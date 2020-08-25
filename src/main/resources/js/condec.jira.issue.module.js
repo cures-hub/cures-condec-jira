@@ -10,7 +10,7 @@
  Is referenced in HTML by
  * jiraIssueModule.vm
  */
-(function (global) {
+(function(global) {
 	/* private vars */
 	var conDecAPI = null;
 	var conDecObservable = null;
@@ -23,17 +23,17 @@
 	var issueKey = "";
 	var search = "";
 
-	var ConDecJiraIssueModule = function () {
+	var ConDecJiraIssueModule = function() {
 		console.log("conDecJiraIssueModule constructor");
 	};
 
-	ConDecJiraIssueModule.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog,
-		_conDecContextMenu, _treant, _vis, _decisionTable) {
+	ConDecJiraIssueModule.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+	        _treant, _vis, _decisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
-			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-			&& isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {//) {
+		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {//) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -46,14 +46,11 @@
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
 
-            addOnClickEventToExportAsTable();
-            addOnClickEventToTab();
-            addOnClickEventToFilterButton();
-            addOnClickEventToDecisionTableButtons();
-            conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
-            
-            var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
-            isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+			addOnClickEventToExportAsTable();
+			addOnClickEventToTab();
+			addOnClickEventToFilterButton();
+			addOnClickEventToDecisionTableButtons();
+			addOnClickEventToTreantFilters();
 
 			// initial call to api depending on selected tab!
 			determineSelectedTab(window.location.href);
@@ -62,49 +59,42 @@
 		return false;
 	};
 
-	ConDecJiraIssueModule.prototype.initView = function () {
+	ConDecJiraIssueModule.prototype.initView = function() {
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
 		search = getURLsSearch();
 		initFilter(issueKey, search);
 	};
 
-	ConDecJiraIssueModule.prototype.applyClassViewFilters = function () {
-		showClassTreant();
-	};
-
-	ConDecJiraIssueModule.prototype.applyTreeVisFilters = function () {
+	ConDecJiraIssueModule.prototype.applyTreeVisFilters = function() {
 		showTreant();
 	};
 
-	function addOnClickEventToDecisionTableButtons() {		
+	function addOnClickEventToDecisionTableButtons() {
 		document.getElementById("btnAddCriterion").addEventListener("click", function() {
-				conDecDecisionTable.showAddCriteriaToDecisionTableDialog();		
+			conDecDecisionTable.showAddCriteriaToDecisionTableDialog();
 		});
-		
+
 		document.getElementById("btnAddAlternative").addEventListener("click", function() {
-			conDecDecisionTable.showCreateDialogForIssue();		
+			conDecDecisionTable.showCreateDialogForIssue();
 		});
 	}
-	
+
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
 
-		AJS.$("#visualization-selection-tabs-menu").on("click", function (event) {
+		AJS.$("#visualization-selection-tabs-menu").on("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
 			determineSelectedTab(event.target.href);
 		});
+
 		//initial call of active tab
 		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
 	}
 
 	function determineSelectedTab(href) {
-		if (href === undefined) {
-			AJS.tabs.change(jQuery('a[href="#treant"]'));
-			showTreant();
-		}
-		if (href.includes("#treant")) {
+		if (href === undefined || href.includes("#treant")) {
 			AJS.tabs.change(jQuery('a[href="#treant"]'));
 			showTreant();
 		} else if (href.includes("#vis")) {
@@ -113,9 +103,6 @@
 		} else if (href.includes("#decisionTable")) {
 			AJS.tabs.change(jQuery('a[href="#decisionTable"]'));
 			showDecisionTable();
-		} else if (href.includes("#class-treant")) {
-			AJS.tabs.change(jQuery('a[href="#class-treant"]'));
-			showClassTreant();
 		} else if (href.includes("#duplicate-issues-tab")) {
 			AJS.tabs.change(jQuery('a[href="#duplicate-issues-tab"]'));
 			consistencyTabsModule.loadDuplicateData();
@@ -128,39 +115,45 @@
 	function addOnClickEventToFilterButton() {
 		console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
 
-        var filterButton = document.getElementById("filter-button");
-        filterButton.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            applyFilters();
-        });
-        
-        var codeClassFilterButton = document.getElementById("code-class-filter-button");
-        codeClassFilterButton.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            conDecJiraIssueModule.applyClassViewFilters();
-        });
-    }
+		var filterButton = document.getElementById("filter-button");
+		filterButton.addEventListener("click", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			applyFilters();
+		});
+	}
 
-    function showTreant() {
-        console.log("ConDecJiraIssueModule showTreant");        
-        issueKey = conDecAPI.getIssueKey();
-        var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
-        var linkDistance = document.getElementById("link-distance-input").value;
-        treant.buildTreant(issueKey, true, search, isOnlyDecisionKnowledgeShown, linkDistance);
-    }
-
-	function showClassTreant() {
-		console.log("ConDecJiraIssueModule showClassTreant");
+	function showTreant() {
+		console.log("ConDecJiraIssueModule showTreant");
 		issueKey = conDecAPI.getIssueKey();
-		treant.buildClassTreant(issueKey, true, search, true);
+		var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input").checked;
+		var linkDistance = document.getElementById("link-distance-input").value;
+		var search = document.getElementById("search-treant-input").value;
+		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown");
+		var minLinkNumber = document.getElementById("min-number-linked-issues-input").value;
+		var maxLinkNumber = document.getElementById("max-number-linked-issues-input").value;
+		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
+		var filterSettings = {
+		    "searchTerm" : search,
+		    "knowledgeTypes" : knowledgeTypes,
+		    "isOnlyDecisionKnowledgeShown" : isOnlyDecisionKnowledgeShown,
+		    "linkDistance" : linkDistance,
+		    "selectedElement" : issueKey,
+		    "isTestCodeShown" : isTestCodeShown,
+		    "minDegree" : minLinkNumber,
+		    "maxDegree" : maxLinkNumber
+		};
+		treant.buildTreant(filterSettings, true);
 	}
 
 	function showGraph() {
 		console.log("ConDecJiraIssueModule showGraph");
 		issueKey = conDecAPI.getIssueKey();
-		vis.buildVis(issueKey, search);
+		var filterSettings = {
+				"searchTerm": search,
+				"selectedElement": issueKey
+		};
+		vis.buildVis(filterSettings);
 	}
 
 	function showDecisionTable() {
@@ -188,33 +181,39 @@
 		if (nodeDistanceInput !== null) {
 			nodeDistance = nodeDistanceInput.value;
 		}
-		vis.buildVisFiltered(issueKey, search, nodeDistance, issueTypes, status, createdAfter, createdBefore, linkTypes,
-			documentationLocations);
+		var filterSettings = {
+				"searchTerm": search,
+				"createdEarliest": createdAfter,
+				"createdLatest": createdBefore,
+				"documentationLocations": documentationLocations,
+				"knowledgeTypes": issueTypes,
+				"status": status,
+				"linkTypes": linkTypes,
+				"selectedElement": issueKey,
+				"linkDistance": nodeDistance
+		};
+		vis.buildVis(filterSettings);
 	}
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
-		var issueTypeDropdown = document.getElementById("issuetype-dropdown");
+
+		// Graph view
 		var firstDatePicker = document.getElementById("created-after-picker");
 		var secondDatePicker = document.getElementById("created-before-picker");
 
-		conDecAPI.getFilterSettings(issueKey, search, function (filterData) {
-			var allIssueTypes = filterData.jiraIssueTypes;
-			var selectedIssueTypes = filterData.jiraIssueTypes;
-
+		// Parses a Jira query (in JQL) into filter settings, uses the default settings in case no Jira query is provided
+		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
+			var allKnowledgeTypes = conDecAPI.getKnowledgeTypes();		
+			var selectedKnowledgeTypes = filterData.knowledgeTypes;
 			var status = conDecAPI.knowledgeStatus;
-
 			var documentationLocation = filterData.documentationLocations;
-			issueTypeDropdown.innerHTML = "";
 
-			for (var index = 0; index < allIssueTypes.length; index++) {
-				var isSelected = "";
-				if (selectedIssueTypes.includes(allIssueTypes[index])) {
-					isSelected = "checked";
-				}
-				issueTypeDropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
-					+ allIssueTypes[index] + "</aui-item-checkbox>");
-			}
+			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown", allKnowledgeTypes,
+			        selectedKnowledgeTypes); // Tree view
+			knowledgeTypeDropdown.addEventListener("change", showTreant);
+
+			conDecFiltering.initDropdown("issuetype-dropdown", allKnowledgeTypes, selectedKnowledgeTypes); // graph view
 			conDecFiltering.initDropdown("status-dropdown", status);
 			conDecFiltering.initDropdown("documentation-dropdown", documentationLocation);
 			if (filterData.startDate >= 0) {
@@ -226,7 +225,26 @@
 
 			var linkTypes = conDecAPI.getLinkTypesSync();
 			conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
-		});
+		});		
+	}
+	
+	function addOnClickEventToTreantFilters() {
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input", showTreant);
+
+		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input");
+		isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+
+		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
+		isTestCodeShownInput.addEventListener("change", showTreant);
+
+		var minLinkNumberInput = document.getElementById("min-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", showTreant);
+
+		var maxLinkNumberInput = document.getElementById("max-number-linked-issues-input");
+		minLinkNumberInput.addEventListener("change", showTreant);
+
+		var searchInputTreant = document.getElementById("search-treant-input");
+		searchInputTreant.addEventListener("change", showTreant);
 	}
 
 	function getURLsSearch() {
@@ -237,9 +255,9 @@
 		return search;
 	}
 
-	ConDecJiraIssueModule.prototype.updateView = function () {
+	ConDecJiraIssueModule.prototype.updateView = function() {
 		console.log("ConDecJiraIssueModule updateView");
-		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
 
 	function addOnClickEventToExportAsTable() {
@@ -247,16 +265,16 @@
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
-		exportMenuItem.addEventListener("click", function (event) {
+		exportMenuItem.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
 			conDecDialog.showExportDialog(JIRA.Issue.getIssueId(), "i");
 		});
 	}
 
-    /*
-     * Init Helpers
-     */
+	/*
+	 * Init Helpers
+	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
 			console.warn("ConDecJiraIssueModule: invalid ConDecAPI object received.");
@@ -309,7 +327,8 @@
 		if (!(conDecVis !== undefined && conDecDecisionTable.loadDecisionProblems !== undefined && typeof conDecDecisionTable.loadDecisionProblems === 'function')) {
 			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
 			return false;
-		};
+		}
+		;
 		return true;
 	}
 	// export ConDecJiraIssueModule

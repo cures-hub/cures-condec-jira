@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -51,8 +52,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Test
 	public void testGetContent() {
 		element.setStatus(KnowledgeStatus.DECIDED);
-		assertEquals("<img src=" + '"' + element.getType().getIconUrl() + '"' + "> " + element.getSummary(),
-				timeNode.getContent());
+		assertTrue(timeNode.getContent().startsWith("<img src="));
 	}
 
 	@Test

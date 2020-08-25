@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,21 +23,25 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -189,6 +194,12 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return all knowledge types including Jira issue types such as work items
+	 *         (tasks) or requirements.
+	 */
 	@Path("/getKnowledgeTypes")
 	@GET
 	public Response getKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
@@ -196,14 +207,26 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<String> knowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
-			if (isEnabled) {
-				knowledgeTypes.add(knowledgeType.toString());
-			}
+		Set<String> knowledgeTypesAsString = new DecisionKnowledgeProject(projectKey).getNamesOfKnowledgeTypes();
+		return Response.ok(knowledgeTypesAsString).build();
+	}
+
+	/**
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return all decision knowledge (=rationale) types such as issue (=decision
+	 *         problem), alternative, decision, and argument.
+	 */
+	@Path("/getDecisionKnowledgeTypes")
+	@GET
+	public Response getDecisionKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-		return Response.ok(knowledgeTypes).build();
+		Set<String> rationaleTypesAsString = new DecisionKnowledgeProject(projectKey)
+				.getNamesOfDecisionKnowledgeTypes();
+		return Response.ok(rationaleTypesAsString).build();
 	}
 
 	@Path("/getDecisionTableCriteriaQuery")
@@ -254,6 +277,58 @@ public class ConfigRest {
 			map.get(i.getId()).add(new KnowledgeElement(i));
 		}
 		return Response.ok(map).build();
+	}
+
+	@Path("/isLinkTypeEnabled")
+	@GET
+	public Response isLinkTypeEnabled(@QueryParam("projectKey") String projectKey,
+			@QueryParam("linkType") String linkType) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Boolean isLinkTypeEnabled = issueLinkTypeManager.getIssueLinkTypes().stream().map(IssueLinkType::getName)
+				.anyMatch(e -> e.equals(linkType));
+		return Response.ok().entity(isLinkTypeEnabled).build();
+	}
+
+	@Path("/setLinkTypeEnabled")
+	@POST
+	public Response setLinkTypeEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("isLinkTypeEnabled") String isLinkTypeEnabledString, @QueryParam("linkType") String linkType) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isLinkTypeEnabledString == null || linkType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
+					.build();
+		}
+		boolean isLinkTypeEnabled = Boolean.valueOf(isLinkTypeEnabledString);
+		if (isLinkTypeEnabled) {
+			PluginInitializer.createLinkType(linkType);
+			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);
+		} else {
+			PluginInitializer.removeLinkTypeFromScheme(linkType, projectKey);
+		}
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/getLinkTypes")
+	@GET
+	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Map<String, String> linkTypes = new HashMap<>();
+		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
+		for (IssueLinkType linkType : types) {
+			linkTypes.put(linkType.getName(), linkType.getStyle());
+		}
+		return Response.ok(linkTypes).build();
 	}
 
 	@Path("/getDecisionGroups")
@@ -340,20 +415,6 @@ public class ConfigRest {
 		} else {
 			return Response.ok(groups).build();
 		}
-	}
-
-	@Path("/getLinkTypes")
-	@GET
-	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Map<String, String> linkTypes = new HashMap<>();
-		for (LinkType linkType : LinkType.values()) {
-			linkTypes.put(linkType.getName(), linkType.getColor());
-		}
-		return Response.ok(linkTypes).build();
 	}
 
 	@Path("/setWebhookEnabled")
@@ -884,6 +945,130 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
 		}
 		return Response.status(Status.OK).build();
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Decision Guidance */
+	/*										*/
+	/* **************************************/
+
+	@Path("/setMaxNumberRecommendations")
+	@POST
+	public Response setMaxNumberRecommendations(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (maxNumberRecommendations < 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The maximum number of results cannot be smaller 0.")).build();
+		}
+
+		ConfigPersistenceManager.setMaxNumberRecommendations(projectKey, maxNumberRecommendations);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/setRDFKnowledgeSource")
+	@POST
+	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
+
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		Gson gson = new Gson();
+		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
+
+		if (rdfSource == null || rdfSource.getName().isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
+			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
+				return Response.status(Status.BAD_REQUEST)
+						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
+		}
+
+		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/deleteKnowledgeSource")
+	@POST
+	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (knowledgeSourceName.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
+		}
+
+		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/setKnowledgeSourceActivated")
+	@POST
+	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
+			@QueryParam("isActivated") boolean isActivated) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (knowledgeSourceName.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
+		}
+
+		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@Path("/setProjectSource")
+	@POST
+	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (projectSourceKey.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
+		}
+		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 }

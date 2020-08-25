@@ -103,15 +103,15 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfJiraIssueTypes() {
-		assertEquals(7, filterSettings.getJiraIssueTypes().size());
+		assertEquals(7, filterSettings.getKnowledgeTypes().size());
 		filterSettings = new FilterSettings("TEST", "?jql=issuetype in (Decision, Issue)", null);
-		assertEquals(2, filterSettings.getJiraIssueTypes().size());
+		assertEquals(2, filterSettings.getKnowledgeTypes().size());
 	}
 
 	@Test
 	public void testSetJiraIssueTypes() {
-		filterSettings.setJiraIssueTypes(null);
-		assertEquals(7, filterSettings.getJiraIssueTypes().size());
+		filterSettings.setKnowledgeTypes(null);
+		assertEquals(7, filterSettings.getKnowledgeTypes().size());
 	}
 
 	@Test
@@ -126,19 +126,19 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetLinkTypes() {
-		filterSettings.setJiraIssueTypes(null);
+		filterSettings.setKnowledgeTypes(null);
 		assertEquals(11, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
 	public void testGetStatus() {
-		assertEquals(7, filterSettings.getStatus().size());
+		assertEquals(8, filterSettings.getStatus().size());
 	}
 
 	@Test
 	public void testSetStatus() {
 		filterSettings.setStatus(null);
-		assertEquals(7, filterSettings.getStatus().size());
+		assertEquals(8, filterSettings.getStatus().size());
 
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());

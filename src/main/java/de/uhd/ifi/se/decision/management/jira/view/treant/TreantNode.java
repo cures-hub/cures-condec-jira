@@ -12,7 +12,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -58,54 +57,50 @@ public class TreantNode {
 		this.children = new ArrayList<>();
 	}
 
-	public TreantNode(KnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
+	public TreantNode(KnowledgeElement knowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
-		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getSummary() == null) {
+		if (knowledgeElement == null || knowledgeElement.getSummary() == null) {
 			return;
 		}
 		String title = "";
-		if (decisionKnowledgeElement.getSummary().length() > 25
-				&& !decisionKnowledgeElement.getSummary().contains(" ")) {
-			title = (decisionKnowledgeElement.getSummary().substring(0, 24) + "...");
+		if (knowledgeElement.getSummary().length() > 25
+				&& !knowledgeElement.getSummary().contains(" ")) {
+			title = (knowledgeElement.getSummary().substring(0, 24) + "...");
 		} else {
-			title = decisionKnowledgeElement.getSummary();
+			title = knowledgeElement.getSummary();
 		}
 		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
-				decisionKnowledgeElement.getDocumentationLocationAsString(), "status",
-				decisionKnowledgeElement.getStatusAsString(), "desc", decisionKnowledgeElement.getKey());
-		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
-		this.htmlId = decisionKnowledgeElement.getId();
-		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
+				knowledgeElement.getDocumentationLocationAsString(), "status",
+				knowledgeElement.getStatusAsString(), "desc", knowledgeElement.getKey());
+		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
+		this.htmlId = knowledgeElement.getId();
+		DecisionKnowledgeProject project = knowledgeElement.getProject();
 		this.link = new HashMap<String, String>();
-		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().isBlank()) {
-			this.link.put("title", decisionKnowledgeElement.getDescription());
+		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
+			this.link.put("title", knowledgeElement.getDescription());
 		}
 		if (project.isIssueStrategy() && isHyperlinked) {
-			this.link.put("href", decisionKnowledgeElement.getUrl());
+			this.link.put("href", knowledgeElement.getUrl());
 			this.link.put("target", "_blank");
 		}
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", true);
 		}
-		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
+		this.image = KnowledgeType.getIconUrl(knowledgeElement);
 	}
 
-	public static String getIcon(KnowledgeElement element) {
-		return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
-	}
-
-	public TreantNode(KnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
+	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed,
 			boolean isHyperlinked) {
-		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
-		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
+		this(knowledgeElement, isCollapsed, isHyperlinked);
+		this.image = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
 		switch (link.getType()) {
 		case "support":
-			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+			if (knowledgeElement.getId() == link.getSource().getId()) {
 				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getSource().getId()) {
+			if (knowledgeElement.getId() == link.getSource().getId()) {
 				this.htmlClass = "con";
 			}
 			break;

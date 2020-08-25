@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -36,6 +34,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
  * 
  * Iterates over the filtered {@link KnowledgeGraph} provided by the
  * {@link FilteringManager}.
+ * 
+ * If you want to change the shown (sub-)graph, do not change this class but
+ * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TreeViewer {
@@ -67,79 +68,68 @@ public class TreeViewer {
 	}
 
 	/**
-	 * Constructor for a jstree tree viewer for a list of trees where all root
-	 * elements have a specific {@link KnowledgeType}.
-	 *
-	 * @param projectKey
-	 *            of a Jira project.
-	 * @param rootElementType
-	 *            {@link KnowledgeType} of the root elements.
-	 */
-	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
-		this();
-		if (rootElementType == KnowledgeType.OTHER) {
-			return;
-		}
-		graph = KnowledgeGraph.getOrCreate(projectKey);
-		List<KnowledgeElement> elements = ((KnowledgeGraph) graph).getElements(rootElementType);
-
-		nodes = new HashSet<TreeViewerNode>();
-		for (KnowledgeElement element : elements) {
-			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-		}
-	}
-
-	/**
-	 * Constructor for a jstree tree viewer for a single knowledge element as the
-	 * root element. The tree viewer comprises only one tree.
+	 * Constructor for a jstree tree viewer that matches the {@link FilterSettings}.
+	 * If a knowledge element is selected in the {@link FilterSettings}, the tree
+	 * viewer comprises only one tree with the selected element as the root element.
+	 * If no element is selected, the tree viewer contains a list of trees.
 	 *
 	 * @param filterSettings
-	 *            For example, the {@link FilterSettings}s cover the selected
-	 *            element and the knowledge types to be shown.
+	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            and the knowledge types to be shown. The selected element can be
+	 *            null.
 	 */
 	public TreeViewer(FilterSettings filterSettings) {
 		this();
-		if (filterSettings == null || filterSettings.getSelectedElement() == null
-				|| filterSettings.getSelectedElement().getKey() == null) {
+		if (filterSettings == null) {
 			return;
 		}
-		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+		nodes = new HashSet<TreeViewerNode>();
+
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
 
-		// Match irrelevant sentences back to list
-		for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(), DocumentationLocation.JIRAISSUE)) {
-			KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
-			if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-				rootNode.getChildren().add(new TreeViewerNode(opposite));
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+
+		if (rootElement != null) {
+			if (rootElement.getKey() == null) {
+				return;
 			}
+			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+			// Match irrelevant sentences back to list
+			for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
+					DocumentationLocation.JIRAISSUE)) {
+				KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
+				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
+					rootNode.getChildren().add(new TreeViewerNode(opposite));
+				}
+			}
+			nodes.add(rootNode);
+			return;
 		}
 
-		nodes = new HashSet<TreeViewerNode>(Arrays.asList(rootNode));
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+
+		if (graph.vertexSet().isEmpty()) {
+			return;
+		}
+
+		// TODO Improve code class handling and remove this case handling
+		if ("codeClass".equals(filterSettings.getKnowledgeTypes().iterator().next())) {
+			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
+			knowledgeElements = manager.getKnowledgeElements();
+		} else {
+			knowledgeElements.addAll(graph.vertexSet());
+		}
+
+		for (KnowledgeElement element : knowledgeElements) {
+			nodes.add(makeIdUnique(new TreeViewerNode(element)));
+		}
 	}
 
 	// TODO Add this to FilterSettings and FilteringManager
 	private boolean isSentenceShown(KnowledgeElement element) {
 		return !((PartOfJiraIssueText) element).isRelevant()
 				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
-	}
-
-	/**
-	 * Constructor for a jstree tree viewer for a code class as the root element.
-	 * The tree viewer comprises only one tree.
-	 */
-	public TreeViewer(String projectKey) {
-		this();
-		if (projectKey == null) {
-			return;
-		}
-		nodes = new HashSet<TreeViewerNode>();
-		CodeClassPersistenceManager manager = new CodeClassPersistenceManager(projectKey);
-		List<KnowledgeElement> codeClasses = manager.getKnowledgeElements();
-		for (KnowledgeElement element : codeClasses) {
-			nodes.add(this.makeIdUnique(new TreeViewerNode(element)));
-		}
 	}
 
 	/**

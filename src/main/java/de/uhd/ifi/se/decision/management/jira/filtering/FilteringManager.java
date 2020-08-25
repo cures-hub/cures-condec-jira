@@ -1,17 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -20,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -56,7 +56,6 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<KnowledgeElement>();
 		}
-		// String searchString = filterSettings.getSearchTerm().toLowerCase();
 		Set<KnowledgeElement> elements = new HashSet<>();
 		if (filterSettings.getSelectedElement() != null) {
 			graph.addVertex(filterSettings.getSelectedElement());
@@ -68,11 +67,7 @@ public class FilteringManager {
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
-		// if (JiraQueryType.getJiraQueryType(searchString) == JiraQueryType.OTHER) {
 		return elements;
-		// }
-		// elements.retainAll(getAllElementsMatchingQuery());
-		// return new ArrayList<>(elements);
 	}
 
 	/**
@@ -85,8 +80,11 @@ public class FilteringManager {
 			return null;
 		}
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<KnowledgeElement, Link>(graph, elements);
-		if (filterSettings.getLinkTypes().size() < LinkType.toStringList().size()) {
+		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
+
+		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes(false);
+		if (filterSettings.getLinkTypes().size() < types.size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
 		}
@@ -130,54 +128,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private List<KnowledgeElement> getAllElementsMatchingQuery() {
-		List<Issue> jiraIssues = getJiraIssuesFromQuery();
-		return getElementsInJiraIssuesMatchingFilterSettings(jiraIssues);
-	}
-
-	private List<Issue> getJiraIssuesFromQuery() {
-		if (filterSettings == null) {
-			return null;
-		}
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, filterSettings.getProjectKey(),
-				filterSettings.getSearchTerm());
-		if (queryHandler == null || queryHandler.getQueryType() == JiraQueryType.OTHER) {
-			return null;
-		}
-		return queryHandler.getJiraIssuesFromQuery();
-	}
-
-	private List<KnowledgeElement> getElementsInJiraIssuesMatchingFilterSettings(List<Issue> jiraIssues) {
-		if (graph == null) {
-			return null;
-		}
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-
-		for (Issue jiraIssue : jiraIssues) {
-			KnowledgeElement element = new KnowledgeElement(jiraIssue);
-			if (elements.contains(element)) {
-				continue;
-			}
-
-			elements.add(element);
-
-			if (!graph.vertexSet().contains(element)) {
-				graph.addVertex(element);
-			}
-
-			BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<KnowledgeElement, Link>(
-					graph, element);
-			while (iterator.hasNext()) {
-				KnowledgeElement node = iterator.next();
-				if (!elements.contains(node) && isElementMatchingFilterSettings(node)) {
-					elements.add(node);
-				}
-			}
-		}
-		return elements;
 	}
 
 	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
@@ -300,7 +250,7 @@ public class FilteringManager {
 			}
 			type = element.getTypeAsString();
 		}
-		return filterSettings.getJiraIssueTypes().contains(type);
+		return filterSettings.getKnowledgeTypes().contains(type);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
- This module is responsible for filtering functionality and view elements.
+ This module is responsible for filling the filter HTML elements and for filtering functionality.
  
- Requires
+ Requires no other module
 
  Is required by
  * conDecJiraIssueModule
@@ -17,12 +17,20 @@
 	/*
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
 	 */
-	ConDecFiltering.prototype.initDropdown = function(dropdownId, items) {
+	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
-		for (var index = 0; index < items.length; index++) {
-			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + "checked" + ">" + items[index]
-			        + "</aui-item-checkbox>");
+		dropdown.innerHTML = "";
+		var isSelected = "checked";
+		for (var index = 0; index < items.length; index++) {			
+			if (selectedItems !== undefined) {
+				if (!selectedItems.includes(items[index])) {
+					isSelected = "";
+				}
+			}			
+			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
+			        + items[index] + "</aui-item-checkbox>");
 		}
+		return dropdown;
 	};
 
 	/*
@@ -38,6 +46,21 @@
 			}
 		}
 		return selectedItems;
+	};
+
+	/*
+	 * external references: condec.knowledge.page, condec.evolution.page, condec.relationship.page, 
+	 * condec.rationale.backlog
+	 */
+	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
+		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
+		var selectedGroups = [];
+		for (var i = 0; i <= selectedGroupsObj.length; i++) {
+			if (selectedGroupsObj[i]) {
+				selectedGroups[i] = selectedGroupsObj[i].text;
+			}
+		}
+		return selectedGroups;
 	};
 
 	/*

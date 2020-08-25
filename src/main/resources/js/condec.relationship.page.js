@@ -53,14 +53,7 @@
             var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
             var status = conDecFiltering.getSelectedItems("status-dropdown-graph");
             var searchString = document.getElementById("decision-search-input").value;
-
-            var selectedGroupsObj = $('#select2-decision-group-relationshipView').select2('data');
-            var selectedGroups = [];
-            for (var i = 0; i <= selectedGroupsObj.length; i++) {
-                if (selectedGroupsObj[i]) {
-                    selectedGroups[i] = selectedGroupsObj[i].text;
-                }
-            }
+            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
 
             conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
         });
