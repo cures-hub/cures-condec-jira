@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -50,7 +49,7 @@ public class TestCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testArgument() {
-		assertFalse(CompletenessCheck.isElementComplete(proArgument));
+		assertTrue(CompletenessCheck.isElementComplete(proArgument));
 	}
 
 }

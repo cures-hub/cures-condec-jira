@@ -20,7 +20,8 @@ public interface CompletenessCheck {
 	static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
 			entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
 			entry(KnowledgeType.ISSUE, new IssueCompletenessCheck()),
-			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()));
+			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
+			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()));
 
 	public boolean execute(KnowledgeElement childElement);
 
