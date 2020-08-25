@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.rationale.backlog.KnowledgeCompletion;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -22,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeCompletion;
 
 /**
  * Models knowledge elements, e.g. decision knowledge elements or requirements.
@@ -83,40 +83,42 @@ public class KnowledgeElement {
 	}
 
 	public KnowledgeElement(Issue issue) {
-		if (issue != null) {
-			this.id = issue.getId();
-			this.summary = issue.getSummary();
-			this.description = issue.getDescription();
-			if (issue.getIssueType() != null) {
-				this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-			}
-			if (issue.getProjectObject() != null) {
-				this.project = new DecisionKnowledgeProject(issue.getProjectObject().getKey());
-			}
-			this.key = issue.getKey();
-			this.documentationLocation = DocumentationLocation.JIRAISSUE;
-			this.created = issue.getCreated();
-			// TODO Manage status for decision knowledge elements stored as entire Jira
-			// issues
-			this.status = KnowledgeStatus.RESOLVED;
+		if (issue == null) {
+			return;
 		}
+		this.id = issue.getId();
+		this.summary = issue.getSummary();
+		this.description = issue.getDescription();
+		if (issue.getIssueType() != null) {
+			this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+		}
+		if (issue.getProjectObject() != null) {
+			this.project = new DecisionKnowledgeProject(issue.getProjectObject().getKey());
+		}
+		this.key = issue.getKey();
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		this.created = issue.getCreated();
+		// TODO Manage status for decision knowledge elements stored as entire Jira
+		// issues
+		this.status = KnowledgeStatus.RESOLVED;
 	}
 
 	public KnowledgeElement(CodeClassInDatabase entry) {
-		if (entry != null) {
-			this.id = entry.getId();
-			this.summary = entry.getFileName();
-			StringBuilder issueKeys = new StringBuilder();
-			for (String key : entry.getJiraIssueKeys().split(";")) {
-				issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
-			}
-			this.description = issueKeys.toString();
-			this.type = KnowledgeType.getKnowledgeType(null);
-			this.project = new DecisionKnowledgeProject(entry.getProjectKey());
-			this.key = entry.getProjectKey() + "-" + entry.getId();
-			this.documentationLocation = DocumentationLocation.COMMIT;
-			this.status = KnowledgeStatus.getKnowledgeStatus(null);
+		if (entry == null) {
+			return;
 		}
+		this.id = entry.getId();
+		this.summary = entry.getFileName();
+		StringBuilder issueKeys = new StringBuilder();
+		for (String key : entry.getJiraIssueKeys().split(";")) {
+			issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
+		}
+		this.description = issueKeys.toString();
+		this.type = KnowledgeType.getKnowledgeType(null);
+		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
+		this.key = entry.getProjectKey() + "-" + entry.getId();
+		this.documentationLocation = DocumentationLocation.COMMIT;
+		this.status = KnowledgeStatus.getKnowledgeStatus(null);
 	}
 
 	/**
@@ -488,10 +490,8 @@ public class KnowledgeElement {
 		return links;
 	}
 
-
 	public boolean getLink(KnowledgeElement otherElement) {
-		for (Link link : this.getLinks()
-			 ) {
+		for (Link link : this.getLinks()) {
 			if (link.getOppositeElement(this).getId() == otherElement.getId()) {
 				return true;
 			}

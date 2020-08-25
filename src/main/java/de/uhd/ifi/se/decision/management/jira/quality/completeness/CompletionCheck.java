@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rationale.backlog;
+package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 

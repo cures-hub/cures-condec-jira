@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.rationalebacklog;
+package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.rationale.backlog.IssueCompletionCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.IssueCompletionCheck;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
