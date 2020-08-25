@@ -151,13 +151,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testIsIncompleteElementsShown() {
-		assertFalse(filterSettings.isOnlyIncompleteKnowledgeShown());
+		assertFalse(filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test
 	public void testSetIncompleteElementsShown() {
-		filterSettings.setOnlyIncompleteKnowledgeShown(true);
-		assertTrue(filterSettings.isOnlyIncompleteKnowledgeShown());
+		filterSettings.setIncompleteKnowledgeShown(true);
+		assertTrue(filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test
@@ -175,13 +175,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetIsOnlyDecisionKnowledgeShown() {
-		assertEquals(false, filterSettings.isOnlyIncompleteKnowledgeShown());
+		assertEquals(false, filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test
 	public void testSetOnlyDecisionKnowledgeShown() {
-		filterSettings.setOnlyIncompleteKnowledgeShown(true);
-		assertEquals(true, filterSettings.isOnlyIncompleteKnowledgeShown());
+		filterSettings.setIncompleteKnowledgeShown(true);
+		assertEquals(true, filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test

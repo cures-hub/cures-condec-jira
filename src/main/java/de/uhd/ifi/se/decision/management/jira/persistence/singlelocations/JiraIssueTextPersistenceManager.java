@@ -350,7 +350,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
 		databaseEntry.setStatus(element.getStatusAsString());
-		databaseEntry.setIncomplete(element.isIncomplete());
 	}
 
 	@Override
@@ -425,7 +424,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
 		formerElement.setStatus(newStatus);
 		formerElement.setType(newType);
-		formerElement.setIncomplete(newElement.isIncomplete());
 		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(formerElement);

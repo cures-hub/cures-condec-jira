@@ -1,81 +1,55 @@
 package de.uhd.ifi.se.decision.management.jira.rationalebacklog;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.TestFilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rationale.backlog.KnowledgeCompletion;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
-
-public class TestKnowledgeCompletion {
-
-	private KnowledgeCompletion knowledgeCompletion;
-	private KnowledgeElement parentElement;
-	private KnowledgeElement childElement;
+public class TestKnowledgeCompletion extends TestFilterSettings {
+	private KnowledgeElement issueElement;
+	private KnowledgeElement decisionElement;
+	private KnowledgeElement alternativeElement;
+	private KnowledgeElement proElement;
 
 	@Before
 	public void setUp() {
-		knowledgeCompletion = new KnowledgeCompletion();
-		parentElement = new KnowledgeElement();
-		childElement = new KnowledgeElement();
+		init();
+		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
+		issueElement = elements.get(3);
+		decisionElement = elements.get(6);
+		alternativeElement = elements.get(5);
+		proElement = elements.get(7);
 	}
 
 	@Test
-	public void testInitialization() {
-		assertEquals(3, knowledgeCompletion.getCompletionCheckMap().size());
+	@NonTransactional
+	public void testCompleteIssue() {
+		assertTrue(KnowledgeCompletion.isElementComplete(issueElement));
 	}
 
 	@Test
-	public void testIsElementCompleteParentDecision() {
-		parentElement.setType(KnowledgeType.DECISION);
-		childElement.setType(KnowledgeType.ISSUE);
-		assertTrue(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.DECISION);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.ALTERNATIVE);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.PRO);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.CON);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.OTHER);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
+	@NonTransactional
+	public void testCompleteDecision() {
+		assertTrue(KnowledgeCompletion.isElementComplete(decisionElement));
 	}
 
 	@Test
-	public void testIsElementCompleteParentIssue() {
-		parentElement.setType(KnowledgeType.ISSUE);
-		childElement.setType(KnowledgeType.DECISION);
-		assertTrue(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.ALTERNATIVE);
-		assertTrue(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.ISSUE);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.PRO);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.CON);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.OTHER);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
+	@NonTransactional
+	public void testCompleteAlternative() {
+		assertTrue(KnowledgeCompletion.isElementComplete(alternativeElement));
 	}
 
 	@Test
-	public void testIsElementCompleteParentAlternative() {
-		parentElement.setType(KnowledgeType.ALTERNATIVE);
-		childElement.setType(KnowledgeType.ISSUE);
-		assertTrue(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.ALTERNATIVE);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.DECISION);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.PRO);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.CON);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
-		childElement.setType(KnowledgeType.OTHER);
-		assertFalse(knowledgeCompletion.isElementComplete(parentElement, childElement));
+	@NonTransactional
+	public void testArgument() {
+		assertFalse(KnowledgeCompletion.isElementComplete(proElement));
 	}
 
 }

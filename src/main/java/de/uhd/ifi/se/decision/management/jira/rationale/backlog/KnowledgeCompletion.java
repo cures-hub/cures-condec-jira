@@ -3,26 +3,21 @@ package de.uhd.ifi.se.decision.management.jira.rationale.backlog;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Map.entry;
+
 public class KnowledgeCompletion {
-	private final Map<KnowledgeType, CompletionCheck> completionCheckMap;
+	private static final Map<KnowledgeType, CompletionCheck> completionCheckMap = Map.ofEntries(
+		entry(KnowledgeType.DECISION, new DecisionCompletionCheck()),
+		entry(KnowledgeType.ISSUE, new IssueCompletionCheck()),
+		entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletionCheck())
+	);
 
-	public KnowledgeCompletion() {
-		completionCheckMap = new HashMap<>();
-		addCommands();
-	}
 
-	public boolean isElementComplete(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		CompletionCheck completionCheck = completionCheckMap.get(parentElement.getType());
-		return completionCheck != null && completionCheck.execute(childElement);
-	}
-
-	private void addCommands() {
-		completionCheckMap.put(KnowledgeType.DECISION, new DecisionCompletionCheck());
-		completionCheckMap.put(KnowledgeType.ISSUE, new IssueCompletionCheck());
-		completionCheckMap.put(KnowledgeType.ALTERNATIVE, new AlternativeCompletionCheck());
+	public static boolean isElementComplete(KnowledgeElement element) {
+		CompletionCheck completionCheck = completionCheckMap.get(element.getType());
+		return completionCheck != null && completionCheck.execute(element);
 	}
 
 	public Map<KnowledgeType, CompletionCheck> getCompletionCheckMap() {

@@ -58,41 +58,6 @@ public class TestUpdateInDatabase extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testSetIncompleteToComplete() {
-		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();
-		PartOfJiraIssueText elementBeforeUpdate = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-			.getKnowledgeElement(id);
-		PartOfJiraIssueText sentence = comment.get(0);
-		assertTrue(sentence.isIncomplete());
-		sentence.setIncomplete(false);
-		assertTrue(elementBeforeUpdate.isIncomplete());
-		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
-		PartOfJiraIssueText elementAfterUpdate = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-			.getKnowledgeElement(id);
-		assertFalse(elementAfterUpdate.isIncomplete());
-	}
-
-	@Test
-	@NonTransactional
-	public void testSetCompleteToIncomplete() {
-		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();
-		PartOfJiraIssueText sentence = comment.get(0);
-		sentence.setIncomplete(false);
-		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
-		PartOfJiraIssueText elementBeforeUpdate = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-			.getKnowledgeElement(id);
-		assertFalse(elementBeforeUpdate.isIncomplete());
-		sentence.setIncomplete(true);
-		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
-		PartOfJiraIssueText elementAfterUpdate = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-			.getKnowledgeElement(id);
-		assertTrue(elementAfterUpdate.isIncomplete());
-	}
-
-	@Test
-	@NonTransactional
 	public void testSetSentenceIrrlevant() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
 		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();

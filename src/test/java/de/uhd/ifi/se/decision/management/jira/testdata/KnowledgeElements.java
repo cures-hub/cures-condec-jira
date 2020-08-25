@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class KnowledgeElements {
 
-	public static List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+	public static List<KnowledgeElement> elements = new ArrayList<>();
 
 	public static List<KnowledgeElement> getTestKnowledgeElements() {
 		if (elements == null || elements.isEmpty()) {
@@ -24,9 +24,8 @@ public class KnowledgeElements {
 	}
 
 	private static List<KnowledgeElement> createKnowledgeElements() {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> elements = new ArrayList<>();
 		List<MutableIssue> jiraIssues = JiraIssues.getTestJiraIssues();
-
 		for (Issue jiraIssue : jiraIssues) {
 			elements.add(new KnowledgeElement(jiraIssue));
 		}

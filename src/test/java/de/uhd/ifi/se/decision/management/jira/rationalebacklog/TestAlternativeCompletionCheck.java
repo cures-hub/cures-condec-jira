@@ -1,26 +1,42 @@
 package de.uhd.ifi.se.decision.management.jira.rationalebacklog;
 
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rationale.backlog.AlternativeCompletionCheck;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
 
-public class TestAlternativeCompletionCheck {
+import static org.junit.Assert.*;
 
-	@Test
-	public void testChildElementIssue() {
-		KnowledgeElement element = new KnowledgeElement();
-		element.setType(KnowledgeType.ISSUE);
-		assertTrue(new AlternativeCompletionCheck().execute(element));
+public class TestAlternativeCompletionCheck extends TestSetUp {
+
+	private List<KnowledgeElement> elements;
+	private KnowledgeElement alternativeElement;
+
+	@Before
+	public void setUp() {
+		init();
+		elements = KnowledgeElements.getTestKnowledgeElements();
+		alternativeElement = elements.get(5);
 	}
 
 	@Test
-	public void testChildElementOther() {
-		KnowledgeElement element = new KnowledgeElement();
-		assertFalse(new AlternativeCompletionCheck().execute(element));
+	@NonTransactional
+	public void testIsLinkedToIssue() {
+		assertEquals(alternativeElement.getType(), KnowledgeType.ALTERNATIVE);
+		assertEquals(alternativeElement.getId(), 3);
+		KnowledgeElement issue = elements.get(3);
+		assertEquals(issue.getType(), KnowledgeType.ISSUE);
+		assertEquals(issue.getId(), 2);
+		assertTrue(alternativeElement.getLink(issue));
+		assertTrue(new AlternativeCompletionCheck().execute(alternativeElement));
 	}
 
+	//TODO write test to check when alternative is not linked to an issue
 }

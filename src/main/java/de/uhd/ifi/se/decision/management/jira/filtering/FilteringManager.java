@@ -90,9 +90,7 @@ public class FilteringManager {
 	private Set<KnowledgeElement> getElementsInLinkDistance() {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
-		Set<KnowledgeElement> elements = new HashSet<>();
-		elements.addAll(getLinkedElements(selectedElement, linkDistance));
-		return elements;
+		return new HashSet<>(getLinkedElements(selectedElement, linkDistance));
 	}
 
 	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
@@ -153,7 +151,7 @@ public class FilteringManager {
 			return false;
 		}
 		if (!isElementMatchingStatusFilter(element)) {
-			return false;
+			return isElementMatchingIncompleteFilter(element);
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
@@ -162,9 +160,6 @@ public class FilteringManager {
 			return false;
 		}
 		if (!isElementMatchingIsTestCodeFilter(element)) {
-			return false;
-		}
-		if (!isElementMatchingIncompleteFilter(element)){
 			return false;
 		}
 		if (!isElementMatchingDegreeFilter(element)) {
@@ -306,14 +301,16 @@ public class FilteringManager {
 	 *
 	 * @param element
 	 * 			{@link KnowledgeElement} object.
-	 * @return true if the element complete value matches the filter settings complete value.
+	 * @return true if the element incomplete status matches the filter settings value
+	 * 			for showing incomplete decision knowledge.
 	 */
 	public boolean isElementMatchingIncompleteFilter(KnowledgeElement element) {
-		if (filterSettings.isOnlyIncompleteKnowledgeShown()) {
+		if (filterSettings.isIncompleteKnowledgeShown()) {
 			return element.isIncomplete();
 		}
-		return true;
+		return false;
 	}
+
 
 	/**
 	 * @return {@link FilterSettings} object (=filter criteria) that the filtering

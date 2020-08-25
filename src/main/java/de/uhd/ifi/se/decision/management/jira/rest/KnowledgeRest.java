@@ -168,7 +168,6 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
 		persistenceManager.updateIssueStatus(existingElement, newElementWithId, user);
-		persistenceManager.updateCompleteStatus(existingElement, newElementWithId, user);
 		long linkId = persistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

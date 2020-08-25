@@ -31,14 +31,14 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithQueryInvalid() {
-		FilteringManager filteringManager = new FilteringManager(null, null, (String) null);
+		FilteringManager filteringManager = new FilteringManager(null, null, null);
 		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
 		assertNull(filteringManager.getSubgraphMatchingFilterSettings());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManager((FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager(null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
@@ -84,7 +84,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetElementsByType() {
-		Set<String> knowledgeTypes = new HashSet<String>();
+		Set<String> knowledgeTypes = new HashSet<>();
 		knowledgeTypes.add("Decision");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setKnowledgeTypes(knowledgeTypes);
@@ -104,7 +104,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		List<String> linkTypes = new ArrayList<String>();
+		List<String> linkTypes = new ArrayList<>();
 		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setLinkTypes(linkTypes);
@@ -165,15 +165,9 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testIsElementMatchingIncompleteFilter() {
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		KnowledgeElement testKnowledgeElement = KnowledgeElements.getTestKnowledgeElement();
-		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
-		testKnowledgeElement.setIncomplete(false);
-		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
-		filterSettings.setOnlyIncompleteKnowledgeShown(true);
-		assertFalse(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
-		testKnowledgeElement.setIncomplete(true);
-		assertTrue(filteringManager.isElementMatchingIncompleteFilter(testKnowledgeElement));
+		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		assertFalse(filteringManager.isElementMatchingIncompleteFilter(element));
 	}
+
 }

@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.rationale.backlog.KnowledgeCompletion;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -42,7 +43,6 @@ public class KnowledgeElement {
 	private Date closed;
 	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
-	private boolean isIncomplete = true;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -488,6 +488,17 @@ public class KnowledgeElement {
 		return links;
 	}
 
+
+	public boolean getLink(KnowledgeElement otherElement) {
+		for (Link link : this.getLinks()
+			 ) {
+			if (link.getOppositeElement(this).getId() == otherElement.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Determines whether an element is linked to at least one other decision
 	 * knowledge element.
@@ -566,10 +577,7 @@ public class KnowledgeElement {
 	}
 
 	public boolean isIncomplete() {
-		return isIncomplete;
+		return !KnowledgeCompletion.isElementComplete(this);
 	}
 
-	public void setIncomplete(boolean isIncomplete) {
-		this.isIncomplete = isIncomplete;
-	}
 }

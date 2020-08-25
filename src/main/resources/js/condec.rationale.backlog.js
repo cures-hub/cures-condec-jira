@@ -53,7 +53,7 @@
 			conDecRationaleBacklog.updateView();
 		});
 
-		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus, ["challenged", "unresolved"]);
+		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
 		statusDropdown.addEventListener("change", function () {
 			conDecRationaleBacklog.updateView();
 		});
@@ -81,10 +81,14 @@
 		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
-		var onlyIncomplete = false;
+		var showIncomplete = false;
 		if (indexOfIncomplete !== -1) {
-			selectedStatus = this.conDecAPI.knowledgeStatus;
-			onlyIncomplete = true;
+			if (selectedStatus.length === 1) {
+				selectedStatus = this.conDecAPI.knowledgeStatus;
+			} else {
+				selectedStatus.splice(indexOfIncomplete, 1);
+			}
+			showIncomplete = true;
 		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
 		var startDateString = document.getElementById("start-date-picker-rb").value;
@@ -98,7 +102,7 @@
 			"groups" : selectedGroups,
 			"startDate" : startDateLong,
 			"endDate" : endDateLong,
-			"isOnlyIncompleteKnowledgeShown" : onlyIncomplete
+			"isIncompleteKnowledgeShown" : showIncomplete,
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 	}
