@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rationalebacklog;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.TestFilterSettings;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.rationale.backlog.KnowledgeCompletion;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TestKnowledgeCompletion extends TestFilterSettings {
+public class TestKnowledgeCompletion extends TestSetUp {
 	private KnowledgeElement issueElement;
 	private KnowledgeElement decisionElement;
 	private KnowledgeElement alternativeElement;
