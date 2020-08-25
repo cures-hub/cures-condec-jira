@@ -28,8 +28,10 @@ import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.Con
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.TracingCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.contextinformation.UserCIP;
 import de.uhd.ifi.se.decision.management.jira.consistency.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -54,6 +56,7 @@ public class TestCipCalculation extends TestSetUp {
 		Issue baseIssue = TestCipCalculation.testIssues.get(0);
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		try {
+			GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(), DocumentationLocation.JIRAISSUE);
 			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
 			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions.stream().sorted((LinkSuggestion::compareTo))
 					.collect(Collectors.toList());

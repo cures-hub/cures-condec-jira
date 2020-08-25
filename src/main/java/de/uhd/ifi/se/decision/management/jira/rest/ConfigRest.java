@@ -872,7 +872,7 @@ public class ConfigRest {
 	@Path("/setMinimumDuplicateLength")
 	@POST
 	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("minDuplicateLength") int minDuplicateLength) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -881,11 +881,11 @@ public class ConfigRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (minDuplicateLength < 3) {
+		if (fragmentLength < 3) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
 		}
-		ConfigPersistenceManager.setMinDuplicateLength(projectKey, minDuplicateLength);
+		ConfigPersistenceManager.setFragmentLength(projectKey, fragmentLength);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

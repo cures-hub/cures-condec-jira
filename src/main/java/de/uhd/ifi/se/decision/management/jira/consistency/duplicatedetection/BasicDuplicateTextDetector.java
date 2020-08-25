@@ -9,16 +9,15 @@ import java.util.List;
 
 public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 
-	private static Preprocessor preprocessor;
+	private Preprocessor preprocessor;
 	private static final String fieldUsedForDetection = "DESCRIPTION";
-	private int minDuplicateLength;
+	private int fragmentLength;
+	private static final double MIN_SIMILARITY = 0.85;
 
-	public BasicDuplicateTextDetector(int minDuplicateLength) {
-		if (preprocessor == null) {
-			preprocessor = new Preprocessor();
+	public BasicDuplicateTextDetector(int fragmentLength) {
+		preprocessor = new Preprocessor();
 
-		}
-		this.minDuplicateLength = minDuplicateLength;
+		this.fragmentLength = fragmentLength;
 	}
 
 	private String cleanMarkdown(String markdown) {
@@ -41,47 +40,53 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
 			s2 = cleanMarkdown(s2);
-			BasicDuplicateTextDetector.preprocessor.preprocess(s1);
-			List<CharSequence> preprocessedS1Tokens = BasicDuplicateTextDetector.preprocessor.getTokens();
+			this.preprocessor.preprocess(s1);
+			List<CharSequence> preprocessedS1Tokens = this.preprocessor.getTokens();
 
-			BasicDuplicateTextDetector.preprocessor.preprocess(s2);
-			s2 = String.join(" ", BasicDuplicateTextDetector.preprocessor.getTokens());
+			this.preprocessor.preprocess(s2);
+			List<CharSequence> preprocessedS2Tokens = this.preprocessor.getTokens();
 
-			// iterate over string s1 as list
 			int index = 0;
-			while (index < preprocessedS1Tokens.size() - minDuplicateLength + 1) {
-				int numberOfDuplicateTokens = minDuplicateLength;
-				int indexOfDuplicate = 0;
-				int lastIndexOfDuplicate = 0;
+			// Iterate over text.
+			while (index < preprocessedS1Tokens.size() - fragmentLength + 1) {
+				int internalIndex = 0;
+				// Get Lists of text based on the fragmentLength
+				List<CharSequence> sequenceToCheck = preprocessedS1Tokens.subList(index, index + fragmentLength);
+				List<CharSequence> sequenceToCheckAgainst = preprocessedS2Tokens.subList(internalIndex, Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.size()));
 
-				boolean duplicateFound = false;
-				String stringToSearch = "";
-				String lastStringToSearch = "";
 
-				// build DuplicateTextFragment in loop?
-				while (indexOfDuplicate != -1) {
-					lastIndexOfDuplicate = indexOfDuplicate;
-					lastStringToSearch = stringToSearch;
-					if (index + numberOfDuplicateTokens > preprocessedS1Tokens.size()) {
-						break;
-					}
-					stringToSearch = this.generateStringToSearch(preprocessedS1Tokens, index, numberOfDuplicateTokens);
-					indexOfDuplicate = s2.indexOf(stringToSearch);
-					if (!duplicateFound) {
-						duplicateFound = indexOfDuplicate != -1;
-					}
-					numberOfDuplicateTokens++;
-				}
-				if (duplicateFound) {
-					duplicateList.add(new DuplicateSuggestion(baseElement, compareElement, s2, lastIndexOfDuplicate, lastStringToSearch.length(), BasicDuplicateTextDetector.fieldUsedForDetection));
-					index += numberOfDuplicateTokens - 2; // number of duplicate tokens is one more than found tokens
+				while (calculateScore(sequenceToCheck, sequenceToCheckAgainst) <= MIN_SIMILARITY && internalIndex < preprocessedS2Tokens.size() - fragmentLength + 1) {
+					sequenceToCheckAgainst = preprocessedS2Tokens.subList(internalIndex, Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.size()));
+					internalIndex++;
 				}
 
+				if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
+					// sequenceToCheck.remove(sequenceToCheck.size()-1);
+					String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
+					duplicateList.add(new DuplicateSuggestion(
+						baseElement,
+						compareElement,
+						preprocessedDuplicateSummary,
+						0,
+						preprocessedDuplicateSummary.length(),
+						//calculateScore(sequenceToCheck, sequenceToCheckAgainst),
+						fieldUsedForDetection));
+					return duplicateList;
+				}
 				index++;
-
 			}
+
 		}
 		return duplicateList;
+	}
+
+	// Check if the words are present in the same sequence with minor deviation k allowed.
+	private double calculateScore(List<CharSequence> sequenceToCheck, List<CharSequence> sequenceToCheckAgainst) {
+		double count = 0.;
+		for (CharSequence toCheck : sequenceToCheck) {
+			count += sequenceToCheckAgainst.contains(toCheck) ? 1 : 0;
+		}
+		return (count / (sequenceToCheck.size()));
 	}
 
 	private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {
