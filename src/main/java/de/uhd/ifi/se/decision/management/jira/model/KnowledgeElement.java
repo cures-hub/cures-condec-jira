@@ -570,8 +570,9 @@ public class KnowledgeElement {
 	/**
 	 * @return true if the element is correctly linked according to the definition
 	 *         of done. For example, an argument needs to be linked to at least one
-	 *         solution option (decision or alternative). Otherwise, it is
-	 *         incomplete, i.e., its documentation needs to be improved.
+	 *         solution option (decision or alternative) in the
+	 *         {@link KnowledgeGraph}. Otherwise, it is incomplete, i.e., its
+	 *         documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
 		return !KnowledgeCompletenessChecker.isElementComplete(this);

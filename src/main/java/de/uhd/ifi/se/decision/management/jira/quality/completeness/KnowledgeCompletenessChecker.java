@@ -5,6 +5,7 @@ import static java.util.Map.entry;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -12,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * according to the definition of done.
  * 
  * For example, an argument needs to be linked to at least one solution option
- * (decision or alternative). Otherwise, it is incomplete, i.e., its
- * documentation needs to be improved.
+ * (decision or alternative) in the {@link KnowledgeGraph}. Otherwise, it is
+ * incomplete, i.e., its documentation needs to be improved.
  */
 public class KnowledgeCompletenessChecker {
 
