@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -14,50 +13,44 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestKnowledgeCompleteness extends TestSetUp {
-	private KnowledgeElement issueElement;
-	private KnowledgeElement decisionElement;
-	private KnowledgeElement alternativeElement;
-	private KnowledgeElement proElement;
+public class TestCompletenessCheck extends TestSetUp {
+	private KnowledgeElement issue;
+	private KnowledgeElement decision;
+	private KnowledgeElement alternative;
+	private KnowledgeElement proArgument;
 
 	@Before
 	public void setUp() {
 		init();
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
-		issueElement = elements.get(3);
-		decisionElement = elements.get(6);
-		alternativeElement = elements.get(5);
-		proElement = elements.get(7);
-	}
-
-	@Test
-	@NonTransactional
-	public void testConstructor() {
-		assertNotNull(new KnowledgeCompletenessChecker());
+		issue = elements.get(3);
+		decision = elements.get(6);
+		alternative = elements.get(5);
+		proArgument = elements.get(7);
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteIssue() {
-		assertTrue(KnowledgeCompletenessChecker.isElementComplete(issueElement));
+		assertTrue(CompletenessCheck.isElementComplete(issue));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteDecision() {
-		assertTrue(KnowledgeCompletenessChecker.isElementComplete(decisionElement));
+		assertTrue(CompletenessCheck.isElementComplete(decision));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteAlternative() {
-		assertTrue(KnowledgeCompletenessChecker.isElementComplete(alternativeElement));
+		assertTrue(CompletenessCheck.isElementComplete(alternative));
 	}
 
 	@Test
 	@NonTransactional
 	public void testArgument() {
-		assertFalse(KnowledgeCompletenessChecker.isElementComplete(proElement));
+		assertFalse(CompletenessCheck.isElementComplete(proArgument));
 	}
 
 }
