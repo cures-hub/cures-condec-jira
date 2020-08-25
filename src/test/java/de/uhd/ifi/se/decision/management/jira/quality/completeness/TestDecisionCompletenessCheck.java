@@ -3,17 +3,16 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -49,18 +48,14 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToIssue() {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
-		KnowledgeElement issue = elements.get(3);
-		assertEquals(KnowledgeType.ISSUE, issue.getType());
-		assertEquals(2, issue.getId());
-		Link linkToIssue = decision.getLink(issue);
-		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToIssue,
-				JiraUsers.SYS_ADMIN.getApplicationUser());
-		linkToIssue = decision.getLink(issue);
-		assertNull(linkToIssue);
 
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(decision.getProject());
-		assertFalse(graph.containsEdge(linkToIssue));
-		// assertEquals(2, Graphs.neighborSetOf(graph, decision).size());
-		// assertFalse(new DecisionCompletenessCheck().execute(decision));
+		Set<Link> links = decision.getLinks();
+		for (Link link : links) {
+			if (link.getOppositeElement(decision).getType() == KnowledgeType.ISSUE) {
+				KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link,
+						JiraUsers.SYS_ADMIN.getApplicationUser());
+			}
+		}
+		assertFalse(new DecisionCompletenessCheck().execute(decision));
 	}
 }
