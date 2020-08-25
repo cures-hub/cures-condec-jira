@@ -1366,7 +1366,7 @@
 		});
 	};
 
-	ConDecAPI.prototype.showFlag = showFlag
+	ConDecAPI.prototype.showFlag = showFlag;
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();
