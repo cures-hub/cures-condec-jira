@@ -490,13 +490,24 @@ public class KnowledgeElement {
 		return links;
 	}
 
-	public boolean getLink(KnowledgeElement otherElement) {
+	/**
+	 * @param otherElement
+	 *            object of {@link KnowledgeElement}.
+	 * @return {@link Link} object if there exists a link (= edge or relationship)
+	 *         between this knowledge element and the other knowledge element in the
+	 *         {@link KnowledgeGraph}. Returns null if no edge/link/relationshio can
+	 *         be found.
+	 */
+	public Link getLink(KnowledgeElement otherElement) {
+		if (this.equals(otherElement)) {
+			return null;
+		}
 		for (Link link : this.getLinks()) {
-			if (link.getOppositeElement(this).getId() == otherElement.getId()) {
-				return true;
+			if (link.getOppositeElement(this).equals(otherElement)) {
+				return link;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
