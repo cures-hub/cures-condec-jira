@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 public class TracingCIP implements ContextInformationProvider {
 	private final String id = "TracingCIP_BFS";
@@ -30,7 +30,6 @@ public class TracingCIP implements ContextInformationProvider {
 	public String getName() {
 		return this.name;
 	}
-
 
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
@@ -56,7 +55,8 @@ public class TracingCIP implements ContextInformationProvider {
 	}
 
 	/**
-	 * This method uses the breadth first algorithm to search for the shortest path between 2 nodes
+	 * This method uses the breadth first algorithm to search for the shortest path
+	 * between 2 nodes
 	 *
 	 * @param startNode
 	 * @param endNode
@@ -72,20 +72,21 @@ public class TracingCIP implements ContextInformationProvider {
 		int maxIterations = 7;
 		int iteration = 1;
 
-		// Halt  the loop if there are either:
+		// Halt the loop if there are either:
 		// 1.: no more new nodes (=issues) to check
 		// 2.: the end node was already visited
 		// 3.: the maximum iterations are reached.
-		while (!currentNodesToCheck.isEmpty() &&
-			!wasVisited(endNode.getKey(), distanceMap) &&
-			iteration < maxIterations) {
+		while (!currentNodesToCheck.isEmpty() && !wasVisited(endNode.getKey(), distanceMap)
+				&& iteration < maxIterations) {
 			for (KnowledgeElement nodeToCheck : currentNodesToCheck) {
-				List<Link> links = nodeToCheck.getLinks();
-				//Collection<IssueLink> issueLinks = this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
+				Set<Link> links = nodeToCheck.getLinks();
+				// Collection<IssueLink> issueLinks =
+				// this.issueLinkManager.getIssueLinks(nodeToCheck.getId());
 
 				Collection<KnowledgeElement> linkedKnowledge = getElementsForLinks(links);
 				for (KnowledgeElement knowledgeElement : linkedKnowledge) {
-					if (!wasVisited(knowledgeElement.getKey(), distanceMap) && !nextNodesToCheck.contains(knowledgeElement)) {
+					if (!wasVisited(knowledgeElement.getKey(), distanceMap)
+							&& !nextNodesToCheck.contains(knowledgeElement)) {
 						nextNodesToCheck.add(knowledgeElement);
 						distanceMap.put(knowledgeElement.getKey(), iteration);
 					}

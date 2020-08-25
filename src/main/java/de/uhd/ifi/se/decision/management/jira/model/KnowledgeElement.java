@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -18,7 +20,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeCompletion;
@@ -475,19 +476,15 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as
-	 *         list of {@link} objects, does contain Jira {@link IssueLink}s and
-	 *         generic links.
-	 *
-	 * @see GenericLinkManager
+	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as a
+	 *         set of {@link Link} objects, does contain Jira {@link IssueLink}s and
+	 *         generic links (e.g. links between code classes and Jira issues).
 	 */
-	public List<Link> getLinks() {
-		// TODO only return KnowledgeGraph.getOrCreate(project).edgesOf(this)
-		List<Link> links = GenericLinkManager.getLinksForElement(this);
-		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
-			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
+	public Set<Link> getLinks() {
+		if (project == null) {
+			return new HashSet<>();
 		}
-		return links;
+		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
 	/**
@@ -517,11 +514,11 @@ public class KnowledgeElement {
 	 * @return id of first link that is found.
 	 */
 	public long isLinked() {
-		List<Link> links = getLinks();
-		if (!links.isEmpty()) {
-			return links.get(0).getId();
+		Set<Link> links = getLinks();
+		if (links.isEmpty()) {
+			return 0;
 		}
-		return 0;
+		return links.iterator().next().getId();
 	}
 
 	/**
