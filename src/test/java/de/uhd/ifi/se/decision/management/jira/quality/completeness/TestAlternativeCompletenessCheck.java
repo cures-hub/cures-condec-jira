@@ -37,11 +37,11 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsLinkedToIssue() {
-		assertEquals(alternative.getType(), KnowledgeType.ALTERNATIVE);
-		assertEquals(alternative.getId(), 3);
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		assertEquals(3, alternative.getId());
 		KnowledgeElement issue = elements.get(3);
-		assertEquals(issue.getType(), KnowledgeType.ISSUE);
-		assertEquals(issue.getId(), 2);
+		assertEquals(KnowledgeType.ISSUE, issue.getType());
+		assertEquals(2, issue.getId());
 		assertNotNull(alternative.getLink(issue));
 		assertTrue(new AlternativeCompletenessCheck().execute(alternative));
 	}
@@ -49,11 +49,11 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsNotLinkedToIssue() {
-		assertEquals(alternative.getType(), KnowledgeType.ALTERNATIVE);
-		assertEquals(alternative.getId(), 3);
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		assertEquals(3, alternative.getId());
 		KnowledgeElement issue = elements.get(3);
-		assertEquals(issue.getType(), KnowledgeType.ISSUE);
-		assertEquals(issue.getId(), 2);
+		assertEquals(KnowledgeType.ISSUE, issue.getType());
+		assertEquals(2, issue.getId());
 		Link linkToIssue = alternative.getLink(issue);
 		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToIssue,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
