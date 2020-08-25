@@ -129,9 +129,10 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param id of the knowledge element. This id is the internal database id. When
-	 *           using Jira issues to persist knowledge, this id is different to the
-	 *           project internal id that is part of the key.
+	 * @param id
+	 *            of the knowledge element. This id is the internal database id.
+	 *            When using Jira issues to persist knowledge, this id is different
+	 *            to the project internal id that is part of the key.
 	 */
 	public void setId(long id) {
 		this.id = id;
@@ -147,8 +148,9 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param summary of the knowledge element. The summary is a short description
-	 *                of the element.
+	 * @param summary
+	 *            of the knowledge element. The summary is a short description of
+	 *            the element.
 	 */
 	public void setSummary(String summary) {
 		this.summary = summary;
@@ -165,9 +167,10 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param description of the knowledge element. The description provides details
-	 *                    about the element. When using Jira issues to persist
-	 *                    knowledge, it can include images and other fancy stuff.
+	 * @param description
+	 *            of the knowledge element. The description provides details about
+	 *            the element. When using Jira issues to persist knowledge, it can
+	 *            include images and other fancy stuff.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -204,8 +207,9 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeType
-	 * @param type of the knowledge element. For example, types are decision,
-	 *             alternative, issue, and argument.
+	 * @param type
+	 *            of the knowledge element. For example, types are decision,
+	 *            alternative, issue, and argument.
 	 */
 	public void setType(KnowledgeType type) {
 		if (type == null) {
@@ -216,15 +220,16 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeType
-	 * @param type of the knowledge element. For example, types are decision,
-	 *             alternative, issue, and argument.
+	 * @param type
+	 *            of the knowledge element. For example, types are decision,
+	 *            alternative, issue, and argument.
 	 */
 	@JsonProperty("type")
 	public void setType(String typeAsString) {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
 		this.setType(type);
 	}
-	
+
 	/**
 	 * TODO Address issue
 	 *
@@ -243,7 +248,8 @@ public class KnowledgeElement {
 	/**
 	 * Add a list of groups assigned to this decision
 	 *
-	 * @param List<String> of groups
+	 * @param List<String>
+	 *            of groups
 	 */
 	public void addDecisionGroups(List<String> decisionGroup) {
 		for (String group : decisionGroup) {
@@ -254,7 +260,8 @@ public class KnowledgeElement {
 	/**
 	 * Add a group to the list of groups
 	 *
-	 * @param group to add as string
+	 * @param group
+	 *            to add as string
 	 */
 	public void addDecisionGroup(String group) {
 		DecisionGroupManager.insertGroup(group, this);
@@ -263,7 +270,8 @@ public class KnowledgeElement {
 	/**
 	 * Remove a group from the list of groups
 	 *
-	 * @param group to remove as string
+	 * @param group
+	 *            to remove as string
 	 */
 	public void removeDecisionGroup(String group) {
 		DecisionGroupManager.deleteGroupAssignment(group, this);
@@ -281,9 +289,10 @@ public class KnowledgeElement {
 
 	/**
 	 * @see DecisionKnowledgeProject
-	 * @param project that the knowledge element belongs to. The project is a Jira
-	 *                project that is extended with settings for this plug-in, for
-	 *                example, whether the plug-in is activated for the project.
+	 * @param project
+	 *            that the knowledge element belongs to. The project is a Jira
+	 *            project that is extended with settings for this plug-in, for
+	 *            example, whether the plug-in is activated for the project.
 	 */
 	public void setProject(DecisionKnowledgeProject project) {
 		this.project = project;
@@ -291,10 +300,11 @@ public class KnowledgeElement {
 
 	/**
 	 * @see DecisionKnowledgeProject
-	 * @param projectKey key of Jira project that the knowledge element belongs to
-	 *                   via its key. The project is a Jira project that is extended
-	 *                   with settings for this plug-in, for example, whether the
-	 *                   plug-in is activated for the project.
+	 * @param projectKey
+	 *            key of Jira project that the knowledge element belongs to via its
+	 *            key. The project is a Jira project that is extended with settings
+	 *            for this plug-in, for example, whether the plug-in is activated
+	 *            for the project.
 	 */
 	@JsonProperty("projectKey")
 	public void setProject(String projectKey) {
@@ -314,7 +324,8 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param key of the knowledge element. The key is composed of
+	 * @param key
+	 *            of the knowledge element. The key is composed of
 	 *            projectKey-project internal id.
 	 */
 	public void setKey(String key) {
@@ -333,9 +344,9 @@ public class KnowledgeElement {
 
 	/**
 	 * @see DocumentationLocation
-	 * @param documentationLocation of the knowledge element. For example, knowledge
-	 *                              can be documented in commit messages or in the
-	 *                              comments to a Jira issue.
+	 * @param documentationLocation
+	 *            of the knowledge element. For example, knowledge can be documented
+	 *            in commit messages or in the comments to a Jira issue.
 	 */
 	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
 		this.documentationLocation = documentationLocation;
@@ -357,9 +368,9 @@ public class KnowledgeElement {
 
 	/**
 	 * @see DocumentationLocation
-	 * @param documentationLocation of the knowledge element. For example, knowledge
-	 *                              can be documented in commit messages or in the
-	 *                              comments to a Jira issue.
+	 * @param documentationLocation
+	 *            of the knowledge element. For example, knowledge can be documented
+	 *            in commit messages or in the comments to a Jira issue.
 	 */
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
@@ -377,6 +388,7 @@ public class KnowledgeElement {
 	@XmlElement(name = "url")
 	public String getUrl() {
 		String key = this.getKey();
+		// TODO Recognize code classes
 		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
@@ -395,7 +407,8 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param date of creation of the knowledge element.
+	 * @param date
+	 *            of creation of the knowledge element.
 	 */
 	public void setCreated(Date date) {
 		this.created = date;
@@ -409,7 +422,8 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param date close date of the knowledge element.
+	 * @param date
+	 *            close date of the knowledge element.
 	 */
 	public void setClosed(Date date) {
 		this.closed = date;
@@ -466,6 +480,7 @@ public class KnowledgeElement {
 	 * @see GenericLinkManager
 	 */
 	public List<Link> getLinks() {
+		// TODO only return KnowledgeGraph.getOrCreate(project).edgesOf(this)
 		List<Link> links = GenericLinkManager.getLinksForElement(this);
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			links.addAll(KnowledgeGraph.getOrCreate(project).edgesOf(this));
@@ -501,8 +516,9 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeStatus
-	 * @param status of the knowledge element. For example, the status for issues
-	 *               can be solved or unsolved.
+	 * @param status
+	 *            of the knowledge element. For example, the status for issues can
+	 *            be solved or unsolved.
 	 */
 	public void setStatus(KnowledgeStatus status) {
 		this.status = status;
@@ -510,8 +526,9 @@ public class KnowledgeElement {
 
 	/**
 	 * @see KnowledgeStatus
-	 * @param status of the knowledge element. For example, the status for issues
-	 *               can be solved or unsolved.
+	 * @param status
+	 *            of the knowledge element. For example, the status for issues can
+	 *            be solved or unsolved.
 	 */
 	@JsonProperty("status")
 	public void setStatus(String status) {

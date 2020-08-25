@@ -3,9 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class TestVisTimeLine extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
+		Set<KnowledgeElement> elements = new HashSet<KnowledgeElement>();
 		KnowledgeElement element = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(0));
 		elements.add(element);
 		visTimeLine = new VisTimeLine(elements);
@@ -32,7 +31,7 @@ public class TestVisTimeLine extends TestSetUp {
 
 	@Test
 	public void testConstructorElementsNull() {
-		VisTimeLine timeLine = new VisTimeLine((List<KnowledgeElement>) null);
+		VisTimeLine timeLine = new VisTimeLine((Set<KnowledgeElement>) null);
 		assertEquals(0, timeLine.getTimeLineNodes().size());
 	}
 

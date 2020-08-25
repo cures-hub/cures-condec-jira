@@ -15,23 +15,27 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
- * Represents the filter criteria. The filter settings cover the key of the
- * selected project, the time frame, documentation locations, Jira issue types,
- * and decision knowledge types. The search term can contain a query in Jira
- * Query Language (JQL), a {@link JiraFilter} or a search string specified in
- * the frontend of the plug-in.
+ * Represents the filter criteria. For example, the filter settings cover the
+ * key of the selected project, the time frame, documentation locations, Jira
+ * issue types, and decision knowledge types. The search term can contain a
+ * query in Jira Query Language (JQL), a {@link JiraFilter} or a search string
+ * specified in the frontend of the plug-in.
  */
 public class FilterSettings {
 
 	private DecisionKnowledgeProject project;
 	private String searchTerm;
 	private List<DocumentationLocation> documentationLocations;
-	private Set<String> jiraIssueTypes;
+	private Set<String> knowledgeTypes;
 	private List<KnowledgeStatus> knowledgeStatus;
 	private List<String> linkTypes;
 	private List<String> decisionGroups;
@@ -40,6 +44,7 @@ public class FilterSettings {
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
+	private KnowledgeElement selectedElement;
 
 	@XmlElement
 	private long startDate;
@@ -51,13 +56,15 @@ public class FilterSettings {
 			@JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 		setSearchTerm(searchTerm);
-		this.jiraIssueTypes = project.getJiraIssueTypeNames();
+
+		// the following values are the default values of the filter criteria
+		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = LinkType.toStringList();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
+		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.linkDistance = 3;
@@ -74,7 +81,7 @@ public class FilterSettings {
 
 		Set<String> namesOfJiraIssueTypesInQuery = queryHandler.getNamesOfJiraIssueTypesInQuery();
 		if (!namesOfJiraIssueTypesInQuery.isEmpty()) {
-			this.jiraIssueTypes = namesOfJiraIssueTypesInQuery;
+			this.knowledgeTypes = namesOfJiraIssueTypesInQuery;
 		}
 
 		this.startDate = queryHandler.getCreatedEarliest();
@@ -98,8 +105,9 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return search term. This string can also be a Jira Query or a predefined
-	 *         {@link JiraFilter} (e.g. allopenissues).
+	 * @return search term. This string can be a substring filter. If the search
+	 *         term start with "?jql=" oder "?filter=", it is a Jira Query or a
+	 *         predefined {@link JiraFilter} (e.g. allopenissues).
 	 */
 	public String getSearchTerm() {
 		return searchTerm;
@@ -107,7 +115,8 @@ public class FilterSettings {
 
 	/**
 	 * @param searchTerm
-	 *            search term. This string can also be a Jira Query or a predefined
+	 *            can be a substring filter. If the search term start with "?jql="
+	 *            oder "?filter=", it is a Jira Query or a predefined
 	 *            {@link JiraFilter} (e.g. allopenissues).
 	 */
 	@JsonProperty("searchTerm")
@@ -187,23 +196,6 @@ public class FilterSettings {
 		} else {
 			this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		}
-	}
-
-	/**
-	 * @return list of knowledge types to be shown in the knowledge graph.
-	 */
-	@XmlElement(name = "jiraIssueTypes")
-	public Set<String> getJiraIssueTypes() {
-		return jiraIssueTypes;
-	}
-
-	/**
-	 * @param namesOfTypes
-	 *            list of names of Jira {@link IssueType}s as Strings.
-	 */
-	@JsonProperty("jiraIssueTypes")
-	public void setJiraIssueTypes(Set<String> namesOfTypes) {
-		jiraIssueTypes = namesOfTypes != null ? namesOfTypes : project.getJiraIssueTypeNames();
 	}
 
 	/**
@@ -357,5 +349,71 @@ public class FilterSettings {
 	@JsonProperty("isTestCodeShown")
 	public void setTestCodeShown(boolean isTestCodeShown) {
 		this.isTestCodeShown = isTestCodeShown;
+	}
+
+	/**
+	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *         element in the knowlegde tree view). For example, this can be a Jira
+	 *         issue such as a work item, bug report or requirement.
+	 */
+	public KnowledgeElement getSelectedElement() {
+		return selectedElement;
+	}
+
+	/**
+	 * @param selectedElement
+	 *            {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *            element in the knowlegde tree view). For example, this can be a
+	 *            Jira issue such as a work item, bug report or requirement.
+	 */
+	public void setSelectedElement(KnowledgeElement selectedElement) {
+		this.selectedElement = selectedElement;
+	}
+
+	/**
+	 * @param elementKey
+	 *            key of the {@link KnowledgeElement} that is currently selected
+	 *            (e.g. as root element in the knowlegde tree view). For example,
+	 *            this can be the key of a Jira issue such as a work item, bug
+	 *            report or requirement, e.g. CONDEC-123.
+	 * 
+	 * @issue How can we identify knowledge elements from different documentation
+	 *        locations?
+	 * 
+	 *        TODO Solve this issue and make code class recognition more explicit
+	 */
+	@JsonProperty("selectedElement")
+	public void setSelectedElement(String elementKey) {
+		AbstractPersistenceManagerForSingleLocation persistenceManager;
+		if (elementKey.contains(":")) {
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
+					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
+		} else {
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
+		}
+		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
+		if (!elementKey.contains(":") && (selectedElement == null || selectedElement.getKey() == null)) {
+			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(project.getProjectKey());
+			selectedElement = ccManager.getKnowledgeElement(elementKey);
+		}
+	}
+
+	/**
+	 * @return list of selected {@link KnowledgeType}s to be shown in the knowledge
+	 *         graph.
+	 */
+	@XmlElement(name = "knowledgeTypes")
+	public Set<String> getKnowledgeTypes() {
+		return knowledgeTypes;
+	}
+
+	/**
+	 * @param namesOfTypes
+	 *            names of {@link KnowledgeType}s, such decision knowledge types and
+	 *            other Jira {@link IssueType}s.
+	 */
+	@JsonProperty("knowledgeTypes")
+	public void setKnowledgeTypes(Set<String> namesOfTypes) {
+		knowledgeTypes = namesOfTypes != null ? namesOfTypes : project.getNamesOfKnowledgeTypes();
 	}
 }

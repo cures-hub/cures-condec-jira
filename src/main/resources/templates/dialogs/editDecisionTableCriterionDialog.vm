@@ -10,7 +10,7 @@
 	    <thead>
 	        <tr>
 	            <th id="basic-number">Enabled</th>
-	            <th id="basic-fname">Cirterion</th>
+	            <th id="basic-fname">Criterion</th>
 	        </tr>
 	    </thead>
 	    <tbody id="table-body">

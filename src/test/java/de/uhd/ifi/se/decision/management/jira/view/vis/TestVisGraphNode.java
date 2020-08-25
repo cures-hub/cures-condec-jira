@@ -22,14 +22,14 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testNodeSummary() {
-		VisNode node = new VisNode(element, false, 1, 0);
+		VisNode node = new VisNode(element, false, 1);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
 
 	@Test
 	public void testNodeDescription() {
-		VisNode node = new VisNode(element, true, 1, 0);
+		VisNode node = new VisNode(element, true, 1);
 		String expectedTitle = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
 		assertEquals(expectedTitle, node.getTitle());
@@ -37,13 +37,13 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testNodeGroup() {
-		VisNode node = new VisNode(element, false, 1, 0);
+		VisNode node = new VisNode(element, false, 1);
 		assertEquals(element.getTypeAsString().toLowerCase(), node.getGroup());
 	}
 
 	@Test
 	public void testNodeId() {
-		VisNode node = new VisNode(element, true, 1, 0);
+		VisNode node = new VisNode(element, true, 1);
 		String expectedId = element.getId() + "_" + element.getDocumentationLocationAsString();
 		assertEquals(expectedId, node.getId());
 	}
@@ -54,32 +54,26 @@ public class TestVisGraphNode extends TestSetUp {
 				+ "malesuada ...");
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary().substring(0, 99)
 				+ "...";
-		VisNode node = new VisNode(element, false, 1, 0);
+		VisNode node = new VisNode(element, false, 1);
 		assertEquals(expectedLabel, node.getLabel());
 	}
 
 	@Test
 	public void testCollapsed() {
-		VisNode node = new VisNode(element, true, 1, 0);
+		VisNode node = new VisNode(element, true, 1);
 		assertEquals("collapsed", node.getGroup());
 	}
 
 	@Test
 	public void testGetLevel() {
-		VisNode node = new VisNode(element, false, 1, 0);
+		VisNode node = new VisNode(element, false, 1);
 		assertEquals(1, node.getLevel());
-	}
-
-	@Test
-	public void testGetCid() {
-		VisNode node = new VisNode(element, false, 1, 12);
-		assertEquals(12, node.getCid());
 	}
 
 	@Test
 	public void testGetFont() {
 		element.setStatus(KnowledgeStatus.DISCARDED);
-		VisNode node = new VisNode(element, false, 1, 12);
+		VisNode node = new VisNode(element, false, 1);
 		assertEquals("gray", node.getFont().values().iterator().next());
 		element.setStatus(KnowledgeStatus.UNDEFINED);
 	}

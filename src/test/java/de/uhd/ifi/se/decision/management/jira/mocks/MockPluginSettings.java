@@ -36,6 +36,7 @@ public class MockPluginSettings implements PluginSettings {
 		settings.put(subfix + "defaultBranches", "master");
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "webhookSecret", "myhoneybee");
+		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "setClassiferForIssueComments", "false");
 		return settings;
 	}

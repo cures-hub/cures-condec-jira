@@ -32,15 +32,15 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> font;
 
-	@XmlElement
-	private int cid;
+	public VisNode(KnowledgeElement element, int level) {
+		this(element, false, level);
+	}
 
-	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, int cid) {
+	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
 		// TODO Add two attributes for id and docuLocu or even provide the whole
 		// knowledge element
 		this.id = element.getId() + "_" + element.getDocumentationLocationAsString();
 		this.level = level;
-		this.cid = cid;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
 		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
@@ -93,10 +93,6 @@ public class VisNode {
 
 	public int getLevel() {
 		return level;
-	}
-
-	public int getCid() {
-		return cid;
 	}
 
 	public Map<String, String> getFont() {

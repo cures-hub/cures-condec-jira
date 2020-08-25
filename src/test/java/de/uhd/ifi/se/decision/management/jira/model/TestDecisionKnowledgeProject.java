@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test class for a Jira project with the configuration settings used in this
@@ -59,8 +61,9 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testGetKnowledgeTypes() {
+	public void testGetDecisionKnowledgeTypes() {
 		assertEquals(18, project.getDecisionKnowledgeTypes().size());
+		assertEquals(18, project.getNamesOfDecisionKnowledgeTypes().size());
 	}
 
 	@Test
@@ -80,7 +83,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testIsWebhookEnabled() {
-		assertEquals(true, project.isWebhookEnabled());
+		assertEquals(false, project.isWebhookEnabled());
 	}
 
 	@Test
@@ -101,7 +104,12 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetJiraIssueTypes() {
-		assertEquals(6, project.getJiraIssueTypeNames().size());
+		assertEquals(7, project.getJiraIssueTypeNames().size());
+	}
+
+	@Test
+	public void testGetKnowledgeTypesStorageInJiraIssuesActivated() {
+		assertEquals(7, project.getNamesOfKnowledgeTypes().size());
 	}
 
 	@AfterClass

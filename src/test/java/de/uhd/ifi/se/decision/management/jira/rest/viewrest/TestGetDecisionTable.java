@@ -12,6 +12,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -31,22 +32,39 @@ public class TestGetDecisionTable extends TestSetUp {
 	}
 
 	@Test
-	public void testGetDesicionIssuesElementKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null).getStatus());
+	public void testGetDecisionIssuesRequestNullFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null, null).getStatus());
 	}
 
 	@Test
-	public void testGetDesicionIssues() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues("TEST-1").getStatus());
+	public void testGetDecisionIssuesRequestNullProjectKeyInFilterSettingsNull() {
+		FilterSettings filterSettings = new FilterSettings(null, "");
+		filterSettings.setSelectedElement("TEST-1");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionIssues(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetDesicionTableDataRequestNullLocationNullElementKeyNull() {
+	public void testGetDecisionIssuesRequestNullSelectedElementInFilterSettingsNull() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testGetDecisionIssues() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement("TEST-1");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testGetDecisionTableDataRequestNullLocationNullElementKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTable(null, 0, null, null).getStatus());
 	}
 
 	@Test
-	public void testGetDesicionTableData() {
+	public void testGetDecisionTableData() {
 		assertEquals(Status.OK.getStatusCode(), viewRest
 				.getDecisionTable(request, 2, DocumentationLocation.JIRAISSUE.getIdentifier(), "TEST").getStatus());
 	}

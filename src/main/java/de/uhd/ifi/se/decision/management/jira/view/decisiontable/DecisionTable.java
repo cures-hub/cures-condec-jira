@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,12 +11,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.Graph;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -27,6 +29,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
+// TODO Improve JavaDoc (not only parameter names should be given but a short
+// explanation)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -44,25 +48,27 @@ public class DecisionTable {
 	}
 
 	/**
-	 * 
-	 * @param key
+	 * @param filterSettings
+	 *            filter criteria such as selected knowledge element and maximal
+	 *            link distance in the {@link KnowledgeGraph}.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 */
-	public void setIssues(String key) {
+	public void setIssues(FilterSettings filterSettings, ApplicationUser user) {
 		issues = new ArrayList<>();
-		KnowledgeElement rootElement = persistenceManager.getJiraIssueManager().getKnowledgeElement(key);
-		Iterator<KnowledgeElement> iterator = new DepthFirstIterator<>(this.graph, rootElement);
-		while (iterator.hasNext()) {
-			KnowledgeElement elem = iterator.next();
-			if (elem.getType() == KnowledgeType.ISSUE) {
-				issues.add(elem);
+
+		FilteringManager filterManager = new FilteringManager(user, filterSettings);
+		Graph<KnowledgeElement, Link> subgraph = filterManager.getSubgraphMatchingFilterSettings();
+		for (KnowledgeElement element : subgraph.vertexSet()) {
+			if (element.getType() == KnowledgeType.ISSUE) {
+				issues.add(element);
 			}
 		}
 	}
 
 	/**
-	 * 
 	 * @param user
-	 * @param map
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return
 	 */
 	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
@@ -80,6 +86,7 @@ public class DecisionTable {
 	 * @param id
 	 * @param location
 	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(long id, String location, ApplicationUser user) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
@@ -87,11 +94,12 @@ public class DecisionTable {
 		decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
+
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
 				decisionTableData.get("alternatives").add(new Alternative(elem));
-				getArguments(elem.getId(), decisionTableData, location);
+				getArguments(elem.getId(), elem.getKey(), decisionTableData, location);
 			}
 		}
 	}
@@ -103,9 +111,18 @@ public class DecisionTable {
 	 * @param criteria
 	 * @param location
 	 */
-	public void getArguments(long id, Map<String, List<DecisionTableElement>> decisionTableData, String location) {
+	public void getArguments(long id, String key, Map<String, List<DecisionTableElement>> decisionTableData,
+			String location) {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+
+		Set<Link> outgoingLinks;
+		if (rootElement == null) {
+			KnowledgeElement issue = persistenceManager.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT)
+					.getKnowledgeElement(key);
+			outgoingLinks = this.graph.outgoingEdgesOf(issue);
+		} else {
+			outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+		}
 
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
@@ -123,7 +140,7 @@ public class DecisionTable {
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-		
+
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType() == KnowledgeType.OTHER) {

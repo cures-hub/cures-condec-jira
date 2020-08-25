@@ -38,26 +38,26 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsInvalid() {
-		FilteringManager filteringManager = new FilteringManager(null, (FilterSettings) null);
+		FilteringManager filteringManager = new FilteringManager((FilterSettings) null);
 		assertNull(filteringManager.getFilterSettings());
 	}
 
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(9, extractor.getElementsMatchingFilterSettings().size());
+		assertEquals(15, extractor.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
-		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -76,6 +76,7 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals("TEST", filteringManager.getFilterSettings().getSearchTerm());
 	}
 
+	@Test
 	public void testFilterSettingsEmpty() {
 		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings(null, null));
 		assertEquals(0, filteringManager.getElementsMatchingFilterSettings().size());
@@ -86,7 +87,7 @@ public class TestFilteringManager extends TestSetUp {
 		Set<String> knowledgeTypes = new HashSet<String>();
 		knowledgeTypes.add("Decision");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setJiraIssueTypes(knowledgeTypes);
+		settings.setKnowledgeTypes(knowledgeTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());
@@ -109,9 +110,50 @@ public class TestFilteringManager extends TestSetUp {
 		settings.setLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
 		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceZero() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(0);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(1, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceOne() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(1);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(6, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceTwo() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(2);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testGetSubgraphForLinkDistanceThree() {
+		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(3);
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertEquals(10, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test

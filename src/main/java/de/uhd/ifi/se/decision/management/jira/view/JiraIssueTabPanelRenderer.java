@@ -22,7 +22,8 @@ import com.atlassian.velocity.VelocityManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Renders the JIRA issue tab panel.
+ * Renders the Jira issue tab panel. (It is located next to the comment tab
+ * panel and called "Decision Knowledge".)
  */
 public class JiraIssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTabPanelRenderer.class);

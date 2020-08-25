@@ -24,7 +24,7 @@ public class TestKnowledgeStatus {
 
 	@Test
 	public void testToList() {
-		assertEquals(7, KnowledgeStatus.toStringList().size());
+		assertEquals(8, KnowledgeStatus.toStringList().size());
 	}
 
 	@Test
@@ -71,6 +71,6 @@ public class TestKnowledgeStatus {
 		assertEquals("red", KnowledgeStatus.UNRESOLVED.getColor());
 		assertEquals("gray", KnowledgeStatus.DISCARDED.getColor());
 		assertEquals("gray", KnowledgeStatus.REJECTED.getColor());
+		assertEquals("blue", KnowledgeStatus.CHALLENGED.getColor());
 	}
-
 }
