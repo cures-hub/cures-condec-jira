@@ -10,9 +10,6 @@
 		console.log("conDecVis buildVis");
 		conDecAPI.getVis(filterSettings, function(visData) {
 			build(visData.nodes, visData.edges, visData.rootElementId);
-			network.focus(visData.rootElementId, {
-				scale : 0.9
-			});
 		});
 	};
 
