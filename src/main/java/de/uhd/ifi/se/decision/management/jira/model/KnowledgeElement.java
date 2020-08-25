@@ -556,6 +556,16 @@ public class KnowledgeElement {
 		return getStatus().toString();
 	}
 
+	/**
+	 * @return true if the element is correctly linked according to the definition
+	 *         of done. For example, an argument needs to be linked to at least one
+	 *         solution option (decision or alternative). Otherwise, it is
+	 *         incomplete.
+	 */
+	public boolean isIncomplete() {
+		return !KnowledgeCompletion.isElementComplete(this);
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
@@ -575,9 +585,4 @@ public class KnowledgeElement {
 	public int hashCode() {
 		return Objects.hash(id, getDocumentationLocation());
 	}
-
-	public boolean isIncomplete() {
-		return !KnowledgeCompletion.isElementComplete(this);
-	}
-
 }
