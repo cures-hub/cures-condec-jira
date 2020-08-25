@@ -24,9 +24,15 @@
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
+        if (window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecEvolutionPage.buildTimeLine();
+            var click = 0;
+            AJS.$("#menu-item-chronology").on("click", function(event) {
+            	if (click === 0) {
+            		window.conDecEvolutionPage.buildTimeLine();
+            	}
+            	click++;
+    		});            
         }
         else {
             console.error("ConDecEvolutionPage could not get its dependencies.");

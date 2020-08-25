@@ -21,8 +21,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         conDecAPI.checkIfProjectKeyIsValid();
         if(window.conDecRelationshipMatrixPage.init(conDecAPI, conDecObservable)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecRelationshipMatrixPage.buildMatrix();
-            window.conDecRelationshipMatrixPage.buildLegend();
+            var click = 0;
+        	AJS.$("#menu-item-matrix").on("click", function(event) {
+        		if (click === 0) {
+        			window.conDecRelationshipMatrixPage.buildMatrix();
+                    window.conDecRelationshipMatrixPage.buildLegend();
+        		}
+        		click++;
+        	});  
         }
         else {
             console.error("ConDecRelationshipMatrixPage could not get its dependencies.");

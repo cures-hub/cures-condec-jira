@@ -30,7 +30,13 @@
         conDecAPI.checkIfProjectKeyIsValid();
         if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable, conDecVis)) {
             conDecAPI.checkIfProjectKeyIsValid();
-            window.conDecEvolutionPage.buildCompare();
+            var click = 0;
+        	AJS.$("#menu-item-comparison").on("click", function(event) {
+        		if (click === 0) {
+        			window.conDecEvolutionPage.buildCompare();
+        		}
+        		click++;
+        	});             
         }
         else {
             console.error("ConDecEvolutionPage could not get its dependencies.");
