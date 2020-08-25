@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Models the types of links between decision knowledge elements according to
@@ -21,6 +19,10 @@ public enum LinkType {
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), //
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), //
 	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"); //
+
+	public static Set<LinkType> getDefaultTypes() {
+		return EnumSet.of(SUPPORT, ATTACK);
+	}
 
 	private String name;
 	private String outwardLink;
