@@ -1,22 +1,22 @@
-<h2 id="additionale-types-header">Additional Decision Knowledge	Types</h2>
+<h2 id="additional-types-header">Additional Decision Knowledge	Types</h2>
 <div class="field-group">
-        <label for="text-input">Decision table criteria query</label>
-        <input class="text" type="text" id="criteria-query" name="text-input" placeholder="project=CON AND type = &quot;Non-Functional Requirement&quot;" title="JQL input">
-        <div class="description">Enables to configure which kind of criteria can be used</div>
-		<div class="aui-buttons">
-		    <button type="button" class="aui-button aui-button-primary" id="btn_save_query" onclick="saveQuery(event)">Save</button>
-		</div>
+	<label for="criteria-query">Decision table criteria query</label>
+	<div class="aui-group">
+ 		<input class="text long-field" type="text" id="criteria-query" placeholder="project=CON AND type = &quot;Non-Functional Requirement&quot;" title="JQL input">
+ 		<button type="button" class="aui-button aui-button-primary" id="btn_save_query" onclick="saveQuery(event)">Save</button>
+ 	</div>
+ 	<div class="description">Enables to configure which Jira issue types can be used as criteria in the decision table.</div>
 </div>
 <script>
-	html = "<p id='additionale-types-text'> The default decision knowledge types are:";
+	html = "<p id='additional-types-text'> The default decision knowledge types are:";
 	var defaultKnowledgeTypes = [ "Decision", "Issue", "Alternative", "Argument" ]
 	for (i in defaultKnowledgeTypes) {
 		html += " <span class='aui-lozenge'>" + defaultKnowledgeTypes[i];
 		html += "&nbsp;<img src='$imageFolderUrl" + defaultKnowledgeTypes[i] + ".png'></span>";
 	}
-	html += ". If you enable additional decision knowledge types, you need to add them to the ";
-	html += "current issue type scheme (when using the issue strategy).<br/><br/></p>";
-	document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
+	html += ". If you enable additional decision knowledge types, you need to make sure that they were added to the ";
+	html += "current issue type scheme (when using Jira issues to store decision knowledge).<br/><br/></p>";
+	document.getElementById("additional-types-header").insertAdjacentHTML('afterend', html);
 	
 	var additionalKnowledgeTypes = [ "Assessment", "Assumption", "Claim", "Constraint", "Context",
 		"Implication", "Goal", "Solution", "Problem", "Issue" ];
@@ -29,7 +29,7 @@
 		html += "<aui-toggle id='" + toggleName + "' value='" + additionalKnowledgeTypes[i] + "' label='" + additionalKnowledgeTypes[i] + "'></aui-toggle>";
 		html += "<div class='description'>Enables the " + additionalKnowledgeTypes[i] + " element for this project.</div>";
 		html += "</div>";
-		document.getElementById("additionale-types-text").insertAdjacentHTML('afterend', html);
+		document.getElementById("additional-types-text").insertAdjacentHTML('afterend', html);
 		typeToggles.push(document.getElementById(toggleName));
 	}
 </script>
@@ -39,14 +39,14 @@
 		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, "$projectKey", typeToggles[j], function(isTypeEnabled, toggle) {
 	    	toggle.checked = isTypeEnabled;
 		});
-		
+
 	    typeToggles[j].addEventListener("change", function (error) {
 	        this.busy = true;
 	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, "$projectKey");
 	        this.busy = false;
-	    });           
+	    });
 	}
-	
+
 	conDecAPI.getDecisionTableCriteriaQuery("$projectKey", function(query) {
 		document.getElementById("criteria-query").value = query.query;
 	});
@@ -56,6 +56,47 @@
 		const query = document.getElementById("criteria-query").value;
 		conDecAPI.setDecisionTableCriteriaQuery("$projectKey", query);
 	}
-	
+
 	window.onbeforeunload = null;
+</script>
+
+<h2 id="additional-link-types-header">Additional Link Types</h2>
+
+<script>
+    html = "<p id='additional-link-types-text'> The default link types are:";
+    var defaultLinkTypes = ["attack", "support"]
+    for (i in defaultLinkTypes) {
+        html += " <span class='aui-lozenge'>" + defaultLinkTypes[i] + "</span>";
+    }
+    html += ". If you enable additional link types, they are added as Jira issue links to the ";
+    html += "current link type scheme.<br/><br/></p>";
+    document.getElementById("additional-link-types-header").insertAdjacentHTML('afterend', html);
+
+    var additionalLinkTypes = ["Supports", "Attacks", "Duplicates", "Forbids", "Constraints", "Enables",
+        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
+    var typeLinkToggles = [];
+    for (i in additionalLinkTypes) {
+        var toggleName = additionalLinkTypes[i] + "-toggle";
+        html = "<div class='field-group'>";
+        html += "<label for=" + toggleName + ">" + additionalLinkTypes[i] + "</label>";
+        html += "<aui-toggle id='" + toggleName + "' value='" + additionalLinkTypes[i] + "' label='" + additionalLinkTypes[i] + "'></aui-toggle>";
+        html += "<div class='description'>Enables the " + additionalLinkTypes[i] + " element for this project.</div>";
+        html += "</div>";
+        document.getElementById("additional-link-types-text").insertAdjacentHTML('afterend', html);
+        typeLinkToggles.push(document.getElementById(toggleName));
+    }
+</script>
+
+<script>
+    for (j in additionalLinkTypes) {
+        conDecAPI.isLinkTypeEnabled(typeLinkToggles[j].value, "$projectKey", typeLinkToggles[j], function (isTypeEnabled, toggle) {
+            toggle.checked = isTypeEnabled;
+        });
+
+        typeLinkToggles[j].addEventListener("change", function (error) {
+            this.busy = true;
+            conDecAPI.setLinkTypeEnabled(this.checked, this.value, "$projectKey");
+            this.busy = false;
+        });
+    }
 </script>

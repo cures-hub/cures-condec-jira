@@ -547,6 +547,7 @@
 			}
 		});
 	};
+	
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
@@ -691,9 +692,35 @@
 	 */
 	ConDecAPI.prototype.isKnowledgeTypeEnabled = function (knowledgeType, projectKey, toggle, callback) {
 		generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
-				+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
+			+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
 			if (error === null) {
 				callback(isKnowledgeTypeEnabled, toggle);
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setLinkTypeEnabled = function (isLinkTypeEnabled, linkType, projectKey) {
+		generalApi.postJSON(this.restPrefix + "/config/setLinkTypeEnabled.json?projectKey="
+			+ projectKey + "&linkType=" + linkType + "&isLinkTypeEnabled=" + isLinkTypeEnabled,
+			null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The activation of the " + linkType
+						+ " link type for this project has been set to " + isLinkTypeEnabled + ".");
+				}
+			});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.isLinkTypeEnabled = function (linkType, projectKey, toggle, callback) {
+		generalApi.getJSON(this.restPrefix + "/config/isLinkTypeEnabled.json?linkType="
+			+ linkType + "&projectKey=" + projectKey, function (error, isLinkTypeEnabled) {
+			if (error === null) {
+				callback(isLinkTypeEnabled, toggle);
 			}
 		});
 	};
@@ -708,7 +735,7 @@
 			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + getProjectKey());
 		}
 		return this.knowledgeTypes;
-	}
+	};
 
 	ConDecAPI.prototype.getLinkTypesSync = function () {
 		var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
@@ -719,7 +746,7 @@
 			}
 			return linkTypeArray;
 		}
-	}
+	};
 
 	ConDecAPI.prototype.getLinkTypes = function (callback) {
 		var projectKey = getProjectKey();
@@ -910,7 +937,6 @@
 			}
 		});
 	};
-
 
 	/*
 	 * external references: settingsForSingleProject.vm
@@ -1198,11 +1224,11 @@
 				+ projectKey + "&id=" + id);
 
 	};
+	
 	ConDecAPI.prototype.getAllReleaseNotes = function (query) {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
 				+ projectKey + "&query=" + query);
 	};
-
 
 	function getIssueKey() {
 		var issueKey = null;
@@ -1240,6 +1266,7 @@
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
 	};
+	
 	/*
 	 * external references: condec.release.note.page
 	 */
@@ -1252,6 +1279,7 @@
 			}
 		});
 	};
+	
 	/*
 	 * external references: condec.dialog
 	 */
@@ -1264,14 +1292,17 @@
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/postProposedKeys.json?projectKey="
 				+ projectKey, proposedKeys);
 	};
+	
 	ConDecAPI.prototype.createReleaseNote = function createReleaseNote(content) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNote.json?projectKey="
 				+ projectKey, content);
 	};
+	
 	ConDecAPI.prototype.updateReleaseNote = function updateReleaseNote(releaseNote) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNote.json?projectKey="
 				+ projectKey, releaseNote)
 	};
+	
 	ConDecAPI.prototype.deleteReleaseNote = function deleteReleaseNote(id) {
 		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNote.json?projectKey="
 				+ projectKey + "&id=" + id, null);
@@ -1280,7 +1311,6 @@
 	ConDecAPI.prototype.loadRelatedIssues = function (issueKey) {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/consistency/getRelatedIssues.json?issueKey=" + issueKey);
 	};
-
 
 	ConDecAPI.prototype.showFlag = function (type, message, status) {
 		if (status === null || status === undefined) {
@@ -1292,8 +1322,7 @@
 			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
 			body: message
 		});
-	}
-
+	};
 
 	/*
 	 * external references: condec.jira.issue.module, condec.export,
@@ -1337,9 +1366,8 @@
 		});
 	};
 
-	ConDecAPI.prototype.showFlag = showFlag
+	ConDecAPI.prototype.showFlag = showFlag;
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();
-}
-)(window);
+})(window);

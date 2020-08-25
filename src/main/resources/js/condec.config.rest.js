@@ -36,5 +36,4 @@
 
 		// export ConsistencyAPI
 		global.configAPI = new ConfigAPI();
-	}
-)(window);
+})(window);
