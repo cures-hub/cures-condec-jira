@@ -7,13 +7,14 @@ import org.jgrapht.Graphs;
 
 import java.util.List;
 
-public class AlternativeCompletionCheck implements CompletionCheck {
+public class DecisionCompletenessCheck implements CompletenessCheck {
+
 	@Override
-	public boolean execute(KnowledgeElement alternative) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(alternative.getProject());
-		List<KnowledgeElement> neighbours = Graphs.neighborListOf(graph, alternative);
+	public boolean execute(KnowledgeElement decision) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(decision.getProject());
+		List<KnowledgeElement> neighbours = Graphs.neighborListOf(graph, decision);
 		for (KnowledgeElement knowledgeElement : neighbours
-		) {
+			 ) {
 			if (knowledgeElement.getType() == KnowledgeType.ISSUE) {
 				return true;
 			}

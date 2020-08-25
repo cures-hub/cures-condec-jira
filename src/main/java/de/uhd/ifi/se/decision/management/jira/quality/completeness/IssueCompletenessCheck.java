@@ -7,7 +7,7 @@ import org.jgrapht.Graphs;
 
 import java.util.List;
 
-public class IssueCompletionCheck implements CompletionCheck {
+public class IssueCompletenessCheck implements CompletenessCheck {
 	@Override
 	public boolean execute(KnowledgeElement issue) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(issue.getProject());

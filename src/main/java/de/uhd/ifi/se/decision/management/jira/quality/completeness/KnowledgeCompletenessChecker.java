@@ -18,13 +18,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class KnowledgeCompletenessChecker {
 
-	private static final Map<KnowledgeType, CompletionCheck> completionCheckMap = Map.ofEntries(
-			entry(KnowledgeType.DECISION, new DecisionCompletionCheck()),
-			entry(KnowledgeType.ISSUE, new IssueCompletionCheck()),
-			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletionCheck()));
+	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
+			entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
+			entry(KnowledgeType.ISSUE, new IssueCompletenessCheck()),
+			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()));
 
 	public static boolean isElementComplete(KnowledgeElement element) {
-		CompletionCheck completionCheck = completionCheckMap.get(element.getType());
-		return completionCheck != null && completionCheck.execute(element);
+		CompletenessCheck completenessCheck = completenessCheckMap.get(element.getType());
+		return completenessCheck != null && completenessCheck.execute(element);
 	}
 }

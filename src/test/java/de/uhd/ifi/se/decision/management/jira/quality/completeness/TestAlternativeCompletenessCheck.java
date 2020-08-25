@@ -15,28 +15,29 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDecisionCompletionCheck extends TestSetUp {
+public class TestAlternativeCompletenessCheck extends TestSetUp {
+
 	private List<KnowledgeElement> elements;
-	private KnowledgeElement decisionElement;
+	private KnowledgeElement alternativeElement;
 
 	@Before
 	public void setUp() {
 		init();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		decisionElement = elements.get(6);
+		alternativeElement = elements.get(5);
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsLinkedToIssue() {
-		assertEquals(decisionElement.getType(), KnowledgeType.DECISION);
-		assertEquals(decisionElement.getId(), 4);
+		assertEquals(alternativeElement.getType(), KnowledgeType.ALTERNATIVE);
+		assertEquals(alternativeElement.getId(), 3);
 		KnowledgeElement issue = elements.get(3);
 		assertEquals(issue.getType(), KnowledgeType.ISSUE);
 		assertEquals(issue.getId(), 2);
-		assertNotNull(decisionElement.getLink(issue));
-		assertTrue(new DecisionCompletionCheck().execute(decisionElement));
+		assertNotNull(alternativeElement.getLink(issue));
+		assertTrue(new AlternativeCompletenessCheck().execute(alternativeElement));
 	}
 
-	// TODO write test to check when decision is not linked to an issue
+	// TODO write test to check when alternative is not linked to an issue
 }
