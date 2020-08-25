@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -27,6 +28,12 @@ public class TestKnowledgeCompleteness extends TestSetUp {
 		decisionElement = elements.get(6);
 		alternativeElement = elements.get(5);
 		proElement = elements.get(7);
+	}
+
+	@Test
+	@NonTransactional
+	public void testConstructor() {
+		assertNotNull(new KnowledgeCompletenessChecker());
 	}
 
 	@Test
