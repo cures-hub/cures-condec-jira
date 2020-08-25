@@ -24,8 +24,14 @@ public interface CompletenessCheck {
 
 	public boolean execute(KnowledgeElement childElement);
 
+	/**
+	 * @issue Should knowledge elements without definition of done be assumed to be
+	 *        complete or incomplete?
+	 * @decision If no definition of done can be found, the knowledge element is
+	 *           assumed to be complete!
+	 */
 	public static boolean isElementComplete(KnowledgeElement element) {
 		CompletenessCheck completenessCheck = completenessCheckMap.get(element.getType());
-		return completenessCheck != null && completenessCheck.execute(element);
+		return completenessCheck == null || completenessCheck.execute(element);
 	}
 }
