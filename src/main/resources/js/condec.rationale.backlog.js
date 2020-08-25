@@ -92,7 +92,7 @@
 		var endDateString = document.getElementById("end-date-picker-rb").value;
 		var endDateLong = new Date(endDateString).getTime();
 		var filterSettings = {
-			"jiraIssueTypes": knowledgeTypes,
+			"knowledgeTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status" : selectedStatus,
 			"groups" : selectedGroups,

@@ -2,8 +2,21 @@
 
 	var ConDecVis = function() {
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecVis.prototype.buildVis = function (filterSettings) {
+		console.log("conDecVis buildVis");
+		conDecAPI.getVis(filterSettings, function(visData) {
+			build(visData.nodes, visData.edges, visData.rootElementId);
+			network.focus(visData.rootElementId, {
+				scale : 0.9
+			});
+		});
+	};
 
-	function build(theNodes, theEdges, rootElementId) {
+	function build (theNodes, theEdges, rootElementId) {
 		console.log("ConDecVis build");
 		var nodes = new vis.DataSet(theNodes);
 		var edges = new vis.DataSet(theEdges);
@@ -41,7 +54,7 @@
 		return network;
 	}
 
-	ConDecVis.prototype.addContextMenu = function(params, network) {
+	ConDecVis.prototype.addContextMenu = function (params, network) {
 		params.event.preventDefault();
 		var nodeIndices = network.body.nodeIndices;
 		var clickedNodeId;
@@ -58,31 +71,6 @@
 		}
 		conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
 		        getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecVis.prototype.buildVisFiltered = function(issueKey, search, linkDistance, issueTypes, status, createdAfter,
-	        createdBefore, linkTypes, documentationLocation) {
-		console.log("conDecVis buildVisFiltered");
-		conDecAPI.getVisFiltered(issueKey, search, issueTypes, status, createdAfter, createdBefore, linkTypes,
-		        documentationLocation, linkDistance, function(visData) {
-			        build(visData.nodes, visData.edges, visData.rootElementId);
-		        });
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecVis.prototype.buildVis = function(elementKey, searchTerm) {
-		console.log("conDecVis buildVis");
-		conDecAPI.getVis(elementKey, searchTerm, function(visData) {
-			var network = build(visData.nodes, visData.edges, visData.rootElementId);
-			network.focus(visData.rootElementId, {
-				scale : 0.9
-			});
-		});
 	};
 
 	ConDecVis.prototype.getVisOptions = function(visData) {

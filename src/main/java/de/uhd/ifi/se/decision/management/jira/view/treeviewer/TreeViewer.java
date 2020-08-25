@@ -34,6 +34,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
  * 
  * Iterates over the filtered {@link KnowledgeGraph} provided by the
  * {@link FilteringManager}.
+ * 
+ * If you want to change the shown (sub-)graph, do not change this class but
+ * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TreeViewer {
@@ -106,7 +109,12 @@ public class TreeViewer {
 
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 
-		if ("codeClass".equals(filterSettings.getJiraIssueTypes().iterator().next())) {
+		if (graph.vertexSet().isEmpty()) {
+			return;
+		}
+
+		// TODO Improve code class handling and remove this case handling
+		if ("codeClass".equals(filterSettings.getKnowledgeTypes().iterator().next())) {
 			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
 			knowledgeElements = manager.getKnowledgeElements();
 		} else {

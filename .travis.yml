@@ -1,6 +1,5 @@
 sudo: false
 language: java
-dist: xenial
 cache:
   directories:
     - $HOME/.m2
@@ -16,7 +15,7 @@ before_install:
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install: true
 script:
-  - atlas-package -P jacoco
+  - atlas-package -P jacoco -q
 notifications:
   email: false
 deploy:

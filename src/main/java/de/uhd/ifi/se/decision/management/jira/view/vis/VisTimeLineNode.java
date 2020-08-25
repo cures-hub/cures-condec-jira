@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class VisTimeLineNode {
 
@@ -62,7 +63,7 @@ public class VisTimeLineNode {
 	}
 
 	private String createContentString(KnowledgeElement element) {
-		String contentString = "<img src=" + '"' + element.getType().getIconUrl() + '"' + "> ";
+		String contentString = "<img src=" + '"' + KnowledgeType.getIconUrl(element) + '"' + "> ";
 		KnowledgeStatus elementStatus = element.getStatus();
 		if (elementStatus == KnowledgeStatus.DISCARDED || elementStatus == KnowledgeStatus.REJECTED
 				|| elementStatus == KnowledgeStatus.UNRESOLVED) {

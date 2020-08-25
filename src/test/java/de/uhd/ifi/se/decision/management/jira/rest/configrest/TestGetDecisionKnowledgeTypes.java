@@ -11,7 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 
-public class TestGetKnowledgeTypes extends TestSetUp {
+public class TestGetDecisionKnowledgeTypes extends TestSetUp {
 
 	protected ConfigRest configRest;
 
@@ -23,22 +23,23 @@ public class TestGetKnowledgeTypes extends TestSetUp {
 
 	@Test
 	public void testProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getKnowledgeTypes(null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getDecisionKnowledgeTypes(null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getKnowledgeTypes("").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getDecisionKnowledgeTypes("").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Response.Status.OK.getStatusCode(), configRest.getKnowledgeTypes("InvalidKey").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(),
+				configRest.getDecisionKnowledgeTypes("InvalidKey").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyValid() {
-		Response response = configRest.getKnowledgeTypes("TEST");
+		Response response = configRest.getDecisionKnowledgeTypes("TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 		// assertEquals("[Alternative, Assumption, Assessment, Argument, Pro, Con,
 		// Claim, "
