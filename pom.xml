@@ -1,111 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.uhd.ifi.se.decision</groupId>
-	<artifactId>management.jira</artifactId>
-	<version>2.2.6</version>
-	<organization>
-		<name>Software Engineering Research Group, Heidelberg University</name>
-		<url>https://github.com/cures-hub</url>
-	</organization>
-	<name>Decision Documentation and Exploration</name>
-	<description>Enables developers to continuously document and explore decision knowledge. Decision knowledge covers
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>de.uhd.ifi.se.decision</groupId>
+ <artifactId>management.jira</artifactId>
+ <version>2.2.6</version>
+ <organization>
+  <name>Software Engineering Research Group, Heidelberg University</name>
+  <url>https://github.com/cures-hub</url>
+ </organization>
+ <name>Decision Documentation and Exploration</name>
+ <description>Enables developers to continuously document and explore decision knowledge. Decision knowledge covers
         knowledge about decisions, the problems they address, solution proposals, their context, and justifications
         (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement
         a feature, or bug reports.
     </description>
-	<developers>
-		<!-- sorted alphabetically by id, these are currently active developers you can contact, see the version 
-			history for former developers -->
-		<developer>
-			<id>cotchere</id>
-			<name>Colin Otchere</name>
-		</developer>
-		<developer>
-			<id>desombre</id>
-			<name>Philipp de Sombre</name>
-		</developer>
-		<developer>
-			<id>manders</id>
-			<name>Michael Anders</name>
-		</developer>
-	</developers>
-	<packaging>atlassian-plugin</packaging>
+ <developers>
+  <!-- sorted alphabetically by id, these are currently active developers you can contact, see the version
+   history for former developers -->
+  <developer>
+   <id>cotchere</id>
+   <name>Colin Otchere</name>
+  </developer>
+  <developer>
+   <id>desombre</id>
+   <name>Philipp de Sombre</name>
+  </developer>
+  <developer>
+   <id>manders</id>
+   <name>Michael Anders</name>
+  </developer>
+ </developers>
+ <packaging>atlassian-plugin</packaging>
 
-	<repositories>
-		<repository>
-			<id>atlassian-external</id>
-			<url>https://packages.atlassian.com/mvn/maven-external/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>atlassian-public</id>
-			<url>https://packages.atlassian.com/maven-public/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>atlassian-3party</id>
-			<url>https://packages.atlassian.com/maven-3rdparty/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>central</id>
-			<name>Central MVN Repo</name>
-			<url>https://repo1.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>spring-release</id>
-			<url>https://repo.spring.io/libs-release/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>atlassian-public</id>
-			<url>https://m2proxy.atlassian.com/repository/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+ <repositories>
+  <repository>
+   <id>atlassian-external</id>
+   <url>https://packages.atlassian.com/mvn/maven-external/</url>
+   <snapshots>
+    <enabled>true</enabled>
+    <updatePolicy>never</updatePolicy>
+    <checksumPolicy>warn</checksumPolicy>
+   </snapshots>
+   <releases>
+    <enabled>true</enabled>
+    <checksumPolicy>warn</checksumPolicy>
+   </releases>
+  </repository>
+  <repository>
+   <id>atlassian-public</id>
+   <url>https://packages.atlassian.com/maven-public/</url>
+   <snapshots>
+    <enabled>true</enabled>
+    <updatePolicy>never</updatePolicy>
+    <checksumPolicy>warn</checksumPolicy>
+   </snapshots>
+   <releases>
+    <enabled>true</enabled>
+    <checksumPolicy>warn</checksumPolicy>
+   </releases>
+  </repository>
+  <repository>
+   <id>atlassian-3party</id>
+   <url>https://packages.atlassian.com/maven-3rdparty/</url>
+   <snapshots>
+    <enabled>true</enabled>
+    <updatePolicy>never</updatePolicy>
+    <checksumPolicy>warn</checksumPolicy>
+   </snapshots>
+   <releases>
+    <enabled>true</enabled>
+    <checksumPolicy>warn</checksumPolicy>
+   </releases>
+  </repository>
+  <repository>
+   <id>central</id>
+   <name>Central MVN Repo</name>
+   <url>https://repo1.maven.org/maven2</url>
+  </repository>
+  <repository>
+   <id>spring-release</id>
+   <url>https://repo.spring.io/libs-release/</url>
+   <snapshots>
+    <enabled>true</enabled>
+    <updatePolicy>never</updatePolicy>
+    <checksumPolicy>warn</checksumPolicy>
+   </snapshots>
+   <releases>
+    <enabled>true</enabled>
+    <checksumPolicy>warn</checksumPolicy>
+   </releases>
+  </repository>
+ </repositories>
+ <pluginRepositories>
+  <pluginRepository>
+   <id>atlassian-public</id>
+   <url>https://m2proxy.atlassian.com/repository/public/</url>
+   <releases>
+    <enabled>true</enabled>
+   </releases>
+   <snapshots>
+    <enabled>true</enabled>
+   </snapshots>
+  </pluginRepository>
+ </pluginRepositories>
 
 	<dependencies>
 		<!-- Jira -->
@@ -115,6 +115,12 @@
 			<version>8.5.3</version>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.atlassian.jira.plugins</groupId>
+            <artifactId>jira-greenhopper-plugin</artifactId>
+            <version>6.3.12</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-api</artifactId>
@@ -327,44 +333,45 @@
 		</plugins>
 	</build>
 
-	<profiles>
-		<!-- Creates coverage reports in target/site/jacoco/ -->
-		<profile>
-			<id>jacoco</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco-version}</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<!-- attached to Maven test phase -->
-							<execution>
-								<id>report</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<excludes>
-								<exclude>**/persistence/tables/*</exclude>
-							</excludes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+
+ <profiles>
+  <!-- Creates coverage reports in target/site/jacoco/ -->
+  <profile>
+   <id>jacoco</id>
+   <activation>
+    <activeByDefault>false</activeByDefault>
+   </activation>
+   <build>
+    <plugins>
+     <plugin>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>${jacoco-version}</version>
+      <executions>
+       <execution>
+        <goals>
+         <goal>prepare-agent</goal>
+        </goals>
+       </execution>
+       <!-- attached to Maven test phase -->
+       <execution>
+        <id>report</id>
+        <phase>test</phase>
+        <goals>
+         <goal>report</goal>
+        </goals>
+       </execution>
+      </executions>
+      <configuration>
+       <excludes>
+        <exclude>**/persistence/tables/*</exclude>
+       </excludes>
+      </configuration>
+     </plugin>
+    </plugins>
+   </build>
+  </profile>
+ </profiles>
 
 	<properties>
 		<jira.version>8.8.0</jira.version>

@@ -77,9 +77,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
 
 
-		velocityParameters.put("minLengthDuplicate",
-			ConfigPersistenceManager.getMinDuplicateLength(projectKey));
-		velocityParameters.put("minProbabilityLink",
+	velocityParameters.put("minLengthDuplicate",
+			ConfigPersistenceManager.getFragmentLength(projectKey));
+	velocityParameters.put("minProbabilityLink",
 			ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 
 		velocityParameters.put("maxNumberRecommendations",

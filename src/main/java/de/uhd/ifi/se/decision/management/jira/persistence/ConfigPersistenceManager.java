@@ -26,6 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
+import java.util.*;
+
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
  * activated for a specific project.
@@ -308,12 +310,12 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static void setMinDuplicateLength(String projectKey, int minDuplicateLength) {
-		setValue(projectKey, "minDuplicateLength", Integer.toString(minDuplicateLength));
+	public static void setFragmentLength(String projectKey, int fragmentLength) {
+		setValue(projectKey, "fragmentLength", Integer.toString(fragmentLength));
 	}
 
-	public static int getMinDuplicateLength(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "minDuplicateLength"), 3);
+	public static int getFragmentLength(String projectKey) {
+		return NumberUtils.toInt(getValue(projectKey, "fragmentLength"), 21);
 	}
 
 	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {

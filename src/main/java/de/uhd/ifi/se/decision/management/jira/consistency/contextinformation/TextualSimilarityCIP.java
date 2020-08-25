@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
@@ -37,31 +38,46 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement issueToTest : knowledgeElements){
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, issueToTest);
+		try {
+			pp.preprocess(baseElement.getDescription());
+			List<CharSequence> stemmedI1Description = pp.getTokens();
+			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
+			this.linkSuggestions =  knowledgeElements.parallelStream().map(knowledgeElement -> {
+				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
-			try {
-				pp.preprocess(baseElement.getDescription().toLowerCase());
-				List<CharSequence> stemmedI1Description = pp.getTokens();
+				try {
 
-				pp.preprocess(issueToTest.getDescription().toLowerCase());
-				List<CharSequence> stemmedI2Description = pp.getTokens();
-				List<CharSequence> concatenatedList = new ArrayList<>();
-				concatenatedList.addAll(stemmedI1Description);
-				concatenatedList.addAll(stemmedI2Description);
+					pp.preprocess(knowledgeElement.getDescription());
+					List<CharSequence> stemmedI2Description = pp.getTokens();
+					List<CharSequence> concatenatedList = new ArrayList<>();
+					concatenatedList.addAll(stemmedI1Description);
+					concatenatedList.addAll(stemmedI2Description);
 
-				int unionCount = uniqueElements(concatenatedList).length;
+					int unionCount = uniqueElements(concatenatedList).length;
 
-				// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
+					// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
 
-				linkSuggestion.addToScore(
-					(uniqueElements(stemmedI1Description).length + uniqueElements(stemmedI2Description).length - unionCount)
-					/ (double) unionCount,
-					this.getName());
-			} catch (Exception e) {
-				linkSuggestion.addToScore(0., this.getName());
-			}
-			this.linkSuggestions.add(linkSuggestion);
+					linkSuggestion.addToScore(
+						(uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
+							/ (double) unionCount,
+						this.getName() + ": " + getId());
+				} catch (Exception e) {
+					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
+				}
+				return linkSuggestion;
+
+			}).collect(Collectors.toList());
+
+		} catch (Exception e) {
+			this.linkSuggestions = knowledgeElements
+				.parallelStream()
+				.map(element -> {
+						LinkSuggestion ls = new LinkSuggestion(baseElement, element);
+						ls.addToScore(0., this.getName());
+						return ls;
+					}
+				)
+				.collect(Collectors.toList());
 		}
 
 	}
