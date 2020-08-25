@@ -305,7 +305,6 @@ public class FilteringManager {
 	}
 
 	/**
-	 *
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element incomplete status matches the filter settings
@@ -315,7 +314,7 @@ public class FilteringManager {
 		if (filterSettings.isIncompleteKnowledgeShown()) {
 			return element.isIncomplete();
 		}
-		return false;
+		return true;
 	}
 
 	/**

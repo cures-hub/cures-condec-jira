@@ -179,7 +179,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetOnlyDecisionKnowledgeShown() {
-		filterSettings.setIncompleteKnowledgeShown(true);
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
 		assertEquals(true, filterSettings.isOnlyDecisionKnowledgeShown());
 	}
 

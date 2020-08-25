@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 public class TestFilteringManager extends TestSetUp {
 
 	private ApplicationUser user;
@@ -165,9 +165,16 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testIsElementMatchingIncompleteFilter() {
-		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
-		assertFalse(filteringManager.isElementMatchingIncompleteFilter(element));
+		FilterSettings settings = new FilterSettings("TEST", "");
+
+		settings.setIncompleteKnowledgeShown(false);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(element));
+
+		settings.setIncompleteKnowledgeShown(true);
+		filteringManager.setFilterSettings(settings);
+		assertTrue(filteringManager.isElementMatchingIncompleteFilter(element));
 	}
 
 }

@@ -68,7 +68,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isIncompleteKnowledgeShown = false;
+		this.isIncompleteKnowledgeShown = true;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -352,14 +352,17 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return true if incompletely documented knowledge elements are shown in the filtered graph.
+	 * @return true if incompletely documented knowledge elements are shown in the
+	 *         filtered graph.
 	 */
-	public boolean isIncompleteKnowledgeShown() {return isIncompleteKnowledgeShown; }
+	public boolean isIncompleteKnowledgeShown() {
+		return isIncompleteKnowledgeShown;
+	}
 
 	/**
 	 * @param isIncompleteKnowledgeShown
-	 * 				true if incompletely documented knowledge elements should be shown in
-	 * 				the filtered graph.
+	 *            true if incompletely documented knowledge elements should be shown
+	 *            in the filtered graph.
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
@@ -424,8 +427,8 @@ public class FilterSettings {
 
 	/**
 	 * @param namesOfTypes
-	 *            names of {@link KnowledgeType}s, such decision knowledge types and
-	 *            other Jira {@link IssueType}s.
+	 *            names of {@link KnowledgeType}s, such as decision knowledge types
+	 *            and other Jira {@link IssueType}s.
 	 */
 	@JsonProperty("knowledgeTypes")
 	public void setKnowledgeTypes(Set<String> namesOfTypes) {
