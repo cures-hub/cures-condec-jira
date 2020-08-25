@@ -67,7 +67,7 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
-		assertEquals(2, decisionTableData.get("alternatives").size());
+		assertEquals(1, decisionTableData.get("alternatives").size());
 
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);

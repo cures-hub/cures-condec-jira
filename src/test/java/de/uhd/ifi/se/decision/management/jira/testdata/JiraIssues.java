@@ -13,6 +13,7 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -21,6 +22,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
+/**
+ * Creates Jira issues used in unit tests.
+ */
 public class JiraIssues {
 
 	public static List<MutableIssue> jiraIssues = new ArrayList<MutableIssue>();
@@ -43,39 +47,41 @@ public class JiraIssues {
 		List<IssueType> jiraIssueTypes = JiraIssueTypes.getTestTypes();
 
 		// Work items
-		MutableIssue issue = createJiraIssue(1, jiraIssueTypes.get(0), project, "WI: Implement feature", user);
-		jiraIssues.add(issue);
-		issue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item", user);
-		jiraIssues.add(issue);
-		issue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
-		jiraIssues.add(issue);
-		// Issue
-		issue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
-		jiraIssues.add(issue);
-		issue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?", user);
-		jiraIssues.add(issue);
-		// Alternative
-		issue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
-		jiraIssues.add(issue);
-		// Decision
-		issue = createJiraIssue(4, jiraIssueTypes.get(3), project, "We will do it like this!", user);
-		jiraIssues.add(issue);
-		// Pro-Argument for the decision
-		issue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
-		jiraIssues.add(issue);
-		
-		issue = createJiraIssue(6, jiraIssueTypes.get(5), project, "NFR: Usabililty", user);
-		jiraIssues.add(issue);
+		MutableIssue jiraIssue = createJiraIssue(1, jiraIssueTypes.get(0), project, "WI: Implement feature", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
+		jiraIssues.add(jiraIssue);
 
-		// Consistency
-		//issue = createJiraIssue(101, jiraIssueTypes.get(4), project, "This is a great solution.", user);
-		//jiraIssues.add(issue);
+		// Issues (= decision problems)
+		jiraIssue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",
+				user);
+		jiraIssues.add(jiraIssue);
+
+		// Alternative
+		jiraIssue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
+		jiraIssues.add(jiraIssue);
+
+		// Decision
+		jiraIssue = createJiraIssue(4, jiraIssueTypes.get(3), project, "We will do it like this!", user);
+		jiraIssues.add(jiraIssue);
+
+		// Pro-Argument for the decision
+		jiraIssue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
+		jiraIssues.add(jiraIssue);
+
+		// Non-functional requirement (used as criteria in decision table)
+		jiraIssue = createJiraIssue(6, jiraIssueTypes.get(5), project, "NFR: Usabililty", user);
+		jiraIssues.add(jiraIssue);
 
 		return jiraIssues;
 	}
 
 	public static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
-											   ApplicationUser user) {
+			ApplicationUser user) {
 		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
@@ -94,7 +100,8 @@ public class JiraIssues {
 		sentence.setJiraIssueId(issue.getId());
 		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence), JiraUsers.SYS_ADMIN.getApplicationUser());
+		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence),
+				JiraUsers.SYS_ADMIN.getApplicationUser());
 		return sentence.getJiraIssue();
 	}
 
