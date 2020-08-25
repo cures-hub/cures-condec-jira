@@ -571,7 +571,7 @@ public class KnowledgeElement {
 	 * @return true if the element is correctly linked according to the definition
 	 *         of done. For example, an argument needs to be linked to at least one
 	 *         solution option (decision or alternative). Otherwise, it is
-	 *         incomplete.
+	 *         incomplete, i.e., its documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
 		return !KnowledgeCompletion.isElementComplete(this);
