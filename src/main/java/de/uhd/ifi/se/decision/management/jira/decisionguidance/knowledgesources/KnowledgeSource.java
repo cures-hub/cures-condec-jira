@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface KnowledgeSource {
 
-	List<KnowledgeElement> getResults(String inputs);
+	Recommendation getResults(String inputs);
 
 	String getName();
 

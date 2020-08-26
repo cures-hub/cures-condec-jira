@@ -80,7 +80,7 @@ public class RDFSource implements KnowledgeSource {
 	}
 
 	@Override
-	public List<KnowledgeElement> getResults(String inputs) {
+	public Recommendation getResults(String inputs) {
 		ResultSet resultSet = this.queryDatabase(this.queryString, this.service, Params.Pair.create("timeout", this.timeout));
 
 		this.recommendations = new ArrayList<>();
@@ -90,7 +90,8 @@ public class RDFSource implements KnowledgeSource {
 			this.recommendations.add(alternative);
 
 		}
-		return this.recommendations;
+		Recommendation recommendation = new Recommendation(this.name, this.recommendations);
+		return recommendation;
 	}
 
 	public String getProjectKey() {

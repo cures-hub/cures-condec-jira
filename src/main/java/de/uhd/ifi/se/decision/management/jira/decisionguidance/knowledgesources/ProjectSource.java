@@ -22,6 +22,7 @@ public class ProjectSource implements KnowledgeSource {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
+		this.isActivated = false;
 	}
 
 	public ProjectSource(String projectKey, String name, boolean isActivated) {
@@ -59,7 +60,7 @@ public class ProjectSource implements KnowledgeSource {
 	}
 
 	@Override
-	public List<KnowledgeElement> getResults(String inputs) {
+	public Recommendation getResults(String inputs) {
 		List<KnowledgeElement> recommendations = new ArrayList<>();
 
 		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
@@ -81,7 +82,7 @@ public class ProjectSource implements KnowledgeSource {
 				}
 			});
 		}
-
-		return recommendations;
+		Recommendation recommendation = new Recommendation(this.name, recommendations);
+		return recommendation;
 	}
 }
