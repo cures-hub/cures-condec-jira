@@ -31,7 +31,7 @@
         </div>
         <div class="field-group">
             <label>Timeout</label>
-            <input type="number" id="create-param-knowledgesource" class="text short-field"
+            <input type="number" min="1" value="10000" id="create-param-knowledgesource" class="text short-field"
                    name="param-knowledgesource"
                    value=""></input>
             <div class="description">Enter the timeout in milliseconds.

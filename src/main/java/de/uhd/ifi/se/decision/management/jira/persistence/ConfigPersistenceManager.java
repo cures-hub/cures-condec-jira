@@ -349,6 +349,7 @@ public class ConfigPersistenceManager {
 		if (rdfSource != null) {
 			try {
 				rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+				if (rdfSourceList == null) rdfSourceList = new ArrayList<>();
 			} catch (JsonSyntaxException e) {
 				rdfSourceList = new ArrayList<>();
 				setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
