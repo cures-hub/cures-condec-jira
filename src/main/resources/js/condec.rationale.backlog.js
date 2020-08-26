@@ -105,6 +105,20 @@
 			"isIncompleteKnowledgeShown" : showIncomplete,
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
+		if (nodeId === undefined) {
+			var rootElement = treant.getCurrentRootElement();
+			if (rootElement) {
+				treeViewer.selectNodeInTreeViewer(rootElement.id, "#rationale-backlog-tree");
+			}
+		} else {
+			treeViewer.selectNodeInTreeViewer(nodeId, "#rationale-backlog-tree");
+		}
+		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
+			var node = tree.node.data;
+			filterSettings["knowledgeTypes"] = null;
+			filterSettings["selectedElement"] = node.key;
+			treant.buildTreant(filterSettings, true, "treant-rationale-backlog");
+		});
 	}
 
 	/*
