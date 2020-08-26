@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -119,7 +121,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testGetNamesOfLinkTypes() {
 		assertEquals(11, filterSettings.getLinkTypes().size());
-		List<String> selectedLinkTypes = new ArrayList<>();
+		Set<String> selectedLinkTypes = new HashSet<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
 		filterSettings.setLinkTypes(selectedLinkTypes);

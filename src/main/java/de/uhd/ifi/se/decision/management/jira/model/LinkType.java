@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Models the types of links between decision knowledge elements according to
- * Kruchten's taxonomy.
- * The Duplicate relationship was added to be able to model this type of inconsistency.
+ * Kruchten's taxonomy. The Duplicate relationship was added to be able to model
+ * this type of inconsistency.
  */
 public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), //
@@ -122,8 +125,7 @@ public enum LinkType {
 		return getLinkTypeForKnowledgeType(type);
 	}
 
-	public static boolean linkTypesAreEqual(KnowledgeType formerKnowledgeType,
-			KnowledgeType knowledgeType) {
+	public static boolean linkTypesAreEqual(KnowledgeType formerKnowledgeType, KnowledgeType knowledgeType) {
 		boolean bothKnowledgeTypesAreArguments = formerKnowledgeType.replaceProAndConWithArgument() == knowledgeType
 				.replaceProAndConWithArgument();
 		LinkType formerLinkType = getLinkTypeForKnowledgeType(formerKnowledgeType);
@@ -132,10 +134,10 @@ public enum LinkType {
 	}
 
 	/**
-	 * @return list of link types as Strings.
+	 * @return names of link types as a set of Strings.
 	 */
-	public static List<String> toStringList() {
-		List<String> linkTypes = new ArrayList<String>();
+	public static Set<String> toStringSet() {
+		Set<String> linkTypes = new HashSet<String>();
 		for (LinkType linkType : LinkType.values()) {
 			linkTypes.add(linkType.getName());
 		}

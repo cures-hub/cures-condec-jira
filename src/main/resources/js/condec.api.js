@@ -736,18 +736,10 @@
 		}
 		return this.knowledgeTypes;
 	};
-
-	ConDecAPI.prototype.getLinkTypesSync = function () {
-		var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
-		if (linkTypes !== null) {
-			var linkTypeArray = [];
-			for (var link in linkTypes) {
-				linkTypeArray.push(link);
-			}
-			return linkTypeArray;
-		}
-	};
-
+	
+	/*
+	 * external references: condec.jira.issue.module, condec.dialog
+	 */
 	ConDecAPI.prototype.getLinkTypes = function (callback) {
 		var projectKey = getProjectKey();
 		generalApi.getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
@@ -1002,17 +994,6 @@
 			}
 		});
 	};
-
-	function getLinkTypes(projectKey) {
-		var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
-		if (linkTypes !== null) {
-			var linkTypeArray = [];
-			for (var link in linkTypes) {
-				linkTypeArray.push(link);
-			}
-			return linkTypeArray;
-		}
-	}
 
 	/*
 	 * external references: settingsForSingleProject.vm

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,11 +9,9 @@ import org.jgrapht.graph.AsSubgraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.link.IssueLinkType;
-import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -85,13 +82,7 @@ public class FilteringManager {
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 
-		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes(false);
-		if (filterSettings.getLinkTypes().size() < types.size()) {
-
-			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
-			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
-		}
+		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 		return subgraph;
 	}
 
@@ -122,10 +113,21 @@ public class FilteringManager {
 		return elements;
 	}
 
+	private Graph<KnowledgeElement, Link> getSubgraphMatchingLinkTypes(Graph<KnowledgeElement, Link> subgraph) {
+		if (filterSettings.getLinkTypes().size() < DecisionKnowledgeProject.getNamesOfLinkTypes().size()) {
+			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
+			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
+		}
+		return subgraph;
+	}
+
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
+		System.out.println("getLinksNotMatchingFilterSettings " + links.size());
+		System.out.println(filterSettings.getLinkTypes());
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
-			if (!filterSettings.getLinkTypes().contains(link.getType())) {
+			System.out.println(link.getType().toLowerCase());
+			if (!filterSettings.getLinkTypes().contains(link.getType().toLowerCase())) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}
@@ -159,7 +161,7 @@ public class FilteringManager {
 			return false;
 		}
 		if (!isElementMatchingStatusFilter(element)) {
-			return isElementMatchingDocumentationIncompletenessFilter(element);
+			return false;
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;

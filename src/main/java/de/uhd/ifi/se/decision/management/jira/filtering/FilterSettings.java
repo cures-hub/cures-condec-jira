@@ -38,7 +38,7 @@ public class FilterSettings {
 	private List<DocumentationLocation> documentationLocations;
 	private Set<String> knowledgeTypes;
 	private List<KnowledgeStatus> knowledgeStatus;
-	private List<String> linkTypes;
+	private Set<String> linkTypes;
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
@@ -61,7 +61,7 @@ public class FilterSettings {
 
 		// the following values are the default values of the filter criteria
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
-		this.linkTypes = LinkType.toStringList();
+		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -228,22 +228,20 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return list of {@link LinkType}s to be shown in the knowledge graph as
-	 *         strings.
+	 * @return {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@XmlElement(name = "linkTypes")
-	public List<String> getLinkTypes() {
+	public Set<String> getLinkTypes() {
 		return linkTypes;
 	}
 
 	/**
 	 * @param namesOfTypes
-	 *            list of {@link LinkType}s to be shown in the knowledge graph as
-	 *            strings.
+	 *            {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@JsonProperty("linkTypes")
-	public void setLinkTypes(List<String> namesOfTypes) {
-		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringList();
+	public void setLinkTypes(Set<String> namesOfTypes) {
+		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringSet();
 	}
 
 	/**

@@ -112,6 +112,13 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(7, project.getNamesOfKnowledgeTypes().size());
 	}
 
+	@Test
+	public void testGetLinkTypes() {
+		assertEquals(4, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
+
+	}
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings

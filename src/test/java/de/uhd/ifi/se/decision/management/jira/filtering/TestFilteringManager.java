@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -105,7 +103,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		List<String> linkTypes = new ArrayList<>();
+		Set<String> linkTypes = new HashSet<>();
 		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setLinkTypes(linkTypes);

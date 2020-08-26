@@ -1,16 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLink;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
+
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
  * Models links (=edges) between knowledge elements. The links are directed,
@@ -36,7 +38,6 @@ public class Link extends DefaultWeightedEdge {
 		this.source = sourceElement;
 		this.target = destinationElement;
 	}
-
 
 	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, LinkType linkType) {
 		this(sourceElement, destinationElement);
@@ -99,14 +100,12 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * This method was kept for compatibility.
-	 *
 	 * @see LinkType
 	 * @return type of the link.
 	 */
 	public String getType() {
 		if (type == null) {
-			return "Relates";
+			type = LinkType.getDefaultLinkType();
 		}
 		return type.toString();
 	}
@@ -154,8 +153,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.source == null) {
-			this.source = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
-					documentationLocation);
+			this.source = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id, documentationLocation);
 		}
 		if (this.source == null) {
 			this.source = new KnowledgeElement();
@@ -215,8 +213,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.target == null) {
-			this.target = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
-					documentationLocation);
+			this.target = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id, documentationLocation);
 		}
 		if (this.target == null) {
 			this.target = new KnowledgeElement();
