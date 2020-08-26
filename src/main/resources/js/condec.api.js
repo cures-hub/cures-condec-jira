@@ -514,33 +514,8 @@
 	/*
 	 * external references: condec.relationship.page
 	 */
-	ConDecAPI.prototype.getDecisionGraph = function (callback) {
-		this.getDecisionGraphFiltered(null, "", [], callback);
-	};
-
-	/*
-	 * external references: condec.relationship.page
-	 */
-	ConDecAPI.prototype.getDecisionGraph = function (callback) {
-		this.getDecisionGraphFiltered(null, "", null, [], callback);
-	};
-
-	/*
-	 * external references: condec.relationship.page
-	 */
-	ConDecAPI.prototype.getDecisionGraphFiltered = function (linkTypes, searchTerm, status, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"createdEarliest": -1,
-				"createdLatest": -1,
-				"documentationLocations": null,
-				"knowledgeTypes": ["Decision"],
-				"status": status,
-				"linkTypes": linkTypes,
-				"groups": decGroups
-		};
+	ConDecAPI.prototype.getDecisionGraph = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function (error, graph) {
 			if (error == null) {
 				callback(graph);
