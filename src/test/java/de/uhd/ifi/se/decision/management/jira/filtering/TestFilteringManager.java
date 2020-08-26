@@ -111,7 +111,7 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(14, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test

@@ -122,12 +122,10 @@ public class FilteringManager {
 	}
 
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
-		System.out.println("getLinksNotMatchingFilterSettings " + links.size());
-		System.out.println(filterSettings.getLinkTypes());
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
-			System.out.println(link.getType().toLowerCase());
-			if (!filterSettings.getLinkTypes().contains(link.getType().toLowerCase())) {
+			if (filterSettings.getLinkTypes().parallelStream()
+					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getType()))) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}
