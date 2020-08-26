@@ -192,8 +192,10 @@
 		
 		conDecAPI.getLinkTypes(function (linkTypes) {
 			var linkTypeArray = [];
-			for (var link in linkTypes) {
-				linkTypeArray.push(link);
+			for (linkType in linkTypes) {
+				if (linkType !== undefined) {
+					linkTypeArray.push(linkType);
+				}				
 			}
 			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
 		});		
