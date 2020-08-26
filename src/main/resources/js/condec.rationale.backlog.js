@@ -10,7 +10,7 @@
 	var treeViewer = null;
 	var treant = null;
 
-	var ConDecRationaleBacklog = function ConDecRationaleBacklog() {
+	var ConDecRationaleBacklog = function() {
 	};
 
 	ConDecRationaleBacklog.prototype.init = function (_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
