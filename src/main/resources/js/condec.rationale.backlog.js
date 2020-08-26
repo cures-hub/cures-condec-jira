@@ -102,7 +102,7 @@
 			"groups" : selectedGroups,
 			"startDate" : startDateLong,
 			"endDate" : endDateLong,
-			"isIncompleteKnowledgeShown" : showIncomplete,
+			"isOnlyIncompleteKnowledgeShown" : showIncomplete,
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 	}

@@ -165,17 +165,17 @@ public class TestFilteringManager extends TestSetUp {
 	}
 
 	@Test
-	public void testIsElementMatchingIncompleteFilter() {
+	public void testIsElementMatchingDocumentationCompletenessFilter() {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		FilterSettings settings = new FilterSettings("TEST", "");
 
 		settings.setIncompleteKnowledgeShown(false);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertTrue(filteringManager.isElementMatchingIncompleteFilter(element));
+		assertTrue(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 
 		settings.setIncompleteKnowledgeShown(true);
 		filteringManager.setFilterSettings(settings);
-		assertFalse(filteringManager.isElementMatchingIncompleteFilter(element));
+		assertFalse(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 	}
 
 }

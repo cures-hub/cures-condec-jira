@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -41,7 +42,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
-	private boolean isIncompleteKnowledgeShown;
+	private boolean isOnlyIncompleteKnowledgeShown;
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
@@ -68,7 +69,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isIncompleteKnowledgeShown = true;
+		this.isOnlyIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -352,21 +353,25 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return true if incompletely documented knowledge elements are shown in the
-	 *         filtered graph.
+	 * @return true if only incompletely documented knowledge elements are shown in
+	 *         the filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
-	public boolean isIncompleteKnowledgeShown() {
-		return isIncompleteKnowledgeShown;
+	public boolean isOnlyIncompleteKnowledgeShown() {
+		return isOnlyIncompleteKnowledgeShown;
 	}
 
 	/**
-	 * @param isIncompleteKnowledgeShown
-	 *            true if incompletely documented knowledge elements should be shown
-	 *            in the filtered graph.
+	 * @param isOnlyIncompleteKnowledgeShown
+	 *            true if only incompletely documented knowledge elements should be
+	 *            shown in the filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
-	@JsonProperty("isIncompleteKnowledgeShown")
+	@JsonProperty("isOnlyIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
-		this.isIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
+		this.isOnlyIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
 	}
 
 	/**

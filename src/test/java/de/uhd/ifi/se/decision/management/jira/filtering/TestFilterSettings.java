@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -148,14 +149,14 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testIsIncompleteElementsShown() {
-		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+	public void testIsOnlyIncompleteElementsShown() {
+		assertFalse(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
-	public void testSetIncompleteElementsShown() {
+	public void testSetOnlyIncompleteElementsShown() {
 		filterSettings.setIncompleteKnowledgeShown(true);
-		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+		assertTrue(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test

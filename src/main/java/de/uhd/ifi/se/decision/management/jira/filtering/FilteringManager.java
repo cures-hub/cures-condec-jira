@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -158,7 +159,7 @@ public class FilteringManager {
 			return false;
 		}
 		if (!isElementMatchingStatusFilter(element)) {
-			return isElementMatchingIncompleteFilter(element);
+			return isElementMatchingDocumentationIncompletenessFilter(element);
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
@@ -307,11 +308,12 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element incomplete status matches the filter settings
-	 *         value for showing incomplete decision knowledge.
+	 * @return False if the element is completely documented according to the
+	 *         {@link CompletenessCheck} and only incomplete knowledge elements
+	 *         should be shown. True otherwise.
 	 */
-	public boolean isElementMatchingIncompleteFilter(KnowledgeElement element) {
-		if (filterSettings.isIncompleteKnowledgeShown()) {
+	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
+		if (filterSettings.isOnlyIncompleteKnowledgeShown()) {
 			return element.isIncomplete();
 		}
 		return true;
