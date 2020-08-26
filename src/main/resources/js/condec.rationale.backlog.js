@@ -36,7 +36,6 @@
 		return false;
 	};
 
-
 	ConDecRationaleBacklog.prototype.fetchAndRender = function () {
 		initializeRationaleBacklog(conDecAPI, treant, treeViewer);
 	};
@@ -49,33 +48,25 @@
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 
 		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
-		knowledgeTypeDropdown.addEventListener("change", function() {
-			conDecRationaleBacklog.updateView();
-		});
+		knowledgeTypeDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
 
 		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
-		statusDropdown.addEventListener("change", function () {
-			conDecRationaleBacklog.updateView();
-		});
+		statusDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
 
 		var date = new Date();
 		var endDatePicker = document.getElementById("end-date-picker-rb");
 		endDatePicker.value = date.toISOString().substr(0, 10);
 		date.setDate(date.getDate() - 7);
-		endDatePicker.addEventListener("change", function () {
-			conDecRationaleBacklog.updateView();
-		});
+		endDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
 		var startDatePicker =document.getElementById("start-date-picker-rb");
 		startDatePicker.value = date.toISOString().substr(0, 10);
-		startDatePicker.addEventListener("change", function () {
-			conDecRationaleBacklog.updateView();
-		});
+		startDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
+		
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", conDecRationaleBacklog.updateView);
 
 		updateView(null, treant, treeViewer);
 	}
-
-
 
 	function updateView(nodeId, treant, treeViewer) {
 		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
@@ -115,8 +106,12 @@
 		}
 		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
+			var linkDistance = document.getElementById("link-distance-input-rb").value;
+			filterSettings["linkDistance"] = linkDistance;
 			filterSettings["knowledgeTypes"] = null;
+			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
+			filterSettings["isOnlyIncompleteKnowledgeShown"] = false;
 			treant.buildTreant(filterSettings, true, "treant-rationale-backlog");
 		});
 	}

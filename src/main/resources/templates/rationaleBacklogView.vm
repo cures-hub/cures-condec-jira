@@ -17,7 +17,8 @@
     #set($select2-decision-group = "select2-decision-group-rb")
   	#parse("templates/filter/decisionGroup.vm")
 
-
+	#set ($linkDistanceInputId = "link-distance-input-rb")	
+	#parse("templates/filter/linkDistance.vm")
 
 </form>
 </div>
