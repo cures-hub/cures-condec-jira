@@ -1172,7 +1172,12 @@
 		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledge Source successfully is saved!");
+			if(isActivated) {
+				showFlag("success", "The project  <b>" + projectSourceKey + "</b> is now  <b>activated</b> as a knowledge source!!");
+			}
+			else {
+				showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
+			}
 			}
 		});
 	};

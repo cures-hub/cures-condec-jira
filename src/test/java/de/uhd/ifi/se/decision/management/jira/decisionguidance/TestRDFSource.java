@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.DBPediaSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testDBPediaSource() {
-		DBPediaSource source = new DBPediaSource("Test");
+		KnowledgeSource source = new RDFSource("Test");
 		List<KnowledgeElement> recommendations = source.getResults(null);
 		assertEquals(recommendations.size(), 10);
 	}
