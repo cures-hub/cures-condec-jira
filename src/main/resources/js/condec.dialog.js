@@ -257,9 +257,6 @@
         var selectElementField = document.getElementById("linkDecisions-form-select-element");
         var submitButton = document.getElementById("linkDecisions-dialog-submit-button");
         var cancelButton = document.getElementById("linkDecisions-dialog-cancel-button");
-        var argumentFieldGroup = document.getElementById("argument-field-group");
-        var linkType = "Relates";
-        var linkTypeColor = "#80c9ff";
 
         // Fill HTML elements
         selectElementField.innerHTML = "";
@@ -274,7 +271,6 @@
 		 */
         conDecAPI.getLinkTypes(function (linkTypes) {
             var linkTypeNames = Object.keys(linkTypes);
-            var linkTypeColors = Object.values(linkTypes);
             var insertString = "";
             var isSelected = "";
             for (var index in linkTypeNames) {
@@ -284,28 +280,22 @@
                     isSelected = "";
                 }
                 console.log(linkTypeNames[index]);
-                insertString += "<option " + isSelected + " value='" + linkTypeColors[index] + "'>"
+                insertString += "<option " + isSelected + " value='" + linkTypeNames[index] + "'>"
                     + linkTypeNames[index] + "</option>";
             }
             selectElementField.insertAdjacentHTML("afterBegin", insertString);
         });
         AJS.$(selectElementField).auiSelect2();
 
-        argumentFieldGroup.style.display = "none";
-        selectElementField.onchange = function (option) {
-            linkType = option.added.text;
-            linkTypeColor = option.val;
-        };
-
         // Set onclick listener on buttons
-        submitButton.onclick = function () {
+        submitButton.onclick = function () {        	
+        	var linkType = selectElementField.value;
             conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, function () {
                 conDecObservable.notify();
             });
             if (submitCallback !== null){
 				console.log(submitCallback);
 				submitCallback();
-
 			}
             AJS.dialog2(linkDialog).hide();
         };

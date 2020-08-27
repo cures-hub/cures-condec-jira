@@ -27,10 +27,6 @@ public enum LinkType {
 	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
 	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
-	public static Set<LinkType> getDefaultTypes() {
-		return EnumSet.of(SUPPORT, ATTACK);
-	}
-
 	private String name;
 	private String outwardName;
 	private String inwardName;
@@ -65,6 +61,10 @@ public enum LinkType {
 		return color;
 	}
 
+	public static Set<LinkType> getDefaultTypes() {
+		return EnumSet.of(SUPPORT, ATTACK);
+	}
+
 	/**
 	 * @return link type as a String in lowercase, e.g., relate, support, and
 	 *         attack.
@@ -88,7 +88,7 @@ public enum LinkType {
 				return linkType;
 			}
 		}
-		return LinkType.OTHER;
+		return OTHER;
 	}
 
 	public static String getLinkTypeColor(String linkTypeName) {
@@ -106,16 +106,16 @@ public enum LinkType {
 	public static LinkType getLinkTypeForKnowledgeType(KnowledgeType knowledgeTypeOfChildElement) {
 		switch (knowledgeTypeOfChildElement) {
 		case PRO:
-			return LinkType.SUPPORT;
+			return SUPPORT;
 		case CON:
-			return LinkType.ATTACK;
+			return ATTACK;
 		default:
-			return LinkType.getDefaultLinkType();
+			return getDefaultLinkType();
 		}
 	}
 
 	public static LinkType getDefaultLinkType() {
-		return LinkType.RELATE;
+		return RELATE;
 	}
 
 	public static boolean linkTypesAreEqual(KnowledgeType formerKnowledgeType, KnowledgeType knowledgeType) {
