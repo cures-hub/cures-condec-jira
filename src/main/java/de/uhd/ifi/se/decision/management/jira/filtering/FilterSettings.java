@@ -42,7 +42,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
-	private boolean isOnlyIncompleteKnowledgeShown;
+	private boolean isIncompleteKnowledgeShown;
 	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
@@ -69,7 +69,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isOnlyIncompleteKnowledgeShown = false;
+		this.isIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -351,25 +351,25 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return true if only incompletely documented knowledge elements are shown in
-	 *         the filtered graph.
+	 * @return true if incompletely documented knowledge elements are shown in the
+	 *         filtered graph.
 	 * 
 	 * @see CompletenessCheck
 	 */
-	public boolean isOnlyIncompleteKnowledgeShown() {
-		return isOnlyIncompleteKnowledgeShown;
+	public boolean isIncompleteKnowledgeShown() {
+		return isIncompleteKnowledgeShown;
 	}
 
 	/**
-	 * @param isOnlyIncompleteKnowledgeShown
-	 *            true if only incompletely documented knowledge elements should be
-	 *            shown in the filtered graph.
+	 * @param isIncompleteKnowledgeShown
+	 *            true if incompletely documented knowledge elements should be shown
+	 *            in the filtered graph.
 	 * 
 	 * @see CompletenessCheck
 	 */
-	@JsonProperty("isOnlyIncompleteKnowledgeShown")
+	@JsonProperty("isIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
-		this.isOnlyIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
+		this.isIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
 	}
 
 	/**

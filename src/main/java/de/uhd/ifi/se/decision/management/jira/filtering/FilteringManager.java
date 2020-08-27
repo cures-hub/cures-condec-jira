@@ -158,7 +158,7 @@ public class FilteringManager {
 		if (!isElementMatchingTimeFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingStatusFilter(element)) {
+		if (!isElementMatchingStatusFilter(element) && !isElementMatchingDocumentationIncompletenessFilter(element)) {
 			return false;
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
@@ -308,15 +308,13 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return False if the element is completely documented according to the
-	 *         {@link CompletenessCheck} and only incomplete knowledge elements
-	 *         should be shown. True otherwise.
+	 * @return True if the element is incompletely documented according to the
+	 *         {@link CompletenessCheck} and incomplete knowledge elements should be
+	 *         shown. False otherwise.
 	 */
 	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
-		if (filterSettings.isOnlyIncompleteKnowledgeShown()) {
-			return element.isIncomplete();
-		}
-		return true;
+		System.out.println(element.isIncomplete());
+		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
 	}
 
 	/**

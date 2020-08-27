@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -147,7 +148,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraphForLinkDistanceThree() {
-		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		settings.setLinkDistance(3);
 
@@ -163,13 +164,25 @@ public class TestFilteringManager extends TestSetUp {
 	}
 
 	@Test
+	public void testIsElementMatchingStatusFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(settings);
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		assertTrue(filteringManager.isElementMatchingStatusFilter(element));
+
+		settings.setStatus(new ArrayList<>());
+		filteringManager.setFilterSettings(settings);
+		assertFalse(filteringManager.isElementMatchingStatusFilter(element));
+	}
+
+	@Test
 	public void testIsElementMatchingDocumentationCompletenessFilter() {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		FilterSettings settings = new FilterSettings("TEST", "");
 
 		settings.setIncompleteKnowledgeShown(false);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertTrue(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
+		assertFalse(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 
 		settings.setIncompleteKnowledgeShown(true);
 		filteringManager.setFilterSettings(settings);

@@ -74,11 +74,6 @@
 		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
 		var showIncomplete = false;
 		if (indexOfIncomplete !== -1) {
-			if (selectedStatus.length === 1) {
-				selectedStatus = this.conDecAPI.knowledgeStatus;
-			} else {
-				selectedStatus.splice(indexOfIncomplete, 1);
-			}
 			showIncomplete = true;
 		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
@@ -93,7 +88,7 @@
 			"groups" : selectedGroups,
 			"startDate" : startDateLong,
 			"endDate" : endDateLong,
-			"isOnlyIncompleteKnowledgeShown" : showIncomplete,
+			"isIncompleteKnowledgeShown" : showIncomplete,
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 		if (nodeId === undefined) {
@@ -111,7 +106,6 @@
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
-			filterSettings["isOnlyIncompleteKnowledgeShown"] = false;
 			treant.buildTreant(filterSettings, true, "treant-rationale-backlog");
 		});
 	}
