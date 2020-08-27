@@ -307,10 +307,7 @@ public class Link extends DefaultWeightedEdge {
 		if (this.source.getId() == elementId) {
 			return target;
 		}
-		if (this.target.getId() == elementId) {
-			return source;
-		}
-		return null;
+		return source;
 	}
 
 	/**

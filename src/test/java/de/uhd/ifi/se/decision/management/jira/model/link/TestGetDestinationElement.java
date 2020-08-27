@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
-public class TestIsValid extends TestSetUp {
+public class TestGetDestinationElement extends TestSetUp {
 
 	public Link link;
 
@@ -21,13 +21,11 @@ public class TestIsValid extends TestSetUp {
 	}
 
 	@Test
-	public void testTrue() {
-		assertTrue(link.isValid());
-	}
+	public void testGetTargetNull() {
+		link.setDestinationElement(null);
+		assertNull(link.getTarget());
 
-	@Test
-	public void testFalse() {
-		link.setIdOfDestinationElement(-1);
-		assertFalse(link.isValid());
+		link.setIdOfDestinationElement(1);
+		assertNotNull(link.getTarget());
 	}
 }

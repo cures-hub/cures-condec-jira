@@ -14,16 +14,15 @@ public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), // for pro-arguments to solution options
 	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""), // for con-arguments to solution options
 	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), // among decisions
-	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), //
-	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), //
-	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), //
-	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"), //
-	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), //
-	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), //
-	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), //
-	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), //
-	OTHER("", "", "", "contain-style", ""); // other Jira issue links not specific for linking rationale elements, e.g.
-											// "jira_subtask_of"
+	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
+	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions
+	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), // among decisions
+	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"), // among decisions
+	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), // among decisions
+	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), // among decisions
+	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), // among decisions
+	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among decisions
+	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_of"
 
 	public static Set<LinkType> getDefaultTypes() {
 		return EnumSet.of(SUPPORT, ATTACK);
