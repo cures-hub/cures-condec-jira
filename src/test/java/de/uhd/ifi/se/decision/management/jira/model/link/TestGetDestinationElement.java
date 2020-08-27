@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
-public class TestGetOppositeElement extends TestSetUp {
+public class TestGetDestinationElement extends TestSetUp {
 
 	public Link link;
 
@@ -22,15 +22,21 @@ public class TestGetOppositeElement extends TestSetUp {
 	}
 
 	@Test
-	public void testValidLink() {
-		assertEquals(link.getSource(), link.getOppositeElement(link.getTarget()));
-		assertEquals(link.getTarget(), link.getOppositeElement(link.getSource()));
+	public void testGetDestinationElement() {
+		assertEquals("TEST-4", link.getTarget().getKey());
 	}
 
 	@Test
-	public void testInvalidLink() {
-		link.setIdOfDestinationElement(-1);
-		assertFalse(link.isValid());
-		assertNull(link.getOppositeElement(link.getTarget()));
+	public void testGetIdOfDestinationElement() {
+		assertEquals(4, link.getTarget().getId());
+	}
+
+	@Test
+	public void testGetTargetNull() {
+		link.setDestinationElement(null);
+		assertNull(link.getTarget());
+
+		link.setIdOfDestinationElement(1);
+		assertNotNull(link.getTarget());
 	}
 }

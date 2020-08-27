@@ -288,7 +288,7 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Boolean isLinkTypeEnabled = issueLinkTypeManager.getIssueLinkTypes().stream().map(IssueLinkType::getName)
+		boolean isLinkTypeEnabled = issueLinkTypeManager.getIssueLinkTypes().stream().map(IssueLinkType::getName)
 				.anyMatch(e -> e.equals(linkType));
 		return Response.ok().entity(isLinkTypeEnabled).build();
 	}
@@ -323,8 +323,7 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Map<String, String> linkTypes = new HashMap<>();
-		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
+		Collection<IssueLinkType> types = DecisionKnowledgeProject.getJiraIssueLinkTypes();
 		for (IssueLinkType linkType : types) {
 			linkTypes.put(linkType.getName(), linkType.getStyle());
 		}

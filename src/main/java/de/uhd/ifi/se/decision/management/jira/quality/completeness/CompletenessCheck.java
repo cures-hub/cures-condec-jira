@@ -21,7 +21,9 @@ public interface CompletenessCheck {
 			entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
 			entry(KnowledgeType.ISSUE, new IssueCompletenessCheck()),
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
-			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()));
+			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
+			entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
+			entry(KnowledgeType.CON, new ArgumentCompletenessCheck()));
 
 	public boolean execute(KnowledgeElement childElement);
 

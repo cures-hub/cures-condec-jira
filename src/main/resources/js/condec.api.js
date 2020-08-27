@@ -514,33 +514,8 @@
 	/*
 	 * external references: condec.relationship.page
 	 */
-	ConDecAPI.prototype.getDecisionGraph = function (callback) {
-		this.getDecisionGraphFiltered(null, "", [], callback);
-	};
-
-	/*
-	 * external references: condec.relationship.page
-	 */
-	ConDecAPI.prototype.getDecisionGraph = function (callback) {
-		this.getDecisionGraphFiltered(null, "", null, [], callback);
-	};
-
-	/*
-	 * external references: condec.relationship.page
-	 */
-	ConDecAPI.prototype.getDecisionGraphFiltered = function (linkTypes, searchTerm, status, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"createdEarliest": -1,
-				"createdLatest": -1,
-				"documentationLocations": null,
-				"knowledgeTypes": ["Decision"],
-				"status": status,
-				"linkTypes": linkTypes,
-				"groups": decGroups
-		};
+	ConDecAPI.prototype.getDecisionGraph = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function (error, graph) {
 			if (error == null) {
 				callback(graph);
@@ -736,18 +711,10 @@
 		}
 		return this.knowledgeTypes;
 	};
-
-	ConDecAPI.prototype.getLinkTypesSync = function () {
-		var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
-		if (linkTypes !== null) {
-			var linkTypeArray = [];
-			for (var link in linkTypes) {
-				linkTypeArray.push(link);
-			}
-			return linkTypeArray;
-		}
-	};
-
+	
+	/*
+	 * external references: condec.jira.issue.module, condec.dialog
+	 */
 	ConDecAPI.prototype.getLinkTypes = function (callback) {
 		var projectKey = getProjectKey();
 		generalApi.getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
@@ -1002,17 +969,6 @@
 			}
 		});
 	};
-
-	function getLinkTypes(projectKey) {
-		var linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + projectKey);
-		if (linkTypes !== null) {
-			var linkTypeArray = [];
-			for (var link in linkTypes) {
-				linkTypeArray.push(link);
-			}
-			return linkTypeArray;
-		}
-	}
 
 	/*
 	 * external references: settingsForSingleProject.vm

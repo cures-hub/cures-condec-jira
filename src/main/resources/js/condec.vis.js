@@ -310,12 +310,14 @@
 		}
 	};
 
+	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.deleteNode = function(data, callback) {
 		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1), function() {
 			callback(data);
 		});
 	};
 
+	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdge = function(data, callback) {
 		if (data.from !== data.to) {
 			conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1), data.from
@@ -326,6 +328,7 @@
 		}
 	};
 
+	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdgeWithType = function(data, callback) {
 		if (data.from !== data.to) {
 			conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), data.from.substr(-1),
@@ -335,6 +338,7 @@
 		}
 	};
 
+	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.deleteEdge = function(data, visData, callback) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);

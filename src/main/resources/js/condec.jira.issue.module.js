@@ -66,10 +66,6 @@
 		initFilter(issueKey, search);
 	};
 
-	ConDecJiraIssueModule.prototype.applyTreeVisFilters = function() {
-		showTreant();
-	};
-
 	function addOnClickEventToDecisionTableButtons() {
 		document.getElementById("btnAddCriterion").addEventListener("click", function() {
 			conDecDecisionTable.showAddCriteriaToDecisionTableDialog();
@@ -150,11 +146,7 @@
 	function showGraph() {
 		console.log("ConDecJiraIssueModule showGraph");
 		issueKey = conDecAPI.getIssueKey();
-		var filterSettings = {
-				"searchTerm": search,
-				"selectedElement": issueKey
-		};
-		vis.buildVis(filterSettings);
+		applyFilters();
 	}
 
 	function showDecisionTable() {
@@ -183,7 +175,6 @@
 			nodeDistance = nodeDistanceInput.value;
 		}
 		var filterSettings = {
-				"searchTerm": search,
 				"createdEarliest": createdAfter,
 				"createdLatest": createdBefore,
 				"documentationLocations": documentationLocations,
@@ -198,6 +189,16 @@
 
 	function initFilter(issueKey, search) {
 		console.log("ConDecJiraIssueModule initFilter");
+		
+		conDecAPI.getLinkTypes(function (linkTypes) {
+			var linkTypeArray = [];
+			for (linkType in linkTypes) {
+				if (linkType !== undefined) {
+					linkTypeArray.push(linkType);
+				}				
+			}
+			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
+		});		
 
 		// Graph view
 		var firstDatePicker = document.getElementById("created-after-picker");
@@ -223,9 +224,6 @@
 			if (filterData.endDate >= 0) {
 				secondDatePicker.valueAsDate = new Date(filterData.endDate + 1000);
 			}
-
-			var linkTypes = conDecAPI.getLinkTypesSync();
-			conDecFiltering.initDropdown("linktype-dropdown", linkTypes);
 		});		
 	}
 	
