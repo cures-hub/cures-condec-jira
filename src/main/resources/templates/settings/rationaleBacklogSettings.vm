@@ -1,0 +1,55 @@
+<h2>Rationale Backlog configuration</h2>
+
+
+<div id="default-definition-of-done" class="settings-divider aui-group">
+    <div class="field-group">
+        <div class="description"><b>Set the <i>definition of done</i> for each type of decision knowledge</b>
+            <br/>All elements that do <strong>not</strong> match the definition of done are shown in the
+            Rationale Backlog View.
+            <br/>These are the criteria a decision knowledge element has to meet in order to fulfill the
+            default definition of done:
+            <dl>
+                <dt><strong>Issue:</strong></dt>
+                <dd>- is <i>resolved</i></dd>
+                <dd>- is linked to a decision</dd>
+                <dt><strong>Decision:</strong></dt>
+                <dd>- is <b>not</b> <i>challenged</i></dd>
+                <dd>- is linked to an issue</dd>
+                <dt><strong>Alternative:</strong></dt>
+                <dd>- is linked to an issue</dd>
+                <dt><strong>Argument (Pro or Con):</strong></dt>
+                <dd>- is linked to a decision or to an alternative</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<div id="configure-definition-of-done" class="settings-divider aui-group">
+<h2>Add more criteria for meetings the definition of done for each type:</h2>
+    <div class="field-group">
+		<label for="issueLinkAlternative-toggle">Issue</label>
+		<aui-toggle id="issueLinkAlternative-toggle" value="$projectKey"
+					label="has to be linked to an alternative"></aui-toggle>
+	    <div class="description">has to be linked to an alternative</div>	
+	</div>			  
+				
+	<div class="field-group">				
+            <label for="decisionLinkPro-toggle">Decision</label>
+            <aui-toggle id="decisionLinkPro-toggle" value="$projectKey"
+                        label="has to be linked to an pro-argument"></aui-toggle>
+			<div class="description">has to be linked to an pro-argument</div>	
+	</div>
+	
+	 <div class="field-group">
+            <label for="decisionStatusDecided-toggle">Decision</label>
+            <aui-toggle id="decisionStatusDecided-toggle" value="$projectKey"
+                        label="has the status decided"></aui-toggle>
+			<div class="description">has the status <i>decided</i></div>			
+	</div>
+	
+	<div class="field-group">
+            <label for="alternativeLinkArgument-toggle">Alternative </label>
+            <aui-toggle id="alternativeLinkArgument-toggle" value="$projectKey"
+                        label="- has to be linked to an argument"></aui-toggle>
+			<div class="description">has to be linked to an argument</div>			
+	</div>
+</div>
