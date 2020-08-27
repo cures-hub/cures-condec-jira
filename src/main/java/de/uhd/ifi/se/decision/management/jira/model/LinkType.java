@@ -6,9 +6,12 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Models the types of links between decision knowledge elements according to
- * Kruchten's taxonomy. The Duplicate relationship was added to be able to model
- * this type of inconsistency.
+ * Models the types of links between knowledge elements.
+ * 
+ * Link types among decisions are modeled according to Kruchten's taxonomy.
+ * 
+ * The duplicate relationship was added to be able to model this type of
+ * inconsistency.
  */
 public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), // for pro-arguments to solution options
@@ -21,8 +24,8 @@ public enum LinkType {
 	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), // among decisions
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), // among decisions
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), // among decisions
-	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among decisions
-	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_of"
+	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
+	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
 	public static Set<LinkType> getDefaultTypes() {
 		return EnumSet.of(SUPPORT, ATTACK);
@@ -85,7 +88,7 @@ public enum LinkType {
 				return linkType;
 			}
 		}
-		return LinkType.getDefaultLinkType();
+		return LinkType.OTHER;
 	}
 
 	public static String getLinkTypeColor(String linkTypeName) {

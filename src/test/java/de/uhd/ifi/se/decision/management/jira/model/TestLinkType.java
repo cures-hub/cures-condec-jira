@@ -28,9 +28,11 @@ public class TestLinkType {
 
 	@Test
 	public void testGetLinkType() {
+		assertEquals(LinkType.RELATE, LinkType.getLinkType(null)); // default
 		assertEquals(LinkType.SUPPORT, LinkType.getLinkType("supports"));
 		assertEquals(LinkType.ATTACK, LinkType.getLinkType("attacks"));
 		assertEquals(LinkType.RELATE, LinkType.getLinkType("relates"));
+		assertEquals(LinkType.OTHER, LinkType.getLinkType("jira_issue_link"));
 	}
 
 	@Test
