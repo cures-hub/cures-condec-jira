@@ -11,34 +11,34 @@ import java.util.Set;
  * this type of inconsistency.
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), //
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""), //
-	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), //
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), // for pro-arguments to solution options
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""), // for con-arguments to solution options
+	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), // among decisions
 	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), //
 	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), //
 	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), //
 	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"), //
-	RELATE("Relates", "relates to", "is relates to", "contain-style", "#80c9ff"), //
+	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), //
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), //
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), //
-	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"); //
+	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), //
+	OTHER("", "", "", "contain-style", ""); // other Jira issue links not specific for linking rationale elements, e.g.
+											// "jira_subtask_of"
 
 	public static Set<LinkType> getDefaultTypes() {
 		return EnumSet.of(SUPPORT, ATTACK);
 	}
 
 	private String name;
-	private String outwardLink;
-	private String inwardLink;
+	private String outwardName;
+	private String inwardName;
 	private String style;
 	private String color;
 
-	// TODO why does the constructur get the outwardLink and inwardLink? Please
-	// remove or add JavaDoc. Is the constructor public or private?
-	LinkType(String name, String outwardLink, String inwardLink, String style, String color) {
+	private LinkType(String name, String outwardName, String inwardName, String style, String color) {
 		this.name = name;
-		this.outwardLink = outwardLink;
-		this.inwardLink = inwardLink;
+		this.outwardName = outwardName;
+		this.inwardName = inwardName;
 		this.style = style;
 		this.color = color;
 	}
@@ -47,12 +47,12 @@ public enum LinkType {
 		return name;
 	}
 
-	public String getOutwardLink() {
-		return outwardLink;
+	public String getOutwardName() {
+		return outwardName;
 	}
 
-	public String getInwardLink() {
-		return inwardLink;
+	public String getInwardName() {
+		return inwardName;
 	}
 
 	public String getStyle() {
@@ -64,7 +64,7 @@ public enum LinkType {
 	}
 
 	/**
-	 * @return knowledge type as a String in lowercase, e.g., relate, support, and
+	 * @return link type as a String in lowercase, e.g., relate, support, and
 	 *         attack.
 	 */
 	@Override
@@ -87,10 +87,6 @@ public enum LinkType {
 			}
 		}
 		return LinkType.getDefaultLinkType();
-	}
-
-	public static String getLinkTypeColor(LinkType linkType) {
-		return linkType.getColor();
 	}
 
 	public static String getLinkTypeColor(String linkTypeName) {
@@ -118,11 +114,6 @@ public enum LinkType {
 
 	public static LinkType getDefaultLinkType() {
 		return LinkType.RELATE;
-	}
-
-	public static LinkType getLinkTypeForKnowledgeType(String knowledgeTypeOfChildElement) {
-		KnowledgeType type = KnowledgeType.getKnowledgeType(knowledgeTypeOfChildElement);
-		return getLinkTypeForKnowledgeType(type);
 	}
 
 	public static boolean linkTypesAreEqual(KnowledgeType formerKnowledgeType, KnowledgeType knowledgeType) {
