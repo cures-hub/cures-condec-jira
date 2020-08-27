@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -18,6 +19,16 @@ public class TestGetSourceElement extends TestSetUp {
 	public void setUp() {
 		init();
 		link = Links.getTestLinks().get(0);
+	}
+
+	@Test
+	public void testGetSourceElement() {
+		assertEquals("TEST-2", link.getSource().getKey());
+	}
+
+	@Test
+	public void testGetIdOfSourceElement() {
+		assertEquals(2, link.getSource().getId());
 	}
 
 	@Test

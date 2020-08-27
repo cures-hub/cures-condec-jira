@@ -84,7 +84,7 @@ public enum LinkType {
 			return LinkType.getDefaultLinkType();
 		}
 		for (LinkType linkType : LinkType.values()) {
-			if (linkType.getName().toLowerCase(Locale.ENGLISH).matches(name.toLowerCase(Locale.ENGLISH))) {
+			if (linkType.getName().toLowerCase(Locale.ENGLISH).startsWith(name.toLowerCase(Locale.ENGLISH))) {
 				return linkType;
 			}
 		}

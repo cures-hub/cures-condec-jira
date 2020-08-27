@@ -8,8 +8,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -106,6 +108,14 @@ public class Link extends DefaultWeightedEdge {
 	public String getType() {
 		if (type == null) {
 			type = LinkType.getDefaultLinkType();
+		}
+		if (type == LinkType.OTHER) {
+			// get Jira issue link from ID
+			IssueLinkManager jiraIssueLinkManager = ComponentAccessor.getComponent(IssueLinkManager.class);
+			IssueLink issueLink = jiraIssueLinkManager.getIssueLink(id);
+			if (issueLink != null) {
+				return issueLink.getIssueLinkType().getName();
+			}
 		}
 		return type.toString();
 	}
