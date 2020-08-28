@@ -33,7 +33,13 @@
 		    nodes : nodes,
 		    edges : edges
 		};
-		var options = conDecVis.getVisOptions(data);
+		
+		var dataset = {
+			nodes: data.nodes,
+			edges: data.edges
+		};
+		
+		var options = conDecVis.getVisOptions(data, dataset);
 
 		var network = new vis.Network(container, data, options);
 		network.setSize("100%", "500px");
@@ -70,12 +76,7 @@
 		        getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
 	};
 
-	ConDecVis.prototype.getVisOptions = function(visData) {
-        var dataset = {
-                nodes: data.nodes,
-                edges: data.edges
-            };
-        
+	ConDecVis.prototype.getVisOptions = function(visData, dataset) {        
 		return {
 		    clickToUse : false,
 		    nodes : {

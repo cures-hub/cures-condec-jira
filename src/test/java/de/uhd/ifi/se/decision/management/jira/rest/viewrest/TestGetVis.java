@@ -36,12 +36,18 @@ public class TestGetVis extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullFilterDataSettingsElementNull() {
+	public void testRequestValidProjectKeyNull() {
+		filterSettings.setProjectKey(null);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testRequestNullFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestNullFilerSettingsNullElementNotExisting() {
+	public void testRequestNullFilerSettingsValidSelectedElementNotExisting() {
 		filterSettings.setSelectedElement("NotTEST");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getVis(null, filterSettings).getStatus());
 	}

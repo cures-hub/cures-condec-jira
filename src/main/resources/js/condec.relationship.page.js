@@ -31,7 +31,7 @@
         var filterSettings = {
 				"knowledgeTypes": ["Decision"]
 		};
-        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
+        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
             buildGraphNetwork(knowledgeGraph);
         });
     };
@@ -44,7 +44,7 @@
 				"linkTypes": linkTypes,
 				"groups": selectedGroups
 		};
-        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
+        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
             buildGraphNetwork(knowledgeGraph);
         });
     };
@@ -79,18 +79,9 @@
     }
 
     function buildGraphNetwork(data) {
-        var coloredEdges = [];
-        for (var e in data.edges) {
-            data.edges[e].color = {
-                color: data.edges[e].color,
-                inherit: false
-            }
-            coloredEdges.push(data.edges[e]);
-        }
-
         var dataset = {
             nodes: data.nodes,
-            edges: coloredEdges
+            edges: data.edges
         };
 
         var graphContainer = document.getElementById('graph-container');

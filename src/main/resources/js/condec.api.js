@@ -422,7 +422,7 @@
 	};
 
 	/*
-	 * external references: condec.vis
+	 * external references: condec.vis, condec.relationship.page
 	 */
 	ConDecAPI.prototype.getVis = function (filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
@@ -511,18 +511,6 @@
 		});
 	};
 
-	/*
-	 * external references: condec.relationship.page
-	 */
-	ConDecAPI.prototype.getDecisionGraph = function (filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionGraph.json?", filterSettings, function (error, graph) {
-			if (error == null) {
-				callback(graph);
-			}
-		});
-	};
-	
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
