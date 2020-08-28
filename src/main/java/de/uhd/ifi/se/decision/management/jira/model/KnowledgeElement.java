@@ -8,8 +8,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -24,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
