@@ -121,6 +121,7 @@
                 });
             AJS.dialog2(assignDialog).hide();
         };
+        
         cancelButton.onclick = function () {
             AJS.dialog2(assignDialog).hide();
         };

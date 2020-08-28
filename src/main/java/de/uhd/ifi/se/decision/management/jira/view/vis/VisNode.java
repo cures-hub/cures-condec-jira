@@ -32,6 +32,9 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> font;
 
+	@XmlElement
+	private String color;
+
 	public VisNode(KnowledgeElement element, int level) {
 		this(element, false, level);
 	}
@@ -46,6 +49,7 @@ public class VisNode {
 		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
 		this.font = determineFont(element);
+		this.color = element.getType().getColor();
 	}
 
 	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {

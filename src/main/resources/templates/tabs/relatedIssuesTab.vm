@@ -21,5 +21,3 @@
 
     </tbody>
 </table>
-
-#parse("templates/dialogs/linkDecisionsDialog.vm")

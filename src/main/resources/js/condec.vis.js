@@ -2,18 +2,18 @@
 
 	var ConDecVis = function() {
 	};
-	
+
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecVis.prototype.buildVis = function (filterSettings) {
+	ConDecVis.prototype.buildVis = function(filterSettings) {
 		console.log("conDecVis buildVis");
 		conDecAPI.getVis(filterSettings, function(visData) {
 			build(visData.nodes, visData.edges, visData.rootElementId);
 		});
 	};
 
-	function build (theNodes, theEdges, rootElementId) {
+	function build(theNodes, theEdges, rootElementId) {
 		console.log("ConDecVis build");
 		var nodes = new vis.DataSet(theNodes);
 		var edges = new vis.DataSet(theEdges);
@@ -33,13 +33,8 @@
 		    nodes : nodes,
 		    edges : edges
 		};
-		
-		var dataset = {
-			nodes: data.nodes,
-			edges: data.edges
-		};
-		
-		var options = conDecVis.getVisOptions(data, dataset);
+
+		var options = conDecVis.getVisOptions(data);
 
 		var network = new vis.Network(container, data, options);
 		network.setSize("100%", "500px");
@@ -57,7 +52,7 @@
 		return network;
 	}
 
-	ConDecVis.prototype.addContextMenu = function (params, network) {
+	ConDecVis.prototype.addContextMenu = function(params, network) {
 		params.event.preventDefault();
 		var nodeIndices = network.body.nodeIndices;
 		var clickedNodeId;
@@ -76,14 +71,14 @@
 		        getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
 	};
 
-	ConDecVis.prototype.getVisOptions = function(visData, dataset) {        
+	ConDecVis.prototype.getVisOptions = function(visData) {
 		return {
 		    clickToUse : false,
 		    nodes : {
 		        shape : "box",
 		        widthConstraint : 120,
 		        color : {
-		            background : 'rgba(255, 255, 255,1)',
+		            background : 'rgba(255, 255, 255, 1)',
 		            border : 'rgba(0,0,0,1)',
 		            highlight : {
 		                background : 'rgba(255,255,255,1)',
@@ -276,7 +271,7 @@
 			        conDecVis.deleteNode(data);
 		        },
 		        deleteEdge : function(data, callback) {
-			        conDecVis.deleteEdge(data, dataset);
+			        conDecVis.deleteEdge(data, visData);
 		        }
 		    },
 		    physics : {
@@ -325,8 +320,8 @@
 		if (data.from === data.to) {
 			return;
 		}
-		conDecDialog.showLinkDialog(data.from.slice(0, -2),  data.from.substr(-1), data.to.slice(0, -2),
-				data.to.substr(-1));
+		conDecDialog.showLinkDialog(data.from.slice(0, -2), data.from.substr(-1), data.to.slice(0, -2), data.to
+		        .substr(-1));
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
@@ -342,7 +337,8 @@
 		var idOfParent = edgeToBeDeleted.from.slice(0, -2);
 		var documentationLocationOfChild = edgeToBeDeleted.to.substr(-1);
 		var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
-		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent, documentationLocationOfParent);
+		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
+		        documentationLocationOfParent);
 	};
 
 	function getDocumentationLocationFromId(nodeId) {
