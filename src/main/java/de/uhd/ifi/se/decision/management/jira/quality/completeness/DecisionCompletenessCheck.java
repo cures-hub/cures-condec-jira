@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.Set;
-
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.jgrapht.Graphs;
 
@@ -9,36 +7,31 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class DecisionCompletenessCheck implements CompletenessCheck {
-
-	private KnowledgeElement decision;
-	private KnowledgeGraph graph;
-	private Set<KnowledgeElement> neighbours;
-	private String projectKey;
-	boolean isComplete;
+public class DecisionCompletenessCheck extends CompletenessCheck {
 
 
 	@Override
 	public boolean execute(KnowledgeElement decision) {
-		this.decision = decision;
-		graph = KnowledgeGraph.getOrCreate(this.decision.getProject());
-		neighbours = Graphs.neighborSetOf(graph, this.decision);
-		projectKey = this.decision.getProject().getProjectKey();
-		boolean hasToBeLinkedToPro =
-			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
-		isComplete = hasNeighbourOfType(KnowledgeType.ISSUE);
-		if (hasToBeLinkedToPro && isComplete) {
-			isComplete = hasNeighbourOfType(KnowledgeType.PRO);
-		}
-		return isComplete;
+		knowledgeElement = decision;
+		graph = KnowledgeGraph.getOrCreate(decision.getProject());
+		neighbours = Graphs.neighborSetOf(graph, decision);
+		projectKey = decision.getProject().getProjectKey();
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
 	}
 
-	private boolean hasNeighbourOfType(KnowledgeType knowledgeType) {
-		for (KnowledgeElement knowledgeElement : neighbours) {
-			if (knowledgeElement.getType() == knowledgeType)
-				return true;
+	@Override
+	protected boolean isCompleteAccordingToDefault() {
+		return hasNeighbourOfType(KnowledgeType.ISSUE);
+	}
+
+	@Override
+	protected boolean isCompleteAccordingToSettings() {
+		boolean hasToBeLinkedToArgument =
+			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
+		if (hasToBeLinkedToArgument) {
+			return hasNeighbourOfType(KnowledgeType.PRO);
 		}
-		return false;
+		else return true;
 	}
 
 }

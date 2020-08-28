@@ -1,26 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.Set;
-
 import org.jgrapht.Graphs;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class ArgumentCompletenessCheck implements CompletenessCheck {
+public class ArgumentCompletenessCheck extends CompletenessCheck {
 
 	@Override
 	public boolean execute(KnowledgeElement argument) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(argument.getProject());
-		Set<KnowledgeElement> neighbours = Graphs.neighborSetOf(graph, argument);
-		for (KnowledgeElement knowledgeElement : neighbours) {
-			if (knowledgeElement.getType() == KnowledgeType.ALTERNATIVE
-					|| knowledgeElement.getType() == KnowledgeType.DECISION) {
-				return true;
-			}
-		}
-		return false;
+		knowledgeElement = argument;
+		graph = KnowledgeGraph.getOrCreate(argument.getProject());
+		neighbours = Graphs.neighborSetOf(graph, argument);
+		projectKey = argument.getProject().getProjectKey();
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+	}
+
+	@Override
+	protected boolean isCompleteAccordingToDefault() {
+		return hasNeighbourOfType(KnowledgeType.DECISION) || hasNeighbourOfType(KnowledgeType.ALTERNATIVE);
+	}
+
+	@Override
+	protected boolean isCompleteAccordingToSettings() {
+		return true;
 	}
 
 }
