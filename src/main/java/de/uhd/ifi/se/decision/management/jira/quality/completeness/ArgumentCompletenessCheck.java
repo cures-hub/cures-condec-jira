@@ -5,12 +5,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class ArgumentCompletenessCheck implements CompletenessCheck {
 
 	private KnowledgeElement argument;
-	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement argument) {
 		this.argument = argument;
-		projectKey = argument.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
 	}
 

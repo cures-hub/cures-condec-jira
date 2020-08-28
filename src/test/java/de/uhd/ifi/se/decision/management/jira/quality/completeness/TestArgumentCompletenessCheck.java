@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.jgrapht.Graphs;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,4 +69,5 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
 		assertFalse(new ArgumentCompletenessCheck().execute(proArgument));
 	}
+
 }
