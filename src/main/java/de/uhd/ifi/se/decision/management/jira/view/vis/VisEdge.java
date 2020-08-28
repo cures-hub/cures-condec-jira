@@ -69,7 +69,7 @@ public class VisEdge {
 	}
 
 	public String getColor() {
-		return this.color.get("color");
+		return color.get("color");
 	}
 
 	public void setColor(String color) {
