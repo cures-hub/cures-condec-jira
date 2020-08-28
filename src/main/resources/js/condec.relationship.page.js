@@ -32,7 +32,7 @@
 				"knowledgeTypes": ["Decision"]
 		};
         conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
+            conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
         });
     };
 
@@ -45,7 +45,7 @@
 				"groups": selectedGroups
 		};
         conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
+        	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
         });
     };
 
@@ -75,51 +75,6 @@
             var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
 
             conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
-        });
-    }
-
-    function buildGraphNetwork(data) {
-        var dataset = {
-            nodes: data.nodes,
-            edges: data.edges
-        };
-
-        var graphContainer = document.getElementById('graph-container');
-
-        var options = {
-            edges: {
-                arrows: "to",
-                length: 200
-            },
-            layout: {
-                randomSeed: 228332
-            },
-            manipulation: {
-                enabled: true,
-                addNode: false,
-                deleteNode: function (data, callback) {
-                    conDecVis.deleteNode(data);
-                },
-                addEdge: function (data, callback) {
-                    conDecVis.addEdge(data);
-                },
-                deleteEdge: function (data, callback) {
-                    conDecVis.deleteEdge(data, dataset);
-                },
-                editEdge: false
-            },
-            physics: {
-                enabled: true,
-                barnesHut: {
-                    avoidOverlap: 0.2
-                }
-            }
-        };
-
-        var graphNetwork = new vis.Network(graphContainer, dataset, options);
-
-        graphNetwork.on("oncontext", function (params) {
-            conDecVis.addContextMenu(params, graphNetwork);
         });
     }
 
