@@ -5,8 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class DecisionCompletenessCheck implements CompletenessCheck {
 
-	KnowledgeElement decision;
-	String projectKey;
+	private KnowledgeElement decision;
+	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement decision) {

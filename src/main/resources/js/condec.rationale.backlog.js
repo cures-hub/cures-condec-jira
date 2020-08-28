@@ -54,13 +54,10 @@
 		statusDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
 
-		var date = new Date();
+
 		var endDatePicker = document.getElementById("end-date-picker-rb");
-		endDatePicker.value = date.toISOString().substr(0, 10);
-		date.setDate(date.getDate() - 7);
 		endDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
 		var startDatePicker =document.getElementById("start-date-picker-rb");
-		startDatePicker.value = date.toISOString().substr(0, 10);
 		startDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
 		
 		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", conDecRationaleBacklog.updateView);
@@ -77,19 +74,23 @@
 			showIncomplete = true;
 		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
-		var startDateString = document.getElementById("start-date-picker-rb").value;
-		var startDateLong = new Date(startDateString).getTime();
-		var endDateString = document.getElementById("end-date-picker-rb").value;
-		var endDateLong = new Date(endDateString).getTime();
 		var filterSettings = {
 			"knowledgeTypes": knowledgeTypes,
 			"linkDistance": 0,
 			"status" : selectedStatus,
 			"groups" : selectedGroups,
-			"startDate" : startDateLong,
-			"endDate" : endDateLong,
 			"isIncompleteKnowledgeShown" : showIncomplete,
 		};
+		var startDateString = document.getElementById("start-date-picker-rb").value;
+		if (startDateString) {
+			var startDateLong = new Date(startDateString).getTime();
+			filterSettings["startDate"] = startDateLong;
+		}
+		var endDateString = document.getElementById("end-date-picker-rb").value;
+		if (endDateString) {
+			var endDateLong = new Date(endDateString).getTime();
+			filterSettings["endDate"] = endDateLong;
+		}
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();

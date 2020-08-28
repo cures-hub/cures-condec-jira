@@ -5,8 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class AlternativeCompletenessCheck implements CompletenessCheck {
 
-	KnowledgeElement alternative;
-	String projectKey;
+	private KnowledgeElement alternative;
+	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement alternative) {

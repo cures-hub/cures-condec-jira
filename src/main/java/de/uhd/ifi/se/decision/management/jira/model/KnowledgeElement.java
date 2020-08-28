@@ -480,12 +480,12 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @param knowledgeType
+	 * @param knowledgeType the type of knowledge to check the neighbours of.
 	 * @return true if this knowledge element is linked to another knowledge element
 	 * of the passed KnowledgeType
 	 */
 	public boolean hasNeighbourOfType(KnowledgeType knowledgeType) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);;
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
 		Set<KnowledgeElement> neighbours = Graphs.neighborSetOf(graph, this);
 		for (KnowledgeElement knowledgeElement : neighbours) {
 			if (knowledgeElement.getType() == knowledgeType)

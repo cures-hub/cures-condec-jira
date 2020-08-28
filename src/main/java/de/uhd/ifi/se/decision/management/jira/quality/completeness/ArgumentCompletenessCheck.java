@@ -4,8 +4,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class ArgumentCompletenessCheck implements CompletenessCheck {
 
-	KnowledgeElement argument;
-	String projectKey;
+	private KnowledgeElement argument;
+	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement argument) {
