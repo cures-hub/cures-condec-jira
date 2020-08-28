@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -37,7 +38,7 @@ public class FilterSettings {
 	private List<DocumentationLocation> documentationLocations;
 	private Set<String> knowledgeTypes;
 	private List<KnowledgeStatus> knowledgeStatus;
-	private List<String> linkTypes;
+	private Set<String> linkTypes;
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
@@ -60,7 +61,7 @@ public class FilterSettings {
 
 		// the following values are the default values of the filter criteria
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
-		this.linkTypes = LinkType.toStringList();
+		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -68,7 +69,7 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isIncompleteKnowledgeShown = true;
+		this.isIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
@@ -227,22 +228,20 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return list of {@link LinkType}s to be shown in the knowledge graph as
-	 *         strings.
+	 * @return {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@XmlElement(name = "linkTypes")
-	public List<String> getLinkTypes() {
+	public Set<String> getLinkTypes() {
 		return linkTypes;
 	}
 
 	/**
 	 * @param namesOfTypes
-	 *            list of {@link LinkType}s to be shown in the knowledge graph as
-	 *            strings.
+	 *            {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@JsonProperty("linkTypes")
-	public void setLinkTypes(List<String> namesOfTypes) {
-		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringList();
+	public void setLinkTypes(Set<String> namesOfTypes) {
+		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringSet();
 	}
 
 	/**
@@ -354,6 +353,8 @@ public class FilterSettings {
 	/**
 	 * @return true if incompletely documented knowledge elements are shown in the
 	 *         filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
 	public boolean isIncompleteKnowledgeShown() {
 		return isIncompleteKnowledgeShown;
@@ -363,6 +364,8 @@ public class FilterSettings {
 	 * @param isIncompleteKnowledgeShown
 	 *            true if incompletely documented knowledge elements should be shown
 	 *            in the filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {

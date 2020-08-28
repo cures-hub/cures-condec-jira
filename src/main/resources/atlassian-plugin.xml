@@ -53,6 +53,7 @@
 		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis/dist/img/network/addNodeIcon.png" />
 		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis/dist/img/network/backIcon.png" />
 		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis/dist/img/network/editIcon.png" />
+		<resource type="download" name="img/network/deleteIcon.png" location="/js/lib/vis/dist/img/network/deleteIcon.png" />
 		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis/dist/img/network/connectIcon.png" />
 		<resource type="download" name="img/network/cross.png" location="/js/lib/vis/dist/img/network/cross.png" />
 		<!-- dashboard item thumbnail -->

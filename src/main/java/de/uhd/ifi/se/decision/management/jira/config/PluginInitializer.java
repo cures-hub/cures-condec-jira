@@ -1,5 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+
 import com.atlassian.core.util.ClassLoaderUtils;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarImpl;
@@ -17,20 +31,11 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-
-import javax.inject.Named;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Handles plug-in initialization
@@ -103,52 +108,63 @@ public class PluginInitializer implements InitializingBean {
 		}
 	}
 
+	public void createDecisionKnowledgeLinkTypes() {
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Set<String> existingIssueLinkTypeNames = DecisionKnowledgeProject.getNamesOfLinkTypes();
+
+		for (LinkType linkType : LinkType.getDefaultTypes()) {
+			if (existingIssueLinkTypeNames.contains(linkType.getName())) {
+				continue;
+			}
+			// TODO Use "createLinkType" method from below
+			issueLinkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardName(),
+					linkType.getInwardName(), linkType.getStyle());
+		}
+	}
+
 	public static void createLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
-		if (types != null) {
-			Optional<IssueLinkType> type = types.stream().filter(
-				entry -> entry.getName().equals(linkTypeName)
-			).findFirst();
-			if (type.isEmpty()) {
-				LinkType linktype = LinkType.getLinkType(linkTypeName);
-				linkTypeManager.createIssueLinkType(linktype.getName(), linktype.getOutwardLink(), linktype.getInwardLink(), linktype.getStyle());
-			}
+		if (types == null) {
+			return;
 		}
+		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
+		if (!type.isEmpty()) {
+			return;
+		}
+		LinkType linktype = LinkType.getLinkType(linkTypeName);
+		linkTypeManager.createIssueLinkType(linktype.getName(), linktype.getOutwardName(), linktype.getInwardName(),
+				linktype.getStyle());
 	}
 
 	public static void removeLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
-		if (types != null) {
-			Optional<IssueLinkType> type = types.stream().filter(
-				entry -> entry.getName().equals(linkTypeName)
-			).findFirst();
-			type.ifPresent(issueLinkType -> linkTypeManager.removeIssueLinkType(issueLinkType.getId()));
+		if (types == null) {
+			return;
 		}
+		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
+		type.ifPresent(issueLinkType -> linkTypeManager.removeIssueLinkType(issueLinkType.getId()));
 	}
 
-
-	public static void addLinkTypeToScheme(String issueTypeName, String projectKey) {
-
+	public static void addLinkTypeToScheme(String linkTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
 		if (issueTypes == null || projectKey == null) {
 			return;
 		}
-		//TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		createLinkType(issueTypeName);
+		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
+		createLinkType(linkTypeName);
 	}
 
-	public static void removeLinkTypeFromScheme(String issueTypeName, String projectKey) {
-
+	public static void removeLinkTypeFromScheme(String linkTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
 		if (issueTypes == null || projectKey == null) {
 			return;
 		}
-		//TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		removeLinkType(issueTypeName);
+		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
+		removeLinkType(linkTypeName);
 	}
 
 	public static String getFileName(String issueTypeName) {
@@ -160,7 +176,6 @@ public class PluginInitializer implements InitializingBean {
 	}
 
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
-
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
 		if (issueTypes == null || projectKey == null) {
@@ -209,27 +224,5 @@ public class PluginInitializer implements InitializingBean {
 				return;
 			}
 		}
-	}
-
-	public void createDecisionKnowledgeLinkTypes() {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		List<String> existingIssueLinkTypeNames = getNamesOfExistingIssueLinkTypes();
-
-		for (LinkType linkType : LinkType.getDefaultTypes()) {
-			if (!existingIssueLinkTypeNames.contains(linkType.getName())) {
-				issueLinkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardLink(), linkType.getInwardLink(), linkType.getStyle());
-			}
-		}
-
-	}
-
-	public List<String> getNamesOfExistingIssueLinkTypes() {
-		List<String> existingIssueLinkTypeNames = new ArrayList<String>();
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes(true);
-		for (IssueLinkType issueLinkType : issueLinkTypes) {
-			existingIssueLinkTypeNames.add(issueLinkType.getName());
-		}
-		return existingIssueLinkTypeNames;
 	}
 }

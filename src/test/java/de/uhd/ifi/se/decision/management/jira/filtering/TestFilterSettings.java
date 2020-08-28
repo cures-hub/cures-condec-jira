@@ -1,12 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -117,8 +120,8 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfLinkTypes() {
-		assertEquals(11, filterSettings.getLinkTypes().size());
-		List<String> selectedLinkTypes = new ArrayList<>();
+		assertEquals(1, filterSettings.getLinkTypes().size());
+		Set<String> selectedLinkTypes = new HashSet<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
 		filterSettings.setLinkTypes(selectedLinkTypes);
@@ -128,7 +131,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetLinkTypes() {
 		filterSettings.setKnowledgeTypes(null);
-		assertEquals(11, filterSettings.getLinkTypes().size());
+		assertEquals(1, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
@@ -148,12 +151,12 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testIsIncompleteElementsShown() {
-		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+	public void testIsOnlyIncompleteElementsShown() {
+		assertFalse(filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test
-	public void testSetIncompleteElementsShown() {
+	public void testSetOnlyIncompleteElementsShown() {
 		filterSettings.setIncompleteKnowledgeShown(true);
 		assertTrue(filterSettings.isIncompleteKnowledgeShown());
 	}

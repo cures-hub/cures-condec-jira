@@ -28,13 +28,23 @@
 
         conDecAPI.fillDecisionGroupSelect("select2-decision-group-relationshipView");
 
-        conDecAPI.getDecisionGraph(function (knowledgeGraph) {
+        var filterSettings = {
+				"knowledgeTypes": ["Decision"]
+		};
+        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
             buildGraphNetwork(knowledgeGraph);
         });
     };
 
     ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function (linkTypes, searchString, status, selectedGroups) {
-        conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups, function (knowledgeGraph) {
+    	var filterSettings = {
+				"searchTerm": searchString,
+				"knowledgeTypes": ["Decision"],
+				"status": status,
+				"linkTypes": linkTypes,
+				"groups": selectedGroups
+		};
+        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
             buildGraphNetwork(knowledgeGraph);
         });
     };
@@ -44,7 +54,16 @@
     }
 
     function addOnClickEventToDecisionLinkFilterButton() {
-        conDecFiltering.initDropdown("linktype-dropdown", conDecAPI.getLinkTypesSync());
+    	conDecAPI.getLinkTypes(function (linkTypes) {
+			var linkTypeArray = [];
+			for (linkType in linkTypes) {
+				if (linkType !== undefined) {
+					linkTypeArray.push(linkType);
+				}				
+			}
+			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
+		});	
+
         conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
 
         var filterButton = document.getElementById("filterDecisionLinks-button");

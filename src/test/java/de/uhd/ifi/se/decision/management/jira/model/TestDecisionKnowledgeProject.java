@@ -112,6 +112,14 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(7, project.getNamesOfKnowledgeTypes().size());
 	}
 
+	@Test
+	public void testGetLinkTypes() {
+		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
+		// currently, all Mock issue link types are called "relate"
+		assertEquals(1, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+
+	}
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings
