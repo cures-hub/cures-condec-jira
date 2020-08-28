@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -22,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCompletenessCheck;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -354,7 +354,7 @@ public class FilterSettings {
 	 * @return true if incompletely documented knowledge elements are shown in the
 	 *         filtered graph.
 	 * 
-	 * @see KnowledgeElementCompletenessCheck
+	 * @see CompletenessCheck
 	 */
 	public boolean isIncompleteKnowledgeShown() {
 		return isIncompleteKnowledgeShown;
@@ -365,7 +365,7 @@ public class FilterSettings {
 	 *            true if incompletely documented knowledge elements should be shown
 	 *            in the filtered graph.
 	 * 
-	 * @see KnowledgeElementCompletenessCheck
+	 * @see CompletenessCheck
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {

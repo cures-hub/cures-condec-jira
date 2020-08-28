@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestKnowledgeElementCompletenessCheck extends TestSetUp {
+public class TestCompletenessHandler extends TestSetUp {
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;

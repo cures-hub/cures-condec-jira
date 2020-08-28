@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import org.jgrapht.Graphs;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
@@ -476,6 +477,21 @@ public class KnowledgeElement {
 			return persistenceManager.getJiraIssueTextManager().getCreator(this);
 		}
 		return null;
+	}
+
+	/**
+	 * @param knowledgeType
+	 * @return true if this knowledge element is linked to another knowledge element
+	 * of the passed KnowledgeType
+	 */
+	public boolean hasNeighbourOfType(KnowledgeType knowledgeType) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);;
+		Set<KnowledgeElement> neighbours = Graphs.neighborSetOf(graph, this);
+		for (KnowledgeElement knowledgeElement : neighbours) {
+			if (knowledgeElement.getType() == knowledgeType)
+				return true;
+		}
+		return false;
 	}
 
 	/**
