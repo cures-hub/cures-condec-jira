@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -575,7 +577,7 @@ public class KnowledgeElement {
 	 *         documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
-		return !KnowledgeElementCompletenessCheck.isElementComplete(this);
+		return !CompletenessHandler.checkForCompletion(this);
 	}
 
 	@Override

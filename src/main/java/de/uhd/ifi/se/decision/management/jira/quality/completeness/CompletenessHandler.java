@@ -9,7 +9,7 @@ import static java.util.Map.entry;
 
 public class CompletenessHandler {
 
-	private final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
+	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
 		entry(KnowledgeType.DECISION, new DecisionKnowledgeElementCompletenessCheck()),
 		entry(KnowledgeType.ISSUE, new IssueKnowledgeElementCompletenessCheck()),
 		entry(KnowledgeType.ALTERNATIVE, new AlternativeKnowledgeElementCompletenessCheck()),
@@ -24,7 +24,7 @@ public class CompletenessHandler {
 	 * @decision If no definition of done can be found, the knowledge element is
 	 *           assumed to be complete!
 	 */
-	public boolean checkForCompletion(KnowledgeElement knowledgeElement) {
+	public static boolean checkForCompletion(KnowledgeElement knowledgeElement) {
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}

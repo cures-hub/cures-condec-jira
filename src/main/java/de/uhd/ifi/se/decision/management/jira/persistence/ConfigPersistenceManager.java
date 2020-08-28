@@ -424,8 +424,8 @@ public class ConfigPersistenceManager {
 		try {
 			definitionOfDone = (DefinitionOfDone) getValueAsObject(projectKey, "definitionOfDone", type);
 		} catch (JsonSyntaxException e) {
-		} finally {
-			return definitionOfDone;
 		}
+		return definitionOfDone;
+
 	}
 }
