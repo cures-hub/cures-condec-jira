@@ -71,6 +71,11 @@
 	};
 
 	ConDecVis.prototype.getVisOptions = function(visData) {
+        var dataset = {
+                nodes: data.nodes,
+                edges: data.edges
+            };
+        
 		return {
 		    clickToUse : false,
 		    nodes : {
@@ -264,15 +269,14 @@
 		        editEdge : false,
 		        addNode : false,
 		        addEdge : function(data, callback) {
-			        conDecVis.addEdge(data, callback);
+			        conDecVis.addEdge(data);
 		        },
 		        deleteNode : function(data, callback) {
-			        conDecVis.deleteNode(data, callback);
+			        conDecVis.deleteNode(data);
 		        },
 		        deleteEdge : function(data, callback) {
-			        conDecVis.deleteEdge(data, visData, callback);
+			        conDecVis.deleteEdge(data, dataset);
 		        }
-
 		    },
 		    physics : {
 			    enabled : false
@@ -311,14 +315,12 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteNode = function(data, callback) {
-		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1), function() {
-			callback(data);
-		});
+	ConDecVis.prototype.deleteNode = function(data) {
+		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1));
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.addEdge = function(data, callback) {
+	ConDecVis.prototype.addEdge = function(data) {
 		if (data.from === data.to) {
 			return;
 		}
@@ -327,17 +329,19 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteEdge = function(data, visData, callback) {
+	// TODO Deleting edges does not work in Jira issue view
+	ConDecVis.prototype.deleteEdge = function(data, visData) {
+		console.log(data);
+		console.log(visData.edges);
 		var allEdges = new vis.DataSet(visData.edges);
+		console.log(allEdges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
+		console.log(edgeToBeDeleted);
 		var idOfChild = edgeToBeDeleted.to.slice(0, -2);
 		var idOfParent = edgeToBeDeleted.from.slice(0, -2);
 		var documentationLocationOfChild = edgeToBeDeleted.to.substr(-1);
 		var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
-		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
-		        documentationLocationOfParent, function() {
-			        callback(data);
-		        });
+		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent, documentationLocationOfParent);
 	};
 
 	function getDocumentationLocationFromId(nodeId) {

@@ -107,13 +107,13 @@
                 enabled: true,
                 addNode: false,
                 deleteNode: function (data, callback) {
-                    conDecVis.deleteNode(data, callback);
+                    conDecVis.deleteNode(data);
                 },
                 addEdge: function (data, callback) {
-                    conDecVis.addEdge(data, callback);
+                    conDecVis.addEdge(data);
                 },
                 deleteEdge: function (data, callback) {
-                    conDecVis.deleteEdge(data, dataset, callback);
+                    conDecVis.deleteEdge(data, dataset);
                 },
                 editEdge: false
             },
