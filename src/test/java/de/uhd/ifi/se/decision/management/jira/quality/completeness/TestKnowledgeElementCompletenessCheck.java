@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCompletenessCheck extends TestSetUp {
+public class TestKnowledgeElementCompletenessCheck extends TestSetUp {
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;
@@ -31,25 +31,25 @@ public class TestCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCompleteIssue() {
-		assertTrue(CompletenessCheck.isElementComplete(issue));
+		assertTrue(KnowledgeElementCompletenessCheck.isElementComplete(issue));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteDecision() {
-		assertTrue(CompletenessCheck.isElementComplete(decision));
+		assertTrue(KnowledgeElementCompletenessCheck.isElementComplete(decision));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteAlternative() {
-		assertTrue(CompletenessCheck.isElementComplete(alternative));
+		assertTrue(KnowledgeElementCompletenessCheck.isElementComplete(alternative));
 	}
 
 	@Test
 	@NonTransactional
 	public void testArgument() {
-		assertTrue(CompletenessCheck.isElementComplete(proArgument));
+		assertTrue(KnowledgeElementCompletenessCheck.isElementComplete(proArgument));
 	}
 
 }

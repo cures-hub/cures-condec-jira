@@ -22,50 +22,60 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestArgumentCompletenessCheck extends TestSetUp {
+public class TestIssueKnowledgeElementCompletenessCheck extends TestSetUp {
 
 	private List<KnowledgeElement> elements;
-	private KnowledgeElement proArgument;
+	private KnowledgeElement issue;
 
 	@Before
 	public void setUp() {
 		init();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		proArgument = elements.get(7);
+		issue = elements.get(3);
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsLinkedToDecision() {
-		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
-		assertEquals(5, proArgument.getId());
+		assertEquals(KnowledgeType.ISSUE, issue.getType());
+		assertEquals(2, issue.getId());
 		KnowledgeElement decision = elements.get(6);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
-		assertNotNull(proArgument.getLink(decision));
-		assertTrue(new ArgumentCompletenessCheck().execute(proArgument));
+		assertNotNull(issue.getLink(decision));
+		assertTrue(new IssueKnowledgeElementCompletenessCheck().execute(issue));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsLinkedToAlternative() {
+		KnowledgeElement alternative = elements.get(5);
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		assertEquals(3, alternative.getId());
+		assertNotNull(issue.getLink(alternative));
+		assertTrue(new IssueKnowledgeElementCompletenessCheck().execute(issue));
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsNotLinkedToDecision() {
-		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
-		assertEquals(5, proArgument.getId());
+		assertEquals(KnowledgeType.ISSUE, issue.getType());
+		assertEquals(2, issue.getId());
 		KnowledgeElement decision = elements.get(6);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 
-		Link linkToDecision = proArgument.getLink(decision);
+		Link linkToDecision = issue.getLink(decision);
 		assertNotNull(linkToDecision);
 
 		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToDecision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		linkToDecision = proArgument.getLink(decision);
+		linkToDecision = issue.getLink(decision);
 		assertNull(linkToDecision);
 
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(proArgument.getProject());
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(issue.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
-		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
-		assertFalse(new ArgumentCompletenessCheck().execute(proArgument));
+		assertEquals(2, Graphs.neighborSetOf(graph, issue).size());
+		assertFalse(new IssueKnowledgeElementCompletenessCheck().execute(issue));
 	}
 }

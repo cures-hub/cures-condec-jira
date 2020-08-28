@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCompletenessCheck;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
@@ -575,7 +575,7 @@ public class KnowledgeElement {
 	 *         documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
-		return !CompletenessCheck.isElementComplete(this);
+		return !KnowledgeElementCompletenessCheck.isElementComplete(this);
 	}
 
 	@Override
