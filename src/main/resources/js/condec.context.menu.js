@@ -54,6 +54,8 @@
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
 	        container) {
 		console.log("contextmenu opened");
+		console.log("element id: " + id + " element documentation location: " + documentationLocation);
+		
 		isContextMenuOpen = true;
 
 		contextMenuNode = document.getElementById("condec-context-menu");

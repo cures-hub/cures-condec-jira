@@ -330,12 +330,11 @@
 
 	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdgeWithType = function(data, callback) {
-		if (data.from !== data.to) {
-			conDecDialog.showDecisionLinkDialog(data.from.slice(0, -2), data.to.slice(0, -2), data.from.substr(-1),
-			        data.to.substr(-1), function() {
-				        callback(data);
-			        });
+		if (data.from === data.to) {
+			return;
 		}
+		conDecDialog.showLinkDialog(data.from.slice(0, -2),  data.from.substr(-1), data.to.slice(0, -2),
+				data.to.substr(-1));
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
