@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 import java.util.*;
@@ -404,5 +405,27 @@ public class ConfigPersistenceManager {
 
 	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
 		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Rationale Backlog  */
+	/*										*/
+	/* **************************************/
+
+	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
+		Type type = new TypeToken<DefinitionOfDone>() {}.getType();
+		setValueAsObject(projectKey, "definitionOfDone", definitionOfDone, type);
+	}
+
+	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
+		Type type = new TypeToken<DefinitionOfDone>() {}.getType();
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		try {
+			definitionOfDone = (DefinitionOfDone) getValueAsObject(projectKey, "definitionOfDone", type);
+		} catch (JsonSyntaxException e) {
+		} finally {
+			return definitionOfDone;
+		}
 	}
 }

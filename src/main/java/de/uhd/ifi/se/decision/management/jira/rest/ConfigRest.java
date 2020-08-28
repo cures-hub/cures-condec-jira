@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1068,6 +1069,42 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
 		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Rationale Backlog  */
+	/*										*/
+	/* **************************************/
+
+	@Path("/setDefinitionOfDone")
+	@POST
+	public Response setDefinitionOfDone(@Context HttpServletRequest request,
+										@QueryParam("projectKey") String projectKey, String definitionOfDoneString) {
+
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		Gson gson = new Gson();
+		DefinitionOfDone definitionOfDone = gson.fromJson(definitionOfDoneString, DefinitionOfDone.class);
+
+		if (definitionOfDone == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		if (definitionOfDone == null ) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The definition of is null")).build();
+		}
+		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

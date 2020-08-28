@@ -32,6 +32,14 @@
    <id>manders</id>
    <name>Michael Anders</name>
   </developer>
+  <developer>
+     <id>gerner</id>
+     <name>Rafael Gerner</name>
+  </developer>
+  <developer>
+     <id>zubrod</id>
+     <name>Paul Zubrod</name>
+  </developer>
  </developers>
  <packaging>atlassian-plugin</packaging>
 
