@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -23,7 +26,7 @@ public class VisEdge {
 	private long id;
 
 	@XmlElement
-	private String color;
+	private Map<String, String> color;
 
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
@@ -66,10 +69,12 @@ public class VisEdge {
 	}
 
 	public String getColor() {
-		return color;
+		return this.color.get("color");
 	}
 
 	public void setColor(String color) {
-		this.color = color;
+		this.color = new HashMap<>();
+		this.color.put("color", color);
+		this.color.put("inherit", "false");
 	}
 }
