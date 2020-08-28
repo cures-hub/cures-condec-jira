@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class DecisionKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletionCheck {
+public class DecisionKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
 
 
 	@Override

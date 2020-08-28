@@ -7,9 +7,9 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class CompletionHandler {
+public class CompletenessHandler {
 
-	private final Map<KnowledgeType, CompletionCheck> completenessCheckMap = Map.ofEntries(
+	private final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
 		entry(KnowledgeType.DECISION, new DecisionKnowledgeElementCompletenessCheck()),
 		entry(KnowledgeType.ISSUE, new IssueKnowledgeElementCompletenessCheck()),
 		entry(KnowledgeType.ALTERNATIVE, new AlternativeKnowledgeElementCompletenessCheck()),
@@ -25,8 +25,8 @@ public class CompletionHandler {
 	 *           assumed to be complete!
 	 */
 	public boolean checkForCompletion(KnowledgeElement knowledgeElement) {
-		CompletionCheck completionCheck = completenessCheckMap.get(knowledgeElement.getType());
-		return completionCheck == null || completionCheck.execute(knowledgeElement);
+		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
+		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}
 
 }

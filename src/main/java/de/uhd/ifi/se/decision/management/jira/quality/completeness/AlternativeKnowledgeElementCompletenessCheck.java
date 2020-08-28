@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class AlternativeKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletionCheck {
+public class AlternativeKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean execute(KnowledgeElement alternative) {
