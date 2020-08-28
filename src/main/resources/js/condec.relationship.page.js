@@ -110,7 +110,7 @@
                     conDecVis.deleteNode(data, callback);
                 },
                 addEdge: function (data, callback) {
-                    conDecVis.addEdgeWithType(data, callback);
+                    conDecVis.addEdge(data, callback);
                 },
                 deleteEdge: function (data, callback) {
                     conDecVis.deleteEdge(data, dataset, callback);

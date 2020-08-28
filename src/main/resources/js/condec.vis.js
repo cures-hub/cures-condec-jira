@@ -319,17 +319,6 @@
 
 	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdge = function(data, callback) {
-		if (data.from !== data.to) {
-			conDecAPI.createLink(null, data.from.slice(0, -2), data.to.slice(0, -2), data.to.substr(-1), data.from
-			        .substr(-1), null, function() {
-				conDecObservable.notify();
-				callback(data);
-			});
-		}
-	};
-
-	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.addEdgeWithType = function(data, callback) {
 		if (data.from === data.to) {
 			return;
 		}
