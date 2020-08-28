@@ -7,28 +7,28 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class IssueKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
+public class AlternativeCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
 
 	@Override
-	public boolean execute(KnowledgeElement issue) {
-		knowledgeElement = issue;
-		graph = KnowledgeGraph.getOrCreate(issue.getProject());
-		neighbours = Graphs.neighborSetOf(graph, issue);
-		projectKey = issue.getProject().getProjectKey();
+	public boolean execute(KnowledgeElement alternative) {
+		knowledgeElement = alternative;
+		graph = KnowledgeGraph.getOrCreate(alternative.getProject());
+		neighbours = Graphs.neighborSetOf(graph, alternative);
+		projectKey = alternative.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
 	}
 
 	@Override
 	protected boolean isCompleteAccordingToDefault() {
-		return hasNeighbourOfType(KnowledgeType.DECISION);
+		return hasNeighbourOfType(KnowledgeType.ISSUE);
 	}
 
 	@Override
 	protected boolean isCompleteAccordingToSettings() {
 		boolean hasToBeLinkedToArgument =
-			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isIssueIsLinkedToAlternative();
+			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument) {
-			return hasNeighbourOfType(KnowledgeType.ALTERNATIVE);
+			return hasNeighbourOfType(KnowledgeType.ARGUMENT);
 		}
 		else return true;
 	}

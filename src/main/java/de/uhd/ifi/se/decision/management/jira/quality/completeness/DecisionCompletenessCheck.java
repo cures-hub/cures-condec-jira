@@ -7,14 +7,15 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class AlternativeKnowledgeElementCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
+public class DecisionCompletenessCheck extends KnowledgeElementCompletenessCheck implements CompletenessCheck {
+
 
 	@Override
-	public boolean execute(KnowledgeElement alternative) {
-		knowledgeElement = alternative;
-		graph = KnowledgeGraph.getOrCreate(alternative.getProject());
-		neighbours = Graphs.neighborSetOf(graph, alternative);
-		projectKey = alternative.getProject().getProjectKey();
+	public boolean execute(KnowledgeElement decision) {
+		knowledgeElement = decision;
+		graph = KnowledgeGraph.getOrCreate(decision.getProject());
+		neighbours = Graphs.neighborSetOf(graph, decision);
+		projectKey = decision.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
 	}
 
@@ -26,10 +27,11 @@ public class AlternativeKnowledgeElementCompletenessCheck extends KnowledgeEleme
 	@Override
 	protected boolean isCompleteAccordingToSettings() {
 		boolean hasToBeLinkedToArgument =
-			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isAlternativeIsLinkedToArgument();
+			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToArgument) {
-			return hasNeighbourOfType(KnowledgeType.ARGUMENT);
+			return hasNeighbourOfType(KnowledgeType.PRO);
 		}
 		else return true;
 	}
+
 }

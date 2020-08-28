@@ -10,12 +10,12 @@ import static java.util.Map.entry;
 public class CompletenessHandler {
 
 	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
-		entry(KnowledgeType.DECISION, new DecisionKnowledgeElementCompletenessCheck()),
-		entry(KnowledgeType.ISSUE, new IssueKnowledgeElementCompletenessCheck()),
-		entry(KnowledgeType.ALTERNATIVE, new AlternativeKnowledgeElementCompletenessCheck()),
-		entry(KnowledgeType.ARGUMENT, new ArgumentKnowledgeElementCompletenessCheck()),
-		entry(KnowledgeType.PRO, new ArgumentKnowledgeElementCompletenessCheck()),
-		entry(KnowledgeType.CON, new ArgumentKnowledgeElementCompletenessCheck()));
+		entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
+		entry(KnowledgeType.ISSUE, new IssueCompletenessCheck()),
+		entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
+		entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
+		entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
+		entry(KnowledgeType.CON, new ArgumentCompletenessCheck()));
 
 
 	/**
