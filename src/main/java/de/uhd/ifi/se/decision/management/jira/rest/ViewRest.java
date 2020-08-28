@@ -279,20 +279,16 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The filter settings are null. Vis graph could not be created."))
+					.entity(ImmutableMap.of("error",
+							"The HttpServletRequest or the filter settings are null. Vis graph could not be created."))
 					.build();
 		}
-		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
-		if (checkIfElementIsValid(selectedElement.getKey()).getStatus() != Status.OK.getStatusCode()) {
-			return checkIfElementIsValid(selectedElement.getKey());
-		}
-
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Vis graph could not be created."))
-					.build();
+		String projectKey = filterSettings.getProjectKey();
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph = new VisGraph(user, filterSettings);
@@ -333,6 +329,7 @@ public class ViewRest {
 	@Path("/getDecisionMatrix")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
+	// TODO Pass filter settings
 	public Response getDecisionMatrix(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -347,24 +344,6 @@ public class ViewRest {
 	// TODO Remove
 	private List<KnowledgeElement> getAllDecisions(String projectKey) {
 		return KnowledgeGraph.getOrCreate(projectKey).getElements(KnowledgeType.DECISION);
-	}
-
-	@Path("/getDecisionGraph")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionGraph(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "The filter settings are null. Knowledge graph could not be accessed."))
-					.build();
-		}
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(filterSettings.getProjectKey());
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph graph = new VisGraph(user, filterSettings);
-		return Response.ok(graph).build();
 	}
 
 	private String getProjectKey(String elementKey) {

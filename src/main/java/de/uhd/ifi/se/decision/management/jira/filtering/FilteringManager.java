@@ -313,7 +313,6 @@ public class FilteringManager {
 	 *         shown. False otherwise.
 	 */
 	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
-		System.out.println(element.isIncomplete());
 		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
 	}
 

@@ -31,8 +31,8 @@
         var filterSettings = {
 				"knowledgeTypes": ["Decision"]
 		};
-        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
+        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+            conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
         });
     };
 
@@ -44,8 +44,8 @@
 				"linkTypes": linkTypes,
 				"groups": selectedGroups
 		};
-        conDecAPI.getDecisionGraph(filterSettings, function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
+        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+        	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
         });
     };
 
@@ -75,60 +75,6 @@
             var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
 
             conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
-        });
-    }
-
-    function buildGraphNetwork(data) {
-        var coloredEdges = [];
-        for (var e in data.edges) {
-            data.edges[e].color = {
-                color: data.edges[e].color,
-                inherit: false
-            }
-            coloredEdges.push(data.edges[e]);
-        }
-
-        var dataset = {
-            nodes: data.nodes,
-            edges: coloredEdges
-        };
-
-        var graphContainer = document.getElementById('graph-container');
-
-        var options = {
-            edges: {
-                arrows: "to",
-                length: 200
-            },
-            layout: {
-                randomSeed: 228332
-            },
-            manipulation: {
-                enabled: true,
-                addNode: false,
-                deleteNode: function (data, callback) {
-                    conDecVis.deleteNode(data, callback);
-                },
-                addEdge: function (data, callback) {
-                    conDecVis.addEdgeWithType(data, callback);
-                },
-                deleteEdge: function (data, callback) {
-                    conDecVis.deleteEdge(data, dataset, callback);
-                },
-                editEdge: false
-            },
-            physics: {
-                enabled: true,
-                barnesHut: {
-                    avoidOverlap: 0.2
-                }
-            }
-        };
-
-        var graphNetwork = new vis.Network(graphContainer, dataset, options);
-
-        graphNetwork.on("oncontext", function (params) {
-            conDecVis.addContextMenu(params, graphNetwork);
         });
     }
 

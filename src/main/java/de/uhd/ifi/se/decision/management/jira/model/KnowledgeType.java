@@ -23,7 +23,21 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * and code classes, but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE("rgb(252, 227, 190)"), //
+	ASSUMPTION, ASSESSMENT, ARGUMENT, PRO("rgb(222, 250, 222)"), //
+	CON("rgb(255, 231, 231)"), //
+	CLAIM, CONTEXT, CONSTRAINT, DECISION("rgb(252, 227, 190)"), //
+	GOAL, ISSUE("rgb(255, 255, 204)"), IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+
+	private String color;
+
+	private KnowledgeType() {
+		this("rgb(255, 255, 255)");
+	}
+
+	private KnowledgeType(String color) {
+		this.color = color;
+	}
 
 	/**
 	 * @return minimal set of decision knowledge types for the management of
@@ -249,5 +263,9 @@ public enum KnowledgeType {
 		default:
 			return getIconUrl(element);
 		}
+	}
+
+	public String getColor() {
+		return color;
 	}
 }
