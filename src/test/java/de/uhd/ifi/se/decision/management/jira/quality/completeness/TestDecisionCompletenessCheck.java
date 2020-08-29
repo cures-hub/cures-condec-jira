@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -64,5 +67,34 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		assertFalse(decisionCompletenessCheck.execute(decision));
 	}
 
-	// TODO Test decision is complete according so settings
+	@Test
+	@NonTransactional
+	public void testIsNotLinkedToPro() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setDecisionLinkedToPro(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(decisionCompletenessCheck.execute(decision));
+
+		// restore default
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsLinkedToPro() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setDecisionLinkedToPro(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+
+		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, "pro");
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
+
+		assertTrue(decisionCompletenessCheck.execute(decision));
+	}
+
+	@After
+	public void tearDown() {
+		// restore default
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+	}
 }
