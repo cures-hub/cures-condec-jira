@@ -1,21 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import static org.junit.Assert.assertEquals;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import javax.servlet.http.HttpServletRequest;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-
-public class TestRationaleBacklogConfig extends TestConfigSuper {
+public class TestSetDefinitionOfDone extends TestSetUp {
 
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
@@ -34,25 +36,22 @@ public class TestRationaleBacklogConfig extends TestConfigSuper {
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
-	/**
-	 * Test Set Definition of Done
-	 */
-
 	@Test
 	@DisplayName("Test the method setDefinitionOfDone with valid value.")
 	public void testSetDefinitionOfDoneValidProject() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		Gson gson = new Gson();
-		assertEquals(200, configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, gson.toJson(definitionOfDone)).getStatus());
+		assertEquals(200,
+				configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, gson.toJson(definitionOfDone)).getStatus());
 	}
-
 
 	@Test
 	@DisplayName("Test the method setDefinitionOfDone with invalid project key.")
 	public void testSetDefinitionOfDoneInvalidProject() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		Gson gson = new Gson();
-		assertEquals(400, configRest.setDefinitionOfDone(request, INVALID_PROJECT_KEY, gson.toJson(definitionOfDone)).getStatus());
+		assertEquals(400, configRest.setDefinitionOfDone(request, INVALID_PROJECT_KEY, gson.toJson(definitionOfDone))
+				.getStatus());
 	}
 
 	@Test(expected = JsonSyntaxException.class)

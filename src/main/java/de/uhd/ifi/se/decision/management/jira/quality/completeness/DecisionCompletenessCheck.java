@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class DecisionCompletenessCheck implements CompletenessCheck {
 
@@ -22,13 +23,12 @@ public class DecisionCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToProArgument =
-			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
+		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument) {
 			return decision.hasNeighborOfType(KnowledgeType.PRO);
 		}
-		else return true;
+		return true;
 	}
-
 
 }

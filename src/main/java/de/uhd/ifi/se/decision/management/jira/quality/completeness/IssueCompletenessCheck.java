@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class IssueCompletenessCheck implements CompletenessCheck {
 
@@ -22,11 +23,11 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToAlternative =
-			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isIssueIsLinkedToAlternative();
+		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative) {
 			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 		}
-		else return true;
+		return true;
 	}
 }

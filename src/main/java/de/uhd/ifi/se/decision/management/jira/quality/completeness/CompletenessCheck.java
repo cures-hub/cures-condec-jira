@@ -23,7 +23,22 @@ public interface CompletenessCheck {
 	 */
 	boolean execute(KnowledgeElement knowledgeElement);
 
+	/**
+	 * Checks the default rules that a knowledge element needs to fulfill to be
+	 * completely documented. For example, a default rule is that each decision
+	 * problem (=issue) needs to be linked to a decision to be complete.
+	 * 
+	 * @return true if all defaults rules are fulfilled.
+	 */
 	boolean isCompleteAccordingToDefault();
 
+	/**
+	 * Checks the configurable rules that a knowledge element needs to fulfill to be
+	 * completely documented according to the {@link DefinitionOfDone}. For example,
+	 * a configurable rule is that each decision needs to be linked to at least one
+	 * pro-argument to be complete.
+	 * 
+	 * @return true if all configured rules are fulfilled.
+	 */
 	boolean isCompleteAccordingToSettings();
 }

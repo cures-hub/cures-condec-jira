@@ -312,43 +312,35 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="condec-project-settings-menu-item-classification"
-		name="Menu Item for ConDec Plug-in Project Settings of Classification"
+	<web-item key="condec-project-settings-menu-item-rationalebacklog"
+		name="Menu Item for ConDec Plug-in Project Settings of Rationale Backlog"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-		<description>Adds the "Classification" menu item.</description>
-		<label key="condec.project.settings.menu.item.classification" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
-		</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-git"
+        <description>Adds the "Rationale backlog" menu item.</description>
+        <label key="condec.project.settings.menu.item.rationale.backlog" />
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-git"
 		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
-		<description>Adds the "Git Extraction" menu item.</description>
+		<description>Adds the "Git connection" menu item.</description>
 		<label key="condec.project.settings.menu.item.git" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="condec-project-settings-menu-item-webhook"
-		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+	<web-item key="condec-project-settings-menu-item-classification"
+		name="Menu Item for ConDec Plug-in Project Settings of Classification"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
-		<description>Adds the "Webhook" menu item.</description>
-		<label key="condec.project.settings.menu.item.webhook" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-release-notes"
-		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
-		<description>Adds the "Release Notes" menu item.</description>
-		<label key="condec.project.settings.menu.item.release.notes" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		<description>Adds the "Text classification" menu item.</description>
+		<label key="condec.project.settings.menu.item.classification" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
+	</web-item>	
 	<web-item key="condec-project-settings-menu-item-consistency"
 		name="Menu Item for ConDec Plug-in Project Settings of Consistency"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
 		<description>Adds the "Consistency" menu item.</description>
 		<label key="condec.project.settings.menu.item.consistency" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
@@ -356,23 +348,31 @@
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
     <web-item key="condec-project-settings-menu-item-decisionguidance"
-        name="Menu Item for ConDec Plug-in Project Settings of decision guidance"
-        section="atl.jira.proj.config/condec-project-settings-section" weight="22">
-        <description>Adds the "Decision Guidance" menu item.</description>
-        <label key="condec.project.settings.menu.item.decisionguidance" />
+        name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
+        section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+        <description>Adds the "Decision guidance" menu item.</description>
+        <label key="condec.project.settings.menu.item.decision.guidance" />
         <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
         </link>
         <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
     </web-item>
-    <web-item key="condec-project-settings-menu-item-rationalebacklog"
-              name="Menu Item for ConDec Plug-in Project Settings of rationale backlog"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="23">
-        <description>Adds the "Rationale Backlog" menu item.</description>
-        <label key="condec.project.settings.menu.item.rationalebacklog" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
+    <web-item key="condec-project-settings-menu-item-release-notes"
+		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="22">
+		<description>Adds the "Release notes" menu item.</description>
+		<label key="condec.project.settings.menu.item.release.notes" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+    <web-item key="condec-project-settings-menu-item-webhook"
+		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="23">
+		<description>Adds the "Webhook" menu item.</description>
+		<label key="condec.project.settings.menu.item.webhook" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
