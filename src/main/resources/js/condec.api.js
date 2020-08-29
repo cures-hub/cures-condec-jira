@@ -1,6 +1,6 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
- * the JIRA API.
+ * the Jira API.
  * 
  * Requires conDecTreant.findParentElement
  * 

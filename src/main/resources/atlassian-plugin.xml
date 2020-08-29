@@ -50,12 +50,12 @@
 		<resource type="download" name="codesummarization.png"
 			location="/images/codesummarization.png" />
 		<!-- visGraph.js icons -->
-		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis/dist/img/network/addNodeIcon.png" />
-		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis/dist/img/network/backIcon.png" />
-		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis/dist/img/network/editIcon.png" />
-		<resource type="download" name="img/network/deleteIcon.png" location="/js/lib/vis/dist/img/network/deleteIcon.png" />
-		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis/dist/img/network/connectIcon.png" />
-		<resource type="download" name="img/network/cross.png" location="/js/lib/vis/dist/img/network/cross.png" />
+		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis-network/dist/img/network/addNodeIcon.png" />
+		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis-network/dist/img/network/backIcon.png" />
+		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis-network/dist/img/network/editIcon.png" />
+		<resource type="download" name="img/network/deleteIcon.png" location="/js/lib/vis-network/dist/img/network/deleteIcon.png" />
+		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis-network/dist/img/network/connectIcon.png" />
+		<resource type="download" name="img/network/cross.png" location="/js/lib/vis-network/dist/img/network/cross.png" />
 		<!-- dashboard item thumbnail -->
 		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
@@ -65,9 +65,9 @@
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
         <resource type="download" name="settings.css" location="/css/settings.css" />
-
-		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
+		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
+		<resource type="download" name="vis-timeline-graph2d.min.css" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
 		<!-- look and feel like Jira -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -106,7 +106,8 @@
 		<resource type="download" name="jquery.easing.js"
 			location="/js/lib/jquery/jquery.easing.js" />
 		<!--Vis -->
-		<resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
+		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
+		<resource type="download" name="vis-timeline-graph2d.min.js" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 
