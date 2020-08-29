@@ -1,25 +1,34 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.List;
-
-import org.jgrapht.Graphs;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class DecisionCompletenessCheck implements CompletenessCheck {
 
+	private KnowledgeElement decision;
+	private String projectKey;
+
 	@Override
 	public boolean execute(KnowledgeElement decision) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(decision.getProject());
-		List<KnowledgeElement> neighbours = Graphs.neighborListOf(graph, decision);
-		for (KnowledgeElement knowledgeElement : neighbours) {
-			if (knowledgeElement.getType() == KnowledgeType.ISSUE) {
-				return true;
-			}
+		this.decision = decision;
+		projectKey = decision.getProject().getProjectKey();
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+	}
+
+	@Override
+	public boolean isCompleteAccordingToDefault() {
+		return decision.hasNeighborOfType(KnowledgeType.ISSUE);
+	}
+
+	@Override
+	public boolean isCompleteAccordingToSettings() {
+		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.isDecisionIsLinkedToPro();
+		if (hasToBeLinkedToProArgument) {
+			return decision.hasNeighborOfType(KnowledgeType.PRO);
 		}
-		return false;
+		return true;
 	}
 
 }
