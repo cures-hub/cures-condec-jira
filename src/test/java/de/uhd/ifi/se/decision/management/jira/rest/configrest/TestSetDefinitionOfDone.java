@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
@@ -40,24 +38,20 @@ public class TestSetDefinitionOfDone extends TestSetUp {
 	@DisplayName("Test the method setDefinitionOfDone with valid value.")
 	public void testSetDefinitionOfDoneValidProject() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		Gson gson = new Gson();
-		assertEquals(200,
-				configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, gson.toJson(definitionOfDone)).getStatus());
+		assertEquals(200, configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, definitionOfDone).getStatus());
 	}
 
 	@Test
 	@DisplayName("Test the method setDefinitionOfDone with invalid project key.")
 	public void testSetDefinitionOfDoneInvalidProject() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		Gson gson = new Gson();
-		assertEquals(400, configRest.setDefinitionOfDone(request, INVALID_PROJECT_KEY, gson.toJson(definitionOfDone))
-				.getStatus());
+		assertEquals(400, configRest.setDefinitionOfDone(request, INVALID_PROJECT_KEY, definitionOfDone).getStatus());
 	}
 
-	@Test(expected = JsonSyntaxException.class)
-	@DisplayName("Test the method setDefinitionOfDone with invalid JSON.")
-	public void testSetDefinitionOfDoneInvalidJSON() {
-		assertEquals(400, configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, "-123").getStatus());
+	@Test
+	@DisplayName("Test the method setDefinitionOfDone with definition of done null.")
+	public void testSetDefinitionOfDoneInvalid() {
+		assertEquals(400, configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, null).getStatus());
 	}
 
 }

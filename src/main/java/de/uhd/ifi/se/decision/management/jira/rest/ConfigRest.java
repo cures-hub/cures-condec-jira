@@ -18,7 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +49,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -494,7 +494,8 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Map<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
-		ReleaseNoteCategory.toOriginalList().forEach(category -> mapping.put(category, ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category)));
+		ReleaseNoteCategory.toOriginalList().forEach(category -> mapping.put(category,
+				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category)));
 		return Response.ok(mapping).build();
 	}
 
@@ -587,7 +588,8 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.parseBoolean(isKnowledgeExtractedFromGit));
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
+				Boolean.parseBoolean(isKnowledgeExtractedFromGit));
 		// deactivate other git extraction if false
 		if (!Boolean.parseBoolean(isKnowledgeExtractedFromGit)) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
@@ -746,7 +748,8 @@ public class ConfigRest {
 			StringBuilder prettyMapOutput = new StringBuilder();
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey()).append("\" : \"").append(e.getValue()).append("\"");
+				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
+						.append("\" : \"").append(e.getValue()).append("\"");
 				prefix = ",";
 			}
 			prettyMapOutput.append(System.lineSeparator()).append("}");
@@ -1069,14 +1072,14 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog  */
+	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
 
 	@Path("/setDefinitionOfDone")
 	@POST
 	public Response setDefinitionOfDone(@Context HttpServletRequest request,
-										@QueryParam("projectKey") String projectKey, String definitionOfDoneString) {
+			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
 
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
@@ -1087,12 +1090,9 @@ public class ConfigRest {
 			return response;
 		}
 
-		Gson gson = new Gson();
-		DefinitionOfDone definitionOfDone = gson.fromJson(definitionOfDoneString, DefinitionOfDone.class);
-
 		if (definitionOfDone == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
 		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
