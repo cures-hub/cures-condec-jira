@@ -14,7 +14,7 @@ public class ArgumentCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return argument.hasNeighbourOfType(KnowledgeType.DECISION) || argument.hasNeighbourOfType(KnowledgeType.ALTERNATIVE);
+		return argument.hasNeighborOfType(KnowledgeType.DECISION) || argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 	@Override

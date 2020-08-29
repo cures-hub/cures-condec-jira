@@ -17,7 +17,7 @@ public class DecisionCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return decision.hasNeighbourOfType(KnowledgeType.ISSUE);
+		return decision.hasNeighborOfType(KnowledgeType.ISSUE);
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class DecisionCompletenessCheck implements CompletenessCheck {
 		boolean hasToBeLinkedToProArgument =
 			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument) {
-			return decision.hasNeighbourOfType(KnowledgeType.PRO);
+			return decision.hasNeighborOfType(KnowledgeType.PRO);
 		}
 		else return true;
 	}

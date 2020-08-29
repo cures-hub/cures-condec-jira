@@ -17,7 +17,7 @@ public class AlternativeCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return alternative.hasNeighbourOfType(KnowledgeType.ISSUE);
+		return alternative.hasNeighborOfType(KnowledgeType.ISSUE);
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class AlternativeCompletenessCheck implements CompletenessCheck {
 		boolean hasToBeLinkedToArgument =
 			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument) {
-			return alternative.hasNeighbourOfType(KnowledgeType.ARGUMENT);
+			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT);
 		} else return true;
 	}
 }
