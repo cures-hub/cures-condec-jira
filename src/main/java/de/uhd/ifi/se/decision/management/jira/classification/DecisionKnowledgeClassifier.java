@@ -1,15 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +10,18 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Tries to identify decision knowledge in natural language texts using a binary
@@ -64,7 +66,7 @@ public class DecisionKnowledgeClassifier {
 		this.binaryClassifier = new BinaryClassifier();
 		/*
 		 * try { //this.binaryClassifier.loadFromFile(); } catch (Exception e) {
-		 *LOGGER.error("Could not load a binary classifier from File."); }
+		 * LOGGER.error("Could not load a binary classifier from File."); }
 		 */
 	}
 
@@ -250,8 +252,8 @@ public class DecisionKnowledgeClassifier {
 	 * @return
 	 */
 	public Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) throws Exception {
-		List preprocessedSentences = new ArrayList();
-		List updatedLabels = new ArrayList();
+		List preprocessedSentences = new ArrayList<>();
+		List updatedLabels = new ArrayList<>();
 		Map<String, List> preprocessedFeaturesWithLabels = new HashMap<String, List>();
 		for (int i = 0; i < stringsToBePreprocessed.size(); i++) {
 			List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));

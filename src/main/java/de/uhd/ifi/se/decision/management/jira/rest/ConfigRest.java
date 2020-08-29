@@ -49,6 +49,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -67,7 +68,7 @@ public class ConfigRest {
 		if (response != null) {
 			return response;
 		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
+		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setActivated(projectKey, isActivated);
 		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 		resetKnowledgeGraph(projectKey);
@@ -136,7 +137,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
 					.build();
 		}
-		boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
+		boolean isIssueStrategy = Boolean.parseBoolean(isIssueStrategyString);
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
 		manageDefaultIssueTypes(projectKey, isIssueStrategy);
 		return Response.ok(Status.ACCEPTED).build();
@@ -181,7 +182,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
 					.build();
 		}
-		boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
+		boolean isKnowledgeTypeEnabled = Boolean.parseBoolean(isKnowledgeTypeEnabledString);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
 		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 			if (isKnowledgeTypeEnabled) {
@@ -254,11 +255,10 @@ public class ConfigRest {
 		if (queryHandler.getJiraIssuesFromQuery().size() > 0) {
 			map.put("criteriaCount", queryHandler.getJiraIssuesFromQuery().size());
 			ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
-			return Response.ok(map).build();
 		} else {
 			map.put("criteriaCount", 0);
-			return Response.ok(map).build();
 		}
+		return Response.ok(map).build();
 	}
 
 	@Path("/testDecisionTableCriteriaQuery")
@@ -269,11 +269,11 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Map<Long, List<KnowledgeElement>> map = new HashMap<Long, List<KnowledgeElement>>();
+		Map<Long, List<KnowledgeElement>> map = new HashMap<>();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
 		for (Issue i : queryHandler.getJiraIssuesFromQuery()) {
-			map.put(i.getId(), new ArrayList<KnowledgeElement>());
+			map.put(i.getId(), new ArrayList<>());
 			map.get(i.getId()).add(new KnowledgeElement(i));
 		}
 		return Response.ok(map).build();
@@ -305,7 +305,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
 					.build();
 		}
-		boolean isLinkTypeEnabled = Boolean.valueOf(isLinkTypeEnabledString);
+		boolean isLinkTypeEnabled = Boolean.parseBoolean(isLinkTypeEnabledString);
 		if (isLinkTypeEnabled) {
 			PluginInitializer.createLinkType(linkType);
 			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);
@@ -428,7 +428,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
 		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
+		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
@@ -494,9 +494,8 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Map<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
-		ReleaseNoteCategory.toOriginalList().forEach(category -> {
-			mapping.put(category, ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category));
-		});
+		ReleaseNoteCategory.toOriginalList().forEach(category -> mapping.put(category,
+				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category)));
 		return Response.ok(mapping).build();
 	}
 
@@ -524,7 +523,7 @@ public class ConfigRest {
 			@QueryParam("isActivatedString") String isActivatedString) {
 		Response response = this.checkRequest(request, projectKey, isActivatedString);
 		if (response == null) {
-			boolean isActivated = Boolean.valueOf(isActivatedString);
+			boolean isActivated = Boolean.parseBoolean(isActivatedString);
 			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
@@ -589,9 +588,10 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
+				Boolean.parseBoolean(isKnowledgeExtractedFromGit));
 		// deactivate other git extraction if false
-		if (!Boolean.valueOf(isKnowledgeExtractedFromGit)) {
+		if (!Boolean.parseBoolean(isKnowledgeExtractedFromGit)) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
 		}
@@ -691,7 +691,7 @@ public class ConfigRest {
 		if (response != null) {
 			return response;
 		}
-		boolean isActivated = Boolean.valueOf(isActivatedString);
+		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
@@ -748,11 +748,11 @@ public class ConfigRest {
 			StringBuilder prettyMapOutput = new StringBuilder();
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput
-						.append(prefix + System.lineSeparator() + "\"" + e.getKey() + "\" : \"" + e.getValue() + "\"");
+				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
+						.append("\" : \"").append(e.getValue()).append("\"");
 				prefix = ",";
 			}
-			prettyMapOutput.append(System.lineSeparator() + "}");
+			prettyMapOutput.append(System.lineSeparator()).append("}");
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 		} catch (Exception e) {
@@ -988,7 +988,10 @@ public class ConfigRest {
 			return response;
 		}
 
+		// TODO Remove JSON conversion and directly pass RDFSource object instead of
+		// String (see setDefinitionOfDone method)
 		Gson gson = new Gson();
+		// TODO Please avoid acronyms like "RDF" and rather write complete names
 		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
 
 		if (rdfSource == null || rdfSource.getName().isBlank()) {
@@ -1067,6 +1070,35 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
 		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Rationale Backlog */
+	/*										*/
+	/* **************************************/
+
+	@Path("/setDefinitionOfDone")
+	@POST
+	public Response setDefinitionOfDone(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
+
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		if (definitionOfDone == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

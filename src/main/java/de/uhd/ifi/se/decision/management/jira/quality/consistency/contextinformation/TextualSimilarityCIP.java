@@ -1,14 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
@@ -18,7 +18,7 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 
 	public TextualSimilarityCIP() {
 		pp = new Preprocessor();
-		this.linkSuggestions = new ArrayList();
+		this.linkSuggestions = new ArrayList<>();
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 			pp.preprocess(baseElement.getDescription());
 			List<CharSequence> stemmedI1Description = pp.getTokens();
 			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
-			this.linkSuggestions =  knowledgeElements.parallelStream().map(knowledgeElement -> {
+			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
@@ -57,10 +57,9 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 
 					// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
 
-					linkSuggestion.addToScore(
-						(uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
-							/ (double) unionCount,
-						this.getName() + ": " + getId());
+					linkSuggestion
+							.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
+									/ (double) unionCount, this.getName() + ": " + getId());
 				} catch (Exception e) {
 					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
 				}
@@ -69,15 +68,11 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 			}).collect(Collectors.toList());
 
 		} catch (Exception e) {
-			this.linkSuggestions = knowledgeElements
-				.parallelStream()
-				.map(element -> {
-						LinkSuggestion ls = new LinkSuggestion(baseElement, element);
-						ls.addToScore(0., this.getName());
-						return ls;
-					}
-				)
-				.collect(Collectors.toList());
+			this.linkSuggestions = knowledgeElements.parallelStream().map(element -> {
+				LinkSuggestion ls = new LinkSuggestion(baseElement, element);
+				ls.addToScore(0., this.getName());
+				return ls;
+			}).collect(Collectors.toList());
 		}
 
 	}

@@ -7,16 +7,21 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jgrapht.Graphs;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -26,10 +31,14 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 
 	private List<KnowledgeElement> elements;
 	private KnowledgeElement issue;
+	private IssueCompletenessCheck issueCompletenessCheck;
+	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		issueCompletenessCheck = new IssueCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = elements.get(3);
 	}
@@ -43,7 +52,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(issue.getLink(decision));
-		assertTrue(new IssueCompletenessCheck().execute(issue));
+		assertTrue(issueCompletenessCheck.execute(issue));
 	}
 
 	@Test
@@ -68,14 +77,37 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		Link linkToDecision = issue.getLink(decision);
 		assertNotNull(linkToDecision);
 
-		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToDecision,
-				JiraUsers.SYS_ADMIN.getApplicationUser());
+		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToDecision, user);
 		linkToDecision = issue.getLink(decision);
 		assertNull(linkToDecision);
 
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(issue.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, issue).size());
-		assertFalse(new IssueCompletenessCheck().execute(issue));
+		assertFalse(issueCompletenessCheck.execute(issue));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsCompleteAccordingToSettings() {
+		// set criteria "issue has to be linked to alternative" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(issueCompletenessCheck.execute(issue));
+		// delete links between issue and alternatives
+		Set<Link> links = issue.getLinks();
+		for (Link link : links) {
+			if (link.getOppositeElement(issue).getType() == KnowledgeType.ALTERNATIVE) {
+				KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
+			}
+		}
+		assertFalse(issueCompletenessCheck.execute(issue));
+	}
+
+	@After
+	public void tearDown() {
+		// restore default
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 }

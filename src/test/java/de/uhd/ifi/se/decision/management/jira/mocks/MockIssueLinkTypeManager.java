@@ -48,7 +48,7 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 		if (notInit) {
 			return new HashSet<>();
 		}
-		Collection<IssueLinkType> isseLTypes = new HashSet<>();
+		Collection<IssueLinkType> issueLinkTypes = new HashSet<>();
 		ArrayList<String> types = new ArrayList<>();
 
 		types.add("contain");
@@ -58,9 +58,9 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 		for (String type : types) {
 			IssueLinkType lt = new MockIssueLinkType((long) 1);
 			((MockIssueLinkType) lt).setName(type);
-			isseLTypes.add(lt);
+			issueLinkTypes.add(lt);
 		}
-		return isseLTypes;
+		return issueLinkTypes;
 	}
 
 	@Override

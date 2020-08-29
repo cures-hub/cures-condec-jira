@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.Graphs;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
@@ -22,7 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
@@ -478,6 +480,22 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @param knowledgeType
+	 *            the {@link KnowledgeType} of the element.
+	 * @return true if this knowledge element is linked to another knowledge element
+	 *         of the given {@link KnowledgeType}.
+	 */
+	public boolean hasNeighborOfType(KnowledgeType knowledgeType) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
+		for (KnowledgeElement knowledgeElement : neighbors) {
+			if (knowledgeElement.getType() == knowledgeType)
+				return true;
+		}
+		return false;
+	}
+
+	/**
 	 * @return all links (=edges) of this element in the {@link KnowledgeGraph} as a
 	 *         set of {@link Link} objects, does contain Jira {@link IssueLink}s and
 	 *         generic links (e.g. links between code classes and Jira issues).
@@ -568,14 +586,14 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return true if the element is correctly linked according to the definition
-	 *         of done. For example, an argument needs to be linked to at least one
-	 *         solution option (decision or alternative) in the
+	 * @return true if the element is correctly linked according to the
+	 *         {@link DefinitionOfDone}. For example, an argument needs to be linked
+	 *         to at least one solution option (decision or alternative) in the
 	 *         {@link KnowledgeGraph}. Otherwise, it is incomplete, i.e., its
 	 *         documentation needs to be improved.
 	 */
 	public boolean isIncomplete() {
-		return !CompletenessCheck.isElementComplete(this);
+		return !CompletenessHandler.checkForCompletion(this);
 	}
 
 	@Override
