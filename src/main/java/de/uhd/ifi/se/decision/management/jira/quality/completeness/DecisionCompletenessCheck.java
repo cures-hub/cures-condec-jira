@@ -22,12 +22,13 @@ public class DecisionCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToArgument =
+		boolean hasToBeLinkedToProArgument =
 			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isDecisionIsLinkedToPro();
-		if (hasToBeLinkedToArgument) {
+		if (hasToBeLinkedToProArgument) {
 			return decision.hasNeighbourOfType(KnowledgeType.PRO);
 		}
 		else return true;
 	}
+
 
 }

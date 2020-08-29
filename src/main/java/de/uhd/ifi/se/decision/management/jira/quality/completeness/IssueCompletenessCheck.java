@@ -22,9 +22,9 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToArgument =
+		boolean hasToBeLinkedToAlternative =
 			ConfigPersistenceManager.getDefinitionOfDone(projectKey).isIssueIsLinkedToAlternative();
-		if (hasToBeLinkedToArgument) {
+		if (hasToBeLinkedToAlternative) {
 			return issue.hasNeighbourOfType(KnowledgeType.ALTERNATIVE);
 		}
 		else return true;
