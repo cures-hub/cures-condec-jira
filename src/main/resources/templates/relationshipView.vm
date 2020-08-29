@@ -1,7 +1,10 @@
 <div class="aui-group">
     <div class="aui-toolbar2" role="toolbar">
         <div class="aui-toolbar-2-inner">
-        	<form class="aui">
+        	<form class="aui">        	
+            	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-graph")
+            	#parse("templates/filter/knowledgeType.vm")
+            	
         		#parse("templates/filter/linkType.vm")
         		
         		#set ($statusDropdownId = "status-dropdown-graph")	

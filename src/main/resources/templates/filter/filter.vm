@@ -16,7 +16,4 @@
 
 #set ($linkDistanceInputId = "node-distance-picker")	
 #parse("templates/filter/linkDistance.vm")
-
-#set ($filterButtonId = "filter-button")
-#parse("templates/filter/filterButton.vm")
 </form>
