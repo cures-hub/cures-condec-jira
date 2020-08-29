@@ -27,12 +27,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
    		#parse("templates/tabs/treantTab.vm")
    </div>
    <div class="tabs-pane" id="vis">
-      <div class="aui-toolbar2" role="toolbar">
-         <div class="aui-toolbar-2-inner">
-            #parse("templates/filter/filter.vm")
-         </div>
-      </div>
-      <div id="vis-container"></div>
+   		#parse("templates/tabs/visGraphTab.vm")
    </div>
    <div class="tabs-pane" id="featureBranchesTab">
       #parse("templates/tabs/featureBranchesTab.vm")
