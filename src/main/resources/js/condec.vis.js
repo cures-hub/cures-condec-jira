@@ -29,7 +29,9 @@
 		    },
 		    manipulation : {
 		        enabled : true,
-		        addNode : false,
+		        addNode : function(data, callback) {
+		        	conDecDialog.showCreateDialog(-1, null, "Decision");
+		        },
 		        deleteNode : function(data, callback) {
 			        conDecVis.deleteNode(data);
 		        },
@@ -81,12 +83,12 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteNode = function(data) {
+	ConDecVis.prototype.deleteNode = function (data) {
 		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1));
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.addEdge = function(data) {
+	ConDecVis.prototype.addEdge = function (data) {
 		if (data.from === data.to) {
 			return;
 		}
@@ -95,7 +97,7 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteEdge = function(data, visData) {
+	ConDecVis.prototype.deleteEdge = function (data, visData) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
 		var idOfChild = edgeToBeDeleted.to.slice(0, -2);
