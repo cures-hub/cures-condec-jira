@@ -39,7 +39,7 @@ public class MockPluginSettings implements PluginSettings {
 		settings.put(subfix + "webhookSecret", "myhoneybee");
 		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "setClassiferForIssueComments", "false");
-		settings.put(subfix + "defaultDefinitionOfDone", new DefinitionOfDone());
+		settings.put(subfix + "definitionOfDone", new DefinitionOfDone());
 		return settings;
 	}
 
