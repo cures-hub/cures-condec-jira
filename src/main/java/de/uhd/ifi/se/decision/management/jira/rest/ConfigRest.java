@@ -988,7 +988,10 @@ public class ConfigRest {
 			return response;
 		}
 
+		// TODO Remove JSON conversion and directly pass RDFSource object instead of
+		// String (see setDefinitionOfDone method)
 		Gson gson = new Gson();
+		// TODO Please avoid acronyms like "RDF" and rather write complete names
 		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
 
 		if (rdfSource == null || rdfSource.getName().isBlank()) {

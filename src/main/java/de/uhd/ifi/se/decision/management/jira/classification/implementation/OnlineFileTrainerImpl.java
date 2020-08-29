@@ -1,24 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import smile.validation.ClassificationMeasure;
-import smile.validation.FMeasure;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils;
+import static java.lang.Math.round;
+import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +21,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.round;
-import static java.util.stream.Collectors.toList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import smile.validation.ClassificationMeasure;
+import smile.validation.FMeasure;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
@@ -53,9 +55,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected Instances instances;
 	protected String projectKey;
 
-	//public static File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
+	// public static File DEFAULT_TRAINING_DATA = new
+	// File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
 	// private static OnlineClassificationTrainerImpl instance;
-
 
 	public OnlineFileTrainerImpl() {
 		this.classifier = DecisionKnowledgeClassifier.getInstance();
@@ -115,7 +117,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return isTrained.get();
 	}
 
-
 	private synchronized void trainBinaryClassifier() throws Exception {
 		LOGGER.debug("Binary Classifier training started.");
 
@@ -123,11 +124,11 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		Map preprocessedSentences;
 		// if (!this.classifier.getBinaryClassifier().loadFromFile()) {
 		preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"),
-			trainingData.get("labelsIsRelevant"));
+				trainingData.get("labelsIsRelevant"));
 
 		this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
-			(List<Integer>) preprocessedSentences.get("labels"));
-		//this.classifier.getBinaryClassifier().saveToFile();
+				(List<Integer>) preprocessedSentences.get("labels"));
+		// this.classifier.getBinaryClassifier().saveToFile();
 	}
 
 	private synchronized void trainFineGrainedClassifier() throws Exception {
@@ -135,11 +136,11 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
 		Map preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
-			trainingData.get("labelKnowledgeType"));
+				trainingData.get("labelKnowledgeType"));
 
 		this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
-			(List<Integer>) preprocessedSentences.get("labels"));
-		//this.classifier.getFineGrainedClassifier().saveToFile();
+				(List<Integer>) preprocessedSentences.get("labels"));
+		// this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
@@ -152,7 +153,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 				this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
 				if (sentence.isRelevant()) {
 					this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new),
-						sentence.getType());
+							sentence.getType());
 				}
 			}
 		} catch (Exception e) {
@@ -231,7 +232,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return loadedInstances;
 	}
 
-
 	@Override
 	public void setTrainingFile(File file) {
 		this.instances = getInstancesFromArffFile(file);
@@ -292,10 +292,11 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * <p>
 	 * Data appearance:
 	 *
-	 * @param trainingElements list of validated decision knowledge elements
+	 * @param trainingElements
+	 *            list of validated decision knowledge elements
 	 * @return training dataset for the supervised text classifier. The instances
-	 * that this method returns is the ARFF file that is needed to train the
-	 * classifier.
+	 *         that this method returns is the ARFF file that is needed to train the
+	 *         classifier.
 	 * @relation 'sentences: -C 5'
 	 * @attribute isAlternative {0,1}
 	 * @attribute isPro {0,1}
@@ -303,9 +304,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * @attribute isDecision {0,1}
 	 * @attribute isIssue {0,1}
 	 * @attribute sentence string
-	 * @data 0, 0, 0, 1, 0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I am an
-	 * alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
-	 * decision and the alternative.'
+	 * @data 0, 0, 0, 1, 0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I
+	 *       am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
+	 *       decision and the alternative.'
 	 */
 	private Instances buildDatasetForMeka(List<KnowledgeElement> trainingElements) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
@@ -350,30 +351,32 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 * contains the knowledge type indicated by the value 1 (or 0 for type OTHER)
 	 * and the summary of the element.
 	 *
-	 * @param element   validated decision knowledge element.
-	 * @param attribute text attribute.
+	 * @param element
+	 *            validated decision knowledge element.
+	 * @param attribute
+	 *            text attribute.
 	 * @return training instance for the supervised text classifier.
 	 */
 	private DenseInstance createTrainingInstance(KnowledgeElement element, Attribute attribute) {
 		DenseInstance instance = initInstance();
 		switch (element.getType()) {
-			case ALTERNATIVE:
-				instance.setValue(0, 1);
-				break;
-			case PRO:
-				instance.setValue(1, 1);
-				break;
-			case CON:
-				instance.setValue(2, 1);
-				break;
-			case DECISION:
-				instance.setValue(3, 1);
-				break;
-			case ISSUE:
-				instance.setValue(4, 1);
-				break;
-			default:
-				break;
+		case ALTERNATIVE:
+			instance.setValue(0, 1);
+			break;
+		case PRO:
+			instance.setValue(1, 1);
+			break;
+		case CON:
+			instance.setValue(2, 1);
+			break;
+		case DECISION:
+			instance.setValue(3, 1);
+			break;
+		case ISSUE:
+			instance.setValue(4, 1);
+			break;
+		default:
+			break;
 		}
 		instance.setValue(attribute, element.getSummary());
 		return instance;
@@ -389,13 +392,12 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return instance;
 	}
 
-
 	private Map<String, List> extractTrainingData(Instances trainingData) {
-		Map extractedTrainingData = new HashMap();
-		List sentences = new ArrayList();
-		List relevantSentences = new ArrayList();
-		List labelsIsRelevant = new ArrayList();
-		List labelsKnowledgeType = new ArrayList();
+		Map extractedTrainingData = new HashMap<>();
+		List sentences = new ArrayList<>();
+		List relevantSentences = new ArrayList<>();
+		List labelsIsRelevant = new ArrayList<>();
+		List labelsKnowledgeType = new ArrayList<>();
 		// TODO: can we use the names instead of indices?
 		// iterate over all instances
 
@@ -405,7 +407,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			sentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
 
 			Integer isRelevant = 0;
-			//Integer fineGrainedLabel = -1;
+			// Integer fineGrainedLabel = -1;
 			// iterate over the binary attributes for each possible class
 			for (int j = 0; j < currInstance.numAttributes() - 1; j++) {
 				if (round(currInstance.value(j)) == 1) {
@@ -441,55 +443,53 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
 		defaultMeasurements.add(new FMeasure());
 		// TODO how to apply to more than binary classification
-		//defaultMeasurements.add(new Precision());
-		//defaultMeasurements.add(new Accuracy());
-		//defaultMeasurements.add(new Recall());
+		// defaultMeasurements.add(new Precision());
+		// defaultMeasurements.add(new Accuracy());
+		// defaultMeasurements.add(new Recall());
 
 		// load validated Jira Issue texts
-		//JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey)
-		//	.getJiraIssueTextManager();
+		// JiraIssueTextPersistenceManager manager =
+		// KnowledgePersistenceManager.getOrCreate(projectKey)
+		// .getJiraIssueTextManager();
 		List<KnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElements();
-//		manager.getUserValidatedPartsOfText(projectKey);
-//		KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
+		// manager.getUserValidatedPartsOfText(projectKey);
+		// KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
 		return evaluateClassifier(defaultMeasurements, partsOfText);
 	}
 
 	@Override
 	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
-												  List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
+			List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
-		List<KnowledgeElement> relevantPartOfJiraIssueTexts =
-			partOfJiraIssueTexts
-				.stream()
-				.filter(x -> !x.getType().equals(KnowledgeType.OTHER))
-				.collect(toList());
+		List<KnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()
+				.filter(x -> !x.getType().equals(KnowledgeType.OTHER)).collect(toList());
 
 		// format data
 		List<String> sentences = this.extractStringsFromDke(partOfJiraIssueTexts);
 		List<String> relevantSentences = this.extractStringsFromDke(relevantPartOfJiraIssueTexts);
 		// extract true values
 		Integer[] binaryTruths = partOfJiraIssueTexts.stream()
-			// when type equals other then it is irrelevant
-			.map(x -> x.getType().equals(KnowledgeType.OTHER) ? 0 : 1).collect(toList())
-			.toArray(new Integer[partOfJiraIssueTexts.size()]);
+				// when type equals other then it is irrelevant
+				.map(x -> x.getType().equals(KnowledgeType.OTHER) ? 0 : 1).collect(toList())
+				.toArray(new Integer[partOfJiraIssueTexts.size()]);
 
 		Integer[] fineGrainedTruths = relevantPartOfJiraIssueTexts.stream()
-			.map(x -> classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x.getType())).collect(toList())
-			.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
+				.map(x -> classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x.getType())).collect(toList())
+				.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
 
 		// predict classes
 		long start = System.currentTimeMillis();
 
 		Integer[] binaryPredictions = this.classifier.makeBinaryPredictions(sentences).stream().map(x -> x ? 1 : 0)
-			.collect(toList()).toArray(new Integer[sentences.size()]);
+				.collect(toList()).toArray(new Integer[sentences.size()]);
 
-		//LOGGER.info(("Time for binary prediction on " +  sentences.size() + " sentences took " + (end-start) + " ms.");
-
+		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
+		// sentences took " + (end-start) + " ms.");
 
 		Integer[] fineGrainedPredictions = this.classifier.makeFineGrainedPredictions(relevantSentences).stream()
-			.map(x -> this.classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x)).collect(toList())
-			.toArray(new Integer[relevantSentences.size()]);
+				.map(x -> this.classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x)).collect(toList())
+				.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
 
 		LOGGER.info("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
@@ -499,20 +499,20 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
 			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
 			Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths),
-				ArrayUtils.toPrimitive(binaryPredictions));
+					ArrayUtils.toPrimitive(binaryPredictions));
 			resultsMap.put(binaryKey, binaryMeasurement);
 
 			for (int classLabel : IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses())
-				.toArray()) {
+					.toArray()) {
 				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
-					+ this.classifier.getFineGrainedClassifier().mapIndexToKnowledgeType(classLabel);
+						+ this.classifier.getFineGrainedClassifier().mapIndexToKnowledgeType(classLabel);
 
 				Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
 				Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions,
-					classLabel);
+						classLabel);
 
 				Double fineGrainedMeasurement = measurement.measure(ArrayUtils.toPrimitive(currentFineGrainedTruths),
-					ArrayUtils.toPrimitive(currentFineGrainedPredictions));
+						ArrayUtils.toPrimitive(currentFineGrainedPredictions));
 				resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
 			}
 

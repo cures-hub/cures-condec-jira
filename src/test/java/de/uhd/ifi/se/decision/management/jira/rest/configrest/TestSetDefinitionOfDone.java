@@ -50,7 +50,7 @@ public class TestSetDefinitionOfDone extends TestSetUp {
 
 	@Test
 	@DisplayName("Test the method setDefinitionOfDone with definition of done null.")
-	public void testSetDefinitionOfDoneInvalid() {
+	public void testSetDefinitionOfDoneInvalidDefinitionOfDone() {
 		assertEquals(400, configRest.setDefinitionOfDone(request, VALID_PROJECT_KEY, null).getStatus());
 	}
 

@@ -27,8 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
-import java.util.*;
-
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
  * activated for a specific project.
@@ -372,6 +370,7 @@ public class ConfigPersistenceManager {
 			rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
 		} catch (JsonSyntaxException e) {
 		} finally {
+			// TODO Fix: finally block does not complete normally
 			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
 		}
 	}
@@ -409,17 +408,19 @@ public class ConfigPersistenceManager {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog  */
+	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
 
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
-		Type type = new TypeToken<DefinitionOfDone>() {}.getType();
+		Type type = new TypeToken<DefinitionOfDone>() {
+		}.getType();
 		setValueAsObject(projectKey, "definitionOfDone", definitionOfDone, type);
 	}
 
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
-		Type type = new TypeToken<DefinitionOfDone>() {}.getType();
+		Type type = new TypeToken<DefinitionOfDone>() {
+		}.getType();
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		try {
 			definitionOfDone = (DefinitionOfDone) getValueAsObject(projectKey, "definitionOfDone", type);

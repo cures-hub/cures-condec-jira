@@ -1096,10 +1096,10 @@
 	 * external references: rationaleBacklogSettings.vm
 	 */
 	ConDecAPI.prototype.setDefinitionOfDone = function (projectKey, definitionOfDone) {
-		generalApi.postJSON(this.restPrefix + "/config/setDefinitionOfDone.json?projectKey=" + projectKey , definitionOfDone, function (
+		generalApi.postJSON(this.restPrefix + "/config/setDefinitionOfDone.json?projectKey=" + projectKey, definitionOfDone, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The definition of done is updated " );
+				showFlag("success", "The definition of done is updated." );
 			}
 		});
 	};
