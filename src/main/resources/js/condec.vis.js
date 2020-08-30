@@ -19,6 +19,21 @@
 		    edges : data.edges
 		};
 
+		var options = conDecVis.getOptions();
+
+		var graphContainer = document.getElementById(container);
+		var graphNetwork = new vis.Network(graphContainer, dataset, options);
+		graphNetwork.setSize("100%", "500px");
+
+		graphNetwork.on("oncontext", function(params) {
+			conDecVis.addContextMenu(params, graphNetwork);
+		});
+		if (data.rootElementId !== undefined && data.rootElementId !== "") {
+			graphNetwork.selectNodes([ data.rootElementId ]);
+		}
+	};
+	
+	ConDecVis.prototype.getOptions = function() {
 		var options = {
 		    edges : {
 		        arrows : "to",
@@ -50,17 +65,7 @@
 		        }
 		    }
 		};
-
-		var graphContainer = document.getElementById(container);
-		var graphNetwork = new vis.Network(graphContainer, dataset, options);
-		graphNetwork.setSize("100%", "500px");
-
-		graphNetwork.on("oncontext", function(params) {
-			conDecVis.addContextMenu(params, graphNetwork);
-		});
-		if (data.rootElementId !== undefined && data.rootElementId !== "") {
-			graphNetwork.selectNodes([ data.rootElementId ]);
-		}
+		return options;
 	};
 
 	ConDecVis.prototype.addContextMenu = function(params, network) {

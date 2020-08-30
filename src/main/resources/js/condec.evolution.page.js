@@ -140,44 +140,14 @@
     }
 
     function getOptions() {
-        return {
-            layout: {
+    	var options = conDecVis.getOptions();
+    	options["layout"] = {
                 randomSeed: 1,
                 hierarchical: {
                     direction: "UD"
                 }
-            },
-            physics: {
-                enabled: false
-            },
-            interaction: {
-                keyboard: true
-            },
-            nodes: {
-                shape: "box",
-                widthConstraint: 120,
-                color: {
-                    background: 'rgba(255, 255, 255,1)',
-                    border: 'rgba(0,0,0,1)',
-                    highlight: {
-                        background: 'rgba(255,255,255,1)',
-                        border: 'rgba(0,0,0,1)'
-                    }
-                },
-                font: {
-                    multi: false
-                },
-                shapeProperties: {
-                    interpolation: false
-                }
-            },
-            edges: {
-                arrows: "to"
-            },
-            physics: {
-                enabled: false
-            }
-        };
+    		};
+        return options;
     }
     
     /*
