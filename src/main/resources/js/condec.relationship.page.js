@@ -24,29 +24,9 @@
     };
 
     ConDecRelationshipPage.prototype.buildDecisionGraph = function () {
-        console.log("ConDec build Decision Relationship Graph");
-
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-relationshipView");
-
-        var filterSettings = {
-				"knowledgeTypes": ["Decision"]
-		};
-        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
-        });
-    };
-
-    ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function (types, linkTypes, searchString, status, selectedGroups) {
-    	var filterSettings = {
-				"searchTerm": searchString,
-				"knowledgeTypes": types,
-				"status": status,
-				"linkTypes": linkTypes,
-				"groups": selectedGroups
-		};
-        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-        	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
-        });
+        console.log("ConDec build Decision Relationship Graph");        
+        var filterButton = document.getElementById("filterDecisionLinks-button");
+        filterButton.click();       
     };
 
     ConDecRelationshipPage.prototype.updateView = function () {
@@ -64,19 +44,18 @@
 			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
 		});	
 
+    	conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
         conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
         conDecFiltering.initDropdown("knowledge-type-dropdown-graph", conDecAPI.getKnowledgeTypes(), ["Decision"]);
 
         var filterButton = document.getElementById("filterDecisionLinks-button");
 
         filterButton.addEventListener("click", function (event) {
-        	var types = conDecFiltering.getSelectedItems("knowledge-type-dropdown-graph");
-            var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
-            var status = conDecFiltering.getSelectedItems("status-dropdown-graph");
-            var searchString = document.getElementById("decision-search-input").value;
-            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
-
-            conDecRelationshipPage.buildDecisionGraphFiltered(types, linkTypes, searchString, status, selectedGroups);
+        	var filterSettings = conDecFiltering.getFilterSettings("graph");
+        	
+        	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+            	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
+            });
         });
     }
 

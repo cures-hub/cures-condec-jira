@@ -13,6 +13,34 @@
 	var ConDecFiltering = function() {
 		console.log("conDecFiltering constructor");
 	};
+	
+	/**
+	 * Reads the filter settings from the HTML elements of a view.
+	 *
+	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
+	 */
+	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
+		var filterSettings = {};
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);		 
+		if (searchInput !== undefined) {
+			filterSettings["searchTerm"] = searchInput.value;
+		}
+		
+		var types = conDecFiltering.getSelectedItems("knowledge-type-dropdown-" + viewIdentifier);
+		filterSettings["knowledgeTypes"] = types;
+		
+		var status = conDecFiltering.getSelectedItems("status-dropdown-" + viewIdentifier);
+		filterSettings["status"] = status;
+		
+		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-" + viewIdentifier);
+		filterSettings["groups"] = selectedGroups;
+		
+		var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
+		filterSettings["linkTypes"] = linkTypes;
+		
+		return filterSettings;
+	};
+
 
 	/*
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
@@ -38,6 +66,9 @@
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = AJS.$("#" + dropdownId);
+		if (dropdown === undefined) {
+			return null;
+		}
 		var selectedItems = [];
 		for (var i = 0; i < dropdown.children().size(); i++) {
 			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined

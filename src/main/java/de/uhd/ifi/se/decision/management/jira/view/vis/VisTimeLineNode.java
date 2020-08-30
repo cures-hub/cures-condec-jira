@@ -33,9 +33,6 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String documentationLocation;
 
-	@XmlElement(name = "color")
-	private String color;
-
 	private String end;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -51,7 +48,6 @@ public class VisTimeLineNode {
 		this.className = element.getTypeAsString().toLowerCase();
 		this.title = element.getDescription();
 		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
-		this.color = element.getType().getColor();
 	}
 
 	public VisTimeLineNode(KnowledgeElement element, long group) {
