@@ -63,23 +63,29 @@
 			filterSettings["maxDegree"] = maxDegreeInput.value;
 		}
 		
-		// Reads whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
+		// Read whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
 			filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShownInput.checked;
 		}
 		
-		// Reads selected maximal link distance from selected element in knowledge graph
+		// Read selected maximal link distance from selected element in knowledge graph
 		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
 		if (linkDistanceInput !== null) {
 			filterSettings["linkDistance"] = linkDistanceInput.value;
 		}		
 
-		// Reads whether only incompletely documented elements should be shown
-		var indexOfIncomplete = status.indexOf("incomplete");
-		if (indexOfIncomplete !== -1) {
-			filterSettings["isIncompleteKnowledgeShown"] = true;
-		}
+		// Read whether only incompletely documented elements should be shown
+		if (status !== null) {
+			var indexOfIncomplete = status.indexOf("incomplete");
+			if (indexOfIncomplete !== -1) {
+				filterSettings["isIncompleteKnowledgeShown"] = true;
+			}
+		}		
+		
+		// Read selected documentation locations, e.g. Jira issue comments + description, code, ...
+		var documentationLocations = conDecFiltering.getSelectedItems("documentation-location-dropdown-" + viewIdentifier);
+		filterSettings["documentationLocations"] = documentationLocations;
 
 		return filterSettings;
 	};
@@ -156,7 +162,7 @@
 		startDate.setDate(startDate.getDate() - deltaDays);
 		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10); 
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
-	}
+	};
 
 	// export ConDecFiltering
 	global.conDecFiltering = new ConDecFiltering();
