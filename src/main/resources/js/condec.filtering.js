@@ -74,12 +74,12 @@
 		if (linkDistanceInput !== null) {
 			filterSettings["linkDistance"] = linkDistanceInput.value;
 		}		
-		
-		// Reads selected groups
-		// TODO
-		
-		// Reads documentation completeness
-		// TODO
+
+		// Reads whether only incompletely documented elements should be shown
+		var indexOfIncomplete = status.indexOf("incomplete");
+		if (indexOfIncomplete !== -1) {
+			filterSettings["isIncompleteKnowledgeShown"] = true;
+		}
 
 		return filterSettings;
 	};
