@@ -147,6 +147,16 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module, condec.knowledge.page
+	 */
+	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
+		var startDate = new Date();
+		startDate.setDate(startDate.getDate() - deltaDays);
+		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10); 
+		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
+	}
 
 	// export ConDecFiltering
 	global.conDecFiltering = new ConDecFiltering();

@@ -436,18 +436,8 @@
 	/*
 	 * external reference: condec.evolution.page.js
 	 */
-	ConDecAPI.prototype.getCompareVis = function (created, closed, searchTerm, knowledgeTypes, status, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"startDate": created,
-				"endDate": closed,
-				"documentationLocations": null,
-				"knowledgeTypes": knowledgeTypes,
-				"status": status,
-				"groups": null
-		};
-
+	ConDecAPI.prototype.getCompareVis = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
 				vis) {
 			if (error === null) {
