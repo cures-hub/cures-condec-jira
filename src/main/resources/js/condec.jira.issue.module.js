@@ -144,6 +144,7 @@
 
 	function applyFilters() {
 		var filterSettings = conDecFiltering.getFilterSettings("graph");
+		filterSettings["selectedElement"] = issueKey;
 		vis.buildVis(filterSettings);
 	}
 
