@@ -17,11 +17,16 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
-            //conDecObservable.subscribe(this);
+            conDecObservable.subscribe(this);
             return true;
         }
         return false;
     };
+    
+    ConDecEvolutionPage.prototype.updateView = function () {
+    	document.getElementById("filter-button-chronology").click();
+    	document.getElementById("filter-button-comparison").click();
+	};
 
     ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
         console.log("ConDecEvolutionPage build chronology");

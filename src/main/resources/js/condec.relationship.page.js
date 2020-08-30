@@ -18,6 +18,7 @@
             fillFilterElements();
             addOnClickEventToFilterButton();
 
+            // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
             return true;
         }

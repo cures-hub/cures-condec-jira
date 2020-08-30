@@ -39,7 +39,7 @@
 			treeViewer = _treeViewer;
 
 			// Register/subscribe this view as an observer
-			// conDecObservable.subscribe(this);
+			conDecObservable.subscribe(this);
 			return true;
 		}
 		return false;
@@ -124,10 +124,8 @@
 		}
 		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			var isOnlyDecisionKnowledgeShown = document.getElementById("is-decision-knowledge-only-input-overview").checked;
 			var linkDistance = document.getElementById("link-distance-input-overview").value;
 			filterSettings["linkDistance"] = linkDistance;
-    		filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShown;
     		filterSettings["knowledgeTypes"] = null;
     		filterSettings["selectedElement"] = node.key;
 	        treant.buildTreant(filterSettings, true);
