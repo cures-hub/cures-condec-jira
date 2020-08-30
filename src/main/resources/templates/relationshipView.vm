@@ -8,15 +8,27 @@
             	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-graph")
             	#parse("templates/filter/knowledgeType.vm")
             	
+            	#set ($linkTypeDropdownId = "link-type-dropdown-graph")	
         		#parse("templates/filter/linkType.vm")
         		
         		#set ($statusDropdownId = "status-dropdown-graph")	
         		#parse("templates/filter/status.vm")        		
         	
         		#set($select2-decision-group = "select2-decision-group-graph")    
-  				#parse("templates/filter/decisionGroup.vm") 
+  				#parse("templates/filter/decisionGroup.vm")
+  				
+  				#set ($datepickerStartId = "start-date-picker-graph")
+  				#set ($datepickerEndId = "end-date-picker-graph")
+  				#parse("templates/filter/creationDate.vm")
+  				
+  				#set ($minDegreeInputId = "min-degree-input-graph")	
+  				#set ($maxDegreeInputId = "max-degree-input-graph")	
+  				#parse("templates/filter/degree.vm")
+  				
+  				#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-graph")	
+  				#parse("templates/filter/isDecisionKnowledgeOnly.vm")
         	
-        		#set ($filterButtonId = "filterDecisionLinks-button")
+        		#set ($filterButtonId = "filter-button-graph")
         		#parse("templates/filter/filterButton.vm")
         	</form>
         </div>
@@ -32,7 +44,7 @@
             var click = 0;
         	AJS.$("#menu-item-graph").on("click", function(event) {
         		if (click === 0) {
-        			window.conDecRelationshipPage.buildDecisionGraph();
+        			window.conDecRelationshipPage.updateView();
         		}
         		click++;
         	});  

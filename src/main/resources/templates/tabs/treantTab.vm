@@ -15,6 +15,8 @@
 
         	#parse("templates/filter/isTestCode.vm")
             
+        	#set ($minDegreeInputId = "min-number-linked-issues-input")	
+        	#set ($maxDegreeInputId = "max-number-linked-issues-input")	
             #parse("templates/filter/degree.vm")
         </form>
     </div>

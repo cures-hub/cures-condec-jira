@@ -15,7 +15,8 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
 
-            addOnClickEventToDecisionLinkFilterButton();
+            fillFilterElements();
+            addOnClickEventToFilterButton();
 
             conDecObservable.subscribe(this);
             return true;
@@ -23,17 +24,11 @@
         return false;
     };
 
-    ConDecRelationshipPage.prototype.buildDecisionGraph = function () {
-        console.log("ConDec build Decision Relationship Graph");        
-        var filterButton = document.getElementById("filterDecisionLinks-button");
-        filterButton.click();       
-    };
-
     ConDecRelationshipPage.prototype.updateView = function () {
-        conDecRelationshipPage.buildDecisionGraph();
-    }
-
-    function addOnClickEventToDecisionLinkFilterButton() {
+    	document.getElementById("filter-button-graph").click();
+    };
+    
+    function fillFilterElements() {
     	conDecAPI.getLinkTypes(function (linkTypes) {
 			var linkTypeArray = [];
 			for (linkType in linkTypes) {
@@ -41,14 +36,16 @@
 					linkTypeArray.push(linkType);
 				}				
 			}
-			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
+			conDecFiltering.initDropdown("link-type-dropdown-graph", linkTypeArray);
 		});	
 
     	conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
         conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
         conDecFiltering.initDropdown("knowledge-type-dropdown-graph", conDecAPI.getKnowledgeTypes(), ["Decision"]);
+    }
 
-        var filterButton = document.getElementById("filterDecisionLinks-button");
+    function addOnClickEventToFilterButton() {
+        var filterButton = document.getElementById("filter-button-graph");
 
         filterButton.addEventListener("click", function (event) {
         	var filterSettings = conDecFiltering.getFilterSettings("graph");

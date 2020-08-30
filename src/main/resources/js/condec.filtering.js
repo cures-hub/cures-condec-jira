@@ -14,33 +14,66 @@
 		console.log("conDecFiltering constructor");
 	};
 	
-	/**
+	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 *
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
 	 */
 	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
 		var filterSettings = {};
+		
+		// Read search term
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);		 
-		if (searchInput !== undefined) {
+		if (searchInput !== null) {
 			filterSettings["searchTerm"] = searchInput.value;
 		}
 		
+		// Read selected knowledge types
 		var types = conDecFiltering.getSelectedItems("knowledge-type-dropdown-" + viewIdentifier);
 		filterSettings["knowledgeTypes"] = types;
 		
+		// Read selected status
 		var status = conDecFiltering.getSelectedItems("status-dropdown-" + viewIdentifier);
 		filterSettings["status"] = status;
 		
+		// Read selected groups
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-" + viewIdentifier);
 		filterSettings["groups"] = selectedGroups;
 		
-		var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
+		// Read selected link types
+		var linkTypes = conDecFiltering.getSelectedItems("link-type-dropdown-" + viewIdentifier);
 		filterSettings["linkTypes"] = linkTypes;
 		
+		// Read selected time frame
+		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
+		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
+		if (startDatePicker !== null && endDatePicker !== null) {
+			var startDate = new Date(startDatePicker.value).getTime();
+			filterSettings["startDate"] = startDate;
+			
+			var endDate = new Date(endDatePicker.value).getTime();
+			filterSettings["endDate"] = endDate;
+		}
+		
+		// Read selected min and max degree (number of linked elements for a element/node)
+		var minDegreeInput = document.getElementById("min-degree-input-" + viewIdentifier);
+		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
+		if (minDegreeInput !== null && maxDegreeInput !== null) {
+			filterSettings["minDegree"] = minDegreeInput.value;
+			filterSettings["maxDegree"] = maxDegreeInput.value;
+		}
+		
+		// Reads whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
+		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
+		if (isOnlyDecisionKnowledgeShownInput !== null) {
+			filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShownInput.checked;
+		}
+		
+		filterSettings["linkDistance"] = 0;
+		
+
 		return filterSettings;
 	};
-
 
 	/*
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page

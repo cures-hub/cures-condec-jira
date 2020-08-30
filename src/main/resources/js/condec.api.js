@@ -440,8 +440,8 @@
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"createdEarliest": created,
-				"createdLatest": closed,
+				"startDate": created,
+				"endDate": closed,
 				"documentationLocations": null,
 				"knowledgeTypes": knowledgeTypes,
 				"status": status,
@@ -485,8 +485,8 @@
 		var filterSettings = {
 				"projectKey": projectKey,
 				"searchTerm": searchTerm,
-				"createdEarliest": created,
-				"createdLatest": closed,
+				"startDate": created,
+				"endDate": closed,
 				"documentationLocations": null,
 				"knowledgeTypes": issueTypes,
 				"status": issueStatus,

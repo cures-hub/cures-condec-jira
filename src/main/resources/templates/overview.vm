@@ -1,27 +1,29 @@
 <div>
 <form class="aui">
-	#set ($textInputId = "jstree-search-input")
+	#set ($textInputId = "search-input-overview")
 	#parse("templates/filter/text.vm")
 
-    <select id="select-root-element-type" name="select-root-element-type"
+    <select id="select-root-element-type" name="knowledge-type-dropdown-overview"
             class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
     <input type="text" class="text medium-field"
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
            
-	#set($select2-decision-group = "select2-decision-group")    
+	#set($select2-decision-group = "select2-decision-group-overview")    
   	#parse("templates/filter/decisionGroup.vm")  
   	
   	#set ($statusDropdownId = "status-dropdown-overview")	
     #parse("templates/filter/status.vm")
   			
-	#set ($linkDistanceInputId = "link-distance-input")	
+	#set ($linkDistanceInputId = "link-distance-input-overview")	
 	#parse("templates/filter/linkDistance.vm")
     
+	#set ($minDegreeInputId = "min-degree-input-overview")	
+	#set ($maxDegreeInputId = "max-degree-input-overview")	
 	#parse("templates/filter/degree.vm")
 	
-	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input")	
+	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-overview")	
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 </div>
