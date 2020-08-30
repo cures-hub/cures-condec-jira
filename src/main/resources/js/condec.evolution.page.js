@@ -101,7 +101,8 @@
         filterButton.addEventListener("click", function (event) {
         	// left side
             var filterSettingsLeft = conDecFiltering.getFilterSettings("comparison");            
-            conDecAPI.getCompareVis(filterSettingsLeft, function (visDataLeft) {
+            conDecAPI.getVis(filterSettingsLeft, function (visDataLeft) {
+            	visDataLeft.nodes.sort(sortVis);
                 var dateLeft = {
                     nodes: visDataLeft.nodes,
                     edges: visDataLeft.edges
@@ -115,7 +116,8 @@
     		filterSettingsRight["startDate"] = new Date(startDatePicker.value).getTime();  			
     		var endDatePicker = document.getElementById("end-date-picker-comparison-right");
     		filterSettingsRight["endDate"] = new Date(endDatePicker.value).getTime();
-            conDecAPI.getCompareVis(filterSettingsRight, function (visDataRight) {
+            conDecAPI.getVis(filterSettingsRight, function (visDataRight) {
+                visDataRight.nodes.sort(sortVis);
                 var dateRight = {
                     nodes: visDataRight.nodes,
                     edges: visDataRight.edges
@@ -125,6 +127,16 @@
         });
         
         filterButton.click();
+    }
+    
+    function sortVis(a, b) {
+        if (a.id > b.id) {
+            return 1;
+        }
+        if (a.id < b.id) {
+            return -1;
+        }
+        return 0;
     }
 
     function getOptions() {

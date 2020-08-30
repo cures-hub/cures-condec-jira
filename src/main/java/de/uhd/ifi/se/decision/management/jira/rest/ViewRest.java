@@ -295,20 +295,6 @@ public class ViewRest {
 		return Response.ok(visGraph).build();
 	}
 
-	@Path("/getCompareVis")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCompareVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Invalid parameters given. Vis graph could not be created."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph graph = new VisGraph(user, filterSettings);
-		return Response.ok(graph).build();
-	}
-
 	@Path("/getFilterSettings")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
