@@ -13,6 +13,82 @@
 	var ConDecFiltering = function() {
 		console.log("conDecFiltering constructor");
 	};
+	
+	/*
+	 * Reads the filter settings from the HTML elements of a view.
+	 *
+	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
+	 */
+	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
+		var filterSettings = {};
+		
+		// Read search term
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);		 
+		if (searchInput !== null) {
+			filterSettings["searchTerm"] = searchInput.value;
+		}
+		
+		// Read selected knowledge types
+		var types = conDecFiltering.getSelectedItems("knowledge-type-dropdown-" + viewIdentifier);
+		filterSettings["knowledgeTypes"] = types;
+		
+		// Read selected status
+		var status = conDecFiltering.getSelectedItems("status-dropdown-" + viewIdentifier);
+		filterSettings["status"] = status;
+		
+		// Read selected groups
+		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-" + viewIdentifier);
+		filterSettings["groups"] = selectedGroups;
+		
+		// Read selected link types
+		var linkTypes = conDecFiltering.getSelectedItems("link-type-dropdown-" + viewIdentifier);
+		filterSettings["linkTypes"] = linkTypes;
+		
+		// Read selected time frame
+		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
+		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
+		if (startDatePicker !== null && endDatePicker !== null) {
+			var startDate = new Date(startDatePicker.value).getTime();
+			filterSettings["startDate"] = startDate;
+			
+			var endDate = new Date(endDatePicker.value).getTime();
+			filterSettings["endDate"] = endDate;
+		}
+		
+		// Read selected min and max degree (number of linked elements for a element/node)
+		var minDegreeInput = document.getElementById("min-degree-input-" + viewIdentifier);
+		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
+		if (minDegreeInput !== null && maxDegreeInput !== null) {
+			filterSettings["minDegree"] = minDegreeInput.value;
+			filterSettings["maxDegree"] = maxDegreeInput.value;
+		}
+		
+		// Read whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
+		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
+		if (isOnlyDecisionKnowledgeShownInput !== null) {
+			filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShownInput.checked;
+		}
+		
+		// Read selected maximal link distance from selected element in knowledge graph
+		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
+		if (linkDistanceInput !== null) {
+			filterSettings["linkDistance"] = linkDistanceInput.value;
+		}		
+
+		// Read whether only incompletely documented elements should be shown
+		if (status !== null) {
+			var indexOfIncomplete = status.indexOf("incomplete");
+			if (indexOfIncomplete !== -1) {
+				filterSettings["isIncompleteKnowledgeShown"] = true;
+			}
+		}		
+		
+		// Read selected documentation locations, e.g. Jira issue comments + description, code, ...
+		var documentationLocations = conDecFiltering.getSelectedItems("documentation-location-dropdown-" + viewIdentifier);
+		filterSettings["documentationLocations"] = documentationLocations;
+
+		return filterSettings;
+	};
 
 	/*
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
@@ -38,6 +114,9 @@
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = AJS.$("#" + dropdownId);
+		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
+			return null;
+		}
 		var selectedItems = [];
 		for (var i = 0; i < dropdown.children().size(); i++) {
 			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined
@@ -73,6 +152,16 @@
 				callback();
 			}
 		});
+	};
+	
+	/*
+	 * external references: condec.jira.issue.module, condec.knowledge.page
+	 */
+	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
+		var startDate = new Date();
+		startDate.setDate(startDate.getDate() - deltaDays);
+		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10); 
+		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
 	};
 
 	// export ConDecFiltering

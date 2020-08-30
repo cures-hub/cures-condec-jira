@@ -1,23 +1,23 @@
 <div>
 <form class="aui">
 
-    #set ($textInputId = "text-search-input-rb")
+    #set ($textInputId = "search-input-rationale-backlog")
     #parse("templates/filter/text.vm")
 
-    #set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-rb")
+    #set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-rationale-backlog")
     #parse("templates/filter/knowledgeType.vm")
 
-    #set ($statusDropdownId = "status-dropdown-rb")
+    #set ($statusDropdownId = "status-dropdown-rationale-backlog")
     #parse("templates/filter/status.vm")
 
-    #set ($datepickerStartId = "start-date-picker-rb")
-    #set ($datepickerEndId = "end-date-picker-rb")
+    #set ($datepickerStartId = "start-date-picker-rationale-backlog")
+    #set ($datepickerEndId = "end-date-picker-rationale-backlog")
     #parse("templates/filter/creationDate.vm")
 
-    #set($select2-decision-group = "select2-decision-group-rb")
+    #set($select2-decision-group = "select2-decision-group-rationale-backlog")
   	#parse("templates/filter/decisionGroup.vm")
 
-	#set ($linkDistanceInputId = "link-distance-input-rb")	
+	#set ($linkDistanceInputId = "link-distance-input-rationale-backlog")	
 	#parse("templates/filter/linkDistance.vm")
 
 </form>

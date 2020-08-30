@@ -19,6 +19,21 @@
 		    edges : data.edges
 		};
 
+		var options = conDecVis.getOptions();
+
+		var graphContainer = document.getElementById(container);
+		var graphNetwork = new vis.Network(graphContainer, dataset, options);
+		graphNetwork.setSize("100%", "500px");
+
+		graphNetwork.on("oncontext", function(params) {
+			conDecVis.addContextMenu(params, graphNetwork);
+		});
+		if (data.rootElementId !== undefined && data.rootElementId !== "") {
+			graphNetwork.selectNodes([ data.rootElementId ]);
+		}
+	};
+	
+	ConDecVis.prototype.getOptions = function() {
 		var options = {
 		    edges : {
 		        arrows : "to",
@@ -29,7 +44,9 @@
 		    },
 		    manipulation : {
 		        enabled : true,
-		        addNode : false,
+		        addNode : function(data, callback) {
+		        	conDecDialog.showCreateDialog(-1, null, "Decision");
+		        },
 		        deleteNode : function(data, callback) {
 			        conDecVis.deleteNode(data);
 		        },
@@ -48,17 +65,7 @@
 		        }
 		    }
 		};
-
-		var graphContainer = document.getElementById(container);
-		var graphNetwork = new vis.Network(graphContainer, dataset, options);
-		graphNetwork.setSize("100%", "500px");
-
-		graphNetwork.on("oncontext", function(params) {
-			conDecVis.addContextMenu(params, graphNetwork);
-		});
-		if (data.rootElementId !== undefined && data.rootElementId !== "") {
-			graphNetwork.selectNodes([ data.rootElementId ]);
-		}
+		return options;
 	};
 
 	ConDecVis.prototype.addContextMenu = function(params, network) {
@@ -81,12 +88,12 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteNode = function(data) {
+	ConDecVis.prototype.deleteNode = function (data) {
 		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1));
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.addEdge = function(data) {
+	ConDecVis.prototype.addEdge = function (data) {
 		if (data.from === data.to) {
 			return;
 		}
@@ -95,7 +102,7 @@
 	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
-	ConDecVis.prototype.deleteEdge = function(data, visData) {
+	ConDecVis.prototype.deleteEdge = function (data, visData) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
 		var idOfChild = edgeToBeDeleted.to.slice(0, -2);

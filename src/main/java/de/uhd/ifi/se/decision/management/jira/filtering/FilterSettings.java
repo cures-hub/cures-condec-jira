@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -23,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -47,10 +47,7 @@ public class FilterSettings {
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
-
-	@XmlElement
 	private long startDate;
-	@XmlElement
 	private long endDate;
 
 	@JsonCreator
@@ -128,39 +125,39 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return earliest creation date of an element to be included in the
+	 * @return earliest creation or update date of an element to be included in the
 	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedEarliest() {
+	public long getStartDate() {
 		return startDate;
 	}
 
 	/**
-	 * @param createdEarliest
-	 *            earliest creation date of an element to be included in the
-	 *            filter/shown in the knowledge graph.
+	 * @param startDate
+	 *            earliest creation or update date of an element to be included in
+	 *            the filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("createdEarliest")
-	public void setCreatedEarliest(long createdEarliest) {
-		this.startDate = createdEarliest;
+	@JsonProperty("startDate")
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
-	 * @return latest creation date of an element to be included in the filter/shown
-	 *         in the knowledge graph.
+	 * @return latest creation or update date of an element to be included in the
+	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedLatest() {
+	public long getEndDate() {
 		return endDate;
 	}
 
 	/**
-	 * @param createdLatest
-	 *            latest creation date of an element to be included in the
+	 * @param endDate
+	 *            latest creation or update date of an element to be included in the
 	 *            filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("createdLatest")
-	public void setCreatedLatest(long createdLatest) {
-		this.endDate = createdLatest;
+	@JsonProperty("endDate")
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
 	}
 
 	/**

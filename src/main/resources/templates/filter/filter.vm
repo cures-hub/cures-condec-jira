@@ -1,22 +1,20 @@
 <form class="aui">
-#set ($knowledgeTypeDropdownId = "issuetype-dropdown")	
+#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-graph")	
 #parse("templates/filter/knowledgeType.vm")
 
-#set ($statusDropdownId = "status-dropdown")	
+#set ($statusDropdownId = "status-dropdown-graph")	
 #parse("templates/filter/status.vm")
 
-#set ($datepickerStartId = "created-after-picker")
-#set ($datepickerEndId = "created-before-picker")
+#set ($datepickerStartId = "start-date-picker-graph")
+#set ($datepickerEndId = "end-date-picker-graph")
 #parse("templates/filter/creationDate.vm")
 
+#set ($linkTypeDropdownId = "link-type-dropdown-graph")	
 #parse("templates/filter/linkType.vm")
 
-#set ($documentationLocationDropdownId = "documentation-dropdown")	
+#set ($documentationLocationDropdownId = "documentation-location-dropdown-graph")	
 #parse("templates/filter/documentationLocation.vm")
 
-#set ($linkDistanceInputId = "node-distance-picker")	
+#set ($linkDistanceInputId = "link-distance-input-graph")	
 #parse("templates/filter/linkDistance.vm")
-
-#set ($filterButtonId = "filter-button")
-#parse("templates/filter/filterButton.vm")
 </form>

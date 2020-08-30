@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -189,4 +190,14 @@ public class TestFilteringManager extends TestSetUp {
 		assertFalse(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 	}
 
+	@Test
+	public void testIsElementMatchingTimeFilter() {
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setStartDate(1);
+		settings.setEndDate(new Date().getTime());
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.isElementMatchingTimeFilter(element));
+	}
 }

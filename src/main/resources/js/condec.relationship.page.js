@@ -15,45 +15,21 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
 
-            addOnClickEventToDecisionLinkFilterButton();
+            fillFilterElements();
+            addOnClickEventToFilterButton();
 
+            // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
             return true;
         }
         return false;
     };
 
-    ConDecRelationshipPage.prototype.buildDecisionGraph = function () {
-        console.log("ConDec build Decision Relationship Graph");
-
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-relationshipView");
-
-        var filterSettings = {
-				"knowledgeTypes": ["Decision"]
-		};
-        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
-        });
-    };
-
-    ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function (linkTypes, searchString, status, selectedGroups) {
-    	var filterSettings = {
-				"searchTerm": searchString,
-				"knowledgeTypes": ["Decision"],
-				"status": status,
-				"linkTypes": linkTypes,
-				"groups": selectedGroups
-		};
-        conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-        	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
-        });
-    };
-
     ConDecRelationshipPage.prototype.updateView = function () {
-        conDecRelationshipPage.buildDecisionGraph();
-    }
-
-    function addOnClickEventToDecisionLinkFilterButton() {
+    	document.getElementById("filter-button-graph").click();
+    };
+    
+    function fillFilterElements() {
     	conDecAPI.getLinkTypes(function (linkTypes) {
 			var linkTypeArray = [];
 			for (linkType in linkTypes) {
@@ -61,20 +37,23 @@
 					linkTypeArray.push(linkType);
 				}				
 			}
-			conDecFiltering.initDropdown("linktype-dropdown", linkTypeArray);
+			conDecFiltering.initDropdown("link-type-dropdown-graph", linkTypeArray);
 		});	
 
+    	conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
         conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
+        conDecFiltering.initDropdown("knowledge-type-dropdown-graph", conDecAPI.getKnowledgeTypes(), ["Decision"]);
+    }
 
-        var filterButton = document.getElementById("filterDecisionLinks-button");
+    function addOnClickEventToFilterButton() {
+        var filterButton = document.getElementById("filter-button-graph");
 
         filterButton.addEventListener("click", function (event) {
-            var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
-            var status = conDecFiltering.getSelectedItems("status-dropdown-graph");
-            var searchString = document.getElementById("decision-search-input").value;
-            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
-
-            conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
+        	var filterSettings = conDecFiltering.getFilterSettings("graph");
+        	
+        	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+            	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
+            });
         });
     }
 

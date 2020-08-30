@@ -80,7 +80,7 @@ public class VisNode {
 		return ImmutableMap.of("color", "black");
 	}
 
-	private Map<String, String> determineColor(KnowledgeElement element) {
+	public static Map<String, String> determineColor(KnowledgeElement element) {
 		Map<String, String> color = new HashMap<>();
 		color.put("background", element.getType().getColor());
 		color.put("border", "black");

@@ -25,13 +25,13 @@
 	<label>Alternative:</label>
 	<ul>
 		<li>is linked to an issue <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>has to be linked to an argument <input type="checkbox" id="alternative-link-argument-checkbox" value="alternativeLinkArgument"></li>
+		<li>has to be linked to an argument (either pro or con) <input type="checkbox" id="alternative-link-argument-checkbox" value="alternativeLinkArgument"></li>
 	</ul>
 </div>
 <div class="field-group">
 	<label>Argument (Pro or Con):</label>
 	<ul>
-		<li>is linked to a decision or to a solution option (decision or alternative) <input type="checkbox" disabled="disabled" checked="checked"></li>
+		<li>is linked to a solution option (decision or alternative) <input type="checkbox" disabled="disabled" checked="checked"></li>
 	</ul>
 </div>
 <div class="field-group">

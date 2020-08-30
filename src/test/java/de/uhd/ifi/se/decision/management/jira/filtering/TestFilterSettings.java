@@ -69,24 +69,24 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetCreatedEarliest() {
-		assertEquals(createDate, filterSettings.getCreatedEarliest());
+		assertEquals(createDate, filterSettings.getStartDate());
 	}
 
 	@Test
 	public void testSetCreatedEarliest() {
-		filterSettings.setCreatedEarliest(createDate - 50);
-		assertEquals(createDate - 50, filterSettings.getCreatedEarliest());
+		filterSettings.setStartDate(createDate + 50);
+		assertEquals(createDate + 50, filterSettings.getStartDate());
 	}
 
 	@Test
 	public void testGetCreatedLatest() {
-		assertEquals(createDate, filterSettings.getCreatedLatest());
+		assertEquals(createDate, filterSettings.getEndDate());
 	}
 
 	@Test
 	public void testSetCreatedLatest() {
-		filterSettings.setCreatedLatest(createDate + 10);
-		assertEquals(createDate + 10, filterSettings.getCreatedLatest());
+		filterSettings.setEndDate(createDate + 10);
+		assertEquals(createDate + 10, filterSettings.getEndDate());
 	}
 
 	@Test

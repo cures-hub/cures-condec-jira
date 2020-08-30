@@ -203,12 +203,12 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
-		if (filterSettings.getCreatedEarliest() != -1) {
-			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getCreatedEarliest();
+		if (filterSettings.getStartDate() > 0) {
+			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getStartDate();
 		}
-		if (filterSettings.getCreatedLatest() != -1) {
+		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest() + 86400000;
+					&& element.getCreated().getTime() <= filterSettings.getEndDate() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}

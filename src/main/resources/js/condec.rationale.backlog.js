@@ -47,51 +47,28 @@
 	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 
-		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rb", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
+		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
 		knowledgeTypeDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
 
-		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rb", conDecAPI.rationaleBacklogItemStatus);
+		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
 		statusDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rb");
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 
-
-		var endDatePicker = document.getElementById("end-date-picker-rb");
+		var endDatePicker = document.getElementById("end-date-picker-rationale-backlog");
 		endDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
-		var startDatePicker =document.getElementById("start-date-picker-rb");
+		var startDatePicker =document.getElementById("start-date-picker-rationale-backlog");
 		startDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
 		
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rb", conDecRationaleBacklog.updateView);
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rationale-backlog", conDecRationaleBacklog.updateView);
 
 		updateView(null, treant, treeViewer);
 	}
 
-	function updateView(nodeId, treant, treeViewer) {
-		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
-		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
-		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
-		var showIncomplete = false;
-		if (indexOfIncomplete !== -1) {
-			showIncomplete = true;
-		}
-		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
-		var filterSettings = {
-			"knowledgeTypes": knowledgeTypes,
-			"linkDistance": 0,
-			"status" : selectedStatus,
-			"groups" : selectedGroups,
-			"isIncompleteKnowledgeShown" : showIncomplete,
-		};
-		var startDateString = document.getElementById("start-date-picker-rb").value;
-		if (startDateString) {
-			var startDateLong = new Date(startDateString).getTime();
-			filterSettings["startDate"] = startDateLong;
-		}
-		var endDateString = document.getElementById("end-date-picker-rb").value;
-		if (endDateString) {
-			var endDateLong = new Date(endDateString).getTime();
-			filterSettings["endDate"] = endDateLong;
-		}
-		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
+	function updateView(nodeId, treant, treeViewer) {		
+		var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
+		filterSettings["linkDistance"] = 0; // so that jstree tree viewer only shows a list of elements
+		
+		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
 			if (rootElement) {
@@ -102,7 +79,7 @@
 		}
 		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			var linkDistance = document.getElementById("link-distance-input-rb").value;
+			var linkDistance = document.getElementById("link-distance-input-rationale-backlog").value;
 			filterSettings["linkDistance"] = linkDistance;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;

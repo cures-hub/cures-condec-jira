@@ -1,0 +1,9 @@
+ <div class="aui-toolbar2" role="toolbar">
+	<div class="aui-toolbar-2-inner">
+		#parse("templates/filter/filter.vm")
+		
+		#set ($filterButtonId = "filter-button")
+		#parse("templates/filter/filterButton.vm")
+	</div>
+</div>
+<div id="vis-container"></div>

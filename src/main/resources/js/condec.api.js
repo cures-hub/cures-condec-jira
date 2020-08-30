@@ -1,6 +1,6 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
- * the JIRA API.
+ * the Jira API.
  * 
  * Requires conDecTreant.findParentElement
  * 
@@ -432,38 +432,6 @@
 			}
 		});
 	};
-
-	/*
-	 * external reference: condec.evolution.page.js
-	 */
-	ConDecAPI.prototype.getCompareVis = function (created, closed, searchTerm, knowledgeTypes, status, callback) {
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"createdEarliest": created,
-				"createdLatest": closed,
-				"documentationLocations": null,
-				"knowledgeTypes": knowledgeTypes,
-				"status": status,
-				"groups": null
-		};
-
-		generalApi.postJSON(this.restPrefix + "/view/getCompareVis.json", filterSettings, function (error,
-				vis) {
-			if (error === null) {
-				vis.nodes.sort(function (a, b) {
-					if (a.id > b.id) {
-						return 1;
-					}
-					if (a.id < b.id) {
-						return -1;
-					}
-					return 0;
-				});
-				callback(vis);
-			}
-		});
-	};
 	
 	/*
 	 * external reference: condec.jira.issue.module
@@ -480,18 +448,8 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function (searchTerm, created, closed, issueTypes, issueStatus, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"createdEarliest": created,
-				"createdLatest": closed,
-				"documentationLocations": null,
-				"knowledgeTypes": issueTypes,
-				"status": issueStatus,
-				"groups": decGroups
-		};
+	ConDecAPI.prototype.getEvolutionData = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
 				error, evolutionData) {
 			if (error === null) {
