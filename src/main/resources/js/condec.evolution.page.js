@@ -24,36 +24,24 @@
     };
 
     ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
-        console.log("ConDec build timeline");
+        console.log("ConDecEvolutionPage build chronology");
         conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.getKnowledgeTypes(), ["Decision"]);
         conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-chrono");
-        conDecAPI.getEvolutionData("", -1, -1, conDecAPI.getKnowledgeTypes(), conDecAPI.knowledgeStatus, [], function (
-            evolutionData) {
-            var container = document.getElementById('evolution-timeline');
-            var data = evolutionData.dataSet;
-            var item = new vis.DataSet(data);
-            var groups = evolutionData.groupSet;
-            var date = new Date();
-            document.getElementById("end-date-picker").value = date.toISOString().substr(0, 10);
-            var endTime = date.toDateString();
-            date.setDate(date.getDate() - 30);
-            document.getElementById("start-date-picker").value = date.toISOString().substr(0, 10);
-            var startTime = date.toDateString();
-            var options = {
-                locale: 'de',
-                start: startTime,
-                end: endTime
-            };
-            timeline = new vis.Timeline(container, item, options);
-            timeline.setGroups(groups);
-            timeline.on('contextmenu', function (properties) {
-                properties.event.preventDefault();
-                var nodeId = properties.item;
-                var documentationLocation = timeline.itemsData._data[nodeId].documentationLocation;
-                conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
-            });
+        conDecAPI.fillDecisionGroupSelect("select2-decision-group-chronology");      
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+        document.getElementById("start-date-picker-chronology").value = startDate.toISOString().substr(0, 10); 
+        document.getElementById("end-date-picker-chronology").value = new Date().toISOString().substr(0, 10);
+        
+        var container = document.getElementById("evolution-timeline");
+        timeline = new vis.Timeline(container, new vis.DataSet(), {});
+        timeline.on("contextmenu", function (properties) {
+            properties.event.preventDefault();
+            var nodeId = properties.item;
+            var documentationLocation = timeline.itemsData.get(nodeId).documentationLocation;
+            conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
         });
+        
         addOnClickEventToFilterTimeLineButton();
     };
 
@@ -183,24 +171,12 @@
 
     // Compute filter and select new elements in the TimeLine View
     function addOnClickEventToFilterTimeLineButton() {
-        console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonTimeLine");
-        var filterButton = document.getElementById("filter-button-time");
+        console.log("ConDecEvolutionPage addOnClickEventToFilterButtonTimeLine");
+        var filterButton = document.getElementById("filter-button-chronology");
 
         filterButton.addEventListener("click", function (event) {
-            var firstDate = -1;
-            var secondDate = -1;
-            var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-chronology");
-            var issueStatus = conDecFiltering.getSelectedItems("status-dropdown-chronology");
-            if (!isNaN(document.getElementById("start-date-picker").valueAsNumber)) {
-                firstDate = document.getElementById("start-date-picker").valueAsNumber;
-            }
-            if (!isNaN(document.getElementById("end-date-picker").valueAsNumber)) {
-                secondDate = document.getElementById("end-date-picker").valueAsNumber;
-            }
-            var searchString = document.getElementById("time-search-input").value;
-            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-chrono");
-
-            conDecAPI.getEvolutionData(searchString, firstDate, secondDate, knowledgeTypes, issueStatus, selectedGroups, function (visData) {
+        	var filterSettings = conDecFiltering.getFilterSettings("chronology");
+            conDecAPI.getEvolutionData(filterSettings, function (visData) {
                 var data = visData.dataSet;
                 var groups = visData.groupSet;
                 var item = new vis.DataSet(data);
@@ -209,6 +185,8 @@
                 timeline.redraw();
             });
         });
+        
+        filterButton.click();
     }
 
     function getOptions() {

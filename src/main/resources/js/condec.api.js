@@ -480,18 +480,8 @@
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function (searchTerm, created, closed, issueTypes, issueStatus, decGroups, callback) {
-
-		var filterSettings = {
-				"projectKey": projectKey,
-				"searchTerm": searchTerm,
-				"startDate": created,
-				"endDate": closed,
-				"documentationLocations": null,
-				"knowledgeTypes": issueTypes,
-				"status": issueStatus,
-				"groups": decGroups
-		};
+	ConDecAPI.prototype.getEvolutionData = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
 				error, evolutionData) {
 			if (error === null) {
