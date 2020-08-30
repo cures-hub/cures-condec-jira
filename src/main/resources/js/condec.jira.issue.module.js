@@ -175,8 +175,8 @@
 			nodeDistance = nodeDistanceInput.value;
 		}
 		var filterSettings = {
-				"createdEarliest": createdAfter,
-				"createdLatest": createdBefore,
+				"startDate": createdAfter,
+				"endDate": createdBefore,
 				"documentationLocations": documentationLocations,
 				"knowledgeTypes": issueTypes,
 				"status": status,

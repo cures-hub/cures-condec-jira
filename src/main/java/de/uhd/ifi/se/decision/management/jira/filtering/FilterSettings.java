@@ -47,10 +47,7 @@ public class FilterSettings {
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
-
-	@XmlElement
 	private long startDate;
-	@XmlElement
 	private long endDate;
 
 	@JsonCreator
@@ -128,47 +125,39 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return earliest creation date of an element to be included in the
+	 * @return earliest creation or update date of an element to be included in the
 	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedEarliest() {
+	public long getStartDate() {
 		return startDate;
 	}
 
 	/**
-	 * @param createdEarliest
-	 *            earliest creation date of an element to be included in the
-	 *            filter/shown in the knowledge graph.
+	 * @param startDate
+	 *            earliest creation or update date of an element to be included in
+	 *            the filter/shown in the knowledge graph.
 	 */
 	@JsonProperty("startDate")
-	public void setCreatedEarliest(long createdEarliest) {
-		if (createdEarliest <= 0) {
-			this.startDate = -1;
-			return;
-		}
-		this.startDate = createdEarliest;
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
-	 * @return latest creation date of an element to be included in the filter/shown
-	 *         in the knowledge graph.
+	 * @return latest creation or update date of an element to be included in the
+	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedLatest() {
+	public long getEndDate() {
 		return endDate;
 	}
 
 	/**
-	 * @param createdLatest
-	 *            latest creation date of an element to be included in the
+	 * @param endDate
+	 *            latest creation or update date of an element to be included in the
 	 *            filter/shown in the knowledge graph.
 	 */
 	@JsonProperty("endDate")
-	public void setCreatedLatest(long createdLatest) {
-		if (createdLatest <= 0) {
-			this.endDate = -1;
-			return;
-		}
-		this.endDate = createdLatest;
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
 	}
 
 	/**

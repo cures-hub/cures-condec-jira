@@ -42,8 +42,8 @@ public class TestGetFilterSettings extends TestSetUp {
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
 		assertEquals(7, filterSettings.getKnowledgeTypes().size());
-		assertEquals(-1, filterSettings.getCreatedEarliest());
-		assertEquals(-1, filterSettings.getCreatedLatest());
+		assertEquals(-1, filterSettings.getStartDate());
+		assertEquals(-1, filterSettings.getEndDate());
 	}
 
 	@Test
@@ -55,8 +55,8 @@ public class TestGetFilterSettings extends TestSetUp {
 		Set<String> issueTypesMatchingFilter = filterSettings.getKnowledgeTypes();
 		assertEquals("Issue", issueTypesMatchingFilter.iterator().next());
 		assertEquals(1, issueTypesMatchingFilter.size());
-		assertEquals(-1, filterSettings.getCreatedEarliest());
-		assertEquals(-1, filterSettings.getCreatedLatest());
+		assertEquals(-1, filterSettings.getStartDate());
+		assertEquals(-1, filterSettings.getEndDate());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TestGetFilterSettings extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
-		assertEquals(-1, filterSettings.getCreatedEarliest());
-		assertEquals(-1, filterSettings.getCreatedLatest());
+		assertEquals(-1, filterSettings.getStartDate());
+		assertEquals(-1, filterSettings.getEndDate());
 	}
 }
