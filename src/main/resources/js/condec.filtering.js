@@ -69,8 +69,17 @@
 			filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShownInput.checked;
 		}
 		
-		filterSettings["linkDistance"] = 0;
+		// Reads selected maximal link distance from selected element in knowledge graph
+		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
+		if (linkDistanceInput !== null) {
+			filterSettings["linkDistance"] = linkDistanceInput.value;
+		}		
 		
+		// Reads selected groups
+		// TODO
+		
+		// Reads documentation completeness
+		// TODO
 
 		return filterSettings;
 	};
@@ -99,7 +108,7 @@
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = AJS.$("#" + dropdownId);
-		if (dropdown === undefined) {
+		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
 		}
 		var selectedItems = [];

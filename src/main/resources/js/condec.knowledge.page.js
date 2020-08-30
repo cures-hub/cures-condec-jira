@@ -111,8 +111,9 @@
 	function updateView(nodeId, treant, treeViewer) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
 		var knowledgeType = jQueryConDec("select[name='knowledge-type-dropdown-overview']").val();
-		var knowledgeTypes = [ knowledgeType ];
+		var knowledgeTypes = [ knowledgeType ];		
 		filterSettings["knowledgeTypes"] = knowledgeTypes;
+		filterSettings["linkDistance"] = 0;
 		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();

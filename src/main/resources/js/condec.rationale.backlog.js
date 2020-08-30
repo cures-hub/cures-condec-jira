@@ -65,8 +65,9 @@
 		updateView(null, treant, treeViewer);
 	}
 
-	function updateView(nodeId, treant, treeViewer) {
-		var knowledgeTypes = conDecFiltering.getSelectedItems("knowledge-type-dropdown-rb");
+	function updateView(nodeId, treant, treeViewer) {		
+		var filterSettings = conDecFiltering.getFilterSettings("rb");
+		
 		var selectedStatus = conDecFiltering.getSelectedItems("status-dropdown-rb");
 		var indexOfIncomplete = selectedStatus.indexOf("incomplete");
 		var showIncomplete = false;
@@ -74,23 +75,11 @@
 			showIncomplete = true;
 		}
 		var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-rb");
-		var filterSettings = {
-			"knowledgeTypes": knowledgeTypes,
-			"linkDistance": 0,
-			"status" : selectedStatus,
-			"groups" : selectedGroups,
-			"isIncompleteKnowledgeShown" : showIncomplete,
-		};
-		var startDateString = document.getElementById("start-date-picker-rb").value;
-		if (startDateString) {
-			var startDateLong = new Date(startDateString).getTime();
-			filterSettings["startDate"] = startDateLong;
-		}
-		var endDateString = document.getElementById("end-date-picker-rb").value;
-		if (endDateString) {
-			var endDateLong = new Date(endDateString).getTime();
-			filterSettings["endDate"] = endDateLong;
-		}
+
+		filterSettings["linkDistance"] = 0;
+		filterSettings["isIncompleteKnowledgeShown"] = showIncomplete;
+		filterSettings["groups"] = selectedGroups;
+		
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#text-search-input-rb", "rationale-backlog-tree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
