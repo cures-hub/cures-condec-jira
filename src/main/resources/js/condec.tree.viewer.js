@@ -38,8 +38,8 @@
 		console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
 		jQueryConDec(treeId).on('move_node.jstree', function(object, nodeInContext) {
 			var node = nodeInContext.node;
-			var parentNode = getTreeViewerNodeById(nodeInContext.parent, "#jstree");
-			var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent, "#jstree");
+			var parentNode = getTreeViewerNodeById(nodeInContext.parent, treeId);
+			var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent, treeId);
 			var nodeId = node.data.id;
 
 			var sourceType = (node.li_attr['class'] === "sentence") ? "s" : "i";
@@ -78,7 +78,7 @@
 			event.preventDefault();
 
 			var nodeId = event.target.parentNode.id;
-			var node = getTreeViewerNodeById(nodeId, "#jstree");
+			var node = getTreeViewerNodeById(nodeId, treeId);
 			var id = node.data.id;
 
 			if (event.target.parentNode.classList.contains("sentence")) {
