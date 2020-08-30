@@ -74,8 +74,8 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetCreatedEarliest() {
-		filterSettings.setCreatedEarliest(createDate - 50);
-		assertEquals(createDate - 50, filterSettings.getCreatedEarliest());
+		filterSettings.setCreatedEarliest(createDate + 50);
+		assertEquals(createDate + 50, filterSettings.getCreatedEarliest());
 	}
 
 	@Test
