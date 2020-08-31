@@ -461,8 +461,10 @@
 	/*
 	 * external references: condec.relationshipMatrix.page
 	 */
-	ConDecAPI.prototype.getDecisionMatrix = function (callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
+	ConDecAPI.prototype.getDecisionMatrix = function (filterSetting, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/view/getDecisionMatrix.json", 
+				filterSettings, function (error, matrix) {
 			if (error == null) {
 				callback(matrix);
 			}

@@ -1,6 +1,4 @@
-<div>
 <form class="aui">
-
     #set ($textInputId = "search-input-rationale-backlog")
     #parse("templates/filter/text.vm")
 
@@ -19,9 +17,7 @@
 
 	#set ($linkDistanceInputId = "link-distance-input-rationale-backlog")	
 	#parse("templates/filter/linkDistance.vm")
-
 </form>
-</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="rationale-backlog-tree"></div>

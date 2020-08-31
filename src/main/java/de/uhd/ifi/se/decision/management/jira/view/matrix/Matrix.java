@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -23,6 +24,10 @@ public class Matrix {
 	public Matrix(String projectKey, List<KnowledgeElement> decisions) {
 		this.headerElements = decisions;
 		this.coloredRows = this.getColoredRows(projectKey);
+	}
+
+	public Matrix(FilterSettings filterSettings) {
+		this(filterSettings.getProjectKey(), new ArrayList<>());
 	}
 
 	public List<KnowledgeElement> getHeaderElements() {

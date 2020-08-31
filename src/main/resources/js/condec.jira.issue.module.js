@@ -33,7 +33,7 @@
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {//) {
+		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -289,9 +289,9 @@
 			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
 			return false;
 		}
-		;
 		return true;
 	}
+	
 	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

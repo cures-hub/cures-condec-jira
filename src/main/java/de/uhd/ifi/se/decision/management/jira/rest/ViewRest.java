@@ -35,8 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMe
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -316,20 +314,19 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	// TODO Pass filter settings
-	public Response getDecisionMatrix(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+	public Response getDecisionMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Matrix cannot be shown since filter settings are invalid."))
+					.build();
+		}
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<KnowledgeElement> decisions = getAllDecisions(projectKey);
-		Matrix matrix = new Matrix(projectKey, decisions);
+		Matrix matrix = new Matrix(filterSettings);
 		return Response.ok(matrix).build();
-	}
-
-	// TODO Remove
-	private List<KnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgeGraph.getOrCreate(projectKey).getElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {

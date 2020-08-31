@@ -20,7 +20,8 @@
     };
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
-        conDecAPI.getDecisionMatrix(function (data) {
+    	var filterSettings = {};
+        conDecAPI.getDecisionMatrix(filterSettings, function (data) {
             const matrix = document.getElementById("matrix");
             const thead = document.createElement("thead");
             const firstRowHeaderElement = document.createElement("th");

@@ -1,15 +1,21 @@
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+<form class="aui">
+	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-matrix")
+	#parse("templates/filter/knowledgeType.vm")
+
+	#set ($statusDropdownId = "status-dropdown-matrix")	
+    #parse("templates/filter/status.vm")
+
+    #set ($textInputId = "search-input-matrix")
+    #parse("templates/filter/text.vm")
+
+    #set ($filterButtonId = "filter-button-matrix")
+    #parse("templates/filter/filterButton.vm")
+</form>
 <div class="container">
-    <table class="aui" id="matrix" border="1"></table>
+    <table class="aui aui-table-list aui-table-sortable" id="matrix"></table>
 </div>
-
-<br>
-<br>
-
-
 <div class='my-legend'>
-    <div class='legend-title'>Relationships</div>
+    <div class='legend-title'>Relationship Types</div>
     <div class='legend-scale'>
         <ul class='legend-labels' id="legendList">
         </ul>

@@ -20,12 +20,10 @@ public class TestMatrix extends TestSetUp {
 		init();
 		List<KnowledgeElement> decisions = new ArrayList<>();
 
-		KnowledgeElement element_1 = new KnowledgeElement(1, "TESTfwf", "", "Decision", "TEST",
-				"Test-1", "i", "");
+		KnowledgeElement element_1 = new KnowledgeElement(1, "TESTfwf", "", "Decision", "TEST", "Test-1", "i", "");
 		decisions.add(element_1);
 
-		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST",
-				"Test-1", "i", "");
+		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST", "Test-1", "i", "");
 		decisions.add(element_2);
 
 		matrix = new Matrix("Test", decisions);

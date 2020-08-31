@@ -1,4 +1,3 @@
-<div>
 <form class="aui">
 	#set ($textInputId = "search-input-overview")
 	#parse("templates/filter/text.vm")
@@ -26,7 +25,6 @@
 	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-overview")	
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
-</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="jstree"></div>
