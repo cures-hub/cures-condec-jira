@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -312,24 +313,30 @@ public class ViewRest {
 		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
 	}
 
-	@Path("/getDecisionMatrix")
-	@GET
+	/**
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the
+	 *            {@link KnowledgeType}s to be shown.
+	 * @return adjacency matrix of the {@link KnowledgeGraph} or a filtered subgraph
+	 *         provided by the {@link FilteringManager}.
+	 */
+	@Path("/getMatrix")
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	// TODO Pass filter settings
-	public Response getDecisionMatrix(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getProjectKey() == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Matrix cannot be shown since the HttpServletRequest or filter settings are invalid."))
+					.build();
+		}
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		List<KnowledgeElement> decisions = getAllDecisions(projectKey);
-		Matrix matrix = new Matrix(projectKey, decisions);
+		Matrix matrix = new Matrix(filterSettings);
 		return Response.ok(matrix).build();
-	}
-
-	// TODO Remove
-	private List<KnowledgeElement> getAllDecisions(String projectKey) {
-		return KnowledgeGraph.getOrCreate(projectKey).getElements(KnowledgeType.DECISION);
 	}
 
 	private String getProjectKey(String elementKey) {

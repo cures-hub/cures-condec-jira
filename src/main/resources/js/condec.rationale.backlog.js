@@ -50,16 +50,11 @@
 		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
 		knowledgeTypeDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
 
-		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
-		statusDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
-
-		var endDatePicker = document.getElementById("end-date-picker-rationale-backlog");
-		endDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
-		var startDatePicker =document.getElementById("start-date-picker-rationale-backlog");
-		startDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);
+		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
 		
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-rationale-backlog", conDecRationaleBacklog.updateView);
+		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
+		
+		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView);
 
 		updateView(null, treant, treeViewer);
 	}

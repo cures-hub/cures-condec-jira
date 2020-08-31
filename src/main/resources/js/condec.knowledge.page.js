@@ -83,27 +83,9 @@
 			}
 		});
 
-		// @issue Should filters change all views or only the current view?
-		// @decision Filters are only applied in the current view using updateView()!
-		// @alternative We update all views using conDecObservable.notify()!
-		// @pro The user could reuse the filter settings, which is more useable.
-		// @con This would need more computation and decreases performance.
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-overview", conDecKnowledgePage.updateView);
-
+		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-overview");
-		$("#select2-decision-group").on("change.select2", conDecKnowledgePage.updateView);
-
-		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		statusDropdown.addEventListener("change", conDecKnowledgePage.updateView);
-
-		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-overview");
-		isOnlyDecisionKnowledgeShownInput.addEventListener("change", conDecKnowledgePage.updateView);
-		
-		var minLinkNumberInput = document.getElementById("min-degree-input-overview");
-		minLinkNumberInput.addEventListener("change", conDecKnowledgePage.updateView);
-
-		var maxLinkNumberInput = document.getElementById("max-degree-input-overview");
-		minLinkNumberInput.addEventListener("change", conDecKnowledgePage.updateView);
+		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView);
 
 		updateView(null, treant, treeViewer);
 	}

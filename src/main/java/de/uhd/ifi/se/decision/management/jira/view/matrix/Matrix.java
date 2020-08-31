@@ -8,24 +8,49 @@ import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jgrapht.Graph;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
+/**
+ * Creates an adjacency matrix of the {@link KnowledgeGraph}. The matrix can
+ * either be created on the entire graph or on a subgraph matching the giving
+ * {@link FilterSettings}. The subgraph is provided by the
+ * {@link FilteringManager}.
+ * 
+ * If you want to change the shown (sub-)graph, do not change this class but
+ * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
+ */
 public class Matrix {
 	@XmlElement
-	private List<KnowledgeElement> headerElements;
+	private Set<KnowledgeElement> headerElements;
 
 	@XmlElement
 	private List<List<String>> coloredRows;
 
-	public Matrix(String projectKey, List<KnowledgeElement> decisions) {
-		this.headerElements = decisions;
-		this.coloredRows = this.getColoredRows(projectKey);
+	@JsonIgnore
+	private Graph<KnowledgeElement, Link> graph;
+
+	public Matrix(String projectKey, Set<KnowledgeElement> elements) {
+		this.headerElements = elements;
+		graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.coloredRows = getColoredRows(projectKey);
 	}
 
-	public List<KnowledgeElement> getHeaderElements() {
+	public Matrix(FilterSettings filterSettings) {
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		graph = filteringManager.getSubgraphMatchingFilterSettings();
+		this.headerElements = graph.vertexSet();
+		this.coloredRows = getColoredRows("");
+	}
+
+	public Set<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
 
@@ -35,14 +60,14 @@ public class Matrix {
 
 	public List<List<String>> getColoredRows(String projectKey) {
 		List<List<String>> coloredRows = new ArrayList<>();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+
 		Set<Link> links = graph.edgeSet();
 
-		for (KnowledgeElement sourceDecision : this.headerElements) {
+		for (KnowledgeElement sourceDecision : headerElements) {
 			List<String> row = new ArrayList<String>();
-			Map<Long, String> linksOfRow = this.getLinksForRow(links, sourceDecision);
+			Map<Long, String> linksOfRow = getLinksForRow(links, sourceDecision);
 
-			for (KnowledgeElement targetDecision : this.headerElements) {
+			for (KnowledgeElement targetDecision : headerElements) {
 				if (targetDecision.getId() == sourceDecision.getId()) {
 					row.add("LightGray");
 				} else if (linksOfRow.get(targetDecision.getId()) != null) {

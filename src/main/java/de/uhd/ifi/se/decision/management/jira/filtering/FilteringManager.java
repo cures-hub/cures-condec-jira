@@ -284,8 +284,11 @@ public class FilteringManager {
 	 *         minDegree and maxDegree in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
-		int degree = element.getLinks().size();
-		return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+		if (filterSettings.getMinDegree() > 0) {
+			int degree = element.getLinks().size();
+			return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+		}
+		return true;
 	}
 
 	/**

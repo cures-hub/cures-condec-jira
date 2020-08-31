@@ -1,6 +1,5 @@
-<div>
 <form class="aui">
-	#set ($textInputId = "search-input-overview")
+	#set ($viewIdentifier = "overview")
 	#parse("templates/filter/text.vm")
 
     <select id="select-root-element-type" name="knowledge-type-dropdown-overview"
@@ -9,24 +8,14 @@
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-           
-	#set($select2-decision-group = "select2-decision-group-overview")    
+
   	#parse("templates/filter/decisionGroup.vm")  
-  	
-  	#set ($statusDropdownId = "status-dropdown-overview")	
     #parse("templates/filter/status.vm")
-  			
-	#set ($linkDistanceInputId = "link-distance-input-overview")	
 	#parse("templates/filter/linkDistance.vm")
-    
-	#set ($minDegreeInputId = "min-degree-input-overview")	
-	#set ($maxDegreeInputId = "max-degree-input-overview")	
 	#parse("templates/filter/degree.vm")
-	
-	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-overview")	
+	#parse("templates/filter/creationDate.vm")
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
-</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="jstree"></div>
