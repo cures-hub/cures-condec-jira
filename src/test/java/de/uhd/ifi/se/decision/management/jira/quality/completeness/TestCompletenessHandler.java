@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -51,13 +50,6 @@ public class TestCompletenessHandler extends TestSetUp {
 	@NonTransactional
 	public void testArgument() {
 		assertTrue(CompletenessHandler.checkForCompletion(proArgument));
-	}
-
-	@Test
-	@NonTransactional
-	public void testConstructor() {
-		CompletenessHandler completenessHandler = new CompletenessHandler();
-		assertSame(completenessHandler.getClass(), CompletenessHandler.class);
 	}
 
 }
