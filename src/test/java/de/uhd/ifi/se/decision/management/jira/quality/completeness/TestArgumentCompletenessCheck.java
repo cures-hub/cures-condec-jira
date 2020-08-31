@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,10 +31,12 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 
 	private List<KnowledgeElement> elements;
 	private KnowledgeElement proArgument;
+	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		proArgument = elements.get(7);
 	}
@@ -50,7 +55,19 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsNotLinkedToDecision() {
+	public void testIsLinkedToAlternative() {
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(321, "alternative");
+		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
+		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, "pro");
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
+		assertNotNull(proArgument.getLink(alternative));
+		assertTrue(new ArgumentCompletenessCheck().execute(proArgument));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsNeitherLinkedToDecisionNorToAlternative() {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
 		assertEquals(5, proArgument.getId());
 		KnowledgeElement decision = elements.get(6);
@@ -61,7 +78,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertNotNull(linkToDecision);
 
 		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToDecision,
-				JiraUsers.SYS_ADMIN.getApplicationUser());
+				user);
 		linkToDecision = proArgument.getLink(decision);
 		assertNull(linkToDecision);
 
