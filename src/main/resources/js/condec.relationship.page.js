@@ -15,7 +15,7 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
 
-            fillFilterElements();
+            conDecFiltering.fillFilterElements("graph", ["Decision"]);
             addOnClickEventToFilterButton();
 
             // Register/subscribe this view as an observer
@@ -28,22 +28,6 @@
     ConDecRelationshipPage.prototype.updateView = function () {
     	document.getElementById("filter-button-graph").click();
     };
-    
-    function fillFilterElements() {
-    	conDecAPI.getLinkTypes(function (linkTypes) {
-			var linkTypeArray = [];
-			for (linkType in linkTypes) {
-				if (linkType !== undefined) {
-					linkTypeArray.push(linkType);
-				}				
-			}
-			conDecFiltering.initDropdown("link-type-dropdown-graph", linkTypeArray);
-		});	
-
-    	conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
-        conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
-        conDecFiltering.initDropdown("knowledge-type-dropdown-graph", conDecAPI.getKnowledgeTypes(), ["Decision"]);
-    }
 
     function addOnClickEventToFilterButton() {
         var filterButton = document.getElementById("filter-button-graph");
@@ -52,7 +36,7 @@
         	var filterSettings = conDecFiltering.getFilterSettings("graph");
         	
         	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            	conDecVis.buildGraphNetwork(knowledgeGraph, 'graph-container');
+            	conDecVis.buildGraphNetwork(knowledgeGraph, "graph-container");
             });
         });
     }

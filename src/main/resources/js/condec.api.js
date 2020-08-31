@@ -943,8 +943,12 @@
 		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
 	};
 
+	// TODO Refactor and move to conDecFiltering
 	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
 		var selectGroupField = document.getElementById(elementId);
+		if (selectGroupField === null || selectGroupField === undefined) {
+			return null;
+		}
 		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
 			if (!(groups === null) && groups.length > 0) {
 				selectGroupField.innerHTML = "";

@@ -15,6 +15,27 @@
 	};
 	
 	/*
+	 * Fills the HTML elements for basic filter criteria such as knowledge types, status, ... of a view.
+	 *
+	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
+	 */
+	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
+		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
+        conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), selectedKnowledgeTypes);
+    	
+        conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier); // TODO Refactor and move method to conDecFiltering
+    	conDecAPI.getLinkTypes(function (linkTypes) {
+			var linkTypeArray = [];
+			for (linkType in linkTypes) {
+				if (linkType !== undefined) {
+					linkTypeArray.push(linkType);
+				}				
+			}
+			conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
+		});	
+	};
+	
+	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 *
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
@@ -133,6 +154,9 @@
 	 */
 	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
+		if (selectedGroupsObj === null || selectedGroupsObj === undefined) {
+			return null;
+		}
 		var selectedGroups = [];
 		for (var i = 0; i <= selectedGroupsObj.length; i++) {
 			if (selectedGroupsObj[i]) {

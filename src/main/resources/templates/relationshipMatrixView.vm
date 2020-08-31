@@ -1,13 +1,7 @@
 <form class="aui">
-	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-matrix")
-	#parse("templates/filter/knowledgeType.vm")
-
-	#set ($statusDropdownId = "status-dropdown-matrix")	
-    #parse("templates/filter/status.vm")
-
-    #set ($textInputId = "search-input-matrix")
-    #parse("templates/filter/text.vm")
-
+	#set ($viewIdentifier = "matrix")
+	#parse("templates/filter/basicFilterCriteria.vm")
+	
     #set ($filterButtonId = "filter-button-matrix")
     #parse("templates/filter/filterButton.vm")
 </form>

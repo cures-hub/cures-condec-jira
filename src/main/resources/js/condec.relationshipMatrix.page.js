@@ -14,13 +14,15 @@
             conDecObservable = _conDecObservable;
 
             conDecObservable.subscribe(this);
+            conDecFiltering.fillFilterElements("matrix", ["Decision"]);
             return true;
         }
         return false;
     };
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
-    	var filterSettings = {};
+    	var filterSettings = conDecFiltering.getFilterSettings("matrix");
+    	filterSettings["documentationLocations"] = null;
         conDecAPI.getMatrix(filterSettings, function (data) {
             const matrix = document.getElementById("matrix");
             const thead = document.createElement("thead");
