@@ -5,9 +5,9 @@
         	#parse("templates/filter/text.vm")	
         	#parse("templates/filter/knowledgeType.vm")
         	#parse("templates/filter/status.vm")
+        	#parse("templates/filter/decisionGroup.vm")
         	#parse("templates/filter/linkDistance.vm")
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-
         	#parse("templates/filter/isTestCode.vm")
             #parse("templates/filter/degree.vm")
         </form>

@@ -20,7 +20,7 @@
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
-		conDecAPI.getLinkTypes(function (linkTypes) { // TODO Call in conDecAPI only once
+		conDecAPI.getLinkTypes(function (linkTypes) {
 			var linkTypeArray = [];
 			for (linkType in linkTypes) {
 				if (linkType !== undefined) {
@@ -42,7 +42,7 @@
         	var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
         	callback(filterSettings);        	
         });
-    }
+    };
 	
 	/*
 	 * Reads the filter settings from the HTML elements of a view.

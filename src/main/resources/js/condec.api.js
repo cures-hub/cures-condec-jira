@@ -960,6 +960,7 @@
 						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
 					}
 				}
+				AJS.$("#" + elementId).auiSelect2();
 			} else {
 				selectGroupField.innerHTML = "";
 			}

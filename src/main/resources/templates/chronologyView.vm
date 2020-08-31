@@ -3,10 +3,7 @@
 	#parse("templates/filter/text.vm")
 	#parse("templates/filter/knowledgeType.vm")
 	#parse("templates/filter/status.vm")
-	
-	#set($select2-decision-group = "select2-decision-group-" + $viewIdentifier)    
-	#parse("templates/filter/decisionGroup.vm")
-		
+	#parse("templates/filter/decisionGroup.vm")		
 	#parse("templates/filter/degree.vm")
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 	#parse("templates/filter/creationDate.vm")	

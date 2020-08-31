@@ -8,12 +8,12 @@
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-           
-	#set($select2-decision-group = "select2-decision-group-overview")    
+
   	#parse("templates/filter/decisionGroup.vm")  
     #parse("templates/filter/status.vm")
 	#parse("templates/filter/linkDistance.vm")
 	#parse("templates/filter/degree.vm")
+	#parse("templates/filter/creationDate.vm")
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 <div class="aui-group">

@@ -91,7 +91,7 @@
 		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-overview", conDecKnowledgePage.updateView);
 
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-overview");
-		$("#select2-decision-group").on("change.select2", conDecKnowledgePage.updateView);
+		$("#select2-decision-group-overview").on("change.select2", conDecKnowledgePage.updateView);
 
 		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
 		statusDropdown.addEventListener("change", conDecKnowledgePage.updateView);
@@ -104,6 +104,11 @@
 
 		var maxLinkNumberInput = document.getElementById("max-degree-input-overview");
 		minLinkNumberInput.addEventListener("change", conDecKnowledgePage.updateView);
+
+		var endDatePicker = document.getElementById("end-date-picker-overview");
+		endDatePicker.addEventListener("change", conDecKnowledgePage.updateView);
+		var startDatePicker = document.getElementById("start-date-picker-overview");
+		startDatePicker.addEventListener("change", conDecKnowledgePage.updateView);
 
 		updateView(null, treant, treeViewer);
 	}

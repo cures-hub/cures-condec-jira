@@ -52,7 +52,9 @@
 
 		var statusDropdown = conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
 		statusDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
+		
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
+		$("#select2-decision-group-rationale-backlog").on("change.select2", conDecRationaleBacklog.updateView);
 
 		var endDatePicker = document.getElementById("end-date-picker-rationale-backlog");
 		endDatePicker.addEventListener("change", conDecRationaleBacklog.updateView);

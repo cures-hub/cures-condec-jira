@@ -17,6 +17,15 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
+            
+            conDecFiltering.fillFilterElements("chronology", ["Decision"]);      
+            conDecFiltering.fillDatePickers("chronology", 30);
+            
+            conDecFiltering.fillFilterElements("comparison"); 
+            conDecFiltering.fillDatePickers("comparison", 30); // left side
+            conDecFiltering.fillDatePickers("comparison-right", 7);
+            
+            // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
             return true;
         }
@@ -30,8 +39,6 @@
 
     ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
         console.log("ConDecEvolutionPage build chronology");
-        conDecFiltering.fillFilterElements("chronology", ["Decision"]);      
-        conDecFiltering.fillDatePickers("chronology", 30);
         
         var container = document.getElementById("evolution-timeline");
         timeline = new vis.Timeline(container, new vis.DataSet(), {});
@@ -58,9 +65,6 @@
 
     ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
         console.log("ConDec build comparison view");
-        conDecFiltering.fillFilterElements("comparison"); 
-        conDecFiltering.fillDatePickers("comparison", 30); // left side
-        conDecFiltering.fillDatePickers("comparison-right", 7);
         
         var containerLeft = document.getElementById('left-network');
         networkLeft = new vis.Network(containerLeft, new vis.DataSet(), getOptions());
