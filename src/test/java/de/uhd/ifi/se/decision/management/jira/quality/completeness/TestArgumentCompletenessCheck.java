@@ -32,12 +32,15 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	private List<KnowledgeElement> elements;
 	private KnowledgeElement proArgument;
 	private ApplicationUser user;
+	private ArgumentCompletenessCheck argumentCompletenessCheck;
+
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		elements = KnowledgeElements.getTestKnowledgeElements();
+		argumentCompletenessCheck = new ArgumentCompletenessCheck();
 		proArgument = elements.get(7);
 	}
 
@@ -50,7 +53,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertTrue(new ArgumentCompletenessCheck().execute(proArgument));
+		assertTrue(argumentCompletenessCheck.execute(proArgument));
 	}
 
 	@Test
@@ -62,7 +65,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertTrue(new ArgumentCompletenessCheck().execute(proArgument));
+		assertTrue(argumentCompletenessCheck.execute(proArgument));
 	}
 
 	@Test
@@ -85,7 +88,13 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(proArgument.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
-		assertFalse(new ArgumentCompletenessCheck().execute(proArgument));
+		assertFalse(argumentCompletenessCheck.execute(proArgument));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsCompleteAccordingToSettings() {
+		assertTrue(argumentCompletenessCheck.isCompleteAccordingToSettings());
 	}
 
 }
