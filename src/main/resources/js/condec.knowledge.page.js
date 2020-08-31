@@ -29,7 +29,7 @@
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecTreeViewerType(_treeViewer)) {
+		        && isConDecTreanType(_treant) && isConDecTreeViewerType(_treeViewer)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -179,7 +179,7 @@
 		return true;
 	}
 
-	function isConDecTreantType(conDecTreant) {
+	function isConDecTreanType(conDecTreant) {
 		if (!(conDecTreant !== undefined && conDecTreant.buildTreant !== undefined && typeof conDecTreant.buildTreant === 'function')) {
 			console.warn("ConDecKnowledgePage: invalid conDecTreant object received.");
 			return false;

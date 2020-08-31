@@ -1,8 +1,8 @@
 <div>
 <form class="aui">
-    #set ($datepickerStartId = "start-date-picker-rb")
-    #set ($datepickerEndId = "end-date-picker-rb")
-    #parse("templates/filter/creationDate.vm")
+
+    #set ($textInputId = "text-search-input-rb")
+    #parse("templates/filter/text.vm")
 
     #set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-rb")
     #parse("templates/filter/knowledgeType.vm")
@@ -10,11 +10,14 @@
     #set ($statusDropdownId = "status-dropdown-rb")
     #parse("templates/filter/status.vm")
 
+    #set ($datepickerStartId = "start-date-picker-rb")
+    #set ($datepickerEndId = "end-date-picker-rb")
+    #parse("templates/filter/creationDate.vm")
+
     #set($select2-decision-group = "select2-decision-group-rb")
   	#parse("templates/filter/decisionGroup.vm")
 
-    #set ($textInputId = "text-search-input-rb")
-    #parse("templates/filter/text.vm")
+
 
 </form>
 </div>
