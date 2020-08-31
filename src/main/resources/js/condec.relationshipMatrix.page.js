@@ -21,7 +21,7 @@
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
     	var filterSettings = {};
-        conDecAPI.getDecisionMatrix(filterSettings, function (data) {
+        conDecAPI.getMatrix(filterSettings, function (data) {
             const matrix = document.getElementById("matrix");
             const thead = document.createElement("thead");
             const firstRowHeaderElement = document.createElement("th");

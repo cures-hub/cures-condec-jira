@@ -32,18 +32,23 @@ public class TestGetMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionMatrix(request, null).getStatus());
+	public void testRequestNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(null, settings).getStatus());
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyNonExistent() {
+	public void testFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(request, null).getStatus());
+	}
+
+	@Test
+	public void testProjectKeyNonExistent() {
 		settings.setProjectKey("NotTEST");
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionMatrix(request, settings).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(request, settings).getStatus());
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyExistent() {
-		assertEquals(200, viewRest.getDecisionMatrix(request, settings).getStatus());
+	public void testFilterSettingsValid() {
+		assertEquals(Status.OK.getStatusCode(), viewRest.getMatrix(request, settings).getStatus());
 	}
 }
