@@ -159,9 +159,14 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testIsElementMatchingDegreeFilter() {
-		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		FilterSettings settings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(settings);
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
+
+		settings.setMinDegree(20);
+		filteringManager.setFilterSettings(settings);
+		assertFalse(filteringManager.isElementMatchingDegreeFilter(element));
 	}
 
 	@Test
