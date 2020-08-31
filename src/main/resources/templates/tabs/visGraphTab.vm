@@ -1,9 +1,18 @@
  <div class="aui-toolbar2" role="toolbar">
 	<div class="aui-toolbar-2-inner">
-		#parse("templates/filter/filter.vm")
-		
-		#set ($filterButtonId = "filter-button")
-		#parse("templates/filter/filterButton.vm")
+		#set ($viewIdentifier = "graph")	
+		<form class="aui">
+			#parse("templates/filter/knowledgeType.vm")
+			#parse("templates/filter/status.vm")
+
+			#parse("templates/filter/creationDate.vm")
+
+			#parse("templates/filter/linkType.vm")
+			#parse("templates/filter/documentationLocation.vm")
+
+			#parse("templates/filter/linkDistance.vm")
+			#parse("templates/filter/filterButton.vm")
+		</form>		
 	</div>
 </div>
 <div id="vis-container"></div>

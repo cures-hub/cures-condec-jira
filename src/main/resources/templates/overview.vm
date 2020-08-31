@@ -1,5 +1,5 @@
 <form class="aui">
-	#set ($textInputId = "search-input-overview")
+	#set ($viewIdentifier = "overview")
 	#parse("templates/filter/text.vm")
 
     <select id="select-root-element-type" name="knowledge-type-dropdown-overview"
@@ -11,18 +11,9 @@
            
 	#set($select2-decision-group = "select2-decision-group-overview")    
   	#parse("templates/filter/decisionGroup.vm")  
-  	
-  	#set ($statusDropdownId = "status-dropdown-overview")	
     #parse("templates/filter/status.vm")
-  			
-	#set ($linkDistanceInputId = "link-distance-input-overview")	
 	#parse("templates/filter/linkDistance.vm")
-    
-	#set ($minDegreeInputId = "min-degree-input-overview")	
-	#set ($maxDegreeInputId = "max-degree-input-overview")	
 	#parse("templates/filter/degree.vm")
-	
-	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-overview")	
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 <div class="aui-group">

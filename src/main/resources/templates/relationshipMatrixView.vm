@@ -1,8 +1,17 @@
 <form class="aui">
 	#set ($viewIdentifier = "matrix")
-	#parse("templates/filter/basicFilterCriteria.vm")
+	#parse("templates/filter/text.vm")
+    #parse("templates/filter/knowledgeType.vm")
+    #parse("templates/filter/status.vm")
+    #parse("templates/filter/linkType.vm")
 	
-    #set ($filterButtonId = "filter-button-matrix")
+    #set($select2-decision-group = "select2-decision-group-" + $viewIdentifier)    
+    #parse("templates/filter/decisionGroup.vm")
+        		
+    #parse("templates/filter/degree.vm")
+    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
+    #parse("templates/filter/creationDate.vm")	
+
     #parse("templates/filter/filterButton.vm")
 </form>
 <div class="container">

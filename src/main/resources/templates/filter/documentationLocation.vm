@@ -1,4 +1,4 @@
-<button aria-controls="$documentationLocationDropdownId" class="aui-button aui-style-default aui-dropdown2-trigger" 
+<button aria-controls="documentation-location-dropdown-$viewIdentifier" class="aui-button aui-style-default aui-dropdown2-trigger" 
 	aria-haspopup="true">$i18n.getText('condec.label.documentation.location')
 </button>
-<aui-dropdown-menu id="$documentationLocationDropdownId"></aui-dropdown-menu>
+<aui-dropdown-menu id="documentation-location-dropdown-$viewIdentifier"></aui-dropdown-menu>

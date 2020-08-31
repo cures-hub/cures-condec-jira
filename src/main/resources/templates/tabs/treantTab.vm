@@ -1,25 +1,14 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner" id="treant-filter">
         <form class="aui">      	
-        	#set ($textInputId = "search-input-treant")
-        	#parse("templates/filter/text.vm")
-        	
-        	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-treant")	
+        	#set ($viewIdentifier = "treant")	
+        	#parse("templates/filter/text.vm")	
         	#parse("templates/filter/knowledgeType.vm")
-        	
-        	#set ($statusDropdownId = "status-dropdown-treant")	
         	#parse("templates/filter/status.vm")
-        	
-        	#set ($linkDistanceInputId = "link-distance-input-treant")	
         	#parse("templates/filter/linkDistance.vm")
-        	
-        	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input-treant")	
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 
         	#parse("templates/filter/isTestCode.vm")
-            
-        	#set ($minDegreeInputId = "min-degree-input-treant")	
-        	#set ($maxDegreeInputId = "max-degree-input-treant")	
             #parse("templates/filter/degree.vm")
         </form>
     </div>

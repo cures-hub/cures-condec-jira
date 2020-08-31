@@ -3,7 +3,7 @@
 		<form class="aui">
 			<label for="selectDecisionProblem">Issues: </label>
 			<select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
-			#set ($linkDistanceInputId = "link-distance-input-decision-table")	
+			#set ($viewIdentifier = "decision-table")
 			#parse("templates/filter/linkDistance.vm")
 		</form>		
 		<div class="aui-buttons">

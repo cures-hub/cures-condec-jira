@@ -112,7 +112,7 @@
 	function addOnClickEventToFilterButton() {
 		console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
 
-		var filterButton = document.getElementById("filter-button");
+		var filterButton = document.getElementById("filter-button-graph");
 		filterButton.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
