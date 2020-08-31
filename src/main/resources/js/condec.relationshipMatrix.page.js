@@ -15,6 +15,10 @@
 
             conDecObservable.subscribe(this);
             conDecFiltering.fillFilterElements("matrix", ["Decision"]);
+            conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
+            	conDecRelationshipMatrixPage.updateView();
+            });
+            
             return true;
         }
         return false;

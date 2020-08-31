@@ -30,9 +30,7 @@
 
     ConDecEvolutionPage.prototype.buildTimeLine = function buildTimeLine() {
         console.log("ConDecEvolutionPage build chronology");
-        conDecFiltering.initDropdown("knowledge-type-dropdown-chronology", conDecAPI.getKnowledgeTypes(), ["Decision"]);
-        conDecFiltering.initDropdown("status-dropdown-chronology", conDecAPI.knowledgeStatus);
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-chronology");      
+        conDecFiltering.fillFilterElements("chronology", ["Decision"]);      
         conDecFiltering.fillDatePickers("chronology", 30);
         
         var container = document.getElementById("evolution-timeline");
@@ -44,16 +42,8 @@
             conDecContextMenu.createContextMenu(nodeId, documentationLocation, properties.event, "evolution-timeline");
         });
         
-        addOnClickEventToFilterTimeLineButton();
-    };
-    
-    function addOnClickEventToFilterTimeLineButton() {
-        console.log("ConDecEvolutionPage addOnClickEventToFilterButtonTimeLine");
-        var filterButton = document.getElementById("filter-button-chronology");
-
-        filterButton.addEventListener("click", function (event) {
-        	var filterSettings = conDecFiltering.getFilterSettings("chronology");
-            conDecAPI.getEvolutionData(filterSettings, function (visData) {
+        conDecFiltering.addOnClickEventToFilterButton("chronology", function(filterSettings) {
+        	conDecAPI.getEvolutionData(filterSettings, function (visData) {
                 var data = visData.dataSet;
                 var groups = visData.groupSet;
                 var item = new vis.DataSet(data);
@@ -63,13 +53,12 @@
             });
         });
         
-        filterButton.click();
-    }
+        document.getElementById("filter-button-chronology").click();
+    };
 
     ConDecEvolutionPage.prototype.buildCompare = function buildCompare() {
-        console.log("ConDec build compare view");
-        conDecFiltering.initDropdown("knowledge-type-dropdown-comparison", conDecAPI.getKnowledgeTypes());
-        conDecFiltering.initDropdown("status-dropdown-comparison", conDecAPI.knowledgeStatus);
+        console.log("ConDec build comparison view");
+        conDecFiltering.fillFilterElements("comparison"); 
         conDecFiltering.fillDatePickers("comparison", 30); // left side
         conDecFiltering.fillDatePickers("comparison-right", 7);
         
@@ -94,16 +83,8 @@
             networkRight.focus(params.nodes[0]);
             networkLeft.focus(params.nodes[0]);
         });
-        addOnClickEventToFilterCompareButton();
-    };
-
-    // Compute filter and select new elements
-    function addOnClickEventToFilterCompareButton() {
-        console.log("ConDecJiraEvolutionPage addOnClickEventToFilterButtonCompare");
-
-        var filterButton = document.getElementById("filter-button-comparison");
-
-        filterButton.addEventListener("click", function (event) {
+        
+        conDecFiltering.addOnClickEventToFilterButton("comparison", function(filterSettings) {
         	// left side
             var filterSettingsLeft = conDecFiltering.getFilterSettings("comparison");            
             conDecAPI.getVis(filterSettingsLeft, function (visDataLeft) {
@@ -131,8 +112,8 @@
             });
         });
         
-        filterButton.click();
-    }
+        document.getElementById("filter-button-comparison").click();
+    };
     
     function sortVis(a, b) {
         if (a.id > b.id) {

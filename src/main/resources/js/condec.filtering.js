@@ -20,11 +20,7 @@
 	 * external references: condec.jira.issue.module, condec.evolution.page, condec.relationship.page
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
-		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
-        conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), selectedKnowledgeTypes);
-    	
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier); // TODO Refactor and move method to conDecFiltering
-    	conDecAPI.getLinkTypes(function (linkTypes) {
+		conDecAPI.getLinkTypes(function (linkTypes) { // TODO Call in conDecAPI only once
 			var linkTypeArray = [];
 			for (linkType in linkTypes) {
 				if (linkType !== undefined) {
@@ -33,7 +29,20 @@
 			}
 			conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
 		});	
+		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
+        conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), selectedKnowledgeTypes);
+    	
+        conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier); // TODO Refactor and move method to conDecFiltering
 	};
+	
+	ConDecFiltering.prototype.addOnClickEventToFilterButton = function (viewIdentifier, callback) {
+        var filterButton = document.getElementById("filter-button-" + viewIdentifier);
+
+        filterButton.addEventListener("click", function (event) {
+        	var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
+        	callback(filterSettings);        	
+        });
+    }
 	
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
@@ -116,6 +125,9 @@
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
+		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
+			return null;
+		}
 		dropdown.innerHTML = "";
 		for (var index = 0; index < items.length; index++) {
 			var isSelected = "checked";

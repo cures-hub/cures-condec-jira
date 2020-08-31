@@ -16,7 +16,11 @@
             conDecVis = _conDecVis;
 
             conDecFiltering.fillFilterElements("graph", ["Decision"]);
-            addOnClickEventToFilterButton();
+            conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
+            	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+                	conDecVis.buildGraphNetwork(knowledgeGraph, "graph-container");
+                });
+            });
 
             // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
@@ -28,18 +32,6 @@
     ConDecRelationshipPage.prototype.updateView = function () {
     	document.getElementById("filter-button-graph").click();
     };
-
-    function addOnClickEventToFilterButton() {
-        var filterButton = document.getElementById("filter-button-graph");
-
-        filterButton.addEventListener("click", function (event) {
-        	var filterSettings = conDecFiltering.getFilterSettings("graph");
-        	
-        	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-            	conDecVis.buildGraphNetwork(knowledgeGraph, "graph-container");
-            });
-        });
-    }
 
     /*
      * Init Helpers
