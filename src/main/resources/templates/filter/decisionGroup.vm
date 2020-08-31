@@ -1,6 +1,3 @@
-<select id ="$select2-decision-group" multiple placeholder="Select a Group..." class="select medium-field" style="vertical-align: bottom"></select>
-
-<script>
-AJS.$("#$select2-decision-group").auiSelect2();
-
-</script>
+<select id="select2-decision-group-$viewIdentifier" multiple placeholder="Select a Group..." 
+	class="select medium-field" style="vertical-align: bottom">
+</select>

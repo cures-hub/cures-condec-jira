@@ -1,26 +1,24 @@
 <form class="aui">
-	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-comparison")
+	#set ($viewIdentifier = "comparison")	
+	<!-- filter criteria for both sides -->
+	#parse("templates/filter/text.vm")
 	#parse("templates/filter/knowledgeType.vm")
-
-	#set ($statusDropdownId = "status-dropdown-comparison")	
+	#parse("templates/filter/linkType.vm")
     #parse("templates/filter/status.vm")
-
-    #set ($textInputId = "search-input-comparison")
-    #parse("templates/filter/text.vm")
-
-    #set ($filterButtonId = "filter-button-comparison")
+    #parse("templates/filter/decisionGroup.vm")
+    #parse("templates/filter/degree.vm")
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
     #parse("templates/filter/filterButton.vm")
 </form>
 <div class="aui-group">
     <div  class="aui-item">
-    	#set ($datepickerStartId = "start-date-picker-comparison")
-    	#set ($datepickerEndId = "end-date-picker-comparison")
+    	<!-- filter criteria for the left side -->
     	#parse("templates/filter/creationDate.vm")
         <div id="left-network"></div>
     </div>
     <div class="aui-item">
-    	#set ($datepickerStartId = "start-date-picker-comparison-right")
-    	#set ($datepickerEndId = "end-date-picker-comparison-right")
+    	<!--  filter criteria for the right side -->
+    	#set ($viewIdentifier = "comparison-right")	
     	#parse("templates/filter/creationDate.vm")
         <div id="right-network"></div>
     </div>

@@ -461,8 +461,9 @@
 	/*
 	 * external references: condec.relationshipMatrix.page
 	 */
-	ConDecAPI.prototype.getDecisionMatrix = function (callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getDecisionMatrix.json?projectKey=" + projectKey, function (error, matrix) {
+	ConDecAPI.prototype.getMatrix = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/view/getMatrix.json", filterSettings, function (error, matrix) {
 			if (error == null) {
 				callback(matrix);
 			}
@@ -942,8 +943,12 @@
 		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
 	};
 
+	// TODO Refactor and move to conDecFiltering
 	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
 		var selectGroupField = document.getElementById(elementId);
+		if (selectGroupField === null || selectGroupField === undefined) {
+			return null;
+		}
 		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
 			if (!(groups === null) && groups.length > 0) {
 				selectGroupField.innerHTML = "";
@@ -955,6 +960,7 @@
 						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
 					}
 				}
+				AJS.$("#" + elementId).auiSelect2();
 			} else {
 				selectGroupField.innerHTML = "";
 			}

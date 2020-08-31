@@ -33,7 +33,7 @@
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {//) {
+		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -112,7 +112,7 @@
 	function addOnClickEventToFilterButton() {
 		console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
 
-		var filterButton = document.getElementById("filter-button");
+		var filterButton = document.getElementById("filter-button-graph");
 		filterButton.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -172,10 +172,9 @@
 			var status = conDecAPI.knowledgeStatus;
 			var documentationLocations = filterData.documentationLocations;
 
-			var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-treant", allKnowledgeTypes,
-			        selectedKnowledgeTypes); // Tree view
-			knowledgeTypeDropdown.addEventListener("change", showTreant);
-
+			conDecFiltering.initDropdown("knowledge-type-dropdown-treant", allKnowledgeTypes, selectedKnowledgeTypes); // Tree view
+			conDecAPI.fillDecisionGroupSelect("select2-decision-group-treant");
+			conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
 			conDecFiltering.initDropdown("knowledge-type-dropdown-graph", allKnowledgeTypes, selectedKnowledgeTypes); // graph view
 			conDecFiltering.initDropdown("status-dropdown-graph", status);
 			conDecFiltering.initDropdown("status-dropdown-treant", status);
@@ -190,20 +189,11 @@
 	}
 	
 	function addOnClickEventToTreantFilters() {
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-treant", showTreant);
-
-		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-treant");
-		isOnlyDecisionKnowledgeShownInput.addEventListener("change", showTreant);
+		conDecFiltering.addOnChangeEventToFilterElements("treant", showTreant);
 
 		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
 		isTestCodeShownInput.addEventListener("change", showTreant);
-
-		var minLinkNumberInput = document.getElementById("min-degree-input-treant");
-		minLinkNumberInput.addEventListener("change", showTreant);
-
-		var maxLinkNumberInput = document.getElementById("max-degree-input-treant");
-		minLinkNumberInput.addEventListener("change", showTreant);
-
+		
 		var searchInputTreant = document.getElementById("search-input-treant");
 		searchInputTreant.addEventListener("change", showTreant);
 	}
@@ -289,9 +279,9 @@
 			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
 			return false;
 		}
-		;
 		return true;
 	}
+	
 	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

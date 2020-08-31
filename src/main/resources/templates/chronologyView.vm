@@ -1,21 +1,12 @@
 <form class="aui">
-	#set ($datepickerStartId = "start-date-picker-chronology")
-	#set ($datepickerEndId = "end-date-picker-chronology")
-	#parse("templates/filter/creationDate.vm")
-	
-	#set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-chronology")	
-    #parse("templates/filter/knowledgeType.vm")
-    
-    #set ($statusDropdownId = "status-dropdown-chronology")	
-    #parse("templates/filter/status.vm")
-    
-    #set($select2-decision-group = "select2-decision-group-chronology")    
-  	#parse("templates/filter/decisionGroup.vm") 
-    
-    #set ($textInputId = "search-input-chronology")
-    #parse("templates/filter/text.vm")
-    
-    #set ($filterButtonId = "filter-button-chronology")
+	#set ($viewIdentifier = "chronology")	
+	#parse("templates/filter/text.vm")
+	#parse("templates/filter/knowledgeType.vm")
+	#parse("templates/filter/status.vm")
+	#parse("templates/filter/decisionGroup.vm")		
+	#parse("templates/filter/degree.vm")
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+	#parse("templates/filter/creationDate.vm")	
     #parse("templates/filter/filterButton.vm")
 </form>
 <div class="aui-group">

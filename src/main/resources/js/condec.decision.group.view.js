@@ -20,57 +20,40 @@
 
     ConDecDecisionGroupView.prototype.buildMatrix = function () {
         conDecAPI.getDecisionGroupTable(function (groups, projectKey) {
-            const table = document.getElementById("group-table");
-            const thead = document.createElement("thead");
-            const firstRowHeaderElement = document.createElement("th");
-            firstRowHeaderElement.innerText = "Group";
-            firstRowHeaderElement.classList.add("columnHeader");
-            thead.appendChild(firstRowHeaderElement);
-            const secondHeaderElement = document.createElement("th");
-            secondHeaderElement.innerText = "Decision Knowledge Elements";
-            secondHeaderElement.classList.add("columnHeader");
-            thead.appendChild(secondHeaderElement);
-            const thirdHeaderElement = document.createElement("th");
-            thirdHeaderElement.innerText = "Java Classes";
-            thirdHeaderElement.classList.add("columnHeader");
-            thead.appendChild(thirdHeaderElement);
-            table.appendChild(thead);
+            const body = document.getElementById("group-table-body");
             for (var i = 0; i < groups.length; i++) {
                 var group = groups[i];
                 var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
                     + "&group=" + group);
                 var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
                     + "&group=" + group);
-                newTableRow(table, group, keys.length, classes.length);
+                newTableRow(body, group, keys.length, classes.length);
             }
         });
     };
 
     ConDecDecisionGroupView.prototype.updateView = function () {
-        const table = document.getElementById("group-table");
-        table.innerHTML = "";
+        const body = document.getElementById("group-table-body");
+        body.innerHTML = "";
         conDecDecisionGroupView.buildMatrix();
     };
 
-    function newTableRow(table, row1, row2, row3) {
-        table.appendChild(document.createElement("tr"));
+    function newTableRow(body, row1, row2, row3) {
+    	const row = document.createElement("tr");
         const tableRowElement = document.createElement("td");
         tableRowElement.innerHTML = row1;
         tableRowElement.addEventListener("contextmenu", function (e) {
             e.preventDefault();
             conDecContextMenu.createContextMenu(row1, "groups", e, null);
         }, false);
-        table.appendChild(tableRowElement);
+        row.appendChild(tableRowElement);
         const tableRowElement2 = document.createElement("td");
         tableRowElement2.innerHTML = row2;
-        tableRowElement2.align = "center";
-        tableRowElement2.width = "100";
-        table.appendChild(tableRowElement2);
+        row.appendChild(tableRowElement2);
         const tableRowElement3 = document.createElement("td");
         tableRowElement3.innerHTML = row3;
-        tableRowElement3.align = "center";
-        tableRowElement3.width = "100";
-        table.appendChild(tableRowElement3);
+        row.appendChild(tableRowElement3);
+        body.appendChild(row);
     };
 
     /*

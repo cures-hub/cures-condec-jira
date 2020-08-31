@@ -12,12 +12,13 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetMatrix extends TestSetUp {
 	private ViewRest viewRest;
-	// private FilterSettings settings;
+	private FilterSettings settings;
 	protected HttpServletRequest request;
 
 	@Before
@@ -27,21 +28,27 @@ public class TestGetMatrix extends TestSetUp {
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
-		// settings = new FilterSettings("TEST", "");
+		settings = new FilterSettings("TEST", "");
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionMatrix(request, null).getStatus());
+	public void testRequestNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(null, settings).getStatus());
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyNonExistent() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionMatrix(request, "NotTEST").getStatus());
+	public void testFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(request, null).getStatus());
 	}
 
 	@Test
-	public void testDecisionMatrixProjectKeyExistent() {
-		assertEquals(200, viewRest.getDecisionMatrix(request, "TEST").getStatus());
+	public void testProjectKeyNonExistent() {
+		settings.setProjectKey("NotTEST");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getMatrix(request, settings).getStatus());
+	}
+
+	@Test
+	public void testFilterSettingsValid() {
+		assertEquals(Status.OK.getStatusCode(), viewRest.getMatrix(request, settings).getStatus());
 	}
 }
