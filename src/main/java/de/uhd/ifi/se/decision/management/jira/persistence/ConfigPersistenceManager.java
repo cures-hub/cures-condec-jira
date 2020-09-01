@@ -62,12 +62,12 @@ public class ConfigPersistenceManager {
 		if (isGlobalSetting) {
 			settings = pluginSettingsFactory.createGlobalSettings();
 		} else {
-			if (projectKey == null || projectKey.equals("")) {
+			if (projectKey == null || projectKey.isBlank()) {
 				return "";
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		}
-		if (parameter == null || parameter.equals("")) {
+		if (parameter == null || parameter.isBlank()) {
 			return "";
 		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -82,7 +82,7 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
-	public static Object getValueAsObject(String projectKey, String parameter, Type type) {
+	public static Object getSavedObject(String projectKey, String parameter, Type type) {
 		Gson gson = new Gson();
 		return gson.fromJson(getValue(projectKey, parameter), type);
 	}
@@ -260,7 +260,7 @@ public class ConfigPersistenceManager {
 		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
 
-	public static void setValueAsObject(String projectKey, String parameter, Object value, Type type) {
+	public static void saveObject(String projectKey, String parameter, Object value, Type type) {
 		Gson gson = new Gson();
 		setValue(projectKey, parameter, gson.toJson(value, type));
 	}
@@ -274,7 +274,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
-		if (webhookType == null || webhookType.equals("")) {
+		if (webhookType == null || webhookType.isBlank()) {
 			return;
 		}
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
@@ -347,16 +347,16 @@ public class ConfigPersistenceManager {
 		}.getType();
 		if (rdfSource != null) {
 			try {
-				rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 			} catch (JsonSyntaxException e) {
 				rdfSourceList = new ArrayList<>();
-				setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 			}
 
 			rdfSource.setActivated(true); // default: activated
 			rdfSourceList.add(rdfSource);
 
-			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+			saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 
 		}
 
@@ -367,7 +367,7 @@ public class ConfigPersistenceManager {
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		try {
-			rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+			rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 		} catch (JsonSyntaxException e) {
 		} finally {
 			// TODO Fix: finally block does not complete normally
@@ -380,7 +380,7 @@ public class ConfigPersistenceManager {
 		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
@@ -395,7 +395,7 @@ public class ConfigPersistenceManager {
 			}
 		}
 
-		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
@@ -411,24 +411,20 @@ public class ConfigPersistenceManager {
 	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
-
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
-		setValueAsObject(projectKey, "definitionOfDone", definitionOfDone, type);
+		saveObject(projectKey, "definitionOfDone", definitionOfDone, type);
 	}
 
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
-		DefinitionOfDone definitionOfDone = null;
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		try {
-			definitionOfDone = (DefinitionOfDone) getValueAsObject(projectKey, "definitionOfDone", type);
+			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
 		} catch (Exception e) {
 			setDefinitionOfDone(projectKey, new DefinitionOfDone());
-		}
-		if (definitionOfDone == null) {
-			definitionOfDone  = new DefinitionOfDone();
 		}
 		return definitionOfDone;
 	}
