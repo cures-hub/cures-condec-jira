@@ -60,7 +60,24 @@ public class VisGraph {
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		rootElement = filterSettings.getSelectedElement();
-		addNodesAndEdges();
+		addNodesAndEdges(filterSettings.isHierarchical());
+	}
+
+	/**
+	 * @param isHierarchical
+	 *            true if the {@link KnowledgeGraph} or a respective subgraph
+	 *            provided by the {@link FilteringManager} should be shown with a
+	 *            hierarchy of nodes.
+	 */
+	private void addNodesAndEdges(boolean isHierarchical) {
+		if (rootElement != null) {
+			subgraph.addVertex(rootElement);
+		}
+		if (isHierarchical) {
+			addNodesAndEdgesWithHierarchy();
+		} else {
+			addNodesAndEdgesWithoutHierarchy();
+		}
 	}
 
 	/**
@@ -69,11 +86,7 @@ public class VisGraph {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	private void addNodesAndEdges() {
-		if (rootElement != null) {
-			subgraph.addVertex(rootElement);
-		}
-
+	private void addNodesAndEdgesWithHierarchy() {
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();
@@ -86,9 +99,12 @@ public class VisGraph {
 			allEdges.addAll(undirectedGraph.edgesOf(element));
 		}
 
-		for (Link link : allEdges) {
-			edges.add(new VisEdge(link));
-		}
+		allEdges.forEach(link -> edges.add(new VisEdge(link)));
+	}
+
+	private void addNodesAndEdgesWithoutHierarchy() {
+		subgraph.vertexSet().forEach(element -> nodes.add(new VisNode(element)));
+		subgraph.edgeSet().forEach(link -> edges.add(new VisEdge(link)));
 	}
 
 	public void setNodes(Set<VisNode> nodes) {

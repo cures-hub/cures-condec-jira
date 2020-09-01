@@ -91,6 +91,7 @@
         conDecFiltering.addOnClickEventToFilterButton("comparison", function(filterSettings) {
         	// left side
             var filterSettingsLeft = conDecFiltering.getFilterSettings("comparison");            
+            filterSettingsLeft ["isHierarchical"] = true;
             conDecAPI.getVis(filterSettingsLeft, function (visDataLeft) {
             	visDataLeft.nodes.sort(sortVis);
                 var dateLeft = {
