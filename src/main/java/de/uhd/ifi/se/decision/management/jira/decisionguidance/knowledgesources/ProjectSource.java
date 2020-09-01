@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class ProjectSource implements KnowledgeSource {
 
 	private String projectKey;
-	private String name;
+	private String projectSourceName;
 	private boolean isActivated;
 	KnowledgePersistenceManager knowledgePersistenceManager;
 
@@ -25,12 +25,12 @@ public class ProjectSource implements KnowledgeSource {
 		this.isActivated = false;
 	}
 
-	public ProjectSource(String projectKey, String name, boolean isActivated) {
+	public ProjectSource(String projectKey, String projectSourceName, boolean isActivated) {
 		this.projectKey = projectKey;
-		this.name = name;
+		this.projectSourceName = projectSourceName;
 		this.isActivated = isActivated;
 		try {
-			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
+			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectSourceName);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
@@ -42,12 +42,12 @@ public class ProjectSource implements KnowledgeSource {
 
 	@Override
 	public String getName() {
-		return this.name;
+		return this.projectSourceName;
 	}
 
 	@Override
 	public void setName(String name) {
-		this.name = name;
+		this.projectSourceName = name;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class ProjectSource implements KnowledgeSource {
 				}
 			});
 		}
-		Recommendation recommendation = new Recommendation(this.name, recommendations);
+		Recommendation recommendation = new Recommendation(this.projectSourceName, recommendations);
 		return recommendation;
 	}
 }
