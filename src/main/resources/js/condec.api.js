@@ -950,20 +950,14 @@
 			return null;
 		}
 		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
-			if (!(groups === null) && groups.length > 0) {
-				selectGroupField.innerHTML = "";
-				selectGroupField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High_Level</option>"
-						+ "<option value='Medium_Level'>Medium_Level</option>"
-						+ "<option value='Realization_Level'>Realization_Level</option>");
+			if (!(groups === null) && groups.length > 0) {				
 				for (var i = 0; i < groups.length; i++) {
 					if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
 						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
 					}
-				}
-				AJS.$("#" + elementId).auiSelect2();
-			} else {
-				selectGroupField.innerHTML = "";
+				}				
 			}
+			AJS.$("#" + elementId).auiSelect2();
 		});
 	};
 
