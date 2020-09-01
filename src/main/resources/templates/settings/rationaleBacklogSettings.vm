@@ -2,7 +2,7 @@
 
 <p>Set the <i>definition of done</i> for each type of decision knowledge.</p>
 <p>All elements that do <strong>not</strong> match the definition of done are shown in the
- Rationale Backlog View. Some Criteria for this are default and others can be configured.</p>
+ Rationale Backlog View. Some of these Criteria are default and can not be changed, others can be configured.</p>
 <p>Criteria to match the definition of done:</p>
             	
 <div class="field-group">
@@ -10,7 +10,7 @@
 	<ul>
 		<li>is <i>resolved</i> <input type="checkbox" disabled="disabled" checked="checked"></li>
 		<li>is linked to a decision <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>has to be linked to an alternative <input type="checkbox" id="issue-link-alternative-checkbox" value="issueLinkAlternative"></li>
+		<li>is linked to an alternative <input type="checkbox" id="issue-link-alternative-checkbox" value="issueLinkAlternative"></li>
 	</ul>
 </div>
 <div class="field-group">
@@ -18,14 +18,14 @@
 	<ul>
 		<li>is <b>not</b> <i>challenged</i> <input type="checkbox" disabled="disabled" checked="checked"></li>
 		<li>is linked to an issue (=decision problem) <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>has to be linked to a pro-argument <input type="checkbox" id="decision-link-pro-checkbox" value="decisionLinkPro"></li>
+		<li>is linked to a pro-argument <input type="checkbox" id="decision-link-pro-checkbox" value="decisionLinkPro"></li>
 	</ul>
 </div>
 <div class="field-group">
 	<label>Alternative:</label>
 	<ul>
 		<li>is linked to an issue <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>has to be linked to an argument (either pro or con) <input type="checkbox" id="alternative-link-argument-checkbox" value="alternativeLinkArgument"></li>
+		<li>is linked to an argument (either pro or con) <input type="checkbox" id="alternative-link-argument-checkbox" value="alternativeLinkArgument"></li>
 	</ul>
 </div>
 <div class="field-group">

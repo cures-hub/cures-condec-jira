@@ -7,7 +7,9 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public class CompletenessHandler {
+final public class CompletenessHandler {
+
+	private CompletenessHandler() {}
 
 	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
 		entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
