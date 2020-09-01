@@ -74,6 +74,10 @@ public class ViewRest {
 	@GET
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
 			throws PermissionException {
+		if (request == null || issueKey == null || issueKey.isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
+		}
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
 		String projectKey = getProjectKey(normalizedIssueKey);
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
