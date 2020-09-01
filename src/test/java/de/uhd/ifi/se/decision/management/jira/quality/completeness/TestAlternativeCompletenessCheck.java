@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.jgrapht.Graphs;
 import org.junit.After;
 import org.junit.Before;
@@ -73,7 +74,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsCompleteAccordingToSettings() {
+	public void testIsLinkedToArgument() {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
@@ -84,6 +85,40 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		KnowledgeElement argument = elements.get(7);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, argument, user);
 		assertNotNull(alternative.getLink(argument));
+		assertTrue(alternativeCompletenessCheck.execute(alternative));
+	}
+
+
+	@Test
+	@NonTransactional
+	public void testIsLinkedToProArgument() {
+		// set criteria "alternative has to be linked to argument" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setAlternativeLinkedToArgument(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(alternativeCompletenessCheck.execute(alternative));
+
+		// link alternative to an pro-argument
+		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, "pro");
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, proArgument, user);
+		assertNotNull(alternative.getLink(proArgument));
+		assertTrue(alternativeCompletenessCheck.execute(alternative));
+	}
+
+
+	@Test
+	@NonTransactional
+	public void testIsLinkedToConArgument() {
+		// set criteria "alternative has to be linked to argument" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setAlternativeLinkedToArgument(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(alternativeCompletenessCheck.execute(alternative));
+
+		// link alternative to an pro-argument
+		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, "con");
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, conArgument, user);
+		assertNotNull(alternative.getLink(conArgument));
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 	}
 

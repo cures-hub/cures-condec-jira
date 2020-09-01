@@ -9,7 +9,7 @@ public class ArgumentCompletenessCheck implements CompletenessCheck {
 	@Override
 	public boolean execute(KnowledgeElement argument) {
 		this.argument = argument;
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+		return isCompleteAccordingToDefault();
 	}
 
 	@Override
