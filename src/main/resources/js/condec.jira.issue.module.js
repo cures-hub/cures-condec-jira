@@ -48,8 +48,11 @@
 			vis = _vis;
 			conDecDecisionTable = _conDecDecisionTable;
 
+			// Fill HTML elements for filter criteria
 			conDecFiltering.fillFilterElements("treant");
 			conDecFiltering.fillFilterElements("graph");
+			
+			// Add event listener on buttons
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
 				issueKey = conDecAPI.getIssueKey();
 				filterSettings["selectedElement"] = issueKey;
@@ -57,7 +60,6 @@
 			});
 
 			addOnClickEventToExportAsTable();
-
 			conDecDecisionTable.addOnClickEventToDecisionTableButtons();
 
 			// Register/subscribe this view as an observer
@@ -70,70 +72,23 @@
 	ConDecJiraIssueModule.prototype.initView = function() {
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
-		addOnClickEventToTab();
-		AJS.$("#menu-item-treant").click();
+		AJS.$("#menu-item-graph").click();
 	};
 
-	function addOnClickEventToTab() {
-		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
-
-		var treantClick = 0;
-		AJS.$("#menu-item-treant").on("click", function(event) {
-			if (treantClick === 0) {
-				showTreant();
-				addOnClickEventToTreantFilters();
-			}
-			treantClick++;
-		});
-		var graphClick = 0;
-		AJS.$("#menu-item-graph").on("click", function(event) {
-			if (graphClick === 0) {
-				document.getElementById("filter-button-graph").click();
-			}
-			graphClick++;
-		});
-		var decisionTableClick = 0;
-		AJS.$("#menu-item-decision-table").on("click", function(event) {
-			if (decisionTableClick === 0) {
-				showDecisionTable();
-			}
-			decisionTableClick++;
-		});
-		var relatedClick = 0;
-		AJS.$("#menu-item-related-knowledge").on("click", function(event) {
-			if (relatedClick === 0) {
-				consistencyTabsModule.loadData();
-			}
-			relatedClick++;
-		});
-		var duplicateClick = 0;
-		AJS.$("#menu-item-duplicate").on("click", function(event) {
-			if (duplicateClick === 0) {
-				consistencyTabsModule.loadDuplicateData();
-			}
-			duplicateClick++;
-		});
-	}
-
-	function showTreant() {
+	ConDecJiraIssueModule.prototype.showTreant = function () {
 		console.log("ConDecJiraIssueModule showTreant");
 		var filterSettings = conDecFiltering.getFilterSettings("treant");
 		filterSettings["selectedElement"] = issueKey;
 		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
 		filterSettings["isTestCodeShown"] = isTestCodeShown;
 		treant.buildTreant(filterSettings, true);
-	}
+	};
 
-	function showDecisionTable() {
-		console.log("ConDecJiraIssueModule showDecisionTable");
-		conDecDecisionTable.loadDecisionProblems(issueKey);
-	}
-
-	function addOnClickEventToTreantFilters() {
-		conDecFiltering.addOnChangeEventToFilterElements("treant", showTreant);
+	ConDecJiraIssueModule.prototype.addOnChangeEventToTreantFilters = function () {
+		conDecFiltering.addOnChangeEventToFilterElements("treant", conDecJiraIssueModule.showTreant);
 		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
-		isTestCodeShownInput.addEventListener("change", showTreant);
-	}
+		isTestCodeShownInput.addEventListener("change", conDecJiraIssueModule.showTreant);
+	};
 
 	function getURLsSearch() {
 		// get jql from url

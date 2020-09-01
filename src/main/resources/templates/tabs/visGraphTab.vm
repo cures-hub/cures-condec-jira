@@ -15,3 +15,19 @@
 	</div>
 </div>
 <div id="vis-container"></div>
+<script>
+/* Adds the on click listener on the menu item */
+$(document).ready(function () {
+	var isOnceClicked = false;
+	var menuItem = document.getElementById("menu-item-graph");
+	if (menuItem === null) {
+		return;
+	}
+	menuItem.onclick = function() {
+		if (!isOnceClicked) {
+			document.getElementById("filter-button-graph").click();
+			isOnceClicked = true;
+		}
+	};
+  }); 
+</script>

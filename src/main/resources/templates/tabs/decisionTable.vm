@@ -25,3 +25,20 @@
 	</div>
 </div>
 <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
+<script>
+/* Adds the on click listener on the menu item */
+$(document).ready(function () {
+	var isOnceClicked = false;
+	var menuItem = document.getElementById("menu-item-decision-table");
+	if (menuItem === null) {
+		return;
+	}
+	menuItem.onclick = function() {
+		if (!isOnceClicked) {
+			var issueKey = conDecAPI.getIssueKey();
+			conDecDecisionTable.loadDecisionProblems(issueKey);
+			isOnceClicked = true;
+		}
+	};
+  }); 
+</script>
