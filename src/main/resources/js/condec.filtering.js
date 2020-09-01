@@ -39,9 +39,8 @@
 			}
 		}
 		conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
-		// TODO Refactor and move method to conDecFiltering
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
-		conDecFiltering.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
+		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
 
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
@@ -260,6 +259,22 @@
 		startDate.setDate(startDate.getDate() - deltaDays);
 		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10);
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
+	};
+	
+	ConDecFiltering.prototype.fillDecisionGroupSelect = function (elementId) {
+		var selectGroupField = document.getElementById(elementId);
+		if (selectGroupField === null || selectGroupField === undefined) {
+			return null;
+		}
+		groups = conDecAPI.getAllDecisionGroups();
+		if (groups !== null && groups.length > 0) {				
+			for (var i = 0; i < groups.length; i++) {
+				if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
+					selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
+				}
+			}				
+		}
+		AJS.$("#" + elementId).auiSelect2();
 	};
 
 	// export ConDecFiltering

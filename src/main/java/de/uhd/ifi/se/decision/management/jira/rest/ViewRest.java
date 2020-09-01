@@ -38,6 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -61,6 +62,9 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.OK).build();
+		}
 		// get all project branches
 		return getDiffViewerResponse(projectKey, projectKey);
 	}
@@ -71,6 +75,10 @@ public class ViewRest {
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
 			throws PermissionException {
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
+		String projectKey = getProjectKey(normalizedIssueKey);
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.OK).build();
+		}
 		Issue issue = getJiraIssue(normalizedIssueKey);
 		if (issue == null) {
 			return jiraIssueKeyIsInvalid();
@@ -79,7 +87,7 @@ public class ViewRest {
 				+ normalizedIssueKey.toUpperCase() + "\\-";
 
 		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
+		return getDiffViewerResponse(projectKey, regexFilter,
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
 	}
 

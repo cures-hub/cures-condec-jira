@@ -84,7 +84,8 @@
 		});
 
 		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-overview");
+		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
+		
 		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
 
 		updateView(null, treant, treeViewer);

@@ -37,7 +37,8 @@
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_conDecDecisionTable)) {
+		        && isConDecTreantType(_treant) && isConDecVisType(_vis)
+		        && isConDecDecisionTableTyp(_conDecDecisionTable)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -46,17 +47,17 @@
 			treant = _treant;
 			vis = _vis;
 			conDecDecisionTable = _conDecDecisionTable;
-			
+
 			conDecFiltering.fillFilterElements("treant");
-			conDecFiltering.fillFilterElements("graph");	
+			conDecFiltering.fillFilterElements("graph");
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
 				issueKey = conDecAPI.getIssueKey();
 				filterSettings["selectedElement"] = issueKey;
 				vis.buildVis(filterSettings);
-            });
+			});
 
 			addOnClickEventToExportAsTable();
-				
+
 			conDecDecisionTable.addOnClickEventToDecisionTableButtons();
 
 			// Register/subscribe this view as an observer
@@ -70,11 +71,12 @@
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
 		addOnClickEventToTab();
-	};	
+        AJS.$("#menu-item-graph").click();
+	};
 
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
-		
+
 		var treantClick = 0;
 		AJS.$("#menu-item-treant").on("click", function(event) {
 			if (treantClick === 0) {
@@ -82,39 +84,39 @@
 				addOnClickEventToTreantFilters();
 			}
 			treantClick++;
-    	}); 
+		});
 		var graphClick = 0;
 		AJS.$("#menu-item-graph").on("click", function(event) {
 			if (graphClick === 0) {
 				document.getElementById("filter-button-graph").click();
 			}
 			graphClick++;
-    	}); 
+		});
 		var decisionTableClick = 0;
 		AJS.$("#menu-item-decision-table").on("click", function(event) {
 			if (decisionTableClick === 0) {
 				showDecisionTable();
 			}
 			decisionTableClick++;
-    	}); 
+		});
 		var relatedClick = 0;
 		AJS.$("#menu-item-related-knowledge").on("click", function(event) {
 			if (relatedClick === 0) {
 				consistencyTabsModule.loadData();
 			}
 			relatedClick++;
-    	}); 
+		});
 		var duplicateClick = 0;
 		AJS.$("#menu-item-duplicate").on("click", function(event) {
 			if (duplicateClick === 0) {
 				consistencyTabsModule.loadDuplicateData();
 			}
 			duplicateClick++;
-    	}); 
+		});
 	}
 
 	function showTreant() {
-		console.log("ConDecJiraIssueModule showTreant");		
+		console.log("ConDecJiraIssueModule showTreant");
 		var filterSettings = conDecFiltering.getFilterSettings("treant");
 		filterSettings["selectedElement"] = issueKey;
 		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
@@ -126,7 +128,7 @@
 		console.log("ConDecJiraIssueModule showDecisionTable");
 		conDecDecisionTable.loadDecisionProblems(issueKey);
 	}
-	
+
 	function addOnClickEventToTreantFilters() {
 		conDecFiltering.addOnChangeEventToFilterElements("treant", showTreant);
 		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
@@ -216,7 +218,7 @@
 		}
 		return true;
 	}
-	
+
 	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

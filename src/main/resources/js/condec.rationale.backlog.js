@@ -48,11 +48,8 @@
 		console.log("conDecRationaleBacklog initializeRationaleBacklog");
 
 		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
-		knowledgeTypeDropdown.addEventListener("change", conDecRationaleBacklog.updateView);
-
-		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
-		
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
+		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);		
+		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");		
 		
 		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
 

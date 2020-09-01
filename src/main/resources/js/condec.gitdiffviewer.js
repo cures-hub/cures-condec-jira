@@ -451,6 +451,10 @@ function appendForceRestFetch(parentNode) {
 
 function showBranchesDiff(data) {
 	console.debug("showBranchesDiff");
+	if (data === null || data === undefined) {
+		contentHtml.innerText = "Git extraction is disabled.";
+		return;
+	}	
 	data.timestamp = Date.now();
 	localStorage.setItem(url, JSON.stringify(data, null, 1));
 	contentHtml = document.getElementById("featureBranches-container");

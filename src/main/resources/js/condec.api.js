@@ -43,6 +43,8 @@
 		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Commit", "PullRequest"];
 		
 		this.linkTypes = [];
+		
+		this.decisionGroups = [];
 	};
 
 	/**
@@ -438,10 +440,13 @@
 	};
 	
 	/**
-	 * If the search term is a Jira query in JQL, this function provides the filter settings matching the JQL.
-	 * Otherwise it provides the default filter settings (e.g. link distance 3, all knowledge types, all link types, ...).
+	 * If the search term is a Jira query in JQL, this function provides the
+	 * filter settings matching the JQL. Otherwise it provides the default
+	 * filter settings (e.g. link distance 3, all knowledge types, all link
+	 * types, ...).
 	 * 
-	 * external reference: currently not used, used to be used in condec.jira.issue.module to fill the HTML filter elements
+	 * external reference: currently not used, used to be used in
+	 * condec.jira.issue.module to fill the HTML filter elements
 	 */
 	ConDecAPI.prototype.getFilterSettings = function (elementKey, searchTerm, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
@@ -676,15 +681,14 @@
 		return this.linkTypes;
 	};
 
-	ConDecAPI.prototype.getDecisionGroupTable = function (callback) {
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
-		callback(decisionGroups, projectKey);
-	};
-
-	function getAllDecisionGroups(selectGroupField, callback) {
-		var projectKey = getProjectKey();
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
-		callback(selectGroupField, decisionGroups);
+	/*
+	 * external references: condec.filtering
+	 */
+	ConDecAPI.prototype.getAllDecisionGroups = function () {
+		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
+			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + getProjectKey());
+		}
+		return this.decisionGroups;
 	};
 
 	/*
@@ -946,24 +950,6 @@
 		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
 				+ "&location=" + location + "&projectKey=" + projectKey);
 		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
-	};
-
-	// TODO Refactor and move to conDecFiltering
-	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
-		var selectGroupField = document.getElementById(elementId);
-		if (selectGroupField === null || selectGroupField === undefined) {
-			return null;
-		}
-		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
-			if (!(groups === null) && groups.length > 0) {				
-				for (var i = 0; i < groups.length; i++) {
-					if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
-						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
-					}
-				}				
-			}
-			AJS.$("#" + elementId).auiSelect2();
-		});
 	};
 
 	/*

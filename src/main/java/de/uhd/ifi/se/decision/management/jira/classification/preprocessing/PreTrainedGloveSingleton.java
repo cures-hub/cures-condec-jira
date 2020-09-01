@@ -1,18 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class PreTrainedGloveSingleton {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreTrainedGloveSingleton.class);
@@ -37,14 +36,14 @@ class PreTrainedGloveSingleton {
 				map.put(attributes[0], Arrays.copyOf(vector.toArray(), vector.size(), Double[].class));
 				line = br.readLine();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
 
 	}
 
 	public static PreTrainedGloveSingleton getInstance() {
-		if (instance == null){
+		if (instance == null) {
 			File file = new File(Preprocessor.DEFAULT_DIR + "glove.6b.50d.csv");
 			if (!file.exists()) {
 				return null;
