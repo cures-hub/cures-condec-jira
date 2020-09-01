@@ -30,18 +30,18 @@
 		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 		        selectedKnowledgeTypes);
-		// TODO Save in conDecAPI and call only once
-		conDecAPI.getLinkTypes(function(linkTypes) {
-			var linkTypeArray = [];
-			for (linkType in linkTypes) {
-				if (linkType !== undefined) {
-					linkTypeArray.push(linkType);
-				}
+		// TODO Refactor link type logic
+		var linkTypes = conDecAPI.getLinkTypes();
+		var linkTypeArray = [];
+		for (linkType in linkTypes) {
+			if (linkType !== undefined) {
+				linkTypeArray.push(linkType);
 			}
-			conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
-		});
+		}
+		conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
 		// TODO Refactor and move method to conDecFiltering
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
+		conDecFiltering.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
 
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
@@ -53,7 +53,12 @@
 		});
 	};
 
-	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback) {
+	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);
+		if (isSearchInputEvent && searchInput !== null) {
+			searchInput.addEventListener("change", callback);
+		}		
+		
 		$("#select2-decision-group-" + viewIdentifier).on("change.select2", callback);
 		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-" + viewIdentifier, callback);
 		
@@ -144,8 +149,7 @@
 			filterSettings["maxDegree"] = maxDegreeInput.value;
 		}
 
-		// Read whether only decision knowledge elements (issue, decision,
-		// alternative, arguments, ...) should be shown
+		// Read whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-"
 		        + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {

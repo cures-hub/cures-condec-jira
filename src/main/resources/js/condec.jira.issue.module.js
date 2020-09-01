@@ -6,6 +6,10 @@
  * conDecObservable
  * conDecContextMenu
  * conDecTreant
+ * conDecDecisionTable
+ * conDecExport
+ * conDecVis
+ * conDecDialog
 
  Is referenced in HTML by
  * jiraIssueModule.vm
@@ -18,7 +22,7 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
-	var decisionTable = null;
+	var conDecDecisionTable = null;
 
 	var issueKey = "";
 	var search = "";
@@ -28,12 +32,12 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
-	        _treant, _vis, _decisionTable) {
+	        _treant, _vis, _conDecDecisionTable) {
 
 		console.log("ConDecJiraIssueModule init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_decisionTable)) {
+		        && isConDecTreantType(_treant) && isConDecVisType(_vis) && isConDecDecisionTableTyp(_conDecDecisionTable)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -41,19 +45,22 @@
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			vis = _vis;
-			decisionTable = _decisionTable;
+			conDecDecisionTable = _conDecDecisionTable;
+			
+			conDecFiltering.fillFilterElements("treant");
+			conDecFiltering.fillFilterElements("graph");	
+			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
+				issueKey = conDecAPI.getIssueKey();
+				filterSettings["selectedElement"] = issueKey;
+				vis.buildVis(filterSettings);
+            });
+
+			addOnClickEventToExportAsTable();
+				
+			conDecDecisionTable.addOnClickEventToDecisionTableButtons();
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
-
-			addOnClickEventToExportAsTable();
-			addOnClickEventToTab();
-			addOnClickEventToFilterButton();
-			addOnClickEventToDecisionTableButtons();
-			addOnClickEventToTreantFilters();
-
-			// initial call to api depending on selected tab!
-			determineSelectedTab(window.location.href);
 			return true;
 		}
 		return false;
@@ -62,67 +69,52 @@
 	ConDecJiraIssueModule.prototype.initView = function() {
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
-		search = getURLsSearch();
-		initFilter(issueKey, search);
-	};
-
-	function addOnClickEventToDecisionTableButtons() {
-		document.getElementById("btnAddCriterion").addEventListener("click", function() {
-			conDecDecisionTable.showAddCriteriaToDecisionTableDialog();
-		});
-
-		document.getElementById("btnAddAlternative").addEventListener("click", function() {
-			conDecDecisionTable.showCreateDialogForIssue();
-		});
-	}
+		addOnClickEventToTab();
+	};	
 
 	function addOnClickEventToTab() {
 		console.log("ConDecJiraIssueModule addOnClickEventVisualizationSelectionTab");
-
-		AJS.$("#visualization-selection-tabs-menu").on("click", function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			determineSelectedTab(event.target.href);
-		});
-
-		//initial call of active tab
-		determineSelectedTab(AJS.$(".active-tab")[0].firstElementChild.href)
-	}
-
-	// TODO Only fill tab when clicking menu item for the first time
-	function determineSelectedTab(href) {
-		if (href === undefined || href.includes("#treant")) {
-			AJS.tabs.change(jQuery('a[href="#treant"]'));
-			showTreant();
-		} else if (href.includes("#vis")) {
-			AJS.tabs.change(jQuery('a[href="#vis"]'));
-			showGraph();
-		} else if (href.includes("#decisionTable")) {
-			AJS.tabs.change(jQuery('a[href="#decisionTable"]'));
-			showDecisionTable();
-		} else if (href.includes("#duplicate-issues-tab")) {
-			AJS.tabs.change(jQuery('a[href="#duplicate-issues-tab"]'));
-			consistencyTabsModule.loadDuplicateData();
-		} else if (href.includes("#related-issues-tab")) {
-			AJS.tabs.change(jQuery('a[href="#related-issues-tab"]'));
-			consistencyTabsModule.loadData();
-		}
-	}
-
-	function addOnClickEventToFilterButton() {
-		console.log("ConDecJiraIssueModule addOnClickEventToFilterButton");
-
-		var filterButton = document.getElementById("filter-button-graph");
-		filterButton.addEventListener("click", function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			applyFilters();
-		});
+		
+		var treantClick = 0;
+		AJS.$("#menu-item-treant").on("click", function(event) {
+			if (treantClick === 0) {
+				showTreant();
+				addOnClickEventToTreantFilters();
+			}
+			treantClick++;
+    	}); 
+		var graphClick = 0;
+		AJS.$("#menu-item-graph").on("click", function(event) {
+			if (graphClick === 0) {
+				document.getElementById("filter-button-graph").click();
+			}
+			graphClick++;
+    	}); 
+		var decisionTableClick = 0;
+		AJS.$("#menu-item-decision-table").on("click", function(event) {
+			if (decisionTableClick === 0) {
+				showDecisionTable();
+			}
+			decisionTableClick++;
+    	}); 
+		var relatedClick = 0;
+		AJS.$("#menu-item-related-knowledge").on("click", function(event) {
+			if (relatedClick === 0) {
+				consistencyTabsModule.loadData();
+			}
+			relatedClick++;
+    	}); 
+		var duplicateClick = 0;
+		AJS.$("#menu-item-duplicate").on("click", function(event) {
+			if (duplicateClick === 0) {
+				consistencyTabsModule.loadDuplicateData();
+			}
+			duplicateClick++;
+    	}); 
 	}
 
 	function showTreant() {
 		console.log("ConDecJiraIssueModule showTreant");		
-		issueKey = conDecAPI.getIssueKey();
 		var filterSettings = conDecFiltering.getFilterSettings("treant");
 		filterSettings["selectedElement"] = issueKey;
 		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
@@ -130,72 +122,15 @@
 		treant.buildTreant(filterSettings, true);
 	}
 
-	function showGraph() {
-		console.log("ConDecJiraIssueModule showGraph");
-		issueKey = conDecAPI.getIssueKey();
-		applyFilters();
-	}
-
 	function showDecisionTable() {
 		console.log("ConDecJiraIssueModule showDecisionTable");
-		issueKey = conDecAPI.getIssueKey();
-		decisionTable.loadDecisionProblems(issueKey);
-	}
-
-	function applyFilters() {
-		var filterSettings = conDecFiltering.getFilterSettings("graph");
-		filterSettings["selectedElement"] = issueKey;
-		vis.buildVis(filterSettings);
-	}
-
-	function initFilter(issueKey, search) {
-		console.log("ConDecJiraIssueModule initFilter");
-		
-		conDecAPI.getLinkTypes(function (linkTypes) {
-			var linkTypeArray = [];
-			for (linkType in linkTypes) {
-				if (linkType !== undefined) {
-					linkTypeArray.push(linkType);
-				}				
-			}
-			conDecFiltering.initDropdown("link-type-dropdown-graph", linkTypeArray);
-		});		
-
-		// Graph view
-		var firstDatePicker = document.getElementById("start-date-picker-graph");
-		var secondDatePicker = document.getElementById("end-date-picker-graph");
-
-		// Parses a Jira query (in JQL) into filter settings, uses the default settings in case no Jira query is provided
-		conDecAPI.getFilterSettings(issueKey, search, function(filterData) {
-			var allKnowledgeTypes = conDecAPI.getKnowledgeTypes();		
-			var selectedKnowledgeTypes = filterData.knowledgeTypes;
-			var status = conDecAPI.knowledgeStatus;
-			var documentationLocations = filterData.documentationLocations;
-
-			conDecFiltering.initDropdown("knowledge-type-dropdown-treant", allKnowledgeTypes, selectedKnowledgeTypes); // Tree view
-			conDecAPI.fillDecisionGroupSelect("select2-decision-group-treant");
-			conDecAPI.fillDecisionGroupSelect("select2-decision-group-graph");
-			conDecFiltering.initDropdown("knowledge-type-dropdown-graph", allKnowledgeTypes, selectedKnowledgeTypes); // graph view
-			conDecFiltering.initDropdown("status-dropdown-graph", status);
-			conDecFiltering.initDropdown("status-dropdown-treant", status);
-			conDecFiltering.initDropdown("documentation-location-dropdown-graph", documentationLocations);
-			if (filterData.startDate >= 0) {
-				firstDatePicker.valueAsDate = new Date(filterData.startDate + 1000);
-			}
-			if (filterData.endDate >= 0) {
-				secondDatePicker.valueAsDate = new Date(filterData.endDate + 1000);
-			}
-		});		
+		conDecDecisionTable.loadDecisionProblems(issueKey);
 	}
 	
 	function addOnClickEventToTreantFilters() {
 		conDecFiltering.addOnChangeEventToFilterElements("treant", showTreant);
-
 		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
 		isTestCodeShownInput.addEventListener("change", showTreant);
-		
-		var searchInputTreant = document.getElementById("search-input-treant");
-		searchInputTreant.addEventListener("change", showTreant);
 	}
 
 	function getURLsSearch() {

@@ -11,6 +11,14 @@
 	let decisionTableData = [];
 	let currentIssue;
 	
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function () {
+		document.getElementById("btnAddCriterion").addEventListener("click", conDecDecisionTable.showAddCriteriaToDecisionTableDialog);
+		document.getElementById("btnAddAlternative").addEventListener("click", conDecDecisionTable.showCreateDialogForIssue);
+	};
+	
  	/*
 	 * external references: condec.jira.issue.module
 	 */
@@ -303,7 +311,7 @@
 		ev.preventDefault();
 		let argumentId = ev.dataTransfer.getData("argumentId");
 		let criteriaId = ev.dataTransfer.getData("criteriaId");
-		let arguments = document.getElementsByClassName("argument");
+		arguments = document.getElementsByClassName("argument");
 		for (let x = 0; x < arguments.length; x++) {
 			const argument = arguments[x];
 			if (argument.id === argumentId) {

@@ -1,7 +1,8 @@
- <div class="aui-toolbar2" role="toolbar">
-	<div class="aui-toolbar-2-inner">
-		#set ($viewIdentifier = "graph")	
+<div class="aui-toolbar2" role="toolbar">
+	<div class="aui-toolbar-2-inner">		
 		<form class="aui">
+			#set ($viewIdentifier = "graph")	
+			#parse("templates/filter/text.vm")	
 			#parse("templates/filter/knowledgeType.vm")
 			#parse("templates/filter/status.vm")
 			#parse("templates/filter/decisionGroup.vm")

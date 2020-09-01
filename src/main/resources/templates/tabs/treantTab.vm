@@ -1,15 +1,16 @@
 <div class="aui-toolbar2" role="toolbar">
-    <div class="aui-toolbar-2-inner" id="treant-filter">
+    <div class="aui-toolbar-2-inner">
         <form class="aui">      	
         	#set ($viewIdentifier = "treant")	
         	#parse("templates/filter/text.vm")	
         	#parse("templates/filter/knowledgeType.vm")
         	#parse("templates/filter/status.vm")
         	#parse("templates/filter/decisionGroup.vm")
+        	#parse("templates/filter/creationDate.vm")
+        	#parse("templates/filter/degree.vm")
         	#parse("templates/filter/linkDistance.vm")
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-        	#parse("templates/filter/isTestCode.vm")
-            #parse("templates/filter/degree.vm")
+        	#parse("templates/filter/isTestCode.vm")           
         </form>
     </div>
 </div>

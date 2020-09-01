@@ -54,7 +54,7 @@
 		
 		conDecAPI.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 		
-		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView);
+		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
 
 		updateView(null, treant, treeViewer);
 	}

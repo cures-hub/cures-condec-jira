@@ -4,22 +4,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 
 <div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
    <ul class="tabs-menu" id="visualization-selection-tabs-menu">
-      <li class="menu-item active-tab">
+      <li class="menu-item active-tab" id="menu-item-treant">
          <a href="#treant">Tree Visualization</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-graph">
          <a href="#vis">Graph Visualization</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-decision-table">
          <a href="#decisionTable">Decision Table</a>
       </li>
-      <li class="menu-item" data-condec="feature-branches-item">
+      <li class="menu-item" data-condec="feature-branches-item" id="menu-item-feature-branches">
          <a href="#featureBranchesTab">Feature branch(es)</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-related-knowledge">
          <a href="#related-issues-tab">Related knowledge</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-duplicate">
          <a href="#duplicate-issues-tab">Duplicate knowledge</a>
       </li>
    </ul>
@@ -60,8 +60,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
      * Instantiate the ConDecJiraIssueModule object controlling this view:
      */
     $(document).ready(function () {
-        conDecAPI.checkIfProjectKeyIsValid();
-
+        conDecAPI.checkIfProjectKeyIsValid();      
         consistencyTabsModule.init();
         if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
                 conDecVis, conDecDecisionTable)) {
@@ -83,7 +82,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
             setTimeout(500, getBranchesDiff())
         } else {
             console.error("ConDecJiraIssueModule could not get its dependencies.");
-        }
+        }    
     });
-
 </script>
