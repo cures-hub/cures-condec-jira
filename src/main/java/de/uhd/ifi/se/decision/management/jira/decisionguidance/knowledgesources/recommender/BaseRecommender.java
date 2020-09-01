@@ -14,7 +14,7 @@ public abstract class BaseRecommender {
 		this.knowledgeSources.add(knowledgeSource);
 	}
 
-	public void addKnowledgeSource(List<KnowledgeSource> knowledgeSources) {
+	public void addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
 		this.knowledgeSources.addAll(knowledgeSources);
 	}
 
