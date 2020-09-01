@@ -156,7 +156,10 @@ public class KnowledgeRest {
 
 		if (newElementWithId == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+					.entity(ImmutableMap.of("error",
+							"Creation of decision knowledge element failed. "
+									+ "A reason might be that Jira issue persistence in project settings is disabled."))
+					.build();
 		}
 
 		if (idOfExistingElement == 0 || existingElement == null) {
