@@ -34,6 +34,26 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	}
 
 	@Test
+	public void testRequestNull() {
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
+		try {
+			assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getFeatureBranchTree(null, null).getStatus());
+		} catch (PermissionException e) {
+			assertNull(e);
+		}
+	}
+
+	@Test
+	public void testIssueKeyNull() {
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
+		try {
+			assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getFeatureBranchTree(request, null).getStatus());
+		} catch (PermissionException e) {
+			assertNull(e);
+		}
+	}
+
+	@Test
 	public void testEmptyIssueKey() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
 		try {

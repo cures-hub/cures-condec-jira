@@ -69,7 +69,6 @@ public class ViewRest {
 		return getDiffViewerResponse(projectKey, projectKey);
 	}
 
-	// FIXME: Unit test
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
@@ -80,12 +79,12 @@ public class ViewRest {
 		}
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
 		String projectKey = getProjectKey(normalizedIssueKey);
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.OK).build();
-		}
-		Issue issue = getJiraIssue(normalizedIssueKey);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(normalizedIssueKey);
 		if (issue == null) {
 			return jiraIssueKeyIsInvalid();
+		}
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.OK).build();
 		}
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
 				+ normalizedIssueKey.toUpperCase() + "\\-";
@@ -93,14 +92,6 @@ public class ViewRest {
 		// get feature branches of an issue
 		return getDiffViewerResponse(projectKey, regexFilter,
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
-	}
-
-	private Issue getJiraIssue(String issueKey) {
-		Issue issue = null;
-		if (issueKey == null || issueKey.isBlank())
-			return null;
-		issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		return issue;
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
