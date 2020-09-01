@@ -86,22 +86,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
-		velocityParameters.put("projectSources", getProjectSources(projectKey));
+		velocityParameters.put("projectSources", ConfigPersistenceManager.getActiveProjectSources(projectKey));
 
 		return velocityParameters;
-	}
-
-	//TODO wohin damit? ConfigPersistanceManager?
-	public static List<ProjectSource> getProjectSources(String projectKey) {
-		List<ProjectSource> projectSources = new ArrayList<>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
-			if (jiraProject.isActivated()) {
-				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
-				projectSources.add(projectSource);
-			}
-		}
-		return projectSources;
 	}
 }

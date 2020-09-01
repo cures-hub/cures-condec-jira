@@ -4,6 +4,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -12,8 +13,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
@@ -397,5 +400,18 @@ public class ConfigPersistenceManager {
 
 	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
 		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
+	}
+
+	public static List<ProjectSource> getActiveProjectSources(String projectKey) {
+		List<ProjectSource> projectSources = new ArrayList<>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
+			if (jiraProject.isActivated()) {
+				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
+				projectSources.add(projectSource);
+			}
+		}
+		return projectSources;
 	}
 }
