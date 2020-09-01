@@ -812,6 +812,18 @@
 	};
 
 	/*
+	 * external references: condec.decision.table
+	 */
+	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" +  projectKey + "&keyword=" + keyword,
+				function (error, query) {
+			if (error === null) {
+				callback(query);
+			}
+		});
+	};
+
+	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
@@ -1194,6 +1206,7 @@
 			}
 		});
 	};
+
 
 	/*
 	 * external references: condec.context.menu

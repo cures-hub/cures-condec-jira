@@ -1,0 +1,17 @@
+<form class="aui">
+    <input id="recommendation-keyword" class="text long-field" value="" placeholder="keyword"/>
+    <button class="aui-button" id="recommendation-button"
+            title="Adds a new criterion column to decision table">
+        <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Get Recommendations</span>
+        Recommend Solution Options
+    </button>
+</form>
+
+<table id="recommendation-container" class="aui">
+    <tr>
+        <th>Recommendation</th>
+        <th>Project Key</th>
+    </tr>
+</table>
+
+
