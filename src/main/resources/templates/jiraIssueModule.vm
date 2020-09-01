@@ -2,7 +2,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
-<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
+<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs">
    <ul class="tabs-menu" id="visualization-selection-tabs-menu">
       <li class="menu-item active-tab" id="menu-item-treant">
          <a href="#treant">Tree Visualization</a>

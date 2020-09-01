@@ -71,7 +71,7 @@
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
 		addOnClickEventToTab();
-        AJS.$("#menu-item-graph").click();
+		AJS.$("#menu-item-treant").click();
 	};
 
 	function addOnClickEventToTab() {
