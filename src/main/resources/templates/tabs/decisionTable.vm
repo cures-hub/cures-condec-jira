@@ -26,7 +26,6 @@
         </form>
     </div>
 </div>
-</div>
 <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
 
 #parse("templates/tabs/recommendationTable.vm")
