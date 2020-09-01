@@ -2,11 +2,20 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@XmlRootElement(name = "Recommendation")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Recommendation {
 
+	@XmlElement
 	String knowledgeSourceName;
+
+	@XmlElement
 	List<KnowledgeElement> recommendations;
 
 	Recommendation(String knowledgeSourceName, List<KnowledgeElement> recommendations) {
