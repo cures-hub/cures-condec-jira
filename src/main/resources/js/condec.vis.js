@@ -14,15 +14,10 @@
 	};
 
 	ConDecVis.prototype.buildGraphNetwork = function(data, container) {
-		var dataset = {
-		    nodes : data.nodes,
-		    edges : data.edges
-		};
-
-		var options = conDecVis.getOptions();
+		var options = conDecVis.getOptions(data);
 
 		var graphContainer = document.getElementById(container);
-		var graphNetwork = new vis.Network(graphContainer, dataset, options);
+		var graphNetwork = new vis.Network(graphContainer, data, options);
 		graphNetwork.setSize("100%", "500px");
 
 		graphNetwork.on("oncontext", function(params) {
@@ -33,7 +28,7 @@
 		}
 	};
 	
-	ConDecVis.prototype.getOptions = function() {
+	ConDecVis.prototype.getOptions = function (visData) {		
 		var options = {
 		    edges : {
 		        arrows : "to",
@@ -47,14 +42,14 @@
 		        addNode : function(data, callback) {
 		        	conDecDialog.showCreateDialog(-1, null, "Decision");
 		        },
-		        deleteNode : function(data, callback) {
-			        conDecVis.deleteNode(data);
+		        deleteNode : function(selectedNode, callback) {
+			        conDecVis.deleteNode(selectedNode);
 		        },
-		        addEdge : function(data, callback) {
-			        conDecVis.addEdge(data);
+		        addEdge : function(selectedNodes, callback) {
+			        conDecVis.addEdge(selectedNodes);
 		        },
-		        deleteEdge : function(data, callback) {
-			        conDecVis.deleteEdge(data, dataset);
+		        deleteEdge : function(selectedEdge, callback) {
+			        conDecVis.deleteEdge(selectedEdge, visData);
 		        },
 		        editEdge : false
 		    },
