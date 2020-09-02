@@ -18,6 +18,10 @@ public abstract class BaseRecommender {
 		this.knowledgeSources.addAll(knowledgeSources);
 	}
 
+	public List<KnowledgeSource> getKnowledgeSources() {
+		return this.knowledgeSources;
+	}
+
 	abstract public List<Recommendation> getResults();
 
 

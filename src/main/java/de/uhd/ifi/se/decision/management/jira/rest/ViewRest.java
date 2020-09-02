@@ -8,8 +8,10 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -420,14 +422,35 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
+		if (keyword.isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "The keywords should not be empty."))
+				.build();
+		}
+
+
 		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
-		List<ProjectSource> projectSoures = ConfigPersistenceManager.getActiveProjectSources(projectKey);
+		List<ProjectSource> projectSources = ConfigPersistenceManager.getActiveProjectSources(projectKey);
 		List<RDFSource> rdfSources = ConfigPersistenceManager.getRDFKnowledgeSource(projectKey);
 
-		simpleRecommender.addKnowledgeSource(projectSoures);
+		simpleRecommender.addKnowledgeSource(projectSources);
 		simpleRecommender.addKnowledgeSource(rdfSources);
+
+		//TODO move the text
+		if(checkIfKnowledgeSourceNotConfigured(simpleRecommender)) {
+			return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="+projectKey+"&category=decisionGuidance'>Configure</a>"))
+				.build();
+		}
 
 		List<Recommendation> recommendationList = simpleRecommender.getResults();
 		return Response.ok(recommendationList).build();
+	}
+
+	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender recommender) {
+		for(KnowledgeSource knowledgeSource : recommender.getKnowledgeSources()) {
+			if(knowledgeSource.isActivated()) return false;
+		}
+		return true;
 	}
 }
