@@ -6,6 +6,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Sets rules that the decision knowledge documentation needs to fulfill to be
  * complete. These rules can be configured by the rationale manager.
@@ -23,13 +26,20 @@ public class DefinitionOfDone {
 	private boolean issueIsLinkedToAlternative;
 	private boolean decisionIsLinkedToPro;
 	private boolean alternativeIsLinkedToArgument;
+	private Map<String, Boolean> criteriaMap = new HashMap<>();
+
+	public DefinitionOfDone() {
+		criteriaMap.put("issueIsLinkedToAlternative", Boolean.FALSE);
+		criteriaMap.put("decisionIsLinkedToPro", Boolean.FALSE);
+		criteriaMap.put("alternativeIsLinkedToArgument", Boolean.FALSE);
+	}
 
 	/**
 	 * @return true if every decision problem (=issue) needs to be linked to at
 	 *         least one alternative.
 	 */
 	public boolean isIssueIsLinkedToAlternative() {
-		return issueIsLinkedToAlternative;
+		return (boolean) criteriaMap.get("issueIsLinkedToAlternative");
 	}
 
 	/**
@@ -39,7 +49,7 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("issueIsLinkedToAlternative")
 	public void setIssueLinkedToAlternative(boolean issueIsLinkedToAlternative) {
-		this.issueIsLinkedToAlternative = issueIsLinkedToAlternative;
+		criteriaMap.put("issueIsLinkedToAlternative", issueIsLinkedToAlternative);
 	}
 
 	/**
@@ -47,7 +57,7 @@ public class DefinitionOfDone {
 	 *         linked to at least one pro-argument.
 	 */
 	public boolean isDecisionIsLinkedToPro() {
-		return decisionIsLinkedToPro;
+		return criteriaMap.get("decisionIsLinkedToPro");
 	}
 
 	/**
@@ -57,7 +67,7 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("decisionIsLinkedToPro")
 	public void setDecisionLinkedToPro(boolean decisionIsLinkedToPro) {
-		this.decisionIsLinkedToPro = decisionIsLinkedToPro;
+		criteriaMap.put("decisionIsLinkedToPro", decisionIsLinkedToPro);
 	}
 
 	/**
@@ -65,7 +75,7 @@ public class DefinitionOfDone {
 	 *         needs to be linked to at least one pro-argument.
 	 */
 	public boolean isAlternativeIsLinkedToArgument() {
-		return alternativeIsLinkedToArgument;
+		return criteriaMap.get("alternativeIsLinkedToArgument");
 	}
 
 	/**
@@ -75,6 +85,6 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("alternativeIsLinkedToArgument")
 	public void setAlternativeLinkedToArgument(boolean alternativeIsLinkedToArgument) {
-		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
+		criteriaMap.put("alternativeIsLinkedToArgument", alternativeIsLinkedToArgument);
 	}
 }
