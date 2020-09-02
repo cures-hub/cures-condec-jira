@@ -379,6 +379,13 @@ public class ConfigPersistenceManager {
 		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
+	public static void deleteAllKnowledgeSource(String projectKey) {
+		List<RDFSource> rdfSourceList = new ArrayList<>();
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
+
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
 		Type listType = new TypeToken<List<RDFSource>>() {

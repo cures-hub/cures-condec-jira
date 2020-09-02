@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.recommender;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
@@ -13,12 +13,12 @@ import java.util.List;
 public class Recommendation {
 
 	@XmlElement
-	String knowledgeSourceName;
+	private String knowledgeSourceName;
 
 	@XmlElement
-	List<KnowledgeElement> recommendations;
+	private List<KnowledgeElement> recommendations;
 
-	Recommendation(String knowledgeSourceName, List<KnowledgeElement> recommendations) {
+	public Recommendation(String knowledgeSourceName, List<KnowledgeElement> recommendations) {
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.recommendations = recommendations;
 	}

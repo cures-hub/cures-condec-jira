@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 public interface KnowledgeSource {
 

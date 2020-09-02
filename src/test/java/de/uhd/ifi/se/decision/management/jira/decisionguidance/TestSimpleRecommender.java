@@ -4,10 +4,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.recommender.SimpleRecommender;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,7 @@ public class TestSimpleRecommender extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TestProject1", true);
+		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); //search for solutions in the same project
 		rdfSource = new RDFSource(JiraProjects.getTestProject().getKey());
 	}
 

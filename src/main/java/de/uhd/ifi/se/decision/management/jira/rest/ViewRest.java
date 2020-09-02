@@ -10,8 +10,8 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.recommender.SimpleRecommender;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -425,7 +425,7 @@ public class ViewRest {
 		List<RDFSource> rdfSources = ConfigPersistenceManager.getRDFKnowledgeSource(projectKey);
 
 		simpleRecommender.addKnowledgeSource(projectSoures);
-		//simpleRecommender.addKnowledgeSource(rdfSources);
+		simpleRecommender.addKnowledgeSource(rdfSources);
 
 		List<Recommendation> recommendationList = simpleRecommender.getResults();
 		return Response.ok(recommendationList).build();
