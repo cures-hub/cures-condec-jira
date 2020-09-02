@@ -56,9 +56,6 @@
 		    },
 		    physics : {
 		        enabled : true,
-		        barnesHut : {
-			        avoidOverlap : 0.2
-		        },
 		        stabilization : true // if false, there is a lot of movement at the beginning
 		    },
 		    nodes : {

@@ -238,4 +238,13 @@ public class TestFilterSettings extends TestSetUp {
 		assertNull(filterSettings.getSelectedElement());
 	}
 
+	@Test
+	public void testSetHierarchical() {
+		// default value
+		assertFalse(filterSettings.isHierarchical());
+
+		filterSettings.setHierarchical(true);
+		assertTrue(filterSettings.isHierarchical());
+	}
+
 }

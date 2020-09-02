@@ -27,8 +27,8 @@
 	 * condec.relationship.page
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
-		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
-		conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
+		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
+		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 		        selectedKnowledgeTypes);
 		// TODO Refactor link type logic
 		var linkTypes = conDecAPI.getLinkTypes();
@@ -38,7 +38,7 @@
 				linkTypeArray.push(linkType);
 			}
 		}
-		conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
@@ -213,7 +213,7 @@
 		}
 		var selectedItems = [];
 		for (var i = 0; i < dropdown.children().size(); i++) {
-			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined
+			if (dropdown.children().eq(i).attr("checked") !== undefined
 			        && dropdown.children().eq(i).attr("checked") !== false) {
 				selectedItems.push(dropdown.children().eq(i).text());
 			}
