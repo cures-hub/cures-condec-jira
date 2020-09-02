@@ -35,7 +35,8 @@
 		        length : 200
 		    },
 		    layout : {
-			    randomSeed : 228332
+			    randomSeed : 1,
+			    improvedLayout : false
 		    },
 		    manipulation : {
 		        enabled : true,
@@ -57,7 +58,13 @@
 		        enabled : true,
 		        barnesHut : {
 			        avoidOverlap : 0.2
-		        }
+		        },
+		        stabilization : true // if false, there is a lot of movement at the beginning
+		    },
+		    nodes : {
+		    	  shapeProperties: {
+		    	    interpolation: false    // 'true' for intensive zooming
+		    	}
 		    }
 		};
 		return options;
