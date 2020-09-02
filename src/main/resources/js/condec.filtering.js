@@ -72,45 +72,45 @@
 	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);
 		if (isSearchInputEvent && searchInput !== null) {
-			searchInput.addEventListener("change", function() {callback});
+			searchInput.addEventListener("change", function() {callback()});
 		}		
 		
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2", function() {callback});
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-" + viewIdentifier, function() {callback});
+		$("#select2-decision-group-" + viewIdentifier).on("change.select2", function() {callback()});
+		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-" + viewIdentifier, function() {callback()});
 		
 		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
 		if (knowledgeTypeDropdown !== null) {
-			knowledgeTypeDropdown.addEventListener("change", function() {callback});
+			knowledgeTypeDropdown.addEventListener("change", function() {callback()});
 		}
 		
 		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
 		if (statusDropdown !== null) {
-			statusDropdown.addEventListener("change", function() {callback});
+			statusDropdown.addEventListener("change", function() {callback()});
 		}	
 		
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
-			isOnlyDecisionKnowledgeShownInput.addEventListener("change", function() {callback});
+			isOnlyDecisionKnowledgeShownInput.addEventListener("change", function() {callback()});
 		}		
 		
 		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
 		if (minLinkNumberInput !== null) {
-			minLinkNumberInput.addEventListener("change", function() {callback});
+			minLinkNumberInput.addEventListener("change", function() {callback()});
 		}
 
 		var maxLinkNumberInput = document.getElementById("max-degree-input-" + viewIdentifier);
 		if (maxLinkNumberInput !== null) {
-			maxLinkNumberInput.addEventListener("change", function() {callback});
+			maxLinkNumberInput.addEventListener("change", function() {callback()});
 		}
 
 		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
 		if (endDatePicker !== null) {
-			endDatePicker.addEventListener("change", function() {callback});
+			endDatePicker.addEventListener("change", function() {callback()});
 		}		
 
 		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
 		if (startDatePicker !== null) {
-			startDatePicker.addEventListener("change", function() {callback});
+			startDatePicker.addEventListener("change", function() {callback()});
 		}
 	};
 
