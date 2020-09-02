@@ -224,6 +224,9 @@ public class FilterSettings {
 			return;
 		}
 		for (String stringStatus : status) {
+			if (stringStatus.equals("incomplete")) {
+				continue;
+			}
 			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 		}
 	}
