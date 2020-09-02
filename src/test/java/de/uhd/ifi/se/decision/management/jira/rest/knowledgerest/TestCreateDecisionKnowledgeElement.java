@@ -114,4 +114,13 @@ public class TestCreateDecisionKnowledgeElement extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(), knowledgeRest
 				.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null, "TEST-3").getStatus());
 	}
+
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementDocumentationLocationNull() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, element, 1, "i", null).getStatus());
+	}
 }

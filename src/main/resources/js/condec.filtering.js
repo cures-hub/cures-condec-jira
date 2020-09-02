@@ -5,13 +5,20 @@
  * Requires no other module
  * 
  * Is required by: conDecJiraIssueModule, conDecEvolutionPage,
- * ConDecRelationshipPage
+ * ConDecRelationshipPage, conDecMatrix, conDecRationaleBacklog,
+ * conDecKnowledgePage
  * 
  * @issue Should filters change all views or only the current view?
  * @decision Filters are only applied in the current view using updateView()!
- * @alternative We update all views using conDecObservable.notify()!
+ * @alternative We could update all views using conDecObservable.notify()!
  * @pro The user could reuse the filter settings, which is more useable.
  * @con This would need more computation and decreases performance.
+ * 
+ * @issue Should filtering be performed instantly after every change or using a
+ *        "filter" button?
+ * @decision Perform filtering instantly after changes in some views, e.g.
+ *           conDecRationaleBacklog! Perform filtering using a "filter" button
+ *           in other views, e.g. chronology view!
  */
 (function(global) {
 
@@ -24,7 +31,7 @@
 	 * types, status, ... of a view.
 	 * 
 	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * condec.relationship.page, condec.matrix
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
@@ -43,6 +50,11 @@
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
 
+	/*
+	 * For views with filter button, i.e., NO instant filtering. external
+	 * references: condec.jira.issue.module, condec.evolution.page,
+	 * condec.relationship.page, condec.matrix
+	 */
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
 
@@ -52,6 +64,11 @@
 		});
 	};
 
+	/*
+	 * For views without filter button but instant filtering. external
+	 * references: condec.jira.issue.module, condec.knowledge.page,
+	 * condec.rationale.backlog
+	 */
 	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);
 		if (isSearchInputEvent && searchInput !== null) {
@@ -100,8 +117,8 @@
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 * 
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: condec.jira.issue.module, condec.knowledge.page,
+	 * condec.evolution.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
 		var filterSettings = {};
@@ -148,7 +165,8 @@
 			filterSettings["maxDegree"] = maxDegreeInput.value;
 		}
 
-		// Read whether only decision knowledge elements (issue, decision, alternative, arguments, ...) should be shown
+		// Read whether only decision knowledge elements (issue, decision,
+		// alternative, arguments, ...) should be shown
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-"
 		        + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
@@ -180,8 +198,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
@@ -203,19 +220,26 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: none, only used locally in condec.filtering
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
-		var dropdown = AJS.$("#" + dropdownId);
+		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
 		}
-		var selectedItems = [];
-		for (var i = 0; i < dropdown.children().size(); i++) {
-			if (dropdown.children().eq(i).attr("checked") !== undefined
-			        && dropdown.children().eq(i).attr("checked") !== false) {
-				selectedItems.push(dropdown.children().eq(i).text());
+		var selectedItems = [];		
+		if (dropdown.children.length === 1) {
+			/*
+			 * @issue In some cases a <div role="application"> is added for
+			 * unknown reasons. How to prevent this? How to make reading checked
+			 * items more deterministic?
+			 */
+			dropdown = dropdown.children[0];
+		}
+		for (var i = 0; i < dropdown.children.length; i++) {
+			var option = dropdown.children[i];
+			if (option.hasAttribute("checked")) {
+				selectedItems.push(option.textContent);
 			}
 		}
 		return selectedItems;

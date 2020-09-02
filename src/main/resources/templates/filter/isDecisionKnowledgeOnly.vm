@@ -1,2 +1,2 @@
 <label for="is-decision-knowledge-only-input-$viewIdentifier">$i18n.getText('condec.label.is.decision.knowledge.only')</label>
-<input class="checkbox" type="checkbox" id="$isDecisionKnowledgeOnlyId"/> 
+<input class="checkbox" type="checkbox" id="is-decision-knowledge-only-input-$viewIdentifier"/> 
