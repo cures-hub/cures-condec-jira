@@ -7,12 +7,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
@@ -32,21 +32,28 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 	}
 
 	@Test
-	public void testEmptyIssueKey() throws GenericEntityException {
+	public void testEmptyIssueKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getAllFeatureBranchesTree("").getStatus());
 	}
 
 	@Test
-	public void testUnknownProjectKey() throws GenericEntityException {
+	public void testUnknownProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getAllFeatureBranchesTree("HOUDINI").getStatus());
 	}
 
 	@Test
-	public void testExistingProjectKey() throws GenericEntityException {
+	public void testExistingProjectKey() {
 		assertEquals(200, viewRest.getAllFeatureBranchesTree("TEST").getStatus());
 		Object receivedEntity = viewRest.getAllFeatureBranchesTree("TEST").getEntity();
 
 		Object expectedEntity = new DiffViewer(null);
 		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
+	}
+
+	@Test
+	public void testGitExtractionDisabled() {
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
+		assertEquals(200, viewRest.getAllFeatureBranchesTree("TEST").getStatus());
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 	}
 }

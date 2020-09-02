@@ -46,15 +46,6 @@
 	};
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
-		initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer);
-	};
-
-	ConDecKnowledgePage.prototype.updateView = function() {
-		updateView(null, treant, treeViewer);
-	};
-
-	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
-		console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
 		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
@@ -84,11 +75,16 @@
 		});
 
 		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-overview");
-		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView);
+		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
+		
+		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
 
+		this.updateView();
+	};
+
+	ConDecKnowledgePage.prototype.updateView = function() {
 		updateView(null, treant, treeViewer);
-	}
+	};
 
 	function updateView(nodeId, treant, treeViewer) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");

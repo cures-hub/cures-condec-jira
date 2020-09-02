@@ -28,7 +28,7 @@
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecRelationshipMatrixPage.init(conDecAPI, conDecObservable)) {
+        if (window.conDecRelationshipMatrixPage.init(conDecAPI, conDecObservable)) {
             conDecAPI.checkIfProjectKeyIsValid();
             var click = 0;
         	AJS.$("#menu-item-matrix").on("click", function(event) {

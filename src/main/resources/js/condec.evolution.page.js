@@ -91,6 +91,7 @@
         conDecFiltering.addOnClickEventToFilterButton("comparison", function(filterSettings) {
         	// left side
             var filterSettingsLeft = conDecFiltering.getFilterSettings("comparison");            
+            filterSettingsLeft ["isHierarchical"] = true;
             conDecAPI.getVis(filterSettingsLeft, function (visDataLeft) {
             	visDataLeft.nodes.sort(sortVis);
                 var dateLeft = {
@@ -98,6 +99,7 @@
                     edges: visDataLeft.edges
                 };
                 networkLeft.setData(dateLeft);
+                networkLeft.setOptions(getOptions(visDataLeft));
             });
             
             // right side
@@ -113,6 +115,7 @@
                     edges: visDataRight.edges
                 };
                 networkRight.setData(dateRight);
+                networkRight.setOptions(getOptions(visDataRight));
             });
         });
         
@@ -129,8 +132,8 @@
         return 0;
     }
 
-    function getOptions() {
-    	var options = conDecVis.getOptions();
+    function getOptions(visData) {
+    	var options = conDecVis.getOptions(visData);
     	options["layout"] = {
                 randomSeed: 1,
                 hierarchical: {

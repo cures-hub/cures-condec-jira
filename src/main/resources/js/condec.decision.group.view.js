@@ -9,7 +9,7 @@
 
     ConDecDecisionGroupView.prototype.init = function (_conDecAPI, _conDecObservable) {
         console.log("ConDecDecisionGroupView init");
-        if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
+        if (isConDecAPIType(_conDecAPI)) {
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecObservable.subscribe(this);
@@ -18,18 +18,19 @@
         return false;
     };
 
+    // TODO Refactor, move API methods to ConDecAPI
     ConDecDecisionGroupView.prototype.buildMatrix = function () {
-        conDecAPI.getDecisionGroupTable(function (groups, projectKey) {
-            const body = document.getElementById("group-table-body");
-            for (var i = 0; i < groups.length; i++) {
-                var group = groups[i];
-                var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
-                    + "&group=" + group);
-                var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
-                    + "&group=" + group);
-                newTableRow(body, group, keys.length, classes.length);
-            }
-        });
+        const groups = conDecAPI.getAllDecisionGroups();
+        const projectKey = conDecAPI.getProjectKey();
+        const body = document.getElementById("group-table-body");
+        for (var i = 0; i < groups.length; i++) {
+            var group = groups[i];
+            var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
+                + "&group=" + group);
+            var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
+                + "&group=" + group);
+            newTableRow(body, group, keys.length, classes.length);
+        }
     };
 
     ConDecDecisionGroupView.prototype.updateView = function () {
@@ -62,14 +63,6 @@
     function isConDecAPIType(conDecAPI) {
         if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
             console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
-            return false;
-        }
-        return true;
-    };
-
-    function isConDecObservableType(conDecObservable) {
-        if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-            console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
             return false;
         }
         return true;

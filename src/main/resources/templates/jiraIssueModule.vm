@@ -2,31 +2,31 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
-<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
+<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs">
    <ul class="tabs-menu" id="visualization-selection-tabs-menu">
-      <li class="menu-item active-tab">
+      <li class="menu-item" id="menu-item-treant">
          <a href="#treant">Tree Visualization</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item active-tab" id="menu-item-graph">
          <a href="#vis">Graph Visualization</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-decision-table">
          <a href="#decisionTable">Decision Table</a>
       </li>
-      <li class="menu-item" data-condec="feature-branches-item">
+      <li class="menu-item" data-condec="feature-branches-item" id="menu-item-feature-branches">
          <a href="#featureBranchesTab">Feature branch(es)</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-related-knowledge">
          <a href="#related-issues-tab">Related knowledge</a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" id="menu-item-duplicate">
          <a href="#duplicate-issues-tab">Duplicate knowledge</a>
       </li>
    </ul>
-   <div class="tabs-pane active-pane" id="treant">
+   <div class="tabs-pane" id="treant">
    		#parse("templates/tabs/treantTab.vm")
    </div>
-   <div class="tabs-pane" id="vis">
+   <div class="tabs-pane active-pane" id="vis">
    		#parse("templates/tabs/visGraphTab.vm")
    </div>
    <div class="tabs-pane" id="featureBranchesTab">
@@ -60,30 +60,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
      * Instantiate the ConDecJiraIssueModule object controlling this view:
      */
     $(document).ready(function () {
-        conDecAPI.checkIfProjectKeyIsValid();
-
+        conDecAPI.checkIfProjectKeyIsValid();      
         consistencyTabsModule.init();
         if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
                 conDecVis, conDecDecisionTable)) {
-
-            // set REST caching
-            if (!localStorage.getItem("condec.restCacheTTL")) {
-                localStorage.setItem("condec.restCacheTTL", 5 * 60 * 1000) // 5 minute
-                // cache
-            }
-
-            // is this a demonstration case?
-            if (localStorage.getItem("condec-skipIssueViewAutostart")) {
-                console.log("conDecJiraIssueModule.initView() was deliberately not started!")
-                return;
-            }
             window.conDecJiraIssueModule.initView();
-
-            // do not lock page load
-            setTimeout(500, getBranchesDiff())
         } else {
             console.error("ConDecJiraIssueModule could not get its dependencies.");
-        }
+        }    
     });
-
 </script>

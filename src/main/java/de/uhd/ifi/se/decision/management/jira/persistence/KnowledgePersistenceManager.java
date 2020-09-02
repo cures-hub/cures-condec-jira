@@ -47,8 +47,8 @@ public class KnowledgePersistenceManager {
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link #getOrCreate(String) getOrCreate} method to either
-	 * create or retrieve an existing object
+	 * Use the {@link #getOrCreate(String) getOrCreate} method to either create or
+	 * retrieve an existing object
 	 *
 	 * @issue How can we reuse existing objects instead of recreating them all the
 	 *        time?
@@ -255,7 +255,6 @@ public class KnowledgePersistenceManager {
 		return false;
 	}
 
-
 	/**
 	 * Inserts a new link into database.
 	 *
@@ -420,6 +419,9 @@ public class KnowledgePersistenceManager {
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
+		if (persistenceManager == null) {
+			return null;
+		}
 		KnowledgeElement elementWithId = persistenceManager.insertKnowledgeElement(element, user, parentElement);
 		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
 		return elementWithId;

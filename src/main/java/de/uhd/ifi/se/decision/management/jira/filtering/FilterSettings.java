@@ -16,6 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -23,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -49,6 +51,7 @@ public class FilterSettings {
 	private KnowledgeElement selectedElement;
 	private long startDate;
 	private long endDate;
+	private boolean isHierarchical;
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
@@ -70,6 +73,7 @@ public class FilterSettings {
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
+		this.isHierarchical = false;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -220,6 +224,9 @@ public class FilterSettings {
 			return;
 		}
 		for (String stringStatus : status) {
+			if (stringStatus.equals("incomplete")) {
+				continue;
+			}
 			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 		}
 	}
@@ -433,5 +440,25 @@ public class FilterSettings {
 	@JsonProperty("knowledgeTypes")
 	public void setKnowledgeTypes(Set<String> namesOfTypes) {
 		knowledgeTypes = namesOfTypes != null ? namesOfTypes : project.getNamesOfKnowledgeTypes();
+	}
+
+	/**
+	 * @return true if the {@link KnowledgeGraph} or a respective subgraph provided
+	 *         by the {@link FilteringManager} should be shown with a hierarchy of
+	 *         nodes. This is used in the {@link VisGraph}.
+	 */
+	public boolean isHierarchical() {
+		return isHierarchical;
+	}
+
+	/**
+	 * @param isHierarchical
+	 *            true if the {@link KnowledgeGraph} or a respective subgraph
+	 *            provided by the {@link FilteringManager} should be shown with a
+	 *            hierarchy of nodes. This is used in the {@link VisGraph}.
+	 */
+	@JsonProperty("isHierarchical")
+	public void setHierarchical(boolean isHierarchical) {
+		this.isHierarchical = isHierarchical;
 	}
 }

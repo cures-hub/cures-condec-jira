@@ -38,6 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -61,34 +62,36 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.OK).build();
+		}
 		// get all project branches
 		return getDiffViewerResponse(projectKey, projectKey);
 	}
 
-	// FIXME: Unit test
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
 			throws PermissionException {
+		if (request == null || issueKey == null || issueKey.isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
+		}
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
-		Issue issue = getJiraIssue(normalizedIssueKey);
+		String projectKey = getProjectKey(normalizedIssueKey);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(normalizedIssueKey);
 		if (issue == null) {
 			return jiraIssueKeyIsInvalid();
+		}
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.OK).build();
 		}
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
 				+ normalizedIssueKey.toUpperCase() + "\\-";
 
 		// get feature branches of an issue
-		return getDiffViewerResponse(getProjectKey(normalizedIssueKey), regexFilter,
+		return getDiffViewerResponse(projectKey, regexFilter,
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
-	}
-
-	private Issue getJiraIssue(String issueKey) {
-		Issue issue = null;
-		if (issueKey == null || issueKey.isBlank())
-			return null;
-		issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		return issue;
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {

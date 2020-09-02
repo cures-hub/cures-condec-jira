@@ -36,6 +36,10 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> color;
 
+	public VisNode(KnowledgeElement element) {
+		this(element, false, 0);
+	}
+
 	public VisNode(KnowledgeElement element, int level) {
 		this(element, false, level);
 	}

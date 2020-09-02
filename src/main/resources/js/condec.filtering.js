@@ -5,13 +5,20 @@
  * Requires no other module
  * 
  * Is required by: conDecJiraIssueModule, conDecEvolutionPage,
- * ConDecRelationshipPage
+ * ConDecRelationshipPage, conDecMatrix, conDecRationaleBacklog,
+ * conDecKnowledgePage
  * 
  * @issue Should filters change all views or only the current view?
  * @decision Filters are only applied in the current view using updateView()!
- * @alternative We update all views using conDecObservable.notify()!
+ * @alternative We could update all views using conDecObservable.notify()!
  * @pro The user could reuse the filter settings, which is more useable.
  * @con This would need more computation and decreases performance.
+ * 
+ * @issue Should filtering be performed instantly after every change or using a
+ *        "filter" button?
+ * @decision Perform filtering instantly after changes in some views, e.g.
+ *           conDecRationaleBacklog! Perform filtering using a "filter" button
+ *           in other views, e.g. chronology view!
  */
 (function(global) {
 
@@ -24,26 +31,30 @@
 	 * types, status, ... of a view.
 	 * 
 	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * condec.relationship.page, condec.matrix
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
-		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
-		conDecFiltering.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
+		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
+		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 		        selectedKnowledgeTypes);
-		// TODO Save in conDecAPI and call only once
-		conDecAPI.getLinkTypes(function(linkTypes) {
-			var linkTypeArray = [];
-			for (linkType in linkTypes) {
-				if (linkType !== undefined) {
-					linkTypeArray.push(linkType);
-				}
+		// TODO Refactor link type logic
+		var linkTypes = conDecAPI.getLinkTypes();
+		var linkTypeArray = [];
+		for (linkType in linkTypes) {
+			if (linkType !== undefined) {
+				linkTypeArray.push(linkType);
 			}
-			conDecFiltering.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
-		});
-		// TODO Refactor and move method to conDecFiltering
-		conDecAPI.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
+		}
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, linkTypeArray);
+		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
+		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
 
+	/*
+	 * For views with filter button, i.e., NO instant filtering. external
+	 * references: condec.jira.issue.module, condec.evolution.page,
+	 * condec.relationship.page, condec.matrix
+	 */
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
 
@@ -53,51 +64,74 @@
 		});
 	};
 
-	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback) {
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2", callback);
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-" + viewIdentifier, callback);
+	/*
+	 * For views without filter button but instant filtering. external
+	 * references: condec.jira.issue.module, condec.knowledge.page,
+	 * condec.rationale.backlog
+	 */
+	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
+		$("#select2-decision-group-" + viewIdentifier).on("change.select2", 
+				function() {
+					callback();
+				});
 		
 		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
 		if (knowledgeTypeDropdown !== null) {
-			knowledgeTypeDropdown.addEventListener("change", callback);
+			knowledgeTypeDropdown.addEventListener("click", () => callback());
 		}
 		
 		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
 		if (statusDropdown !== null) {
-			statusDropdown.addEventListener("change", callback);
-		}	
+			statusDropdown.addEventListener("click", () => callback());
+		}
+		
+		var filterElements = [];
+		
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);
+		if (isSearchInputEvent && searchInput !== null) {
+			filterElements.push(searchInput);
+		}
+		
+		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
+		if (linkDistanceInput !== null) {
+			filterElements.push(linkDistanceInput);
+		}			
 		
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
-			isOnlyDecisionKnowledgeShownInput.addEventListener("change", callback);
+			filterElements.push(isOnlyDecisionKnowledgeShownInput);
 		}		
 		
 		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
 		if (minLinkNumberInput !== null) {
-			minLinkNumberInput.addEventListener("change", callback);
+			filterElements.push(minLinkNumberInput);
 		}
 
 		var maxLinkNumberInput = document.getElementById("max-degree-input-" + viewIdentifier);
 		if (maxLinkNumberInput !== null) {
-			maxLinkNumberInput.addEventListener("change", callback);
+			filterElements.push(maxLinkNumberInput);
 		}
 
 		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
 		if (endDatePicker !== null) {
-			endDatePicker.addEventListener("change", callback);
+			filterElements.push(endDatePicker);
 		}		
 
 		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
 		if (startDatePicker !== null) {
-			startDatePicker.addEventListener("change", callback);
+			filterElements.push(startDatePicker);
 		}
+		
+		filterElements.forEach(function(filterElement) {
+			filterElement.addEventListener("input", () => callback());
+		});
 	};
 
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 * 
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: condec.jira.issue.module, condec.knowledge.page,
+	 * condec.evolution.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
 		var filterSettings = {};
@@ -177,8 +211,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
 		var dropdown = document.getElementById(dropdownId);
@@ -200,19 +233,26 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page
+	 * external references: none, only used locally in condec.filtering
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
-		var dropdown = AJS.$("#" + dropdownId);
+		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
 		}
-		var selectedItems = [];
-		for (var i = 0; i < dropdown.children().size(); i++) {
-			if (typeof dropdown.children().eq(i).attr("checked") !== typeof undefined
-			        && dropdown.children().eq(i).attr("checked") !== false) {
-				selectedItems.push(dropdown.children().eq(i).text());
+		var selectedItems = [];		
+		if (dropdown.children.length === 1) {
+			/*
+			 * @issue In some cases a <div role="application"> is added for
+			 * unknown reasons. How to prevent this? How to make reading checked
+			 * items more deterministic?
+			 */
+			dropdown = dropdown.children[0];
+		}
+		for (var i = 0; i < dropdown.children.length; i++) {
+			var option = dropdown.children[i];
+			if (option.hasAttribute("checked")) {
+				selectedItems.push(option.textContent);
 			}
 		}
 		return selectedItems;
@@ -239,23 +279,27 @@
 	/*
 	 * external references: condec.jira.issue.module, condec.knowledge.page
 	 */
-	ConDecFiltering.prototype.addEventListenerToLinkDistanceInput = function(inputId, callback) {
-		var linkDistanceInput = document.getElementById(inputId);
-		linkDistanceInput.addEventListener("input", function() {
-			if (this.value >= 0) {
-				callback();
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.jira.issue.module, condec.knowledge.page
-	 */
 	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
 		var startDate = new Date();
 		startDate.setDate(startDate.getDate() - deltaDays);
 		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10);
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
+	};
+	
+	ConDecFiltering.prototype.fillDecisionGroupSelect = function (elementId) {
+		var selectGroupField = document.getElementById(elementId);
+		if (selectGroupField === null || selectGroupField === undefined) {
+			return null;
+		}
+		groups = conDecAPI.getAllDecisionGroups();
+		if (groups !== null && groups.length > 0) {				
+			for (var i = 0; i < groups.length; i++) {
+				if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
+					selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
+				}
+			}				
+		}
+		AJS.$("#" + elementId).auiSelect2();
 	};
 
 	// export ConDecFiltering

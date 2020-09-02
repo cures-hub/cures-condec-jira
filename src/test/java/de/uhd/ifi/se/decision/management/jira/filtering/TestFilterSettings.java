@@ -146,6 +146,7 @@ public class TestFilterSettings extends TestSetUp {
 
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
+		status.add("incomplete");
 		filterSettings.setStatus(status);
 		assertEquals(1, filterSettings.getStatus().size());
 	}
@@ -236,6 +237,15 @@ public class TestFilterSettings extends TestSetUp {
 
 		filterSettings.setSelectedElement("TEST-1:123");
 		assertNull(filterSettings.getSelectedElement());
+	}
+
+	@Test
+	public void testSetHierarchical() {
+		// default value
+		assertFalse(filterSettings.isHierarchical());
+
+		filterSettings.setHierarchical(true);
+		assertTrue(filterSettings.isHierarchical());
 	}
 
 }

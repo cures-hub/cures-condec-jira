@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +62,6 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void testGetGraph() {
 		assertEquals(9, visGraph.getGraph().vertexSet().size());
-		// assertEquals(KnowledgeGraph.getOrCreate("TEST").edgeSet().size(),
-		// visGraph.getGraph().edgeSet().size());
 	}
 
 	@Test
@@ -87,5 +86,14 @@ public class TestVisGraph extends TestSetUp {
 		visGraph = new VisGraph(user, filterSettings);
 		assertTrue(KnowledgeGraph.getOrCreate("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
 		assertTrue(KnowledgeGraph.getOrCreate("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());
+	}
+
+	@Test
+	public void testVisGraphWithHierarchy() {
+		filterSettings.setHierarchical(true);
+		filterSettings.setSelectedElement("TEST-1");
+		visGraph = new VisGraph(user, filterSettings);
+		Set<VisNode> nodes = visGraph.getNodes();
+		assertEquals(visGraph.getGraph().vertexSet().size(), nodes.size());
 	}
 }

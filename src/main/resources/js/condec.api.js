@@ -39,6 +39,12 @@
 		this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
+		
+		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Commit", "PullRequest"];
+		
+		this.linkTypes = [];
+		
+		this.decisionGroups = [];
 	};
 
 	/**
@@ -433,8 +439,14 @@
 		});
 	};
 	
-	/*
-	 * external reference: condec.jira.issue.module
+	/**
+	 * If the search term is a Jira query in JQL, this function provides the
+	 * filter settings matching the JQL. Otherwise it provides the default
+	 * filter settings (e.g. link distance 3, all knowledge types, all link
+	 * types, ...).
+	 * 
+	 * external reference: currently not used, used to be used in
+	 * condec.jira.issue.module to fill the HTML filter elements
 	 */
 	ConDecAPI.prototype.getFilterSettings = function (elementKey, searchTerm, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
@@ -660,26 +672,23 @@
 	};
 	
 	/*
-	 * external references: condec.jira.issue.module, condec.dialog
+	 * external references: condec.dialog, condec.filtering
 	 */
-	ConDecAPI.prototype.getLinkTypes = function (callback) {
-		var projectKey = getProjectKey();
-		generalApi.getJSON(this.restPrefix + "/config/getLinkTypes.json?projectKey=" + projectKey, function (error, linkTypes) {
-			if (error === null) {
-				callback(linkTypes);
-			}
-		});
+	ConDecAPI.prototype.getLinkTypes = function () {
+		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
+			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + getProjectKey());
+		}
+		return this.linkTypes;
 	};
 
-	ConDecAPI.prototype.getDecisionGroupTable = function (callback) {
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
-		callback(decisionGroups, projectKey);
-	};
-
-	function getAllDecisionGroups(selectGroupField, callback) {
-		var projectKey = getProjectKey();
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + projectKey);
-		callback(selectGroupField, decisionGroups);
+	/*
+	 * external references: condec.filtering
+	 */
+	ConDecAPI.prototype.getAllDecisionGroups = function () {
+		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
+			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + getProjectKey());
+		}
+		return this.decisionGroups;
 	};
 
 	/*
@@ -941,30 +950,6 @@
 		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
 				+ "&location=" + location + "&projectKey=" + projectKey);
 		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
-	};
-
-	// TODO Refactor and move to conDecFiltering
-	ConDecAPI.prototype.fillDecisionGroupSelect = function (elementId) {
-		var selectGroupField = document.getElementById(elementId);
-		if (selectGroupField === null || selectGroupField === undefined) {
-			return null;
-		}
-		getAllDecisionGroups(selectGroupField, function (selectGroupField, groups) {
-			if (!(groups === null) && groups.length > 0) {
-				selectGroupField.innerHTML = "";
-				selectGroupField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High_Level</option>"
-						+ "<option value='Medium_Level'>Medium_Level</option>"
-						+ "<option value='Realization_Level'>Realization_Level</option>");
-				for (var i = 0; i < groups.length; i++) {
-					if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
-						selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
-					}
-				}
-				AJS.$("#" + elementId).auiSelect2();
-			} else {
-				selectGroupField.innerHTML = "";
-			}
-		});
 	};
 
 	/*

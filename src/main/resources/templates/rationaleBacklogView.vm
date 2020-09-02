@@ -24,13 +24,4 @@
            console.error("ConDecRationaleBacklog could not get its dependencies.");
        }
     });
-
-    $("#select2-decision-group-rb").on("change.select2", function (e) {
-        conDecObservable.notify();
-    });
-
-    function checkBoxClicked() {
-        conDecObservable.notify();
-    }
-
 </script>

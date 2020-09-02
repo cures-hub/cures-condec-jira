@@ -331,22 +331,21 @@
 		 * 
 		 * @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
 		 */
-        conDecAPI.getLinkTypes(function (linkTypes) {
-            var linkTypeNames = Object.keys(linkTypes);
-            var insertString = "";
-            var isSelected = "";
-            for (var index in linkTypeNames) {
-                if (linkTypeNames[index] == "Relates") {
-                    isSelected = "selected";
-                } else {
-                    isSelected = "";
-                }
-                console.log(linkTypeNames[index]);
-                insertString += "<option " + isSelected + " value='" + linkTypeNames[index] + "'>"
-                    + linkTypeNames[index] + "</option>";
+        var linkTypes = conDecAPI.getLinkTypes();
+        var linkTypeNames = Object.keys(linkTypes);
+        var insertString = "";
+        var isSelected = "";
+        for (var index in linkTypeNames) {
+            if (linkTypeNames[index] == "Relates") {
+                isSelected = "selected";
+            } else {
+                isSelected = "";
             }
-            selectField.insertAdjacentHTML("afterBegin", insertString);
-        });
+            console.log(linkTypeNames[index]);
+            insertString += "<option " + isSelected + " value='" + linkTypeNames[index] + "'>"
+                + linkTypeNames[index] + "</option>";
+        }
+        selectField.insertAdjacentHTML("afterBegin", insertString);
         AJS.$(selectField).auiSelect2();
     }
 
