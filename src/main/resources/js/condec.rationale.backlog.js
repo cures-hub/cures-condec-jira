@@ -17,7 +17,7 @@
 														  _treant, _treeViewer) {
 		console.log("conDecRationaleBacklog init");
 
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
+		if (isConDecAPIType(_conDecAPI)
 			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
 			&& isConDecTreantType(_treant) && isConDecTreeViewerType(_treeViewer)) {
 
@@ -27,6 +27,11 @@
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			treeViewer = _treeViewer;
+			
+			// Fill filter elements
+			conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
+			conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);		
+			conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");	
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
@@ -37,28 +42,21 @@
 	};
 
 	ConDecRationaleBacklog.prototype.fetchAndRender = function () {
-		initializeRationaleBacklog(conDecAPI, treant, treeViewer);
+		console.log("conDecRationaleBacklog fetchAndRender");
+
+		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
+		this.updateView();
 	};
 
 	ConDecRationaleBacklog.prototype.updateView = function () {
 		updateView(null, treant, treeViewer);
 	};
 
-	function initializeRationaleBacklog(conDecAPI, treant, treeViewer) {
-		console.log("conDecRationaleBacklog initializeRationaleBacklog");
-
-		var knowledgeTypeDropdown = conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
-		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);		
-		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");		
-		
-		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
-
-		updateView(null, treant, treeViewer);
-	}
-
 	function updateView(nodeId, treant, treeViewer) {		
 		var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
-		filterSettings["linkDistance"] = 0; // so that jstree tree viewer only shows a list of elements
+		
+		// so that jstree tree viewer only shows a list of elements:
+		filterSettings["linkDistance"] = 0; 
 		
 		treeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");
 		if (nodeId === undefined) {
@@ -69,10 +67,14 @@
 		} else {
 			treeViewer.selectNodeInTreeViewer(nodeId, "#rationale-backlog-tree");
 		}
+		
+		addSelectNodeEventListenerToTreeViewer();
+	}
+	
+	function addSelectNodeEventListenerToTreeViewer() {
 		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
+			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
-			var linkDistance = document.getElementById("link-distance-input-rationale-backlog").value;
-			filterSettings["linkDistance"] = linkDistance;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
@@ -86,14 +88,6 @@
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
 			console.warn("ConDecCodeClassPage: invalid ConDecAPI object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecObservableType(conDecObservable) {
-		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecCodeClassPage: invalid ConDecObservable object received.");
 			return false;
 		}
 		return true;

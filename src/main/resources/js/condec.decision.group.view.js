@@ -9,7 +9,7 @@
 
     ConDecDecisionGroupView.prototype.init = function (_conDecAPI, _conDecObservable) {
         console.log("ConDecDecisionGroupView init");
-        if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
+        if (isConDecAPIType(_conDecAPI)) {
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
             conDecObservable.subscribe(this);
@@ -63,14 +63,6 @@
     function isConDecAPIType(conDecAPI) {
         if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
             console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
-            return false;
-        }
-        return true;
-    };
-
-    function isConDecObservableType(conDecObservable) {
-        if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-            console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
             return false;
         }
         return true;
