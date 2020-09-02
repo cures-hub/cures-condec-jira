@@ -1,30 +1,21 @@
-<div>
 <form class="aui">
-	#set ($textInputId = "jstree-search-input")
+	#set ($viewIdentifier = "overview")
 	#parse("templates/filter/text.vm")
 
-    <select id="select-root-element-type" name="select-root-element-type"
+    <select id="select-root-element-type" name="knowledge-type-dropdown-overview"
             class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
     <input type="text" class="text medium-field"
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
            class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-           
-	#set($select2-decision-group = "select2-decision-group")    
+
   	#parse("templates/filter/decisionGroup.vm")  
-  	
-  	#set ($statusDropdownId = "status-dropdown-overview")	
     #parse("templates/filter/status.vm")
-  			
-	#set ($linkDistanceInputId = "link-distance-input")	
 	#parse("templates/filter/linkDistance.vm")
-    
 	#parse("templates/filter/degree.vm")
-	
-	#set ($isDecisionKnowledgeOnlyId = "is-decision-knowledge-only-input")	
+	#parse("templates/filter/creationDate.vm")
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
-</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="jstree"></div>

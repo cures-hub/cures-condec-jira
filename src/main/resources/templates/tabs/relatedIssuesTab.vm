@@ -21,5 +21,19 @@
 
     </tbody>
 </table>
-
-#parse("templates/dialogs/linkDecisionsDialog.vm")
+<script>
+/* Adds the on click listener on the menu item */
+$(document).ready(function () {
+	var isOnceClicked = false;
+	var menuItem = document.getElementById("menu-item-related-knowledge");
+	if (menuItem === null) {
+		return;
+	}
+	menuItem.onclick = function() {
+		if (!isOnceClicked) {
+			consistencyTabsModule.loadData();
+			isOnceClicked = true;
+		}
+	};
+  }); 
+</script>

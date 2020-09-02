@@ -5,7 +5,7 @@
  * delete an existing knowledge element,
  * create a new link between two knowledge elements,
  * delete a link between two knowledge elements,
- * change the documentation location (e.g. from issue comments to single JIRA issues),
+ * change the documentation location (e.g. from issue comments to single Jira issues),
  * set an element to the root element in the knowledge tree.
 
  Requires
@@ -121,6 +121,7 @@
                 });
             AJS.dialog2(assignDialog).hide();
         };
+        
         cancelButton.onclick = function () {
             AJS.dialog2(assignDialog).hide();
         };
@@ -249,20 +250,78 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showDecisionLinkDialog = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, submitCallback) {
-        console.log("conDecDialog showDecisionLinkDialog");
+    ConDecDialog.prototype.showLinkDialog = function (id, documentationLocation, idOfTarget, documentationLocationOfTarget) {
+        console.log("conDecDialog showLinkDialog");
 
         // HTML elements
-        var linkDialog = document.getElementById("linkDecisions-dialog");
-        var selectElementField = document.getElementById("linkDecisions-form-select-element");
-        var submitButton = document.getElementById("linkDecisions-dialog-submit-button");
-        var cancelButton = document.getElementById("linkDecisions-dialog-cancel-button");
-        var argumentFieldGroup = document.getElementById("argument-field-group");
-        var linkType = "Relates";
-        var linkTypeColor = "#80c9ff";
+        var linkDialog = document.getElementById("link-dialog");
+        var selectElementField = document.getElementById("link-form-select-element");
+        var selectLinkTypeField = document.getElementById("link-form-select-linktype");
+        var submitButton = document.getElementById("link-dialog-submit-button");
+        var cancelButton = document.getElementById("link-dialog-cancel-button");
+        
+        fillSelectElementField(selectElementField, id, documentationLocation, idOfTarget, documentationLocationOfTarget);     
+        fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation);
 
-        // Fill HTML elements
-        selectElementField.innerHTML = "";
+        selectElementField.onchange = function () {
+        	var idOfSelectedElement = this.value.split(":")[0];
+        	var documentationLocationOfSelectedElement = this.value.split(":")[1];
+            conDecAPI.getDecisionKnowledgeElement(idOfSelectedElement, documentationLocationOfSelectedElement, 
+            		function (element) {
+                if (element.type === "Argument" || element.type === "Pro") {
+                	$("#link-form-select-linktype").val("Supports");                
+                }
+                if (element.type === "Con") {
+                	$("#link-form-select-linktype").val("Attacks");                
+                }
+            });
+        };
+
+        // Set onclick listener on buttons
+        submitButton.onclick = function () {
+            var idOfChild = selectElementField.value.split(":")[0];
+            var documentationLocationOfChild = selectElementField.value.split(":")[1];
+            var linkType = selectLinkTypeField.value;
+            conDecAPI.createLink(null, id, idOfChild, documentationLocation, documentationLocationOfChild, 
+            		linkType, function () {conDecObservable.notify()});
+            AJS.dialog2(linkDialog).hide();
+        };
+
+        cancelButton.onclick = function () {
+            AJS.dialog2(linkDialog).hide();
+        };
+
+        // Show dialog
+        AJS.dialog2(linkDialog).show();
+    };
+
+    function fillSelectElementField(selectField, id, documentationLocation, idOfTarget, documentationLocationOfTarget) {
+        if (selectField === null) {
+            return;
+        }
+        selectField.innerHTML = "";
+        conDecAPI.getUnlinkedElements(id, documentationLocation, function (unlinkedElements) {
+            var insertString = "";
+            for (var index = 0; index < unlinkedElements.length; index++) {
+                insertString += "<option value='" + unlinkedElements[index].id + ":" 
+                	+ unlinkedElements[index].documentationLocation + "'>"
+                    + unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
+            }
+            selectField.insertAdjacentHTML("afterBegin", insertString);
+            
+            if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
+            	console.log("Target element provided");
+                $("#link-form-select-element").val(idOfTarget + ":" + documentationLocationOfTarget);
+            }
+        });
+        AJS.$(selectField).auiSelect2();
+    }
+
+    function fillSelectLinkTypeField(selectField, id, documentationLocation) {
+        if (selectField === null) {
+            return;
+        }
+        selectField.innerHTML = "";
         /*
 		 * NOTE! Instead the Jira API could be called using GET
 		 * "/rest/api/2/issueLinkType". This call "[r]eturns a list of available
@@ -272,115 +331,21 @@
 		 * 
 		 * @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
 		 */
-        conDecAPI.getLinkTypes(function (linkTypes) {
-            var linkTypeNames = Object.keys(linkTypes);
-            var linkTypeColors = Object.values(linkTypes);
-            var insertString = "";
-            var isSelected = "";
-            for (var index in linkTypeNames) {
-                if (linkTypeNames[index] == "Relates") {
-                    isSelected = "selected";
-                } else {
-                    isSelected = "";
-                }
-                console.log(linkTypeNames[index]);
-                insertString += "<option " + isSelected + " value='" + linkTypeColors[index] + "'>"
-                    + linkTypeNames[index] + "</option>";
-            }
-            selectElementField.insertAdjacentHTML("afterBegin", insertString);
-        });
-        AJS.$(selectElementField).auiSelect2();
-
-        argumentFieldGroup.style.display = "none";
-        selectElementField.onchange = function (option) {
-            linkType = option.added.text;
-            linkTypeColor = option.val;
-        };
-
-        // Set onclick listener on buttons
-        submitButton.onclick = function () {
-            conDecAPI.createLink(null, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, function () {
-                conDecObservable.notify();
-            });
-            if (submitCallback !== null){
-				console.log(submitCallback);
-				submitCallback();
-
-			}
-            AJS.dialog2(linkDialog).hide();
-        };
-
-        cancelButton.onclick = function () {
-            AJS.dialog2(linkDialog).hide();
-        };
-
-        // Show dialog
-        AJS.dialog2(linkDialog).show();
-    };
-
-    ConDecDialog.prototype.showLinkDialog = function (id, documentationLocation) {
-        console.log("conDecDialog showLinkDialog");
-
-        // HTML elements
-        var linkDialog = document.getElementById("link-dialog");
-        var selectElementField = document.getElementById("link-form-select-element");
-        var submitButton = document.getElementById("link-dialog-submit-button");
-        var cancelButton = document.getElementById("link-dialog-cancel-button");
-        var argumentFieldGroup = document.getElementById("argument-field-group");
-        var radioPro = document.getElementById("link-form-radio-pro");
-        var radioCon = document.getElementById("link-form-radio-con");
-
-        // Fill HTML elements
-        fillSelectElementField(selectElementField, id, documentationLocation);
-        argumentFieldGroup.style.display = "none";
-        radioPro.checked = false;
-        radioCon.checked = false;
-
-        selectElementField.onchange = function () {
-            conDecAPI.getDecisionKnowledgeElement(this.value, documentationLocation, function (decisionKnowledgeElement) {
-                if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-                    argumentFieldGroup.style.display = "inherit";
-                    radioPro.checked = true;
-                }
-            });
-        };
-
-        // Set onclick listener on buttons
-        submitButton.onclick = function () {
-            var childId = selectElementField.value.split(":")[0];
-            var documentationLocationOfChild = selectElementField.value.split(":")[1];
-            var knowledgeTypeOfChild = $("input[name=form-radio-argument]:checked").val();
-            conDecAPI.createLink(knowledgeTypeOfChild, id, childId, documentationLocation, documentationLocationOfChild,
-                null, function () {
-                    conDecObservable.notify();
-                });
-            AJS.dialog2(linkDialog).hide();
-        };
-
-        cancelButton.onclick = function () {
-            AJS.dialog2(linkDialog).hide();
-        };
-
-        // Show dialog
-        AJS.dialog2(linkDialog).show();
-    };
-
-    function fillSelectElementField(selectField, id, documentationLocation) {
-        if (selectField === null) {
-            return;
-        }
-        selectField.innerHTML = "";
-        conDecAPI.getUnlinkedElements(id, documentationLocation, function (unlinkedElements) {
-            var insertString = "";
-            var isSelected = "selected";
-            for (var index = 0; index < unlinkedElements.length; index++) {
-                insertString += "<option " + isSelected
-                    + " value='" + unlinkedElements[index].id + ":" + unlinkedElements[index].documentationLocation + "'>"
-                    + unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
+        var linkTypes = conDecAPI.getLinkTypes();
+        var linkTypeNames = Object.keys(linkTypes);
+        var insertString = "";
+        var isSelected = "";
+        for (var index in linkTypeNames) {
+            if (linkTypeNames[index] == "Relates") {
+                isSelected = "selected";
+            } else {
                 isSelected = "";
             }
-            selectField.insertAdjacentHTML("afterBegin", insertString);
-        });
+            console.log(linkTypeNames[index]);
+            insertString += "<option " + isSelected + " value='" + linkTypeNames[index] + "'>"
+                + linkTypeNames[index] + "</option>";
+        }
+        selectField.insertAdjacentHTML("afterBegin", insertString);
         AJS.$(selectField).auiSelect2();
     }
 
@@ -394,7 +359,7 @@
             var documentationLocation = decisionKnowledgeElement.documentationLocation;
 
             if (documentationLocation === "i") {
-                var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
+                var createEditIssueForm = require("quick-edit/form/factory/edit-issue");
                 createEditIssueForm({
                     issueId: id
                 }).asDialog({}).show();

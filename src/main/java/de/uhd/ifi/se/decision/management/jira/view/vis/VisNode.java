@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,6 +33,13 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> font;
 
+	@XmlElement
+	private Map<String, String> color;
+
+	public VisNode(KnowledgeElement element) {
+		this(element, false, 0);
+	}
+
 	public VisNode(KnowledgeElement element, int level) {
 		this(element, false, level);
 	}
@@ -46,6 +54,7 @@ public class VisNode {
 		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
 		this.font = determineFont(element);
+		this.color = determineColor(element);
 	}
 
 	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {
@@ -75,6 +84,13 @@ public class VisNode {
 		return ImmutableMap.of("color", "black");
 	}
 
+	public static Map<String, String> determineColor(KnowledgeElement element) {
+		Map<String, String> color = new HashMap<>();
+		color.put("background", element.getType().getColor());
+		color.put("border", "black");
+		return color;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -97,5 +113,9 @@ public class VisNode {
 
 	public Map<String, String> getFont() {
 		return font;
+	}
+
+	public String getColor() {
+		return color.get("background");
 	}
 }

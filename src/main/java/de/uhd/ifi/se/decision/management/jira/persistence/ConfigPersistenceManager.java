@@ -18,10 +18,12 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 
 import java.lang.reflect.Type;
 import java.util.*;
+
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -29,9 +31,9 @@ import java.util.*;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -58,12 +60,12 @@ public class ConfigPersistenceManager {
 		if (isGlobalSetting) {
 			settings = pluginSettingsFactory.createGlobalSettings();
 		} else {
-			if (projectKey == null || projectKey.equals("")) {
+			if (projectKey == null || projectKey.isBlank()) {
 				return "";
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		}
-		if (parameter == null || parameter.equals("")) {
+		if (parameter == null || parameter.isBlank()) {
 			return "";
 		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -78,7 +80,7 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
-	public static Object getValueAsObject(String projectKey, String parameter, Type type) {
+	public static Object getSavedObject(String projectKey, String parameter, Type type) {
 		Gson gson = new Gson();
 		return gson.fromJson(getValue(projectKey, parameter), type);
 	}
@@ -97,32 +99,32 @@ public class ConfigPersistenceManager {
 
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
-		return "true".equals(isActivated);
+		return "true" .equals(isActivated);
 	}
 
 	public static boolean isIconParsing(String projectKey) {
 		String isIconParsing = getValue(projectKey, "isIconParsing");
-		return "true".equals(isIconParsing);
+		return "true" .equals(isIconParsing);
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
 		String isIssueStrategy = getValue(projectKey, "isIssueStrategy");
-		return "true".equals(isIssueStrategy);
+		return "true" .equals(isIssueStrategy);
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
 		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
-		return "true".equals(isKnowledgeExtractedFromGit);
+		return "true" .equals(isKnowledgeExtractedFromGit);
 	}
 
 	// TODO Testing
 	public static boolean isPostSquashedCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
+		return "true" .equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
 	}
 
 	// TODO Testing
 	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
+		return "true" .equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
 	}
 
 	// TODO Testing
@@ -132,7 +134,7 @@ public class ConfigPersistenceManager {
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
 		String isKnowledgeTypeEnabled = getValue(projectKey, knowledgeType);
-		return "true".equals(isKnowledgeTypeEnabled);
+		return "true" .equals(isKnowledgeTypeEnabled);
 	}
 
 	public static boolean isClassifierEnabled(String projectKey) {
@@ -141,7 +143,7 @@ public class ConfigPersistenceManager {
 
 	public static boolean isWebhookEnabled(String projectKey) {
 		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
-		return "true".equals(isWebhookEnabled);
+		return "true" .equals(isWebhookEnabled);
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
@@ -149,7 +151,7 @@ public class ConfigPersistenceManager {
 			return false;
 		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
-		return "true".equals(isWebhookTypeEnabled);
+		return "true" .equals(isWebhookTypeEnabled);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
@@ -226,7 +228,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -256,7 +258,7 @@ public class ConfigPersistenceManager {
 		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
 	}
 
-	public static void setValueAsObject(String projectKey, String parameter, Object value, Type type) {
+	public static void saveObject(String projectKey, String parameter, Object value, Type type) {
 		Gson gson = new Gson();
 		setValue(projectKey, parameter, gson.toJson(value, type));
 	}
@@ -270,7 +272,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
-		if (webhookType == null || webhookType.equals("")) {
+		if (webhookType == null || webhookType.isBlank()) {
 			return;
 		}
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
@@ -289,7 +291,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -326,7 +328,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
-		return "true".equals(getValue(projectKey, eventKey));
+		return "true" .equals(getValue(projectKey, eventKey));
 	}
 
 	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
@@ -343,17 +345,17 @@ public class ConfigPersistenceManager {
 		}.getType();
 		if (rdfSource != null) {
 			try {
-				rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 				if (rdfSourceList == null) rdfSourceList = new ArrayList<>();
 			} catch (JsonSyntaxException e) {
 				rdfSourceList = new ArrayList<>();
-				setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 			}
 
 			rdfSource.setActivated(true); // default: activated
 			rdfSourceList.add(rdfSource);
 
-			setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, type);
+			saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 
 		}
 
@@ -364,9 +366,10 @@ public class ConfigPersistenceManager {
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		try {
-			rdfSourceList = (List<RDFSource>) getValueAsObject(projectKey, "rdfsource.list", type);
+			rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 		} catch (JsonSyntaxException e) {
 		} finally {
+			// TODO Fix: finally block does not complete normally
 			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
 		}
 	}
@@ -376,14 +379,14 @@ public class ConfigPersistenceManager {
 		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void deleteAllKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
@@ -398,7 +401,7 @@ public class ConfigPersistenceManager {
 			}
 		}
 
-		setValueAsObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
 	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
@@ -420,5 +423,28 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return projectSources;
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Rationale Backlog */
+	/*										*/
+	/* **************************************/
+	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
+		Type type = new TypeToken<DefinitionOfDone>() {
+		}.getType();
+		saveObject(projectKey, "definitionOfDone", definitionOfDone, type);
+	}
+
+	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
+		Type type = new TypeToken<DefinitionOfDone>() {
+		}.getType();
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		try {
+			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
+		} catch (Exception e) {
+			setDefinitionOfDone(projectKey, new DefinitionOfDone());
+		}
+		return definitionOfDone;
 	}
 }

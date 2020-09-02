@@ -1,19 +1,17 @@
 <div class="aui-group">
     <div class="aui-toolbar2" role="toolbar">
         <div class="aui-toolbar-2-inner">
-        	<form class="aui">
-        		#parse("templates/filter/linkType.vm")
-        		
-        		#set ($statusDropdownId = "status-dropdown-graph")	
-        		#parse("templates/filter/status.vm")
-
-        		#set ($textInputId = "decision-search-input")
+        	<form class="aui">        	
+        		#set ($viewIdentifier = "graph")
         		#parse("templates/filter/text.vm")
-        	
-        		#set($select2-decision-group = "select2-decision-group-relationshipView")    
-  				#parse("templates/filter/decisionGroup.vm") 
-        	
-        		#set ($filterButtonId = "filterDecisionLinks-button")
+        		#parse("templates/filter/knowledgeType.vm")
+        		#parse("templates/filter/status.vm")
+        		#parse("templates/filter/linkType.vm")    
+        		#parse("templates/filter/decisionGroup.vm")        		
+        		#parse("templates/filter/degree.vm")
+        		#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+        		#parse("templates/filter/creationDate.vm")	
+
         		#parse("templates/filter/filterButton.vm")
         	</form>
         </div>
@@ -29,7 +27,7 @@
             var click = 0;
         	AJS.$("#menu-item-graph").on("click", function(event) {
         		if (click === 0) {
-        			window.conDecRelationshipPage.buildDecisionGraph();
+        			window.conDecRelationshipPage.updateView();
         		}
         		click++;
         	});  

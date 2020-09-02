@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,11 +9,9 @@ import org.jgrapht.graph.AsSubgraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.link.IssueLinkType;
-import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -84,13 +81,7 @@ public class FilteringManager {
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 
-		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes(false);
-		if (filterSettings.getLinkTypes().size() < types.size()) {
-
-			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
-			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
-		}
+		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 		return subgraph;
 	}
 
@@ -121,10 +112,19 @@ public class FilteringManager {
 		return elements;
 	}
 
+	private Graph<KnowledgeElement, Link> getSubgraphMatchingLinkTypes(Graph<KnowledgeElement, Link> subgraph) {
+		if (filterSettings.getLinkTypes().size() < DecisionKnowledgeProject.getNamesOfLinkTypes().size()) {
+			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
+			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
+		}
+		return subgraph;
+	}
+
 	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
-			if (!filterSettings.getLinkTypes().contains(link.getType())) {
+			if (filterSettings.getLinkTypes().parallelStream()
+					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getType()))) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}
@@ -157,8 +157,8 @@ public class FilteringManager {
 		if (!isElementMatchingTimeFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingStatusFilter(element)) {
-			return isElementMatchingIncompleteFilter(element);
+		if (!isElementMatchingStatusFilter(element) && !isElementMatchingDocumentationIncompletenessFilter(element)) {
+			return false;
 		}
 		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
@@ -203,12 +203,12 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
-		if (filterSettings.getCreatedEarliest() != -1) {
-			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getCreatedEarliest();
+		if (filterSettings.getStartDate() > 0) {
+			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getStartDate();
 		}
-		if (filterSettings.getCreatedLatest() != -1) {
+		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getCreatedLatest() + 86400000;
+					&& element.getCreated().getTime() <= filterSettings.getEndDate() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}
@@ -284,8 +284,11 @@ public class FilteringManager {
 	 *         minDegree and maxDegree in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
-		int degree = element.getLinks().size();
-		return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+		if (filterSettings.getMinDegree() > 0) {
+			int degree = element.getLinks().size();
+			return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
+		}
+		return true;
 	}
 
 	/**
@@ -307,14 +310,12 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element incomplete status matches the filter settings
-	 *         value for showing incomplete decision knowledge.
+	 * @return True if the element is incompletely documented according to the
+	 *         {@see CompletenessCheck} and incomplete knowledge elements should be
+	 *         shown. False otherwise.
 	 */
-	public boolean isElementMatchingIncompleteFilter(KnowledgeElement element) {
-		if (filterSettings.isIncompleteKnowledgeShown()) {
-			return element.isIncomplete();
-		}
-		return true;
+	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
+		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
 	}
 
 	/**

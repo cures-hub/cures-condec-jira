@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -476,6 +477,18 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
 	}
 
+
+	@Test
+	public void testSetAndGetDefinitionOfDone() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
+		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
+		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
+		definitionOfDone.setAlternativeLinkedToArgument(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
+	}
 
 	@AfterClass
 	public static void tearDown() {

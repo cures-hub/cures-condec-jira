@@ -32,7 +32,7 @@
 	};
 
 	function changeColorForNodes() {
-		var redStatus = new Array("discarded", "rejected", "unresolved");
+		var redStatus = new Array("discarded", "rejected", "unresolved", "challenged");
 		var treantNodes = document.getElementsByClassName("node");
 		for (var i = 0; i < treantNodes.length; i++) {
 			var node = treantNodes[i];

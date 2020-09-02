@@ -39,9 +39,11 @@
 			console.log("contextmenu closed");
 			if (contextMenuNode) {
 				contextMenuNode.setAttribute('aria-hidden', 'true');
+				contextMenuNode.removeAttribute('open');
 			}
 			if (contextMenuForSentencesNode) {
 				contextMenuForSentencesNode.setAttribute('aria-hidden', 'true');
+				contextMenuNode.removeAttribute('open');
 			}
 		}
 		isContextMenuOpen = false;
@@ -54,6 +56,8 @@
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
 	        container) {
 		console.log("contextmenu opened");
+		console.log("element id: " + id + " element documentation location: " + documentationLocation);
+		
 		isContextMenuOpen = true;
 
 		contextMenuNode = document.getElementById("condec-context-menu");
@@ -73,6 +77,7 @@
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
 		contextMenuNode.setAttribute('aria-hidden', 'false');
+		contextMenuNode.setAttribute('open', '');
 	};
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation) {

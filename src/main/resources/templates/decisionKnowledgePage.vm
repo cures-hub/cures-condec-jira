@@ -9,14 +9,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-overview">
             <a href="#tabs-overview">Overview</a>
         </li>
+        <li class="menu-item" id="menu-item-graph">
+        	<a href="#tabs-relationshipGraph">$i18n.getText('condec.label.relationshipGraph')</a>
+        </li>
         <li class="menu-item" id="menu-item-chronology">
             <a href="#tabs-chronology">$i18n.getText('condec.label.evolution')</a>
         </li>
         <li class="menu-item" id="menu-item-comparison">
             <a href="#tabs-compare">$i18n.getText('condec.label.compare')</a>
-        </li>
-        <li class="menu-item" id="menu-item-graph">
-            <a href="#tabs-relationshipGraph">$i18n.getText('condec.label.relationshipGraph')</a>
         </li>
         <li class="menu-item" id="menu-item-matrix">
             <a href="#tabs-relationshipMatrix">$i18n.getText('condec.label.relationshipMatrix')</a>
@@ -31,14 +31,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div class="tabs-pane" id="tabs-overview">
         #parse("templates/overview.vm")
     </div>
+    <div class="tabs-pane" id="tabs-relationshipGraph">
+        #parse("templates/relationshipView.vm")
+    </div>
     <div class="tabs-pane" id="tabs-chronology">
         #parse("templates/chronologyView.vm")
     </div>
     <div class="tabs-pane" id="tabs-compare">
         #parse("templates/comparisonView.vm")
-    </div>
-    <div class="tabs-pane" id="tabs-relationshipGraph">
-        #parse("templates/relationshipView.vm")
     </div>
     <div class="tabs-pane" id="tabs-relationshipMatrix">
         #parse("templates/relationshipMatrixView.vm")
@@ -55,7 +55,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #parse("templates/dialogs/renameGroupDialog.vm")
 #parse("templates/dialogs/deleteGroupDialog.vm")
 #parse("templates/dialogs/linkDialog.vm")
-#parse("templates/dialogs/linkDecisionsDialog.vm")
 #parse("templates/dialogs/changeTypeDialog.vm")
 #parse("templates/dialogs/changeStatusDialog.vm")
 #parse("templates/dialogs/summarizationDialog.vm")

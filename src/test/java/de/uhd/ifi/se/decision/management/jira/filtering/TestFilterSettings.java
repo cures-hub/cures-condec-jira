@@ -1,12 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -66,24 +69,24 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetCreatedEarliest() {
-		assertEquals(createDate, filterSettings.getCreatedEarliest());
+		assertEquals(createDate, filterSettings.getStartDate());
 	}
 
 	@Test
 	public void testSetCreatedEarliest() {
-		filterSettings.setCreatedEarliest(createDate - 50);
-		assertEquals(createDate - 50, filterSettings.getCreatedEarliest());
+		filterSettings.setStartDate(createDate + 50);
+		assertEquals(createDate + 50, filterSettings.getStartDate());
 	}
 
 	@Test
 	public void testGetCreatedLatest() {
-		assertEquals(createDate, filterSettings.getCreatedLatest());
+		assertEquals(createDate, filterSettings.getEndDate());
 	}
 
 	@Test
 	public void testSetCreatedLatest() {
-		filterSettings.setCreatedLatest(createDate + 10);
-		assertEquals(createDate + 10, filterSettings.getCreatedLatest());
+		filterSettings.setEndDate(createDate + 10);
+		assertEquals(createDate + 10, filterSettings.getEndDate());
 	}
 
 	@Test
@@ -117,8 +120,8 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfLinkTypes() {
-		assertEquals(11, filterSettings.getLinkTypes().size());
-		List<String> selectedLinkTypes = new ArrayList<>();
+		assertEquals(1, filterSettings.getLinkTypes().size());
+		Set<String> selectedLinkTypes = new HashSet<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
 		filterSettings.setLinkTypes(selectedLinkTypes);
@@ -128,7 +131,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetLinkTypes() {
 		filterSettings.setKnowledgeTypes(null);
-		assertEquals(11, filterSettings.getLinkTypes().size());
+		assertEquals(1, filterSettings.getLinkTypes().size());
 	}
 
 	@Test
@@ -143,17 +146,18 @@ public class TestFilterSettings extends TestSetUp {
 
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());
+		status.add("incomplete");
 		filterSettings.setStatus(status);
 		assertEquals(1, filterSettings.getStatus().size());
 	}
 
 	@Test
-	public void testIsIncompleteElementsShown() {
-		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+	public void testIsOnlyIncompleteElementsShown() {
+		assertFalse(filterSettings.isIncompleteKnowledgeShown());
 	}
 
 	@Test
-	public void testSetIncompleteElementsShown() {
+	public void testSetOnlyIncompleteElementsShown() {
 		filterSettings.setIncompleteKnowledgeShown(true);
 		assertTrue(filterSettings.isIncompleteKnowledgeShown());
 	}
@@ -233,6 +237,15 @@ public class TestFilterSettings extends TestSetUp {
 
 		filterSettings.setSelectedElement("TEST-1:123");
 		assertNull(filterSettings.getSelectedElement());
+	}
+
+	@Test
+	public void testSetHierarchical() {
+		// default value
+		assertFalse(filterSettings.isHierarchical());
+
+		filterSettings.setHierarchical(true);
+		assertTrue(filterSettings.isHierarchical());
 	}
 
 }

@@ -1,4 +1,3 @@
-
 <section id="link-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
 	<header class="aui-dialog2-header">
 		<h2 id="link-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.link.item.label")</h2>
@@ -12,16 +11,9 @@
 				<label for="link-form-select-element">$i18n.getText("condec.label.unlinked.elements"):</label>
 				<select id="link-form-select-element" class="select full-width-field"></select>			
 			</div>
-			<div class="field-group" id="argument-field-group">
-				<label for="form-radio-argument">$i18n.getText("condec.label.argument.type"):</label>
-				<div class="radio">
-					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-pro" value="Pro-argument">
-					<label for="link-form-radio-pro">Pro-argument</label>
-				</div>
-				<div class="radio">
-					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-con" value="Con-argument">
-					<label for="link-form-radio-con">Con-argument</label>
-				</div>
+			<div class="field-group">
+				<label for="link-form-select-linktype">$i18n.getText("condec.label.link.type"):</label>
+				<select id="link-form-select-linktype" class="select full-width-field"></select>
 			</div>
 		</form>
     </div>

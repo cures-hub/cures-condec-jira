@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,14 +18,12 @@ public class TestMatrix extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		List<KnowledgeElement> decisions = new ArrayList<>();
+		Set<KnowledgeElement> decisions = new LinkedHashSet<>();
 
-		KnowledgeElement element_1 = new KnowledgeElement(1, "TESTfwf", "", "Decision", "TEST",
-				"Test-1", "i", "");
+		KnowledgeElement element_1 = new KnowledgeElement(1, "TESTfwf", "", "Decision", "TEST", "Test-1", "i", "");
 		decisions.add(element_1);
 
-		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST",
-				"Test-1", "i", "");
+		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST", "Test-1", "i", "");
 		decisions.add(element_2);
 
 		matrix = new Matrix("Test", decisions);

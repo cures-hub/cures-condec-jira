@@ -1,4 +1,4 @@
-<label for="min-number-linked-issues-input">$i18n.getText('condec.label.degree.min')</label>
-<input type="number" id="min-number-linked-issues-input" value="1" min="1" class="text short-field"/>
-<label for="max-number-linked-issues-input">$i18n.getText('condec.label.degree.max')</label>
-<input type="number" id="max-number-linked-issues-input" value="100" min="1" class="text short-field"/>
+<label for="min-degree-input-$viewIdentifier">$i18n.getText('condec.label.degree.min')</label>
+<input type="number" id="min-degree-input-$viewIdentifier" value="0" min="0" class="text short-field"/>
+<label for="max-degree-input-$viewIdentifier">$i18n.getText('condec.label.degree.max')</label>
+<input type="number" id="max-degree-input-$viewIdentifier" value="100" min="0" class="text short-field"/>

@@ -77,4 +77,10 @@ public class TestVisGraphNode extends TestSetUp {
 		assertEquals("gray", node.getFont().values().iterator().next());
 		element.setStatus(KnowledgeStatus.UNDEFINED);
 	}
+
+	@Test
+	public void testGetColor() {
+		VisNode node = new VisNode(element, false, 1);
+		assertEquals("rgb(255, 255, 255)", node.getColor());
+	}
 }

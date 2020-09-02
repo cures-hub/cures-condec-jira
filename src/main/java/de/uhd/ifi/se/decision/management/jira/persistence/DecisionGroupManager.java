@@ -45,8 +45,8 @@ public class DecisionGroupManager {
 		}
 		boolean isDeleted = false;
 		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getGroup() == group && dgData.getSourceId() == element.getId()
-					&& dgData.getSourceDocumentationLocation() == element.getDocumentationLocation().getIdentifier()) {
+			if (dgData.getGroup().equals(group) && dgData.getSourceId() == element.getId()
+					&& dgData.getSourceDocumentationLocation().equals(element.getDocumentationLocation().getIdentifier())) {
 				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
 			}
 		}
@@ -85,15 +85,15 @@ public class DecisionGroupManager {
 	 * Replaces all current existing assignments for that element with a list of new
 	 * groups
 	 *
-	 * @param List of groups to add
-	 * @param The  element that the groups should be assigned to
+	 * @param groups of groups to add
+	 * @param element The element that the groups should be assigned to
 	 * @return If replacement was successful
 	 */
 	public static boolean setGroupAssignment(List<String> groups, KnowledgeElement element) {
 		if (groups == null || element == null) {
 			return false;
 		}
-		boolean success = false;
+		boolean success;
 		long id = 0;
 		success = deleteAllGroupAssignments(element);
 		for (String group : groups) {
@@ -141,13 +141,13 @@ public class DecisionGroupManager {
 	/**
 	 * Returns all groups for a given KnowledgeElement.
 	 *
-	 * @param element       node id in the {@link KnowledgeGraph}.
-	 * @param documentation location of the KnowledgeElement
+	 * @param elementId       node id in the {@link KnowledgeGraph}.
+	 * @param documentationLocation location of the KnowledgeElement
 	 * @return list of Strings of group assignments
 	 * @see KnowledgeElement
 	 */
 	public static List<String> getGroupsForElement(long elementId, DocumentationLocation documentationLocation) {
-		List<String> groups = new ArrayList<String>();
+		List<String> groups = new ArrayList<>();
 		if (elementId <= 0 || documentationLocation == null) {
 			return null;
 		}
@@ -169,8 +169,8 @@ public class DecisionGroupManager {
 	/**
 	 * Inserts a new group assignment into database.
 	 *
-	 * @param String Name of the Group
-	 * @param The    KnowledgeElement that the group is assigned to
+	 * @param sourceElement Name of the Group
+	 * @param group    KnowledgeElement that the group is assigned to
 	 * @return internal database id of inserted group assignment, -1 if insertion
 	 * failed.
 	 */
@@ -196,8 +196,8 @@ public class DecisionGroupManager {
 	 * Returns the group id if the assignment already exists in database, otherwise
 	 * -1.
 	 *
-	 * @param String Name of the Group
-	 * @param The    KnowledgeElement that the group is assigned to
+	 * @param group Name of the Group
+	 * @param sourceElement    KnowledgeElement that the group is assigned to
 	 * @return group id if the entry already exists in database, otherwise -1.
 	 */
 	public static long isGroupAlreadyInDatabase(String group, KnowledgeElement sourceElement) {
@@ -216,8 +216,8 @@ public class DecisionGroupManager {
 	/**
 	 * Returns the GroupInDatabase object.
 	 *
-	 * @param String Name of the Group
-	 * @param The    KnowledgeElement that the group is assigned to
+	 * @param group Name of the Group
+	 * @param sourceElement    KnowledgeElement that the group is assigned to
 	 * @return GroupInDatabase object.
 	 */
 	public static DecisionGroupInDatabase getGroupInDatabase(String group, KnowledgeElement sourceElement) {
@@ -225,9 +225,9 @@ public class DecisionGroupManager {
 			return null;
 		}
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getGroup() == group && groupInDatabase.getSourceId() == sourceElement.getId()
-					&& groupInDatabase.getSourceDocumentationLocation() == sourceElement.getDocumentationLocation()
-					.getIdentifier()) {
+			if (groupInDatabase.getGroup().equals(group) && groupInDatabase.getSourceId() == sourceElement.getId()
+					&& groupInDatabase.getSourceDocumentationLocation().equals(sourceElement.getDocumentationLocation()
+				.getIdentifier())) {
 				return groupInDatabase;
 			}
 		}
@@ -235,7 +235,7 @@ public class DecisionGroupManager {
 	}
 
 	public static List<String> getAllDecisionGroups(String projectKey) {
-		List<String> groups = new ArrayList<String>();
+		List<String> groups = new ArrayList<>();
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			String elementGroup = groupInDatabase.getGroup();
 			if (groupInDatabase.getProjectKey().equals(projectKey) && !groups.contains(elementGroup)

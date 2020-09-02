@@ -1,6 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.issue.link.IssueLink;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -8,13 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test class for links between decision knowledge elements
@@ -37,18 +39,9 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testSetType() {
 		link.setType(LinkType.RELATE.toString() + "New");
-		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.", LinkType.RELATE.toString(), link.getType());
+		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.",
+				LinkType.RELATE.toString(), link.getType());
 		link.setType(LinkType.RELATE);
-	}
-
-	@Test
-	public void testGetIdOfSourceElement() {
-		assertEquals(2, link.getSource().getId());
-	}
-
-	@Test
-	public void testGetIdOfDestinationElement() {
-		assertEquals(4, link.getTarget().getId());
 	}
 
 	@Test
@@ -66,11 +59,6 @@ public class TestLink extends TestSetUp {
 	}
 
 	@Test
-	public void testGetSourceElement() {
-		assertEquals("TEST-2", link.getSource().getKey());
-	}
-
-	@Test
 	public void testSetSourceElement() {
 		KnowledgeElement element = new KnowledgeElement();
 		KnowledgeElement oldElement = link.getSource();
@@ -78,11 +66,6 @@ public class TestLink extends TestSetUp {
 		link.setSourceElement(element);
 		assertEquals(element.getKey(), link.getSource().getKey());
 		link.setSourceElement(oldElement);
-	}
-
-	@Test
-	public void testGetDestinationElement() {
-		assertEquals("TEST-4", link.getTarget().getKey());
 	}
 
 	@Test

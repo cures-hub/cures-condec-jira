@@ -16,12 +16,15 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -37,7 +40,7 @@ public class FilterSettings {
 	private List<DocumentationLocation> documentationLocations;
 	private Set<String> knowledgeTypes;
 	private List<KnowledgeStatus> knowledgeStatus;
-	private List<String> linkTypes;
+	private Set<String> linkTypes;
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
@@ -46,11 +49,9 @@ public class FilterSettings {
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
-
-	@XmlElement
 	private long startDate;
-	@XmlElement
 	private long endDate;
+	private boolean isHierarchical;
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
@@ -60,7 +61,7 @@ public class FilterSettings {
 
 		// the following values are the default values of the filter criteria
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
-		this.linkTypes = LinkType.toStringList();
+		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -68,10 +69,11 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isIncompleteKnowledgeShown = true;
+		this.isIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
+		this.isHierarchical = false;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -127,39 +129,39 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return earliest creation date of an element to be included in the
+	 * @return earliest creation or update date of an element to be included in the
 	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedEarliest() {
+	public long getStartDate() {
 		return startDate;
 	}
 
 	/**
-	 * @param createdEarliest
-	 *            earliest creation date of an element to be included in the
-	 *            filter/shown in the knowledge graph.
+	 * @param startDate
+	 *            earliest creation or update date of an element to be included in
+	 *            the filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("createdEarliest")
-	public void setCreatedEarliest(long createdEarliest) {
-		this.startDate = createdEarliest;
+	@JsonProperty("startDate")
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
-	 * @return latest creation date of an element to be included in the filter/shown
-	 *         in the knowledge graph.
+	 * @return latest creation or update date of an element to be included in the
+	 *         filter/shown in the knowledge graph.
 	 */
-	public long getCreatedLatest() {
+	public long getEndDate() {
 		return endDate;
 	}
 
 	/**
-	 * @param createdLatest
-	 *            latest creation date of an element to be included in the
+	 * @param endDate
+	 *            latest creation or update date of an element to be included in the
 	 *            filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("createdLatest")
-	public void setCreatedLatest(long createdLatest) {
-		this.endDate = createdLatest;
+	@JsonProperty("endDate")
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
 	}
 
 	/**
@@ -222,27 +224,28 @@ public class FilterSettings {
 			return;
 		}
 		for (String stringStatus : status) {
+			if (stringStatus.equals("incomplete")) {
+				continue;
+			}
 			knowledgeStatus.add(KnowledgeStatus.getKnowledgeStatus(stringStatus));
 		}
 	}
 
 	/**
-	 * @return list of {@link LinkType}s to be shown in the knowledge graph as
-	 *         strings.
+	 * @return {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@XmlElement(name = "linkTypes")
-	public List<String> getLinkTypes() {
+	public Set<String> getLinkTypes() {
 		return linkTypes;
 	}
 
 	/**
 	 * @param namesOfTypes
-	 *            list of {@link LinkType}s to be shown in the knowledge graph as
-	 *            strings.
+	 *            {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
 	@JsonProperty("linkTypes")
-	public void setLinkTypes(List<String> namesOfTypes) {
-		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringList();
+	public void setLinkTypes(Set<String> namesOfTypes) {
+		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringSet();
 	}
 
 	/**
@@ -354,6 +357,8 @@ public class FilterSettings {
 	/**
 	 * @return true if incompletely documented knowledge elements are shown in the
 	 *         filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
 	public boolean isIncompleteKnowledgeShown() {
 		return isIncompleteKnowledgeShown;
@@ -363,6 +368,8 @@ public class FilterSettings {
 	 * @param isIncompleteKnowledgeShown
 	 *            true if incompletely documented knowledge elements should be shown
 	 *            in the filtered graph.
+	 * 
+	 * @see CompletenessCheck
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
 	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
@@ -433,5 +440,25 @@ public class FilterSettings {
 	@JsonProperty("knowledgeTypes")
 	public void setKnowledgeTypes(Set<String> namesOfTypes) {
 		knowledgeTypes = namesOfTypes != null ? namesOfTypes : project.getNamesOfKnowledgeTypes();
+	}
+
+	/**
+	 * @return true if the {@link KnowledgeGraph} or a respective subgraph provided
+	 *         by the {@link FilteringManager} should be shown with a hierarchy of
+	 *         nodes. This is used in the {@link VisGraph}.
+	 */
+	public boolean isHierarchical() {
+		return isHierarchical;
+	}
+
+	/**
+	 * @param isHierarchical
+	 *            true if the {@link KnowledgeGraph} or a respective subgraph
+	 *            provided by the {@link FilteringManager} should be shown with a
+	 *            hierarchy of nodes. This is used in the {@link VisGraph}.
+	 */
+	@JsonProperty("isHierarchical")
+	public void setHierarchical(boolean isHierarchical) {
+		this.isHierarchical = isHierarchical;
 	}
 }

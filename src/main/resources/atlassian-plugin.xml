@@ -50,11 +50,12 @@
 		<resource type="download" name="codesummarization.png"
 			location="/images/codesummarization.png" />
 		<!-- visGraph.js icons -->
-		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis/dist/img/network/addNodeIcon.png" />
-		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis/dist/img/network/backIcon.png" />
-		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis/dist/img/network/editIcon.png" />
-		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis/dist/img/network/connectIcon.png" />
-		<resource type="download" name="img/network/cross.png" location="/js/lib/vis/dist/img/network/cross.png" />
+		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis-network/dist/img/network/addNodeIcon.png" />
+		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis-network/dist/img/network/backIcon.png" />
+		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis-network/dist/img/network/editIcon.png" />
+		<resource type="download" name="img/network/deleteIcon.png" location="/js/lib/vis-network/dist/img/network/deleteIcon.png" />
+		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis-network/dist/img/network/connectIcon.png" />
+		<resource type="download" name="img/network/cross.png" location="/js/lib/vis-network/dist/img/network/cross.png" />
 		<!-- dashboard item thumbnail -->
 		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
@@ -64,9 +65,9 @@
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
         <resource type="download" name="settings.css" location="/css/settings.css" />
-
-		<resource type="download" name="vis.css" location="/js/lib/vis/dist/vis.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
+		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
+		<resource type="download" name="vis-timeline-graph2d.min.css" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
 		<!-- look and feel like Jira -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -105,7 +106,8 @@
 		<resource type="download" name="jquery.easing.js"
 			location="/js/lib/jquery/jquery.easing.js" />
 		<!--Vis -->
-		<resource type="download" name="vis.js" location="/js/lib/vis/dist/vis.js" />
+		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
+		<resource type="download" name="vis-timeline-graph2d.min.js" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 
@@ -313,43 +315,35 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="condec-project-settings-menu-item-classification"
-		name="Menu Item for ConDec Plug-in Project Settings of Classification"
+	<web-item key="condec-project-settings-menu-item-rationalebacklog"
+		name="Menu Item for ConDec Plug-in Project Settings of Rationale Backlog"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-		<description>Adds the "Classification" menu item.</description>
-		<label key="condec.project.settings.menu.item.classification" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
-		</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-git"
+        <description>Adds the "Rationale backlog" menu item.</description>
+        <label key="condec.project.settings.menu.item.rationale.backlog" />
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-git"
 		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
-		<description>Adds the "Git Extraction" menu item.</description>
+		<description>Adds the "Git connection" menu item.</description>
 		<label key="condec.project.settings.menu.item.git" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="condec-project-settings-menu-item-webhook"
-		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+	<web-item key="condec-project-settings-menu-item-classification"
+		name="Menu Item for ConDec Plug-in Project Settings of Classification"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
-		<description>Adds the "Webhook" menu item.</description>
-		<label key="condec.project.settings.menu.item.webhook" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-release-notes"
-		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
-		<description>Adds the "Release Notes" menu item.</description>
-		<label key="condec.project.settings.menu.item.release.notes" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		<description>Adds the "Text classification" menu item.</description>
+		<label key="condec.project.settings.menu.item.classification" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
+	</web-item>	
 	<web-item key="condec-project-settings-menu-item-consistency"
 		name="Menu Item for ConDec Plug-in Project Settings of Consistency"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
 		<description>Adds the "Consistency" menu item.</description>
 		<label key="condec.project.settings.menu.item.consistency" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
@@ -357,14 +351,31 @@
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
     <web-item key="condec-project-settings-menu-item-decisionguidance"
-        name="Menu Item for ConDec Plug-in Project Settings of decision guidance"
-        section="atl.jira.proj.config/condec-project-settings-section" weight="22">
-        <description>Adds the "Decision Guidance" menu item.</description>
-        <label key="condec.project.settings.menu.item.decisionguidance" />
+        name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
+        section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+        <description>Adds the "Decision guidance" menu item.</description>
+        <label key="condec.project.settings.menu.item.decision.guidance" />
         <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
         </link>
         <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
     </web-item>
+    <web-item key="condec-project-settings-menu-item-release-notes"
+		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="22">
+		<description>Adds the "Release notes" menu item.</description>
+		<label key="condec.project.settings.menu.item.release.notes" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=releaseNotes
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+    <web-item key="condec-project-settings-menu-item-webhook"
+		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="23">
+		<description>Adds the "Webhook" menu item.</description>
+		<label key="condec.project.settings.menu.item.webhook" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">

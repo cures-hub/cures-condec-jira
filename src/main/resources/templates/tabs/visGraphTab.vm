@@ -1,0 +1,33 @@
+<div class="aui-toolbar2" role="toolbar">
+	<div class="aui-toolbar-2-inner">		
+		<form class="aui">
+			#set ($viewIdentifier = "graph")	
+			#parse("templates/filter/text.vm")	
+			#parse("templates/filter/knowledgeType.vm")
+			#parse("templates/filter/status.vm")
+			#parse("templates/filter/decisionGroup.vm")
+			#parse("templates/filter/creationDate.vm")
+			#parse("templates/filter/linkType.vm")
+			#parse("templates/filter/documentationLocation.vm")
+			#parse("templates/filter/linkDistance.vm")
+			#parse("templates/filter/filterButton.vm")
+		</form>		
+	</div>
+</div>
+<div id="vis-container"></div>
+<script>
+/* Adds the on click listener on the menu item */
+$(document).ready(function () {
+	var isOnceClicked = false;
+	var menuItem = document.getElementById("menu-item-graph");
+	if (menuItem === null) {
+		return;
+	}
+	menuItem.onclick = function() {
+		if (!isOnceClicked) {
+			document.getElementById("filter-button-graph").click();
+			isOnceClicked = true;
+		}
+	};
+  }); 
+</script>

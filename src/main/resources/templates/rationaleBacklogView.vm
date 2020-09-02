@@ -1,26 +1,12 @@
-<div>
 <form class="aui">
-
-    #set ($textInputId = "text-search-input-rb")
+	#set ($viewIdentifier = "rationale-backlog")
     #parse("templates/filter/text.vm")
-
-    #set ($knowledgeTypeDropdownId = "knowledge-type-dropdown-rb")
     #parse("templates/filter/knowledgeType.vm")
-
-    #set ($statusDropdownId = "status-dropdown-rb")
     #parse("templates/filter/status.vm")
-
-    #set ($datepickerStartId = "start-date-picker-rb")
-    #set ($datepickerEndId = "end-date-picker-rb")
     #parse("templates/filter/creationDate.vm")
-
-    #set($select2-decision-group = "select2-decision-group-rb")
   	#parse("templates/filter/decisionGroup.vm")
-
-
-
+	#parse("templates/filter/linkDistance.vm")
 </form>
-</div>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="rationale-backlog-tree"></div>
@@ -38,13 +24,4 @@
            console.error("ConDecRationaleBacklog could not get its dependencies.");
        }
     });
-
-    $("#select2-decision-group-rb").on("change.select2", function (e) {
-        conDecObservable.notify();
-    });
-
-    function checkBoxClicked() {
-        conDecObservable.notify();
-    }
-
 </script>

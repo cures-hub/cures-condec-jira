@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -226,5 +228,21 @@ public class DecisionKnowledgeProject {
 		}
 		issueTypes.add("Other");
 		return issueTypes;
+	}
+
+	/**
+	 * @return names of Jira issue links available in the project.
+	 */
+	public static Set<String> getNamesOfLinkTypes() {
+		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
+		return types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
+	}
+
+	/**
+	 * @return Jira issue links available in the project.
+	 */
+	public static Collection<IssueLinkType> getJiraIssueLinkTypes() {
+		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		return linkTypeManager.getIssueLinkTypes(false);
 	}
 }

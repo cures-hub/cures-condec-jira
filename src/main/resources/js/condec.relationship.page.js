@@ -15,103 +15,23 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
 
-            addOnClickEventToDecisionLinkFilterButton();
+            conDecFiltering.fillFilterElements("graph", ["Decision"]);
+            conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
+            	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+                	conDecVis.buildGraphNetwork(knowledgeGraph, "graph-container");
+                });
+            });
 
+            // Register/subscribe this view as an observer
             conDecObservable.subscribe(this);
             return true;
         }
         return false;
     };
 
-    ConDecRelationshipPage.prototype.buildDecisionGraph = function () {
-        console.log("ConDec build Decision Relationship Graph");
-
-        conDecAPI.fillDecisionGroupSelect("select2-decision-group-relationshipView");
-
-        conDecAPI.getDecisionGraph(function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
-        });
-    };
-
-    ConDecRelationshipPage.prototype.buildDecisionGraphFiltered = function (linkTypes, searchString, status, selectedGroups) {
-        conDecAPI.getDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups, function (knowledgeGraph) {
-            buildGraphNetwork(knowledgeGraph);
-        });
-    };
-
     ConDecRelationshipPage.prototype.updateView = function () {
-        conDecRelationshipPage.buildDecisionGraph();
-    }
-
-    function addOnClickEventToDecisionLinkFilterButton() {
-        conDecFiltering.initDropdown("linktype-dropdown", conDecAPI.getLinkTypesSync());
-        conDecFiltering.initDropdown("status-dropdown-graph", conDecAPI.knowledgeStatus);
-
-        var filterButton = document.getElementById("filterDecisionLinks-button");
-
-        filterButton.addEventListener("click", function (event) {
-            var linkTypes = conDecFiltering.getSelectedItems("linktype-dropdown");
-            var status = conDecFiltering.getSelectedItems("status-dropdown-graph");
-            var searchString = document.getElementById("decision-search-input").value;
-            var selectedGroups = conDecFiltering.getSelectedGroups("select2-decision-group-relationshipView");
-
-            conDecRelationshipPage.buildDecisionGraphFiltered(linkTypes, searchString, status, selectedGroups);
-        });
-    }
-
-    function buildGraphNetwork(data) {
-        var coloredEdges = [];
-        for (var e in data.edges) {
-            data.edges[e].color = {
-                color: data.edges[e].color,
-                inherit: false
-            }
-            coloredEdges.push(data.edges[e]);
-        }
-
-        var dataset = {
-            nodes: data.nodes,
-            edges: coloredEdges
-        };
-
-        var graphContainer = document.getElementById('graph-container');
-
-        var options = {
-            edges: {
-                arrows: "to",
-                length: 200
-            },
-            layout: {
-                randomSeed: 228332
-            },
-            manipulation: {
-                enabled: true,
-                addNode: false,
-                deleteNode: function (data, callback) {
-                    conDecVis.deleteNode(data, callback);
-                },
-                addEdge: function (data, callback) {
-                    conDecVis.addEdgeWithType(data, callback);
-                },
-                deleteEdge: function (data, callback) {
-                    conDecVis.deleteEdge(data, dataset, callback);
-                },
-                editEdge: false
-            },
-            physics: {
-                enabled: true,
-                barnesHut: {
-                    avoidOverlap: 0.2
-                }
-            }
-        };
-
-        var graphNetwork = new vis.Network(graphContainer, dataset, options);
-
-        graphNetwork.on("oncontext", function (params) {
-            conDecVis.addContextMenu(params, graphNetwork);
-        });
-    }
+    	document.getElementById("filter-button-graph").click();
+    };
 
     /*
      * Init Helpers

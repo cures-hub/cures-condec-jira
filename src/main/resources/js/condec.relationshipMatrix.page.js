@@ -14,13 +14,20 @@
             conDecObservable = _conDecObservable;
 
             conDecObservable.subscribe(this);
+            conDecFiltering.fillFilterElements("matrix", ["Decision"]);
+            conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
+            	conDecRelationshipMatrixPage.updateView();
+            });
+            
             return true;
         }
         return false;
     };
 
     ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
-        conDecAPI.getDecisionMatrix(function (data) {
+    	var filterSettings = conDecFiltering.getFilterSettings("matrix");
+    	filterSettings["documentationLocations"] = null;
+        conDecAPI.getMatrix(filterSettings, function (data) {
             const matrix = document.getElementById("matrix");
             const thead = document.createElement("thead");
             const firstRowHeaderElement = document.createElement("th");
@@ -75,19 +82,18 @@
     };
 
     ConDecRelationshipMatrixPage.prototype.buildLegend = function buildLegend() {
-        conDecAPI.getLinkTypes(function(linkTypes) {
-            const legend = document.getElementById("legendList");
-            for (let linkType in linkTypes) {
-                if (linkTypes[linkType] != "") {
-                    const li = document.createElement("li");
-                    li.innerText = linkType;
-                    const span = document.createElement("span");
-                    span.style.background = linkTypes[linkType];
-                    li.appendChild(span);
-                    legend.appendChild(li);
-                }
+    	var linkTypes = conDecAPI.getLinkTypes();
+        const legend = document.getElementById("legendList");
+        for (let linkType in linkTypes) {
+            if (linkTypes[linkType] != "") {
+                const li = document.createElement("li");
+                li.innerText = linkType;
+                const span = document.createElement("span");
+                span.style.background = linkTypes[linkType];
+                li.appendChild(span);
+                legend.appendChild(li);
             }
-        });
+        }
     };
 
     /*

@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -105,7 +105,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		List<String> linkTypes = new ArrayList<>();
+		Set<String> linkTypes = new HashSet<>();
 		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 		settings.setLinkTypes(linkTypes);
@@ -113,7 +113,7 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(0, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(14, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test
@@ -149,7 +149,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraphForLinkDistanceThree() {
-		FilterSettings settings = new FilterSettings("TEST", "TEST");
+		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		settings.setLinkDistance(3);
 
@@ -159,23 +159,50 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testIsElementMatchingDegreeFilter() {
-		FilteringManager filteringManager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		FilterSettings settings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(settings);
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
+
+		settings.setMinDegree(20);
+		filteringManager.setFilterSettings(settings);
+		assertFalse(filteringManager.isElementMatchingDegreeFilter(element));
 	}
 
 	@Test
-	public void testIsElementMatchingIncompleteFilter() {
+	public void testIsElementMatchingStatusFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(settings);
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		assertTrue(filteringManager.isElementMatchingStatusFilter(element));
+
+		settings.setStatus(new ArrayList<>());
+		filteringManager.setFilterSettings(settings);
+		assertFalse(filteringManager.isElementMatchingStatusFilter(element));
+	}
+
+	@Test
+	public void testIsElementMatchingDocumentationCompletenessFilter() {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		FilterSettings settings = new FilterSettings("TEST", "");
 
 		settings.setIncompleteKnowledgeShown(false);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertTrue(filteringManager.isElementMatchingIncompleteFilter(element));
+		assertFalse(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 
 		settings.setIncompleteKnowledgeShown(true);
 		filteringManager.setFilterSettings(settings);
-		assertFalse(filteringManager.isElementMatchingIncompleteFilter(element));
+		assertFalse(filteringManager.isElementMatchingDocumentationIncompletenessFilter(element));
 	}
 
+	@Test
+	public void testIsElementMatchingTimeFilter() {
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setStartDate(1);
+		settings.setEndDate(new Date().getTime());
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.isElementMatchingTimeFilter(element));
+	}
 }

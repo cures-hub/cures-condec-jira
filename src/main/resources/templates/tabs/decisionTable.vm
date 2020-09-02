@@ -3,10 +3,10 @@
         <form class="aui">
             <label for="selectDecisionProblem">Issues: </label>
             <select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
-            #set ($linkDistanceInputId = "link-distance-input-decision-table")
+            #set ($viewIdentifier = "decision-table")
             #parse("templates/filter/linkDistance.vm")
         </form>
-        <form class="aui-buttons">
+        <div class="aui-buttons">
             <button class="aui-button" id="btnAddCriterion" title="Adds a new criterion column to decision table">
                 <span class="aui-icon aui-icon-small aui-iconfont-new-edit">Adds a new criterion column to decision table</span>
                 Criterion
@@ -23,10 +23,27 @@
             <div id="dropdown2-more" class="aui-dropdown2 aui-style-default">
                 <ul class="aui-list-truncate" id="alternative-dropdown-items"></ul>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
+<script>
+/* Adds the on click listener on the menu item */
+$(document).ready(function () {
+	var isOnceClicked = false;
+	var menuItem = document.getElementById("menu-item-decision-table");
+	if (menuItem === null) {
+		return;
+	}
+	menuItem.onclick = function() {
+		if (!isOnceClicked) {
+			var issueKey = conDecAPI.getIssueKey();
+			conDecDecisionTable.loadDecisionProblems(issueKey);
+			isOnceClicked = true;
+		}
+	};
+  }); 
+
+</script>
 
 #parse("templates/tabs/recommendationTable.vm")
-

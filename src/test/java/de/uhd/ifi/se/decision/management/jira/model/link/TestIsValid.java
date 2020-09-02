@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -22,5 +23,11 @@ public class TestIsValid extends TestSetUp {
 	@Test
 	public void testTrue() {
 		assertTrue(link.isValid());
+	}
+
+	@Test
+	public void testFalse() {
+		link.setIdOfDestinationElement(-1);
+		assertFalse(link.isValid());
 	}
 }
