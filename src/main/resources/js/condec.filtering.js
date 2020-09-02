@@ -70,48 +70,61 @@
 	 * condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
-		var searchInput = document.getElementById("search-input-" + viewIdentifier);
-		if (isSearchInputEvent && searchInput !== null) {
-			searchInput.addEventListener("change", function() {callback()});
-		}		
-		
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2", function() {callback()});
-		conDecFiltering.addEventListenerToLinkDistanceInput("link-distance-input-" + viewIdentifier, function() {callback()});
+		$("#select2-decision-group-" + viewIdentifier).on("change.select2", 
+				function() {
+					callback();
+				});
 		
 		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
 		if (knowledgeTypeDropdown !== null) {
-			knowledgeTypeDropdown.addEventListener("change", function() {callback()});
+			knowledgeTypeDropdown.addEventListener("click", () => callback());
 		}
 		
 		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
 		if (statusDropdown !== null) {
-			statusDropdown.addEventListener("change", function() {callback()});
-		}	
+			statusDropdown.addEventListener("click", () => callback());
+		}
+		
+		var filterElements = [];
+		
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);
+		if (isSearchInputEvent && searchInput !== null) {
+			filterElements.push(searchInput);
+		}
+		
+		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
+		if (linkDistanceInput !== null) {
+			filterElements.push(linkDistanceInput);
+		}			
 		
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
-			isOnlyDecisionKnowledgeShownInput.addEventListener("change", function() {callback()});
+			filterElements.push(isOnlyDecisionKnowledgeShownInput);
 		}		
 		
 		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
 		if (minLinkNumberInput !== null) {
-			minLinkNumberInput.addEventListener("change", function() {callback()});
+			filterElements.push(minLinkNumberInput);
 		}
 
 		var maxLinkNumberInput = document.getElementById("max-degree-input-" + viewIdentifier);
 		if (maxLinkNumberInput !== null) {
-			maxLinkNumberInput.addEventListener("change", function() {callback()});
+			filterElements.push(maxLinkNumberInput);
 		}
 
 		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
 		if (endDatePicker !== null) {
-			endDatePicker.addEventListener("change", function() {callback()});
+			filterElements.push(endDatePicker);
 		}		
 
 		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
 		if (startDatePicker !== null) {
-			startDatePicker.addEventListener("change", function() {callback()});
+			filterElements.push(startDatePicker);
 		}
+		
+		filterElements.forEach(function(filterElement) {
+			filterElement.addEventListener("input", () => callback());
+		});
 	};
 
 	/*
@@ -261,18 +274,6 @@
 			}
 		}
 		return selectedGroups;
-	};
-
-	/*
-	 * external references: condec.jira.issue.module, condec.knowledge.page
-	 */
-	ConDecFiltering.prototype.addEventListenerToLinkDistanceInput = function(inputId, callback) {
-		var linkDistanceInput = document.getElementById(inputId);
-		linkDistanceInput.addEventListener("input", function() {
-			if (this.value >= 0) {
-				callback();
-			}
-		});
 	};
 
 	/*

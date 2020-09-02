@@ -87,7 +87,7 @@
 	ConDecJiraIssueModule.prototype.addOnChangeEventToTreantFilters = function () {
 		conDecFiltering.addOnChangeEventToFilterElements("treant", conDecJiraIssueModule.showTreant);
 		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
-		isTestCodeShownInput.addEventListener("change", function() {conDecJiraIssueModule.showTreant()});
+		isTestCodeShownInput.addEventListener("change", function() {conDecJiraIssueModule.showTreant();});
 	};
 
 	function getURLsSearch() {
