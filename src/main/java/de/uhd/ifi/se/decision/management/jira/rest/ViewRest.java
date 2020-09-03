@@ -412,7 +412,7 @@ public class ViewRest {
 
 
 		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
-		List<ProjectSource> projectSources = ConfigPersistenceManager.getActiveProjectSources(projectKey);
+		List<ProjectSource> projectSources = ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey);
 		List<RDFSource> rdfSources = ConfigPersistenceManager.getRDFKnowledgeSource(projectKey);
 
 		simpleRecommender.addKnowledgeSource(projectSources);

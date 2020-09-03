@@ -412,7 +412,7 @@ public class ConfigPersistenceManager {
 		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
 	}
 
-	public static List<ProjectSource> getActiveProjectSources(String projectKey) {
+	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
