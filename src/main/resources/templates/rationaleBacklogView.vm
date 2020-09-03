@@ -6,6 +6,7 @@
     #parse("templates/filter/creationDate.vm")
   	#parse("templates/filter/decisionGroup.vm")
 	#parse("templates/filter/linkDistance.vm")
+	#parse("templates/filter/degree.vm")
 </form>
 <div class="aui-group">
     <div id="resizable" class="left">
