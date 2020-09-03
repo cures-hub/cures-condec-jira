@@ -42,6 +42,11 @@
 
 <script>
     $(document).ready(function () {
+        conDecAPI.getDefinitionOfDone("$projectKey", function (definitionOfDone) {
+            $("#issue-link-alternative-checkbox").prop("checked", definitionOfDone["issueIsLinkedToAlternative"]);
+            $("#decision-link-pro-checkbox").prop("checked", definitionOfDone["decisionIsLinkedToPro"]);
+            $("#alternative-link-argument-checkbox").prop("checked", definitionOfDone["alternativeIsLinkedToArgument"]);
+        });
         const saveDefinitionOfDoneButton = $("#change-definition-of-done");
         saveDefinitionOfDoneButton.click((event => {
             event.preventDefault();

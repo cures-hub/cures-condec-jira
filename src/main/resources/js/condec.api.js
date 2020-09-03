@@ -1064,6 +1064,18 @@
 	};
 
 	/*
+	 * external reference: rationaleBacklogSettings.vm
+	 */
+	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/config/getDefinitionOfDone.json?projectKey=${projectKey}`,
+			function (error, definitionOfDone) {
+				if (error === null) {
+					callback(definitionOfDone);
+				}
+			});
+	};
+
+	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeSourceActivated = function (projectKey, knowledgeSourceName, isActivated) {
