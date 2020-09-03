@@ -23,15 +23,16 @@ import java.util.Map;
  */
 public class DefinitionOfDone {
 
-	private boolean issueIsLinkedToAlternative;
-	private boolean decisionIsLinkedToPro;
-	private boolean alternativeIsLinkedToArgument;
 	private Map<String, Boolean> criteriaMap = new HashMap<>();
 
 	public DefinitionOfDone() {
 		criteriaMap.put("issueIsLinkedToAlternative", Boolean.FALSE);
 		criteriaMap.put("decisionIsLinkedToPro", Boolean.FALSE);
 		criteriaMap.put("alternativeIsLinkedToArgument", Boolean.FALSE);
+	}
+
+	public Map<String, Boolean> getCriteriaMap() {
+		return criteriaMap;
 	}
 
 	/**
