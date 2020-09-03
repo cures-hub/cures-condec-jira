@@ -13,18 +13,23 @@
             conDecAPI = _conDecAPI;
             conDecObservable = _conDecObservable;
 
-            conDecObservable.subscribe(this);
+            // Fill HTML elements for filter criteria
             conDecFiltering.fillFilterElements("matrix", ["Decision"]);
+            
+            // Add event listener on buttons
             conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
             	conDecRelationshipMatrixPage.updateView();
             });
+            
+            // Register/subscribe this view as an observer
+            conDecObservable.subscribe(this);
             
             return true;
         }
         return false;
     };
 
-    ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
+    ConDecRelationshipMatrixPage.prototype.buildMatrix = function () {
     	var filterSettings = conDecFiltering.getFilterSettings("matrix");
     	filterSettings["documentationLocations"] = null;
         conDecAPI.getMatrix(filterSettings, function (data) {
@@ -50,7 +55,7 @@
         });
     };
 
-    ConDecRelationshipMatrixPage.prototype.updateView = function() {
+    ConDecRelationshipMatrixPage.prototype.updateView = function () {
         const matrix = document.getElementById("matrix");
         matrix.innerHTML = "";
         conDecRelationshipMatrixPage.buildMatrix();
@@ -84,7 +89,8 @@
     };
 
     ConDecRelationshipMatrixPage.prototype.buildLegend = function (linkTypesWithColor) {
-        const legend = document.getElementById("legendList");
+        const legend = document.getElementById("legend-list");
+        legend.innerHTML = "";
         for (let linkType in linkTypesWithColor) {
             const li = document.createElement("li");
             li.innerText = linkType;

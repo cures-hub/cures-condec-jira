@@ -528,6 +528,26 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @param targetElement
+	 *            object of {@link KnowledgeElement}.
+	 * @return {@link Link} object if there exists an outgoing link (= edge or
+	 *         relationship) between this knowledge element and the potential target
+	 *         knowledge element in the {@link KnowledgeGraph}. Returns null if no
+	 *         outgoing edge/link/relationshio can be found.
+	 */
+	public Link getOutgoingLink(KnowledgeElement targetElement) {
+		if (this.equals(targetElement)) {
+			return null;
+		}
+		for (Link link : this.getLinks()) {
+			if (link.getTarget().equals(targetElement)) {
+				return link;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Determines whether an element is linked to at least one other knowledge
 	 * element in the {@link KnowledgeGraph}.
 	 *

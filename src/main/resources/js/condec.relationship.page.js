@@ -15,6 +15,7 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
 
+            // Fill HTML elements for filter criteria
             conDecFiltering.fillFilterElements("graph", ["Decision"]);
             conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
             	conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
