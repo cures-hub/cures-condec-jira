@@ -23,9 +23,6 @@ public class TestSetDefinitionOfDone extends TestSetUp {
 	protected static String INVALID_PROJECT_KEY = "";
 	protected static String VALID_PROJECT_KEY = "TEST";
 
-	protected static String VALID_VALUE = "valid_value";
-	protected static String INVALID_VALUE = "";
-
 	@Before
 	public void setUp() {
 		init();
