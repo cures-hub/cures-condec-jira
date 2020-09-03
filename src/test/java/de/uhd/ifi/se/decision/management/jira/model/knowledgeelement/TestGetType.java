@@ -22,7 +22,7 @@ public class TestGetType extends TestSetUp {
 	}
 
 	@Test
-	public void testValidElementWithTypeOther() {
+	public void testValidElementWithDocumentationLocationJiraIssue() {
 		// Jira issue with task Jira issue type
 		assertEquals(KnowledgeType.OTHER, element.getType());
 		assertEquals("Task", element.getTypeAsString());
@@ -42,5 +42,4 @@ public class TestGetType extends TestSetUp {
 		element.setType((KnowledgeType) null);
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
-
 }
