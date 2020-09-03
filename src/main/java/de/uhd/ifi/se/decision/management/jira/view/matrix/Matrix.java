@@ -69,7 +69,7 @@ public class Matrix {
 			}
 			Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
 			if (linkToTargetElement != null) {
-				row.add(getLinkTypesWithColor().get(linkToTargetElement.getType()));
+				row.add(LinkType.getLinkTypeColor(linkToTargetElement.getType()));
 			} else {
 				row.add("White");
 			}

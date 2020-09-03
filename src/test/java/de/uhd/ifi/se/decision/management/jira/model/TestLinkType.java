@@ -44,4 +44,12 @@ public class TestLinkType {
 		assertEquals(LinkType.RELATE, LinkType.getLinkTypeForKnowledgeType(KnowledgeType.DECISION));
 	}
 
+	@Test
+	public void testGetLinkTypeColor() {
+		assertEquals("#80c9ff", LinkType.getLinkTypeColor("relate"));
+		assertEquals("#00FF00", LinkType.getLinkTypeColor("Supports"));
+		assertEquals("", "");
+		assertEquals("#16bd35", LinkType.getLinkTypeColor("jira_subtask_link"));
+		assertEquals("#af15ce", LinkType.getLinkTypeColor("clones"));
+	}
 }

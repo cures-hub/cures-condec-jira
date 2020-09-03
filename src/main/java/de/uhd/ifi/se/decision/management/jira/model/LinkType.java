@@ -14,8 +14,9 @@ import java.util.Set;
  * inconsistency.
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", ""), // for pro-arguments to solution options
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", ""), // for con-arguments to solution options
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00FF00"), // for pro-arguments to solution
+																					// options
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#FF0000"), // for con-arguments to solution options
 	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), // among decisions
 	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
 	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions
@@ -95,7 +96,7 @@ public enum LinkType {
 	public static String getLinkTypeColor(String linkTypeName) {
 		LinkType linkType = getLinkType(linkTypeName);
 		if (linkType == OTHER) {
-			return String.format("#%06x", linkTypeName.hashCode());
+			return String.format("#%x", linkTypeName.hashCode()).substring(0, 7);
 		}
 		return linkType.getColor();
 	}
