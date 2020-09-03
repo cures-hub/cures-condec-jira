@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -26,7 +27,7 @@ public class TestMatrix extends TestSetUp {
 		KnowledgeElement element_2 = new KnowledgeElement(2, "TESTfwfw", "", "Decision", "TEST", "Test-1", "i", "");
 		decisions.add(element_2);
 
-		matrix = new Matrix("Test", decisions);
+		matrix = new Matrix("TEST", decisions);
 	}
 
 	@Test
@@ -36,8 +37,15 @@ public class TestMatrix extends TestSetUp {
 
 	@Test
 	public void testGetColoredRows() {
-		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("LightGray"));
-		assertTrue(this.matrix.getColoredRows("Test").get(1).contains("White"));
+		assertTrue(this.matrix.getColoredRows().get(1).contains("lightGray"));
+		assertTrue(this.matrix.getColoredRows().get(1).contains("white"));
+	}
+
+	@Test
+	public void testGetLinkTypesWithColors() {
+		Map<String, String> linkTypesWithColors = matrix.getLinkTypesWithColor();
+		assertEquals(1, linkTypesWithColors.size());
+		assertEquals("#80c9ff", linkTypesWithColors.get("relate"));
 	}
 
 }

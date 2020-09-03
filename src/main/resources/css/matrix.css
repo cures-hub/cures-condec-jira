@@ -1,33 +1,15 @@
-.my-legend .legend-title {
-    text-align: left;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 90%;
+#legend-list {
+	display: flex;
+    list-style-type: none;
 }
-.my-legend .legend-scale ul {
-    margin: 0 0 5px;
-    padding: 0;
+
+.legend-labels li span {
     float: left;
-    list-style: none;
-}
-.my-legend .legend-scale ul li {
-    font-size: 80%;
-    list-style: none;
-    margin-left: 0;
-    line-height: 18px;
-    margin-bottom: 2px;
-}
-.my-legend ul.legend-labels li span {
-    display: block;
-    float: left;
-    height: 16px;
+    height: 18px;
     width: 30px;
     margin-right: 5px;
-    margin-left: 0;
-    border: 1px solid #999;
-}
-.my-legend a {
-    color: #777;
+    margin-left: 10px;
+    margin-bottom: 5px;
 }
 
 #matrix {
@@ -35,25 +17,17 @@
     height: fit-content;
 }
 
-div.container {
-    overflow: scroll;
-    position: relative;
-    width: 100%;
-    height: 1000px;
-}
-
 .columnHeader {
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     top: 0;
-    background-color: #e2e2e2;
+    background-color: white;
 }
 
 .rowHeader {
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     left: 0;
-    background-color: #e2e2e2;
 }
 
 .columnHeader div {
@@ -66,8 +40,7 @@ div.container {
     overflow: hidden;
     text-overflow: ellipsis;
     width: 1.5em;
-    height: 15em;
-    background-color: #e2e2e2;
+    background-color: white;
 }
 
 .rowHeader div {
@@ -77,18 +50,11 @@ div.container {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 15em;
     height: 1.5em;
-    background-color: #e2e2e2;
 }
 
 thead th:first-child {
     left: 0;
     z-index: 1;
     background-color: white;
-}
-
-#linktype-dropdown {
-    overflow:auto;
-    max-height:200px;
 }

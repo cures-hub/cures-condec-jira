@@ -23,16 +23,23 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * and code classes, but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
-	ALTERNATIVE("rgb(252, 227, 190)"), //
-	ASSUMPTION, ASSESSMENT, ARGUMENT, PRO("rgb(222, 250, 222)"), //
-	CON("rgb(255, 231, 231)"), //
-	CLAIM, CONTEXT, CONSTRAINT, DECISION("rgb(252, 227, 190)"), //
-	GOAL, ISSUE("rgb(255, 255, 204)"), IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE("#fff6e8"), //
+	ASSUMPTION, ASSESSMENT, ARGUMENT("#f5f5f5"), //
+	PRO("#defade"), //
+	CON("#ffe7e7"), //
+	CLAIM, CONTEXT("#ffffdd"), //
+	CONSTRAINT, DECISION("#fce3be"), //
+	GOAL, ISSUE("#ffffcc"), //
+	IMPLICATION, PROBLEM("#ffffcc"), //
+	RATIONALE("#f5f5f5"), //
+	SOLUTION("#fce3be"), //
+	QUESTION("#ffffcc"), //
+	OTHER;
 
 	private String color;
 
 	private KnowledgeType() {
-		this("rgb(255, 255, 255)");
+		this("#ffffff");
 	}
 
 	private KnowledgeType(String color) {
@@ -48,11 +55,11 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Converts a string to a decision knowledge type.
+	 * Converts a string to a knowledge type.
 	 *
 	 * @param type
-	 *            of decision knowledge as a String.
-	 * @return decision knowledge type as a {@link KnowledgeType} object.
+	 *            of knowledge as a String.
+	 * @return knowledge type as a {@link KnowledgeType} object.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
 		if (type == null || type.isEmpty()) {

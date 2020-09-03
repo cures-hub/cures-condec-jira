@@ -9,10 +9,29 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
+/**
+ * Subclasses are macros to mark (i.e. annotate/classifiy) text in the
+ * description or comments of a Jira issue as a decision knowledge element (=
+ * rationale element). Each macro class needs to be added in the
+ * atlassian-plugin.xml file.
+ * 
+ * Currently, only five decision knowledge types can be used to classify text as
+ * decision knowledge:
+ * 
+ * @see IssueMacro
+ * @see AlternativeMacro
+ * @see DecisionMacro
+ * @see ProMacro
+ * @see ConMacro
+ * 
+ * @see JiraIssueTextPersistenceManager
+ * @see DecisionKnowledgeClassifier
+ */
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
 	@Override
@@ -23,12 +42,8 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
 
-		String color = getColor();
+		String color = getKnowledgeType().getColor();
 		return this.getCommentBody(body, renderContext, knowledgeType, color);
-	}
-
-	public String getColor() {
-		return "#FFFFFF";
 	}
 
 	public KnowledgeType getKnowledgeType() {

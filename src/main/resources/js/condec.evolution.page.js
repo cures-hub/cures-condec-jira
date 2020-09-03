@@ -18,6 +18,7 @@
             conDecObservable = _conDecObservable;
             conDecVis = _conDecVis;
             
+            // Fill HTML elements for filter criteria
             conDecFiltering.fillFilterElements("chronology", ["Decision"]);      
             conDecFiltering.fillDatePickers("chronology", 30);
             

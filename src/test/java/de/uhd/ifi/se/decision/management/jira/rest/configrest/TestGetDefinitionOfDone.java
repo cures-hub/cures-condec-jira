@@ -1,25 +1,34 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestGetDefinitionOfDone extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+
+public class TestGetDefinitionOfDone extends TestSetUp {
+
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+	}
 
 	@Test
 	public void testGetDefinitionOfDoneWithInvalidProjectKey() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.getDefinitionOfDone(null).getEntity());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), configRest.getDefinitionOfDone(null).getStatus());
 	}
 
 	@Test
 	public void testGetDefinitionOfDone() {
 		String projectKey = "TEST";
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.getDefinitionOfDone(projectKey).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), configRest.getDefinitionOfDone(projectKey).getStatus());
 	}
 
 }

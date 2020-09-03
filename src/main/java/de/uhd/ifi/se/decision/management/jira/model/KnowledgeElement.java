@@ -206,7 +206,7 @@ public class KnowledgeElement {
 				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return Objects.requireNonNull(issue.getIssueType()).getName();
+			return issue != null ? issue.getIssueType().getName() : "";
 		}
 		return this.getType().toString();
 	}
@@ -521,6 +521,26 @@ public class KnowledgeElement {
 		}
 		for (Link link : this.getLinks()) {
 			if (link.getOppositeElement(this).equals(otherElement)) {
+				return link;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param targetElement
+	 *            object of {@link KnowledgeElement}.
+	 * @return {@link Link} object if there exists an outgoing link (= edge or
+	 *         relationship) between this knowledge element and the potential target
+	 *         knowledge element in the {@link KnowledgeGraph}. Returns null if no
+	 *         outgoing edge/link/relationshio can be found.
+	 */
+	public Link getOutgoingLink(KnowledgeElement targetElement) {
+		if (this.equals(targetElement)) {
+			return null;
+		}
+		for (Link link : this.getLinks()) {
+			if (link.getTarget().equals(targetElement)) {
 				return link;
 			}
 		}

@@ -242,7 +242,7 @@
 			document.getElementById("second-context-section").style.display = "none";
 			document.getElementById("third-context-section").style.display = "none";
 			document.getElementById("fourth-context-section").style.display = "none";
-		} else if (container.includes("tbldecisionTable")) {
+		} else if (container !== null && container.includes("tbldecisionTable")) {
 			document.getElementById("condec-context-menu-create-item").style.display = "none";
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
@@ -278,7 +278,7 @@
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
 		}
 
-		if (documentationLocation === "s" && !container.includes("tbldecisionTable")) {
+		if (container !== null && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			conDecAPI.isIssueStrategy(function(isEnabled) {
 				if (isEnabled) {

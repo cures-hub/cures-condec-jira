@@ -81,6 +81,6 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testGetColor() {
 		VisNode node = new VisNode(element, false, 1);
-		assertEquals("rgb(255, 255, 255)", node.getColor());
+		assertEquals("#ffffff", node.getColor());
 	}
 }
