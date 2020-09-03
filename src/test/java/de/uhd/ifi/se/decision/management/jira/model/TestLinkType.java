@@ -47,9 +47,9 @@ public class TestLinkType {
 	@Test
 	public void testGetLinkTypeColor() {
 		assertEquals("#80c9ff", LinkType.getLinkTypeColor("relate"));
-		assertEquals("#00FF00", LinkType.getLinkTypeColor("Supports"));
+		assertEquals("#00994C", LinkType.getLinkTypeColor("Supports"));
 		assertEquals("", "");
-		assertEquals("#16bd35", LinkType.getLinkTypeColor("jira_subtask_link"));
-		assertEquals("#af15ce", LinkType.getLinkTypeColor("clones"));
+		assertEquals("#bd3525", LinkType.getLinkTypeColor("jira_subtask_link"));
+		assertEquals("#15ceb6", LinkType.getLinkTypeColor("clones"));
 	}
 }

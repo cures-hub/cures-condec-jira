@@ -64,14 +64,14 @@ public class Matrix {
 		List<String> row = new ArrayList<String>();
 		for (KnowledgeElement targetElement : headerElements) {
 			if (targetElement.getId() == sourceElement.getId()) {
-				row.add("LightGray");
+				row.add("lightGray");
 				continue;
 			}
 			Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
 			if (linkToTargetElement != null) {
 				row.add(LinkType.getLinkTypeColor(linkToTargetElement.getType()));
 			} else {
-				row.add("White");
+				row.add("white");
 			}
 		}
 		return row;

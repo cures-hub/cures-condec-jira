@@ -9,6 +9,7 @@
     width: 30px;
     margin-right: 5px;
     margin-left: 5px;
+    margin-bottom: 5px;
     border: 1px solid #999;
 }
 
@@ -21,14 +22,12 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     top: 0;
-    background-color: #e2e2e2;
 }
 
 .rowHeader {
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     left: 0;
-    background-color: #e2e2e2;
 }
 
 .columnHeader div {
@@ -42,7 +41,6 @@
     text-overflow: ellipsis;
     width: 1.5em;
     height: 15em;
-    background-color: #e2e2e2;
 }
 
 .rowHeader div {
@@ -54,7 +52,6 @@
     text-overflow: ellipsis;
     width: 15em;
     height: 1.5em;
-    background-color: #e2e2e2;
 }
 
 thead th:first-child {

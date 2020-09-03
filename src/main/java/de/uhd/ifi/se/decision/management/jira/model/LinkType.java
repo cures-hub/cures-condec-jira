@@ -14,10 +14,10 @@ import java.util.Set;
  * inconsistency.
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00FF00"), // for pro-arguments to solution
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00994C"), // for pro-arguments to solution
 																					// options
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#FF0000"), // for con-arguments to solution options
-	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#ff0000"), // among decisions
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#c0392b"), // for con-arguments to solution options
+	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#c0392b"), // among decisions
 	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
 	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions
 	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), // among decisions
@@ -25,7 +25,7 @@ public enum LinkType {
 	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), // among decisions
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), // among decisions
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), // among decisions
-	DUPLICATE("Duplicates", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
+	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
 	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
 	private String name;
@@ -96,7 +96,7 @@ public enum LinkType {
 	public static String getLinkTypeColor(String linkTypeName) {
 		LinkType linkType = getLinkType(linkTypeName);
 		if (linkType == OTHER) {
-			return String.format("#%x", linkTypeName.hashCode()).substring(0, 7);
+			return String.format("#%x", linkTypeName.hashCode() & 0x0FFFFFF);
 		}
 		return linkType.getColor();
 	}
