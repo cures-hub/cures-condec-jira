@@ -20,7 +20,6 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSource() {
-
 		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey());
 		projectSource.setName("ProjectSource");
 
@@ -30,7 +29,6 @@ public class TestProjectSource extends TestSetUp {
 		assertEquals("We could do it like this!", recommendations.getRecommendations().get(0).getSummary());
 		assertEquals(KnowledgeType.ALTERNATIVE, recommendations.getRecommendations().get(0).getType());
 		assertEquals("ProjectSource", recommendations.getKnowledgeSourceName());
-
 	}
 
 
