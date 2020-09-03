@@ -55,4 +55,9 @@ public class TestGetRecommendation extends TestSetUp {
 	public void testGetRecommendationRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(null, projectKey, validKeyword).getStatus());
 	}
+
+	@Test
+	public void testGetRecommendationNoKnowledgeSourceConfigured() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "Project does not exist", validKeyword).getStatus());
+	}
 }

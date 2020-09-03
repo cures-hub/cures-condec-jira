@@ -99,32 +99,32 @@ public class ConfigPersistenceManager {
 
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
-		return "true" .equals(isActivated);
+		return "true".equals(isActivated);
 	}
 
 	public static boolean isIconParsing(String projectKey) {
 		String isIconParsing = getValue(projectKey, "isIconParsing");
-		return "true" .equals(isIconParsing);
+		return "true".equals(isIconParsing);
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
 		String isIssueStrategy = getValue(projectKey, "isIssueStrategy");
-		return "true" .equals(isIssueStrategy);
+		return "true".equals(isIssueStrategy);
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
 		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
-		return "true" .equals(isKnowledgeExtractedFromGit);
+		return "true".equals(isKnowledgeExtractedFromGit);
 	}
 
 	// TODO Testing
 	public static boolean isPostSquashedCommitsActivated(String projectKey) {
-		return "true" .equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
+		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
 	}
 
 	// TODO Testing
 	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
-		return "true" .equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
+		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
 	}
 
 	// TODO Testing
@@ -134,7 +134,7 @@ public class ConfigPersistenceManager {
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
 		String isKnowledgeTypeEnabled = getValue(projectKey, knowledgeType);
-		return "true" .equals(isKnowledgeTypeEnabled);
+		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
 	public static boolean isClassifierEnabled(String projectKey) {
@@ -143,7 +143,7 @@ public class ConfigPersistenceManager {
 
 	public static boolean isWebhookEnabled(String projectKey) {
 		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
-		return "true" .equals(isWebhookEnabled);
+		return "true".equals(isWebhookEnabled);
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
@@ -151,7 +151,7 @@ public class ConfigPersistenceManager {
 			return false;
 		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
-		return "true" .equals(isWebhookTypeEnabled);
+		return "true".equals(isWebhookTypeEnabled);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
@@ -328,7 +328,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
-		return "true" .equals(getValue(projectKey, eventKey));
+		return "true".equals(getValue(projectKey, eventKey));
 	}
 
 	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
@@ -414,12 +414,15 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
-			if (jiraProject.isActivated()) {
-				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
-				projectSources.add(projectSource);
+		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		if (currentProject != null) {
+			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
+				if (jiraProject.isActivated()) {
+					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
+					projectSources.add(projectSource);
+				}
 			}
 		}
 		return projectSources;

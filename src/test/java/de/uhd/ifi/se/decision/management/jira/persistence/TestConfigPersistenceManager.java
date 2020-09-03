@@ -469,6 +469,11 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testGetProjectSourceIfInitial() {
+		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
+	}
+
+	@Test
 	public void testSetAndGetMaxRecommendations() {
 		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
 		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
@@ -482,8 +487,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testGetActiveProjectsSources() {
-		assertEquals(1, ConfigPersistenceManager.getProjectSourcesForActiveProjects("TEST").size());
+	public void testGetActiveProjectsSourcesInvalid() {
+		assertEquals(0, ConfigPersistenceManager.getProjectSourcesForActiveProjects("PROJECT DOES NOT EXIST").size());
 	}
 
 	@Test
