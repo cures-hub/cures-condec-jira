@@ -14,8 +14,10 @@
 
     #parse("templates/filter/filterButton.vm")
 </form>
-<div class="container">
-    <table class="aui aui-table-list" id="matrix"></table>
+<div class="matrix-container">
+    <table class="aui aui-table-list" id="matrix">
+    
+    </table>
 </div>
 <div class='my-legend'>
     <div class='legend-title'>Relationship Types</div>
@@ -34,7 +36,6 @@
         	AJS.$("#menu-item-matrix").on("click", function(event) {
         		if (click === 0) {
         			window.conDecRelationshipMatrixPage.buildMatrix();
-                    window.conDecRelationshipMatrixPage.buildLegend();
         		}
         		click++;
         	});  

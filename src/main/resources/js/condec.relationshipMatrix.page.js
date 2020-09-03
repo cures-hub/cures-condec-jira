@@ -45,6 +45,8 @@
             	const row = data.coloredRows[d];
                 newTableRow(matrix, row, data.headerElements[d]);
             }
+            
+            conDecRelationshipMatrixPage.buildLegend(data.linkTypesWithColor);
         });
     };
 
@@ -81,18 +83,15 @@
         matrix.appendChild(tableRowElement);
     };
 
-    ConDecRelationshipMatrixPage.prototype.buildLegend = function buildLegend() {
-    	var linkTypes = conDecAPI.getLinkTypes();
+    ConDecRelationshipMatrixPage.prototype.buildLegend = function (linkTypesWithColor) {
         const legend = document.getElementById("legendList");
-        for (let linkType in linkTypes) {
-            if (linkTypes[linkType] != "") {
-                const li = document.createElement("li");
-                li.innerText = linkType;
-                const span = document.createElement("span");
-                span.style.background = linkTypes[linkType];
-                li.appendChild(span);
-                legend.appendChild(li);
-            }
+        for (let linkType in linkTypesWithColor) {
+            const li = document.createElement("li");
+            li.innerText = linkType;
+            const span = document.createElement("span");
+            span.style.background = linkTypesWithColor[linkType];
+            li.appendChild(span);
+            legend.appendChild(li);
         }
     };
 

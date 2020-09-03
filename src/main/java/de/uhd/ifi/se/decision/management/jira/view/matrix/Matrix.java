@@ -13,6 +13,7 @@ import org.jgrapht.Graph;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -31,63 +32,58 @@ public class Matrix {
 	@XmlElement
 	private Set<KnowledgeElement> headerElements;
 
-	@XmlElement
-	private List<List<String>> coloredRows;
-
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> graph;
 
 	public Matrix(String projectKey, Set<KnowledgeElement> elements) {
 		this.headerElements = elements;
 		graph = KnowledgeGraph.getOrCreate(projectKey);
-		this.coloredRows = getColoredRows(projectKey);
 	}
 
 	public Matrix(FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.headerElements = graph.vertexSet();
-		this.coloredRows = getColoredRows("");
 	}
 
 	public Set<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
 
+	@XmlElement(name = "coloredRows")
 	public List<List<String>> getColoredRows() {
-		return this.coloredRows;
-	}
-
-	public List<List<String>> getColoredRows(String projectKey) {
 		List<List<String>> coloredRows = new ArrayList<>();
-
-		Set<Link> links = graph.edgeSet();
-
-		for (KnowledgeElement sourceDecision : headerElements) {
-			List<String> row = new ArrayList<String>();
-			Map<Long, String> linksOfRow = getLinksForRow(links, sourceDecision);
-
-			for (KnowledgeElement targetDecision : headerElements) {
-				if (targetDecision.getId() == sourceDecision.getId()) {
-					row.add("LightGray");
-				} else if (linksOfRow.get(targetDecision.getId()) != null) {
-					row.add(linksOfRow.get(targetDecision.getId()));
-				} else {
-					row.add("White");
-				}
-			}
+		for (KnowledgeElement sourceElement : headerElements) {
+			List<String> row = getColoredRow(sourceElement);
 			coloredRows.add(row);
 		}
 		return coloredRows;
 	}
 
-	private Map<Long, String> getLinksForRow(Set<Link> links, KnowledgeElement decision) {
-		Map<Long, String> linksForRow = new TreeMap<Long, String>();
-		for (Link link : links) {
-			if (link.getSource().getId() == decision.getId()) {
-				linksForRow.put(link.getTarget().getId(), LinkType.getLinkTypeColor(link.getType()));
+	public List<String> getColoredRow(KnowledgeElement sourceElement) {
+		List<String> row = new ArrayList<String>();
+
+		for (KnowledgeElement targetElement : headerElements) {
+			if (targetElement.getId() == sourceElement.getId()) {
+				row.add("LightGray");
+				continue;
+			}
+			Link linkToTargetElement = sourceElement.getLink(targetElement);
+			if (linkToTargetElement != null) {
+				row.add(LinkType.getLinkTypeColor(linkToTargetElement.getType()));
+			} else {
+				row.add("White");
 			}
 		}
-		return linksForRow;
+		return row;
+	}
+
+	@XmlElement(name = "linkTypesWithColor")
+	private Map<String, String> getLinkTypesWithColor() {
+		Map<String, String> linkTypesWithColor = new TreeMap<>();
+		for (String linkTypeName : DecisionKnowledgeProject.getNamesOfLinkTypes()) {
+			linkTypesWithColor.put(linkTypeName, LinkType.getLinkTypeColor(linkTypeName));
+		}
+		return linkTypesWithColor;
 	}
 }
