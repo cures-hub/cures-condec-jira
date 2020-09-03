@@ -420,7 +420,11 @@ public class ConfigPersistenceManager {
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
-		DefinitionOfDone definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
+		DefinitionOfDone definitionOfDone = null;
+		try {
+			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
+		} catch (JsonSyntaxException e) {
+		}
 		if (definitionOfDone == null) {
 			definitionOfDone = new DefinitionOfDone();
 			setDefinitionOfDone(projectKey, definitionOfDone);

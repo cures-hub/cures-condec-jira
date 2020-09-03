@@ -78,8 +78,14 @@ public class Matrix {
 		return row;
 	}
 
+	/**
+	 * Used to plot the legend for relationship types in the frontend.
+	 * 
+	 * @return map of link type names and colors. Also contains Jira issue link
+	 *         types.
+	 */
 	@XmlElement(name = "linkTypesWithColor")
-	private Map<String, String> getLinkTypesWithColor() {
+	public Map<String, String> getLinkTypesWithColor() {
 		Map<String, String> linkTypesWithColor = new TreeMap<>();
 		for (String linkTypeName : DecisionKnowledgeProject.getNamesOfLinkTypes()) {
 			linkTypesWithColor.put(linkTypeName, LinkType.getLinkTypeColor(linkTypeName));
