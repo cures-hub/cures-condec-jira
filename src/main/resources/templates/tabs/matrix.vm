@@ -20,18 +20,17 @@
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
-        if (window.conDecRelationshipMatrixPage.init(conDecAPI, conDecObservable)) {
-            conDecAPI.checkIfProjectKeyIsValid();
+        if (window.conDecMatrix.init(conDecAPI, conDecObservable)) {
             var click = 0;
         	AJS.$("#menu-item-matrix").on("click", function(event) {
         		if (click === 0) {
-        			window.conDecRelationshipMatrixPage.buildMatrix();
+        			window.conDecMatrix.buildMatrix();
         		}
         		click++;
         	});  
         }
         else {
-            console.error("ConDecRelationshipMatrixPage could not get its dependencies.");
+            console.error("ConDecMatrix could not get its dependencies.");
         }
     });
 </script>

@@ -1,14 +1,24 @@
+/**
+ * Creates an adjancency matrix from the knowledge graph or its respective
+ * filtered subgraph.
+ * 
+ * Requires: conDecAPI, conDecContextMenu, conDecFiltering, conDecObservable
+ * 
+ * Is required by: no other module
+ * 
+ * Is referenced in HTML by: matrix.vm
+ */
 (function(global) {
 
 	/* private vars */
 	var conDecObservable = null;
 	var conDecAPI = null;
 
-	var ConDecRelationshipMatrixPage = function ConDecRelationshipMatrixPage() {
+	var ConDecMatrix = function ConDecMatrix() {
 	};
 
-	ConDecRelationshipMatrixPage.prototype.init = function(_conDecAPI, _conDecObservable) {
-		console.log("ConDecRelationshipMatrixPage init");
+	ConDecMatrix.prototype.init = function(_conDecAPI, _conDecObservable) {
+		console.log("ConDecMatrix init");
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -18,7 +28,7 @@
 
 			// Add event listener on buttons
 			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
-				conDecRelationshipMatrixPage.updateView();
+				conDecMatrix.updateView();
 			});
 
 			// Register/subscribe this view as an observer
@@ -29,7 +39,7 @@
 		return false;
 	};
 
-	ConDecRelationshipMatrixPage.prototype.buildMatrix = function() {
+	ConDecMatrix.prototype.buildMatrix = function() {
 		var filterSettings = conDecFiltering.getFilterSettings("matrix");
 		filterSettings["documentationLocations"] = null;
 		conDecAPI.getMatrix(filterSettings, function(data) {
@@ -57,14 +67,14 @@
 
 			matrix.appendChild(tbody);
 
-			conDecRelationshipMatrixPage.buildLegend(data.linkTypesWithColor);
+			conDecMatrix.buildLegend(data.linkTypesWithColor);
 		});
 	};
 
-	ConDecRelationshipMatrixPage.prototype.updateView = function() {
+	ConDecMatrix.prototype.updateView = function() {
 		const matrix = document.getElementById("matrix");
 		matrix.innerHTML = "";
-		conDecRelationshipMatrixPage.buildMatrix();
+		conDecMatrix.buildMatrix();
 	};
 
 	function newTableHeaderElement(knowledgeElement, styleClass) {
@@ -98,7 +108,7 @@
 		return tableRowCell;
 	}
 
-	ConDecRelationshipMatrixPage.prototype.buildLegend = function(linkTypesWithColor) {
+	ConDecMatrix.prototype.buildLegend = function(linkTypesWithColor) {
 		const legend = document.getElementById("legend-list");
 		legend.innerHTML = "";
 		for ( let linkType in linkTypesWithColor) {
@@ -116,7 +126,7 @@
 	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
+			console.warn("ConDecMatrix: invalid ConDecAPI object received.");
 			return false;
 		}
 		return true;
@@ -124,11 +134,11 @@
 
 	function isConDecObservableType(conDecObservable) {
 		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
+			console.warn("ConDecMatrix: invalid ConDecObservable object received.");
 			return false;
 		}
 		return true;
 	}
 
-	global.conDecRelationshipMatrixPage = new ConDecRelationshipMatrixPage();
+	global.conDecMatrix = new ConDecMatrix();
 })(window);

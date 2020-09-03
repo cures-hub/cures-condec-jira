@@ -2,9 +2,9 @@
  * This module implements the communication with the ConDec Java REST API and
  * the Jira API.
  * 
- * Requires conDecTreant.findParentElement
+ * Requires: conDecTreant.findParentElement
  * 
- * Is required by conDecContextMenu conDecDialog conDecEvolutionPage
+ * Is required by: conDecContextMenu conDecDialog conDecEvolutionPage
  * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
  * conDecTabPanel conDecVis
  * 

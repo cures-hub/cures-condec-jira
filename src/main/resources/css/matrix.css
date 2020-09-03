@@ -21,6 +21,7 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     top: 0;
+    background-color: white;
 }
 
 .rowHeader {
@@ -39,7 +40,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 1.5em;
-    height: 15em;
+    background-color: white;
 }
 
 .rowHeader div {
@@ -49,7 +50,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 15em;
     height: 1.5em;
 }
 
