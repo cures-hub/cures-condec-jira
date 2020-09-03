@@ -81,12 +81,11 @@ public enum LinkType {
 	 * @return link type as a {@link LinkType} object.
 	 */
 	public static LinkType getLinkType(String name) {
-		if (name == null) {
+		if (name == null || name.isBlank()) {
 			return LinkType.getDefaultLinkType();
 		}
 		for (LinkType linkType : LinkType.values()) {
-			if (linkType.getName().toLowerCase(Locale.ENGLISH)
-					.startsWith(name.substring(0, 5).toLowerCase(Locale.ENGLISH))) {
+			if (linkType.getName().toLowerCase(Locale.ENGLISH).startsWith(name.toLowerCase(Locale.ENGLISH))) {
 				return linkType;
 			}
 		}
