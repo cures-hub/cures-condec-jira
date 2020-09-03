@@ -1,28 +1,30 @@
 <div class="aui-toolbar2" role="toolbar">
-	<div class="aui-toolbar-2-inner">
-		<form class="aui">
-			<label for="selectDecisionProblem">Issues: </label>
-			<select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
-			#set ($viewIdentifier = "decision-table")
-			#parse("templates/filter/linkDistance.vm")
-		</form>		
-		<div class="aui-buttons">
-			<button class="aui-button" id="btnAddCriterion" title="Adds a new criterion column to decision table">
-				<span class="aui-icon aui-icon-small aui-iconfont-new-edit">Adds a new criterion column to decision table</span>
-				Criterion
-			</button>
-			<button class="aui-button" id="btnAddAlternative" title="Adds a new solution option to decision table">
-				<span class="aui-icon aui-icon-small aui-iconfont-add">Adds a new solution option to decision table</span>
-				Solution option
-			</button>
-			<button class="aui-button aui-dropdown2-trigger" id="btnAddArgument" aria-owns="dropdown2-more" aria-haspopup="true">
-				Create argument for solution option
-			</button>
-			<div id="dropdown2-more" class="aui-dropdown2 aui-style-default">
-				<ul class="aui-list-truncate" id="alternative-dropdown-items"></ul>
-			</div>
-		</div>
-	</div>
+    <div class="aui-toolbar-2-inner">
+        <form class="aui">
+            <label for="selectDecisionProblem">Issues: </label>
+            <select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
+            #set ($viewIdentifier = "decision-table")
+            #parse("templates/filter/linkDistance.vm")
+        </form>
+        <div class="aui-buttons">
+            <button class="aui-button" id="btnAddCriterion" title="Adds a new criterion column to decision table">
+                <span class="aui-icon aui-icon-small aui-iconfont-new-edit">Adds a new criterion column to decision table</span>
+                Criterion
+            </button>
+            <button class="aui-button" id="btnAddAlternative" title="Adds a new solution option to decision table">
+                <span
+                    class="aui-icon aui-icon-small aui-iconfont-add">Adds a new solution option to decision table</span>
+                Solution option
+            </button>
+            <button class="aui-button aui-dropdown2-trigger" id="btnAddArgument" aria-owns="dropdown2-more"
+                    aria-haspopup="true">
+                Create argument for solution option
+            </button>
+            <div id="dropdown2-more" class="aui-dropdown2 aui-style-default">
+                <ul class="aui-list-truncate" id="alternative-dropdown-items"></ul>
+            </div>
+        </div>
+    </div>
 </div>
 <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
 <script>
@@ -41,4 +43,7 @@ $(document).ready(function () {
 		}
 	};
   }); 
+
 </script>
+
+#parse("templates/tabs/recommendationTable.vm")

@@ -735,6 +735,16 @@
 	};
 
 	/*
+	 * external references: condec.decision.table
+	 */
+	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" +  projectKey + "&keyword=" + keyword,
+				function (error, results) {
+					callback(results, error);
+				});
+	};
+
+	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
 	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
@@ -1089,7 +1099,12 @@
 		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledge Source successfully is saved!");
+			if(isActivated) {
+				showFlag("success", "The project  <b>" + projectSourceKey + "</b> is now  <b>activated</b> as a knowledge source!!");
+			}
+			else {
+				showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
+			}
 			}
 		});
 	};
@@ -1106,6 +1121,7 @@
 			}
 		});
 	};
+
 
 	/*
 	 * external references: condec.context.menu

@@ -1,10 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
+import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +22,7 @@ public class RDFSource implements KnowledgeSource {
 	protected String service;
 	protected String queryString;
 	protected String timeout;
-	protected boolean isActivated = true;
+	protected boolean isActivated;
 
 
 	/**
@@ -26,7 +32,7 @@ public class RDFSource implements KnowledgeSource {
 		this.projectKey = projectKey;
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?country ?capital WHERE { ?country a dbo:Country.	?country dbo:capital ?capital } LIMIT 10";
+			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?capital WHERE { ?alternative a dbo:Country.	?country dbo:capital ?alternative } LIMIT 10";
 		this.name = "DBPedia";
 		this.timeout = "30000";
 		this.isActivated = true;
@@ -68,15 +74,29 @@ public class RDFSource implements KnowledgeSource {
 			ResultSet resultSet = queryExecution.execSelect();
 
 			return resultSet;
-		} catch (Exception e) {
+		} catch (QueryBuildException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Override
-	public List<KnowledgeElement> getResults(String inputs) {
-		return null;
+	public Recommendation getResults(String inputs) {
+
+		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");;
+
+
+		ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
+
+		this.recommendations = new ArrayList<>();
+		while (resultSet != null && resultSet.hasNext()) {
+			QuerySolution row = resultSet.nextSolution();
+			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?alternative").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
+			this.recommendations.add(alternative);
+
+		}
+		Recommendation recommendation = new Recommendation(this.name, this.recommendations);
+		return recommendation;
 	}
 
 	public String getProjectKey() {
@@ -130,7 +150,6 @@ public class RDFSource implements KnowledgeSource {
 	public void setActivated(boolean activated) {
 		isActivated = activated;
 	}
-
 
 
 	@Override

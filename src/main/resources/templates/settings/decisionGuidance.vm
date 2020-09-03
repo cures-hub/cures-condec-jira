@@ -31,7 +31,7 @@
         </div>
         <div class="field-group">
             <label>Timeout</label>
-            <input type="number" id="create-param-knowledgesource" class="text short-field"
+            <input type="number" min="1" value="10000" id="create-param-knowledgesource" class="text short-field"
                    name="param-knowledgesource"
                    value=""></input>
             <div class="description">Enter the timeout in milliseconds.
@@ -39,7 +39,9 @@
         </div>
         <div class="field-group">
             <label for="create-rdf-source">Create a new RDF Source</label>
-            <button class="aui-button-primary aui-button" id="create-rdf-source" label="ConDec Activated?">Create
+            <button class="aui-button-primary aui-button" id="create-rdf-source" label="ConDec Activated?">
+                <span class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
+                Create
             </button>
             <div class="description">Creates a new rdf source for this project.
             </div>
@@ -133,6 +135,7 @@
             <label for="create-rdf-source">Delete?</label>
             <button class="aui-button-primary aui-button delete-knowledgesource"
                     name="$rdfSource.getName()" label="Delete Knowledge Source?">
+                <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span>
                 Delete
             </button>
             <div class="description">Deletes the knowledge source permanently from the system.

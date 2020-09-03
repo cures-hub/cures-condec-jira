@@ -17,6 +17,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -380,5 +386,53 @@ public class ViewRest {
 		String message = "Decision knowledge elements cannot be shown" + " since the Jira issue key is invalid.";
 		LOGGER.error(message);
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
+	}
+
+	@Path("/getRecommendation")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getRecommendation (@Context HttpServletRequest request,
+									   @QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword){
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "Project Key is not correct!"))
+				.build();
+		}
+
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+
+		if (keyword.isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "The keywords should not be empty."))
+				.build();
+		}
+
+
+		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
+		List<ProjectSource> projectSources = ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey);
+		List<RDFSource> rdfSources = ConfigPersistenceManager.getRDFKnowledgeSource(projectKey);
+
+		simpleRecommender.addKnowledgeSource(projectSources);
+		simpleRecommender.addKnowledgeSource(rdfSources);
+
+		//TODO move the text
+		if (checkIfKnowledgeSourceNotConfigured(simpleRecommender)) {
+			return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey=" + projectKey + "&category=decisionGuidance'>Configure</a>"))
+				.build();
+		}
+
+		List<Recommendation> recommendationList = simpleRecommender.getResults();
+		return Response.ok(recommendationList).build();
+	}
+
+	private boolean checkIfKnowledgeSourceNotConfigured (BaseRecommender recommender){
+		for (KnowledgeSource knowledgeSource : recommender.getKnowledgeSources()) {
+			if (knowledgeSource.isActivated()) return false;
+		}
+		return true;
 	}
 }
