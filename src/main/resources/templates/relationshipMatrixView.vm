@@ -10,14 +10,13 @@
     #parse("templates/filter/creationDate.vm")	
     #parse("templates/filter/filterButton.vm")
 </form>
+<div class="legend">
+	<label for="legend-list">Relationship Types:</label>
+	<ul class="legend-labels" id="legend-list"></ul>
+</div>
 <div class="matrix-container">
     <table class="aui aui-table-list" id="matrix"></table>
 </div>
-<div class="legend">
-    <h3>Relationship Types</h3>
-    <ul class="legend-labels" id="legend-list"></ul>
-</div>
-
 <script>
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();

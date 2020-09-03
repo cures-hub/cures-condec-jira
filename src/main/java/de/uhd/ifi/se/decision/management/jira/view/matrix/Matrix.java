@@ -62,7 +62,6 @@ public class Matrix {
 
 	public List<String> getColoredRow(KnowledgeElement sourceElement) {
 		List<String> row = new ArrayList<String>();
-
 		for (KnowledgeElement targetElement : headerElements) {
 			if (targetElement.getId() == sourceElement.getId()) {
 				row.add("LightGray");
@@ -70,7 +69,7 @@ public class Matrix {
 			}
 			Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
 			if (linkToTargetElement != null) {
-				row.add(LinkType.getLinkTypeColor(linkToTargetElement.getType()));
+				row.add(getLinkTypesWithColor().get(linkToTargetElement.getType()));
 			} else {
 				row.add("White");
 			}
@@ -88,7 +87,8 @@ public class Matrix {
 	public Map<String, String> getLinkTypesWithColor() {
 		Map<String, String> linkTypesWithColor = new TreeMap<>();
 		for (String linkTypeName : DecisionKnowledgeProject.getNamesOfLinkTypes()) {
-			linkTypesWithColor.put(linkTypeName, LinkType.getLinkTypeColor(linkTypeName));
+			String color = LinkType.getLinkTypeColor(linkTypeName);
+			linkTypesWithColor.put(linkTypeName, color);
 		}
 		return linkTypesWithColor;
 	}

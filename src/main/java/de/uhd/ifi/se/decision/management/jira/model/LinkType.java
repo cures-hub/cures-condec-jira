@@ -84,7 +84,8 @@ public enum LinkType {
 			return LinkType.getDefaultLinkType();
 		}
 		for (LinkType linkType : LinkType.values()) {
-			if (linkType.getName().toLowerCase(Locale.ENGLISH).startsWith(name.toLowerCase(Locale.ENGLISH))) {
+			if (linkType.getName().toLowerCase(Locale.ENGLISH)
+					.startsWith(name.substring(0, 5).toLowerCase(Locale.ENGLISH))) {
 				return linkType;
 			}
 		}
@@ -93,6 +94,9 @@ public enum LinkType {
 
 	public static String getLinkTypeColor(String linkTypeName) {
 		LinkType linkType = getLinkType(linkTypeName);
+		if (linkType == OTHER) {
+			return String.format("#%06x", linkTypeName.hashCode());
+		}
 		return linkType.getColor();
 	}
 

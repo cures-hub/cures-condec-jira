@@ -206,7 +206,7 @@ public class KnowledgeElement {
 				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return Objects.requireNonNull(issue.getIssueType()).getName();
+			return issue != null ? issue.getIssueType().getName() : "";
 		}
 		return this.getType().toString();
 	}

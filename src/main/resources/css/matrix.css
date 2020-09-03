@@ -1,17 +1,14 @@
-.legend ul li {
-    font-size: 80%;
-    list-style: none;
-    margin-left: 0;
-    line-height: 18px;
-    margin-bottom: 2px;
+#legend-list {
+	display: flex;
+    list-style-type: none;
 }
-.legend ul.legend-labels li span {
-    display: block;
+
+.legend-labels li span {
     float: left;
-    height: 16px;
+    height: 18px;
     width: 30px;
     margin-right: 5px;
-    margin-left: 0;
+    margin-left: 5px;
     border: 1px solid #999;
 }
 
@@ -64,9 +61,4 @@ thead th:first-child {
     left: 0;
     z-index: 1;
     background-color: white;
-}
-
-#linktype-dropdown {
-    overflow:auto;
-    max-height:200px;
 }
