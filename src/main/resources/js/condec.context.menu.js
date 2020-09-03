@@ -278,7 +278,7 @@
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
 		}
 
-		if (container != null && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
+		if (container !== null && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			conDecAPI.isIssueStrategy(function(isEnabled) {
 				if (isEnabled) {

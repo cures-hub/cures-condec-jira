@@ -37,8 +37,8 @@ public class TestMatrix extends TestSetUp {
 
 	@Test
 	public void testGetColoredRows() {
-		assertTrue(this.matrix.getColoredRows().get(1).contains("LightGray"));
-		assertTrue(this.matrix.getColoredRows().get(1).contains("White"));
+		assertTrue(this.matrix.getColoredRows().get(1).contains("lightGray"));
+		assertTrue(this.matrix.getColoredRows().get(1).contains("white"));
 	}
 
 	@Test

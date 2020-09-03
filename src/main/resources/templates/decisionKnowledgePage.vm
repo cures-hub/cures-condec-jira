@@ -4,7 +4,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <div class="aui-tabs horizontal-tabs">
     <ul class="tabs-menu active-tab">
     	<li class="menu-item">
-    		<a href="#tabs-rationaleBacklogView">$i18n.getText('condec.label.rationaleBacklog')</a>
+    		<a href="#tabs-rationaleBacklogView">$i18n.getText('condec.label.rationale.backlog')</a>
     	</li>
         <li class="menu-item" id="menu-item-overview">
             <a href="#tabs-overview">Overview</a>
@@ -19,7 +19,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
             <a href="#tabs-compare">$i18n.getText('condec.label.compare')</a>
         </li>
         <li class="menu-item" id="menu-item-matrix">
-            <a href="#tabs-relationshipMatrix">$i18n.getText('condec.label.relationshipMatrix')</a>
+            <a href="#tabs-matrix">$i18n.getText('condec.label.matrix')</a>
         </li>
         <li class="menu-item" id="menu-item-groups">
             <a href="#tabs-decisionGroupView">Decision Groups</a>
@@ -40,8 +40,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div class="tabs-pane" id="tabs-compare">
         #parse("templates/comparisonView.vm")
     </div>
-    <div class="tabs-pane" id="tabs-relationshipMatrix">
-        #parse("templates/relationshipMatrixView.vm")
+    <div class="tabs-pane" id="tabs-matrix">
+        #parse("templates/tabs/matrix.vm")
     </div>
     <div class="tabs-pane" id="tabs-decisionGroupView">
         #parse("templates/decisionGroupView.vm")
