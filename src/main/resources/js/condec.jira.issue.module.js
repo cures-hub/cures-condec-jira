@@ -61,6 +61,7 @@
 
 			addOnClickEventToExportAsTable();
 			conDecDecisionTable.addOnClickEventToDecisionTableButtons();
+			conDecDecisionGuidance.addOnClickListenerForRecommendations();
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
