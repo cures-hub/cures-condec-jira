@@ -996,13 +996,26 @@ public class ConfigRest {
 
 		if (rdfSource == null || rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		try {
+			int timeout = Integer.valueOf(rdfSource.getTimeout());
+			if (timeout <= 0) {
+				return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
+			}
+
+
+		} catch (NumberFormatException e) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
 		}
 
 		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
 				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
+					.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
 		}
 
 		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);

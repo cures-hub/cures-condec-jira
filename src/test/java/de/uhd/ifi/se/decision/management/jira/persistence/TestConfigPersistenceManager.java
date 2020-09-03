@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -15,10 +12,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -472,11 +469,27 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testGetProjectSourceIfInitial() {
+		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
+	}
+
+	@Test
 	public void testSetAndGetMaxRecommendations() {
 		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
 		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
 	}
 
+
+	@Test
+	public void testGetActiveProjects() {
+		ConfigPersistenceManager.setProjectSource("TEST", "TEST", true);
+		assertEquals(1, ConfigPersistenceManager.getProjectSourcesForActiveProjects("TEST").size());
+	}
+
+	@Test
+	public void testGetActiveProjectsSourcesInvalid() {
+		assertEquals(0, ConfigPersistenceManager.getProjectSourcesForActiveProjects("PROJECT DOES NOT EXIST").size());
+	}
 
 	@Test
 	public void testSetAndGetDefinitionOfDone() {

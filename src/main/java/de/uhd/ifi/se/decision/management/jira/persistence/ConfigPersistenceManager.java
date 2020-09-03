@@ -1,17 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -19,13 +12,18 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+
+import java.lang.reflect.Type;
+import java.util.*;
+
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -33,9 +31,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -230,7 +228,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -293,7 +291,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -348,6 +346,7 @@ public class ConfigPersistenceManager {
 		if (rdfSource != null) {
 			try {
 				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
+				if (rdfSourceList == null) rdfSourceList = new ArrayList<>();
 			} catch (JsonSyntaxException e) {
 				rdfSourceList = new ArrayList<>();
 				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
@@ -383,6 +382,13 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
+	public static void deleteAllKnowledgeSource(String projectKey) {
+		List<RDFSource> rdfSourceList = new ArrayList<>();
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
+
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
 		Type listType = new TypeToken<List<RDFSource>>() {
@@ -404,6 +410,22 @@ public class ConfigPersistenceManager {
 
 	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
 		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
+	}
+
+	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
+		List<ProjectSource> projectSources = new ArrayList<>();
+		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		if (currentProject != null) {
+			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
+				if (jiraProject.isActivated()) {
+					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
+					projectSources.add(projectSource);
+				}
+			}
+		}
+		return projectSources;
 	}
 
 	/* **************************************/
