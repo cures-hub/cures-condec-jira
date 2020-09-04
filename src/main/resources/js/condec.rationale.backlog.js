@@ -72,7 +72,7 @@
 	}
 	
 	function addSelectNodeEventListenerToTreeViewer() {
-		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
+		jQuery("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;
