@@ -12,7 +12,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -29,33 +28,6 @@ public class TestGetDecisionTable extends TestSetUp {
 		request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-	}
-
-	@Test
-	public void testGetDecisionIssuesRequestNullFilterSettingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null, null).getStatus());
-	}
-
-	@Test
-	public void testGetDecisionIssuesRequestNullProjectKeyInFilterSettingsNull() {
-		FilterSettings filterSettings = new FilterSettings(null, "");
-		filterSettings.setSelectedElement("TEST-1");
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionIssues(request, filterSettings).getStatus());
-	}
-
-	@Test
-	public void testGetDecisionIssuesRequestNullSelectedElementInFilterSettingsNull() {
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionIssues(request, filterSettings).getStatus());
-	}
-
-	@Test
-	public void testGetDecisionIssues() {
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement("TEST-1");
-		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues(request, filterSettings).getStatus());
 	}
 
 	@Test

@@ -343,11 +343,11 @@
 	};
 
 	/*
-	 * external references: condec.export
+	 * external references: condec.export, condec.decision.table
 	 */
-	ConDecAPI.prototype.getElements = function (query, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/getElements.json?projectKey="
-				+ projectKey + "&query=" + query, function (error, elements) {
+	ConDecAPI.prototype.getElements = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/knowledge/getElements.json", filterSettings, function (error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -689,25 +689,6 @@
 			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + getProjectKey());
 		}
 		return this.decisionGroups;
-	};
-
-	/*
-	 * external references: condec.decision.table
-	 */
-	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
-		const filterSettings = {
-				"projectKey": projectKey,
-				"linkDistance": linkDistance,
-				"selectedElement": elementKey,
-				"groups": null
-		};
-
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings,
-				function (error, issues) {
-			if (error === null) {
-				callback(issues);
-			}
-		});
 	};
 
 	/*

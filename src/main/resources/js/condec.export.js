@@ -19,7 +19,10 @@
 	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
 			var query = getQuery(element);
-			conDecAPI.getElements(query, function(elements) {
+			const filterSettings = {
+					"searchTerm": query
+			};
+			conDecAPI.getElements(filterSettings, function(elements) {
 				if (elements && elements.length > 0 && elements[0] !== null) {
 					download(elements, "decisionKnowledge", exportFormat);
 				}

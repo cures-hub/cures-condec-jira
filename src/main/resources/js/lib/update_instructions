@@ -26,3 +26,7 @@ Download jstree.js from "https://github.com/vakata/jstree/tree/master/dist"
 Download style.css from "https://github.com/vakata/jstree/tree/master/dist/themes/default" 
 Move style.css to css folder, rename it to jstree.css
 Check if the following images are up-to-date in images folder: 32px.png, 40px.png, throbber.gif
+
+# treant
+Used to plot trees of knowledge elements.
+https://fperucic.github.io/treant-js/

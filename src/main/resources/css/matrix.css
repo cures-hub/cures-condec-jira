@@ -10,6 +10,7 @@
     margin-right: 5px;
     margin-left: 10px;
     margin-bottom: 5px;
+    border: 1px solid #e8e8e8;
 }
 
 #matrix {
@@ -22,6 +23,7 @@
     position: sticky;
     top: 0;
     background-color: white;
+    border: 1px solid #e8e8e8;
 }
 
 .rowHeader {
@@ -35,26 +37,36 @@
     top: 0;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 1.5em;
+    height: 15em;
     background-color: white;
 }
 
 .rowHeader div {
     position: sticky;
     left: 0;
-    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     height: 1.5em;
+    width: 20%;
 }
 
-thead th:first-child {
-    left: 0;
-    z-index: 1;
-    background-color: white;
+#matrix td {
+	border: 1px solid #e8e8e8;
+}
+
+#matrix th {
+	border: 1px solid #e8e8e8;
+}
+
+.columnHeader th {
+	border: 1px solid #e8e8e8;
+}
+
+.rowHeader th {
+	border: 1px solid #e8e8e8;
 }

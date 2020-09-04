@@ -52,7 +52,8 @@
 			headerRow.appendChild(firstRowHeaderElement);
 
 			for ( let d in data.headerElements) {
-				headerRow.appendChild(newTableHeaderElement(data.headerElements[d], "columnHeader"));
+				const headerCell = newTableHeaderElement(data.headerElements[d], "columnHeader");
+				headerRow.appendChild(headerCell);
 			}
 
 			thead.appendChild(headerRow);

@@ -11,6 +11,14 @@
 	let decisionTableData = [];
 	let currentIssue;
 	
+	ConDecDecisionTable.prototype.init = function () {
+		this.addOnClickEventToDecisionTableButtons();
+		this.loadDecisionProblems();
+		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
+			conDecDecisionTable.loadDecisionProblems();
+		});
+	};
+	
 	/*
 	 * external references: condec.jira.issue.module
 	 */
@@ -22,23 +30,24 @@
  	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems(elementKey) {
+	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems() {
 		console.log("conDecDecisionTable buildDecisionTable");
-		const linkDistance = document.getElementById("link-distance-input-decision-table").value;
-
-		conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
-			issues = data;
-			addDropDownItems(data, elementKey);
-		});
-		
-		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
-			const linkDistance = event.target.value;
-			conDecAPI.getDecisionIssues(elementKey, linkDistance, function (data) {
-				issues = data;
-				addDropDownItems(data, elementKey);
-			});
+		const linkDistance = document.getElementById("link-distance-input-decision-table").value;		
+		const elementKey = conDecAPI.getIssueKey();		
+		const filterSettings = {
+				"linkDistance": linkDistance,
+				"selectedElement": elementKey,
+				"knowledgeTypes": ["Issue"]
+		};
+		conDecAPI.getElements(filterSettings, function (knowledgeElements) {
+			issues = knowledgeElements.filter(element => isNotSelectedElement(element, elementKey));
+			addDropDownItems(issues, elementKey);
 		});
 	};
+	
+	function isNotSelectedElement(element, elementKey) {
+		return !elementKey.match(element.key);
+	}
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog() {
 		conDecDialog.showAddCriterionToDecisionTableDialog(conDecAPI.getProjectKey(), decisionTableData["criteria"], function (data) {		
