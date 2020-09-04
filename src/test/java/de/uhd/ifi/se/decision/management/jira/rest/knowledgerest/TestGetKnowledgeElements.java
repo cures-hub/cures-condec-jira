@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetElements extends TestSetUp {
+public class TestGetKnowledgeElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
 
@@ -30,13 +30,13 @@ public class TestGetElements extends TestSetUp {
 
 	@Test
 	public void testNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getElements(null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getKnowledgeElements(null, null).getStatus());
 	}
 
 	@Test
 	public void testFilled() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		Response response = knowledgeRest.getElements(request, filterSettings);
+		Response response = knowledgeRest.getKnowledgeElements(request, filterSettings);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
 

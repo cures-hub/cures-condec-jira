@@ -323,7 +323,6 @@
         }
         selectField.innerHTML = "";
         var linkTypes = conDecAPI.getLinkTypes();
-        console.log(linkTypes);
         var insertString = "";
         var isSelected = "";
         for (index = 0; index < linkTypes.length; index++) {

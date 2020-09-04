@@ -40,7 +40,7 @@
 				"selectedElement": elementKey,
 				"knowledgeTypes": ["Issue"]
 		};
-		conDecAPI.getElements(filterSettings, function (knowledgeElements) {
+		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
 			issues = knowledgeElements.filter(element => isNotSelectedElement(element, elementKey));
 			addDropDownItems(issues, elementKey);
 		});

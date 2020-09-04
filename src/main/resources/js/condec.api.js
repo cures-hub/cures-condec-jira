@@ -345,9 +345,9 @@
 	/*
 	 * external references: condec.export, condec.decision.table
 	 */
-	ConDecAPI.prototype.getElements = function (filterSettings, callback) {
+	ConDecAPI.prototype.getKnowledgeElements = function (filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/knowledge/getElements.json", filterSettings, function (error, elements) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements.json", filterSettings, function (error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -417,7 +417,6 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
-		// console.log(probability);
 		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
 				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 				function (error, summary) {
@@ -471,7 +470,7 @@
 	};
 
 	/*
-	 * external references: condec.relationshipMatrix.page
+	 * external references: condec.matrix
 	 */
 	ConDecAPI.prototype.getMatrix = function (filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;

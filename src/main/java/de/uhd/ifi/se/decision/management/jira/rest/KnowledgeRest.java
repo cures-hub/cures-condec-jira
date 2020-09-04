@@ -392,12 +392,13 @@ public class KnowledgeRest {
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            object of the {@link FilterSettings} class.
-	 * @return list of all elements that match the filter settings.
+	 * @return list of all {@link KnowledgeElement}s that match the
+	 *         {@link FilterSettings}.
 	 */
-	@Path("/getElements")
+	@Path("/knowledgeElements")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getElements(@Context HttpServletRequest request, FilterSettings filterSettings) {
+	public Response getKnowledgeElements(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getProjectKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",

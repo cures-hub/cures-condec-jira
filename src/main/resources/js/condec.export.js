@@ -22,7 +22,7 @@
 			const filterSettings = {
 					"searchTerm": query
 			};
-			conDecAPI.getElements(filterSettings, function(elements) {
+			conDecAPI.getKnowledgeElements(filterSettings, function(elements) {
 				if (elements && elements.length > 0 && elements[0] !== null) {
 					download(elements, "decisionKnowledge", exportFormat);
 				}
