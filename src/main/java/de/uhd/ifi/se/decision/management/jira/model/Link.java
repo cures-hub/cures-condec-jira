@@ -492,6 +492,12 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement,
 			LinkType linkType) {
+		if ((linkType == LinkType.SUPPORT || linkType == LinkType.ATTACK)
+				&& parentElement.getType().replaceProAndConWithArgument() != KnowledgeType.ARGUMENT) {
+			// link direction needs to be swapped because an argument supports or attacks a
+			// solution option (decision or alternative)
+			return new Link(childElement, parentElement, linkType);
+		}
 		return new Link(parentElement, childElement, linkType);
 	}
 
