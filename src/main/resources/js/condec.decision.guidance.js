@@ -7,7 +7,7 @@
 	const rejectButton = "<button class='aui-button'>Reject</button>";
 
 	/*
-	 * external usage: condec.jira.issue.module
+	 * external usage: condec.decision.table
 	 */
 	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function () {
 		$("#recommendation-button").click(function(event) {
@@ -39,7 +39,7 @@
 		});
 	};
 	
-	// export ConDecDecisionTable
+	// export ConDecDecisionGuidance
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 
 })(window);

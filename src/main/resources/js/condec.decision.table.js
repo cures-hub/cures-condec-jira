@@ -17,6 +17,13 @@
 			conDecDecisionTable.loadDecisionProblems();
 		});
 		addOnClickEventToDecisionTableButtons();
+		
+		conDecDecisionGuidance.addOnClickListenerForRecommendations();
+		
+		// TODO Add to observable and add updateView method
+		// Register/subscribe this view as an observer
+		//conDecObservable.subscribe(this);
+		
 	};
 	
 	function addOnClickEventToDecisionTableButtons () {
@@ -78,13 +85,9 @@
 			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");		
 		}
 	}
-	/**
-	 * 
-	 * @param {Array
-	 *            <KnowledgeElement> or empty object} data
-	 */
-	function buildDecisionTable(data) {
-		decisionTableData = data;
+
+	function buildDecisionTable(decisionTable) {
+		decisionTableData = decisionTable;
 		let container = document.getElementById(decisionTableID);
 		container.innerHTML = "";
 		container.innerHTML += `<table id="${auiTableID}" class="aui">`;
@@ -96,10 +99,10 @@
 		header.innerHTML += "<th id=\"alternativeClmTitle\">" + alternativeClmTitle + "</th>";
 		table.innerHTML += "<tbody id=\"tblBody\">";
 
-		addCriteriaToToDecisionTable(data["criteria"]);
-		addAlternativesToDecisionTable(data["alternatives"], data["criteria"]);
+		addCriteriaToToDecisionTable(decisionTable["criteria"]);
+		addAlternativesToDecisionTable(decisionTable["alternatives"], decisionTable["criteria"]);
 		addDragAndDropSupportForArguments();
-		buildCreateArgumentsButton(data["alternatives"]);
+		buildCreateArgumentsButton(decisionTable["alternatives"]);
 
 		addContextMenuToElements("argument");
 		addContextMenuToElements("alternative");
@@ -247,14 +250,14 @@
 	 * @param {string}
 	 *            elementKey
 	 */
-	function addDropDownItems(data, elementKey) {
+	function addDropDownItems(issues, elementKey) {
 		let dropDown = document.getElementById(`${dropDownID}`);
 		let btnAddCriterion = document.getElementById("btnAddCriterion");
 		let btnAddAlternative = document.getElementById("btnAddAlternative");
 		let btnAddArgument = document.getElementById("btnAddArgument");
 		
 		dropDown.innerHTML = "";
-		if (!data.length) {
+		if (!issues.length) {
 			btnAddCriterion.disabled = true;
 			btnAddAlternative.disabled = true;
 			btnAddArgument.disabled = true;
@@ -264,18 +267,18 @@
 			btnAddCriterion.disabled = false;
 			btnAddAlternative.disabled = false;
 			btnAddArgument.disabled = false;
-			for (let i = 0; i < data.length; i++) {
+			for (let i = 0; i < issues.length; i++) {
 				if (i == 0) {
-					dropDown.innerHTML += "<option value=\"" + data[i].id + "\" checked>" + data[i].summary + "</option>";
-					currentIssue = data[i];
+					dropDown.innerHTML += "<option value=\"" + issues[i].id + "\" checked>" + issues[i].summary + "</option>";
+					currentIssue = issues[i];
 					const filterSettings = {
-							"selectedElement" : data[i].key
+							"selectedElement" : issues[i].key
 					}
-					conDecAPI.getDecisionTable(filterSettings, function (data) {
-						buildDecisionTable(data);
+					conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
+						buildDecisionTable(decisionTable);
 					});
 				} else {
-					dropDown.innerHTML += "<option value=\"" + data[i].id + "\">" + data[i].summary + "</option>";
+					dropDown.innerHTML += "<option value=\"" + issues[i].id + "\">" + issues[i].summary + "</option>";
 				}
 			}
 		}
@@ -287,8 +290,8 @@
 			const filterSettings = {
 					"selectedElement" : currentIssue[i].key
 			}
-			conDecAPI.getDecisionTable(filterSettings, function (data) {
-					buildDecisionTable(data);
+			conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
+					buildDecisionTable(decisionTable);
 			});
 		} else {
 			addAlternativesToDecisionTable([], []);
