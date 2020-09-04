@@ -144,7 +144,7 @@
 		<resource type="download" name="condec.config.rest.js"
 			location="/js/condec.config.rest.js" />
 		<resource type="download" name="condec.settings.consistency.js"
-			location="/js/condec.settings.consistency.js" />
+			location="/js/settings/condec.settings.consistency.js" />
 		<resource type="download" name="condec.jira.issue.module.consistency.js"
 			location="/js/condec.jira.issue.module.consistency.js" />
         <resource type="download" name="condec.decision.guidance.js"
