@@ -10,12 +10,19 @@
     #parse("templates/filter/creationDate.vm")	
     #parse("templates/filter/filterButton.vm")
 </form>
+<a id="simple-tooltip" href="https://example.com/" title="This is a simple tooltip">tooltip</a>
 <div class="legend">
 	<label for="legend-list">Relationship Types:</label>
 	<ul class="legend-labels" id="legend-list"></ul>
 </div>
 <div class="matrix-container">
-    <table class="aui aui-table-list" id="matrix"></table>
+    <table class="aui aui-table-list" id="matrix">
+    	<thead>
+    		<tr id="matrix-header-row"></tr>
+    	</thead>
+    	<tbody id="matrix-body">
+    	</tbody>    
+    </table>
 </div>
 <script>
     $(document).ready(function() {

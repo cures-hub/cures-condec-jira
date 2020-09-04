@@ -24,7 +24,7 @@
 			conDecObservable = _conDecObservable;
 
 			// Fill HTML elements for filter criteria
-			conDecFiltering.fillFilterElements("matrix", [ "Decision", "Alternative" ]);
+			conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
 
 			// Add event listener on buttons
 			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
@@ -40,56 +40,50 @@
 	};
 
 	ConDecMatrix.prototype.buildMatrix = function() {
+		AJS.$("#simple-tooltip").tooltip();
 		var filterSettings = conDecFiltering.getFilterSettings("matrix");
 		filterSettings["documentationLocations"] = null;
 		conDecAPI.getMatrix(filterSettings, function(data) {
-			const matrix = document.getElementById("matrix");
-			const thead = document.createElement("thead");
-			const headerRow = document.createElement("tr");
-			const firstRowHeaderElement = document.createElement("th");
-			firstRowHeaderElement.innerText = "";
-			firstRowHeaderElement.classList.add("columnHeader");
-			headerRow.appendChild(firstRowHeaderElement);
-
+			const headerRow = document.getElementById("matrix-header-row");
+            const firstRowHeaderElement = document.createElement("th");
+            firstRowHeaderElement.classList.add("columnHeader");
+            headerRow.appendChild(firstRowHeaderElement);
+			
 			for ( let d in data.headerElements) {
 				const headerCell = newTableHeaderElement(data.headerElements[d], "columnHeader");
-				headerRow.appendChild(headerCell);
+				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
-			thead.appendChild(headerRow);
-			matrix.appendChild(thead);
-
-			const tbody = document.createElement("tbody");
-
+			const tbody = document.getElementById("matrix-body");
 			for ( let d in data.coloredRows) {
 				const row = data.coloredRows[d];
 				tbody.appendChild(newTableRow(row, data.headerElements[d]));
 			}
-
-			matrix.appendChild(tbody);
 
 			conDecMatrix.buildLegend(data.linkTypesWithColor);
 		});
 	};
 
 	ConDecMatrix.prototype.updateView = function() {
-		const matrix = document.getElementById("matrix");
-		matrix.innerHTML = "";
+		document.getElementById("matrix-header-row").innerHTML = "";
+		document.getElementById("matrix-body").innerHTML = "";
 		conDecMatrix.buildMatrix();
 	};
 
 	function newTableHeaderElement(knowledgeElement, styleClass) {
-		const headerColumn = document.createElement("th");
-		headerColumn.addEventListener("contextmenu", function(event) {
+		const headerCell = document.createElement("th");
+		headerCell.addEventListener("contextmenu", function(event) {
 			event.preventDefault();
 			conDecContextMenu.createContextMenu(knowledgeElement.id, knowledgeElement.documentationLocation, event,
 			        null);
 		});
-		headerColumn.classList.add(styleClass);
+		headerCell.classList.add(styleClass);
 		const div = document.createElement("div");
 		div.innerText = knowledgeElement.type + ": " + knowledgeElement.summary;
-		headerColumn.appendChild(div);
-		return headerColumn;
+		headerCell.title = knowledgeElement.type + ": " + knowledgeElement.summary;
+		AJS.$(headerCell).tooltip();
+		headerCell.appendChild(div);
+		return headerCell;
 	}
 
 	function newTableRow(row, header) {

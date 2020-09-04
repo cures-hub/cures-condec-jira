@@ -30,6 +30,7 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     left: 0;
+    width: 15em;
 }
 
 .columnHeader div {
@@ -40,9 +41,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background-color: white;
     width: 1.5em;
     height: 15em;
-    background-color: white;
 }
 
 .rowHeader div {
@@ -52,7 +53,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     height: 1.5em;
-    width: 20%;
 }
 
 #matrix td {
