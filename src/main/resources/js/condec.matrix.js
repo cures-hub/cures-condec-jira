@@ -12,7 +12,8 @@
 
 	/* private vars */
 	var conDecObservable = null;
-	var conDecAPI = null;
+	var conDecAPI = null
+	var headerElements = [];
 
 	var ConDecMatrix = function ConDecMatrix() {
 	};
@@ -43,24 +44,25 @@
 		AJS.$("#simple-tooltip").tooltip();
 		var filterSettings = conDecFiltering.getFilterSettings("matrix");
 		filterSettings["documentationLocations"] = null;
-		conDecAPI.getMatrix(filterSettings, function(data) {
+		conDecAPI.getMatrix(filterSettings, function(matrix) {
+			this.headerElements = matrix.headerElements;
 			const headerRow = document.getElementById("matrix-header-row");
-            const firstRowHeaderElement = document.createElement("th");
-            firstRowHeaderElement.classList.add("columnHeader");
-            headerRow.appendChild(firstRowHeaderElement);
+            const firstRowHeaderCell = document.createElement("th");
+            firstRowHeaderCell.classList.add("columnHeader");
+            headerRow.appendChild(firstRowHeaderCell);
 			
-			for ( let d in data.headerElements) {
-				const headerCell = newTableHeaderElement(data.headerElements[d], "columnHeader");
+			for ( let d in matrix.headerElements) {
+				const headerCell = newTableHeaderCell(matrix.headerElements[d], "columnHeader");
 				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
 			const tbody = document.getElementById("matrix-body");
-			for ( let d in data.coloredRows) {
-				const row = data.coloredRows[d];
-				tbody.appendChild(newTableRow(row, data.headerElements[d]));
+			for ( let d in matrix.links) {
+				const row = matrix.links[d];
+				tbody.appendChild(newTableRow(row, matrix.headerElements[d], d));
 			}
 
-			conDecMatrix.buildLegend(data.linkTypesWithColor);
+			conDecMatrix.buildLegend(matrix.linkTypesWithColor);
 		});
 	};
 
@@ -70,7 +72,7 @@
 		conDecMatrix.buildMatrix();
 	};
 
-	function newTableHeaderElement(knowledgeElement, styleClass) {
+	function newTableHeaderCell(knowledgeElement, styleClass) {
 		const headerCell = document.createElement("th");
 		headerCell.addEventListener("contextmenu", function(event) {
 			event.preventDefault();
@@ -86,19 +88,27 @@
 		return headerCell;
 	}
 
-	function newTableRow(row, header) {
+	function newTableRow(row, sourceElement, positionX) {
 		const tableRow = document.createElement("tr");
-		tableRow.appendChild(newTableHeaderElement(header, "rowHeader"));
+		tableRow.appendChild(newTableHeaderCell(sourceElement, "rowHeader"));
 		for ( let d in row) {
-			tableRow.appendChild(newTableElement(row[d]));
+			tableRow.appendChild(newTableCell(row[d], positionX, d));
 		}
 		return tableRow;
 	}
 
-	function newTableElement(color) {
+	function newTableCell(link, positionX, positionY) {
 		const tableRowCell = document.createElement("td");
-		if (!color.match("white")) {
-			tableRowCell.style.backgroundColor = color;
+		if (positionX === positionY) {
+			tableRowCell.style.backgroundColor = "lightGray";
+		} if (link !== null) {
+			tableRowCell.style.backgroundColor = link.color;
+			const sourceElement = this.headerElements[positionX];
+			const targetElement = this.headerElements[positionY];
+			tableRowCell.title = "Link Type: " + link.type 
+				+ "; From " + sourceElement.type + ": " + sourceElement.summary
+				+ " to " + targetElement.type + ": " + targetElement.summary;
+			AJS.$(tableRowCell).tooltip();
 		}
 		return tableRowCell;
 	}

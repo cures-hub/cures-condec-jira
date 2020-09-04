@@ -10,7 +10,6 @@
     #parse("templates/filter/creationDate.vm")	
     #parse("templates/filter/filterButton.vm")
 </form>
-<a id="simple-tooltip" href="https://example.com/" title="This is a simple tooltip">tooltip</a>
 <div class="legend">
 	<label for="legend-list">Relationship Types:</label>
 	<ul class="legend-labels" id="legend-list"></ul>
