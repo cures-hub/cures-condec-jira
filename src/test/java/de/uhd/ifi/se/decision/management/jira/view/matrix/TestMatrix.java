@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
@@ -28,9 +27,8 @@ public class TestMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testGetColoredRows() {
-		assertNull(matrix.getLinks()[0][0]);
-		assertNotNull(matrix.getLinks()[0][1]);
+	public void testGetLinks() {
+		assertNull(matrix.getMatrixOfLinks()[0][0]);
 	}
 
 	@Test

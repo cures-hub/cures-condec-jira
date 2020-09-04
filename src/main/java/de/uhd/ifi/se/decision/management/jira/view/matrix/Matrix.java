@@ -37,7 +37,7 @@ public class Matrix {
 	public Matrix(Set<KnowledgeElement> elements) {
 		headerElements = elements;
 		size = headerElements.size();
-		links = getLinks();
+		links = getMatrixOfLinks();
 	}
 
 	public Matrix(FilterSettings filterSettings) {
@@ -51,17 +51,17 @@ public class Matrix {
 	/**
 	 * Matrix of links for each cell.
 	 */
-	public Link[][] getLinks() {
+	public Link[][] getMatrixOfLinks() {
 		Link[][] links = new Link[size][size];
 		Iterator<KnowledgeElement> iterator = headerElements.iterator();
 		for (int positionY = 0; positionY < size; positionY++) {
 			KnowledgeElement sourceElement = iterator.next();
-			links[positionY] = getRowWithLinks(sourceElement);
+			links[positionY] = getRowOfLinks(sourceElement);
 		}
 		return links;
 	}
 
-	public Link[] getRowWithLinks(KnowledgeElement sourceElement) {
+	public Link[] getRowOfLinks(KnowledgeElement sourceElement) {
 		Link[] row = new Link[headerElements.size()];
 		Iterator<KnowledgeElement> iterator = headerElements.iterator();
 		for (int positionX = 0; positionX < size; positionX++) {
