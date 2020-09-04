@@ -11,26 +11,27 @@
 	let decisionTableData = [];
 	let currentIssue;
 	
-	ConDecDecisionTable.prototype.init = function () {
-		this.addOnClickEventToDecisionTableButtons();
+	ConDecDecisionTable.prototype.init = function () {		
 		this.loadDecisionProblems();
 		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
 			conDecDecisionTable.loadDecisionProblems();
 		});
+		addOnClickEventToDecisionTableButtons();
 	};
 	
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function () {
-		document.getElementById("btnAddCriterion").addEventListener("click", conDecDecisionTable.showAddCriteriaToDecisionTableDialog);
-		document.getElementById("btnAddAlternative").addEventListener("click", conDecDecisionTable.showCreateDialogForIssue);
-	};
+	function addOnClickEventToDecisionTableButtons () {
+		document.getElementById("btnAddCriterion").addEventListener("click", function (event) {
+			conDecDecisionTable.showAddCriteriaToDecisionTableDialog();
+		});
+		document.getElementById("btnAddAlternative").addEventListener("click", function (event) {
+			conDecDecisionTable.showCreateDialogForIssue();
+		});
+	}
 	
  	/*
-	 * external references: condec.jira.issue.module
+	 * external references: none, called in init function
 	 */
-	ConDecDecisionTable.prototype.loadDecisionProblems = function loadDecisionProblems() {
+	ConDecDecisionTable.prototype.loadDecisionProblems = function () {
 		console.log("conDecDecisionTable buildDecisionTable");
 		const linkDistance = document.getElementById("link-distance-input-decision-table").value;		
 		const elementKey = conDecAPI.getIssueKey();		
@@ -49,7 +50,7 @@
 		return !elementKey.match(element.key);
 	}
 
-	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function showAddCriteriaToDecisionTableDialog() {
+	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function () {
 		conDecDialog.showAddCriterionToDecisionTableDialog(conDecAPI.getProjectKey(), decisionTableData["criteria"], function (data) {		
 			for (key of data.keys()) {
 				const tmpCriterion = data.get(key).criterion;
@@ -72,7 +73,7 @@
 		});
 	}
 	
-	ConDecDecisionTable.prototype.showCreateDialogForIssue = function showCreateDialogForIssue() {
+	ConDecDecisionTable.prototype.showCreateDialogForIssue = function () {
 		if (currentIssue) {
 			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");		
 		}

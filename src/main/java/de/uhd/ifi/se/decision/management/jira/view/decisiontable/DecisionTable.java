@@ -69,14 +69,15 @@ public class DecisionTable {
 	/**
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return
+	 * @return all available criteria (e.g. quality attributes, non-functional
+	 *         requirements) for a project.
 	 */
 	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
 		List<Criterion> criteria = new ArrayList<>();
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
-		for (Issue i : queryHandler.getJiraIssuesFromQuery()) {
-			criteria.add(new Criterion(new KnowledgeElement(i)));
+		for (Issue jiraIssue : queryHandler.getJiraIssuesFromQuery()) {
+			criteria.add(new Criterion(new KnowledgeElement(jiraIssue)));
 		}
 		return criteria;
 	}

@@ -223,17 +223,20 @@ public class ViewRest {
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 
+	/**
+	 * @return all available criteria (e.g. quality attributes, non-functional
+	 *         requirements) for a project.
+	 */
 	@Path("/getDecisionTableCriteria")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
-			@QueryParam("elementKey") String elementKey) {
-		if (request == null || elementKey == null) {
+			@QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;

@@ -606,7 +606,7 @@
 		let allCriteria;
         let uniqueCriteria;
         
-		conDecAPI.getDecisionTableCriteria(projectKey, function (criteria) {
+		conDecAPI.getDecisionTableCriteria(function (criteria) {
 			allCriteria = criteria.concat(currentCriteria);
 			uniqueCriteria = new Set(allCriteria.map(item => item.id));
 			createDialogContent(criteria, currentCriteria, projectKey);
@@ -664,7 +664,7 @@
         AJS.dialog2(addCriterionDialog).show();
         
         // send callback when dialog was closed not via apply or close button
-		AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
+		//AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
 
         exitButton.onclick = function () {
         	applyChanges([]);

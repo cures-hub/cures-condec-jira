@@ -706,8 +706,8 @@
 	/*
 	 * external references: condec.decision.table
 	 */
-	ConDecAPI.prototype.getDecisionTableCriteria = function (elementKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?elementKey=${elementKey}`,
+	ConDecAPI.prototype.getDecisionTableCriteria = function (callback) {
+		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?projectKey=${projectKey}`,
 				function (error, query) {
 			if (error === null) {
 				callback(query);
@@ -1045,6 +1045,7 @@
 	};
 
 	/*
+	 * TODO Remove this REST method and use a velocity parameter in the SettingsForSingleProject servlet instead
 	 * external reference: rationaleBacklogSettings.vm
 	 */
 	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
