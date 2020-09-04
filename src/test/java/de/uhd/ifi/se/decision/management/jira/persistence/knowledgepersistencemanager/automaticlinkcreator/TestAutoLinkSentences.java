@@ -111,6 +111,6 @@ public class TestAutoLinkSentences extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
-		assertEquals("i30 to s3", sentenceLink.toString());
+		assertEquals("s3 to i30", sentenceLink.toString());
 	}
 }
