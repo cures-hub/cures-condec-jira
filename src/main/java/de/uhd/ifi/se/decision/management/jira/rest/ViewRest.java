@@ -201,25 +201,24 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
-	// TODO Pass FilterSettings
-	@Path("/getDecisionTable")
-	@GET
+	@Path("/decisionTable")
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementId") long id,
-			@QueryParam("location") String location, @QueryParam("elementKey") String elementKey) {
-		if (elementKey == null || id == -1 || location == null) {
+	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
+		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		decisionTable.setDecisionTableForIssue(id, location, user);
+		KnowledgeElement issue = filterSettings.getSelectedElement();
+		decisionTable.setDecisionTableForIssue(issue.getId(), issue.getDocumentationLocationAsString(), user);
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 
@@ -227,7 +226,7 @@ public class ViewRest {
 	 * @return all available criteria (e.g. quality attributes, non-functional
 	 *         requirements) for a project.
 	 */
-	@Path("/getDecisionTableCriteria")
+	@Path("/decisionTableCriteria")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,

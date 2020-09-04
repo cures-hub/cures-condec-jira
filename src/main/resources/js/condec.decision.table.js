@@ -268,7 +268,10 @@
 				if (i == 0) {
 					dropDown.innerHTML += "<option value=\"" + data[i].id + "\" checked>" + data[i].summary + "</option>";
 					currentIssue = data[i];
-					conDecAPI.getDecisionTable(elementKey, data[i].id, data[i].documentationLocation, function (data) {
+					const filterSettings = {
+							"selectedElement" : data[i].key
+					}
+					conDecAPI.getDecisionTable(filterSettings, function (data) {
 						buildDecisionTable(data);
 					});
 				} else {
@@ -281,7 +284,10 @@
 		section.addEventListener('change', function (e) {
 		currentIssue = issues.find(o => o.id == document.getElementById(dropDownID).value);
 		if (typeof currentIssue !== "undefined") {
-			conDecAPI.getDecisionTable(elementKey, currentIssue.id, currentIssue.documentationLocation, function (data) {
+			const filterSettings = {
+					"selectedElement" : currentIssue[i].key
+			}
+			conDecAPI.getDecisionTable(filterSettings, function (data) {
 					buildDecisionTable(data);
 			});
 		} else {

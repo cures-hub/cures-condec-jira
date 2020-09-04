@@ -29,8 +29,20 @@ public class TestGetKnowledgeElements extends TestSetUp {
 	}
 
 	@Test
-	public void testNull() {
+	public void testRequestNullFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getKnowledgeElements(null, null).getStatus());
+	}
+
+	@Test
+	public void testRequestValidFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getKnowledgeElements(request, null).getStatus());
+	}
+
+	@Test
+	public void testProjectKeyInvalid() {
+		FilterSettings filterSettings = new FilterSettings(null, "");
+		Response response = knowledgeRest.getKnowledgeElements(request, filterSettings);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 
 	@Test
@@ -39,5 +51,4 @@ public class TestGetKnowledgeElements extends TestSetUp {
 		Response response = knowledgeRest.getKnowledgeElements(request, filterSettings);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
-
 }

@@ -693,8 +693,9 @@
 	/*
 	 * external references: condec.decision.table
 	 */
-	ConDecAPI.prototype.getDecisionTable = function (elementKey, elementId, location, callback) {
-		generalApi.getJSON(this.restPrefix + `/view/getDecisionTable.json?elementKey=${elementKey}&elementId=${elementId}&location=${location}`,
+	ConDecAPI.prototype.getDecisionTable = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/view/decisionTable.json", filterSettings,
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);
@@ -706,7 +707,7 @@
 	 * external references: condec.decision.table
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteria = function (callback) {
-		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?projectKey=${projectKey}`,
+		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria.json?projectKey=${projectKey}`,
 				function (error, query) {
 			if (error === null) {
 				callback(query);

@@ -399,7 +399,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getKnowledgeElements(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null || filterSettings.getProjectKey() == null) {
+		if (request == null || filterSettings == null || filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
 							"Getting elements failed due to a bad request. You need to provide the filter settings."))
