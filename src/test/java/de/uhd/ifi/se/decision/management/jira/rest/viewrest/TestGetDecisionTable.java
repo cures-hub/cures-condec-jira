@@ -43,6 +43,13 @@ public class TestGetDecisionTable extends TestSetUp {
 	}
 
 	@Test
+	public void testRequestValidFilterSettingsWithoutSelectedElement() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionTable(request, filterSettings).getStatus());
+	}
+
+	@Test
 	public void testRequestValidFilterSettingsWithInvalidProjectKey() {
 		FilterSettings filterSettings = new FilterSettings("NonExistingProject", "");
 		filterSettings.setSelectedElement("TEST-2");
@@ -58,6 +65,11 @@ public class TestGetDecisionTable extends TestSetUp {
 	@Test
 	public void testDecisionTableCriteriaRequestValidProjectKeyValid() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionTableCriteria(request, "TEST").getStatus());
+	}
+
+	@Test
+	public void testDecisionTableCriteriaRequestNullProjectKeyValid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTableCriteria(null, "TEST").getStatus());
 	}
 
 	@Test

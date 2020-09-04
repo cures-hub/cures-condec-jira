@@ -48,13 +48,16 @@
 				"knowledgeTypes": ["Issue"]
 		};
 		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
-			issues = knowledgeElements.filter(element => isNotSelectedElement(element, elementKey));
+			issues = knowledgeElements.filter(element => !isSelectedElement(element, elementKey) || element.type.match("Issue"));
 			addDropDownItems(issues, elementKey);
 		});
 	};
 	
-	function isNotSelectedElement(element, elementKey) {
-		return !elementKey.match(element.key);
+	/**
+	 * True if the element is the selected element in the filter settings.
+	 */
+	function isSelectedElement(element, elementKey) {
+		return elementKey.match(element.key);
 	}
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function () {
@@ -261,7 +264,7 @@
 			btnAddCriterion.disabled = true;
 			btnAddAlternative.disabled = true;
 			btnAddArgument.disabled = true;
-			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create new issue!></otpion>";
+			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create a new issue!</otpion>";
 			return;
 		} else {
 			btnAddCriterion.disabled = false;
@@ -288,7 +291,7 @@
 		currentIssue = issues.find(o => o.id == document.getElementById(dropDownID).value);
 		if (typeof currentIssue !== "undefined") {
 			const filterSettings = {
-					"selectedElement" : currentIssue[i].key
+					"selectedElement" : currentIssue.key
 			}
 			conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
 					buildDecisionTable(decisionTable);
