@@ -27,17 +27,15 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 public class Matrix {
+
 	@XmlElement
 	private Set<KnowledgeElement> headerElements;
 
-	@XmlElement
-	private Link[][] links;
 	private int size;
 
 	public Matrix(Set<KnowledgeElement> elements) {
 		headerElements = elements;
 		size = headerElements.size();
-		links = getMatrixOfLinks();
 	}
 
 	public Matrix(FilterSettings filterSettings) {
@@ -51,6 +49,7 @@ public class Matrix {
 	/**
 	 * Matrix of links for each cell.
 	 */
+	@XmlElement(name = "links")
 	public Link[][] getMatrixOfLinks() {
 		Link[][] links = new Link[size][size];
 		Iterator<KnowledgeElement> iterator = headerElements.iterator();

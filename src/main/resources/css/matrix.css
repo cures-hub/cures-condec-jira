@@ -53,6 +53,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     height: 1.5em;
+    width: 15em;
 }
 
 #matrix td {

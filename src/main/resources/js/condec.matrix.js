@@ -46,19 +46,21 @@
 		filterSettings["documentationLocations"] = null;
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			this.headerElements = matrix.headerElements;
-			const headerRow = document.getElementById("matrix-header-row");
-            const firstRowHeaderCell = document.createElement("th");
-            firstRowHeaderCell.classList.add("columnHeader");
-            headerRow.appendChild(firstRowHeaderCell);
-			
+			let headerRow = document.getElementById("matrix-header-row");
+			headerRow.innerHTML = "";
+			let firstRowHeaderCell = document.createElement("th");
+			firstRowHeaderCell.classList.add("columnHeader");
+			headerRow.appendChild(firstRowHeaderCell);
+
 			for ( let d in matrix.headerElements) {
 				const headerCell = newTableHeaderCell(matrix.headerElements[d], "columnHeader");
 				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
-			const tbody = document.getElementById("matrix-body");
+			let tbody = document.getElementById("matrix-body");
+			tbody.innerHTML = "";
 			for ( let d in matrix.links) {
-				const row = matrix.links[d];
+				let row = matrix.links[d];
 				tbody.appendChild(newTableRow(row, matrix.headerElements[d], d));
 			}
 
@@ -67,8 +69,6 @@
 	};
 
 	ConDecMatrix.prototype.updateView = function() {
-		document.getElementById("matrix-header-row").innerHTML = "";
-		document.getElementById("matrix-body").innerHTML = "";
 		conDecMatrix.buildMatrix();
 	};
 
@@ -101,13 +101,13 @@
 		const tableRowCell = document.createElement("td");
 		if (positionX === positionY) {
 			tableRowCell.style.backgroundColor = "lightGray";
-		} if (link !== null) {
+		}
+		if (link !== null) {
 			tableRowCell.style.backgroundColor = link.color;
 			const sourceElement = this.headerElements[positionX];
 			const targetElement = this.headerElements[positionY];
-			tableRowCell.title = "Link Type: " + link.type 
-				+ "; From " + sourceElement.type + ": " + sourceElement.summary
-				+ " to " + targetElement.type + ": " + targetElement.summary;
+			tableRowCell.title = "Link Type: " + link.type + "; From " + sourceElement.type + ": "
+			        + sourceElement.summary + " to " + targetElement.type + ": " + targetElement.summary;
 			AJS.$(tableRowCell).tooltip();
 		}
 		return tableRowCell;
