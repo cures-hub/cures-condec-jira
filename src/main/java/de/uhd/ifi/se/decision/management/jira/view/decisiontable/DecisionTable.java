@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
 // TODO Improve JavaDoc (not only parameter names should be given but a short
-// explanation)
+// explanation!)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -109,13 +109,17 @@ public class DecisionTable {
 	 *            object.
 	 */
 	public void getArguments(KnowledgeElement solutionOption) {
+		if (decisionTableData.get("alternatives") == null) {
+			return;
+		}
+		int numberOfAlternatives = decisionTableData.get("alternatives").size();
 		Set<Link> incomingLinks = graph.incomingEdgesOf(solutionOption);
 
 		for (Link currentLink : incomingLinks) {
 			KnowledgeElement sourceElement = currentLink.getSource();
 			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
-						.get(decisionTableData.get("alternatives").size() - 1);
+						.get(numberOfAlternatives - 1);
 				Argument argument = new Argument(sourceElement);
 				getArgumentCriteria(argument, decisionTableData.get("criteria"));
 				alternative.addArgument(argument);
@@ -146,7 +150,7 @@ public class DecisionTable {
 	 * @return
 	 */
 	public List<KnowledgeElement> getIssues() {
-		return this.issues;
+		return issues;
 	}
 
 	/**
@@ -154,6 +158,6 @@ public class DecisionTable {
 	 * @return
 	 */
 	public Map<String, List<DecisionTableElement>> getDecisionTableData() {
-		return this.decisionTableData;
+		return decisionTableData;
 	}
 }

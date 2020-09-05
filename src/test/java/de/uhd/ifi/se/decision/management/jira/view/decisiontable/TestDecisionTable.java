@@ -64,17 +64,24 @@ public class TestDecisionTable extends TestSetUp {
 	public void testGetAlternativesOnIssueDirectly() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
-		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(1);
+		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(3);
 		decisionTable.setDecisionTableForIssue(issue, user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
-		assertEquals(1, decisionTableData.get("alternatives").size());
+		assertEquals(2, decisionTableData.get("alternatives").size());
 
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
+		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 
 		assertNotNull(alternative1);
+		assertNotNull(alternative2);
 
-		assertEquals(0, alternative1.getArguments().size());
+		assertEquals(1, alternative1.getArguments().size());
+		assertEquals(0, alternative2.getArguments().size());
+
+		Argument argument = alternative1.getArguments().get(0);
+		assertNotNull(argument);
+		assertNotNull(argument.getCriterion());
 	}
 
 	@Test
