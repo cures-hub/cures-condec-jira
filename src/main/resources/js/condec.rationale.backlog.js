@@ -31,7 +31,8 @@
 			// Fill filter elements
 			conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue"]);
 			conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);		
-			conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");	
+			conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
+			conDecFiltering.fillDatePickers("rationale-backlog", 30);
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
@@ -72,7 +73,7 @@
 	}
 	
 	function addSelectNodeEventListenerToTreeViewer() {
-		jQueryConDec("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
+		jQuery("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;

@@ -13,7 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -32,50 +31,50 @@ public class TestGetDecisionTable extends TestSetUp {
 	}
 
 	@Test
-	public void testGetDecisionIssuesRequestNullFilterSettingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionIssues(null, null).getStatus());
+	public void testRequestNullFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTable(null, null).getStatus());
 	}
 
 	@Test
-	public void testGetDecisionIssuesRequestNullProjectKeyInFilterSettingsNull() {
-		FilterSettings filterSettings = new FilterSettings(null, "");
-		filterSettings.setSelectedElement("TEST-1");
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	public void testRequestValidFilterSettingsValid() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement("TEST-2");
+		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionTable(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetDecisionIssuesRequestNullSelectedElementInFilterSettingsNull() {
+	public void testRequestValidFilterSettingsWithoutSelectedElement() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getDecisionIssues(request, filterSettings).getStatus());
+				viewRest.getDecisionTable(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetDecisionIssues() {
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement("TEST-1");
-		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionIssues(request, filterSettings).getStatus());
+	public void testRequestValidFilterSettingsWithInvalidProjectKey() {
+		FilterSettings filterSettings = new FilterSettings("NonExistingProject", "");
+		filterSettings.setSelectedElement("TEST-2");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionTable(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetDecisionTableDataRequestNullLocationNullElementKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTable(null, 0, null, null).getStatus());
-	}
-
-	@Test
-	public void testGetDecisionTableData() {
-		assertEquals(Status.OK.getStatusCode(), viewRest
-				.getDecisionTable(request, 2, DocumentationLocation.JIRAISSUE.getIdentifier(), "TEST").getStatus());
-	}
-
-	@Test
-	public void testDecisionTableCriteriaRequestNullElementKeyNull() {
+	public void testDecisionTableCriteriaRequestNullProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTableCriteria(null, null).getStatus());
 	}
 
 	@Test
-	public void testDecisionTableCriteria() {
+	public void testDecisionTableCriteriaRequestValidProjectKeyValid() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getDecisionTableCriteria(request, "TEST").getStatus());
+	}
+
+	@Test
+	public void testDecisionTableCriteriaRequestNullProjectKeyValid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTableCriteria(null, "TEST").getStatus());
+	}
+
+	@Test
+	public void testDecisionTableCriteriaRequestValidProjectKeyInvalid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getDecisionTableCriteria(request, "NonExistingProject").getStatus());
 	}
 }

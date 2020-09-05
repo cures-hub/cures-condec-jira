@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -315,6 +315,25 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	/**
+	 * @return all available link types for a project. That covers the
+	 *         {@link LinkType}s for linking decision knowledge elements (=rationale
+	 *         elements) and also other Jira issue links in the project.
+	 * 
+	 * @issue How can we access the availiable link types in the client
+	 *        side/frontend of the plugin?
+	 * @decision We provide our own getLinkTypes REST API!
+	 * @pro In the future, we will have transitive links in the knowledge graph. The
+	 *      link type "transitive" needs to be added, which will not be a real Jira
+	 *      issue link type.
+	 * @pro Easy to extend.
+	 * @alternative Jira API could be called using GET "/rest/api/2/issueLinkType"!
+	 *              This call "returns a list of available issue link types. Each
+	 *              issue link type has an id, a name and a label for the outward
+	 *              and inward link relationship."
+	 * @con All link types need to be Jira issue links, which might be problematic
+	 *      if we model transitive links or links to code classes. *
+	 */
 	@Path("/getLinkTypes")
 	@GET
 	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
@@ -322,11 +341,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Map<String, String> linkTypes = new HashMap<>();
-		Collection<IssueLinkType> types = DecisionKnowledgeProject.getJiraIssueLinkTypes();
-		for (IssueLinkType linkType : types) {
-			linkTypes.put(linkType.getName(), linkType.getStyle());
-		}
+		Set<String> linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		return Response.ok(linkTypes).build();
 	}
 
@@ -996,26 +1011,25 @@ public class ConfigRest {
 
 		if (rdfSource == null || rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
 		try {
 			int timeout = Integer.valueOf(rdfSource.getTimeout());
 			if (timeout <= 0) {
 				return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
+						.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
 			}
-
 
 		} catch (NumberFormatException e) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
+					.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
 		}
 
 		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
 				return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
+						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
 		}
 
 		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);

@@ -343,11 +343,11 @@
 	};
 
 	/*
-	 * external references: condec.export
+	 * external references: condec.export, condec.decision.table
 	 */
-	ConDecAPI.prototype.getElements = function (query, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/getElements.json?projectKey="
-				+ projectKey + "&query=" + query, function (error, elements) {
+	ConDecAPI.prototype.getKnowledgeElements = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements.json", filterSettings, function (error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
@@ -417,7 +417,6 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
-		// console.log(probability);
 		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
 				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
 				function (error, summary) {
@@ -471,7 +470,7 @@
 	};
 
 	/*
-	 * external references: condec.relationshipMatrix.page
+	 * external references: condec.matrix
 	 */
 	ConDecAPI.prototype.getMatrix = function (filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
@@ -694,15 +693,9 @@
 	/*
 	 * external references: condec.decision.table
 	 */
-	ConDecAPI.prototype.getDecisionIssues = function (elementKey, linkDistance, callback) {
-		const filterSettings = {
-				"projectKey": projectKey,
-				"linkDistance": linkDistance,
-				"selectedElement": elementKey,
-				"groups": null
-		};
-
-		generalApi.postJSON(this.restPrefix + "/view/getDecisionIssues.json", filterSettings,
+	ConDecAPI.prototype.getDecisionTable = function (filterSettings, callback) {
+		filterSettings["projectKey"] = projectKey;
+		generalApi.postJSON(this.restPrefix + "/view/decisionTable.json", filterSettings,
 				function (error, issues) {
 			if (error === null) {
 				callback(issues);
@@ -713,20 +706,8 @@
 	/*
 	 * external references: condec.decision.table
 	 */
-	ConDecAPI.prototype.getDecisionTable = function (elementKey, elementId, location, callback) {
-		generalApi.getJSON(this.restPrefix + `/view/getDecisionTable.json?elementKey=${elementKey}&elementId=${elementId}&location=${location}`,
-				function (error, issues) {
-			if (error === null) {
-				callback(issues);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.decision.table
-	 */
-	ConDecAPI.prototype.getDecisionTableCriteria = function (elementKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/view/getDecisionTableCriteria.json?elementKey=${elementKey}`,
+	ConDecAPI.prototype.getDecisionTableCriteria = function (callback) {
+		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria.json?projectKey=${projectKey}`,
 				function (error, query) {
 			if (error === null) {
 				callback(query);
@@ -1064,6 +1045,7 @@
 	};
 
 	/*
+	 * TODO Remove this REST method and use a velocity parameter in the SettingsForSingleProject servlet instead
 	 * external reference: rationaleBacklogSettings.vm
 	 */
 	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {

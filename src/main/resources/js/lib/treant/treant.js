@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Treant-js
  *

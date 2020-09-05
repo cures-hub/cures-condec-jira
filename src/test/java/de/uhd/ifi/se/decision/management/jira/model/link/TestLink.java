@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
@@ -29,19 +28,6 @@ public class TestLink extends TestSetUp {
 	public void setUp() {
 		init();
 		link = Links.getTestLinks().get(0);
-	}
-
-	@Test
-	public void testGetType() {
-		assertEquals(LinkType.RELATE.toString(), link.getType().toLowerCase());
-	}
-
-	@Test
-	public void testSetType() {
-		link.setType(LinkType.RELATE.toString() + "New");
-		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.",
-				LinkType.RELATE.toString(), link.getType());
-		link.setType(LinkType.RELATE);
 	}
 
 	@Test

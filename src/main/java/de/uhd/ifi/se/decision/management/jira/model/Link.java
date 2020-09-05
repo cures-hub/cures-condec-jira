@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.slf4j.Logger;
@@ -105,6 +108,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see LinkType
 	 * @return type of the link.
 	 */
+	@XmlElement(name = "type")
 	public String getType() {
 		if (type == null) {
 			type = LinkType.getDefaultLinkType();
@@ -149,6 +153,11 @@ public class Link extends DefaultWeightedEdge {
 	@JsonProperty("type")
 	public void setType(String type) {
 		this.type = LinkType.getLinkType(type);
+	}
+
+	@XmlElement(name = "color")
+	public String getColor() {
+		return LinkType.getLinkTypeColor(this.getType());
 	}
 
 	/**
@@ -346,6 +355,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see KnowledgeElement
 	 * @return true if the link connects two existing decision knowledge elements.
 	 */
+	@JsonIgnore
 	public boolean isValid() {
 		return source.existsInDatabase() && target.existsInDatabase();
 	}
@@ -359,6 +369,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @return true if the link connects decision knowledge elements from two
 	 *         different projects.
 	 */
+	@JsonIgnore
 	public boolean isInterProjectLink() {
 		try {
 			return !source.getProject().getProjectKey().equals(target.getProject().getProjectKey());
@@ -423,6 +434,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @return true if both source and destination element of the link are
 	 *         documented as Jira issues.
 	 */
+	@JsonIgnore
 	public boolean isIssueLink() {
 		return this.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
 				&& this.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
@@ -480,6 +492,12 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement,
 			LinkType linkType) {
+		if ((linkType == LinkType.SUPPORT || linkType == LinkType.ATTACK)
+				&& parentElement.getType().replaceProAndConWithArgument() != KnowledgeType.ARGUMENT) {
+			// link direction needs to be swapped because an argument supports or attacks a
+			// solution option (decision or alternative)
+			return new Link(childElement, parentElement, linkType);
+		}
 		return new Link(parentElement, childElement, linkType);
 	}
 

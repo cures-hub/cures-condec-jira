@@ -1,15 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.jgrapht.Graph;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -25,53 +21,55 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  * {@link FilterSettings}. The subgraph is provided by the
  * {@link FilteringManager}.
  * 
+ * Each matrix cell contains a {@link Link} object or null if no link exists.
+ * 
  * If you want to change the shown (sub-)graph, do not change this class but
  * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 public class Matrix {
+
 	@XmlElement
 	private Set<KnowledgeElement> headerElements;
 
-	@JsonIgnore
-	private Graph<KnowledgeElement, Link> graph;
+	private int size;
 
-	public Matrix(String projectKey, Set<KnowledgeElement> elements) {
-		this.headerElements = elements;
-		graph = KnowledgeGraph.getOrCreate(projectKey);
+	public Matrix(Set<KnowledgeElement> elements) {
+		headerElements = elements;
+		size = headerElements.size();
 	}
 
 	public Matrix(FilterSettings filterSettings) {
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		graph = filteringManager.getSubgraphMatchingFilterSettings();
-		this.headerElements = graph.vertexSet();
+		this(new FilteringManager(filterSettings).getSubgraphMatchingFilterSettings().vertexSet());
 	}
 
 	public Set<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
 
-	@XmlElement(name = "coloredRows")
-	public List<List<String>> getColoredRows() {
-		List<List<String>> coloredRows = new ArrayList<>();
-		for (KnowledgeElement sourceElement : headerElements) {
-			List<String> row = getColoredRow(sourceElement);
-			coloredRows.add(row);
+	/**
+	 * Matrix of links for each cell.
+	 */
+	@XmlElement(name = "links")
+	public Link[][] getMatrixOfLinks() {
+		Link[][] links = new Link[size][size];
+		Iterator<KnowledgeElement> iterator = headerElements.iterator();
+		for (int positionY = 0; positionY < size; positionY++) {
+			KnowledgeElement sourceElement = iterator.next();
+			links[positionY] = getRowOfLinks(sourceElement);
 		}
-		return coloredRows;
+		return links;
 	}
 
-	public List<String> getColoredRow(KnowledgeElement sourceElement) {
-		List<String> row = new ArrayList<String>();
-		for (KnowledgeElement targetElement : headerElements) {
+	public Link[] getRowOfLinks(KnowledgeElement sourceElement) {
+		Link[] row = new Link[headerElements.size()];
+		Iterator<KnowledgeElement> iterator = headerElements.iterator();
+		for (int positionX = 0; positionX < size; positionX++) {
+			KnowledgeElement targetElement = iterator.next();
 			if (targetElement.getId() == sourceElement.getId()) {
-				row.add("lightGray");
-				continue;
-			}
-			Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
-			if (linkToTargetElement != null) {
-				row.add(LinkType.getLinkTypeColor(linkToTargetElement.getType()));
+				row[positionX] = null;
 			} else {
-				row.add("white");
+				Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
+				row[positionX] = linkToTargetElement;
 			}
 		}
 		return row;

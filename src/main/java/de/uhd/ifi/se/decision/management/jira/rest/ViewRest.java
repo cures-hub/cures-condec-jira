@@ -17,12 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +30,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -45,6 +44,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -201,15 +201,13 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
-	// TODO Rename to "getDecisionProblems"
-	@Path("/getDecisionIssues")
+	@Path("/decisionTable")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionIssues(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Decision problems cannot be shown since filter settings or element key are invalid."))
+	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
@@ -217,46 +215,27 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		DecisionTable decisionTable = new DecisionTable(projectKey);
-		decisionTable.setIssues(filterSettings, user);
-
-		return Response.ok(decisionTable.getIssues()).build();
-	}
-
-	// TODO Pass FilterSettings
-	@Path("/getDecisionTable")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionTable(@Context HttpServletRequest request, @QueryParam("elementId") long id,
-			@QueryParam("location") String location, @QueryParam("elementKey") String elementKey) {
-		if (elementKey == null || id == -1 || location == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
-					.build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		decisionTable.setDecisionTableForIssue(id, location, user);
+		KnowledgeElement issue = filterSettings.getSelectedElement();
+		decisionTable.setDecisionTableForIssue(issue, user);
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 
-	@Path("/getDecisionTableCriteria")
+	/**
+	 * @return all available criteria (e.g. quality attributes, non-functional
+	 *         requirements) for a project.
+	 */
+	@Path("/decisionTableCriteria")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
-			@QueryParam("elementKey") String elementKey) {
-		if (request == null || elementKey == null) {
+			@QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
-		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -390,13 +369,12 @@ public class ViewRest {
 
 	@Path("/getRecommendation")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRecommendation (@Context HttpServletRequest request,
-									   @QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword){
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("keyword") String keyword) {
 		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Project Key is not correct!"))
-				.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not correct!"))
+					.build();
 		}
 
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -405,11 +383,9 @@ public class ViewRest {
 		}
 
 		if (keyword.isBlank()) {
-			return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "The keywords should not be empty."))
-				.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
-
 
 		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
 		List<ProjectSource> projectSources = ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey);
@@ -418,20 +394,22 @@ public class ViewRest {
 		simpleRecommender.addKnowledgeSource(projectSources);
 		simpleRecommender.addKnowledgeSource(rdfSources);
 
-		//TODO move the text
+		// TODO move the text
 		if (checkIfKnowledgeSourceNotConfigured(simpleRecommender)) {
-			return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey=" + projectKey + "&category=decisionGuidance'>Configure</a>"))
-				.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
+							+ projectKey + "&category=decisionGuidance'>Configure</a>"))
+					.build();
 		}
 
 		List<Recommendation> recommendationList = simpleRecommender.getResults();
 		return Response.ok(recommendationList).build();
 	}
 
-	private boolean checkIfKnowledgeSourceNotConfigured (BaseRecommender recommender){
+	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender recommender) {
 		for (KnowledgeSource knowledgeSource : recommender.getKnowledgeSources()) {
-			if (knowledgeSource.isActivated()) return false;
+			if (knowledgeSource.isActivated())
+				return false;
 		}
 		return true;
 	}

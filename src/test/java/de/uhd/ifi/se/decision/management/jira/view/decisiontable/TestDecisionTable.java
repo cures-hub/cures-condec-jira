@@ -16,10 +16,10 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestDecisionTable extends TestSetUp {
 
@@ -64,7 +64,8 @@ public class TestDecisionTable extends TestSetUp {
 	public void testGetAlternativesOnIssueDirectly() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
-		decisionTable.setDecisionTableForIssue(2, DocumentationLocation.JIRAISSUE.getIdentifier(), user);
+		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(3);
+		decisionTable.setDecisionTableForIssue(issue, user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
 		assertEquals(2, decisionTableData.get("alternatives").size());
@@ -93,16 +94,16 @@ public class TestDecisionTable extends TestSetUp {
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(3, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(4, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
-		assertEquals(1, alternative2.getArguments().size());
+		assertEquals(0, alternative2.getArguments().size());
 	}
 
 	@Test

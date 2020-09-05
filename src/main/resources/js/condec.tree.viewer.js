@@ -10,7 +10,7 @@
 		console.log("conDecTreeViewer buildTreeViewer");
 		resetTreeViewer(treeId);
 		conDecAPI.getTreeViewer(filterSettings, function (core) {
-			jQueryConDec(treeId).jstree({
+			jQuery(treeId).jstree({
 			    "core" : core,
 			    "plugins" : [ "dnd", "wholerow", "sort", "search", "state" ],
 			    "search" : {
@@ -19,7 +19,7 @@
 			});
 			$(searchInputId).keyup (function () {
 				var searchString = $(this).val();
-				jQueryConDec(treeId).jstree(true).search(searchString);
+				jQuery(treeId).jstree(true).search(searchString);
 			});
 		});
 		addDragAndDropSupportForTreeViewer(treeId);
@@ -28,7 +28,7 @@
 	
 	function resetTreeViewer (treeId) {
 		console.log("conDecTreeViewer resetTreeViewer");
-		var treeViewer = jQueryConDec(treeId).jstree(true);
+		var treeViewer = jQuery(treeId).jstree(true);
 		if (treeViewer) {
 			treeViewer.destroy();
 		}
@@ -36,7 +36,7 @@
 
 	function addDragAndDropSupportForTreeViewer (treeId) {
 		console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
-		jQueryConDec(treeId).on('move_node.jstree', function(object, nodeInContext) {
+		jQuery(treeId).on('move_node.jstree', function(object, nodeInContext) {
 			var node = nodeInContext.node;
 			var parentNode = getTreeViewerNodeById(nodeInContext.parent, treeId);
 			var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent, treeId);
@@ -74,7 +74,7 @@
 			return;
 		}
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
-		jQueryConDec(treeId).on("contextmenu.jstree", function(event) {
+		jQuery(treeId).on("contextmenu.jstree", function(event) {
 			event.preventDefault();
 
 			var nodeId = event.target.parentNode.id;
@@ -94,7 +94,7 @@
 		if (nodeId === "#") {
 			return nodeId;
 		}
-		return jQueryConDec(treeId).jstree(true).get_node(nodeId);
+		return jQuery(treeId).jstree(true).get_node(nodeId);
 	}
 
 	/**
@@ -102,8 +102,8 @@
 	 */
 	ConDecTreeViewer.prototype.selectNodeInTreeViewer = function (nodeId, treeId) {
 		console.log("conDecTreeViewer selectNodeInTreeViewer");
-		jQueryConDec(document).ready(function() {
-			var treeViewer = jQueryConDec(treeId).jstree(true);
+		jQuery(document).ready(function() {
+			var treeViewer = jQuery(treeId).jstree(true);
 			if (treeViewer) {
 				treeViewer.deselect_all(true);
 				treeViewer.select_node(nodeId);

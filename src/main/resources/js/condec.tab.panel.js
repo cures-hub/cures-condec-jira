@@ -50,8 +50,8 @@
 				"selectedElement": jiraIssueKey
 		};
 		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#jstree-search-input", "issue-container");
-		jQueryConDec("#jstree").on("loaded.jstree", function() {
-			jQueryConDec("#jstree").jstree("open_all");
+		jQuery("#jstree").on("loaded.jstree", function() {
+			jQuery("#jstree").jstree("open_all");
 		});
 	};
 

@@ -12,10 +12,11 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetElements extends TestSetUp {
+public class TestGetKnowledgeElements extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
 
@@ -28,13 +29,26 @@ public class TestGetElements extends TestSetUp {
 	}
 
 	@Test
-	public void testNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getElements(null, null, null).getStatus());
+	public void testRequestNullFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getKnowledgeElements(null, null).getStatus());
+	}
+
+	@Test
+	public void testRequestValidFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getKnowledgeElements(request, null).getStatus());
+	}
+
+	@Test
+	public void testProjectKeyInvalid() {
+		FilterSettings filterSettings = new FilterSettings(null, "");
+		Response response = knowledgeRest.getKnowledgeElements(request, filterSettings);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 
 	@Test
 	public void testFilled() {
-		Response response = knowledgeRest.getElements(request, "TEST", "");
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		Response response = knowledgeRest.getKnowledgeElements(request, filterSettings);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
 }

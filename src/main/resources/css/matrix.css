@@ -10,6 +10,7 @@
     margin-right: 5px;
     margin-left: 10px;
     margin-bottom: 5px;
+    border: 1px solid #e8e8e8;
 }
 
 #matrix {
@@ -21,13 +22,14 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     top: 0;
-    background-color: white;
+    border: 1px solid #e8e8e8;
 }
 
 .rowHeader {
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     left: 0;
+    width: 15em;
 }
 
 .columnHeader div {
@@ -35,26 +37,35 @@
     top: 0;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 1.5em;
-    background-color: white;
+    height: 15em;
 }
 
 .rowHeader div {
     position: sticky;
     left: 0;
-    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     height: 1.5em;
+    width: 15em;
 }
 
-thead th:first-child {
-    left: 0;
-    z-index: 1;
-    background-color: white;
+#matrix td {
+	border: 1px solid #e8e8e8;
+}
+
+#matrix th {
+	border: 1px solid #e8e8e8;
+}
+
+.columnHeader th {
+	border: 1px solid #e8e8e8;
+}
+
+.rowHeader th {
+	border: 1px solid #e8e8e8;
 }

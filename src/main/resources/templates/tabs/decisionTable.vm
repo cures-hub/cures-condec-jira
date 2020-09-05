@@ -37,8 +37,7 @@ $(document).ready(function () {
 	}
 	menuItem.onclick = function() {
 		if (!isOnceClicked) {
-			var issueKey = conDecAPI.getIssueKey();
-			conDecDecisionTable.loadDecisionProblems(issueKey);
+			conDecDecisionTable.init();
 			isOnceClicked = true;
 		}
 	};

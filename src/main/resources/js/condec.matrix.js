@@ -12,7 +12,8 @@
 
 	/* private vars */
 	var conDecObservable = null;
-	var conDecAPI = null;
+	var conDecAPI = null
+	var headerElements = [];
 
 	var ConDecMatrix = function ConDecMatrix() {
 	};
@@ -24,7 +25,8 @@
 			conDecObservable = _conDecObservable;
 
 			// Fill HTML elements for filter criteria
-			conDecFiltering.fillFilterElements("matrix", [ "Decision", "Alternative" ]);
+			conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
+			conDecFiltering.fillDatePickers("matrix", 30);
 
 			// Add event listener on buttons
 			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
@@ -40,70 +42,74 @@
 	};
 
 	ConDecMatrix.prototype.buildMatrix = function() {
+		AJS.$("#simple-tooltip").tooltip();
 		var filterSettings = conDecFiltering.getFilterSettings("matrix");
 		filterSettings["documentationLocations"] = null;
-		conDecAPI.getMatrix(filterSettings, function(data) {
-			const matrix = document.getElementById("matrix");
-			const thead = document.createElement("thead");
-			const headerRow = document.createElement("tr");
-			const firstRowHeaderElement = document.createElement("th");
-			firstRowHeaderElement.innerText = "";
-			firstRowHeaderElement.classList.add("columnHeader");
-			headerRow.appendChild(firstRowHeaderElement);
+		conDecAPI.getMatrix(filterSettings, function(matrix) {
+			this.headerElements = matrix.headerElements;
+			let headerRow = document.getElementById("matrix-header-row");
+			headerRow.innerHTML = "";
+			let firstRowHeaderCell = document.createElement("th");
+			firstRowHeaderCell.classList.add("columnHeader");
+			headerRow.appendChild(firstRowHeaderCell);
 
-			for ( let d in data.headerElements) {
-				headerRow.appendChild(newTableHeaderElement(data.headerElements[d], "columnHeader"));
+			for ( let d in matrix.headerElements) {
+				const headerCell = newTableHeaderCell(matrix.headerElements[d], "columnHeader");
+				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
-			thead.appendChild(headerRow);
-			matrix.appendChild(thead);
-
-			const tbody = document.createElement("tbody");
-
-			for ( let d in data.coloredRows) {
-				const row = data.coloredRows[d];
-				tbody.appendChild(newTableRow(row, data.headerElements[d]));
+			let tbody = document.getElementById("matrix-body");
+			tbody.innerHTML = "";
+			for ( let d in matrix.links) {
+				let row = matrix.links[d];
+				tbody.appendChild(newTableRow(row, matrix.headerElements[d], d));
 			}
 
-			matrix.appendChild(tbody);
-
-			conDecMatrix.buildLegend(data.linkTypesWithColor);
+			conDecMatrix.buildLegend(matrix.linkTypesWithColor);
 		});
 	};
 
 	ConDecMatrix.prototype.updateView = function() {
-		const matrix = document.getElementById("matrix");
-		matrix.innerHTML = "";
 		conDecMatrix.buildMatrix();
 	};
 
-	function newTableHeaderElement(knowledgeElement, styleClass) {
-		const headerColumn = document.createElement("th");
-		headerColumn.addEventListener("contextmenu", function(event) {
+	function newTableHeaderCell(knowledgeElement, styleClass) {
+		const headerCell = document.createElement("th");
+		headerCell.addEventListener("contextmenu", function(event) {
 			event.preventDefault();
 			conDecContextMenu.createContextMenu(knowledgeElement.id, knowledgeElement.documentationLocation, event,
 			        null);
 		});
-		headerColumn.classList.add(styleClass);
+		headerCell.classList.add(styleClass);
 		const div = document.createElement("div");
 		div.innerText = knowledgeElement.type + ": " + knowledgeElement.summary;
-		headerColumn.appendChild(div);
-		return headerColumn;
+		headerCell.title = knowledgeElement.type + ": " + knowledgeElement.summary;
+		AJS.$(headerCell).tooltip();
+		headerCell.appendChild(div);
+		return headerCell;
 	}
 
-	function newTableRow(row, header) {
+	function newTableRow(row, sourceElement, positionX) {
 		const tableRow = document.createElement("tr");
-		tableRow.appendChild(newTableHeaderElement(header, "rowHeader"));
+		tableRow.appendChild(newTableHeaderCell(sourceElement, "rowHeader"));
 		for ( let d in row) {
-			tableRow.appendChild(newTableElement(row[d]));
+			tableRow.appendChild(newTableCell(row[d], positionX, d));
 		}
 		return tableRow;
 	}
 
-	function newTableElement(color) {
+	function newTableCell(link, positionX, positionY) {
 		const tableRowCell = document.createElement("td");
-		if (!color.match("white")) {
-			tableRowCell.style.backgroundColor = color;
+		if (positionX === positionY) {
+			tableRowCell.style.backgroundColor = "lightGray";
+		}
+		if (link !== null) {
+			tableRowCell.style.backgroundColor = link.color;
+			const sourceElement = this.headerElements[positionX];
+			const targetElement = this.headerElements[positionY];
+			tableRowCell.title = "Link Type: " + link.type + "; From " + sourceElement.type + ": "
+			        + sourceElement.summary + " to " + targetElement.type + ": " + targetElement.summary;
+			AJS.$(tableRowCell).tooltip();
 		}
 		return tableRowCell;
 	}

@@ -1,0 +1,32 @@
+# Update guide for Javascript libraries
+
+# vis-network
+This lib is used to plot the knowledge graph.
+https://visjs.github.io/vis-network/docs/network/
+https://github.com/visjs/vis-network
+
+Run "npm install vis-network"
+Only the "dist" folder is kept, all other folders are deleted.
+
+
+# vis-timeline
+This lib is used to plot the chronology of knowledge elements.
+https://visjs.github.io/vis-timeline/docs/timeline/
+https://github.com/visjs/vis-timeline
+
+Run "npm install vis-timeline"
+Only the "dist" folder is kept, all other folders are deleted.
+
+
+# jstree
+This lib is used to plot the tree viewer of knowledge elements.
+https://www.jstree.com/
+
+Download jstree.js from "https://github.com/vakata/jstree/tree/master/dist"
+Download style.css from "https://github.com/vakata/jstree/tree/master/dist/themes/default" 
+Move style.css to css folder, rename it to jstree.css
+Check if the following images are up-to-date in images folder: 32px.png, 40px.png, throbber.gif
+
+# treant
+Used to plot trees of knowledge elements.
+https://fperucic.github.io/treant-js/

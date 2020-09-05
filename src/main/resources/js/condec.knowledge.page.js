@@ -52,7 +52,7 @@
 			if (knowledgeTypes[index] === "Issue") {
 				isSelected = "selected ";
 			}
-			jQueryConDec("select[name='knowledge-type-dropdown-overview']")[0].insertAdjacentHTML("beforeend", "<option "
+			jQuery("select[name='knowledge-type-dropdown-overview']")[0].insertAdjacentHTML("beforeend", "<option "
 			        + isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 		}
 
@@ -62,7 +62,7 @@
 			if (isEnabled) {
 				createElementButton.addEventListener("click", function() {
 					var summary = elementInputField.value;
-					var type = jQueryConDec("select[name='knowledge-type-dropdown-overview']").val();
+					var type = jQuery("select[name='knowledge-type-dropdown-overview']").val();
 					elementInputField.value = "";
 					conDecAPI.createDecisionKnowledgeElement(summary, "", type, "i", 0, null, function(id) {
 						updateView(id, treant, treeViewer);
@@ -88,7 +88,7 @@
 
 	function updateView(nodeId, treant, treeViewer) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
-		var knowledgeType = jQueryConDec("select[name='knowledge-type-dropdown-overview']").val();
+		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
 		filterSettings["knowledgeTypes"] = [ knowledgeType ];
 		filterSettings["linkDistance"] = 0; // so that jstree tree viewer only shows a list of elements
 		treeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
@@ -100,7 +100,7 @@
 		} else {
 			treeViewer.selectNodeInTreeViewer(nodeId, "#jstree");
 		}
-		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
+		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
 			var linkDistance = document.getElementById("link-distance-input-overview").value;
 			filterSettings["linkDistance"] = linkDistance;

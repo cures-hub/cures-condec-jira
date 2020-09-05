@@ -21,8 +21,8 @@
 	var ConDecContextMenu = function ConDecContextMenu() {
 		console.log("conDecContextMenu constructor");
 		isContextMenuOpen = false;
-		jQueryConDec(global).blur(hideContextMenu);
-		jQueryConDec(document).click(hideContextMenu);
+		jQuery(global).blur(hideContextMenu);
+		jQuery(document).click(hideContextMenu);
 	};
 
 	function hideContextMenu() {

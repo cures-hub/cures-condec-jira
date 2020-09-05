@@ -96,15 +96,11 @@
 			Provides the JavaScript files for the management of decision knowledge.
 		</description>
 		<context>jira.view.issue</context>
-		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
-		<resource type="download" name="jqueryConDec.js" location="/js/lib/jquery/jquery.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
 		<!-- treant -->
 		<resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
-		<resource type="download" name="jquery.easing.js"
-			location="/js/lib/jquery/jquery.easing.js" />
 		<!--Vis -->
 		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
 		<resource type="download" name="vis-timeline-graph2d.min.js" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
@@ -144,7 +140,7 @@
 		<resource type="download" name="condec.config.rest.js"
 			location="/js/condec.config.rest.js" />
 		<resource type="download" name="condec.settings.consistency.js"
-			location="/js/condec.settings.consistency.js" />
+			location="/js/settings/condec.settings.consistency.js" />
 		<resource type="download" name="condec.jira.issue.module.consistency.js"
 			location="/js/condec.jira.issue.module.consistency.js" />
         <resource type="download" name="condec.decision.guidance.js"

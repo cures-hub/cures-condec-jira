@@ -28,7 +28,7 @@ public class JiraIssueLinks {
 		issueLinks.add(issueLink);
 
 		// link between decision and argument
-		issueLink = createJiraIssueLink(4, 5, 6);
+		issueLink = createJiraIssueLink(5, 4, 6);
 		issueLinks.add(issueLink);
 
 		// links between WI and issue

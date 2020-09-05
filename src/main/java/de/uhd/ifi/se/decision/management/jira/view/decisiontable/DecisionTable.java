@@ -19,7 +19,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
 // TODO Improve JavaDoc (not only parameter names should be given but a short
-// explanation)
+// explanation!)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -43,8 +42,9 @@ public class DecisionTable {
 	private Map<String, List<DecisionTableElement>> decisionTableData;
 
 	public DecisionTable(String projectKey) {
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		decisionTableData = new HashMap<>();
 	}
 
 	/**
@@ -69,67 +69,58 @@ public class DecisionTable {
 	/**
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return
+	 * @return all available criteria (e.g. quality attributes, non-functional
+	 *         requirements) for a project.
 	 */
 	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
 		List<Criterion> criteria = new ArrayList<>();
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
-		for (Issue i : queryHandler.getJiraIssuesFromQuery()) {
-			criteria.add(new Criterion(new KnowledgeElement(i)));
+		for (Issue jiraIssue : queryHandler.getJiraIssuesFromQuery()) {
+			criteria.add(new Criterion(new KnowledgeElement(jiraIssue)));
 		}
 		return criteria;
 	}
 
 	/**
-	 * 
-	 * @param id
-	 * @param location
+	 * @param rootElement
+	 *            decision problem as a {@link KnowledgeElement} object.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
-	public void setDecisionTableForIssue(long id, String location, ApplicationUser user) {
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
+	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-		decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
 
 		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
-				decisionTableData.get("alternatives").add(new Alternative(elem));
-				getArguments(elem.getId(), elem.getKey(), decisionTableData, location);
+			KnowledgeElement targetElement = currentLink.getTarget();
+			if (targetElement.getType() == KnowledgeType.ALTERNATIVE
+					|| targetElement.getType() == KnowledgeType.DECISION) {
+				decisionTableData.get("alternatives").add(new Alternative(targetElement));
+				getArguments(targetElement);
 			}
 		}
 	}
 
 	/**
-	 * 
-	 * @param id
-	 * @param alternative
-	 * @param criteria
-	 * @param location
+	 * @param solutionOption
+	 *            either an alternative or decision as a {@link KnowledgeElement}
+	 *            object.
 	 */
-	public void getArguments(long id, String key, Map<String, List<DecisionTableElement>> decisionTableData,
-			String location) {
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
-
-		Set<Link> outgoingLinks;
-		if (rootElement == null) {
-			KnowledgeElement issue = persistenceManager.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT)
-					.getKnowledgeElement(key);
-			outgoingLinks = this.graph.outgoingEdgesOf(issue);
-		} else {
-			outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+	public void getArguments(KnowledgeElement solutionOption) {
+		if (decisionTableData.get("alternatives") == null) {
+			return;
 		}
+		int numberOfAlternatives = decisionTableData.get("alternatives").size();
+		Set<Link> incomingLinks = graph.incomingEdgesOf(solutionOption);
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
-			if (KnowledgeType.replaceProAndConWithArgument(elem.getType()) == KnowledgeType.ARGUMENT) {
+		for (Link currentLink : incomingLinks) {
+			KnowledgeElement sourceElement = currentLink.getSource();
+			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
-						.get(decisionTableData.get("alternatives").size() - 1);
-				Argument argument = new Argument(elem);
+						.get(numberOfAlternatives - 1);
+				Argument argument = new Argument(sourceElement);
 				getArgumentCriteria(argument, decisionTableData.get("criteria"));
 				alternative.addArgument(argument);
 			}
@@ -137,6 +128,8 @@ public class DecisionTable {
 	}
 
 	public void getArgumentCriteria(Argument argument, List<DecisionTableElement> criteria) {
+		// TODO Make Argument class extend KnowledgeElement and remove calling
+		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
@@ -157,7 +150,7 @@ public class DecisionTable {
 	 * @return
 	 */
 	public List<KnowledgeElement> getIssues() {
-		return this.issues;
+		return issues;
 	}
 
 	/**
@@ -165,6 +158,6 @@ public class DecisionTable {
 	 * @return
 	 */
 	public Map<String, List<DecisionTableElement>> getDecisionTableData() {
-		return this.decisionTableData;
+		return decisionTableData;
 	}
 }

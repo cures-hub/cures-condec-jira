@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,8 +24,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.JiraFilter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -391,27 +390,23 @@ public class KnowledgeRest {
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
-	 * @param projectKey
-	 *            of a Jira project.
-	 * @param query
-	 *            either in in Jira Query Language (JQL) or a predefinded
-	 *            {@link JiraFilter}.
-	 * @return list of all elements that match the query.
+	 * @param filterSettings
+	 *            object of the {@link FilterSettings} class.
+	 * @return list of all {@link KnowledgeElement}s that match the
+	 *         {@link FilterSettings}.
 	 */
-	@Path("/getElements")
-	@GET
+	@Path("/knowledgeElements")
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@DefaultValue("") @QueryParam("query") String query) {
-		if (request == null || projectKey == null || projectKey.isBlank() || query == null) {
+	public Response getKnowledgeElements(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
-							"Getting elements failed due to a bad request. You need to provide a project key."))
+							"Getting elements failed due to a bad request. You need to provide the filter settings."))
 					.build();
 		}
-
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilteringManager filteringManager = new FilteringManager(projectKey, user, query);
+		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		Set<KnowledgeElement> elementsMatchingQuery = filteringManager.getElementsMatchingFilterSettings();
 		return Response.ok(elementsMatchingQuery).build();
 	}

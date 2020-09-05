@@ -322,28 +322,18 @@
             return;
         }
         selectField.innerHTML = "";
-        /*
-		 * NOTE! Instead the Jira API could be called using GET
-		 * "/rest/api/2/issueLinkType". This call "[r]eturns a list of available
-		 * issue link types, if issue linking is enabled. Each issue link type
-		 * has an id, a name and a label for the outward and inward link
-		 * relationship."
-		 * 
-		 * @see https://docs.atlassian.com/software/jira/docs/api/REST/8.5.4/#api/2/issueLinkType-getIssueLinkTypes
-		 */
         var linkTypes = conDecAPI.getLinkTypes();
-        var linkTypeNames = Object.keys(linkTypes);
         var insertString = "";
         var isSelected = "";
-        for (var index in linkTypeNames) {
-            if (linkTypeNames[index] == "Relates") {
+        for (index = 0; index < linkTypes.length; index++) {
+            if (linkTypes[index].match("Relates")) {
                 isSelected = "selected";
             } else {
                 isSelected = "";
             }
-            console.log(linkTypeNames[index]);
-            insertString += "<option " + isSelected + " value='" + linkTypeNames[index] + "'>"
-                + linkTypeNames[index] + "</option>";
+            console.log(linkTypes[index]);
+            insertString += "<option " + isSelected + " value='" + linkTypes[index] + "'>"
+                + linkTypes[index] + "</option>";
         }
         selectField.insertAdjacentHTML("afterBegin", insertString);
         AJS.$(selectField).auiSelect2();
@@ -606,7 +596,7 @@
 		let allCriteria;
         let uniqueCriteria;
         
-		conDecAPI.getDecisionTableCriteria(projectKey, function (criteria) {
+		conDecAPI.getDecisionTableCriteria(function (criteria) {
 			allCriteria = criteria.concat(currentCriteria);
 			uniqueCriteria = new Set(allCriteria.map(item => item.id));
 			createDialogContent(criteria, currentCriteria, projectKey);
@@ -664,7 +654,7 @@
         AJS.dialog2(addCriterionDialog).show();
         
         // send callback when dialog was closed not via apply or close button
-		AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
+		//AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
 
         exitButton.onclick = function () {
         	applyChanges([]);

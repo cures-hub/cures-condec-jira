@@ -15,7 +15,13 @@
 	<ul class="legend-labels" id="legend-list"></ul>
 </div>
 <div class="matrix-container">
-    <table class="aui aui-table-list" id="matrix"></table>
+    <table class="aui aui-table-list" id="matrix">
+    	<thead>
+    		<tr id="matrix-header-row"></tr>
+    	</thead>
+    	<tbody id="matrix-body">
+    	</tbody>    
+    </table>
 </div>
 <script>
     $(document).ready(function() {
