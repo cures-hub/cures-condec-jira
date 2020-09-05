@@ -218,7 +218,7 @@ public class ViewRest {
 		DecisionTable decisionTable = new DecisionTable(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		KnowledgeElement issue = filterSettings.getSelectedElement();
-		decisionTable.setDecisionTableForIssue(issue.getId(), issue.getDocumentationLocationAsString(), user);
+		decisionTable.setDecisionTableForIssue(issue, user);
 		return Response.ok(decisionTable.getDecisionTableData()).build();
 	}
 

@@ -42,8 +42,9 @@ public class DecisionTable {
 	private Map<String, List<DecisionTableElement>> decisionTableData;
 
 	public DecisionTable(String projectKey) {
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getOrCreate(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		decisionTableData = new HashMap<>();
 	}
 
 	/**
@@ -82,37 +83,40 @@ public class DecisionTable {
 	}
 
 	/**
-	 * 
-	 * @param id
-	 * @param location
+	 * @param rootElement
+	 *            decision problem as a {@link KnowledgeElement} object.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
-	public void setDecisionTableForIssue(long id, String location, ApplicationUser user) {
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
+	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-		decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
 
 		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
-			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
-				decisionTableData.get("alternatives").add(new Alternative(elem));
-				getArguments(elem, decisionTableData);
+			KnowledgeElement targetElement = currentLink.getTarget();
+			if (targetElement.getType() == KnowledgeType.ALTERNATIVE
+					|| targetElement.getType() == KnowledgeType.DECISION) {
+				decisionTableData.get("alternatives").add(new Alternative(targetElement));
+				getArguments(targetElement);
 			}
 		}
 	}
 
-	public void getArguments(KnowledgeElement rootElement, Map<String, List<DecisionTableElement>> decisionTableData) {
-		Set<Link> outgoingLinks = graph.outgoingEdgesOf(rootElement);
+	/**
+	 * @param solutionOption
+	 *            either an alternative or decision as a {@link KnowledgeElement}
+	 *            object.
+	 */
+	public void getArguments(KnowledgeElement solutionOption) {
+		Set<Link> incomingLinks = graph.incomingEdgesOf(solutionOption);
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
-			if (KnowledgeType.replaceProAndConWithArgument(elem.getType()) == KnowledgeType.ARGUMENT) {
+		for (Link currentLink : incomingLinks) {
+			KnowledgeElement sourceElement = currentLink.getSource();
+			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
 						.get(decisionTableData.get("alternatives").size() - 1);
-				Argument argument = new Argument(elem);
+				Argument argument = new Argument(sourceElement);
 				getArgumentCriteria(argument, decisionTableData.get("criteria"));
 				alternative.addArgument(argument);
 			}
@@ -120,6 +124,8 @@ public class DecisionTable {
 	}
 
 	public void getArgumentCriteria(Argument argument, List<DecisionTableElement> criteria) {
+		// TODO Make Argument class extend KnowledgeElement and remove calling
+		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
 		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
