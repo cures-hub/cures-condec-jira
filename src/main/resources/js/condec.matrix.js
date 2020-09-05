@@ -26,6 +26,7 @@
 
 			// Fill HTML elements for filter criteria
 			conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
+			conDecFiltering.fillDatePickers("matrix", 30);
 
 			// Add event listener on buttons
 			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {

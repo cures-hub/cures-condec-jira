@@ -93,14 +93,14 @@ public class TestDecisionTable extends TestSetUp {
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(3, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(knowledgeElement, decisionTableData);
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 
 		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
 				.getKnowledgeElement(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(4, null, decisionTableData, DocumentationLocation.JIRAISSUE.getIdentifier());
+		decisionTable.getArguments(knowledgeElement, decisionTableData);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 		assertEquals(1, alternative2.getArguments().size());
 	}

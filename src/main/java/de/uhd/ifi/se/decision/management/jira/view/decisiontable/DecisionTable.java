@@ -19,7 +19,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -100,30 +99,13 @@ public class DecisionTable {
 			KnowledgeElement elem = currentLink.getTarget();
 			if (elem.getType() == KnowledgeType.ALTERNATIVE || elem.getType() == KnowledgeType.DECISION) {
 				decisionTableData.get("alternatives").add(new Alternative(elem));
-				getArguments(elem.getId(), elem.getKey(), decisionTableData, location);
+				getArguments(elem, decisionTableData);
 			}
 		}
 	}
 
-	/**
-	 * 
-	 * @param id
-	 * @param alternative
-	 * @param criteria
-	 * @param location
-	 */
-	public void getArguments(long id, String key, Map<String, List<DecisionTableElement>> decisionTableData,
-			String location) {
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(id, location);
-
-		Set<Link> outgoingLinks;
-		if (rootElement == null) {
-			KnowledgeElement issue = persistenceManager.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT)
-					.getKnowledgeElement(key);
-			outgoingLinks = this.graph.outgoingEdgesOf(issue);
-		} else {
-			outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
-		}
+	public void getArguments(KnowledgeElement rootElement, Map<String, List<DecisionTableElement>> decisionTableData) {
+		Set<Link> outgoingLinks = graph.outgoingEdgesOf(rootElement);
 
 		for (Link currentLink : outgoingLinks) {
 			KnowledgeElement elem = currentLink.getTarget();

@@ -22,7 +22,6 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     top: 0;
-    background-color: white;
     border: 1px solid #e8e8e8;
 }
 
@@ -41,7 +40,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background-color: white;
     width: 1.5em;
     height: 15em;
 }
