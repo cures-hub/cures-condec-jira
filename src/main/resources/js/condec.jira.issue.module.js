@@ -71,7 +71,7 @@
 	ConDecJiraIssueModule.prototype.initView = function() {
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
-		AJS.$("#menu-item-graph").click();
+		//AJS.$("#menu-item-graph").click();
 	};
 
 	ConDecJiraIssueModule.prototype.showTreant = function () {

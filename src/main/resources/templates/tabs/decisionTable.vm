@@ -27,22 +27,16 @@
     </div>
 </div>
 <div style="height: auto; overflow-x: auto;" id="decisionTable-container"></div>
+#parse("templates/tabs/recommendationTable.vm")
 <script>
-/* Adds the on click listener on the menu item */
+/* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-	var menuItem = document.getElementById("menu-item-decision-table");
-	if (menuItem === null) {
-		return;
-	}
-	menuItem.onclick = function() {
-		if (!isOnceClicked) {
-			conDecDecisionTable.init();
+    AJS.$("#visualization-selection-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+    		conDecDecisionTable.init();
 			isOnceClicked = true;
 		}
-	};
-  }); 
-
+	});
+});
 </script>
-
-#parse("templates/tabs/recommendationTable.vm")
