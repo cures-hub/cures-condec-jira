@@ -116,14 +116,14 @@
 			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
-
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
-
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
+		<resource type="download" name="condec.knowledge.page.js"
+			location="/js/condec.knowledge.page.js" />
 		<resource type="download" name="condec.gitdiffviewer.js"
 			location="/js/condec.gitdiffviewer.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
@@ -154,16 +154,6 @@
 			location="/js/condec.decision.guidance.js" />
 	</web-resource>
 
-	<web-resource key="decision-knowledge-page-resources"
-		name="ConDec Decision Knowledge Page Resources">
-		<description>
-			Provides the JavaScript files for the separate decision knowledge page of this
-			plug-in.
-		</description>
-		<resource type="download" name="condec.knowledge.page.js"
-			location="/js/condec.knowledge.page.js" />
-	</web-resource>
-
 	<web-resource key="release-note-page-resources"
 		name="ConDec Release Notes Page Resources">
 		<description>
@@ -188,16 +178,6 @@
 			location="/js/lib/markdowneditor/icomoon.woff" />
 		<resource type="download" name="condec.release.note.markdowneditor.icomoon_ie.eot"
 			location="/js/lib/markdowneditor/icomoon_ie.eot" />
-	</web-resource>
-
-	<web-resource key="jira-issue-module-resources"
-		name="ConDec Jira Issue Module Resources">
-		<description>
-			Provides the JavaScript file used in the Jira issue module.
-		</description>
-		<context>jira.view.issue</context>
-		<resource type="download" name="condec.jira.issue.module.js"
-			location="/js/condec.jira.issue.module.js" />
 	</web-resource>
 
 	<web-resource key="classifier-resources"

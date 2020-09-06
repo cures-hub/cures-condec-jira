@@ -4,7 +4,7 @@
 	};
 	
 	ConDecVis.prototype.initView = function (isJiraIssueView = false) {
-		console.log("ConDecRelationshipPage initView");       
+		console.log("ConDecVis initView");       
 		
 		// Fill HTML elements for filter criteria and add on click listener
 		if (isJiraIssueView) {
@@ -17,9 +17,7 @@
 		} else {
 			conDecFiltering.fillFilterElements("graph", ["Decision"]);
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
-				conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
-					conDecVis.buildGraphNetwork(knowledgeGraph, "vis-graph-container");
-				});
+				conDecVis.buildVis(filterSettings);
 			});
 			document.getElementById("link-distance-input-graph").remove();
 		}	
@@ -36,7 +34,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: none, used in initView function
 	 */
 	ConDecVis.prototype.buildVis = function(filterSettings) {
 		console.log("conDecVis buildVis");
