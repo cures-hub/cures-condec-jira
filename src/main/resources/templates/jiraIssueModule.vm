@@ -2,7 +2,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
-<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
+<div class="aui-tabs horizontal-tabs" id="jira-issue-tabs" data-aui-persist="username">
    <ul class="tabs-menu" id="visualization-selection-tabs-menu">
       <li class="menu-item" id="menu-item-treant">
          <a href="#treant-tab">Tree Visualization</a>
@@ -17,29 +17,29 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
          <a href="#feature-branches-tab">Feature branch(es)</a>
       </li>
       <li class="menu-item" id="menu-item-related-knowledge">
-         <a href="#related-knowledge-tab">Related knowledge</a>
+         <a href="#related-knowledge-elements-tab">Related knowledge</a>
       </li>
       <li class="menu-item" id="menu-item-duplicates">
          <a href="#duplicates-tab">Duplicate knowledge</a>
       </li>
    </ul>
    <div class="tabs-pane" id="treant-tab">
-   		#parse("templates/tabs/treantTab.vm")
+   		#parse("templates/tabs/treant.vm")
    </div>
    <div class="tabs-pane active-pane" id="graph-tab">
-   		#parse("templates/tabs/visGraphTab.vm")
+   		#parse("templates/tabs/visGraph.vm")
    </div>
    <div class="tabs-pane" id="feature-branches-tab">
-      #parse("templates/tabs/featureBranchesTab.vm")
+      #parse("templates/tabs/featureBranches.vm")
    </div>
-   <div class="tabs-pane" id="related-knowledge-tab">
-      #parse("templates/tabs/relatedIssuesTab.vm")
+   <div class="tabs-pane" id="related-knowledge-elements-tab">
+      #parse("templates/tabs/relatedKnowledgeElements.vm")
    </div>
    <div class="tabs-pane" id="decision-table-tab">
    	  #parse("templates/tabs/decisionTable.vm")
    </div>
    <div class="tabs-pane" id="duplicates-tab">
-      #parse("templates/tabs/duplicatesTab.vm")
+      #parse("templates/tabs/duplicates.vm")
    </div>
 </div>
 #parse("templates/dialogs/createDialog.vm")

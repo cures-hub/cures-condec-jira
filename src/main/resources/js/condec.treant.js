@@ -9,11 +9,41 @@
 
 	var ConDecTreant = function() {
 	};
+	
+	/**
+	 * Creates a view with only the treant and filter elements. 
+	 * The treant is shown as part of other views as well, but these views call "buildTreant".
+	 */
+	ConDecTreant.prototype.initView = function () {
+		// Fill HTML elements for filter criteria
+		conDecFiltering.fillFilterElements("treant");
+		
+		// Add event listeners to HTML elements for filtering
+		conDecFiltering.addOnChangeEventToFilterElements("treant", conDecTreant.updateView);
+		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
+		isTestCodeShownInput.addEventListener("click", function() {conDecTreant.updateView();});
+
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
+		
+		// Fill view
+		this.updateView();
+	};
+	
+	ConDecTreant.prototype.updateView = function () {
+		console.log("ConDecTreant updateView");
+		var issueKey = conDecAPI.getIssueKey();		
+		var filterSettings = conDecFiltering.getFilterSettings("treant");
+		filterSettings["selectedElement"] = issueKey;
+		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
+		filterSettings["isTestCodeShown"] = isTestCodeShown;
+		this.buildTreant(filterSettings, true);
+	};
 
 	/*
-	 * external references: condec.jira.issue.module.js, condec.knowledge.page.js
+	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
-	ConDecTreant.prototype.buildTreant = function(filterSettings, isInteractive, treantIdParam) {
+	ConDecTreant.prototype.buildTreant = function (filterSettings, isInteractive, treantIdParam) {
 		console.log("conDecTreant buildTreant");		
 		conDecAPI.getTreant(filterSettings, function(treeStructure) {
 			if (treantIdParam !== undefined) {

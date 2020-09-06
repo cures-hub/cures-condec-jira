@@ -19,10 +19,9 @@
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-    AJS.$("#visualization-selection-tabs").on("tabSelect", function(event) {
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#treant-tab")) {
-			conDecJiraIssueModule.showTreant();
-			conDecJiraIssueModule.addOnChangeEventToTreantFilters();
+			conDecTreant.initView();
 			isOnceClicked = true;
 		}
     });

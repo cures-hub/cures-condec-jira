@@ -25,8 +25,8 @@
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-    AJS.$("#visualization-selection-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#related-knowledge-tab")) {
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#related-knowledge-elements-tab")) {
     		consistencyTabsModule.loadData();
 			isOnceClicked = true;
 		}

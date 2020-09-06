@@ -49,7 +49,6 @@
 			conDecDecisionTable = _conDecDecisionTable;
 
 			// Fill HTML elements for filter criteria
-			conDecFiltering.fillFilterElements("treant");
 			conDecFiltering.fillFilterElements("graph");
 			
 			// Add event listener on buttons
@@ -71,22 +70,6 @@
 	ConDecJiraIssueModule.prototype.initView = function() {
 		console.log("ConDecJiraIssueModule initView");
 		issueKey = conDecAPI.getIssueKey();
-		//AJS.$("#menu-item-graph").click();
-	};
-
-	ConDecJiraIssueModule.prototype.showTreant = function () {
-		console.log("ConDecJiraIssueModule showTreant");
-		var filterSettings = conDecFiltering.getFilterSettings("treant");
-		filterSettings["selectedElement"] = issueKey;
-		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
-		filterSettings["isTestCodeShown"] = isTestCodeShown;
-		treant.buildTreant(filterSettings, true);
-	};
-
-	ConDecJiraIssueModule.prototype.addOnChangeEventToTreantFilters = function () {
-		conDecFiltering.addOnChangeEventToFilterElements("treant", conDecJiraIssueModule.showTreant);
-		var isTestCodeShownInput = document.getElementById("show-test-elements-input");
-		isTestCodeShownInput.addEventListener("change", function() {conDecJiraIssueModule.showTreant();});
 	};
 
 	function getURLsSearch() {
