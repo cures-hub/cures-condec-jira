@@ -11,34 +11,28 @@
 (function(global) {
 
 	/* private vars */
-	var conDecObservable = null;
-	var conDecAPI = null
 	var headerElements = [];
 
 	var ConDecMatrix = function ConDecMatrix() {
 	};
 
-	ConDecMatrix.prototype.init = function(_conDecAPI, _conDecObservable) {
-		console.log("ConDecMatrix init");
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)) {
-			conDecAPI = _conDecAPI;
-			conDecObservable = _conDecObservable;
+	ConDecMatrix.prototype.initView = function() {
+		console.log("ConDecMatrix initView");
+		
+		// Fill HTML elements for filter criteria
+		conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
+		conDecFiltering.fillDatePickers("matrix", 30);
 
-			// Fill HTML elements for filter criteria
-			conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
-			conDecFiltering.fillDatePickers("matrix", 30);
+		// Add event listener on buttons
+		conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
+			conDecMatrix.updateView();
+		});
 
-			// Add event listener on buttons
-			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
-				conDecMatrix.updateView();
-			});
-
-			// Register/subscribe this view as an observer
-			conDecObservable.subscribe(this);
-
-			return true;
-		}
-		return false;
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
+		
+		// Fill view
+		this.buildMatrix();
 	};
 
 	ConDecMatrix.prototype.buildMatrix = function() {
@@ -126,25 +120,6 @@
 			legend.appendChild(li);
 		}
 	};
-
-	/*
-	 * Init Helpers
-	 */
-	function isConDecAPIType(conDecAPI) {
-		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecMatrix: invalid ConDecAPI object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecObservableType(conDecObservable) {
-		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecMatrix: invalid ConDecObservable object received.");
-			return false;
-		}
-		return true;
-	}
 
 	global.conDecMatrix = new ConDecMatrix();
 })(window);

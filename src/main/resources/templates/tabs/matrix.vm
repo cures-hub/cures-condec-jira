@@ -24,19 +24,14 @@
     </table>
 </div>
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-        if (window.conDecMatrix.init(conDecAPI, conDecObservable)) {
-            var click = 0;
-        	AJS.$("#menu-item-matrix").on("click", function(event) {
-        		if (click === 0) {
-        			window.conDecMatrix.buildMatrix();
-        		}
-        		click++;
-        	});  
-        }
-        else {
-            console.error("ConDecMatrix could not get its dependencies.");
-        }
-    });
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#matrix-tab")) {
+    		conDecMatrix.initView();
+			isOnceClicked = true;
+		}
+	});
+});
 </script>
