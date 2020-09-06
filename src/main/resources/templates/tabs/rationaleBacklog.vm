@@ -15,14 +15,8 @@
     <div id="treant-rationale-backlog" class="right"></div>
 </div>
 <script>
-/* Adds the on click listener on tab opening */
+/* Inits rationale backlog as the default tab */
 $(document).ready(function () {
-	var isOnceClicked = false;
-    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#rationale-backlog-tab")) {
-    		conDecRationaleBacklog.initView();
-			isOnceClicked = true;
-		}
-	});
+	conDecRationaleBacklog.initView();
 });
 </script>

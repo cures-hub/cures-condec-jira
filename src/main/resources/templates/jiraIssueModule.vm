@@ -3,7 +3,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
 <div class="aui-tabs horizontal-tabs" id="jira-issue-tabs" data-aui-persist="username">
-   <ul class="tabs-menu" id="visualization-selection-tabs-menu">
+   <ul class="tabs-menu">
       <li class="menu-item" id="menu-item-treant">
          <a href="#treant-tab">Tree Visualization</a>
       </li>

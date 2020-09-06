@@ -4,6 +4,7 @@
 
     <select id="select-root-element-type" name="knowledge-type-dropdown-overview"
             class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
+    
     <input type="text" class="text medium-field"
            id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
     <input type="button" id="create-element-button"
