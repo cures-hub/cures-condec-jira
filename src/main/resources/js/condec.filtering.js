@@ -294,6 +294,5 @@
 		AJS.$("#" + elementId).auiSelect2();
 	};
 
-	// export ConDecFiltering
 	global.conDecFiltering = new ConDecFiltering();
 })(window);

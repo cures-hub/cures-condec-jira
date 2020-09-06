@@ -12,6 +12,18 @@
 
 	var ConDecExport = function ConDecExport() {
 	};
+	
+	ConDecExport.prototype.addOnClickEventToExportAsTable = function () {
+		console.log("ConDecExport addOnClickEventToExportAsTable");
+
+		var exportMenuItem = document.getElementById("export-as-table-link");
+
+		exportMenuItem.addEventListener("click", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			conDecDialog.showExportDialog(JIRA.Issue.getIssueId(), "i");
+		});
+	};
 
 	/*
 	 * external references: condec.dialog
@@ -116,6 +128,5 @@
 		return htmlString;
 	}
 
-	// export ConDecExport
 	global.conDecExport = new ConDecExport();
 })(window);

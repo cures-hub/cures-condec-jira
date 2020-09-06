@@ -16,19 +16,14 @@
 </div>
 <div style="height: auto" id="treant-container"></div>
 <script>
-/* Adds the on click listener on the menu item */
+/* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-	var treantMenuItem = document.getElementById("menu-item-treant");
-	if (treantMenuItem === null) {
-		return;
-	}
-	treantMenuItem.onclick = function() {
-		if (!isOnceClicked) {
-			conDecJiraIssueModule.showTreant();
-			conDecJiraIssueModule.addOnChangeEventToTreantFilters();
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#treant-tab")) {
+			conDecTreant.initView();
 			isOnceClicked = true;
 		}
-	};
+    });
   }); 
 </script>

@@ -15,14 +15,8 @@
     <div id="treant-rationale-backlog" class="right"></div>
 </div>
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-       if (window.conDecRationaleBacklog.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
-           conDecAPI.checkIfProjectKeyIsValid();
-           window.conDecRationaleBacklog.fetchAndRender();
-       }
-       else {
-           console.error("ConDecRationaleBacklog could not get its dependencies.");
-       }
-    });
+/* Inits rationale backlog as the default tab */
+$(document).ready(function () {
+	conDecRationaleBacklog.initView();
+});
 </script>
