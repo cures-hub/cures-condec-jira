@@ -33,6 +33,5 @@
 		this.observers.push(observer);
 	};
 
-	// export ConDecObservable
 	global.conDecObservable = new ConDecObservable();
 })(window);

@@ -7,7 +7,7 @@
     };
 
     ConDecChronology.prototype.initView = function () {
-        console.log("ConDecChronology init");           
+        console.log("ConDecChronology initView");           
         
         // Fill HTML elements for filter criteria
         conDecFiltering.fillFilterElements("chronology", ["Decision"]);      

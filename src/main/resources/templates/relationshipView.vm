@@ -19,20 +19,14 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecRelationshipPage.init(conDecAPI, conDecObservable, conDecVis)) {
-            conDecAPI.checkIfProjectKeyIsValid();
-            var click = 0;
-        	AJS.$("#menu-item-graph").on("click", function(event) {
-        		if (click === 0) {
-        			window.conDecRelationshipPage.updateView();
-        		}
-        		click++;
-        	});  
-        }
-        else {
-            console.error("ConDecRelationshipPage could not get its dependencies.");
-        }
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#graph-tab")) {
+    		conDecRelationshipPage.initView();
+			isOnceClicked = true;
+		}
     });
+}); 
 </script>

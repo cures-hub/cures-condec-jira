@@ -23,7 +23,7 @@
 		conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
 		conDecFiltering.fillDatePickers("matrix", 30);
 
-		// Add event listener on buttons
+		// Add event listener on button
 		conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
 			conDecMatrix.updateView();
 		});
