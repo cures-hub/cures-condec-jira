@@ -34,6 +34,7 @@
 			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
 				conDecMatrix.buildMatrix(filterSettings);
 			});
+			document.getElementById("link-distance-input-label-matrix").remove();
 			document.getElementById("link-distance-input-matrix").remove();
 		}		
 

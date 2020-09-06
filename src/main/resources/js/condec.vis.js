@@ -19,6 +19,7 @@
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
 				conDecVis.buildVis(filterSettings);
 			});
+			document.getElementById("link-distance-input-label-graph").remove();
 			document.getElementById("link-distance-input-graph").remove();
 		}	
 
