@@ -1,14 +1,18 @@
-<form class="aui">
-	#set ($viewIdentifier = "chronology")	
-	#parse("templates/filter/text.vm")
-	#parse("templates/filter/knowledgeType.vm")
-	#parse("templates/filter/status.vm")
-	#parse("templates/filter/decisionGroup.vm")		
-	#parse("templates/filter/degree.vm")
-	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-	#parse("templates/filter/creationDate.vm")	
-    #parse("templates/filter/filterButton.vm")
-</form>
+<div class="aui-toolbar2" role="toolbar">
+	<div class="aui-toolbar-2-inner">	
+		<form class="aui">
+			#set ($viewIdentifier = "chronology")	
+			#parse("templates/filter/text.vm")
+			#parse("templates/filter/knowledgeType.vm")
+			#parse("templates/filter/status.vm")
+			#parse("templates/filter/decisionGroup.vm")		
+			#parse("templates/filter/degree.vm")
+			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+			#parse("templates/filter/creationDate.vm")	
+		    #parse("templates/filter/filterButton.vm")
+		</form>
+	</div>
+</div>
 <div class="aui-group">
     <div id="evolution-timeline"></div>
 </div>
@@ -16,6 +20,12 @@
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#chronology-tab")) {
+    		conDecChronology.initView();
+			isOnceClicked = true;
+		}
+	});
     AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#chronology-tab")) {
     		conDecChronology.initView();

@@ -37,7 +37,7 @@
 		filterSettings["selectedElement"] = issueKey;
 		var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
 		filterSettings["isTestCodeShown"] = isTestCodeShown;
-		this.buildTreant(filterSettings, true);
+		conDecTreant.buildTreant(filterSettings, true);
 	};
 
 	/*

@@ -7,7 +7,6 @@
 (function (global) {
 
 	/**
-	 *
 	 * @constructor
 	 */
 	let ConsistencyTabsModule = function ConsistencyTabsModule() {
@@ -15,8 +14,6 @@
 
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
-
-
 	};
 
 	ConsistencyTabsModule.prototype.init = function () {

@@ -1,20 +1,22 @@
-<form class="aui">
-	#set ($viewIdentifier = "matrix")
-	#parse("templates/filter/text.vm")
-    #parse("templates/filter/knowledgeType.vm")
-    #parse("templates/filter/status.vm")
-    #parse("templates/filter/linkType.vm")
-    #parse("templates/filter/decisionGroup.vm")        		
-    #parse("templates/filter/degree.vm")
-    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
-    #parse("templates/filter/creationDate.vm")	
-    #parse("templates/filter/filterButton.vm")
-</form>
-<div class="legend">
-	<label for="legend-list">Relationship Types:</label>
-	<ul class="legend-labels" id="legend-list"></ul>
+<div class="aui-toolbar2" role="toolbar">
+	<div class="aui-toolbar-2-inner">		
+		<form class="aui">
+			#set ($viewIdentifier = "matrix")
+			#parse("templates/filter/text.vm")
+		    #parse("templates/filter/knowledgeType.vm")
+		    #parse("templates/filter/status.vm")
+		    #parse("templates/filter/linkType.vm")
+		    #parse("templates/filter/decisionGroup.vm")        		
+		    #parse("templates/filter/degree.vm")
+		    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
+		    #parse("templates/filter/creationDate.vm")	
+		    #parse("templates/filter/linkDistance.vm")	
+		    #parse("templates/filter/filterButton.vm")
+		</form>
+	</div>
 </div>
-<div class="matrix-container">
+<div class="aui-group" id="legend"></div>
+<div class="aui-group matrix-container">
     <table class="aui aui-table-list" id="matrix">
     	<thead>
     		<tr id="matrix-header-row"></tr>
@@ -27,7 +29,13 @@
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+	AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#matrix-tab")) {
+    		conDecMatrix.initView(true);
+			isOnceClicked = true;
+		}
+	});
+	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#matrix-tab")) {
     		conDecMatrix.initView();
 			isOnceClicked = true;

@@ -1,21 +1,26 @@
-#legend-list {
-	display: flex;
-    list-style-type: none;
-}
-
-.legend-labels li span {
-    float: left;
+.legend-labels {
+	display: inline-block;
     height: 18px;
     width: 30px;
-    margin-right: 5px;
     margin-left: 10px;
-    margin-bottom: 5px;
+    margin-right: 5px;
     border: 1px solid #e8e8e8;
 }
 
+#legend {
+	display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+
+.matrix-container {
+	overflow: auto;
+    resize: both;
+}
+
 #matrix {
-    width: fit-content;
-    height: fit-content;
+    overflow: auto;
+    resize: both;
 }
 
 .columnHeader {

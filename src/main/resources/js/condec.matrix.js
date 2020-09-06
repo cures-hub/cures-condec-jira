@@ -12,35 +12,42 @@
 
 	/* private vars */
 	var headerElements = [];
+	var linkTypesWithColor = null;
 
 	var ConDecMatrix = function ConDecMatrix() {
 	};
 
-	ConDecMatrix.prototype.initView = function() {
+	ConDecMatrix.prototype.initView = function(isJiraIssueView = false) {
 		console.log("ConDecMatrix initView");
 		
-		// Fill HTML elements for filter criteria
-		conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
-		conDecFiltering.fillDatePickers("matrix", 30);
-
-		// Add event listener on button
-		conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
-			conDecMatrix.updateView();
-		});
+		// Fill HTML elements for filter criteria and add on click listener
+		if (isJiraIssueView) {
+			conDecFiltering.fillFilterElements("matrix");
+			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
+				issueKey = conDecAPI.getIssueKey();
+				filterSettings["selectedElement"] = issueKey;
+				conDecMatrix.buildMatrix(filterSettings);
+			});
+		} else {
+			conDecFiltering.fillFilterElements("matrix", [ "Decision" ]);
+			conDecFiltering.fillDatePickers("matrix", 30);
+			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
+				conDecMatrix.buildMatrix(filterSettings);
+			});
+			document.getElementById("link-distance-input-matrix").remove();
+		}		
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 		
 		// Fill view
-		this.buildMatrix();
+		this.updateView();
 	};
 
-	ConDecMatrix.prototype.buildMatrix = function() {
-		AJS.$("#simple-tooltip").tooltip();
-		var filterSettings = conDecFiltering.getFilterSettings("matrix");
-		filterSettings["documentationLocations"] = null;
+	ConDecMatrix.prototype.buildMatrix = function(filterSettings) {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			this.headerElements = matrix.headerElements;
+			
 			let headerRow = document.getElementById("matrix-header-row");
 			headerRow.innerHTML = "";
 			let firstRowHeaderCell = document.createElement("th");
@@ -58,13 +65,13 @@
 				let row = matrix.links[d];
 				tbody.appendChild(newTableRow(row, matrix.headerElements[d], d));
 			}
-
+			
 			conDecMatrix.buildLegend(matrix.linkTypesWithColor);
-		});
+		});	
 	};
 
 	ConDecMatrix.prototype.updateView = function() {
-		conDecMatrix.buildMatrix();
+		document.getElementById("filter-button-matrix").click();
 	};
 
 	function newTableHeaderCell(knowledgeElement, styleClass) {
@@ -108,16 +115,17 @@
 		return tableRowCell;
 	}
 
-	ConDecMatrix.prototype.buildLegend = function(linkTypesWithColor) {
-		const legend = document.getElementById("legend-list");
-		legend.innerHTML = "";
+	ConDecMatrix.prototype.buildLegend = function (linkTypesWithColor) {
+		const legend = document.getElementById("legend");
+		legend.innerHTML = "<b>Relationship Types:</b>";
 		for ( let linkType in linkTypesWithColor) {
-			const li = document.createElement("li");
-			li.innerText = linkType;
-			const span = document.createElement("span");
-			span.style.background = linkTypesWithColor[linkType];
-			li.appendChild(span);
-			legend.appendChild(li);
+			const coloredBlock = document.createElement("div");
+			coloredBlock.classList.add("legend-labels");
+			coloredBlock.style.background = linkTypesWithColor[linkType];			
+			coloredBlock.title = linkType;
+			AJS.$(coloredBlock).tooltip();
+			legend.insertAdjacentElement("beforeend", coloredBlock);
+			legend.insertAdjacentText("beforeend", linkType);
 		}
 	};
 

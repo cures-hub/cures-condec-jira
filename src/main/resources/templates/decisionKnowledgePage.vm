@@ -6,26 +6,26 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<li class="menu-item active-tab" id="menu-item-rationale-backlog">
     		<a href="#rationale-backlog-tab">$i18n.getText('condec.label.rationale.backlog')</a>
     	</li>
-        <li class="menu-item" id="menu-item-overview">
-            <a href="#overview-tab">Overview</a>
+    	<li class="menu-item" id="menu-item-overview">
+        	<a href="#overview-tab">Overview</a>
         </li>
         <li class="menu-item" id="menu-item-graph">
         	<a href="#graph-tab">$i18n.getText('condec.label.relationshipGraph')</a>
         </li>
         <li class="menu-item" id="menu-item-chronology">
-            <a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
+        	<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
         </li>
         <li class="menu-item" id="menu-item-comparison">
-            <a href="#comparison-tab">$i18n.getText('condec.label.compare')</a>
+        	<a href="#comparison-tab">$i18n.getText('condec.label.compare')</a>
         </li>
         <li class="menu-item" id="menu-item-matrix">
-            <a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
+        	<a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
         </li>
         <li class="menu-item" id="menu-item-groups">
-            <a href="#decision-groups-tab">Decision Groups</a>
+        	<a href="#decision-groups-tab">Decision Groups</a>
         </li>
-    </ul>
-    <div class="tabs-pane active-pane" id="rationale-backlog-tab">
+	</ul>
+	<div class="tabs-pane active-pane" id="rationale-backlog-tab">
     	#parse("templates/tabs/rationaleBacklog.vm")
     </div>
     <div class="tabs-pane" id="overview-tab">
