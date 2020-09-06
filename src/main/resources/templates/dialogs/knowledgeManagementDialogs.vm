@@ -1,0 +1,21 @@
+#parse("templates/dialogs/createDialog.vm")
+#parse("templates/dialogs/editDialog.vm")
+#parse("templates/dialogs/deleteDialog.vm")
+#parse("templates/dialogs/linkDialog.vm")
+#parse("templates/dialogs/deleteLinkDialog.vm")
+#parse("templates/dialogs/changeTypeDialog.vm")
+#parse("templates/dialogs/changeStatusDialog.vm")
+
+<!-- Decision Groups -->
+#parse("templates/dialogs/assignDialog.vm")
+#parse("templates/dialogs/renameGroupDialog.vm")
+#parse("templates/dialogs/deleteGroupDialog.vm")
+
+<!-- Code Summarization -->
+#parse("templates/dialogs/summarizationDialog.vm")
+
+<!-- Export -->
+#parse("templates/dialogs/exportDialog.vm")
+
+<!-- Decision Table -->
+#parse("templates/dialogs/editDecisionTableCriterionDialog.vm")

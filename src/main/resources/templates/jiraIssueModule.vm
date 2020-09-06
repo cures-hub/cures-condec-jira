@@ -41,18 +41,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
       #parse("templates/tabs/duplicates.vm")
    </div>
 </div>
-#parse("templates/dialogs/createDialog.vm")
-#parse("templates/dialogs/editDialog.vm")
-#parse("templates/dialogs/deleteDialog.vm")
-#parse("templates/dialogs/deleteLinkDialog.vm")
-#parse("templates/dialogs/assignDialog.vm")
-#parse("templates/dialogs/linkDialog.vm")
-#parse("templates/dialogs/changeTypeDialog.vm")
-#parse("templates/dialogs/changeStatusDialog.vm")
-#parse("templates/dialogs/summarizationDialog.vm")
-#parse("templates/dialogs/exportDialog.vm")
-#parse("templates/dialogs/editDecisionTableCriterionDialog.vm")
 #parse("templates/contextMenu.vm")
+#parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
 <script>
 $(document).ready(function () {
