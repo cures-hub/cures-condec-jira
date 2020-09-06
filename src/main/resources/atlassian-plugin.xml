@@ -50,12 +50,18 @@
 		<resource type="download" name="codesummarization.png"
 			location="/images/codesummarization.png" />
 		<!-- visGraph.js icons -->
-		<resource type="download" name="img/network/addNodeIcon.png" location="/js/lib/vis-network/dist/img/network/addNodeIcon.png" />
-		<resource type="download" name="img/network/backIcon.png" location="/js/lib/vis-network/dist/img/network/backIcon.png" />
-		<resource type="download" name="img/network/editIcon.png" location="/js/lib/vis-network/dist/img/network/editIcon.png" />
-		<resource type="download" name="img/network/deleteIcon.png" location="/js/lib/vis-network/dist/img/network/deleteIcon.png" />
-		<resource type="download" name="img/network/connectIcon.png" location="/js/lib/vis-network/dist/img/network/connectIcon.png" />
-		<resource type="download" name="img/network/cross.png" location="/js/lib/vis-network/dist/img/network/cross.png" />
+		<resource type="download" name="img/network/addNodeIcon.png"
+			location="/js/lib/vis-network/dist/img/network/addNodeIcon.png" />
+		<resource type="download" name="img/network/backIcon.png"
+			location="/js/lib/vis-network/dist/img/network/backIcon.png" />
+		<resource type="download" name="img/network/editIcon.png"
+			location="/js/lib/vis-network/dist/img/network/editIcon.png" />
+		<resource type="download" name="img/network/deleteIcon.png"
+			location="/js/lib/vis-network/dist/img/network/deleteIcon.png" />
+		<resource type="download" name="img/network/connectIcon.png"
+			location="/js/lib/vis-network/dist/img/network/connectIcon.png" />
+		<resource type="download" name="img/network/cross.png"
+			location="/js/lib/vis-network/dist/img/network/cross.png" />
 		<!-- dashboard item thumbnail -->
 		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
@@ -64,10 +70,12 @@
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
-        <resource type="download" name="settings.css" location="/css/settings.css" />
+		<resource type="download" name="settings.css" location="/css/settings.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
-		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
-		<resource type="download" name="vis-timeline-graph2d.min.css" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
+		<resource type="download" name="vis-network.css"
+			location="/js/lib/vis-network/dist/dist/vis-network.css" />
+		<resource type="download" name="vis-timeline-graph2d.min.css"
+			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
 		<!-- look and feel like Jira -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -102,8 +110,10 @@
 		<resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
 		<!--Vis -->
-		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
-		<resource type="download" name="vis-timeline-graph2d.min.js" location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
+		<resource type="download" name="vis-network.js"
+			location="/js/lib/vis-network/dist/vis-network.js" />
+		<resource type="download" name="vis-timeline-graph2d.min.js"
+			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 
@@ -125,29 +135,25 @@
 		<resource type="download" name="condec.decision.table.js"
 			location="/js/condec.decision.table.js" />
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
-		<resource type="download" name="condec.chronology.js"
-			location="/js/condec.chronology.js" />
-		<resource type="download" name="condec.comparison.js"
-			location="/js/condec.comparison.js" />
+		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
+		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
 		<resource type="download" name="condec.relationship.page.js"
 			location="/js/condec.relationship.page.js" />
-		<resource type="download" name="condec.matrix.js"
-			location="/js/condec.matrix.js" />
-		<resource type="download" name="condec.decision.group.view.js"
-			location="/js/condec.decision.group.view.js" />
+		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
+		<resource type="download" name="condec.decision.groups.js"
+			location="/js/condec.decision.groups.js" />
 		<resource type="download" name="condec.consistency.api.js"
 			location="/js/condec.consistency.api.js" />
-        <resource type="download" name="condec.rationale.backlog.js"
-                  location="/js/condec.rationale.backlog.js" />
+		<resource type="download" name="condec.rationale.backlog.js"
+			location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.config.rest.js"
 			location="/js/condec.config.rest.js" />
 		<resource type="download" name="condec.settings.consistency.js"
 			location="/js/settings/condec.settings.consistency.js" />
 		<resource type="download" name="condec.jira.issue.module.consistency.js"
 			location="/js/condec.jira.issue.module.consistency.js" />
-        <resource type="download" name="condec.decision.guidance.js"
-                  location="/js/condec.decision.guidance.js" />
-
+		<resource type="download" name="condec.decision.guidance.js"
+			location="/js/condec.decision.guidance.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -316,13 +322,13 @@
 	<web-item key="condec-project-settings-menu-item-rationalebacklog"
 		name="Menu Item for ConDec Plug-in Project Settings of Rationale Backlog"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-        <description>Adds the "Rationale backlog" menu item.</description>
-        <label key="condec.project.settings.menu.item.rationale.backlog" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-git"
+		<description>Adds the "Rationale backlog" menu item.</description>
+		<label key="condec.project.settings.menu.item.rationale.backlog" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-git"
 		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
 		<description>Adds the "Git connection" menu item.</description>
@@ -338,7 +344,7 @@
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=classification
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>	
+	</web-item>
 	<web-item key="condec-project-settings-menu-item-consistency"
 		name="Menu Item for ConDec Plug-in Project Settings of Consistency"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
@@ -348,16 +354,16 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-    <web-item key="condec-project-settings-menu-item-decisionguidance"
-        name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
-        section="atl.jira.proj.config/condec-project-settings-section" weight="21">
-        <description>Adds the "Decision guidance" menu item.</description>
-        <label key="condec.project.settings.menu.item.decision.guidance" />
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-release-notes"
+	<web-item key="condec-project-settings-menu-item-decisionguidance"
+		name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
+		<description>Adds the "Decision guidance" menu item.</description>
+		<label key="condec.project.settings.menu.item.decision.guidance" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-release-notes"
 		name="Menu Item for ConDec Plug-in Project Settings of Release Notes"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="22">
 		<description>Adds the "Release notes" menu item.</description>
@@ -366,7 +372,7 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-    <web-item key="condec-project-settings-menu-item-webhook"
+	<web-item key="condec-project-settings-menu-item-webhook"
 		name="Menu Item for ConDec Plug-in Project Settings of Webhook"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="23">
 		<description>Adds the "Webhook" menu item.</description>
@@ -406,9 +412,9 @@
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
 		</entity>
-        <entity>
-            de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase
-        </entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase
+		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase
 		</entity>
@@ -514,7 +520,7 @@
 	</web-resource>
 
 	<!-- ConDec feature branch dashboard item -->
-	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/
+	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<dashboard-item key="condec-feature-branch-dashboard-item"
 		name="ConDec Dashboard for Feature Task Branches">

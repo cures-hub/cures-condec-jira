@@ -1,25 +1,17 @@
 (function (global) {
 
-    /* private vars */
-    var conDecObservable = null;
-    var conDecAPI = null;
-
-    var ConDecDecisionGroupView = function ConDecDecisionGroupView() {
+    var ConDecDecisionGroups = function ConDecDecisionGroups() {
     };
 
-    ConDecDecisionGroupView.prototype.init = function (_conDecAPI, _conDecObservable) {
-        console.log("ConDecDecisionGroupView init");
-        if (isConDecAPIType(_conDecAPI)) {
-            conDecAPI = _conDecAPI;
-            conDecObservable = _conDecObservable;
-            conDecObservable.subscribe(this);
-            return true;
-        }
-        return false;
+    ConDecDecisionGroups.prototype.initView = function () {
+        console.log("ConDecDecisionGroups initView");
+      
+        conDecObservable.subscribe(this);         
+        this.buildMatrix();
     };
 
     // TODO Refactor, move API methods to ConDecAPI
-    ConDecDecisionGroupView.prototype.buildMatrix = function () {
+    ConDecDecisionGroups.prototype.buildMatrix = function () {
         const groups = conDecAPI.getAllDecisionGroups();
         const projectKey = conDecAPI.getProjectKey();
         const body = document.getElementById("group-table-body");
@@ -33,10 +25,10 @@
         }
     };
 
-    ConDecDecisionGroupView.prototype.updateView = function () {
+    ConDecDecisionGroups.prototype.updateView = function () {
         const body = document.getElementById("group-table-body");
         body.innerHTML = "";
-        conDecDecisionGroupView.buildMatrix();
+        this.buildMatrix();
     };
 
     function newTableRow(body, row1, row2, row3) {
@@ -56,18 +48,7 @@
         row.appendChild(tableRowElement3);
         body.appendChild(row);
     };
-
-    /*
-     * Init Helpers
-     */
-    function isConDecAPIType(conDecAPI) {
-        if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-            console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
-            return false;
-        }
-        return true;
-    };
-
+    
     function getResponseAsReturnValue(url) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, false);
@@ -76,5 +57,5 @@
         return JSON.parse(xhr.response);
     }
 
-    global.conDecDecisionGroupView = new ConDecDecisionGroupView();
+    global.conDecDecisionGroups = new ConDecDecisionGroups();
 })(window);

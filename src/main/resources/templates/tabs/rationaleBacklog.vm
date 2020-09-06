@@ -15,14 +15,14 @@
     <div id="treant-rationale-backlog" class="right"></div>
 </div>
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-       if (window.conDecRationaleBacklog.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)){
-           conDecAPI.checkIfProjectKeyIsValid();
-           window.conDecRationaleBacklog.fetchAndRender();
-       }
-       else {
-           console.error("ConDecRationaleBacklog could not get its dependencies.");
-       }
-    });
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#rationale-backlog-tab")) {
+    		conDecRationaleBacklog.initView();
+			isOnceClicked = true;
+		}
+	});
+});
 </script>
