@@ -34,7 +34,7 @@ $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
-    		conDecDecisionTable.init();
+    		conDecDecisionTable.initView();
 			isOnceClicked = true;
 		}
 	});

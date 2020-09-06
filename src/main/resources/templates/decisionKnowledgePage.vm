@@ -4,47 +4,47 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <div class="aui-tabs horizontal-tabs" id="knowledge-page-tabs" data-aui-persist="username">
     <ul class="tabs-menu active-tab">
     	<li class="menu-item">
-    		<a href="#tabs-rationaleBacklogView">$i18n.getText('condec.label.rationale.backlog')</a>
+    		<a href="#rationale-backlog-tab">$i18n.getText('condec.label.rationale.backlog')</a>
     	</li>
         <li class="menu-item" id="menu-item-overview">
-            <a href="#tabs-overview">Overview</a>
+            <a href="#overview-tab">Overview</a>
         </li>
         <li class="menu-item" id="menu-item-graph">
-        	<a href="#tabs-relationshipGraph">$i18n.getText('condec.label.relationshipGraph')</a>
+        	<a href="#graph-tab">$i18n.getText('condec.label.relationshipGraph')</a>
         </li>
         <li class="menu-item" id="menu-item-chronology">
-            <a href="#tabs-chronology">$i18n.getText('condec.label.evolution')</a>
+            <a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
         </li>
         <li class="menu-item" id="menu-item-comparison">
-            <a href="#tabs-compare">$i18n.getText('condec.label.compare')</a>
+            <a href="#comparison-tab">$i18n.getText('condec.label.compare')</a>
         </li>
         <li class="menu-item" id="menu-item-matrix">
-            <a href="#tabs-matrix">$i18n.getText('condec.label.matrix')</a>
+            <a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
         </li>
         <li class="menu-item" id="menu-item-groups">
-            <a href="#tabs-decisionGroupView">Decision Groups</a>
+            <a href="#decision-groups-tab">Decision Groups</a>
         </li>
     </ul>
-    <div class="tabs-pane active-pane" id="tabs-rationaleBacklogView">
-    	#parse("templates/rationaleBacklogView.vm")
+    <div class="tabs-pane active-pane" id="rationale-backlog-tab">
+    	#parse("templates/tabs/rationaleBacklog.vm")
     </div>
-    <div class="tabs-pane" id="tabs-overview">
-        #parse("templates/overview.vm")
+    <div class="tabs-pane" id="overview-tab">
+        #parse("templates/tabs/overview.vm")
     </div>
-    <div class="tabs-pane" id="tabs-relationshipGraph">
+    <div class="tabs-pane" id="graph-tab">
         #parse("templates/relationshipView.vm")
     </div>
-    <div class="tabs-pane" id="tabs-chronology">
-        #parse("templates/chronologyView.vm")
+    <div class="tabs-pane" id="chronology-tab">
+        #parse("templates/tabs/chronology.vm")
     </div>
-    <div class="tabs-pane" id="tabs-compare">
-        #parse("templates/comparisonView.vm")
+    <div class="tabs-pane" id="comparison-tab">
+        #parse("templates/tabs/comparison.vm")
     </div>
-    <div class="tabs-pane" id="tabs-matrix">
+    <div class="tabs-pane" id="matrix-tab">
         #parse("templates/tabs/matrix.vm")
     </div>
-    <div class="tabs-pane" id="tabs-decisionGroupView">
-        #parse("templates/decisionGroupView.vm")
+    <div class="tabs-pane" id="decision-groups-tab">
+        #parse("templates/tabs/decisionGroups.vm")
     </div>
 </div>
 #parse("templates/dialogs/createDialog.vm")
