@@ -11,20 +11,27 @@
 			#parse("templates/filter/documentationLocation.vm")
 			#parse("templates/filter/linkDistance.vm")	
 			#parse("templates/filter/degree.vm")
+			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 			#parse("templates/filter/filterButton.vm")
 		</form>		
 	</div>
 </div>
-<div id="vis-container"></div>
+<div id="vis-graph-container"></div>
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#graph-tab")) {
-    		document.getElementById("filter-button-graph").click();
+    		conDecVis.initView(true);
 			isOnceClicked = true;
 		}
     });
-  }); 
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#graph-tab")) {
+    		conDecVis.initView();
+    		isOnceClicked = true;
+    	}
+	});
+}); 
 </script>

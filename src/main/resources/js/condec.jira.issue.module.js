@@ -16,14 +16,6 @@
  */
 (function(global) {
 	/* private vars */
-	var conDecAPI = null;
-	var conDecObservable = null;
-	var conDecDialog = null;
-	var conDecContextMenu = null;
-	var treant = null;
-	var vis = null;
-	var conDecDecisionTable = null;
-
 	var issueKey = "";
 	var search = "";
 
@@ -31,40 +23,12 @@
 		console.log("conDecJiraIssueModule constructor");
 	};
 
-	ConDecJiraIssueModule.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
-	        _treant, _vis, _conDecDecisionTable) {
-
+	ConDecJiraIssueModule.prototype.init = function() {
 		console.log("ConDecJiraIssueModule init");
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
-		        && isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-		        && isConDecTreantType(_treant) && isConDecVisType(_vis)
-		        && isConDecDecisionTableTyp(_conDecDecisionTable)) {
+		addOnClickEventToExportAsTable();
 
-			conDecAPI = _conDecAPI;
-			conDecObservable = _conDecObservable;
-			conDecDialog = _conDecDialog;
-			conDecContextMenu = _conDecContextMenu;
-			treant = _treant;
-			vis = _vis;
-			conDecDecisionTable = _conDecDecisionTable;
-
-			// Fill HTML elements for filter criteria
-			conDecFiltering.fillFilterElements("graph");
-			
-			// Add event listener on buttons
-			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
-				issueKey = conDecAPI.getIssueKey();
-				filterSettings["selectedElement"] = issueKey;
-				vis.buildVis(filterSettings);
-			});
-
-			addOnClickEventToExportAsTable();
-
-			// Register/subscribe this view as an observer
-			conDecObservable.subscribe(this);
-			return true;
-		}
-		return false;
+		// Register/subscribe this view as an observer
+		//conDecObservable.subscribe(this);
 	};
 
 	ConDecJiraIssueModule.prototype.initView = function() {
@@ -97,65 +61,5 @@
 		});
 	}
 
-	/*
-	 * Init Helpers
-	 */
-	function isConDecAPIType(conDecAPI) {
-		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid ConDecAPI object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecObservableType(conDecObservable) {
-		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid ConDecObservable object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecDialogType(conDecDialog) {
-		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid conDecDialog object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecContextMenuType(conDecContextMenu) {
-		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid conDecContextMenu object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecTreantType(conDecTreant) {
-		if (!(conDecTreant !== undefined && conDecTreant.buildTreant !== undefined && typeof conDecTreant.buildTreant === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid conDecTreant object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecVisType(conDecVis) {
-		if (!(conDecVis !== undefined && conDecVis.buildVis !== undefined && typeof conDecVis.buildVis === 'function')) {
-			console.warn("ConDecJiraIssueModule: invalid conDecVis object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecDecisionTableTyp(conDecDecisionTable) {
-		if (!(conDecVis !== undefined && conDecDecisionTable.loadDecisionProblems !== undefined && typeof conDecDecisionTable.loadDecisionProblems === 'function')) {
-			console.warn("ConDecJiraIssueModule: ivalid conDecDecisionTable object received.");
-			return false;
-		}
-		return true;
-	}
-
-	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

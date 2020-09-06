@@ -62,11 +62,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     $(document).ready(function () {
         conDecAPI.checkIfProjectKeyIsValid();      
         consistencyTabsModule.init();
-        if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
-                conDecVis, conDecDecisionTable)) {
-            window.conDecJiraIssueModule.initView();
-        } else {
-            console.error("ConDecJiraIssueModule could not get its dependencies.");
-        }    
+        conDecJiraIssueModule.init();
+        conDecJiraIssueModule.initView();
     });
 </script>

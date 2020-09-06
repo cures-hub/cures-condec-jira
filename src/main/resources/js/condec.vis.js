@@ -2,6 +2,38 @@
 
 	var ConDecVis = function() {
 	};
+	
+	ConDecVis.prototype.initView = function (isJiraIssueView = false) {
+		console.log("ConDecRelationshipPage initView");       
+		
+		// Fill HTML elements for filter criteria and add on click listener
+		if (isJiraIssueView) {
+			conDecFiltering.fillFilterElements("graph");
+			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
+				issueKey = conDecAPI.getIssueKey();
+				filterSettings["selectedElement"] = issueKey;
+				conDecVis.buildVis(filterSettings);
+			});
+		} else {
+			conDecFiltering.fillFilterElements("graph", ["Decision"]);
+			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
+				conDecAPI.getVis(filterSettings, function (knowledgeGraph) {
+					conDecVis.buildGraphNetwork(knowledgeGraph, "vis-graph-container");
+				});
+			});
+			document.getElementById("link-distance-input-graph").remove();
+		}	
+
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
+	        
+		// Fill view
+		this.updateView();
+	};
+
+	ConDecVis.prototype.updateView = function () {
+		document.getElementById("filter-button-graph").click();
+	};
 
 	/*
 	 * external references: condec.jira.issue.module
@@ -9,7 +41,7 @@
 	ConDecVis.prototype.buildVis = function(filterSettings) {
 		console.log("conDecVis buildVis");
 		conDecAPI.getVis(filterSettings, function(visData) {
-			conDecVis.buildGraphNetwork(visData, "vis-container");
+			conDecVis.buildGraphNetwork(visData, "vis-graph-container");
 		});
 	};
 

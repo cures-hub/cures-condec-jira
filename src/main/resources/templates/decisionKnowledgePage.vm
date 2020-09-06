@@ -33,7 +33,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/overview.vm")
     </div>
     <div class="tabs-pane" id="graph-tab">
-        #parse("templates/relationshipView.vm")
+        #parse("templates/tabs/visGraph.vm")
     </div>
     <div class="tabs-pane" id="chronology-tab">
         #parse("templates/tabs/chronology.vm")
