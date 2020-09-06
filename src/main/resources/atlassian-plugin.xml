@@ -125,8 +125,10 @@
 		<resource type="download" name="condec.decision.table.js"
 			location="/js/condec.decision.table.js" />
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
-		<resource type="download" name="condec.evolution.page.js"
-			location="/js/condec.evolution.page.js" />
+		<resource type="download" name="condec.chronology.js"
+			location="/js/condec.chronology.js" />
+		<resource type="download" name="condec.comparison.js"
+			location="/js/condec.comparison.js" />
 		<resource type="download" name="condec.relationship.page.js"
 			location="/js/condec.relationship.page.js" />
 		<resource type="download" name="condec.matrix.js"

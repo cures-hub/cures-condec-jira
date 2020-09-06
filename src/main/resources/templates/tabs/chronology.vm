@@ -13,21 +13,14 @@
     <div id="evolution-timeline"></div>
 </div>
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-        if (window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
-            conDecAPI.checkIfProjectKeyIsValid();
-            var click = 0;
-            AJS.$("#menu-item-chronology").on("click", function(event) {
-            	if (click === 0) {
-            		window.conDecEvolutionPage.buildTimeLine();
-            	}
-            	click++;
-    		});            
-        }
-        else {
-            console.error("ConDecEvolutionPage could not get its dependencies.");
-        }
-    });
-    
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#chronology-tab")) {
+    		conDecChronology.initView();
+			isOnceClicked = true;
+		}
+	});
+});
 </script>
