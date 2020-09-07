@@ -33,7 +33,5 @@
 				+ projectKey + "&isConsistencyActivated=" + isActivated, null);
 		}
 
-
-		// export ConsistencyAPI
 		global.configAPI = new ConfigAPI();
 })(window);

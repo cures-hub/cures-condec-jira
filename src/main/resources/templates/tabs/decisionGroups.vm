@@ -1,0 +1,27 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+<form class="aui">
+    <table class="aui aui-table-list" id="group-table">
+    	<thead>
+    		<tr>
+    			<th>Group</th>
+    			<th># Knowledge Elements</th>
+    			<th># Java Classes</th>
+    		</tr>
+    	</thead>
+    	<tbody id="group-table-body">
+    	</tbody>
+    </table>
+</form>
+<script>
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#decision-groups-tab")) {
+    		conDecDecisionGroups.initView();
+			isOnceClicked = true;
+		}
+	});
+});
+</script>

@@ -24,20 +24,14 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        conDecAPI.checkIfProjectKeyIsValid();
-        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable, conDecVis)) {
-            conDecAPI.checkIfProjectKeyIsValid();
-            var click = 0;
-        	AJS.$("#menu-item-comparison").on("click", function(event) {
-        		if (click === 0) {
-        			window.conDecEvolutionPage.buildCompare();
-        		}
-        		click++;
-        	});             
-        }
-        else {
-            console.error("ConDecEvolutionPage could not get its dependencies.");
-        }
-    });
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#comparison-tab")) {
+    		conDecComparison.initView();
+			isOnceClicked = true;
+		}
+	});
+});
 </script>

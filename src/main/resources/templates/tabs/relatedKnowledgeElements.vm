@@ -22,18 +22,15 @@
     </tbody>
 </table>
 <script>
-/* Adds the on click listener on the menu item */
+/* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-	var menuItem = document.getElementById("menu-item-related-knowledge");
-	if (menuItem === null) {
-		return;
-	}
-	menuItem.onclick = function() {
-		if (!isOnceClicked) {
-			consistencyTabsModule.loadData();
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#related-knowledge-elements-tab")) {
+    		consistencyTabsModule.init();
+    		consistencyTabsModule.loadData();
 			isOnceClicked = true;
 		}
-	};
-  }); 
+	});
+});
 </script>

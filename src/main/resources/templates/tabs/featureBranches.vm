@@ -7,18 +7,14 @@
 </div>
 <div id="featureBranches-container"></div>
 <script>
-/* Adds the on click listener on the menu item */
+/* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
-	var menuItem = document.getElementById("menu-item-feature-branches");
-	if (menuItem === null) {
-		return;
-	}
-	menuItem.onclick = function() {
-		if (!isOnceClicked) {
-			getBranchesDiff();
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#feature-branches-tab")) {
+    		getBranchesDiff();
 			isOnceClicked = true;
 		}
-	};
-  }); 
+	});
+});
 </script>

@@ -11,7 +11,7 @@
 	let decisionTableData = [];
 	let currentIssue;
 	
-	ConDecDecisionTable.prototype.init = function () {		
+	ConDecDecisionTable.prototype.initView = function () {		
 		this.loadDecisionProblems();
 		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
 			conDecDecisionTable.loadDecisionProblems();
@@ -36,7 +36,7 @@
 	}
 	
  	/*
-	 * external references: none, called in init function
+	 * external references: none, called in initView function
 	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function () {
 		console.log("conDecDecisionTable buildDecisionTable");
