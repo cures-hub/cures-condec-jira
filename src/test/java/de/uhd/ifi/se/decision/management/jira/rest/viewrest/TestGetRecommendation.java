@@ -80,4 +80,19 @@ public class TestGetRecommendation extends TestSetUp {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, "TEST").getStatus());
 	}
+
+	@Test
+	public void testGetRecommendationEvaluationInvalidProject() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(request, "", validKeyword, "TEST").getStatus());
+	}
+
+	@Test
+	public void testGetRecommendationEvaluationRequestNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(null, projectKey, validKeyword, "TEST").getStatus());
+	}
+
+	@Test
+	public void testGetRecommendationEvaluationBlankKeyword() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(null, projectKey, "", "TEST").getStatus());
+	}
 }

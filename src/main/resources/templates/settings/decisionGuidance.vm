@@ -2,40 +2,42 @@
 
 <h2>Configure Knowledge Sources</h2>
 <div class="settings-divider">
-    <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
-       id="open-rdf-source-dialog"><span
-        class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
-    </a>
-    <div id="create-knowledgesource-expander" class="aui-expander-content">
-        <div class="field-group">
-            <label for="create-name-knowledgesource">Name*</label>
-            <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource">
-            <div class="description">Name your knowledge source.</div>
-        </div>
-        <div class="field-group">
-            <label for="create-uri-knowledgesource">RDF-Service</label>
-            <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
-                   placeholder="http://dbpedia.org/sparql">
-            <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
-        </div>
-        <div class="field-group">
-            <label for="create-query-knowledgesource">SPARQL-Query</label>
-            <textarea id="create-query-knowledgesource"
-                      placeholder="SPARQL-Query" class="textarea
+    <div>
+        <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
+        ><span
+            class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
+        </a>
+        <div id="create-knowledgesource-expander" class="aui-expander-content">
+            <div class="field-group">
+                <label for="create-name-knowledgesource">Name*</label>
+                <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource">
+                <div class="description">Name your knowledge source.</div>
+            </div>
+            <div class="field-group">
+                <label for="create-uri-knowledgesource">RDF-Service</label>
+                <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
+                       placeholder="http://dbpedia.org/sparql">
+                <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
+            </div>
+            <div class="field-group">
+                <label for="create-query-knowledgesource">SPARQL-Query</label>
+                <textarea id="create-query-knowledgesource"
+                          placeholder="SPARQL-Query" class="textarea
                           large-field"></textarea>
-            <div class="description">Enter a SPARQL-Query.</div>
-        </div>
-        <div class="field-group">
-            <label for="create-param-knowledgesource">Timeout</label>
-            <input type="number" min="1" value="10000" id="create-param-knowledgesource"
-                   class="text short-field"
-                   name="param-knowledgesource">
-            <div class="description">Enter the timeout in milliseconds.</div>
-        </div>
-        <div class="field-group">
-            <button class="aui-button-primary aui-button" id="create-rdf-source">
-                Create
-            </button>
+                <div class="description">Enter a SPARQL-Query.</div>
+            </div>
+            <div class="field-group">
+                <label for="create-param-knowledgesource">Timeout</label>
+                <input type="number" min="1" value="10000" id="create-param-knowledgesource"
+                       class="text short-field"
+                       name="param-knowledgesource">
+                <div class="description">Enter the timeout in milliseconds.</div>
+            </div>
+            <div class="field-group">
+                <button class="aui-button-primary aui-button" id="create-rdf-source">
+                    Create
+                </button>
+            </div>
         </div>
     </div>
 
@@ -240,6 +242,7 @@
          });
 
     });
+
 
 
 
