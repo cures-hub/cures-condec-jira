@@ -1,65 +1,65 @@
 <h2>Evaluation of Knowledge sources</h2>
 
-
-<div class="field-group">
-    <label for="evaluation-keywords">Keywords</label>
-    <input id="evaluation-keywords" class="text medium-field" placeholder="e.g. Databases"/>
-    <div class="description">Enter some keywords.
+<div class="settings-divider">
+    <div class="field-group">
+        <label for="evaluation-keywords">Keywords</label>
+        <input id="evaluation-keywords" class="text medium-field" placeholder="e.g. Databases"/>
+        <div class="description">Enter some keywords.
+        </div>
     </div>
-</div>
-<div class="field-group">
-    <!-- Trigger -->
+    <div class="field-group">
+        <!-- Trigger -->
 
 
-    <label for="knowledgesource-evaluation-dropdown">Type of Source</label>
-    <!-- Dropdown -->
-    <div style="display:flex; align-items:center; gap:12px">
-        <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
-           aria-haspopup="true"
-           class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
+        <label for="knowledgesource-evaluation-dropdown">Type of Source</label>
+        <!-- Dropdown -->
+        <div style="display:flex; align-items:center; gap:12px">
+            <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
+               aria-haspopup="true"
+               class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
 
-        <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
-            <div class="aui-dropdown2-section">
-                <div class="aui-dropdown2-heading">
-                    <strong>RDF Sources</strong>
+            <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
+                <div class="aui-dropdown2-section">
+                    <div class="aui-dropdown2-heading">
+                        <strong>RDF Sources</strong>
+                    </div>
+                    #foreach ($rdfSource in $rdfSources)
+                    <aui-item-checkbox interactive>$rdfSource.getName()
+                    </aui-item-checkbox>
+                    #end
                 </div>
-                #foreach ($rdfSource in $rdfSources)
-                <aui-item-checkbox interactive>$rdfSource.getName()
-                </aui-item-checkbox>
-                #end
-            </div>
-            <div class="aui-dropdown2-section">
-                <div class="aui-dropdown2-heading">
-                    <strong>Project Sources</strong>
+                <div class="aui-dropdown2-section">
+                    <div class="aui-dropdown2-heading">
+                        <strong>Project Sources</strong>
+                    </div>
+                    #foreach($projectSource in $projectSources)
+                    <aui-item-checkbox interactive>$projectSource.getName()
+                    </aui-item-checkbox>
+                    #end
                 </div>
-                #foreach($projectSource in $projectSources)
-                <aui-item-checkbox interactive>$projectSource.getName()
-                </aui-item-checkbox>
-                #end
-            </div>
-        </aui-dropdown-menu>
-        <input type="button" class="aui-button" id="evaluation-knowledgesource-button" value="Evaluate"/>
-        <aui-spinner size="small" id="loading-spinner-recommendation"
-                     style="margin:0 auto; display:none; "></aui-spinner>
-    </div>
-    <div class="description">
-        Evaluates the selected knowledge source. <br/>
+            </aui-dropdown-menu>
+            <input type="button" class="aui-button" id="evaluation-knowledgesource-button" value="Evaluate"/>
+            <aui-spinner size="small" id="loading-spinner-recommendation"
+                         style="margin:0 auto; display:none; "></aui-spinner>
+        </div>
+        <div class="description">
+            Evaluates the selected knowledge source. <br/>
+        </div>
+
     </div>
 
+    <table id="evaluation-results-table" class="aui">
+        <thead>
+        <tr>
+            <th>Algorithm</th>
+            <th>Knowledge Source</th>
+            <th>Results</th>
+            <th>Used Words</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
-
-<table id="evaluation-results-table" class="aui">
-    <thead>
-    <tr>
-        <th>Algorithm</th>
-        <th>Knowledge Source</th>
-        <th>Results</th>
-        <th>Used Words</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-
 
 <script>
 
@@ -101,6 +101,7 @@
 
 
     });
+
 
 
 

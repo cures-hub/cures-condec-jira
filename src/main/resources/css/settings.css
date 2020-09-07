@@ -1,7 +1,11 @@
 .settings-divider {
-    border-bottom: 1px solid #dfe1e6;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    border: 1px solid #dfe1e6;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 16px;
+    margin-top: 16px;
 }
 
 .settings-border {
