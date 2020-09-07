@@ -61,8 +61,9 @@ public class RDFSource implements KnowledgeSource {
 	 * @return
 	 */
 	protected ResultSet queryDatabase(String queryString, String service, Pair<String, String>... params) {
-		Query query = QueryFactory.create(queryString);
 		try {
+			Query query = QueryFactory.create(queryString);
+
 			// Remote execution.
 			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(service, query);
 			// Add Paramaters
@@ -76,6 +77,8 @@ public class RDFSource implements KnowledgeSource {
 			return resultSet;
 		} catch (QueryBuildException e) {
 			e.printStackTrace();
+		} catch (QueryParseException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -83,7 +86,7 @@ public class RDFSource implements KnowledgeSource {
 	@Override
 	public Recommendation getResults(String inputs) {
 
-		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");;
+		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
 
 
 		ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));

@@ -17,8 +17,13 @@ public class SimpleRecommender extends BaseRecommender {
 		this.keywords = Arrays.asList(keywordsString.split(" "));
 	}
 
+	public SimpleRecommender(String keywordsString, List<KnowledgeSource> knowledgeSources) {
+		this(keywordsString);
+		this.addKnowledgeSource(knowledgeSources);
+	}
+
 	@Override
-	public List<Recommendation> getResults() {
+	public List<Recommendation> getRecommendation() {
 		for(String keyword : this.keywords) {
 			if (this.knowledgeSources != null) {
 				for (KnowledgeSource knowledgeSource : this.knowledgeSources) {

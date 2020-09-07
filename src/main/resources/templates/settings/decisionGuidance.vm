@@ -40,7 +40,8 @@
         <div class="field-group">
             <label for="create-rdf-source">Create a new RDF Source</label>
             <button class="aui-button-primary aui-button" id="create-rdf-source" label="ConDec Activated?">
-                <span class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
+                <span
+                    class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
                 Create
             </button>
             <div class="description">Creates a new rdf source for this project.
@@ -86,9 +87,28 @@
 <div class="source-wrapper-existing aui-group-split">
     #foreach ($rdfSource in $rdfSources)
 
-    <div class="aui-item settings-divider">
-        <h3>$rdfSource.getName()</h3>
+    <div style="position:relative; padding:6px;" class="settings-border">
+        <h3>$rdfSource.getName()
+        </h3>
+        <div class="field-group">
+            <label>$rdfSource.getName() activated?</label>
+            <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()"
+                        #if ($rdfSource.isActivated())
+                        checked
+                        #end
+                        label="$rdfSource.getName() activated?"></aui-toggle>
+            <div class="description">Enables or disables the knowledge source for alternative recommendations
+                for this
+                project.
+            </div>
+        </div>
 
+        <a href="#" style="position: absolute; right: 16px; top:16px;"  class="aui-expander-trigger" aria-controls="$rdfSource.getName()"><span
+            class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
+        </a>
+    </div>
+
+    <div id="$rdfSource.getName()"  class="aui-item settings-border aui-expander-content">
         <!--RDF SOURCE FORM -->
         <div class="field-group">
             <label>Name*</label>
@@ -117,18 +137,6 @@
             <input class="param-knowledgesource text short-field" name="param-knowledgesource"
                    value="$rdfSource.getTimeout()"></input>
             <div class="description">Enter the timeout in milliseconds.
-            </div>
-        </div>
-        <div class="field-group">
-            <label>$rdfSource.getName() activated?</label>
-            <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()"
-                        #if ($rdfSource.isActivated())
-                        checked
-                        #end
-                        label="$rdfSource.getName() activated?"></aui-toggle>
-            <div class="description">Enables or disables the knowledge source for alternative recommendations
-                for this
-                project.
             </div>
         </div>
         <div class="field-group">
@@ -164,31 +172,15 @@
 </div>
 
 
-<h2>Evaluation of Knowledge sources</h2>
-
-<div class="field-group">
-    <label for="select-knowledgeSources">Type of Source</label>
-    <select id="select-knowledgeSources" name="select-knowledgeSources" class="select medium-field">
-        #foreach ($rdfSource in $rdfSources)
-        <option value="$rdfSource">
-            $rdfSource.getName()
-        </option>
-        #end
-    </select>
-    <input type="button" class="aui-button" id="trainClassifier-button" value="Evaluate"/>
-    <div class="description">
-        Evaluates the selected knowledge source. <br/>
-    </div>
-    <div class="aui-progress-indicator">
-        <span id="evaluate-knowledgesource-progress"></span>
-    </div>
-</div>
-
+#parse("templates/settings/fragments/decisionguidance/decisionGuidanceEvaluation.vm")
 
 <script>
 
-
     $(document).ready(function() {
+
+        $(".aui-expander-trigger").click(function(event) {
+            event.preventDefault();
+        });
 
         $("#save-max-recommendation-btn").click((event) => {
            event.preventDefault();
@@ -270,6 +262,10 @@
 
 
     });
+
+
+
+
 
 
 

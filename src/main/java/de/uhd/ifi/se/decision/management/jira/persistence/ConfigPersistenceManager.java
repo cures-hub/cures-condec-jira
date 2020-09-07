@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -426,6 +427,16 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return projectSources;
+	}
+
+	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+
+		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
+		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
+		//New KnowledgeSources could be added here.
+
+		return knowledgeSources;
 	}
 
 	/* **************************************/
