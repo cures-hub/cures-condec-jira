@@ -70,4 +70,16 @@ public class TestSimpleRecommender extends TestSetUp {
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
 
+
+	@Test
+	public void testRecommenderEvaluation() {
+		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+		knowledgeSources.add(projectSource);
+		knowledgeSources.add(rdfSource);
+		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
+		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
+		assertEquals(1, simpleRecommender.evaluate().size());
+	}
+
 }

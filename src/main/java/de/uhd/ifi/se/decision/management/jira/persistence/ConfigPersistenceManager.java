@@ -341,7 +341,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList;
+		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		if (rdfSource != null) {
@@ -364,6 +364,8 @@ public class ConfigPersistenceManager {
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
+		if(projectKey == null) return rdfSourceList;
+
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		try {
@@ -415,6 +417,8 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
+		if(projectKey == null) return projectSources;
+
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		if (currentProject != null) {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
