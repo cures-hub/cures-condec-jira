@@ -1,12 +1,43 @@
 <h2>Decision Guidance</h2>
 
 <h2>Configure Knowledge Sources</h2>
-<div class="aui-group-split settings-divider">
-    <button class="aui-button-primary aui-button" id="open-rdf-source-dialog">
-                <span
-                    class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
-        Create
-    </button>
+<div class="settings-divider">
+    <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
+       id="open-rdf-source-dialog"><span
+        class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
+    </a>
+    <div id="create-knowledgesource-expander" class="aui-expander-content">
+        <div class="field-group">
+            <label for="create-name-knowledgesource">Name*</label>
+            <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource">
+            <div class="description">Name your knowledge source.</div>
+        </div>
+        <div class="field-group">
+            <label for="create-uri-knowledgesource">RDF-Service</label>
+            <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
+                   placeholder="http://dbpedia.org/sparql">
+            <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
+        </div>
+        <div class="field-group">
+            <label for="create-query-knowledgesource">SPARQL-Query</label>
+            <textarea id="create-query-knowledgesource"
+                      placeholder="SPARQL-Query" class="textarea
+                          large-field"></textarea>
+            <div class="description">Enter a SPARQL-Query.</div>
+        </div>
+        <div class="field-group">
+            <label for="create-param-knowledgesource">Timeout</label>
+            <input type="number" min="1" value="10000" id="create-param-knowledgesource"
+                   class="text short-field"
+                   name="param-knowledgesource">
+            <div class="description">Enter the timeout in milliseconds.</div>
+        </div>
+        <div class="field-group">
+            <button class="aui-button-primary aui-button" id="create-rdf-source">
+                Create
+            </button>
+        </div>
+    </div>
 
     <h4>Configure RDF Knowledge Sources</h4>
 
@@ -64,9 +95,9 @@
             </div>
         </div>
         <div class="field-group">
-            <label for="create-rdf-source">Delete?</label>
-            <button class="aui-button-primary aui-button delete-knowledgesource"
-                    name="$rdfSource.getName()" label="Delete Knowledge Source?">
+            <label for="delete-rdf-source">Delete?</label>
+            <button id="delete-rdf-source" class="aui-button-primary aui-button delete-knowledgesource"
+                    name="$rdfSource.getName()">
                 <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span>
                 Delete
             </button>
@@ -124,7 +155,6 @@
 
 
 #parse("templates/settings/fragments/decisionguidance/decisionGuidanceEvaluation.vm")
-#parse("templates/dialogs/createRDFKnowledgeSource.vm")
 
 <script>
 
@@ -157,9 +187,6 @@
            conDecAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
         });
 
-         $("#update-rdf-source").click((event) => {
-            //TODO
-        });
 
          const activations = $(".activation-knowledgesource");
 
@@ -211,33 +238,8 @@
             })
 
          });
+
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
