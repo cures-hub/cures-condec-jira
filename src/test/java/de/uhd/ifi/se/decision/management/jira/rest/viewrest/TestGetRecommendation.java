@@ -93,6 +93,6 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationEvaluationBlankKeyword() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(null, projectKey, "", "TEST").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, "", "TEST").getStatus());
 	}
 }

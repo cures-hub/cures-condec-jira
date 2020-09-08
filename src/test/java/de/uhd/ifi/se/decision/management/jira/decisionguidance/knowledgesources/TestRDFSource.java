@@ -39,5 +39,13 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(false, source.isActivated());
 	}
 
+	@Test
+	public void testRDFqueryDataBaseExecption() {
+		RDFSource source = new RDFSource("Test");
+		source.setName("RDFSource");
+		source.setActivated(true);
+		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**" ,"TEST")); //expcet QueryParseException to be catched
+	}
+
 
 }
