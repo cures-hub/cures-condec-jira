@@ -13,12 +13,8 @@
     justify-content: center;
 }
 
-.matrix-container {
-	overflow: auto;
-    resize: both;
-}
-
 #matrix {
+	display: block;
     overflow: auto;
     resize: both;
 }
