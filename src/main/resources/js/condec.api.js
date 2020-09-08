@@ -1037,7 +1037,7 @@
 		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey , rdfSource, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledgesource is updated " );
+				showFlag("success", "The Knowledgesource is successfully created. <b>Please refresh the page.</b> " );
 			}
 		});
 	};
