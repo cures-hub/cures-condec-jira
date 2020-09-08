@@ -1,7 +1,7 @@
 <table id="release-notes-table" class="aui aui-table-sortable">
 	<thead>
     <tr>
-        <th class="aui-table-column-issue-key" id="basic-id">#Id</th>
+        <th class="aui-table-column-issue-key" id="basic-id">ID</th>
         <th id="basic-title">Title</th>
         <th id="basic-title">Start-Date</th>
         <th id="basic-title">End-Date</th>

@@ -161,8 +161,10 @@
 			Provides the JavaScript files for the separate release note page of this
 			plug-in.
 		</description>
-		<resource type="download" name="condec.release.note.page.js"
-			location="/js/releasenotes/condec.release.note.page.js" />
+		<resource type="download" name="condec.release.notes.page.js"
+			location="/js/releasenotes/condec.release.notes.page.js" />
+		<resource type="download" name="condec.release.notes.api.js"
+			location="/js/releasenotes/condec.release.notes.api.js" />
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />

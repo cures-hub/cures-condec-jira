@@ -31,7 +31,7 @@
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {
 		var query=$("#searchReleaseNotesInput").val();
 		emptyTable();
-		conDecAPI.getAllReleaseNotes(query).then(function(response){
+		conDecReleaseNotesAPI.getAllReleaseNotes(query).then(function(response){
 			if(response && response.length){
 				fillTable(response)
 			}else{
@@ -91,7 +91,7 @@
 		tableRow +="<td>"+releaseNote.title+"</td>";
 		tableRow +="<td>"+releaseNote.startDate+"</td>";
 		tableRow +="<td>"+releaseNote.endDate+"</td>";
-		tableRow +="<td><button class='aui-button' id='openEditReleaseNoteDialogButton_"+releaseNote.id+"' onclick='displayReleaseNote("+releaseNote.id+")'>Display</button></td>";
+		tableRow +="<td><button class='aui-button' id='openEditReleaseNoteDialogButton_"+releaseNote.id+"' onclick='conDecReleaseNotePage.displayReleaseNote("+releaseNote.id+")'>Display</button></td>";
 		tableRow +="</tr>";
 		return tableRow
 	}

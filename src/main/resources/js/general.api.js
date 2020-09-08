@@ -19,7 +19,9 @@
             if (status === 200) {
                 callback(null, xhr.response);
             } else {
-                conDecAPI.showFlag("error", xhr.response.error, status);
+            	if (xhr !== null && xhr.response !== null) {
+            		conDecAPI.showFlag("error", xhr.response.error, status);
+            	}                
                 callback(status);
             }
         }
@@ -112,6 +114,5 @@
         })
     };
 
-// export GeneralAPI
     global.generalApi = new GeneralAPI();
 })(window);

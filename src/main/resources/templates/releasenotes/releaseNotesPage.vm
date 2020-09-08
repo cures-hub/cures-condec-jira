@@ -6,7 +6,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
     <div class="aui-page-panel-inner">
     	<section class="aui-page-panel-content">
     		<h1>Release Notes</h1>
-        	<p>This page enables to create, view and manage release notes with explicit decision knowledge (=rationale).</p>
+        	<p>This page enables to create, view, and manage release notes with explicit decision knowledge (=rationale).</p>
 	        <form class="aui">
 	        	<input class="text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
 	        	<button class="aui-button" id="searchReleasaeNotesButton" onclick="conDecReleaseNotePage.getReleaseNotes()">
