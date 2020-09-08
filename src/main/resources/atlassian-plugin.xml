@@ -218,21 +218,22 @@
 	</web-panel>
 
 	<!-- Release Notes Page -->
-	<web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+	<web-item name="Link to the Release Notes Page in Side Bar" key="sidebar-link-release-notes"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
 		<description>Provides the "Release Notes" link in the project's navigation sidebar.
 		</description>
-		<label key="condec.sidebar.link.label.release.note" />
+		<label key="condec.sidebar.link.label.release.notes" />
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
-		<link>/projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+		<link>/projects/$pathEncodedProjectKey?selectedItem=release-notes-page</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-panel name="Decision Knowledge Page" key="release-note-page"
-		location="release-note-page" weight="1000">
+	<web-panel name="Release Notes Page" key="release-notes-page"
+		location="release-notes-page" weight="1000">
 		<description>
 			Provides the plug-in page that developers use to manage release notes.
 		</description>
-		<resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+		<resource name="view" type="velocity"
+			location="templates/releasenotes/releaseNotesPage.vm" />
 	</web-panel>
 
 	<!-- REST API -->
