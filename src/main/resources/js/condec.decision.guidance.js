@@ -2,9 +2,6 @@
 
 	let ConDecDecisionGuidance = function ConDecDecisionGuidance() {};
 
-	// TODO Please try to put as much HTML code as possible into velocity template
-	const acceptButton = "<button class='aui-button-primary aui-button'>Accept</button>";
-	const rejectButton = "<button class='aui-button'>Reject</button>";
 
 	/*
 	 * external usage: condec.decision.table
@@ -26,9 +23,23 @@
 					results.forEach((recommendation) => {
 						recommendation.recommendations.forEach(alternative => {
 							let url = "";
+							let tableRow = "";
+
 							if (alternative.url) { url = alternative.url }
 							counter += 1;
-							table.append("<tr><td><a href='" + url + "'>" + alternative.summary + "</a></td><td>" + recommendation.knowledgeSourceName +"</td><td>100%</<td><td>" + acceptButton + rejectButton + "</td></tr>")
+							tableRow += "<tr>";
+							tableRow += "<td><a class='alternative-summary' href='" + url + "'>" + alternative.summary + "</a></td>";
+							tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
+							tableRow += "<td>100%</td>";
+							tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
+							tableRow += "</tr>";
+							table.append(tableRow);
+
+							$(" #row_" + counter).click(function() {
+								const currentIssue = conDecDecisionTable.getCurrentIssue();
+                            	conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  alternative.summary, alternative.description);
+                            });
+
 						});
 					});
 					conDecAPI.showFlag("success", "Results: " +  counter);
@@ -37,7 +48,10 @@
 				spinner.hide();
 			});
 		});
+
 	};
+
+
 	
 	// export ConDecDecisionGuidance
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();

@@ -25,6 +25,10 @@
 		//conDecObservable.subscribe(this);
 		
 	};
+
+	ConDecDecisionTable.prototype.getCurrentIssue = function() {
+		return currentIssue;
+	};
 	
 	function addOnClickEventToDecisionTableButtons () {
 		document.getElementById("btnAddCriterion").addEventListener("click", function (event) {
