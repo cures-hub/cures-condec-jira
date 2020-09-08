@@ -10,34 +10,20 @@
  * releaseNotesPage.vm
  */
 (function(global) {
-	/* private vars */
-	var conDecObservable = null;
-	var conDecAPI = null;
-	var conDecDialog = null;
 
 	var ConDecReleaseNotePage = function ConDecReleaseNotePage() {
 	};
 
-	ConDecReleaseNotePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog) {
-		console.log("conDecReleaseNotePage init");
-
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
-				&& isConDecDialogType(_conDecDialog) ) {
-
-			conDecAPI = _conDecAPI;
-			conDecObservable = _conDecObservable;
-			conDecDialog = _conDecDialog;
-
-			// subscribe to event on table
-			document.getElementById("release-notes-table").addEventListener("updateReleaseNoteTable",function(event){
-				this.getReleaseNotes();
-			}.bind(this));
-			return true;
-		}
-		return false;
+	ConDecReleaseNotePage.prototype.initView = function () {
+		console.log("conDecReleaseNotePage initView");
+		
+		// subscribe to event on table
+		document.getElementById("release-notes-table").addEventListener("updateReleaseNoteTable", function(event) {
+			this.getReleaseNotes();
+		}.bind(this));
 	};
 
-	ConDecReleaseNotePage.prototype.getReleaseNotes = function() {
+	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {
 		var query=$("#searchReleaseNotesInput").val();
 		emptyTable();
 		conDecAPI.getAllReleaseNotes(query).then(function(response){
@@ -51,15 +37,13 @@
 		}).finally(function () {
 			showLoadingIndicator(false);
 		})
-
 	};
 
-
-	ConDecReleaseNotePage.prototype.addReleaseNote = function() {
+	ConDecReleaseNotePage.prototype.addReleaseNote = function () {
 		conDecDialog.showCreateReleaseNoteDialog();
 	};
 
-	ConDecReleaseNotePage.prototype.displayReleaseNote = function(id) {
+	ConDecReleaseNotePage.prototype.displayReleaseNote = function (id) {
 		conDecDialog.showEditReleaseNoteDialog(id);
 	};
 
@@ -72,6 +56,7 @@
 		})
 		}
 	}
+	
 	function throwAlert(type,title, message) {
 		AJS.flag({
 			type: type,
@@ -80,11 +65,13 @@
 			body: message
 		});
 	}
+	
 	function emptyTable(){
 		showLoadingIndicator(true);
 		var tBody=$("#release-notes-table-body");
 		tBody.empty();
 	}
+	
 	function showLoadingIndicator(display){
 		if(display){
 			$("#release-note-table-loader").css("display","block")
@@ -92,6 +79,7 @@
 			$("#release-note-table-loader").css("display","none");
 		}
 	}
+	
 	function createTableRow(releaseNote){
 		var tableRow="<tr>";
 		tableRow +="<td>"+releaseNote.id+"</td>";
@@ -103,34 +91,5 @@
 		return tableRow
 	}
 
-	/*
-	 * Init Helpers
-	 */
-	function isConDecAPIType(conDecAPI) {
-		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecObservableType(conDecObservable) {
-		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
-			return false;
-		}
-		return true;
-	}
-
-	function isConDecDialogType(conDecDialog) {
-		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid conDecDialog object received.");
-			return false;
-		}
-		return true;
-	}
-
-
-	// export ConDecReleaseNotePage
 	global.conDecReleaseNotePage = new ConDecReleaseNotePage();
 })(window);

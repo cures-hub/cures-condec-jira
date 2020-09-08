@@ -4,15 +4,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 <div class="aui-page-panel">
     <div class="aui-page-panel-inner">
         <h1>Release Notes</h1>
-
-
-        <input class="aui text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
-        <button class="aui-button" id="searchReleasaeNotesButton" onclick="searchReleaseNotes()"><span
-                class="aui-icon aui-icon-small aui-iconfont-search">Search</button>
-
-        <button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="addReleaseNote()" resolved=""><span
-                class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Notes
-        </button>
+        <form class="aui">
+        	<input class="text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
+        	<button class="aui-button" id="searchReleasaeNotesButton" onclick="conDecReleaseNotePage.getReleaseNotes()">
+        		<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Search
+        	</button>
+        	<button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="conDecReleaseNotePage.addReleaseNote()" resolved="">
+        		<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Notes
+        	</button>
+        </form>
         <table id="release-notes-table" class="aui aui-table-sortable">
             <thead>
             <tr>
@@ -27,38 +27,16 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
             </tbody>
         </table>
         <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
-
     </div>
 </div>
-
 
 #parse("templates/dialogs/createReleaseNoteDialog.vm")
 #parse("templates/dialogs/editReleaseNoteDialog.vm")
 
 <script>
-    /*
-     * Instantiate the ConDecKnowledgePage object controlling this view:
-     */
-    $(document).ready(function () {
-        console.log("conDecReleaseNotePage working")
-        conDecAPI.checkIfProjectKeyIsValid();
-        if (window.conDecReleaseNotePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer)) {
-            window.conDecReleaseNotePage.getReleaseNotes();
-
-        } else {
-            console.error("conDecReleaseNotePage could not get its dependencies.");
-        }
-
-    });
-
-    function addReleaseNote() {
-        window.conDecReleaseNotePage.addReleaseNote();
-    }
-
-    function displayReleaseNote(id) {
-        window.conDecReleaseNotePage.displayReleaseNote(id);
-    }
-    function searchReleaseNotes(){
-    	window.conDecReleaseNotePage.getReleaseNotes()
-    }
+$(document).ready(function () {
+    conDecAPI.checkIfProjectKeyIsValid();
+    conDecReleaseNotePage.initView();
+    conDecReleaseNotePage.getReleaseNotes();
+});
 </script>

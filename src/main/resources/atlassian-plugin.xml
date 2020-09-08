@@ -161,7 +161,7 @@
 			plug-in.
 		</description>
 		<resource type="download" name="condec.release.note.page.js"
-			location="/js/condec.release.note.page.js" />
+			location="/js/releasenotes/condec.release.note.page.js" />
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />
