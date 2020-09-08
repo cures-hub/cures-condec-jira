@@ -716,7 +716,7 @@
 	};
 
 	/*
-	 * external references: condec.decision.table
+	 * external references: condec.decision.guidance
 	 */
 	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" +  projectKey + "&keyword=" + keyword,
@@ -724,6 +724,16 @@
 					callback(results, error);
 				});
 	};
+
+		/*
+    	 * external references: condec.decision guidance
+    	 */
+    	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, knowledgeSources, callback) {
+    		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" +  projectKey + "&keyword=" + keyword + "&knowledgeSource="+  knowledgeSources,
+    				function (error, results) {
+    					callback(results, error);
+    				});
+    	};
 
 	/*
 	 * external reference: rationaleModelSettings.vm
@@ -1027,7 +1037,7 @@
 		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey , rdfSource, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledgesource is updated " );
+				showFlag("success", "The Knowledgesource is successfully created. <b>Please refresh the page.</b> " );
 			}
 		});
 	};

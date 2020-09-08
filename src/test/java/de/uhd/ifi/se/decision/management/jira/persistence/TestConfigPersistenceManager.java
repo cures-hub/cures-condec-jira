@@ -492,6 +492,26 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testGetAllKnowledgeSources() {
+		assertEquals(1, ConfigPersistenceManager.getAllKnowledgeSources("TEST").size());
+	}
+
+	@Test
+	public void testGetAllKnowledgeSourcesInvalidProject() {
+		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("PROJECT DOES NOT EXIST").size());
+	}
+
+	@Test
+	public void testGetAllKnowledgeSourcesEmptyProject() {
+		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("").size());
+	}
+
+	@Test
+	public void testGetAllKnowledgeSourcesNullProject() {
+		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources(null).size());
+	}
+
+	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);

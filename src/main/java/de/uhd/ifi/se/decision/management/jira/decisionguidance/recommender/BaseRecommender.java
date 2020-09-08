@@ -10,19 +10,40 @@ public abstract class BaseRecommender {
 
 	List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 
-	protected void addKnowledgeSource(KnowledgeSource knowledgeSource) {
+	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);
+		return this;
 	}
 
-	public void addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
+	public BaseRecommender addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
 		this.knowledgeSources.addAll(knowledgeSources);
+		return this;
 	}
 
 	public List<KnowledgeSource> getKnowledgeSources() {
 		return this.knowledgeSources;
 	}
 
-	abstract public List<Recommendation> getResults();
+	abstract public List<Recommendation> getRecommendation();
 
+	/**
+	 * Checks if the knowledge source exists and activates it
+	 * @param knowledgeSources
+	 * @param knowledgeSourceName
+	 * @return
+	 */
+	public BaseRecommender addKnowledgeSourceForEvaluation(List<? extends KnowledgeSource> knowledgeSources, String knowledgeSourceName) {
+		for (KnowledgeSource knowledgeSource : knowledgeSources) {
+			if (knowledgeSource.getName().equals(knowledgeSourceName)) {
+				knowledgeSource.setActivated(true);
+				this.addKnowledgeSource(knowledgeSource);
+			}
+		}
+		return this;
+	}
+
+	 public List<Recommendation> evaluate() {
+		return this.getRecommendation();
+	 }
 
 }

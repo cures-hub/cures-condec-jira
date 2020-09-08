@@ -1,94 +1,71 @@
 <h2>Decision Guidance</h2>
 
-<h2>Create Knowledge Sources</h2>
-<div id="source-wrapper" class="settings-divider aui-group">
-    <!-- RDF Source -->
-    <div class="aui-item">
-        <div class="description">
-            Create a RDF Source
-        </div>
-        <div class="field-group">
-            <label>Name*</label>
-            <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource"
-                   value=""></input>
-            <div class="description">Name your knowledge source.
+<h2>Configure Knowledge Sources</h2>
+<div class="settings-divider">
+    <div>
+        <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
+        ><span
+            class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
+        </a>
+        <div id="create-knowledgesource-expander" class="aui-expander-content">
+            <div class="field-group">
+                <label for="create-name-knowledgesource">Name*</label>
+                <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource">
+                <div class="description">Name your knowledge source.</div>
             </div>
-        </div>
-        <div class="field-group">
-            <label>RDF-Service</label>
-            <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
-                   placeholder="http://dbpedia.org/sparql" value=""></input>
-            <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.
+            <div class="field-group">
+                <label for="create-uri-knowledgesource">RDF-Service</label>
+                <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
+                       placeholder="http://dbpedia.org/sparql">
+                <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
             </div>
-        </div>
-        <div class="field-group">
-            <label>SPARQL-Query</label>
-            <textarea id="create-query-knowledgesource"
-                      placeholder="SPARQL-Query" class="textarea
+            <div class="field-group">
+                <label for="create-query-knowledgesource">SPARQL-Query</label>
+                <textarea id="create-query-knowledgesource"
+                          placeholder="SPARQL-Query" class="textarea
                           large-field"></textarea>
-            <div class="description">Enter a SPARQL-Query.
+                <div class="description">Enter a SPARQL-Query.</div>
             </div>
-        </div>
-        <div class="field-group">
-            <label>Timeout</label>
-            <input type="number" min="1" value="10000" id="create-param-knowledgesource" class="text short-field"
-                   name="param-knowledgesource"
-                   value=""></input>
-            <div class="description">Enter the timeout in milliseconds.
+            <div class="field-group">
+                <label for="create-param-knowledgesource">Timeout</label>
+                <input type="number" min="1" value="10000" id="create-param-knowledgesource"
+                       class="text short-field"
+                       name="param-knowledgesource">
+                <div class="description">Enter the timeout in milliseconds.</div>
             </div>
-        </div>
-        <div class="field-group">
-            <label for="create-rdf-source">Create a new RDF Source</label>
-            <button class="aui-button-primary aui-button" id="create-rdf-source" label="ConDec Activated?">
-                <span class="aui-icon aui-icon-small aui-iconfont-add">Insert meaningful text here for accessibility</span>
-                Create
-            </button>
-            <div class="description">Creates a new rdf source for this project.
+            <div class="field-group">
+                <button class="aui-button-primary aui-button" id="create-rdf-source">
+                    Create
+                </button>
             </div>
         </div>
     </div>
 
-    <!--Project Source -->
-    <div class="aui-item">
-        <div class="description">
-            Create a Project Source
-        </div>
-        <div class="field-group">
-            <table id="project-source-table" class="aui aui-table-list">
+    <h4>Configure RDF Knowledge Sources</h4>
 
-                <thead>
-                <tr>
-                    <th>Project</th>
-                    <th>Activate?</th>
-                </tr>
-                </thead>
-                <tbody>
-                #foreach($projectSource in $projectSources)
-                <tr>
-                    <td>$projectSource.getName()</td>
-                    <td>
-                        <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()"
-                                    #if ($projectSource.isActivated())
-                                    checked
-                                    #end
-                                    label="$projectSource.getName() activated?"></aui-toggle>
-                    </td>
-                </tr>
-                #end
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-
-<h2>Configure RDF Sources</h2>
-<div class="source-wrapper-existing aui-group-split">
     #foreach ($rdfSource in $rdfSources)
 
-    <div class="aui-item settings-divider">
-        <h3>$rdfSource.getName()</h3>
+    <div style="position:relative; padding:6px;" class="settings-border">
+        <div class="field-group">
+            <label>$rdfSource.getName() activated?</label>
+            <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()"
+                        #if ($rdfSource.isActivated())
+                        checked
+                        #end
+                        label="$rdfSource.getName() activated?"></aui-toggle>
+            <div class="description">Enables or disables the knowledge source for alternative recommendations
+                for this
+                project.
+            </div>
+        </div>
 
+        <a href="#" style="position: absolute; right: 16px; top:16px;" class="aui-expander-trigger"
+           aria-controls="$rdfSource.getName()"><span
+            class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
+        </a>
+    </div>
+
+    <div id="$rdfSource.getName()" class="aui-item settings-border aui-expander-content">
         <!--RDF SOURCE FORM -->
         <div class="field-group">
             <label>Name*</label>
@@ -120,21 +97,9 @@
             </div>
         </div>
         <div class="field-group">
-            <label>$rdfSource.getName() activated?</label>
-            <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()"
-                        #if ($rdfSource.isActivated())
-                        checked
-                        #end
-                        label="$rdfSource.getName() activated?"></aui-toggle>
-            <div class="description">Enables or disables the knowledge source for alternative recommendations
-                for this
-                project.
-            </div>
-        </div>
-        <div class="field-group">
-            <label for="create-rdf-source">Delete?</label>
-            <button class="aui-button-primary aui-button delete-knowledgesource"
-                    name="$rdfSource.getName()" label="Delete Knowledge Source?">
+            <label for="delete-rdf-source">Delete?</label>
+            <button id="delete-rdf-source" class="aui-button-primary aui-button delete-knowledgesource"
+                    name="$rdfSource.getName()">
                 <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span>
                 Delete
             </button>
@@ -143,6 +108,33 @@
         </div>
     </div>
     #end
+
+    <h4>Configure Project Knowledge Sources</h4>
+    <table id="project-source-table" class="aui aui-table-list">
+
+        <thead>
+        <tr>
+            <th>Project</th>
+            <th>Activate?</th>
+        </tr>
+        </thead>
+        <tbody>
+        #foreach($projectSource in $projectSources)
+        <tr>
+            <td>$projectSource.getName()</td>
+            <td>
+                <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()"
+                            #if ($projectSource.isActivated())
+                            checked
+                            #end
+                            label="$projectSource.getName() activated?"></aui-toggle>
+            </td>
+        </tr>
+        #end
+        </tbody>
+    </table>
+
+
 </div>
 
 <div class="field-group">
@@ -164,31 +156,15 @@
 </div>
 
 
-<h2>Evaluation of Knowledge sources</h2>
-
-<div class="field-group">
-    <label for="select-knowledgeSources">Type of Source</label>
-    <select id="select-knowledgeSources" name="select-knowledgeSources" class="select medium-field">
-        #foreach ($rdfSource in $rdfSources)
-        <option value="$rdfSource">
-            $rdfSource.getName()
-        </option>
-        #end
-    </select>
-    <input type="button" class="aui-button" id="trainClassifier-button" value="Evaluate"/>
-    <div class="description">
-        Evaluates the selected knowledge source. <br/>
-    </div>
-    <div class="aui-progress-indicator">
-        <span id="evaluate-knowledgesource-progress"></span>
-    </div>
-</div>
-
+#parse("templates/settings/fragments/decisionguidance/decisionGuidanceEvaluation.vm")
 
 <script>
 
-
     $(document).ready(function() {
+
+        $(".aui-expander-trigger").click(function(event) {
+            event.preventDefault();
+        });
 
         $("#save-max-recommendation-btn").click((event) => {
            event.preventDefault();
@@ -213,9 +189,6 @@
            conDecAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
         });
 
-         $("#update-rdf-source").click((event) => {
-            //TODO
-        });
 
          const activations = $(".activation-knowledgesource");
 
@@ -268,25 +241,7 @@
 
          });
 
-
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -340,7 +341,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList;
+		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		if (rdfSource != null) {
@@ -363,6 +364,8 @@ public class ConfigPersistenceManager {
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
+		if(projectKey == null) return rdfSourceList;
+
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		try {
@@ -414,6 +417,8 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
+		if(projectKey == null) return projectSources;
+
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		if (currentProject != null) {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
@@ -426,6 +431,16 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return projectSources;
+	}
+
+	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+
+		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
+		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
+		//New KnowledgeSources could be added here.
+
+		return knowledgeSources;
 	}
 
 	/* **************************************/

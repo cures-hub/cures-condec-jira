@@ -34,7 +34,7 @@ public class TestSimpleRecommender extends TestSetUp {
 
 		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
-		List<Recommendation> recommendations = simpleRecommender.getResults();
+		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
 		assertEquals(2, recommendations.size());
 		assertEquals(1, recommendations.get(0).getRecommendations().size());
@@ -45,7 +45,7 @@ public class TestSimpleRecommender extends TestSetUp {
 	public void testSimpleRecommenderNoKnowledgeSources() {
 		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
 
-		List<Recommendation> recommendations = simpleRecommender.getResults();
+		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
 		assertEquals(0, recommendations.size());
 		assertEquals(0, simpleRecommender.getKnowledgeSources().size());
@@ -68,6 +68,18 @@ public class TestSimpleRecommender extends TestSetUp {
 		simpleRecommender.addKnowledgeSource(projectSource);
 		simpleRecommender.addKnowledgeSource(rdfSource);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
+	}
+
+
+	@Test
+	public void testRecommenderEvaluation() {
+		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+		knowledgeSources.add(projectSource);
+		knowledgeSources.add(rdfSource);
+		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
+		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
+		assertEquals(1, simpleRecommender.evaluate().size());
 	}
 
 }
