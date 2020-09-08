@@ -1,37 +1,29 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:release-note-page-resources")
-<div class="aui-page-panel">
+
+<div id="content" class="aui-page-panel">
     <div class="aui-page-panel-inner">
-        <h1>Release Notes</h1>
-        <form class="aui">
-        	<input class="text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
-        	<button class="aui-button" id="searchReleasaeNotesButton" onclick="conDecReleaseNotePage.getReleaseNotes()">
-        		<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Search
-        	</button>
-        	<button class="aui-button" id="openCreateReleaseNoteDialogButton" onclick="conDecReleaseNotePage.addReleaseNote()" resolved="">
-        		<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Notes
-        	</button>
-        </form>
-        <table id="release-notes-table" class="aui aui-table-sortable">
-            <thead>
-            <tr>
-                <th class="aui-table-column-issue-key" id="basic-id">#Id</th>
-                <th id="basic-title">Title</th>
-                <th id="basic-title">Start-Date</th>
-                <th id="basic-title">End-Date</th>
-                <th id="basic-content">Content</th>
-            </tr>
-            </thead>
-            <tbody id="release-notes-table-body">
-            </tbody>
-        </table>
-        <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
+    	<section class="aui-page-panel-content">
+    		<h1>Release Notes</h1>
+        	<p>This page enables to create, view and manage release notes with explicit decision knowledge (=rationale).</p>
+	        <form class="aui">
+	        	<input class="text long-field" type="text" id="searchReleaseNotesInput" name="searchReleaseNotesInput">
+	        	<button class="aui-button" id="searchReleasaeNotesButton" onclick="conDecReleaseNotePage.getReleaseNotes()">
+	        		<span class="aui-icon aui-icon-small aui-iconfont-search"></span> Search
+	        	</button>
+	        	<button class="aui-button" id="create-release-notes-button">
+	        		<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Create new Release Notes
+	        	</button>
+	        </form>
+	        #parse("templates/releasenotes/releaseNotesTable.vm")
+	        <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
+        </section>
     </div>
 </div>
 
-#parse("templates/dialogs/createReleaseNoteDialog.vm")
-#parse("templates/dialogs/editReleaseNoteDialog.vm")
+#parse("templates/releasenotes/dialogs/createReleaseNotesDialog.vm")
+#parse("templates/releasenotes/dialogs/editReleaseNotesDialog.vm")
 
 <script>
 $(document).ready(function () {

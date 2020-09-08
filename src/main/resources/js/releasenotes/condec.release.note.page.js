@@ -21,6 +21,11 @@
 		document.getElementById("release-notes-table").addEventListener("updateReleaseNoteTable", function(event) {
 			this.getReleaseNotes();
 		}.bind(this));
+		
+		document.getElementById("create-release-notes-button").addEventListener("click", function(event) {
+			event.preventDefault();
+			conDecReleaseNotePage.addReleaseNote();
+		});
 	};
 
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {

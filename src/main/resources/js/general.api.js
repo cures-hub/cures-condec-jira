@@ -44,6 +44,9 @@
     GeneralAPI.prototype.getJSONReturnPromise = function (url) {
         return new Promise(function (resolve, reject) {
             generalApi.getJSON(url, function (err, result) {
+            	if (result === null) {
+            		return;
+            	}
                 if (err === null) {
                     resolve(result);
                 } else {

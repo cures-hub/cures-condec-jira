@@ -679,7 +679,7 @@
     ConDecDialog.prototype.showCreateReleaseNoteDialog = function () {
         // HTML elements
         // set button busy before we show the dialog
-        var openingButton = document.getElementById("openCreateReleaseNoteDialogButton");
+        var openingButton = document.getElementById("create-release-notes-button");
         setButtonBusyAndDisabled(openingButton, true);
         var releaseNoteDialog = document.getElementById("create-release-note-dialog");
         var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
