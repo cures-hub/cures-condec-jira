@@ -115,7 +115,7 @@
 			location="/js/lib/vis-network/dist/vis-network.js" />
 		<resource type="download" name="vis-timeline-graph2d.min.js"
 			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
-		<!-- ConDec java script files -->
+		<!-- ConDec JavaScript files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
@@ -161,10 +161,12 @@
 			Provides the JavaScript files for the separate release note page of this
 			plug-in.
 		</description>
-		<resource type="download" name="condec.release.notes.page.js"
-			location="/js/releasenotes/condec.release.notes.page.js" />
 		<resource type="download" name="condec.release.notes.api.js"
 			location="/js/releasenotes/condec.release.notes.api.js" />
+		<resource type="download" name="condec.release.notes.page.js"
+			location="/js/releasenotes/condec.release.notes.page.js" />
+		<resource type="download" name="condec.release.notes.dialog.js"
+			location="/js/releasenotes/condec.release.notes.dialog.js" />		
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />
@@ -172,7 +174,6 @@
 			location="/js/lib/markdowneditor/marked.js" />
 		<resource type="download" name="condec.release.note.markdowneditor.editor.css"
 			location="/js/lib/markdowneditor/editor.css" />
-
 		<resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
 			location="/js/lib/markdowneditor/icomoon.eot" />
 		<resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"

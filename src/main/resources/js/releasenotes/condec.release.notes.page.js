@@ -3,8 +3,8 @@
  
  Requires
  * conDecAPI
- * conDecObservable
- * conDecDialog
+ * conDecReleaseNotesAPI
+ * conDecReleaseNotesDialog
 
  Is referenced in HTML by
  * releaseNotesPage.vm
@@ -24,12 +24,17 @@
 		
 		document.getElementById("create-release-notes-button").addEventListener("click", function(event) {
 			event.preventDefault();
-			conDecReleaseNotePage.addReleaseNote();
+			conDecReleaseNotesDialog.showCreateReleaseNoteDialog();
+		});
+		
+		document.getElementById("search-release-notes-button").addEventListener("click", function(event) {
+			event.preventDefault();
+			conDecReleaseNotePage.getReleaseNotes();
 		});
 	};
 
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {
-		var query=$("#searchReleaseNotesInput").val();
+		var query = $("#search-release-notes-input").val();
 		emptyTable();
 		conDecReleaseNotesAPI.getAllReleaseNotes(query).then(function(response){
 			if(response && response.length){
@@ -44,12 +49,8 @@
 		})
 	};
 
-	ConDecReleaseNotePage.prototype.addReleaseNote = function () {
-		conDecDialog.showCreateReleaseNoteDialog();
-	};
-
 	ConDecReleaseNotePage.prototype.displayReleaseNote = function (id) {
-		conDecDialog.showEditReleaseNoteDialog(id);
+		conDecReleaseNotesDialog.showEditReleaseNoteDialog(id);
 	};
 
 	function fillTable(response) {
