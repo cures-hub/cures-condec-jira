@@ -116,13 +116,13 @@
 		generalApi.postJSON(this.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function (
 				error, response) {
 			if (error === null) {
-				showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
+				conDecAPI.showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
 			}
 		});
 	};
 
 	/*
-	 * external references: condec.release.note.page
+	 * external references: condec.release.notes.page
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function (callback) {
 		var projectKey = getProjectKey();
@@ -146,7 +146,7 @@
 	};
 	
 	/*
-	 * external references: condec.release.note.page
+	 * external references: condec.release.notes.page
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function (callback) {
 		var projectKey = getProjectKey();

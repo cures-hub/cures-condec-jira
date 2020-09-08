@@ -155,7 +155,7 @@
 			location="/js/condec.decision.guidance.js" />
 	</web-resource>
 
-	<web-resource key="release-note-page-resources"
+	<web-resource key="release-notes-resources"
 		name="ConDec Release Notes Page Resources">
 		<description>
 			Provides the JavaScript files for the separate release note page of this
