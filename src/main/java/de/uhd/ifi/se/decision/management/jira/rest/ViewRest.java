@@ -1,26 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -28,7 +7,6 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -50,6 +28,21 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * REST resource for view

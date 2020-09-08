@@ -24,7 +24,7 @@ public class SimpleRecommender extends BaseRecommender {
 
 	@Override
 	public List<Recommendation> getRecommendation() {
-		for(String keyword : this.keywords) {
+		for (String keyword : this.keywords) {
 			if (this.knowledgeSources != null) {
 				for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
 					if (knowledgeSource.isActivated()) {
