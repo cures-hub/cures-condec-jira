@@ -61,8 +61,8 @@ public class ProjectSource implements KnowledgeSource {
 	}
 
 	@Override
-	public Recommendation getResults(String inputs) {
-		List<KnowledgeElement> recommendations = new ArrayList<>();
+	public List<Recommendation> getResults(String inputs) {
+		List<Recommendation> recommendations = new ArrayList<>();
 
 		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
 
@@ -79,11 +79,13 @@ public class ProjectSource implements KnowledgeSource {
 				if (issue.getSummary().contains(inputs)) {
 					issue.getLinks().stream()
 						.filter(link -> link.getTarget().getType() == KnowledgeType.ALTERNATIVE)
-						.forEach(child -> recommendations.add(child.getTarget()));
+						.forEach(child -> {
+							Recommendation recommendation = new Recommendation(this.projectSourceName, child.getTarget());
+							recommendations.add(recommendation);
+						});
 				}
 			});
 		}
-		Recommendation recommendation = new Recommendation(this.projectSourceName, recommendations);
-		return recommendation;
+		return recommendations;
 	}
 }

@@ -28,7 +28,7 @@ public class SimpleRecommender extends BaseRecommender {
 			if (this.knowledgeSources != null) {
 				for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
 					if (knowledgeSource.isActivated()) {
-						this.recommendations.add(knowledgeSource.getResults(keyword));
+						this.recommendations.addAll(knowledgeSource.getResults(keyword));
 					}
 				}
 			}

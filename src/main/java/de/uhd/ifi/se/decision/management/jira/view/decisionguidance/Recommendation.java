@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 @XmlRootElement(name = "Recommendation")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -16,9 +15,12 @@ public class Recommendation {
 	private String knowledgeSourceName;
 
 	@XmlElement
-	private List<KnowledgeElement> recommendations;
+	private KnowledgeElement recommendations;
 
-	public Recommendation(String knowledgeSourceName, List<KnowledgeElement> recommendations) {
+	@XmlElement
+	private int score;
+
+	public Recommendation(String knowledgeSourceName, KnowledgeElement recommendations) {
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.recommendations = recommendations;
 	}
@@ -31,11 +33,11 @@ public class Recommendation {
 		this.knowledgeSourceName = knowledgeSourceName;
 	}
 
-	public List<KnowledgeElement> getRecommendations() {
+	public KnowledgeElement getRecommendations() {
 		return recommendations;
 	}
 
-	public void setRecommendations(List<KnowledgeElement> recommendations) {
+	public void setRecommendations(KnowledgeElement recommendations) {
 		this.recommendations = recommendations;
 	}
 }

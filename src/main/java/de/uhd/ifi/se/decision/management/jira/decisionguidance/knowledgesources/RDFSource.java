@@ -17,7 +17,7 @@ import java.util.Objects;
 public class RDFSource implements KnowledgeSource {
 
 	protected String projectKey;
-	protected List<KnowledgeElement> recommendations;
+	protected List<Recommendation> recommendations;
 	protected String name;
 	protected String service;
 	protected String queryString;
@@ -84,7 +84,7 @@ public class RDFSource implements KnowledgeSource {
 	}
 
 	@Override
-	public Recommendation getResults(String inputs) {
+	public List<Recommendation> getResults(String inputs) {
 
 		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
 
@@ -95,11 +95,11 @@ public class RDFSource implements KnowledgeSource {
 		while (resultSet != null && resultSet.hasNext()) {
 			QuerySolution row = resultSet.nextSolution();
 			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?alternative").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
-			this.recommendations.add(alternative);
+			Recommendation recommendation = new Recommendation(this.name, alternative);
+			this.recommendations.add(recommendation);
 
 		}
-		Recommendation recommendation = new Recommendation(this.name, this.recommendations);
-		return recommendation;
+		return this.recommendations;
 	}
 
 	public String getProjectKey() {
