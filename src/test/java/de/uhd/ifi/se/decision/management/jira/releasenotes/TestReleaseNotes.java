@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestReleaseNote {
-	private ReleaseNote note;
+public class TestReleaseNotes {
+	private ReleaseNotes note;
 	private long id;
 	private String title;
 	private String projectKey;
@@ -14,7 +14,7 @@ public class TestReleaseNote {
 
 	@Before
 	public void setUp() {
-		note = new ReleaseNote(null, null, null, null, null);
+		note = new ReleaseNotes(null, null, null, null, null);
 		id = 312;
 		title = "version 1.0 Great title";
 		projectKey = "TEST";

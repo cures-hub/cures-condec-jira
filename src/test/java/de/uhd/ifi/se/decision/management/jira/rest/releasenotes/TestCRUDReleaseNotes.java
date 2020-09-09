@@ -14,7 +14,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -23,7 +23,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
 	private String releaseNoteContent;
-	private ReleaseNote releaseNote;
+	private ReleaseNotes releaseNote;
 	private HashMap<String, String> postObject;
 
 	@Before
@@ -36,7 +36,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		releaseNoteContent = "some short content";
-		releaseNote = new ReleaseNote();
+		releaseNote = new ReleaseNotes();
 		postObject = new HashMap<String, String>();
 		postObject.put("title", "some title");
 		postObject.put("content", releaseNoteContent);

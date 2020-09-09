@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersistenceManagerSetUp {
@@ -14,7 +14,7 @@ public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersiste
 	@NonTransactional
 	public void testCreateReleaseNote() {
 		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		ReleaseNote newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
+		ReleaseNotes newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		assertEquals(aVeryLongContent, newReleaseNote.getContent());
 	}
 
@@ -31,7 +31,7 @@ public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersiste
 	public void testUpdateReleaseNote() {
 		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
 		String someChangedContent="some other content";
-		ReleaseNote updateReleaseNote=ReleaseNotesPersistenceManager.getReleaseNotes(newId);
+		ReleaseNotes updateReleaseNote=ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		updateReleaseNote.setContent(someChangedContent);
 		assertEquals(true,ReleaseNotesPersistenceManager.updateReleaseNotes(updateReleaseNote,user));
 		assertEquals(someChangedContent, ReleaseNotesPersistenceManager.getReleaseNotes(newId).getContent());

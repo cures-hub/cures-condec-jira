@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestReleaseNoteConfiguration {
-	private ReleaseNoteConfiguration config;
+public class TestReleaseNotesConfiguration {
+	private ReleaseNotesConfiguration config;
 	private String startDate;
 	private String endDate;
 	private String sprintId;
@@ -22,7 +22,7 @@ public class TestReleaseNoteConfiguration {
 
 	@Before
 	public void setUp() {
-		config = new ReleaseNoteConfiguration();
+		config = new ReleaseNotesConfiguration();
 		startDate = "2019-01-12";
 		endDate = "2020-01-12";
 		sprintId = "15";

@@ -16,7 +16,7 @@
 	</div>
 </div>
 <div class="aui-group" id="legend"></div>
-<div class="aui-group matrix-container">
+<div class="aui-group">
     <table class="aui aui-table-list" id="matrix">
     	<thead>
     		<tr id="matrix-header-row"></tr>

@@ -19,19 +19,19 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Class to compute the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
-	private List<ReleaseNoteIssueProposal> proposals;
+	private List<ReleaseNotesIssueProposal> proposals;
 	private final List<Issue> elementsMatchingQuery;
-	private final ReleaseNoteConfiguration config;
+	private final ReleaseNotesConfiguration config;
 	private final ApplicationUser user;
 
-	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNoteConfiguration releaseNoteConfiguration,
+	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
 		this.elementsMatchingQuery = jiraIssuesMatchingQuery;
 		this.config = releaseNoteConfiguration;
 		this.user = user;
 	}
 
-	public HashMap<String, ArrayList<ReleaseNoteIssueProposal>> getMappedProposals() {
+	public HashMap<String, ArrayList<ReleaseNotesIssueProposal>> getMappedProposals() {
 		setMetrics();
 		compareProposals();
 		return mapProposals();
@@ -43,7 +43,7 @@ public class ReleaseNotesCreator {
 	 * sets Proposals
 	 */
 	private void setMetrics() {
-		ArrayList<ReleaseNoteIssueProposal> releaseNoteIssueProposals = new ArrayList<ReleaseNoteIssueProposal>();
+		ArrayList<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<ReleaseNotesIssueProposal>();
 		// set up components we need to gather metrics
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
@@ -62,7 +62,7 @@ public class ReleaseNotesCreator {
 			// create Release note issue proposal with the element and the count of
 			// associated decision knowledge
 			// check if DK or Comment
-			ReleaseNoteIssueProposal proposal = new ReleaseNoteIssueProposal(dkElement, 0);
+			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(dkElement, 0);
 			String dkKey = dkElement.getKey();
 
 			// check if it is a dk Issue or just a DK comment
@@ -196,13 +196,13 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mapProposals() {
+	private HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mapProposals() {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> resultMap = new HashMap<String, ArrayList<ReleaseNoteIssueProposal>>();
-		ArrayList<ReleaseNoteIssueProposal> bugs = new ArrayList<ReleaseNoteIssueProposal>();
-		ArrayList<ReleaseNoteIssueProposal> features = new ArrayList<ReleaseNoteIssueProposal>();
-		ArrayList<ReleaseNoteIssueProposal> improvements = new ArrayList<ReleaseNoteIssueProposal>();
+		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> resultMap = new HashMap<String, ArrayList<ReleaseNotesIssueProposal>>();
+		ArrayList<ReleaseNotesIssueProposal> bugs = new ArrayList<ReleaseNotesIssueProposal>();
+		ArrayList<ReleaseNotesIssueProposal> features = new ArrayList<ReleaseNotesIssueProposal>();
+		ArrayList<ReleaseNotesIssueProposal> improvements = new ArrayList<ReleaseNotesIssueProposal>();
 		var ref = new Object() {
 			Boolean hasResult = false;
 		};
@@ -232,9 +232,9 @@ public class ReleaseNotesCreator {
 		if (!ref.hasResult) {
 			return null;
 		}
-		Comparator<ReleaseNoteIssueProposal> compareByRating = new Comparator<ReleaseNoteIssueProposal>() {
+		Comparator<ReleaseNotesIssueProposal> compareByRating = new Comparator<ReleaseNotesIssueProposal>() {
 			@Override
-			public int compare(ReleaseNoteIssueProposal o1, ReleaseNoteIssueProposal o2) {
+			public int compare(ReleaseNotesIssueProposal o1, ReleaseNotesIssueProposal o2) {
 				Double rating1 = o1.getRating();
 				Double rating2 = o2.getRating();
 				return rating2.compareTo(rating1);
@@ -244,9 +244,9 @@ public class ReleaseNotesCreator {
 		features.sort(compareByRating);
 		improvements.sort(compareByRating);
 
-		resultMap.put(ReleaseNoteCategory.BUG_FIXES.toString(), bugs);
-		resultMap.put(ReleaseNoteCategory.NEW_FEATURES.toString(), features);
-		resultMap.put(ReleaseNoteCategory.IMPROVEMENTS.toString(), improvements);
+		resultMap.put(ReleaseNotesCategory.BUG_FIXES.toString(), bugs);
+		resultMap.put(ReleaseNotesCategory.NEW_FEATURES.toString(), features);
+		resultMap.put(ReleaseNotesCategory.IMPROVEMENTS.toString(), improvements);
 		return resultMap;
 	}
 
