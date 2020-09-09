@@ -93,7 +93,7 @@
 
 	/*
 	 * external references: condec.context.menu, condec.dialog,
-	 * condec.knowledge.page, condec.jira.issue.module
+	 * condec.knowledge.page
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function (id, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
@@ -323,7 +323,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
 		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
@@ -354,7 +354,7 @@
 	 * types, ...).
 	 * 
 	 * external reference: currently not used, used to be used in
-	 * condec.jira.issue.module to fill the HTML filter elements
+	 * Jira issue view to fill the HTML filter elements
 	 */
 	ConDecAPI.prototype.getFilterSettings = function (elementKey, searchTerm, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
@@ -1061,7 +1061,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.export,
+	 * external references: condec.export,
 	 * condec.gitdiffviewer, relatedIssuesTab.vm
 	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;

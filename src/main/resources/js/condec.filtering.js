@@ -36,7 +36,7 @@
 	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
-		        selectedKnowledgeTypes);
+		        selectedKnowledgeTypes, ["Other"]);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
@@ -205,7 +205,7 @@
 	/*
 	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems) {
+	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
@@ -215,6 +215,11 @@
 			var isSelected = "checked";
 			if (selectedItems !== undefined) {
 				if (!selectedItems.includes(items[index])) {
+					isSelected = "";
+				}
+			}
+			if (unselectedItems !== undefined) {
+				if (unselectedItems.includes(items[index])) {
 					isSelected = "";
 				}
 			}
