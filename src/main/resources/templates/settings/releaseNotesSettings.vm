@@ -1,49 +1,52 @@
-<h2>Release-Notes</h2>
-<h3>Default Jira-Issue-Type-Mapping</h3>
-    <div class="field-group">
-        <label for="select-issue-type-new_features">New features</label>
-        <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-new_features" name="select-issue-type-new_features">
-			#foreach ($issueType in $issueTypes)
-                <option name="$issueType"
-					#if ( $releaseNoteMapping_new_features.contains($issueType) )
-                        selected
-					#end
-                >
-					$issueType</option>
-			#end
-        </select>
-        <div class="description">Selects the issue types which should be considered as "new feature".</div>
-        <input type="button" value="Set new feature mapping" onclick="getReleaseNotesMultipleSelectedValues('new_features')" class="aui-button aui-button-primary"/>
-    </div>
-    <div class="field-group">
-        <label for="select-issue-type-bug_fixes">Bug fixes</label>
-        <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-bug_fixes" name="select-issue-type-bug_fixes">
-			#foreach ($issueType in $issueTypes)
-                <option name="$issueType"
-					#if ( $releaseNoteMapping_bug_fixes.contains($issueType) )
-                        selected
-					#end
-                >
-					$issueType</option>
-			#end
-        </select>
-        <div class="description">Selects the issue types which should be considered as "bug fixes".</div>
-        <input type="button" value="Set bug fixes mapping" onclick="getReleaseNotesMultipleSelectedValues('bug_fixes')" class="aui-button aui-button-primary"/>
-    </div>
-    <div class="field-group">
-        <label for="select-issue-type-improvements">Improvements</label>
-        <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-improvements" name="select-issue-type-improvements">
-			#foreach ($issueType in $issueTypes)
-                <option name="$issueType"
-					#if ( $releaseNoteMapping_improvements.contains($issueType) )
-                        selected
-					#end
-                >
-					$issueType</option>
-			#end
-        </select>
-        <div class="description">Selects the issue types which should be considered as "improvements".</div>
-        <input type="button" value="Set improvements mapping" onclick="getReleaseNotesMultipleSelectedValues('improvements')" class="aui-button aui-button-primary"/>
+<h2>Release Notes</h2>
+<h3>Default Jira Issue Type Mapping</h3>
+
+<div class="field-group">
+    <label for="select-issue-type-new_features">New features</label>
+    <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-new_features" name="select-issue-type-new_features">
+		#foreach ($issueType in $project.getJiraIssueTypeNames())
+            <option name="$issueType"
+				#if ( $releaseNotesMapping.getJiraIssueTypesForNewFeatures().contains($issueType) )
+                    selected
+				#end
+            >
+				$issueType</option>
+		#end
+    </select>
+    <div class="description">Selects the issue types which should be considered as "new feature".</div>
+    <input type="button" value="Set new feature mapping" onclick="getReleaseNotesMultipleSelectedValues('new_features')" class="aui-button aui-button-primary"/>
+</div>
+    
+<div class="field-group">
+    <label for="select-issue-type-bug_fixes">Bug fixes</label>
+    <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-bug_fixes" name="select-issue-type-bug_fixes">
+		#foreach ($issueType in $project.getJiraIssueTypeNames())
+            <option name="$issueType"
+				#if ( $releaseNotesMapping.getJiraIssueTypesForBugFixes().contains($issueType) )
+                    selected
+				#end
+            >
+				$issueType</option>
+		#end
+    </select>
+    <div class="description">Selects the issue types which should be considered as "bug fixes".</div>
+    <input type="button" value="Set bug fixes mapping" onclick="getReleaseNotesMultipleSelectedValues('bug_fixes')" class="aui-button aui-button-primary"/>
+</div>
+    
+<div class="field-group">
+    <label for="select-issue-type-improvements">Improvements</label>
+    <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-improvements" name="select-issue-type-improvements">
+		#foreach ($issueType in $project.getJiraIssueTypeNames())
+            <option name="$issueType"
+				#if ( $releaseNotesMapping.getJiraIssueTypesForImprovements().contains($issueType) )
+                    selected
+				#end
+            >
+				$issueType</option>
+		#end
+    </select>
+    <div class="description">Selects the issue types which should be considered as "improvements".</div>
+    <input type="button" value="Set improvements mapping" onclick="getReleaseNotesMultipleSelectedValues('improvements')" class="aui-button aui-button-primary"/>
 </div>
 
 <script>				
@@ -55,6 +58,6 @@
         		selectedItems.push(x.options[i].value)
         	}
         }
-        conDecAPI.setReleaseNoteMapping(type.toUpperCase(), "$projectKey", selectedItems);
+        conDecReleaseNotesAPI.setReleaseNoteMapping(type.toUpperCase(), "$projectKey", selectedItems);
 	}
 </script>        

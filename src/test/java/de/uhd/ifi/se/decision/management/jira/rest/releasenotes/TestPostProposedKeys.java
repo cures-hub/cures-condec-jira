@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.AdditionalConfigurationOptions;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -37,11 +37,11 @@ public class TestPostProposedKeys extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		keysForContent = new HashMap<String, List<String>>();
-		keysForContent.put(ReleaseNoteCategory.BUG_FIXES.toString(),
+		keysForContent.put(ReleaseNotesCategory.BUG_FIXES.toString(),
 				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
-		keysForContent.put(ReleaseNoteCategory.NEW_FEATURES.toString(),
+		keysForContent.put(ReleaseNotesCategory.NEW_FEATURES.toString(),
 				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
-		keysForContent.put(ReleaseNoteCategory.IMPROVEMENTS.toString(),
+		keysForContent.put(ReleaseNotesCategory.IMPROVEMENTS.toString(),
 				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
 		postObject = new HashMap<String, HashMap<String, List<String>>>();
 		postObject.put("selectedKeys", keysForContent);

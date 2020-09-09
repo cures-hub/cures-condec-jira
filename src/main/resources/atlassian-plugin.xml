@@ -93,6 +93,7 @@
 		<dependency>com.atlassian.auiplugin:tabs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
+		<dependency>com.atlassian.auiplugin:aui-page-layout</dependency>
 		<!-- Jira dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -114,7 +115,7 @@
 			location="/js/lib/vis-network/dist/vis-network.js" />
 		<resource type="download" name="vis-timeline-graph2d.min.js"
 			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
-		<!-- ConDec java script files -->
+		<!-- ConDec JavaScript files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
@@ -154,14 +155,18 @@
 			location="/js/condec.decision.guidance.js" />
 	</web-resource>
 
-	<web-resource key="release-note-page-resources"
+	<web-resource key="release-notes-resources"
 		name="ConDec Release Notes Page Resources">
 		<description>
 			Provides the JavaScript files for the separate release note page of this
 			plug-in.
 		</description>
-		<resource type="download" name="condec.release.note.page.js"
-			location="/js/condec.release.note.page.js" />
+		<resource type="download" name="condec.release.notes.api.js"
+			location="/js/releasenotes/condec.release.notes.api.js" />
+		<resource type="download" name="condec.release.notes.page.js"
+			location="/js/releasenotes/condec.release.notes.page.js" />
+		<resource type="download" name="condec.release.notes.dialog.js"
+			location="/js/releasenotes/condec.release.notes.dialog.js" />		
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />
@@ -169,7 +174,6 @@
 			location="/js/lib/markdowneditor/marked.js" />
 		<resource type="download" name="condec.release.note.markdowneditor.editor.css"
 			location="/js/lib/markdowneditor/editor.css" />
-
 		<resource type="download" name="condec.release.note.markdowneditor.icomoon.eot"
 			location="/js/lib/markdowneditor/icomoon.eot" />
 		<resource type="download" name="condec.release.note.markdowneditor.icomoon.ttf"
@@ -218,21 +222,22 @@
 	</web-panel>
 
 	<!-- Release Notes Page -->
-	<web-item name="Link to the Release Note Page in Side Bar" key="sidebar-link-release-note"
+	<web-item name="Link to the Release Notes Page in Side Bar" key="sidebar-link-release-notes"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
 		<description>Provides the "Release Notes" link in the project's navigation sidebar.
 		</description>
-		<label key="condec.sidebar.link.label.release.note" />
+		<label key="condec.sidebar.link.label.release.notes" />
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
-		<link>/projects/$pathEncodedProjectKey?selectedItem=release-note-page</link>
+		<link>/projects/$pathEncodedProjectKey?selectedItem=release-notes-page</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-panel name="Decision Knowledge Page" key="release-note-page"
-		location="release-note-page" weight="1000">
+	<web-panel name="Release Notes Page" key="release-notes-page"
+		location="release-notes-page" weight="1000">
 		<description>
 			Provides the plug-in page that developers use to manage release notes.
 		</description>
-		<resource name="view" type="velocity" location="templates/releaseNotePage.vm" />
+		<resource name="view" type="velocity"
+			location="templates/releasenotes/releaseNotesPage.vm" />
 	</web-panel>
 
 	<!-- REST API -->

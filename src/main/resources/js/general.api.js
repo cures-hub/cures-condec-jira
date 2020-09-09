@@ -19,7 +19,9 @@
             if (status === 200) {
                 callback(null, xhr.response);
             } else {
-                conDecAPI.showFlag("error", xhr.response.error, status);
+            	if (xhr !== null && xhr.response !== null) {
+            		conDecAPI.showFlag("error", xhr.response.error, status);
+            	}                
                 callback(status);
             }
         }
@@ -44,6 +46,9 @@
     GeneralAPI.prototype.getJSONReturnPromise = function (url) {
         return new Promise(function (resolve, reject) {
             generalApi.getJSON(url, function (err, result) {
+            	if (result === null) {
+            		return;
+            	}
                 if (err === null) {
                     resolve(result);
                 } else {
@@ -109,6 +114,5 @@
         })
     };
 
-// export GeneralAPI
     global.generalApi = new GeneralAPI();
 })(window);

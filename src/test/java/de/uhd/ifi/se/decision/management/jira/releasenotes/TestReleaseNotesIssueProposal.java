@@ -21,9 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestReleaseNoteIssueProposal extends TestSetUp {
+public class TestReleaseNotesIssueProposal extends TestSetUp {
 	private long idOfDKElement;
-	private ReleaseNoteIssueProposal proposal;
+	private ReleaseNotesIssueProposal proposal;
 	private double rating;
 	private Issue issue;
 	private CommentManager commentManager;
@@ -38,7 +38,7 @@ public class TestReleaseNoteIssueProposal extends TestSetUp {
 		dkElement.setId(idOfDKElement);
 		dkElement.setDescription("this is a test helloo");
 		dkElement.setSummary("this is a summary test helloo");
-		proposal = new ReleaseNoteIssueProposal(dkElement, 3);
+		proposal = new ReleaseNotesIssueProposal(dkElement, 3);
 		rating = 54.21;
 		proposal.setRating(rating);
 		existingReporterCount = new HashMap<String, Integer>();

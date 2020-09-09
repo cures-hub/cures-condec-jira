@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -291,13 +291,13 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "arffFileName");
 	}
 
-	public static void setReleaseNoteMapping(String projectKey, ReleaseNoteCategory category,
+	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
 											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
 
-	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNoteCategory category) {
+	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNotesCategory category) {
 		String joinedIssueNames = getValue(projectKey, "releaseNoteMapping" + "." + category);
 		return Arrays.asList(joinedIssueNames.split(","));
 	}

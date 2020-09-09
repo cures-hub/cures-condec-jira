@@ -21,8 +21,8 @@ import java.util.HashMap;
  * Model class for the release notes Jira issue proposal. It saves the knowledge
  * element, the final rating and the issue metrics.
  */
-public class ReleaseNoteIssueProposal {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNoteIssueProposal.class);
+public class ReleaseNotesIssueProposal {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesIssueProposal.class);
 
 	private KnowledgeElement decisionKnowledgeElement;
 
@@ -35,7 +35,7 @@ public class ReleaseNoteIssueProposal {
 	 * @param decisionKnowledgeElement
 	 * @param countDecisionKnowledge
 	 */
-	public ReleaseNoteIssueProposal(KnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
+	public ReleaseNotesIssueProposal(KnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
 		this.decisionKnowledgeElement = decisionKnowledgeElement;
 		// set default values
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();

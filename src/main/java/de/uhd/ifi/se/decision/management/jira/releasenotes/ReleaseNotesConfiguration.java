@@ -8,7 +8,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * Models release notes configuration.
  */
-public class ReleaseNoteConfiguration {
+public class ReleaseNotesConfiguration {
 	private String title;
 	private String startDate;
 	private String endDate;
@@ -22,7 +22,7 @@ public class ReleaseNoteConfiguration {
 
 	// This default constructor is necessary for the JSON string to object mapping.
 	// Do not delete it!
-	public ReleaseNoteConfiguration() {
+	public ReleaseNotesConfiguration() {
 		this.targetGroup = TargetGroup.getTargetGroup("");
 		this.jiraIssueMetric = JiraIssueMetric.toDoubleEnumMap();
 	}
