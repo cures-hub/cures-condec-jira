@@ -843,11 +843,14 @@
 
 	};
 
-	ConDecAPI.prototype.getDecisionGroups = function (id, location, inputExistingGroupsField, selectLevelField, callback) {
-		var projectKey = getProjectKey();
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
-				+ "&location=" + location + "&projectKey=" + projectKey);
-		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
+	ConDecAPI.prototype.getDecisionGroups = function (id, location, callback) {
+		// TODO Change to POST method and post knowledgeElement
+		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
+				+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
+			if (error === null) {
+				callback(decisionGroups);
+			}
+		});		
 	};
 
 	/*

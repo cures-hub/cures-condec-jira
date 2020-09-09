@@ -87,7 +87,7 @@
 			        conDecVis.editNode(selectedNode);
 		        },
 		        editEdge : function(selectedNode, callback) {
-			        conDecVis.editEdge(selectedEdge);
+			        conDecVis.editEdge(selectedNode);
 		        }
 		    },
 		    physics : {

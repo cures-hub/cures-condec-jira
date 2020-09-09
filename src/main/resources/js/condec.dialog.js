@@ -75,38 +75,17 @@
         // Fill HTML elements
         inputAddGroupField.value = "";
 
-        conDecAPI.getDecisionGroups(sourceId, documentationLocation, inputExistingGroupsField, selectLevelField, function (selectLevelField, inputExistingGroupsField, groups) {
-            if (!(groups === null) && groups.length > 0) {
-                var groupZero = groups[0];
-                if ("High_Level" === groupZero) {
-                    selectLevelField.innerHTML = "";
-                    selectLevelField.insertAdjacentHTML("beforeend", "<option selected  value='High_Level'>High Level</option>" +
-                        "<option value='Medium_Level'>Medium Level</option>" +
-                        "<option value='Realization_Level'>Realization Level</option>");
-                } else if ("Medium_Level" === groupZero) {
-                    selectLevelField.innerHTML = "";
-                    selectLevelField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High Level</option>" +
-                        "<option selected value='Medium_Level'>Medium Level</option>" +
-                        "<option value='Realization_Level'>Realization Level</option>");
-                } else {
-                    selectLevelField.innerHTML = "";
-                    selectLevelField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High Level</option>" +
-                        "<option value='Medium_Level'>Medium Level</option>" +
-                        "<option selected value='Realization_Level'>Realization Level</option>");
-                }
-            } else {
-                selectLevelField.innerHTML = "";
-                selectLevelField.insertAdjacentHTML("beforeend", "<option selected  value='High_Level'>High Level</option>" +
-                    "<option value='Medium_Level'>Medium Level</option>" +
-                    "<option value='Realization_Level'>Realization Level</option>");
-            }
+        conDecAPI.getDecisionGroups(sourceId, documentationLocation, function (groups) {
+        	if (groups.length > 0) {
+        		var level = groups[0];
+        		selectLevelField.value = level;
+        	}
             if (groups.length > 1) {
                 groups.shift();
                 inputExistingGroupsField.value = groups;
             } else {
                 inputExistingGroupsField.value = "";
             }
-
         });
 
         // Set onclick listener on buttons
@@ -375,38 +354,17 @@
                 inputSummaryField.disabled = true;
                 selectLocationField.disabled = true;
             }
-            conDecAPI.getDecisionGroups(id, documentationLocation, inputExistingGroupsField, selectLevelField, function (selectLevelField, inputExistingGroupsField, groups) {
-                if (!(groups === null) && groups.length > 0) {
-                    var groupZero = groups[0];
-                    if ("High_Level" === groupZero) {
-                        selectLevelField.innerHTML = "";
-                        selectLevelField.insertAdjacentHTML("beforeend", "<option selected  value='High_Level'>High Level</option>" +
-                            "<option value='Medium_Level'>Medium Level</option>" +
-                            "<option value='Realization_Level'>Realization Level</option>");
-                    } else if ("Medium_Level" === groupZero) {
-                        selectLevelField.innerHTML = "";
-                        selectLevelField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High Level</option>" +
-                            "<option selected value='Medium_Level'>Medium Level</option>" +
-                            "<option value='Realization_Level'>Realization Level</option>");
-                    } else {
-                        selectLevelField.innerHTML = "";
-                        selectLevelField.insertAdjacentHTML("beforeend", "<option value='High_Level'>High Level</option>" +
-                            "<option value='Medium_Level'>Medium Level</option>" +
-                            "<option selected value='Realization_Level'>Realization Level</option>");
-                    }
-                } else {
-                    selectLevelField.innerHTML = "";
-                    selectLevelField.insertAdjacentHTML("beforeend", "<option selected  value='High_Level'>High Level</option>" +
-                        "<option value='Medium_Level'>Medium Level</option>" +
-                        "<option value='Realization_Level'>Realization Level</option>");
-                }
+            conDecAPI.getDecisionGroups(id, documentationLocation, function (groups) {
+            	if (groups.length > 0) {
+            		var level = groups[0];
+            		selectLevelField.value = level;
+            	}
                 if (groups.length > 1) {
                     groups.shift();
                     inputExistingGroupsField.value = groups;
                 } else {
                     inputExistingGroupsField.value = "";
                 }
-
             });
 
             // Set onclick listener on buttons
