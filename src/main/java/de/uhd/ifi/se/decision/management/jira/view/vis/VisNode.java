@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -15,8 +17,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
  */
 public class VisNode {
 
-	@XmlElement
-	private String id;
+	@JsonIgnore
+	private KnowledgeElement element;
 
 	@XmlElement
 	private String label;
@@ -45,9 +47,7 @@ public class VisNode {
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
-		// TODO Add two attributes for id and docuLocu or even provide the whole
-		// knowledge element
-		this.id = element.getId() + "_" + element.getDocumentationLocationAsString();
+		this.element = element;
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
@@ -91,8 +91,19 @@ public class VisNode {
 		return color;
 	}
 
-	public String getId() {
-		return id;
+	@XmlElement(name = "id")
+	public String getVisNodeId() {
+		return element.getId() + "_" + element.getDocumentationLocationAsString();
+	}
+
+	@XmlElement(name = "elementId")
+	public long getElementId() {
+		return element.getId();
+	}
+
+	@XmlElement(name = "documentationLocation")
+	public String getDocumentationLocation() {
+		return element.getDocumentationLocationAsString();
 	}
 
 	public String getLabel() {

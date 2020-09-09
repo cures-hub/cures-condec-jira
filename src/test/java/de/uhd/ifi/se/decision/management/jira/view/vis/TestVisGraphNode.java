@@ -45,7 +45,9 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testNodeId() {
 		VisNode node = new VisNode(element, true, 1);
 		String expectedId = element.getId() + "_" + element.getDocumentationLocationAsString();
-		assertEquals(expectedId, node.getId());
+		assertEquals(expectedId, node.getVisNodeId());
+		assertEquals(element.getId(), node.getElementId());
+		assertEquals(element.getDocumentationLocationAsString(), node.getDocumentationLocation());
 	}
 
 	@Test

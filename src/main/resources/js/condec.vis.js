@@ -55,7 +55,7 @@
 			conDecVis.addContextMenu(params, graphNetwork);
 		});
 		if (data.rootElementId !== undefined && data.rootElementId !== "") {
-			graphNetwork.selectNodes([ data.rootElementId ]);
+			graphNetwork.selectNodes([ data.selectedVisNodeId ]);
 		}
 	};
 	
@@ -118,38 +118,34 @@
 		if (clickedNodeId === undefined) {
 			return;
 		}
-		conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
-		        getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
+		const elementId = getElementId(clickedNodeId);
+		const documentationLocation = getDocumentationLocation(clickedNodeId);
+		conDecContextMenu.createContextMenu(elementId, documentationLocation, params.event, "vis-container");
 	};
 
-	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.deleteNode = function (data) {
-		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1));
+		conDecDialog.showDeleteDialog(getElementId(data.nodes[0]), getDocumentationLocation(data.nodes[0]));
 	};
 	
-	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.editNode = function (data) {
-		conDecDialog.showEditDialog(data.id.slice(0, -2), data.id.substr(-1));
-		return;
+		conDecDialog.showEditDialog(data.elementId, data.documentationLocation);
 	};
 
-	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdge = function (data) {
 		if (data.from === data.to) {
 			return;
 		}
-		conDecDialog.showLinkDialog(data.from.slice(0, -2), data.from.substr(-1), data.to.slice(0, -2), data.to
-		        .substr(-1));
+		conDecDialog.showLinkDialog(getElementId(data.from), getDocumentationLocation(data.from), 
+				getElementId(data.to), getDocumentationLocation(data.to));
 	};
 
-	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.deleteEdge = function (data, visData) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
-		var idOfChild = edgeToBeDeleted.to.slice(0, -2);
-		var idOfParent = edgeToBeDeleted.from.slice(0, -2);
-		var documentationLocationOfChild = edgeToBeDeleted.to.substr(-1);
-		var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
+		var idOfChild = getElementId(edgeToBeDeleted.to);
+		var idOfParent = getElementId(edgeToBeDeleted.from);
+		var documentationLocationOfChild = getDocumentationLocation(edgeToBeDeleted.to);
+		var documentationLocationOfParent = getDocumentationLocation(edgeToBeDeleted.from);
 		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
 		        documentationLocationOfParent);
 	};
@@ -158,9 +154,13 @@
 		console.log(data);
 	};
 
-	function getDocumentationLocationFromId(nodeId) {
-		return nodeId.toString().substr(-1);
+	function getDocumentationLocation(node) {
+		return node.substr(-1);
 	}
-
+	
+	function getElementId(node) {
+		return node.slice(0, -2);
+	}
+	
 	global.conDecVis = new ConDecVis();
 })(window);
