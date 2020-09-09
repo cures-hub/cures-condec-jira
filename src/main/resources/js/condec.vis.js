@@ -83,7 +83,12 @@
 		        deleteEdge : function(selectedEdge, callback) {
 			        conDecVis.deleteEdge(selectedEdge, visData);
 		        },
-		        editEdge : false
+		        editNode : function(selectedNode, callback) {
+			        conDecVis.editNode(selectedNode);
+		        },
+		        editEdge : function(selectedNode, callback) {
+			        conDecVis.editEdge(selectedEdge);
+		        }
 		    },
 		    physics : {
 		        enabled : true,
@@ -121,6 +126,12 @@
 	ConDecVis.prototype.deleteNode = function (data) {
 		conDecDialog.showDeleteDialog(data.nodes[0].slice(0, -2), data.nodes[0].substr(-1));
 	};
+	
+	// TODO Avoid data slicing, this is very hard to understand!
+	ConDecVis.prototype.editNode = function (data) {
+		conDecDialog.showEditDialog(data.id.slice(0, -2), data.id.substr(-1));
+		return;
+	};
 
 	// TODO Avoid data slicing, this is very hard to understand!
 	ConDecVis.prototype.addEdge = function (data) {
@@ -141,6 +152,10 @@
 		var documentationLocationOfParent = edgeToBeDeleted.from.substr(-1);
 		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
 		        documentationLocationOfParent);
+	};
+	
+	ConDecVis.prototype.editEdge = function (data) {
+		console.log(data);
 	};
 
 	function getDocumentationLocationFromId(nodeId) {

@@ -42,9 +42,10 @@
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 	};
 
-	/*
-	 * For views with filter button, i.e., NO instant filtering. external
-	 * references: condec.jira.issue.module, condec.evolution.page,
+	/**
+	 * For views with filter button, i.e., NO instant filtering.
+	 * 
+	 * external references: condec.jira.issue.module, condec.evolution.page,
 	 * condec.relationship.page, condec.matrix
 	 */
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
@@ -56,9 +57,10 @@
 		});
 	};
 
-	/*
-	 * For views without filter button but instant filtering. external
-	 * references: condec.jira.issue.module, condec.knowledge.page,
+	/**
+	 * For views without filter button but instant filtering.
+	 * 
+	 * external references: condec.jira.issue.module, condec.knowledge.page,
 	 * condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {

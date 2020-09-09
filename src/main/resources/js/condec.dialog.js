@@ -127,7 +127,6 @@
 
         // Show dialog
         AJS.dialog2(assignDialog).show();
-
     };
 
     ConDecDialog.prototype.showRenameGroupDialog = function (groupName) {
@@ -444,7 +443,6 @@
         }
         selectField.innerHTML = "";
         var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
-        console.log(extendedKnowledgeTypes, selectedKnowledgeType);
         for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
             var isSelected = "";
             if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {
@@ -457,7 +455,7 @@
 
     function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
         console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
-        return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
+        return extendedKnowledgeTypes[index].toLowerCase().startsWith(knowledgeType.toLowerCase());
     }
 
     function fillSelectLocationField(selectField, documentationLocationOfParentElement) {
@@ -653,7 +651,8 @@
         AJS.dialog2(addCriterionDialog).show();
         
         // send callback when dialog was closed not via apply or close button
-		//AJS.dialog2(addCriterionDialog).on("hide", removeDialogHideListener());
+		// AJS.dialog2(addCriterionDialog).on("hide",
+		// removeDialogHideListener());
 
         exitButton.onclick = function () {
         	applyChanges([]);
