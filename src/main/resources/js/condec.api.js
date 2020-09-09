@@ -62,7 +62,8 @@
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
 		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
-			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(conDecAPI.restPrefix 
+					+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
 			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
 		}
 		return this.extendedKnowledgeTypes;
@@ -292,7 +293,7 @@
 		generalApi.postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
 				function (error, id, type) {
 			if (error === null) {
-				showFlag("success", "JIRA Issue has been created");
+				showFlag("success", "JIRA Issue has been created.");
 				callback();
 			}
 		});

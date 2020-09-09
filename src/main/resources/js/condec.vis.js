@@ -10,7 +10,7 @@
 		if (isJiraIssueView) {
 			conDecFiltering.fillFilterElements("graph");
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
-				issueKey = conDecAPI.getIssueKey();
+				var issueKey = conDecAPI.getIssueKey();
 				filterSettings["selectedElement"] = issueKey;
 				conDecVis.buildVis(filterSettings);
 			});
@@ -71,8 +71,8 @@
 		    },
 		    manipulation : {
 		        enabled : true,
-		        addNode : function(data, callback) {
-		        	conDecDialog.showCreateDialog(-1, null, "Decision");
+		        addNode : function(newNode, callback) {
+		        	conDecVis.addNode(newNode);
 		        },
 		        deleteNode : function(selectedNode, callback) {
 			        conDecVis.deleteNode(selectedNode, callback);
@@ -86,8 +86,8 @@
 		        editNode : function(selectedNode, callback) {
 			        conDecVis.editNode(selectedNode, callback);
 		        },
-		        editEdge : function(selectedNode, callback) {
-			        conDecVis.editEdge(selectedNode);
+		        editEdge : function(selectedEdge, callback) {
+			        conDecVis.editEdge(selectedEdge);
 		        }
 		    },
 		    physics : {
@@ -121,6 +121,10 @@
 		const elementId = getElementId(clickedNodeId);
 		const documentationLocation = getDocumentationLocation(clickedNodeId);
 		conDecContextMenu.createContextMenu(elementId, documentationLocation, params.event, "vis-container");
+	};
+	
+	ConDecVis.prototype.addNode = function (newNode) {
+		conDecDialog.showCreateDialog(-1, null, "Decision");
 	};
 
 	ConDecVis.prototype.deleteNode = function (data, callback) {
