@@ -23,9 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteConfiguration;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteIssueProposal;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProposal;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 
 /**
@@ -38,7 +38,7 @@ public class ReleaseNotesRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNoteConfiguration releaseNoteConfiguration) {
+			ReleaseNotesConfiguration releaseNoteConfiguration) {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
@@ -51,7 +51,7 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		HashMap<String, ArrayList<ReleaseNoteIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
+		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(
@@ -98,7 +98,7 @@ public class ReleaseNotesRest {
 		String endDate = postObject.get("endDate");
 		String releaseNoteContent = postObject.get("content");
 
-		ReleaseNote releaseNote = new ReleaseNote(title, releaseNoteContent, projectKey, startDate, endDate);
+		ReleaseNotes releaseNote = new ReleaseNotes(title, releaseNoteContent, projectKey, startDate, endDate);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
 
 		return Response.ok(id).build();
@@ -108,7 +108,7 @@ public class ReleaseNotesRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNote releaseNote) {
+			ReleaseNotes releaseNote) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		boolean updated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNote, user);
@@ -121,7 +121,7 @@ public class ReleaseNotesRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("id") long id) {
-		ReleaseNote releaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(id);
+		ReleaseNotes releaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(id);
 		return Response.ok(releaseNote).build();
 	}
 
@@ -130,7 +130,7 @@ public class ReleaseNotesRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query) {
-		List<ReleaseNote> releaseNotes = ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, query);
+		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, query);
 		return Response.ok(releaseNotes).build();
 	}
 

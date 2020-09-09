@@ -7,7 +7,7 @@
  * Is required by: conDecReleaseNotesPage
  * 
  * Is referenced in HTML by
- * settingsForSingleProject.vm
+ * templates/releaseNotesSettings.vm
  */
 (function (global) {
 
@@ -33,7 +33,7 @@
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
 					} else {
-						reject("No issue-types could be found for this project");
+						reject("No issue types could be found for this project");
 					}
 				} else {
 					reject("No Projects were found.");
@@ -55,7 +55,7 @@
 				if (result && result.length) {
 					resolve(result);
 				} else {
-					reject("No Releases were found");
+					reject("No releases were found");
 				}
 			}).catch(function (err) {
 				reject(err);
@@ -65,7 +65,7 @@
 
 	ConDecReleaseNotesAPI.prototype.getProjectWideSelectedIssueTypes = function () {
 		return new Promise(function (resolve, reject) {
-			var preSelectedIssueUrl = AJS.contextPath() + "/rest/condec/latest/config/getReleaseNoteMapping.json?projectKey=" + projectKey;
+			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/config/releaseNoteMapping.json?projectKey=" + projectKey;
 			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
 			issuePromise.then(function (result) {
 				if (result) {
@@ -101,7 +101,7 @@
 						reject(err);
 					})
 				} else {
-					reject("No Boards could be found, so the sprints could also not be loaded");
+					reject("No boards could be found, so the sprints could also not be loaded");
 				}
 			}).catch(function (err) {
 				reject(err);
@@ -159,7 +159,7 @@
 	};
 	
 	/*
-	 * external references: condec.dialog
+	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.getProposedIssues = function (releaseNoteConfiguration) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="

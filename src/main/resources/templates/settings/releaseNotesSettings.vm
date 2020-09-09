@@ -6,7 +6,7 @@
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-new_features" name="select-issue-type-new_features">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNoteMapping_new_features.contains($issueType) )
+				#if ( $releaseNotesMapping.getJiraIssueTypesForNewFeatures().contains($issueType) )
                     selected
 				#end
             >
@@ -22,7 +22,7 @@
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-bug_fixes" name="select-issue-type-bug_fixes">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNoteMapping_bug_fixes.contains($issueType) )
+				#if ( $releaseNotesMapping.getJiraIssueTypesForBugFixes().contains($issueType) )
                     selected
 				#end
             >
@@ -38,7 +38,7 @@
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-improvements" name="select-issue-type-improvements">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNoteMapping_improvements.contains($issueType) )
+				#if ( $releaseNotesMapping.getJiraIssueTypesForImprovements().contains($issueType) )
                     selected
 				#end
             >

@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -384,7 +384,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetAndGetReleaseNoteMapping() {
 		List<String> input = new ArrayList<String>();
 		input.add("someOtherString");
-		ReleaseNoteCategory category = ReleaseNoteCategory.IMPROVEMENTS;
+		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
 	}

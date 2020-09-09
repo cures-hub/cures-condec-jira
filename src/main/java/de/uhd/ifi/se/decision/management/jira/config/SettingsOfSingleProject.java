@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -66,14 +66,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());
 		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
 
-		// TODO Integrate into one releaseNotesConfig class and add to
-		// DecisionKnowledgeProject
-		velocityParameters.put("releaseNoteMapping_improvements",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.IMPROVEMENTS));
-		velocityParameters.put("releaseNoteMapping_bug_fixes",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.BUG_FIXES));
-		velocityParameters.put("releaseNoteMapping_new_features",
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, ReleaseNoteCategory.NEW_FEATURES));
+		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
 
 		velocityParameters.put("minLengthDuplicate", ConfigPersistenceManager.getFragmentLength(projectKey));
 		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));

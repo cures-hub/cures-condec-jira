@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 public class TestSetReleaseNoteMapping extends TestConfigSuper {
 
@@ -22,7 +22,7 @@ public class TestSetReleaseNoteMapping extends TestConfigSuper {
 	@Test
 	public void testSetReleaseNoteMappingWithValidValues() {
 		String projectKey = "TEST";
-		ReleaseNoteCategory category = ReleaseNoteCategory.NEW_FEATURES;
+		ReleaseNotesCategory category = ReleaseNotesCategory.NEW_FEATURES;
 		List<String> selectedIssueNames = new ArrayList<>();
 		selectedIssueNames.add("firstName");
 		selectedIssueNames.add("secondName");

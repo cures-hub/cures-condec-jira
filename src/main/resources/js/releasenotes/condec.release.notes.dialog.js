@@ -541,8 +541,6 @@
                 divToAppend.append(title);
                 divToAppend.append(table);
                 divToAppend.append("</table>");
-
-
             }
         };
         

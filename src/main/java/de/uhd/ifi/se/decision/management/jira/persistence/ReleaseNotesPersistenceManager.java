@@ -11,7 +11,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNote;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import net.java.ao.Query;
 
 
@@ -45,10 +45,10 @@ public class ReleaseNotesPersistenceManager {
 	 * @param id
 	 * @return
 	 */
-	public static ReleaseNote getReleaseNotes(long id) {
-		ReleaseNote releaseNote = null;
+	public static ReleaseNotes getReleaseNotes(long id) {
+		ReleaseNotes releaseNote = null;
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("ID = ?", id))) {
-			releaseNote = new ReleaseNote(databaseEntry);
+			releaseNote = new ReleaseNotes(databaseEntry);
 		}
 		return releaseNote;
 	}
@@ -61,7 +61,7 @@ public class ReleaseNotesPersistenceManager {
 	 * @param user
 	 * @return
 	 */
-	public static long createReleaseNotes(ReleaseNote releaseNote, ApplicationUser user) {
+	public static long createReleaseNotes(ReleaseNotes releaseNote, ApplicationUser user) {
 		if (releaseNote == null || user == null) {
 			return 0;
 		}
@@ -78,7 +78,7 @@ public class ReleaseNotesPersistenceManager {
 	 * @param user
 	 * @return
 	 */
-	public static boolean updateReleaseNotes(ReleaseNote releaseNote, ApplicationUser user) {
+	public static boolean updateReleaseNotes(ReleaseNotes releaseNote, ApplicationUser user) {
 		if (releaseNote == null || user == null) {
 			return false;
 		}
@@ -92,15 +92,15 @@ public class ReleaseNotesPersistenceManager {
 		return isUpdated;
 	}
 
-	public static List<ReleaseNote> getAllReleaseNotes(String projectKey,String query) {
-		List<ReleaseNote> result = new ArrayList<ReleaseNote>();
+	public static List<ReleaseNotes> getAllReleaseNotes(String projectKey,String query) {
+		List<ReleaseNotes> result = new ArrayList<ReleaseNotes>();
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey,"%"+query+"%"))) {
-			result.add(new ReleaseNote(databaseEntry));
+			result.add(new ReleaseNotes(databaseEntry));
 		}
 		return result;
 	}
 
-	private static void setParameters(ReleaseNote releaseNote, ReleaseNotesInDatabase dbEntry, Boolean update) {
+	private static void setParameters(ReleaseNotes releaseNote, ReleaseNotesInDatabase dbEntry, Boolean update) {
 		//title
 		dbEntry.setTitle(releaseNote.getTitle());
 		if (!update) {

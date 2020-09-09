@@ -50,7 +50,7 @@ public class MarkdownCreator {
 		String result = "";
 		StringBuilder jql = new StringBuilder();
 
-		List<String> categories = ReleaseNoteCategory.toList();
+		List<String> categories = ReleaseNotesCategory.toList();
 		// create flat
 		List<String> uniqueList = new ArrayList<>();
 		categories.forEach(category -> {
@@ -86,18 +86,18 @@ public class MarkdownCreator {
 	private String generateMarkdownString(Set<KnowledgeElement> issues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("# ").append(title).append(" \n");
-		EnumMap<ReleaseNoteCategory, Boolean> containsTitle = ReleaseNoteCategory.toBooleanMap();
+		EnumMap<ReleaseNotesCategory, Boolean> containsTitle = ReleaseNotesCategory.toBooleanMap();
 		// iterate for each category and check for each issue if its type corresponds
 		// with the mapping
-		ReleaseNoteCategory.toList().forEach(cat -> {
+		ReleaseNotesCategory.toList().forEach(cat -> {
 			issues.forEach(issue -> {
 				if (keysForContent.get(cat).contains(issue.getKey())) {
 					// add title once
-					if (!containsTitle.get(ReleaseNoteCategory.getTargetGroup(cat))) {
+					if (!containsTitle.get(ReleaseNotesCategory.getTargetGroup(cat))) {
 						stringBuilder.append("## ").append(
-								ReleaseNoteCategory.getTargetGroupReadable(ReleaseNoteCategory.getTargetGroup(cat)))
+								ReleaseNotesCategory.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
 								.append(" \n");
-						containsTitle.put(ReleaseNoteCategory.getTargetGroup(cat), true);
+						containsTitle.put(ReleaseNotesCategory.getTargetGroup(cat), true);
 					}
 					// add issue title and url
 					markdownAddIssue(stringBuilder, issue);

@@ -50,7 +50,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNoteCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -492,7 +492,7 @@ public class ConfigRest {
 	@POST
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("releaseNoteCategory") ReleaseNoteCategory category, List<String> selectedIssueNames) {
+			@QueryParam("releaseNoteCategory") ReleaseNotesCategory category, List<String> selectedIssueNames) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -501,15 +501,15 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/getReleaseNoteMapping")
+	@Path("/releaseNoteMapping")
 	@GET
 	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Map<ReleaseNoteCategory, List<String>> mapping = new HashMap<>();
-		ReleaseNoteCategory.toOriginalList().forEach(category -> mapping.put(category,
+		Map<ReleaseNotesCategory, List<String>> mapping = new HashMap<>();
+		ReleaseNotesCategory.toOriginalList().forEach(category -> mapping.put(category,
 				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category)));
 		return Response.ok(mapping).build();
 	}

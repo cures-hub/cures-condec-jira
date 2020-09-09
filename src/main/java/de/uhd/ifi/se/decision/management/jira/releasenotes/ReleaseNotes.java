@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
 /**
  * Models release notes.
  */
-public class ReleaseNote {
+public class ReleaseNotes {
 
 	private long id;
 	private String title;
@@ -21,10 +21,10 @@ public class ReleaseNote {
 
 	// This default constructor is necessary for the JSON string to object mapping.
 	// Do not delete it!
-	public ReleaseNote() {
+	public ReleaseNotes() {
 	}
 
-	public ReleaseNote(String title, String content, String projectKey, String startDate, String endDate) {
+	public ReleaseNotes(String title, String content, String projectKey, String startDate, String endDate) {
 		this.title = title;
 		this.content = content;
 		this.projectKey = projectKey;
@@ -32,12 +32,12 @@ public class ReleaseNote {
 		this.endDate = endDate;
 	}
 
-	public ReleaseNote(ReleaseNotesInDatabase dbEntry) {
+	public ReleaseNotes(ReleaseNotesInDatabase dbEntry) {
 		this(dbEntry.getId(), dbEntry.getTitle(), dbEntry.getProjectKey(), dbEntry.getContent(), dbEntry.getStartDate(),
 				dbEntry.getEndDate());
 	}
 
-	private ReleaseNote(long id, String title, String projectKey, String content, String startDate,
+	private ReleaseNotes(long id, String title, String projectKey, String content, String startDate,
 			String endDate) {
 		this.id = id;
 		this.title = title;

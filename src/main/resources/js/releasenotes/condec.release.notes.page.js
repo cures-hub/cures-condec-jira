@@ -79,21 +79,22 @@
 	}
 	
 	function showLoadingIndicator(display){
-		if(display){
+		if (display) {
 			$("#release-note-table-loader").css("display","block")
-		}else{
+		} else {
 			$("#release-note-table-loader").css("display","none");
 		}
 	}
 	
 	function createTableRow(releaseNote){
-		var tableRow="<tr>";
-		tableRow +="<td>"+releaseNote.id+"</td>";
-		tableRow +="<td>"+releaseNote.title+"</td>";
-		tableRow +="<td>"+releaseNote.startDate+"</td>";
-		tableRow +="<td>"+releaseNote.endDate+"</td>";
-		tableRow +="<td><button class='aui-button' id='openEditReleaseNoteDialogButton_"+releaseNote.id+"' onclick='conDecReleaseNotePage.displayReleaseNote("+releaseNote.id+")'>Display</button></td>";
-		tableRow +="</tr>";
+		var tableRow= "<tr>";
+		tableRow += "<td>" + releaseNote.id + "</td>";
+		tableRow += "<td>" + releaseNote.title + "</td>";
+		tableRow += "<td>" + releaseNote.startDate + "</td>";
+		tableRow += "<td>" + releaseNote.endDate + "</td>";
+		tableRow += "<td><button class='aui-button' id='openEditReleaseNoteDialogButton_" + releaseNote.id 
+					+ "' onclick='conDecReleaseNotePage.displayReleaseNote(" + releaseNote.id + ")'>Display</button></td>";
+		tableRow += "</tr>";
 		return tableRow
 	}
 

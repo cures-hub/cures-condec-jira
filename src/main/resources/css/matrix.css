@@ -17,6 +17,7 @@
 	display: block;
     overflow: auto;
     resize: both;
+    height: 500px;
 }
 
 .columnHeader {

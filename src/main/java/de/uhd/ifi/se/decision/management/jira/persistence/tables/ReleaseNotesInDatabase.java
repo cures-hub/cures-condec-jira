@@ -12,7 +12,7 @@ import net.java.ao.schema.Table;
  * Interface for release notes. Determines which table columns are used for
  * object relational mapping of release notes to the database.
  *
- * @see ReleaseNote
+ * @see ReleaseNotes
  */
 @Table("CondecReleaseNotes")
 public interface ReleaseNotesInDatabase extends RawEntity<Integer> {
