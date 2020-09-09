@@ -95,10 +95,15 @@ public class RDFSource implements KnowledgeSource {
 		while (resultSet != null && resultSet.hasNext()) {
 			QuerySolution row = resultSet.nextSolution();
 			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?alternative").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
-			Recommendation recommendation = new Recommendation(this.name, alternative);
+			Recommendation recommendation = new Recommendation(this.name, alternative, KnowledgeSourceType.RDF);
 			this.recommendations.add(recommendation);
 
 		}
+		KnowledgeElement alternative = new KnowledgeElement();
+		alternative.setSummary("Test Summary from RDF Source");
+		alternative.setDescription("TEst Description from RDF Source");
+		Recommendation recommendation = new Recommendation(this.name, alternative, KnowledgeSourceType.RDF);
+		this.recommendations.add(recommendation);
 		return this.recommendations;
 	}
 

@@ -30,7 +30,7 @@
 							tableRow += "<tr>";
 							tableRow += "<td><a class='alternative-summary' href='" + url + "'>" + alternative.summary + "</a></td>";
 							tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
-							tableRow += "<td>"+ recommendation.score +"</td>";
+							tableRow += "<td>"+ recommendation.score +"%</td>";
 							tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
 							tableRow += "</tr>";
 							table.append(tableRow);
