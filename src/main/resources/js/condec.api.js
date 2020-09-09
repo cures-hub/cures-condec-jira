@@ -213,9 +213,8 @@
 	/*
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
-	ConDecAPI.prototype.createLink = function (knowledgeTypeOfChild, idOfParent, idOfChild,
-			documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
+	ConDecAPI.prototype.createLink = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey
 				+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 				+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
 			if (error === null) {

@@ -271,7 +271,7 @@
             var idOfChild = selectElementField.value.split(":")[0];
             var documentationLocationOfChild = selectElementField.value.split(":")[1];
             var linkType = selectLinkTypeField.value;
-            conDecAPI.createLink(null, id, idOfChild, documentationLocation, documentationLocationOfChild, 
+            conDecAPI.createLink(id, idOfChild, documentationLocation, documentationLocationOfChild, 
             		linkType, function () {conDecObservable.notify()});
             AJS.dialog2(linkDialog).hide();
         };

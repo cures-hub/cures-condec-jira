@@ -327,7 +327,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+			@QueryParam("idOfParent") long idOfParent,
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
 			@QueryParam("idOfChild") long idOfChild,
 			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild,
@@ -351,8 +351,7 @@ public class KnowledgeRest {
 		persistenceManager.updateIssueStatus(parentElement, childElement, user);
 
 		Link link;
-		if (linkTypeName == null) {
-			childElement.setType(knowledgeTypeOfChild);
+		if (linkTypeName == null || linkTypeName.equals("null")) {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
 		} else {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
