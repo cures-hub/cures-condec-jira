@@ -36,7 +36,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
-		assertEquals(11, recommendations.size());
+		assertEquals(12, recommendations.size());
 	}
 
 	@Test
