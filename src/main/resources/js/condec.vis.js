@@ -75,16 +75,16 @@
 		        	conDecDialog.showCreateDialog(-1, null, "Decision");
 		        },
 		        deleteNode : function(selectedNode, callback) {
-			        conDecVis.deleteNode(selectedNode);
+			        conDecVis.deleteNode(selectedNode, callback);
 		        },
 		        addEdge : function(selectedNodes, callback) {
 			        conDecVis.addEdge(selectedNodes);
 		        },
 		        deleteEdge : function(selectedEdge, callback) {
-			        conDecVis.deleteEdge(selectedEdge, visData);
+			        conDecVis.deleteEdge(selectedEdge, visData, callback);
 		        },
 		        editNode : function(selectedNode, callback) {
-			        conDecVis.editNode(selectedNode);
+			        conDecVis.editNode(selectedNode, callback);
 		        },
 		        editEdge : function(selectedNode, callback) {
 			        conDecVis.editEdge(selectedNode);
@@ -123,12 +123,12 @@
 		conDecContextMenu.createContextMenu(elementId, documentationLocation, params.event, "vis-container");
 	};
 
-	ConDecVis.prototype.deleteNode = function (data) {
-		conDecDialog.showDeleteDialog(getElementId(data.nodes[0]), getDocumentationLocation(data.nodes[0]));
+	ConDecVis.prototype.deleteNode = function (data, callback) {
+		conDecDialog.showDeleteDialog(getElementId(data.nodes[0]), getDocumentationLocation(data.nodes[0]), callback);
 	};
 	
-	ConDecVis.prototype.editNode = function (data) {
-		conDecDialog.showEditDialog(data.elementId, data.documentationLocation);
+	ConDecVis.prototype.editNode = function (data, callback) {
+		conDecDialog.showEditDialog(data.elementId, data.documentationLocation, callback);
 	};
 
 	ConDecVis.prototype.addEdge = function (data) {
@@ -139,7 +139,7 @@
 				getElementId(data.to), getDocumentationLocation(data.to));
 	};
 
-	ConDecVis.prototype.deleteEdge = function (data, visData) {
+	ConDecVis.prototype.deleteEdge = function (data, visData, callback) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
 		var idOfChild = getElementId(edgeToBeDeleted.to);
@@ -147,7 +147,7 @@
 		var documentationLocationOfChild = getDocumentationLocation(edgeToBeDeleted.to);
 		var documentationLocationOfParent = getDocumentationLocation(edgeToBeDeleted.from);
 		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
-		        documentationLocationOfParent);
+		        documentationLocationOfParent, callback);
 	};
 	
 	ConDecVis.prototype.editEdge = function (data) {

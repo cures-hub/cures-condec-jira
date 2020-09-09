@@ -1,9 +1,7 @@
 <section id="decisionTableCriteriaDialog" class="aui-dialog2 aui-dialog2-small aui-layer" role="dialog" aria-hidden="true">
     <header class="aui-dialog2-header">
         <h2 class="aui-dialog2-header-main">Edit Criteria</h2>
-        <button id="dialog-exit-button" class="aui-dialog2-header-close" aria-label="close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog"></span>
-        </button>
+        <button class="aui-close-button" type="button" id="dialog-exit-button" aria-label="close"></button>
     </header>
     <div class="aui-dialog2-content">
 	<table id="dialog-table-content" class="aui">

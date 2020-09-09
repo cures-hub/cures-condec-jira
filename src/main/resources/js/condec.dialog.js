@@ -18,11 +18,11 @@
     var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, defaultSelectTypeField = "Alternative") {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative") {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
-        console.log(defaultSelectTypeField);
+        console.log(selectedType);
         
         // HTML elements
         var createDialog = document.getElementById("create-dialog");
@@ -36,7 +36,7 @@
         // Fill HTML elements
         inputSummaryField.value = "";
         inputDescriptionField.value = "";
-        fillSelectTypeField(selectTypeField, defaultSelectTypeField);
+        fillSelectTypeField(selectTypeField, selectedType);
         fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
         // Set onclick listener on buttons
@@ -171,13 +171,14 @@
         }
     };
 
-    ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation) {
+    ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation, callback = function(){}) {
         console.log("conDecDialog showDeleteDialog");
 
         // HTML elements
         var deleteDialog = document.getElementById("delete-dialog");
         var content = document.getElementById("delete-dialog-content");
         var submitButton = document.getElementById("delete-dialog-submit-button");
+        var cancelIcon = document.getElementById("delete-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-dialog-cancel-button");
 
         // Set onclick listener on buttons
@@ -187,22 +188,28 @@
             });
             AJS.dialog2(deleteDialog).hide();
         };
+        
+        cancelIcon.onclick = function () {
+            callback(null);
+        };
 
         cancelButton.onclick = function () {
             AJS.dialog2(deleteDialog).hide();
+            callback(null);
         };
 
         // Show dialog
         AJS.dialog2(deleteDialog).show();
     };
 
-    ConDecDialog.prototype.showDeleteLinkDialog = function (id, documentationLocation, idOfParent, documentationLocationOfParent) {
+    ConDecDialog.prototype.showDeleteLinkDialog = function (id, documentationLocation, idOfParent, documentationLocationOfParent, callback = function(){}) {
         console.log("conDecDialog showDeleteLinkDialog");
 
         // HTML elements
         var deleteLinkDialog = document.getElementById("delete-link-dialog");
         var content = document.getElementById("delete-link-dialog-content");
         var submitButton = document.getElementById("delete-link-dialog-submit-button");
+        var cancelIcon = document.getElementById("delete-link-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
 
         // Set onclick listener on buttons
@@ -218,9 +225,14 @@
                 });
             AJS.dialog2(deleteLinkDialog).hide();
         };
+        
+        cancelIcon.onclick = function () {
+            callback(null);
+        };
 
         cancelButton.onclick = function () {
             AJS.dialog2(deleteLinkDialog).hide();
+            callback(null);
         };
 
         // Show dialog
@@ -316,7 +328,10 @@
         AJS.$(selectField).auiSelect2();
     }
 
-    ConDecDialog.prototype.showEditDialog = function (id, documentationLocation, type) {
+    /**
+	 * external references: conDecVis
+	 */
+    ConDecDialog.prototype.showEditDialog = function (id, documentationLocation, callback = function(){}) {
         console.log("conDecDialog showEditDialog");
 
         conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
@@ -340,6 +355,7 @@
             var selectTypeField = document.getElementById("edit-form-select-type");
             var selectLocationField = document.getElementById("edit-form-select-location");
             var submitButton = document.getElementById("edit-dialog-submit-button");
+            var cancelIcon = document.getElementById("edit-dialog-cancel-icon");
             var cancelButton = document.getElementById("edit-dialog-cancel-button");
 
             var selectLevelField = document.getElementById("edit-form-select-level");
@@ -385,10 +401,15 @@
                     });
                 AJS.dialog2(editDialog).hide();
             };
+            
+            cancelIcon.onclick = function () {
+                callback(null);
+            };
 
             cancelButton.onclick = function () {
                 AJS.dialog2(editDialog).hide();
-            };
+                callback(null); 
+            };       
 
             // Show dialog
             AJS.dialog2(editDialog).show();
