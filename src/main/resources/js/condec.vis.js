@@ -87,7 +87,7 @@
 			        conDecVis.editNode(selectedNode, callback);
 		        },
 		        editEdge : function(selectedEdge, callback) {
-			        conDecVis.editEdge(selectedEdge);
+			        conDecVis.editEdge(selectedEdge, visData);
 		        }
 		    },
 		    physics : {
@@ -146,17 +146,25 @@
 	ConDecVis.prototype.deleteEdge = function (data, visData, callback) {
 		var allEdges = new vis.DataSet(visData.edges);
 		var edgeToBeDeleted = allEdges.get(data.edges[0]);
-		var idOfChild = getElementId(edgeToBeDeleted.to);
-		var idOfParent = getElementId(edgeToBeDeleted.from);
-		var documentationLocationOfChild = getDocumentationLocation(edgeToBeDeleted.to);
-		var documentationLocationOfParent = getDocumentationLocation(edgeToBeDeleted.from);
-		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
-		        documentationLocationOfParent, callback);
+		showDeleteLinkDialogForVisEdge(edgeToBeDeleted);
 	};
 	
-	ConDecVis.prototype.editEdge = function (data) {
-		console.log(data);
+	ConDecVis.prototype.editEdge = function (data, visData) {
+		conDecDialog.showLinkDialog(getElementId(data.from), getDocumentationLocation(data.from), 
+				getElementId(data.to), getDocumentationLocation(data.to), data.label);
+		var allEdges = new vis.DataSet(visData.edges);
+		var edgeToBeDeleted = allEdges.get(data.id);
+		showDeleteLinkDialogForVisEdge(edgeToBeDeleted);
 	};
+	
+	function showDeleteLinkDialogForVisEdge(edge, callback) {
+		var idOfChild = getElementId(edge.to);
+		var idOfParent = getElementId(edge.from);
+		var documentationLocationOfChild = getDocumentationLocation(edge.to);
+		var documentationLocationOfParent = getDocumentationLocation(edge.from);
+		conDecDialog.showDeleteLinkDialog(idOfChild, documentationLocationOfChild, idOfParent,
+		        documentationLocationOfParent, callback);	
+	}
 
 	function getDocumentationLocation(node) {
 		return node.substr(-1);
