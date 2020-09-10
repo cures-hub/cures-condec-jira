@@ -20,6 +20,10 @@
     height: 500px;
 }
 
+#matrix td:hover {
+	background-color: #e0e0e0;
+}
+
 .columnHeader {
     position: -webkit-sticky; /* for Safari */
     position: sticky;

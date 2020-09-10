@@ -244,10 +244,15 @@
 
         // HTML elements
         var linkDialog = document.getElementById("link-dialog");
+        var sourceElementField = document.getElementById("link-form-source-element");
         var selectElementField = document.getElementById("link-form-select-element");
         var selectLinkTypeField = document.getElementById("link-form-select-linktype");
         var submitButton = document.getElementById("link-dialog-submit-button");
         var cancelButton = document.getElementById("link-dialog-cancel-button");
+        
+        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
+        	sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
+        });
         
         fillSelectElementField(selectElementField, id, documentationLocation, idOfTarget, documentationLocationOfTarget);     
         fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation);

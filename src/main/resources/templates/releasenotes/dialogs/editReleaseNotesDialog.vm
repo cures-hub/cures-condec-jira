@@ -2,11 +2,8 @@
          aria-hidden="true">
     <header class="aui-dialog2-header">
         <h2 id="edit-release-note-header" class="aui-dialog2-header-main">Edit Release Note</h2>
-        <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-        </a>
+        <button class="aui-close-button" type="button" id="link-dialog-cancel-icon" aria-label="close"></button>
     </header>
-
 
     <form class="aui">
         <div class="field-group">
