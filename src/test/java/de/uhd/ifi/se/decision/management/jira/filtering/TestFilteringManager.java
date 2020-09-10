@@ -105,10 +105,7 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		Set<String> linkTypes = new HashSet<>();
-		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());

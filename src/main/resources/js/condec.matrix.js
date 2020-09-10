@@ -104,15 +104,33 @@
 		const tableRowCell = document.createElement("td");
 		if (positionX === positionY) {
 			tableRowCell.style.backgroundColor = "lightGray";
+			return tableRowCell;
 		}
+		const sourceElement = this.headerElements[positionX];
+		const targetElement = this.headerElements[positionY];
+		
+		var linkType = null;
 		if (link !== null) {
 			tableRowCell.style.backgroundColor = link.color;
-			const sourceElement = this.headerElements[positionX];
-			const targetElement = this.headerElements[positionY];
-			tableRowCell.title = "Link Type: " + link.type + "; From " + sourceElement.type + ": "
-			        + sourceElement.summary + " to " + targetElement.type + ": " + targetElement.summary;
-			AJS.$(tableRowCell).tooltip();
+			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is linked with type " + link.type
+				+" to " + targetElement.type + ": " + targetElement.summary;
+			linkType = link.type;
+		} else {
+			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is not linked to " 
+				+ targetElement.type + ": " + targetElement.summary;
 		}
+		AJS.$(tableRowCell).tooltip();
+		tableRowCell.addEventListener("click", function(event) {
+			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation, 
+					targetElement.id, targetElement.documentationLocation, linkType);
+		});
+		
+		tableRowCell.addEventListener("contextmenu", function(event) {
+			event.preventDefault();
+			conDecContextMenu.createContextMenu(sourceElement.id, sourceElement.documentationLocation, event, "matrix-body", 
+					targetElement.id, targetElement.documentationLocation, linkType);
+		});
+
 		return tableRowCell;
 	}
 

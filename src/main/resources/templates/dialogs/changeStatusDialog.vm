@@ -1,9 +1,7 @@
 <section id="change-status-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
     <header class="aui-dialog2-header">
         <h2 id="change-status-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.change.status.item.label")</h2>
-        <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-        </a>
+        <button class="aui-close-button" type="button" id="change-status-dialog-cancel-icon" aria-label="close"></button>
     </header>
     <div id="change-status-dialog-content" class="aui-dialog2-content">
         <form class="aui">

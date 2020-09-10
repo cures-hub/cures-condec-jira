@@ -144,7 +144,7 @@
 		if (documentationLocationOfNewParent !== "c" && documentationLocationOfChild !== "c") {
 			conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
 			        documentationLocationOfChild, function() {
-				        conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
+				        conDecAPI.createLink(target.id, draggedElement.id, documentationLocationOfNewParent,
 				                documentationLocationOfChild, null, function() {
 					                conDecObservable.notify();
 				                });

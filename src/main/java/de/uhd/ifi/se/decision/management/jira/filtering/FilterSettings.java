@@ -245,7 +245,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty("linkTypes")
 	public void setLinkTypes(Set<String> namesOfTypes) {
-		linkTypes = namesOfTypes != null ? namesOfTypes : LinkType.toStringSet();
+		linkTypes = namesOfTypes != null ? namesOfTypes : DecisionKnowledgeProject.getNamesOfLinkTypes();
 	}
 
 	/**

@@ -42,7 +42,7 @@ public class VisGraph {
 	private Set<VisEdge> edges;
 
 	@JsonIgnore
-	private KnowledgeElement rootElement;
+	private KnowledgeElement selectedElement;
 
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> subgraph;
@@ -59,7 +59,7 @@ public class VisGraph {
 		}
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
-		rootElement = filterSettings.getSelectedElement();
+		selectedElement = filterSettings.getSelectedElement();
 		addNodesAndEdges(filterSettings.isHierarchical());
 	}
 
@@ -70,8 +70,8 @@ public class VisGraph {
 	 *            hierarchy of nodes.
 	 */
 	private void addNodesAndEdges(boolean isHierarchical) {
-		if (rootElement != null) {
-			subgraph.addVertex(rootElement);
+		if (selectedElement != null) {
+			subgraph.addVertex(selectedElement);
 		}
 		if (isHierarchical) {
 			addNodesAndEdgesWithHierarchy();
@@ -91,7 +91,7 @@ public class VisGraph {
 
 		Set<Link> allEdges = new HashSet<>();
 		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
-				rootElement);
+				selectedElement);
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
@@ -127,8 +127,8 @@ public class VisGraph {
 		return subgraph;
 	}
 
-	@XmlElement(name = "rootElementId")
-	public String getRootElementId() {
-		return rootElement == null ? "" : rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
+	@XmlElement(name = "selectedVisNodeId")
+	public String getSelectedVisNodeId() {
+		return selectedElement == null ? "" : selectedElement.getId() + "_" + selectedElement.getDocumentationLocationAsString();
 	}
 }

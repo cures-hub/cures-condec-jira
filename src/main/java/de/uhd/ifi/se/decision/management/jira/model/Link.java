@@ -47,7 +47,6 @@ public class Link extends DefaultWeightedEdge {
 	public Link(KnowledgeElement sourceElement, KnowledgeElement destinationElement, LinkType linkType) {
 		this(sourceElement, destinationElement);
 		this.type = linkType;
-
 	}
 
 	public Link(long idOfSourceElement, long idOfDestinationElement, DocumentationLocation sourceDocumentationLocation,
@@ -517,9 +516,12 @@ public class Link extends DefaultWeightedEdge {
 	 * @return a link object.
 	 */
 	public static Link instantiateDirectedLink(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
-		return instantiateDirectedLink(parentElement, childElement, linkType);
+		if (parentElement.getType().replaceProAndConWithArgument() == KnowledgeType.ARGUMENT) {
+			LinkType linkType = LinkType.getLinkTypeForKnowledgeType(parentElement.getType());
+			return instantiateDirectedLink(parentElement, childElement, linkType);
+		}
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(childElement.getType());
+		return instantiateDirectedLink(childElement, parentElement, linkType);
 	}
 
 	/**
