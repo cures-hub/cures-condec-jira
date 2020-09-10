@@ -119,6 +119,12 @@ public class TestCreateLink extends TestSetUp {
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledLinkTypeFilled() {
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", "Decision").getStatus());
+				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", "relates").getStatus());
+	}
+
+	@Test
+	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledLinkTypeInvalid() {
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", "null").getStatus());
 	}
 }
