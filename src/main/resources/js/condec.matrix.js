@@ -124,6 +124,12 @@
 			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation, 
 					targetElement.id, targetElement.documentationLocation, linkType);
 		});
+		
+		tableRowCell.addEventListener("contextmenu", function(event) {
+			event.preventDefault();
+			conDecContextMenu.createContextMenu(sourceElement.id, sourceElement.documentationLocation, event, "matrix-body", 
+					targetElement.id, targetElement.documentationLocation, linkType);
+		});
 
 		return tableRowCell;
 	}

@@ -53,8 +53,8 @@
 	 * external references: condec.treant, condec.tree.viewer, condec.vis,
 	 * condec.evolution.page
 	 */
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
-	        container) {
+	ConDecContextMenu.prototype.createContextMenu = function (id, documentationLocation, event, container,
+			idOfTarget, documentationLocationOfTarget, linkType) {
 		console.log("contextmenu opened");
 		console.log("element id: " + id + " element documentation location: " + documentationLocation);
 		
@@ -67,7 +67,7 @@
 		}
 
 		showOrHideContextMenuItems(id, documentationLocation, container);
-		setContextMenuItemsEventHandlers(id, documentationLocation);
+		setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 
 		var position = getPosition(event, container);
 		$(contextMenuNode).css({
@@ -80,7 +80,7 @@
 		contextMenuNode.setAttribute('open', '');
 	};
 
-	function setContextMenuItemsEventHandlers(id, documentationLocation) {
+	function setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType) {
 		document.getElementById("condec-context-menu-group-rename").onclick = function() {
 			conDecDialog.showRenameGroupDialog(id);
 		};
@@ -140,11 +140,11 @@
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id, documentationLocation);
+			conDecDialog.showLinkDialog(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
-			conDecDialog.showDeleteLinkDialog(id, documentationLocation);
+			conDecDialog.showDeleteLinkDialog(id, documentationLocation, idOfTarget, documentationLocationOfTarget);
 		};
 
 		document.getElementById("condec-context-menu-summarized-code").onclick = function() {
@@ -185,6 +185,7 @@
 		};
 	}
 
+	// TODO Remove in Jira version 8.12
 	function getPosition(event, container) {
 		var element = event.target;
 		if (container === null && event !== null) {
@@ -311,6 +312,5 @@
 		}
 	}
 
-	// export ConDecContextMenu
 	global.conDecContextMenu = new ConDecContextMenu();
 })(window);
