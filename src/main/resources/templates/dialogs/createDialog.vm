@@ -5,6 +5,10 @@
 	</header>
 	<div id="create-dialog-content" class="aui-dialog2-content">
 		<form class="aui">
+			<div class="field-group" id="create-form-source-element-group">
+				<label for="create-form-source-element">$i18n.getText("condec.label.source.element"):</label>
+				<input class="text full-width-field" type="text" id="create-form-source-element" disabled>	
+			</div>
 			<div class="field-group">
 				<label for="create-form-input-summary">$i18n.getText("condec.label.summary"):</label>
 				<input id="create-form-input-summary" type="text" placeholder=$i18n.getText("condec.label.summary") class="text full-width-field" value="">

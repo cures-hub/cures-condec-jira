@@ -34,6 +34,7 @@
         var cancelButton = document.getElementById("create-dialog-cancel-button");
 
         // Fill HTML elements
+        fillSourceElementField(idOfParentElement, documentationLocationOfParentElement);
         inputSummaryField.value = "";
         inputDescriptionField.value = "";
         fillSelectTypeField(selectTypeField, selectedType);
@@ -59,6 +60,18 @@
         // Show dialog
         AJS.dialog2(createDialog).show();
     };
+    
+    function fillSourceElementField(id, documentationLocation) {
+    	var sourceElementField = document.getElementById("create-form-source-element");
+    	if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
+    		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
+        		sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
+        	});
+    		document.getElementById("create-form-source-element-group").style.display = "block";
+    	} else {
+    		document.getElementById("create-form-source-element-group").style.display = "none";
+    	}   	
+    }
 
     ConDecDialog.prototype.showAssignDialog = function (sourceId, documentationLocation) {
         console.log("conDecDialog showAssignDialog");
