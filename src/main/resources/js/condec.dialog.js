@@ -34,7 +34,7 @@
         var cancelButton = document.getElementById("create-dialog-cancel-button");
 
         // Fill HTML elements
-        fillSourceElementField("create-form", idOfParentElement, documentationLocationOfParentElement);
+        fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
         inputSummaryField.value = "";
         inputDescriptionField.value = "";
         fillSelectTypeField(selectTypeField, selectedType);
@@ -61,15 +61,15 @@
         AJS.dialog2(createDialog).show();
     };
     
-    function fillSourceElementField(dialogName, id, documentationLocation) {
-    	var sourceElementField = document.getElementById(dialogName + "-source-element");
+    function fillElementField(elementFieldName, id, documentationLocation) {
+    	var elementField = document.getElementById(elementFieldName);
     	if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
     		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
-        		sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
+        		elementField.value = sourceElement.type + " / " + sourceElement.summary;
         	});
-    		document.getElementById(dialogName + "-source-element-group").style.display = "block";
+    		document.getElementById(elementFieldName + "-group").style.display = "block";
     	} else {
-    		document.getElementById(dialogName + "-source-element-group").style.display = "none";
+    		document.getElementById(elementFieldName + "-group").style.display = "none";
     	}   	
     }
 
@@ -224,14 +224,18 @@
         var submitButton = document.getElementById("delete-link-dialog-submit-button");
         var cancelIcon = document.getElementById("delete-link-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
+        
+        // Fill HTML elements
+        fillElementField("delete-link-dialog-source-element", id, documentationLocation);
+        if (idOfParent === null || idOfParent === undefined || idOfParent <= 0) {
+            var parentElement = conDecTreant.findParentElement(id);
+            idOfParent = parentElement["id"];
+            documentationLocationOfParent = parentElement["documentationLocation"];
+        }
+        fillElementField("delete-link-dialog-target-element", idOfParent, documentationLocationOfParent);
 
         // Set onclick listener on buttons
         submitButton.onclick = function () {
-            if (idOfParent === null || idOfParent === undefined || idOfParent === 0) {
-                var parentElement = conDecTreant.findParentElement(id);
-                idOfParent = parentElement["id"];
-                documentationLocationOfParent = parentElement["documentationLocation"];
-            }
             conDecAPI.deleteLink(idOfParent, id, documentationLocationOfParent,
                 documentationLocation, function () {
                     conDecObservable.notify();
@@ -264,7 +268,7 @@
         var cancelButton = document.getElementById("link-dialog-cancel-button");
         
         // Fill HTML elements
-        fillSourceElementField("link-form", id, documentationLocation);
+        fillElementField("link-form-source-element", id, documentationLocation);
         
         if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
         	conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {

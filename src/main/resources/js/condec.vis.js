@@ -92,7 +92,8 @@
 		    },
 		    physics : {
 		        enabled : true,
-		        stabilization : true // if false, there is a lot of movement at the beginning
+		        stabilization : true // if false, there is a lot of movement
+										// at the beginning
 		    },
 		    nodes : {
 		    	  shapeProperties: {
@@ -127,34 +128,36 @@
 		conDecDialog.showCreateDialog(-1, null, "Decision");
 	};
 
-	ConDecVis.prototype.deleteNode = function (data, callback) {
-		conDecDialog.showDeleteDialog(getElementId(data.nodes[0]), getDocumentationLocation(data.nodes[0]), callback);
+	ConDecVis.prototype.deleteNode = function (selectedNodes, callback) {
+		conDecDialog.showDeleteDialog(getElementId(selectedNodes.nodes[0]), getDocumentationLocation(selectedNodes.nodes[0]), callback);
 	};
 	
-	ConDecVis.prototype.editNode = function (data, callback) {
-		conDecDialog.showEditDialog(data.elementId, data.documentationLocation, callback);
+	ConDecVis.prototype.editNode = function (selectedNode, callback) {
+		conDecDialog.showEditDialog(selectedNode.elementId, selectedNode.documentationLocation, callback);
 	};
 
-	ConDecVis.prototype.addEdge = function (data) {
-		if (data.from === data.to) {
+	ConDecVis.prototype.addEdge = function (newEdge) {
+		if (newEdge.from === newEdge.to) {
 			return;
 		}
-		conDecDialog.showLinkDialog(getElementId(data.from), getDocumentationLocation(data.from), 
-				getElementId(data.to), getDocumentationLocation(data.to));
+		conDecDialog.showLinkDialog(getElementId(newEdge.from), getDocumentationLocation(newEdge.from), 
+				getElementId(newEdge.to), getDocumentationLocation(newEdge.to));
 	};
 
-	ConDecVis.prototype.deleteEdge = function (data, visData, callback) {
+	ConDecVis.prototype.deleteEdge = function (selectedEdges, visData, callback) {
 		var allEdges = new vis.DataSet(visData.edges);
-		var edgeToBeDeleted = allEdges.get(data.edges[0]);
-		showDeleteLinkDialogForVisEdge(edgeToBeDeleted);
+		var edgeToBeDeleted = allEdges.get(selectedEdges.edges[0]);
+		showDeleteLinkDialogForVisEdge(edgeToBeDeleted, callback);
 	};
 	
-	ConDecVis.prototype.editEdge = function (data, visData) {
-		conDecDialog.showLinkDialog(getElementId(data.from), getDocumentationLocation(data.from), 
-				getElementId(data.to), getDocumentationLocation(data.to), data.label);
+	ConDecVis.prototype.editEdge = function (newEdge, visData) {		
 		var allEdges = new vis.DataSet(visData.edges);
-		var edgeToBeDeleted = allEdges.get(data.id);
-		showDeleteLinkDialogForVisEdge(edgeToBeDeleted);
+		var edgeToBeDeleted = allEdges.get(newEdge.id);
+		if (edgeToBeDeleted.from !== newEdge.from || edgeToBeDeleted.to !== newEdge.to) {
+			showDeleteLinkDialogForVisEdge(edgeToBeDeleted);
+		}		
+		conDecDialog.showLinkDialog(getElementId(newEdge.from), getDocumentationLocation(newEdge.from), 
+				getElementId(newEdge.to), getDocumentationLocation(newEdge.to), newEdge.label);
 	};
 	
 	function showDeleteLinkDialogForVisEdge(edge, callback) {

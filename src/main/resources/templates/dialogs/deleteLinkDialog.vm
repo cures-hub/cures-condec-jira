@@ -3,9 +3,19 @@
 		<h2 id="delete-link-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.delete.link.item.label")</h2>
 		<button class="aui-close-button" type="button" id="delete-link-dialog-cancel-icon" aria-label="close"></button>
 	</header>
-	<div id="delete-link-dialog-content" class="aui-dialog2-content">
-		$i18n.getText("condec.warning.delete.link")
-    </div>
+	<div id="delete-link-dialog-content" class="aui-dialog2-content">		
+		<p>$i18n.getText("condec.warning.delete.link")</p>	
+		<form class="aui">
+			<div class="field-group" id="delete-link-dialog-source-element-group">
+				<label for="delete-link-dialog-source-element">$i18n.getText("condec.label.source.element"):</label>
+				<input class="text full-width-field" type="text" id="delete-link-dialog-source-element" disabled>	
+			</div>
+			<div class="field-group" id="delete-link-dialog-target-element-group">
+				<label for="delete-link-dialog-target-element">$i18n.getText("condec.label.target.element"):</label>
+				<input class="text full-width-field" type="text" id="delete-link-dialog-target-element" disabled>			
+			</div>
+		</form>
+	</div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
 			<button id="delete-link-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.delete.link")</button>
