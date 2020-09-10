@@ -239,7 +239,7 @@
         AJS.dialog2(deleteLinkDialog).show();
     };
 
-    ConDecDialog.prototype.showLinkDialog = function (id, documentationLocation, idOfTarget, documentationLocationOfTarget) {
+    ConDecDialog.prototype.showLinkDialog = function (id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType) {
         console.log("conDecDialog showLinkDialog");
 
         // HTML elements
@@ -254,20 +254,30 @@
         	sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
         });
         
-        fillSelectElementField(selectElementField, id, documentationLocation, idOfTarget, documentationLocationOfTarget);     
-        fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation);
+        if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
+        	conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {
+        		selectElementField.innerHTML = "";
+        		var text = targetElement.type + " / " + targetElement.summary;
+        		var value = targetElement.id + ":" + targetElement.documentationLocation;
+        		var option = new Option(text, value, false, false);
+        		$(selectElementField).append(option);
+        		if (linkType === null || linkType === undefined) {
+        			$(selectElementField).trigger("change");
+        		}
+        	});
+        } else {
+        	fillSelectElementField(selectElementField, id, documentationLocation);        	
+        }
+
+        fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation, linkType);
 
         selectElementField.onchange = function () {
         	var idOfSelectedElement = this.value.split(":")[0];
         	var documentationLocationOfSelectedElement = this.value.split(":")[1];
             conDecAPI.getDecisionKnowledgeElement(idOfSelectedElement, documentationLocationOfSelectedElement, 
             		function (element) {
-                if (element.type === "Argument" || element.type === "Pro") {
-                	$("#link-form-select-linktype").val("Supports");                
-                }
-                if (element.type === "Con") {
-                	$("#link-form-select-linktype").val("Attacks");                
-                }
+                selectLinkTypeField.value = suggestLinkType(element.type);
+                AJS.$(selectLinkTypeField).auiSelect2();
             });
         };
 
@@ -289,7 +299,7 @@
         AJS.dialog2(linkDialog).show();
     };
 
-    function fillSelectElementField(selectField, id, documentationLocation, idOfTarget, documentationLocationOfTarget) {
+    function fillSelectElementField(selectField, id, documentationLocation) {
         if (selectField === null) {
             return;
         }
@@ -302,36 +312,39 @@
                     + unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
             }
             selectField.insertAdjacentHTML("afterBegin", insertString);
-            
-            if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
-            	console.log("Target element provided");
-                $("#link-form-select-element").val(idOfTarget + ":" + documentationLocationOfTarget);
-            }
         });
         AJS.$(selectField).auiSelect2();
     }
 
-    function fillSelectLinkTypeField(selectField, id, documentationLocation) {
+    function fillSelectLinkTypeField(selectField, id, documentationLocation, linkType) {
         if (selectField === null) {
             return;
         }
         selectField.innerHTML = "";
         var linkTypes = conDecAPI.getLinkTypes();
         var insertString = "";
-        var isSelected = "";
         for (index = 0; index < linkTypes.length; index++) {
-            if (linkTypes[index].match("Relates")) {
-                isSelected = "selected";
-            } else {
-                isSelected = "";
-            }
-            console.log(linkTypes[index]);
-            insertString += "<option " + isSelected + " value='" + linkTypes[index] + "'>"
+            insertString += "<option " + " value='" + linkTypes[index] + "'>"
                 + linkTypes[index] + "</option>";
         }
         selectField.insertAdjacentHTML("afterBegin", insertString);
+        if (linkType !== null && linkType !== undefined) {
+        	console.log(linkType);
+        	selectField.value = linkTypes.find(type => type.toLowerCase().startsWith(linkType));
+        } else {
+        	selectField.value = "Relates";
+        }
         AJS.$(selectField).auiSelect2();
     }
+    
+    function suggestLinkType(knowledgeType) {
+    	if (knowledgeType === "Argument" || knowledgeType === "Pro") {
+    		return "Supports";                
+    	} else if (knowledgeType === "Con") {
+    		return "Attacks";                
+    	} 
+    	return "Relates";   
+	}
 
     /**
 	 * external references: conDecVis

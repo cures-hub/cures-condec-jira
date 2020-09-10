@@ -424,7 +424,7 @@
 	}
 
 	function createLink(parentObj, childObj) {
-		conDecAPI.createLink(null, parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
+		conDecAPI.createLink(parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
 		});
 	}
 

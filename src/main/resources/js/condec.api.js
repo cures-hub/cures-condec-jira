@@ -211,7 +211,7 @@
 	};
 
 	/*
-	 * external references: condec.dialog, condec.treant, condec.tree.viewer
+	 * external references: condec.dialog, condec.treant, condec.tree.viewer, condec.decision.table
 	 */
 	ConDecAPI.prototype.createLink = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
 		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey

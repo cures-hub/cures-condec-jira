@@ -109,11 +109,12 @@
 		const sourceElement = this.headerElements[positionX];
 		const targetElement = this.headerElements[positionY];
 		
+		var linkType = null;
 		if (link !== null) {
 			tableRowCell.style.backgroundColor = link.color;
 			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is linked with type " + link.type
 				+" to " + targetElement.type + ": " + targetElement.summary;
-			
+			linkType = link.type;
 		} else {
 			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is not linked to " 
 				+ targetElement.type + ": " + targetElement.summary;
@@ -121,7 +122,7 @@
 		AJS.$(tableRowCell).tooltip();
 		tableRowCell.addEventListener("click", function(event) {
 			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation, 
-					targetElement.id, targetElement.documentationLocation);
+					targetElement.id, targetElement.documentationLocation, linkType);
 		});
 
 		return tableRowCell;
