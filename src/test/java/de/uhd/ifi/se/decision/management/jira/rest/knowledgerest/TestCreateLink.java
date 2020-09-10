@@ -38,18 +38,21 @@ public class TestCreateLink extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledLinkTypeNull() {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestFilledProjectKeyFilledChildKnowledgeTypeNullParentElementFilledLinkTypeNull() {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationUnknownLinkTypeNull() {
 		assertEquals(Status.NOT_FOUND.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "", 1, "", null).getStatus());

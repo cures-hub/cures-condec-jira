@@ -34,7 +34,7 @@
         var cancelButton = document.getElementById("create-dialog-cancel-button");
 
         // Fill HTML elements
-        fillSourceElementField(idOfParentElement, documentationLocationOfParentElement);
+        fillSourceElementField("create-form", idOfParentElement, documentationLocationOfParentElement);
         inputSummaryField.value = "";
         inputDescriptionField.value = "";
         fillSelectTypeField(selectTypeField, selectedType);
@@ -61,15 +61,15 @@
         AJS.dialog2(createDialog).show();
     };
     
-    function fillSourceElementField(id, documentationLocation) {
-    	var sourceElementField = document.getElementById("create-form-source-element");
+    function fillSourceElementField(dialogName, id, documentationLocation) {
+    	var sourceElementField = document.getElementById(dialogName + "-source-element");
     	if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
     		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
         		sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
         	});
-    		document.getElementById("create-form-source-element-group").style.display = "block";
+    		document.getElementById(dialogName + "-source-element-group").style.display = "block";
     	} else {
-    		document.getElementById("create-form-source-element-group").style.display = "none";
+    		document.getElementById(dialogName + "-source-element-group").style.display = "none";
     	}   	
     }
 
@@ -263,9 +263,8 @@
         var submitButton = document.getElementById("link-dialog-submit-button");
         var cancelButton = document.getElementById("link-dialog-cancel-button");
         
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
-        	sourceElementField.value = sourceElement.type + " / " + sourceElement.summary;
-        });
+        // Fill HTML elements
+        fillSourceElementField("link-form", id, documentationLocation);
         
         if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
         	conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {
@@ -276,7 +275,7 @@
         		$(selectElementField).append(option);
         		if (linkType === null || linkType === undefined) {
         			$(selectElementField).trigger("change");
-        		}
+        		}        		
         	});
         } else {
         	fillSelectElementField(selectElementField, id, documentationLocation);        	

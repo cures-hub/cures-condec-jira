@@ -348,6 +348,11 @@ public class KnowledgeRest {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
+		Link existingLink = parentElement.getLink(childElement);
+		if (existingLink != null) {
+			persistenceManager.deleteLink(existingLink, user);
+		}
+
 		persistenceManager.updateIssueStatus(parentElement, childElement, user);
 
 		Link link;
