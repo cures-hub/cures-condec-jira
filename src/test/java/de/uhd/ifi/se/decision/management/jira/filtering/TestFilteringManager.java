@@ -17,8 +17,10 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFilteringManager extends TestSetUp {
 
@@ -201,5 +203,18 @@ public class TestFilteringManager extends TestSetUp {
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.isElementMatchingTimeFilter(element));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsIrrelevantTextShownFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setIrrelevantTextShown(true);
+		// Add irrelevant sentence
+		JiraIssues.getSentencesForCommentText("Irrelevant text");
+		JiraIssues.addElementToDataBase(1, "other");
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size() > 0);
 	}
 }

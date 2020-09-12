@@ -309,10 +309,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	/**
 	 * @return copy of the {@link KnowledgeGraph} instance.
 	 */
-	public KnowledgeGraph copy() {
+	public static KnowledgeGraph copy(Graph<KnowledgeElement, Link> graphToBeCopied) {
 		KnowledgeGraph copiedGraph = new KnowledgeGraph();
-		this.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
-		this.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
+		graphToBeCopied.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
+		graphToBeCopied.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
 		return copiedGraph;
 	}
 }

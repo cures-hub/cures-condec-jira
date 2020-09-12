@@ -95,13 +95,11 @@
 				conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
 					conDecObservable.notify();
 				});
-			}
-			if (parentNode === "#" && oldParentNode !== "#") {
+			} else if (parentNode === "#" && oldParentNode !== "#") {
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
-			}
-			if (parentNode !== '#' && oldParentNode !== '#') {
+			} else if (parentNode !== '#' && oldParentNode !== '#') {
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
 						conDecObservable.notify();
