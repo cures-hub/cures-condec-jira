@@ -465,8 +465,8 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return true if sentences that are no decision knowledge elements should be
-	 *         included in the filtered knowledge graph.
+	 * @return true if sentences that are not classified as decision knowledge
+	 *         elements should be included in the filtered knowledge graph.
 	 */
 	public boolean isIrrelevantTextShown() {
 		return isIrrelevantTextShown;
@@ -474,8 +474,8 @@ public class FilterSettings {
 
 	/**
 	 * @param isIrrelevantTextShown
-	 *            true if sentences that are no decision knowledge elements should
-	 *            be included in the filtered knowledge graph.
+	 *            true if sentences that are not classified as decision knowledge
+	 *            elements should be included in the filtered knowledge graph.
 	 */
 	@JsonProperty("isIrrelevantTextShown")
 	public void setIrrelevantTextShown(boolean isIrrelevantTextShown) {

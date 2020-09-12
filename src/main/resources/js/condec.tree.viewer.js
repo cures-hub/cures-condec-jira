@@ -29,17 +29,12 @@
 		
 		// Add event listeners to HTML elements for filtering
 		conDecFiltering.addOnChangeEventToFilterElements("jstree", conDecTreeViewer.updateView, false);
-		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-jstree");
-		isIrrelevantTextShownInput.addEventListener("click", function() {conDecTreeViewer.updateView();});
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 		
 		// Fill view
-		this.updateView();
-		jQuery("#jstree").on("loaded.jstree", function() {
-			jQuery("#jstree").jstree("open_all");
-		});
+		this.updateView();		
 	};
 	
 	ConDecTreeViewer.prototype.updateView = function () {
@@ -47,9 +42,10 @@
 		var issueKey = conDecAPI.getIssueKey();		
 		var filterSettings = conDecFiltering.getFilterSettings("jstree");
 		filterSettings["selectedElement"] = issueKey;
-		var isIrrelevantTextShown = document.getElementById("show-irrelevant-text-input-jstree").checked;
-		filterSettings["isIrrelevantTextShown"] = isIrrelevantTextShown;
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
+		jQuery("#jstree").on("loaded.jstree", function() {
+			jQuery("#jstree").jstree("open_all");
+		});
 	};
 
 	/**

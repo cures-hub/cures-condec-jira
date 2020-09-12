@@ -305,4 +305,14 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return !((PartOfJiraIssueText) element).isRelevant()
 				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
 	}
+
+	/**
+	 * @return copy of the {@link KnowledgeGraph} instance.
+	 */
+	public KnowledgeGraph copy() {
+		KnowledgeGraph copiedGraph = new KnowledgeGraph();
+		this.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
+		this.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
+		return copiedGraph;
+	}
 }

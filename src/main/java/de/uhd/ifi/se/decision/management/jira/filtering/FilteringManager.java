@@ -82,11 +82,7 @@ public class FilteringManager {
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 
 		if (filterSettings.isIrrelevantTextShown()) {
-			KnowledgeGraph graphWithIrrelevantSenteces = new KnowledgeGraph();
-			subgraph.vertexSet().forEach(vertex -> graphWithIrrelevantSenteces.addVertex(vertex));
-			subgraph.edgeSet()
-					.forEach(link -> graphWithIrrelevantSenteces.addEdge(link.getSource(), link.getTarget(), link));
-			subgraph = graphWithIrrelevantSenteces.addIrrelevantSentencesLinkedTo(elements);
+			subgraph = ((KnowledgeGraph) subgraph).copy().addIrrelevantSentencesLinkedTo(elements);
 		}
 
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
