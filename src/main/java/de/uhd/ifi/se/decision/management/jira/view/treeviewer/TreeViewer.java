@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
  * Creates tree viewer content. The tree viewer is rendered with the jstree
@@ -97,21 +96,11 @@ public class TreeViewer {
 			return;
 		}
 
-		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
-
 		if (graph.vertexSet().isEmpty()) {
 			return;
 		}
 
-		// TODO Improve code class handling and remove this case handling
-		if ("codeClass".equals(filterSettings.getKnowledgeTypes().iterator().next())) {
-			CodeClassPersistenceManager manager = new CodeClassPersistenceManager(filterSettings.getProjectKey());
-			knowledgeElements = manager.getKnowledgeElements();
-		} else {
-			knowledgeElements.addAll(graph.vertexSet());
-		}
-
-		for (KnowledgeElement element : knowledgeElements) {
+		for (KnowledgeElement element : graph.vertexSet()) {
 			nodes.add(makeIdUnique(new TreeViewerNode(element)));
 		}
 	}
