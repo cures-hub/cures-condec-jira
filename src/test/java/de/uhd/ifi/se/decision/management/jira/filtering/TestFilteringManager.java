@@ -53,8 +53,8 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
-		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(9, extractor.getElementsMatchingFilterSettings().size());
+		FilteringManager manager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		assertEquals(9, manager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test

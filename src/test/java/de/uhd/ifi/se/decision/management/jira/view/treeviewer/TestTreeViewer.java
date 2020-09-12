@@ -30,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreeViewer extends TestSetUp {
@@ -42,13 +43,7 @@ public class TestTreeViewer extends TestSetUp {
 	public void setUp() {
 		init();
 		filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setLinkDistance(0);
-		Set<String> types = new HashSet<>();
-		types.add("Decision");
-		filterSettings.setKnowledgeTypes(types);
-
 		treeViewer = new TreeViewer(filterSettings);
-
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 	}
 
@@ -86,40 +81,27 @@ public class TestTreeViewer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetDataStructureNull() {
-		assertEquals(TreeViewerNode.class, treeViewer.getTreeViewerNodeWithChildren(null).getClass());
-	}
-
-	@Test(expected = NullPointerException.class)
-	@NonTransactional
-	public void testGetDataStructureEmpty() {
-		KnowledgeElement element = new KnowledgeElement();
-		assertNotNull(treeViewer.getTreeViewerNodeWithChildren(element));
+	public void testGetGetTreeViewerNodeWithChildrenRootElementNull() {
+		assertNull(treeViewer.getTreeViewerNodeWithChildren(null).getElement());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-		KnowledgeElement element = persistenceManager.getKnowledgeElement(14);
-		assertNotNull(element);
-		assertEquals(14, element.getId());
-		assertEquals("TEST-14", element.getKey());
-		filterSettings.setSelectedElement(element);
+		KnowledgeElement rootElement = KnowledgeElements.getTestKnowledgeElement();
+		filterSettings.setSelectedElement(rootElement);
 		treeViewer = new TreeViewer(filterSettings);
-		assertTrue(treeViewer.getTreeViewerNodeWithChildren(element).getId().endsWith("tv14"));
+		assertTrue(treeViewer.getTreeViewerNodeWithChildren(rootElement).getId().endsWith("tv1"));
 	}
 
 	@Test
-	@NonTransactional
 	public void testEmptyConstructor() {
-		assertNotNull(new TreeViewer());
+		assertEquals(0, new TreeViewer().getNodes().size());
 	}
 
 	@Test
-	@NonTransactional
-	public void testEmptyTreeViewer() {
-		TreeViewer tree = new TreeViewer();
-		assertNotNull(tree);
+	public void testConstructorFilterSettingsNull() {
+		assertEquals(0, new TreeViewer(null).getNodes().size());
 	}
 
 	@Test
@@ -136,12 +118,10 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTreeViewerForSingleKnowledgeElement() {
-		// 1) Check if Tree Element has no Children - Important!
-		KnowledgeElement element = persistenceManager.getKnowledgeElement("TEST-14");
-		filterSettings.setSelectedElement(element);
-		TreeViewer treeViewer = new TreeViewer(filterSettings);
-		assertNotNull(treeViewer);
-		assertEquals(0, treeViewer.getTreeViewerNodeWithChildren(element).getChildren().size());
+		KnowledgeElement rootElement = KnowledgeElements.getTestKnowledgeElement();
+		filterSettings.setSelectedElement(rootElement);
+		treeViewer = new TreeViewer(filterSettings);
+		assertEquals(5, treeViewer.getTreeViewerNodeWithChildren(rootElement).getChildren().size());
 
 		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-14");
@@ -155,8 +135,8 @@ public class TestTreeViewer extends TestSetUp {
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
-		element = persistenceManager.getKnowledgeElement(14);
-		filterSettings.setSelectedElement(element);
+		rootElement = persistenceManager.getKnowledgeElement(14);
+		filterSettings.setSelectedElement(rootElement);
 		treeViewer = new TreeViewer(filterSettings);
 
 		// 4) Check if TreeViewer has one element

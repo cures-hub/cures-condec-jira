@@ -467,7 +467,6 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(sentence);
 			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}

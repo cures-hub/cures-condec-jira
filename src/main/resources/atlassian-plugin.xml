@@ -38,6 +38,7 @@
 		<resource type="download" name="argument.png" location="/images/argument.png" />
 		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
 		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
+		<resource type="download" name="other.png" location="/images/other.png" />
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />

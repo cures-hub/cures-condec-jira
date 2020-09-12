@@ -61,6 +61,7 @@ public class TreeViewer {
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 		this.ids = new ArrayList<String>();
+		nodes = new HashSet<TreeViewerNode>();
 	}
 
 	/**
@@ -79,7 +80,6 @@ public class TreeViewer {
 		if (filterSettings == null) {
 			return;
 		}
-		nodes = new HashSet<TreeViewerNode>();
 
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
@@ -87,16 +87,8 @@ public class TreeViewer {
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 
 		if (rootElement != null) {
-			if (rootElement.getKey() == null) {
-				return;
-			}
 			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
-
 			nodes.add(rootNode);
-			return;
-		}
-
-		if (graph.vertexSet().isEmpty()) {
 			return;
 		}
 
@@ -139,10 +131,6 @@ public class TreeViewer {
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 
 			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(parentElement);
-			if (parentNode == null) {
-				continue;
-			}
-
 			parentNode.getChildren().add(childNode);
 		}
 

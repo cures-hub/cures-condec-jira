@@ -14,7 +14,7 @@
         </form>
     </div>
 </div>
-<div style="height: auto" id="treant-container"></div>
+<div id="treant-container"></div>
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
