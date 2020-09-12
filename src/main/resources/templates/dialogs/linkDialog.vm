@@ -6,11 +6,11 @@
 	<div id="link-dialog-content" class="aui-dialog2-content">
 		<form class="aui">
 			<div class="field-group" id="link-form-source-element-group">
-				<label for="link-form-source-element">$i18n.getText("condec.label.source.element"):</label>
+				<label for="link-form-source-element">$i18n.getText("condec.knowledge.element"):</label>
 				<input class="text full-width-field" type="text" id="link-form-source-element" disabled>	
 			</div>
 			<div class="field-group">
-				<label for="link-form-select-element">$i18n.getText("condec.label.target.element"):</label>
+				<label for="link-form-select-element">$i18n.getText("condec.knowledge.element"):</label>
 				<select id="link-form-select-element" class="select full-width-field"></select>			
 			</div>
 			<div class="field-group">
