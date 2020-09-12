@@ -36,7 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -468,8 +467,6 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
-			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

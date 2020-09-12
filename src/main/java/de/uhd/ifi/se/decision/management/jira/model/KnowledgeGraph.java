@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -69,9 +71,13 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return getOrCreate(project.getProjectKey());
 	}
 
-	public KnowledgeGraph(String projectKey) {
+	public KnowledgeGraph() {
 		super(Link.class);
 		this.linkIds = new ArrayList<Long>();
+	}
+
+	public KnowledgeGraph(String projectKey) {
+		this();
 		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		createGraph();
 	}
@@ -256,10 +262,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * Returns all knowledge elements for a project with a certain knowledge type.
-	 *
-	 * @return list of all decision knowledge elements for a project with a certain
-	 *         knowledge type.
+	 * @return list of all knowledge elements for a project with a certain knowledge
+	 *         type.
 	 * @see KnowledgeElement
 	 * @see DecisionKnowledgeProject
 	 * @see KnowledgeType
@@ -278,4 +282,27 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return elements;
 	}
 
+	/**
+	 * @param elements
+	 *            nodes/verteces of the {@link KnowledgeGraph} that irrelevant
+	 *            sentences from Jira issue description and comments are linked to.
+	 * @return {@link KnowledgeGraph} with irrelevant sentences from Jira issue
+	 *         description and comments as new nodes/verteces.
+	 */
+	public KnowledgeGraph addIrrelevantSentencesLinkedTo(Set<KnowledgeElement> elements) {
+		for (KnowledgeElement element : elements) {
+			for (Link link : GenericLinkManager.getLinksForElement(element.getId(), DocumentationLocation.JIRAISSUE)) {
+				KnowledgeElement opposite = link.getOppositeElement(element);
+				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
+					this.addEdge(link);
+				}
+			}
+		}
+		return this;
+	}
+
+	private static boolean isSentenceShown(KnowledgeElement element) {
+		return !((PartOfJiraIssueText) element).isRelevant()
+				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
+	}
 }

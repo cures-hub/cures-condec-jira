@@ -20,12 +20,9 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
@@ -95,15 +92,7 @@ public class TreeViewer {
 				return;
 			}
 			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
-			// TODO Add to FilterSettings
-			// Match irrelevant sentences back to list
-			for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
-					DocumentationLocation.JIRAISSUE)) {
-				KnowledgeElement opposite = link.getOppositeElement(rootElement);
-				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
-					rootNode.getChildren().add(new TreeViewerNode(opposite));
-				}
-			}
+
 			nodes.add(rootNode);
 			return;
 		}
@@ -125,12 +114,6 @@ public class TreeViewer {
 		for (KnowledgeElement element : knowledgeElements) {
 			nodes.add(makeIdUnique(new TreeViewerNode(element)));
 		}
-	}
-
-	// TODO Add this to FilterSettings and FilteringManager
-	private boolean isSentenceShown(KnowledgeElement element) {
-		return !((PartOfJiraIssueText) element).isRelevant()
-				&& ((PartOfJiraIssueText) element).getDescription().length() > 0;
 	}
 
 	/**
@@ -191,39 +174,19 @@ public class TreeViewer {
 		return multiple;
 	}
 
-	public void setMultiple(boolean multiple) {
-		this.multiple = multiple;
-	}
-
 	public boolean isCheckCallback() {
 		return checkCallback;
-	}
-
-	public void setCheckCallback(boolean checkCallback) {
-		this.checkCallback = checkCallback;
 	}
 
 	public Map<String, Boolean> getThemes() {
 		return themes;
 	}
 
-	public void setThemes(Map<String, Boolean> themes) {
-		this.themes = themes;
-	}
-
-	public Set<TreeViewerNode> getData() {
+	public Set<TreeViewerNode> getNodes() {
 		return nodes;
 	}
 
-	public void setData(Set<TreeViewerNode> data) {
-		this.nodes = data;
-	}
-
-	public List<String> getIds() {
-		return ids;
-	}
-
-	public void setIds(List<String> ids) {
-		this.ids = ids;
+	public void setData(Set<TreeViewerNode> nodes) {
+		this.nodes = nodes;
 	}
 }

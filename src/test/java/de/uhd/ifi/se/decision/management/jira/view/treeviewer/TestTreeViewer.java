@@ -5,12 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +17,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -37,87 +35,53 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestTreeViewer extends TestSetUp {
 	private AbstractPersistenceManagerForSingleLocation persistenceManager;
 
-	private boolean multiple;
-	private boolean checkCallback;
-	private Map<String, Boolean> themes;
-	private Set<TreeViewerNode> data;
 	private TreeViewer treeViewer;
 	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
-		multiple = false;
-		checkCallback = true;
-		themes = new HashMap<>();
-		themes.put("Test", false);
-		data = new HashSet<>();
-		data.add(new TreeViewerNode());
 		filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setLinkDistance(0);
 		Set<String> types = new HashSet<>();
 		types.add("Decision");
 		filterSettings.setKnowledgeTypes(types);
+
 		treeViewer = new TreeViewer(filterSettings);
-		treeViewer.setMultiple(multiple);
-		treeViewer.setCheckCallback(checkCallback);
-		treeViewer.setThemes(themes);
-		treeViewer.setData(data);
+
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsMultiple() {
-		assertEquals(treeViewer.isMultiple(), multiple);
+		assertEquals(false, treeViewer.isMultiple());
 	}
 
 	@Test
 	@NonTransactional
-	public void testisCheckCallBack() {
-		assertEquals(treeViewer.isCheckCallback(), checkCallback);
+	public void testIsCheckCallBack() {
+		assertEquals(true, treeViewer.isCheckCallback());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetThemes() {
-		assertEquals(treeViewer.getThemes(), themes);
+		assertEquals(ImmutableMap.of("icons", true), treeViewer.getThemes());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetData() {
-		assertEquals(treeViewer.getData(), data);
+	public void testGetNodes() {
+		assertTrue(treeViewer.getNodes().size() > 0);
 	}
 
 	@Test
 	@NonTransactional
-	public void testSetMultiple() {
-		treeViewer.setMultiple(true);
-		assertEquals(treeViewer.isMultiple(), true);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSetCheckCallback() {
-		treeViewer.setCheckCallback(true);
-		assertEquals(treeViewer.isCheckCallback(), true);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSetThemes() {
-		Map<String, Boolean> newThemes = new ConcurrentHashMap<>();
-		treeViewer.setThemes(newThemes);
-		assertEquals(treeViewer.getThemes(), newThemes);
-	}
-
-	@Test
-	@NonTransactional
-	public void testSetData() {
-		HashSet<TreeViewerNode> newData = new HashSet<TreeViewerNode>();
-		treeViewer.setData(newData);
-		assertEquals(treeViewer.getData(), newData);
+	public void testSetNodes() {
+		HashSet<TreeViewerNode> newNodes = new HashSet<TreeViewerNode>();
+		treeViewer.setData(newNodes);
+		assertEquals(newNodes, treeViewer.getNodes());
 	}
 
 	@Test
@@ -197,7 +161,7 @@ public class TestTreeViewer extends TestSetUp {
 
 		// 4) Check if TreeViewer has one element
 		assertNotNull(treeViewer);
-		assertEquals(1, treeViewer.getData().size());
+		assertEquals(1, treeViewer.getNodes().size());
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}
@@ -234,7 +198,7 @@ public class TestTreeViewer extends TestSetUp {
 		filterSettings.setLinkDistance(0);
 		TreeViewer newTreeViewer = new TreeViewer(filterSettings);
 		assertNotNull(newTreeViewer);
-		assertNotNull(newTreeViewer.getData());
+		assertNotNull(newTreeViewer.getNodes());
 	}
 
 }
