@@ -38,6 +38,7 @@
 		<resource type="download" name="argument.png" location="/images/argument.png" />
 		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
 		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
+		<resource type="download" name="other.png" location="/images/other.png" />
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
@@ -193,7 +194,6 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="defaultTrainingData.arff"
 			location="/classifier/defaultTrainingData.arff" />
-		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
 
 		<!--Language models -->
 		<resource type="download" name="person.bin" location="/classifier/person.bin" />
@@ -421,19 +421,6 @@
 		<link linkId="export-as-table-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-
-	<!-- Decision Knowledge Extraction From Jira Issue Description and Comments -->
-	<issue-tabpanel key="condec-tab-panel"
-		name="Decision Knowledge Extraction Tab Panel"
-		class="de.uhd.ifi.se.decision.management.jira.view.JiraIssueTabPanelRenderer">
-		<description>Tab panel to manage extraction of decision knowledge from Jira issue description and
-			comments.
-		</description>
-		<label key="condec.tab.panel.label" />
-		<order>10</order>
-		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
-		<supports-ajax-load>true</supports-ajax-load>
-	</issue-tabpanel>
 
 	<macro key="issue" name="ConDec Editor Macro for Issues"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">

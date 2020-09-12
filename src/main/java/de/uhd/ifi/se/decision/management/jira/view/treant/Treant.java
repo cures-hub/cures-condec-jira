@@ -93,10 +93,6 @@ public class Treant {
 			elementToTreantNodeMap.put(childElement, childNode);
 
 			TreantNode parentNode = elementToTreantNodeMap.get(parentElement);
-			if (parentNode == null) {
-				continue;
-			}
-
 			parentNode.getChildren().add(childNode);
 		}
 

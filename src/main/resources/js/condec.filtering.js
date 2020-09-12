@@ -116,6 +116,11 @@
 			filterElements.push(startDatePicker);
 		}
 		
+		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
+		if (isIrrelevantTextShownInput !== null) {
+			filterElements.push(isIrrelevantTextShownInput);
+		}
+		
 		filterElements.forEach(function(filterElement) {
 			filterElement.addEventListener("input", () => callback());
 		});
@@ -200,6 +205,13 @@
 		var documentationLocations = conDecFiltering.getSelectedItems("documentation-location-dropdown-"
 		        + viewIdentifier);
 		filterSettings["documentationLocations"] = documentationLocations;
+		
+		// Read whether sentences that are not classified as decision knowledge elements should
+		// be included in the filtered knowledge graph.
+		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
+		if (isIrrelevantTextShownInput !== null) {
+			filterSettings["isIrrelevantTextShown"] = isIrrelevantTextShownInput.checked;
+		}		
 
 		return filterSettings;
 	};

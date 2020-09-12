@@ -249,4 +249,13 @@ public class TestFilterSettings extends TestSetUp {
 		assertTrue(filterSettings.isHierarchical());
 	}
 
+	@Test
+	public void testSetIrrelevantTextShown() {
+		// default value
+		assertFalse(filterSettings.isIrrelevantTextShown());
+
+		filterSettings.setIrrelevantTextShown(true);
+		assertTrue(filterSettings.isIrrelevantTextShown());
+	}
+
 }

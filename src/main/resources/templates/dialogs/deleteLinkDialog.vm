@@ -7,11 +7,11 @@
 		<p>$i18n.getText("condec.warning.delete.link")</p>	
 		<form class="aui">
 			<div class="field-group" id="delete-link-dialog-source-element-group">
-				<label for="delete-link-dialog-source-element">$i18n.getText("condec.label.source.element"):</label>
+				<label for="delete-link-dialog-source-element">$i18n.getText("condec.knowledge.element"):</label>
 				<input class="text full-width-field" type="text" id="delete-link-dialog-source-element" disabled>	
 			</div>
 			<div class="field-group" id="delete-link-dialog-target-element-group">
-				<label for="delete-link-dialog-target-element">$i18n.getText("condec.label.target.element"):</label>
+				<label for="delete-link-dialog-target-element">$i18n.getText("condec.knowledge.element"):</label>
 				<input class="text full-width-field" type="text" id="delete-link-dialog-target-element" disabled>			
 			</div>
 		</form>

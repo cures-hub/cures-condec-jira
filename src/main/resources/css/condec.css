@@ -27,9 +27,13 @@ a:focus a:hover {
 
 .graph {
 	width: 100%;
-	height: 500px;
+	height: auto;
 	overflow: auto;
 	resize: both;	
+}
+
+#treant-container {
+	height: auto;
 }
 
 .boxplot {
