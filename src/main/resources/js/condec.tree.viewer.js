@@ -160,6 +160,5 @@
 		});
 	};
 	
-	// export ConDecTreeViewer
 	global.conDecTreeViewer = new ConDecTreeViewer();
 })(window);

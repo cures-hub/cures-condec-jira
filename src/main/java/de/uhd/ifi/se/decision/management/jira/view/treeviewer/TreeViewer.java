@@ -99,7 +99,7 @@ public class TreeViewer {
 			// Match irrelevant sentences back to list
 			for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
 					DocumentationLocation.JIRAISSUE)) {
-				KnowledgeElement opposite = link.getOppositeElement(rootElement.getId());
+				KnowledgeElement opposite = link.getOppositeElement(rootElement);
 				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
 					rootNode.getChildren().add(new TreeViewerNode(opposite));
 				}

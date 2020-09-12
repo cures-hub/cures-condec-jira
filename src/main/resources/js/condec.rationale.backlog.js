@@ -34,6 +34,7 @@
 		
 		// so that jstree tree viewer only shows a list of elements:
 		filterSettings["linkDistance"] = 0; 
+		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
 		
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");
 		if (nodeId === undefined) {
@@ -59,6 +60,5 @@
 		});
 	}
 	
-	// export ConDecRationaleBacklog
 	global.conDecRationaleBacklog = new ConDecRationaleBacklog();
 })(window);
