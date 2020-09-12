@@ -95,6 +95,7 @@ public class TreeViewer {
 				return;
 			}
 			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+			// TODO Add to FilterSettings
 			// Match irrelevant sentences back to list
 			for (Link link : GenericLinkManager.getLinksForElement(rootElement.getId(),
 					DocumentationLocation.JIRAISSUE)) {

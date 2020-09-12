@@ -4,13 +4,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <div class="aui-tabs horizontal-tabs" id="jira-issue-tabs" data-aui-persist="username">
 	<ul class="tabs-menu">
 		<li class="menu-item" id="menu-item-jstree">
-			<a href="#jstree-tab">Tree Visualization (jsTree)</a>
+			<a href="#jstree-tab" title="jsTree">
+				Tree Visualization 
+				<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
+			</a>
 		</li>
 		<li class="menu-item" id="menu-item-treant">
-			<a href="#treant-tab">Tree Visualization (Treant)</a>
+			<a href="#treant-tab" title="Treant">
+				Tree Visualization
+				<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
+			</a>
 		</li>
 		<li class="menu-item active-tab" id="menu-item-graph">
-			<a href="#graph-tab">Graph Visualization</a>
+			<a href="#graph-tab" title="vis.js">Graph Visualization</a>
 		</li>
 		<li class="menu-item" id="menu-item-decision-table">
 			<a href="#decision-table-tab">Decision Table</a>

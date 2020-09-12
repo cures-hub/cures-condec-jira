@@ -52,6 +52,7 @@ public class FilterSettings {
 	private long startDate;
 	private long endDate;
 	private boolean isHierarchical;
+	private boolean isIrrelevantTextShown;
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
@@ -74,6 +75,7 @@ public class FilterSettings {
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
+		this.setIrrelevantTextShown(false);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -460,5 +462,23 @@ public class FilterSettings {
 	@JsonProperty("isHierarchical")
 	public void setHierarchical(boolean isHierarchical) {
 		this.isHierarchical = isHierarchical;
+	}
+
+	/**
+	 * @return true if sentences that are no decision knowledge elements should be
+	 *         included in the filtered knowledge graph.
+	 */
+	public boolean isIrrelevantTextShown() {
+		return isIrrelevantTextShown;
+	}
+
+	/**
+	 * @param isIrrelevantTextShown
+	 *            true if sentences that are no decision knowledge elements should
+	 *            be included in the filtered knowledge graph.
+	 */
+	@JsonProperty("isIrrelevantTextShown")
+	public void setIrrelevantTextShown(boolean isIrrelevantTextShown) {
+		this.isIrrelevantTextShown = isIrrelevantTextShown;
 	}
 }

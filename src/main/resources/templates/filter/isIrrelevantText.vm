@@ -1,0 +1,2 @@
+<label for="show-irrelevant-text-input-$viewIdentifier">$i18n.getText('condec.label.is.irrelevant.text')</label>
+<input class="checkbox" type="checkbox" id="show-irrelevant-text-input-$viewIdentifier"/> 

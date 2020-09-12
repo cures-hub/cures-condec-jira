@@ -20,8 +20,8 @@
 	};
 	
 	/**
-	 * Creates a view with only the treant and filter elements. 
-	 * The treant is shown as part of other views as well, but these views call "buildTreant".
+	 * Creates a view with only the jstree tree viewer and filter elements. 
+	 * The jstree tree viewer is shown as part of other views as well, but these views call "buildTreeViewer".
 	 */
 	ConDecTreeViewer.prototype.initView = function () {
 		// Fill HTML elements for filter criteria
@@ -29,6 +29,8 @@
 		
 		// Add event listeners to HTML elements for filtering
 		conDecFiltering.addOnChangeEventToFilterElements("jstree", conDecTreeViewer.updateView, false);
+		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-jstree");
+		isIrrelevantTextShownInput.addEventListener("click", function() {conDecTreeViewer.updateView();});
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -45,6 +47,8 @@
 		var issueKey = conDecAPI.getIssueKey();		
 		var filterSettings = conDecFiltering.getFilterSettings("jstree");
 		filterSettings["selectedElement"] = issueKey;
+		var isIrrelevantTextShown = document.getElementById("show-irrelevant-text-input-jstree").checked;
+		filterSettings["isIrrelevantTextShown"] = isIrrelevantTextShown;
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
 	};
 

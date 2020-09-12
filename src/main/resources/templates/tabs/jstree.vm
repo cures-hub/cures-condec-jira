@@ -9,7 +9,8 @@
         	#parse("templates/filter/creationDate.vm")
         	#parse("templates/filter/degree.vm")
         	#parse("templates/filter/linkDistance.vm")
-        	#parse("templates/filter/isDecisionKnowledgeOnly.vm")        
+        	#parse("templates/filter/isDecisionKnowledgeOnly.vm")     
+        	#parse("templates/filter/isIrrelevantText.vm")     
         </form>
     </div>
 </div>
