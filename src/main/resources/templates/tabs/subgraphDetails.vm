@@ -1,0 +1,46 @@
+ <div class="aui-tabs horizontal-tabs" id="$viewIdentifier-tabs" data-aui-persist="username">
+	<ul class="tabs-menu">
+		<li class="menu-item active-tab">
+			<a href="#treant-tab-$viewIdentifier" title="Treant">
+				Tree Visualization
+			<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
+			</a>
+		</li>
+		<li class="menu-item">
+			<a href="#jstree-tab-$viewIdentifier" title="jsTree">
+				Tree Visualization 
+				<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
+			</a>
+		</li>				
+		<li class="menu-item">
+			<a href="#graph-tab-$viewIdentifier" title="vis.js">Graph Visualization</a>
+		</li>
+		<li class="menu-item">
+			<a href="#matrix-tab-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
+		</li>
+		<li class="menu-item">
+			<a href="#decision-table-tab-$viewIdentifier">Decision Table</a>
+		</li>
+	</ul>
+	<div class="tabs-pane active-pane" id="treant-tab-$viewIdentifier">
+		<div id="treant-$viewIdentifier"></div>
+	</div>
+	<div class="tabs-pane" id="jstree-tab-$viewIdentifier">
+		<div id="jstree-$viewIdentifier"></div>
+	</div>
+	<div class="tabs-pane" id="graph-tab-$viewIdentifier">
+		<div id="graph-$viewIdentifier"></div>
+	</div>
+	<div class="tabs-pane" id="matrix-tab-$viewIdentifier">
+		<table class="aui aui-table-list matrix">
+			<thead>
+				<tr id="matrix-header-row$viewIdentifier"></tr>
+			</thead>
+			<tbody id="matrix-body$viewIdentifier">
+			</tbody>    
+		</table>
+	</div>
+	<div class="tabs-pane" id="decision-table-tab-$viewIdentifier">
+		Please implement me :-)!
+	</div>
+</div>    

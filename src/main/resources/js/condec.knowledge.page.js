@@ -87,12 +87,19 @@
 	
 	function addSelectNodeEventListenerToTreeViewer() {
 		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
-			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
+			var filterSettings = conDecFiltering.getFilterSettings("overview");
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
-			conDecTreant.buildTreant(filterSettings, true);
+
+			conDecTreant.buildTreant(filterSettings, true, "treant-overview");
+			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-overview", "#search-input-overview", "jstree-overview");
+			jQuery("#jstree-overview").on("loaded.jstree", function() {
+				jQuery("#jstree-overview").jstree("open_all");
+			});
+			conDecVis.buildVis(filterSettings, "graph-overview");		
+			conDecMatrix.buildMatrix(filterSettings, "overview");		
 		});
 	}
 
