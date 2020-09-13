@@ -21,7 +21,9 @@
     <div id="resizable" class="left">
         <div id="jstree"></div>
     </div>
-    <div id="treant-container" class="right"></div>
+    <div class="right">
+    	#parse("templates/tabs/subgraphDetails.vm")
+    </div>
 </div>
 <script>
 /* Adds the on click listener on tab opening */

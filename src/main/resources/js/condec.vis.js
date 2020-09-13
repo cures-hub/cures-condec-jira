@@ -54,7 +54,7 @@
 		graphNetwork.on("oncontext", function(params) {
 			conDecVis.addContextMenu(params, graphNetwork);
 		});
-		if (data.rootElementId !== undefined && data.rootElementId !== "") {
+		if (data.selectedVisNodeId !== undefined && data.selectedVisNodeId !== "") {
 			graphNetwork.selectNodes([ data.selectedVisNodeId ]);
 		}
 	};

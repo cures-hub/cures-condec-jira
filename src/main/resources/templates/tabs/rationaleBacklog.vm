@@ -14,34 +14,7 @@
         <div id="rationale-backlog-tree"></div>
     </div>
     <div class="right">
-	    <div class="aui-tabs horizontal-tabs" id="rationale-backlog-tabs" data-aui-persist="username">
-			<ul class="tabs-menu">
-				<li class="menu-item active-tab" id="menu-item-treant">
-					<a href="#treant-rationale-backlog-tab" title="Treant">
-						Tree Visualization
-					<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
-					</a>
-				</li>
-				<li class="menu-item" id="menu-item-jstree">
-					<a href="#jstree-rationale-backlog-tab" title="jsTree">
-						Tree Visualization 
-						<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
-					</a>
-				</li>				
-				<li class="menu-item" id="menu-item-graph">
-					<a href="#graph-rationale-backlog-tab" title="vis.js">Graph Visualization</a>
-				</li>
-			</ul>
-			<div class="tabs-pane active-pane" id="treant-rationale-backlog-tab">
-				<div id="treant-rationale-backlog"></div>
-			</div>
-			<div class="tabs-pane" id="jstree-rationale-backlog-tab">
-				<div id="jstree-rationale-backlog"></div>
-			</div>
-			<div class="tabs-pane" id="graph-rationale-backlog-tab">
-				<div id="graph-rationale-backlog"></div>
-			</div>
-		</div>    
+	   #parse("templates/tabs/subgraphDetails.vm")
     </div>
 </div>
 <script>

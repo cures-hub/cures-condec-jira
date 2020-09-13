@@ -45,11 +45,11 @@
 		this.updateView();
 	};
 
-	ConDecMatrix.prototype.buildMatrix = function(filterSettings) {
+	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			this.headerElements = matrix.headerElements;
 			
-			let headerRow = document.getElementById("matrix-header-row");
+			let headerRow = document.getElementById("matrix-header-row" + viewIdentifier);
 			headerRow.innerHTML = "";
 			let firstRowHeaderCell = document.createElement("th");
 			firstRowHeaderCell.classList.add("columnHeader");
@@ -60,7 +60,7 @@
 				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
-			let tbody = document.getElementById("matrix-body");
+			let tbody = document.getElementById("matrix-body" + viewIdentifier);
 			tbody.innerHTML = "";
 			for ( let d in matrix.links) {
 				let row = matrix.links[d];

@@ -61,7 +61,8 @@
 			jQuery("#jstree-rationale-backlog").on("loaded.jstree", function() {
 				jQuery("#jstree-rationale-backlog").jstree("open_all");
 			});
-			conDecVis.buildVis(filterSettings, "graph-rationale-backlog")
+			conDecVis.buildVis(filterSettings, "graph-rationale-backlog");
+			conDecMatrix.buildMatrix(filterSettings, "rationale-backlog");
 		});
 	}
 	
