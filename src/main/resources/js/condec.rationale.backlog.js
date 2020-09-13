@@ -53,7 +53,6 @@
 		jQuery("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
-			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");

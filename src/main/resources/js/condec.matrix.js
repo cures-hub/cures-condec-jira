@@ -45,6 +45,9 @@
 		this.updateView();
 	};
 
+	/*
+	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
+	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			this.headerElements = matrix.headerElements;

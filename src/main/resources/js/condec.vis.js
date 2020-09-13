@@ -35,7 +35,7 @@
 	};
 
 	/*
-	 * external references: none, used in initView function
+	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
 	 */
 	ConDecVis.prototype.buildVis = function(filterSettings, container) {
 		console.log("conDecVis buildVis");
