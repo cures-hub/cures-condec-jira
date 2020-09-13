@@ -57,6 +57,11 @@
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");
+			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-rationale-backlog", "#search-input-rationale-backlog", "jstree-rationale-backlog");
+			jQuery("#jstree-rationale-backlog").on("loaded.jstree", function() {
+				jQuery("#jstree-rationale-backlog").jstree("open_all");
+			});
+			conDecVis.buildVis(filterSettings, "graph-rationale-backlog")
 		});
 	}
 	

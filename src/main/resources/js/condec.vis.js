@@ -12,12 +12,12 @@
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
 				var issueKey = conDecAPI.getIssueKey();
 				filterSettings["selectedElement"] = issueKey;
-				conDecVis.buildVis(filterSettings);
+				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
 		} else {
 			conDecFiltering.fillFilterElements("graph", ["Decision"]);
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
-				conDecVis.buildVis(filterSettings);
+				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
 			document.getElementById("link-distance-input-label-graph").remove();
 			document.getElementById("link-distance-input-graph").remove();
@@ -37,10 +37,10 @@
 	/*
 	 * external references: none, used in initView function
 	 */
-	ConDecVis.prototype.buildVis = function(filterSettings) {
+	ConDecVis.prototype.buildVis = function(filterSettings, container) {
 		console.log("conDecVis buildVis");
 		conDecAPI.getVis(filterSettings, function(visData) {
-			conDecVis.buildGraphNetwork(visData, "vis-graph-container");
+			conDecVis.buildGraphNetwork(visData, container);
 		});
 	};
 
