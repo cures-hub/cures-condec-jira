@@ -20,7 +20,13 @@
 			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), function(results, error) {
 				let counter = 0;
 				if (error === null) {
-					results.forEach((recommendation) => {
+
+					var sortedByScore = results.slice(0);
+                    sortedByScore.sort(function(a,b) {
+                        return b.score - a.score;
+                    });
+
+					sortedByScore.forEach((recommendation) => {
 							const alternative = recommendation.recommendations;
 							let url = "";
 							let tableRow = "";
@@ -30,7 +36,7 @@
 							tableRow += "<tr>";
 							tableRow += "<td><a class='alternative-summary' href='" + url + "'>" + alternative.summary + "</a></td>";
 							tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
-							tableRow += "<td>"+ recommendation.score +"%</td>";
+							tableRow += "<td>"+ recommendation.score +"</td>";
 							tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
 							tableRow += "</tr>";
 							table.append(tableRow);
