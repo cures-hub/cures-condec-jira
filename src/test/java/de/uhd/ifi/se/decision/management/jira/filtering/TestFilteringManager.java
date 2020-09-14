@@ -17,8 +17,10 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFilteringManager extends TestSetUp {
 
@@ -46,19 +48,19 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
-		FilteringManager extractor = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(15, extractor.getElementsMatchingFilterSettings().size());
+		FilteringManager manager = new FilteringManager(user, new FilterSettings("TEST", ""));
+		assertEquals(15, manager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -66,7 +68,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
-		assertEquals(15, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(9, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -105,15 +107,12 @@ public class TestFilteringManager extends TestSetUp {
 
 	@Test
 	public void testGetSubgraph() {
-		Set<String> linkTypes = new HashSet<>();
-		linkTypes.add("support");
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
-		settings.setLinkTypes(linkTypes);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(14, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(13, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test
@@ -144,7 +143,7 @@ public class TestFilteringManager extends TestSetUp {
 		settings.setLinkDistance(2);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(8, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test
@@ -154,7 +153,7 @@ public class TestFilteringManager extends TestSetUp {
 		settings.setLinkDistance(3);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(10, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(9, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 	}
 
 	@Test
@@ -204,5 +203,18 @@ public class TestFilteringManager extends TestSetUp {
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.isElementMatchingTimeFilter(element));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsIrrelevantTextShownFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setIrrelevantTextShown(true);
+		// Add irrelevant sentence
+		JiraIssues.getSentencesForCommentText("Irrelevant text");
+		JiraIssues.addElementToDataBase(1, "other");
+
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size() > 0);
 	}
 }

@@ -40,8 +40,10 @@
 		conDecTreant.buildTreant(filterSettings, true);
 	};
 
-	/*
+	/**
 	 * external references: condec.knowledge.page, condec.rationale.backlog
+	 * 
+	 * @issue Why are all treant nodes heaped in one corner of the view sometimes? How can we prevent this?
 	 */
 	ConDecTreant.prototype.buildTreant = function (filterSettings, isInteractive, treantIdParam) {
 		console.log("conDecTreant buildTreant");		
@@ -144,7 +146,7 @@
 		if (documentationLocationOfNewParent !== "c" && documentationLocationOfChild !== "c") {
 			conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
 			        documentationLocationOfChild, function() {
-				        conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
+				        conDecAPI.createLink(target.id, draggedElement.id, documentationLocationOfNewParent,
 				                documentationLocationOfChild, null, function() {
 					                conDecObservable.notify();
 				                });

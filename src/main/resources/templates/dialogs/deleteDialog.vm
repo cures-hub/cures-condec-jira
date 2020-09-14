@@ -1,9 +1,7 @@
 <section id="delete-dialog" class="aui-dialog2 aui-dialog2-medium aui-dialog2-warning aui-layer" role="dialog" aria-hidden="true">
 	<header class="aui-dialog2-header">
 		<h2 id="delete-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.delete.item.label")</h2>
-		<a class="aui-dialog2-header-close"> 
-			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-		</a>
+		<button class="aui-close-button" type="button" id="delete-dialog-cancel-icon" aria-label="close"></button>
 	</header>
 	<div id="delete-dialog-content" class="aui-dialog2-content">
 		$i18n.getText("condec.warning.delete")

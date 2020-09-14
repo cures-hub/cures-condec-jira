@@ -62,7 +62,8 @@
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
 		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
-			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(conDecAPI.restPrefix 
+					+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
 			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
 		}
 		return this.extendedKnowledgeTypes;
@@ -93,7 +94,7 @@
 
 	/*
 	 * external references: condec.context.menu, condec.dialog,
-	 * condec.knowledge.page, condec.jira.issue.module
+	 * condec.knowledge.page
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function (id, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
@@ -210,11 +211,10 @@
 	};
 
 	/*
-	 * external references: condec.dialog, condec.treant, condec.tree.viewer
+	 * external references: condec.dialog, condec.treant, condec.tree.viewer, condec.decision.table
 	 */
-	ConDecAPI.prototype.createLink = function (knowledgeTypeOfChild, idOfParent, idOfChild,
-			documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey + "&knowledgeTypeOfChild=" + knowledgeTypeOfChild
+	ConDecAPI.prototype.createLink = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey
 				+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 				+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
 			if (error === null) {
@@ -292,7 +292,7 @@
 		generalApi.postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
 				function (error, id, type) {
 			if (error === null) {
-				showFlag("success", "JIRA Issue has been created");
+				showFlag("success", "JIRA Issue has been created.");
 				callback();
 			}
 		});
@@ -323,7 +323,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
 		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
@@ -354,7 +354,7 @@
 	 * types, ...).
 	 * 
 	 * external reference: currently not used, used to be used in
-	 * condec.jira.issue.module to fill the HTML filter elements
+	 * Jira issue view to fill the HTML filter elements
 	 */
 	ConDecAPI.prototype.getFilterSettings = function (elementKey, searchTerm, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
@@ -843,11 +843,14 @@
 
 	};
 
-	ConDecAPI.prototype.getDecisionGroups = function (id, location, inputExistingGroupsField, selectLevelField, callback) {
-		var projectKey = getProjectKey();
-		var decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getDecisionGroups.json?elementId=" + id
-				+ "&location=" + location + "&projectKey=" + projectKey);
-		callback(selectLevelField, inputExistingGroupsField, decisionGroups);
+	ConDecAPI.prototype.getDecisionGroups = function (id, location, callback) {
+		// TODO Change to POST method and post knowledgeElement
+		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
+				+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
+			if (error === null) {
+				callback(decisionGroups);
+			}
+		});		
 	};
 
 	/*
@@ -1061,7 +1064,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module, condec.export,
+	 * external references: condec.export,
 	 * condec.gitdiffviewer, relatedIssuesTab.vm
 	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;

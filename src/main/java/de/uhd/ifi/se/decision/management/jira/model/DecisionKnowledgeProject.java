@@ -231,11 +231,16 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return names of Jira issue links available in the project.
+	 * @return names of Jira issue link types available in the project.
 	 */
 	public static Set<String> getNamesOfLinkTypes() {
 		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
-		return types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
+		Set<String> namesOfJiraIssueLinkTypes = types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
+		Set<String> allLinkTypes = namesOfJiraIssueLinkTypes;
+		// In the future, there will also be a "transitive" link type for transitive
+		// link creation.
+		allLinkTypes.add("Other");
+		return allLinkTypes;
 	}
 
 	/**

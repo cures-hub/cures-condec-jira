@@ -34,6 +34,7 @@
 		
 		// so that jstree tree viewer only shows a list of elements:
 		filterSettings["linkDistance"] = 0; 
+		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
 		
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");
 		if (nodeId === undefined) {
@@ -52,13 +53,17 @@
 		jQuery("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
-			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");
+			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-rationale-backlog", "#search-input-rationale-backlog", "jstree-rationale-backlog");
+			jQuery("#jstree-rationale-backlog").on("loaded.jstree", function() {
+				jQuery("#jstree-rationale-backlog").jstree("open_all");
+			});
+			conDecVis.buildVis(filterSettings, "graph-rationale-backlog");
+			conDecMatrix.buildMatrix(filterSettings, "rationale-backlog");
 		});
 	}
 	
-	// export ConDecRationaleBacklog
 	global.conDecRationaleBacklog = new ConDecRationaleBacklog();
 })(window);

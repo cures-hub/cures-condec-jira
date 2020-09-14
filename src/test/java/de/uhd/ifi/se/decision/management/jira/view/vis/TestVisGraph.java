@@ -55,8 +55,8 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testGetRootElementKey() {
-		assertEquals("", visGraph.getRootElementId());
+	public void testGetSelectedVisNodeId() {
+		assertEquals("", visGraph.getSelectedVisNodeId());
 	}
 
 	@Test

@@ -72,6 +72,7 @@
 		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
 		filterSettings["knowledgeTypes"] = [ knowledgeType ];
 		filterSettings["linkDistance"] = 0; // so that jstree tree viewer only shows a list of elements
+		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
@@ -81,13 +82,24 @@
 		} else {
 			conDecTreeViewer.selectNodeInTreeViewer(nodeId, "#jstree");
 		}
+		addSelectNodeEventListenerToTreeViewer();
+	}
+	
+	function addSelectNodeEventListenerToTreeViewer() {
 		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
+			var filterSettings = conDecFiltering.getFilterSettings("overview");
 			var node = tree.node.data;
-			var linkDistance = document.getElementById("link-distance-input-overview").value;
-			filterSettings["linkDistance"] = linkDistance;
-    		filterSettings["knowledgeTypes"] = null;
-    		filterSettings["selectedElement"] = node.key;
-	        conDecTreant.buildTreant(filterSettings, true);
+			filterSettings["knowledgeTypes"] = null;
+			filterSettings["status"] = null;
+			filterSettings["selectedElement"] = node.key;
+
+			conDecTreant.buildTreant(filterSettings, true, "treant-overview");
+			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-overview", "#search-input-overview", "jstree-overview");
+			jQuery("#jstree-overview").on("loaded.jstree", function() {
+				jQuery("#jstree-overview").jstree("open_all");
+			});
+			conDecVis.buildVis(filterSettings, "graph-overview");		
+			conDecMatrix.buildMatrix(filterSettings, "overview");		
 		});
 	}
 

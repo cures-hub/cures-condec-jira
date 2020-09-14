@@ -45,11 +45,14 @@
 		this.updateView();
 	};
 
-	ConDecMatrix.prototype.buildMatrix = function(filterSettings) {
+	/*
+	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
+	 */
+	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			this.headerElements = matrix.headerElements;
 			
-			let headerRow = document.getElementById("matrix-header-row");
+			let headerRow = document.getElementById("matrix-header-row" + viewIdentifier);
 			headerRow.innerHTML = "";
 			let firstRowHeaderCell = document.createElement("th");
 			firstRowHeaderCell.classList.add("columnHeader");
@@ -60,7 +63,7 @@
 				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
-			let tbody = document.getElementById("matrix-body");
+			let tbody = document.getElementById("matrix-body" + viewIdentifier);
 			tbody.innerHTML = "";
 			for ( let d in matrix.links) {
 				let row = matrix.links[d];
@@ -104,15 +107,33 @@
 		const tableRowCell = document.createElement("td");
 		if (positionX === positionY) {
 			tableRowCell.style.backgroundColor = "lightGray";
+			return tableRowCell;
 		}
+		const sourceElement = this.headerElements[positionX];
+		const targetElement = this.headerElements[positionY];
+		
+		var linkType = null;
 		if (link !== null) {
 			tableRowCell.style.backgroundColor = link.color;
-			const sourceElement = this.headerElements[positionX];
-			const targetElement = this.headerElements[positionY];
-			tableRowCell.title = "Link Type: " + link.type + "; From " + sourceElement.type + ": "
-			        + sourceElement.summary + " to " + targetElement.type + ": " + targetElement.summary;
-			AJS.$(tableRowCell).tooltip();
+			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is linked with type " + link.type
+				+" to " + targetElement.type + ": " + targetElement.summary;
+			linkType = link.type;
+		} else {
+			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is not linked to " 
+				+ targetElement.type + ": " + targetElement.summary;
 		}
+		AJS.$(tableRowCell).tooltip();
+		tableRowCell.addEventListener("click", function(event) {
+			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation, 
+					targetElement.id, targetElement.documentationLocation, linkType);
+		});
+		
+		tableRowCell.addEventListener("contextmenu", function(event) {
+			event.preventDefault();
+			conDecContextMenu.createContextMenu(sourceElement.id, sourceElement.documentationLocation, event, "matrix-body", 
+					targetElement.id, targetElement.documentationLocation, linkType);
+		});
+
 		return tableRowCell;
 	}
 

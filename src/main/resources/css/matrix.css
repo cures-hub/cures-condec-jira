@@ -13,11 +13,15 @@
     justify-content: center;
 }
 
-#matrix {
+.matrix {
 	display: block;
     overflow: auto;
     resize: both;
     height: 500px;
+}
+
+.matrix td:hover {
+	background-color: #e0e0e0;
 }
 
 .columnHeader {
@@ -56,11 +60,11 @@
     width: 15em;
 }
 
-#matrix td {
+.matrix td {
 	border: 1px solid #e8e8e8;
 }
 
-#matrix th {
+.matrix th {
 	border: 1px solid #e8e8e8;
 }
 

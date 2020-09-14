@@ -2,9 +2,7 @@
     <header class="aui-dialog2-header">
         <h2 id="delete-group-dialog-header" class="aui-dialog2-header-main">$i18n.getText(
             "condec.context.menu.group.delete.label")</h2>
-        <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-        </a>
+        <button class="aui-close-button" type="button" id="delete-group-dialog-cancel-icon" aria-label="close"></button>
     </header>
     <div id="delete-group-dialog-content" class="aui-dialog2-content">
         <div class="field-group">

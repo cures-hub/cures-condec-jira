@@ -1,7 +1,7 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner">
         <form class="aui">      	
-        	#set ($viewIdentifier = "treant")	
+        	#set ($viewIdentifier = "jstree")	
         	#parse("templates/filter/text.vm")	
         	#parse("templates/filter/knowledgeType.vm")
         	#parse("templates/filter/status.vm")
@@ -9,19 +9,19 @@
         	#parse("templates/filter/creationDate.vm")
         	#parse("templates/filter/degree.vm")
         	#parse("templates/filter/linkDistance.vm")
-        	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-        	#parse("templates/filter/isTestCode.vm")           
+        	#parse("templates/filter/isDecisionKnowledgeOnly.vm")     
+        	#parse("templates/filter/isIrrelevantText.vm")     
         </form>
     </div>
 </div>
-<div id="treant-container"></div>
+<div id="jstree"></div>
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#treant-tab")) {
-			conDecTreant.initView();
+    	if (!isOnceClicked && event.target.href.includes("#jstree-tab")) {
+			conDecTreeViewer.initView();
 			isOnceClicked = true;
 		}
     });

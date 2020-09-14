@@ -8,9 +8,7 @@
 	        	onchange="conDecDialog.showSummarizedDialog()">
 	        <input hidden type="text" id="summarization-id" name="projectId" value="">
 	    </div>
-		<a class="aui-dialog2-header-close"> 
-			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-		</a>
+	    <button class="aui-close-button" type="button" id="summarization-dialog-cancel-icon" aria-label="close"></button>
 	</header>
 	<div id="summarization-dialog-content" class="aui-dialog2-content">
 		Please wait a moment. <aui-spinner size="medium"></aui-spinner>

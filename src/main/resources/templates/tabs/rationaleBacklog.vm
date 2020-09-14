@@ -7,12 +7,15 @@
   	#parse("templates/filter/decisionGroup.vm")
 	#parse("templates/filter/linkDistance.vm")
 	#parse("templates/filter/degree.vm")
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 </form>
 <div class="aui-group">
     <div id="resizable" class="left">
         <div id="rationale-backlog-tree"></div>
     </div>
-    <div id="treant-rationale-backlog" class="right"></div>
+    <div class="right">
+	   #parse("templates/tabs/subgraphDetails.vm")
+    </div>
 </div>
 <script>
 /* Inits rationale backlog as the default tab */

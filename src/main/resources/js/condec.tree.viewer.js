@@ -1,6 +1,51 @@
+/*
+ This module does:
+ * show a tree of decision knowledge elements and other knowledge elements (requirements, tasks, bug reports, ...)
+ * enable to filter the tree of knowledge
+
+ Requires
+ * conDecAPI
+ * conDecObservable
+ 
+ Is referenced by
+ * conDecRationaleBacklog
+ * conDecKnowledgePage
+ 
+ Is referenced in HTML by
+ * jstree.vm 
+ */
 (function(global) {
 
 	var ConDecTreeViewer = function() {
+	};
+	
+	/**
+	 * Creates a view with only the jstree tree viewer and filter elements. 
+	 * The jstree tree viewer is shown as part of other views as well, but these views call "buildTreeViewer".
+	 */
+	ConDecTreeViewer.prototype.initView = function () {
+		// Fill HTML elements for filter criteria
+		conDecFiltering.fillFilterElements("jstree");
+		
+		// Add event listeners to HTML elements for filtering
+		conDecFiltering.addOnChangeEventToFilterElements("jstree", conDecTreeViewer.updateView, false);
+
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
+		
+		// Fill view
+		this.updateView();		
+	};
+	
+	ConDecTreeViewer.prototype.updateView = function () {
+		console.log("ConDecTreeViewer updateView");
+		var issueKey = conDecAPI.getIssueKey();		
+		var filterSettings = conDecFiltering.getFilterSettings("jstree");
+		filterSettings["selectedElement"] = issueKey;
+		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
+		jQuery("#jstree").on("loaded.jstree", function() {
+			jQuery("#jstree").jstree("open_all");
+		});
 	};
 
 	/**
@@ -47,18 +92,16 @@
 			var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
 			if (oldParentNode === "#" && parentNode !== "#") {
-				conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
+				conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
 					conDecObservable.notify();
 				});
-			}
-			if (parentNode === "#" && oldParentNode !== "#") {
+			} else if (parentNode === "#" && oldParentNode !== "#") {
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
-			}
-			if (parentNode !== '#' && oldParentNode !== '#') {
+			} else if (parentNode !== '#' && oldParentNode !== '#') {
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-					conDecAPI.createLink(null, parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
+					conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
 						conDecObservable.notify();
 					});
 				});
@@ -111,6 +154,5 @@
 		});
 	};
 	
-	// export ConDecTreeViewer
 	global.conDecTreeViewer = new ConDecTreeViewer();
 })(window);
