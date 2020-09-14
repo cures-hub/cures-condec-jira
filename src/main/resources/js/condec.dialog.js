@@ -18,7 +18,7 @@
     var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, defaultSelectTypeField = "Alternative", summary = "", description = "") {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative", summary = "", description = "") {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
@@ -37,7 +37,7 @@
  		fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
         inputSummaryField.value = summary;
         inputDescriptionField.value = description;
-        fillSelectTypeField(selectTypeField, defaultSelectTypeField);
+        fillSelectTypeField(selectTypeField, selectedType);
         fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
         // Set onclick listener on buttons
