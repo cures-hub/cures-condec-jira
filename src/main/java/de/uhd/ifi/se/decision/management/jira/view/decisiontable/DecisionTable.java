@@ -89,16 +89,19 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement targetElement = currentLink.getTarget();
-			if (targetElement.getType() == KnowledgeType.ALTERNATIVE
-					|| targetElement.getType() == KnowledgeType.DECISION) {
-				decisionTableData.get("alternatives").add(new Alternative(targetElement));
-				getArguments(targetElement);
+		// TODO Check link type. A decision that leads to a new decision problem should
+		// not be shown as solution option for this derived decision problem.
+		for (Link currentLink : graph.edgesOf(rootElement)) {
+			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
+			System.out.println(oppositeElement);
+			if (oppositeElement.getType() == KnowledgeType.ALTERNATIVE
+					|| oppositeElement.getType() == KnowledgeType.DECISION
+					|| oppositeElement.getType() == KnowledgeType.SOLUTION) {
+				decisionTableData.get("alternatives").add(new Alternative(oppositeElement));
+				getArguments(oppositeElement);
 			}
 		}
 	}

@@ -45,10 +45,10 @@
 		const filterSettings = {
 				"linkDistance": linkDistance,
 				"selectedElement": elementKey,
-				"knowledgeTypes": ["Issue"]
+				"knowledgeTypes": ["Issue", "Problem", "Goal"]
 		};
 		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
-			issues = knowledgeElements.filter(element => !isSelectedElement(element, elementKey) || element.type.match("Issue"));
+			issues = knowledgeElements.filter(element => !isSelectedElement(element, elementKey) || filterSettings["knowledgeTypes"].includes(element.type));
 			addDropDownItems(issues, elementKey);
 		});
 	};

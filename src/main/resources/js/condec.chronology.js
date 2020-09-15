@@ -10,7 +10,7 @@
         console.log("ConDecChronology initView");           
         
         // Fill HTML elements for filter criteria
-        conDecFiltering.fillFilterElements("chronology", ["Decision"]);      
+        conDecFiltering.fillFilterElements("chronology", ["Decision", "Solution"]);      
         conDecFiltering.fillDatePickers("chronology", 30);
         
         // Register/subscribe this view as an observer
