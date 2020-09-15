@@ -2,6 +2,14 @@
 
 	let ConDecDecisionGuidance = function ConDecDecisionGuidance() {};
 
+	ConDecDecisionGuidance.prototype.initView = function () {
+        console.log("ConDecDecisionGuidance initView");
+        conDecObservable.subscribe(this);
+    };
+
+	ConDecDecisionGuidance.prototype.updateView = function () {
+		conDecDecisionTable.updateView();
+	};
 
 	/*
 	 * external usage: condec.decision.table

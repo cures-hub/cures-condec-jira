@@ -26,6 +26,10 @@
 		
 	};
 
+	ConDecDecisionTable.prototype.updateView = function() {
+		if(decisionTableData) buildDecisionTable(decisionTableData);
+	};
+
 	ConDecDecisionTable.prototype.getCurrentIssue = function() {
 		return currentIssue;
 	};
