@@ -304,6 +304,9 @@
 			conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
 					buildDecisionTable(decisionTable);
 			});
+
+			$("#recommendation-keyword").val( currentIssue.summary )
+
 		} else {
 			addAlternativesToDecisionTable([], []);
 			}

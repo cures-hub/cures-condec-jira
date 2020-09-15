@@ -5,6 +5,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement(name = "Recommendation")
 public class Recommendation {
@@ -60,5 +61,19 @@ public class Recommendation {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Recommendation that = (Recommendation) o;
+		return knowledgeSourceName.equals(that.knowledgeSourceName) &&
+			recommendations.equals(that.recommendations);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(knowledgeSourceName, recommendations);
 	}
 }
