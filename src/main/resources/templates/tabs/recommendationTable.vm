@@ -14,7 +14,7 @@
     </div>
 </form>
 
-<table id="recommendation-container" class="aui aui-table-sortable">
+<table id="recommendation-container" class="aui">
     <thead>
     <tr>
         <th>Recommendation</th>
