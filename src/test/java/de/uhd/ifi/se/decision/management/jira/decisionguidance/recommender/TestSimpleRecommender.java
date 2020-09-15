@@ -2,8 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
@@ -36,7 +38,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
-		assertEquals(12, recommendations.size());
+		assertEquals(3, recommendations.size());
 	}
 
 	@Test
@@ -78,6 +80,44 @@ public class TestSimpleRecommender extends TestSetUp {
 		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
 		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
 		assertEquals(1, simpleRecommender.evaluate().size());
+	}
+
+	@Test
+	public void testRemoveDuplicates() {
+
+		List<Recommendation> recommendations = new ArrayList<>();
+
+		KnowledgeElement alternative = new KnowledgeElement();
+		alternative.setSummary("SUMMARY 1");
+		alternative.setDescription("Summary 2");
+		Recommendation recommendation = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
+		Recommendation recommendation2 = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
+
+		recommendations.add(recommendation);
+		recommendations.add(recommendation2);
+
+		BaseRecommender recommender = new SimpleRecommender("");
+
+		assertEquals(1, recommender.removeDuplicated(recommendations).size());
+	}
+
+	@Test
+	public void testRemoveDuplicatesValid() {
+
+		List<Recommendation> recommendations = new ArrayList<>();
+
+		KnowledgeElement alternative = new KnowledgeElement();
+		alternative.setSummary("SUMMARY 1");
+		alternative.setDescription("Summary 2");
+		Recommendation recommendation = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
+		Recommendation recommendation2 = new Recommendation("SOURCE B", alternative, KnowledgeSourceType.RDF);
+
+		recommendations.add(recommendation);
+		recommendations.add(recommendation2);
+
+		BaseRecommender recommender = new SimpleRecommender("");
+
+		assertEquals(2, recommender.removeDuplicated(recommendations).size());
 	}
 
 }
