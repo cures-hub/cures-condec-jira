@@ -44,22 +44,16 @@ public class TestScoreCalculations extends TestSetUp {
 
 	@Test
 	public void testCalculateProjectScore() {
-		/*
 		scoreCalculator = new ProjectScoreCalculator();
-
 		KnowledgeElement rootIssue = KnowledgeElements.getTestKnowledgeElements().get(3);
-		KnowledgeElement alternative =KnowledgeElements.getTestKnowledgeElements().get(5);
-
 
 		List<String> keywords = new ArrayList<>();
 
 		keywords.add("feature");
-		assertEquals(100, scoreCalculator.calculateScore(keywords, alternative));
+		assertEquals(100, scoreCalculator.calculateScore(keywords, rootIssue));
 
 		keywords.add("feature otherword");
-		assertEquals(50, scoreCalculator.calculateScore(keywords, alternative));
-		*/
-
+		assertEquals(50, scoreCalculator.calculateScore(keywords, rootIssue));
 	}
 
 
