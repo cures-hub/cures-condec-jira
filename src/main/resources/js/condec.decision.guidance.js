@@ -50,10 +50,9 @@
 				let url = "";
 				let tableRow = "";
 
-				if (alternative.url) { url = alternative.url }
 				counter += 1;
 				tableRow += "<tr>";
-				tableRow += "<td><a class='alternative-summary' href='" + url + "'>" + alternative.summary + "</a></td>";
+				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendations + "</a></td>";
 				tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
 				tableRow += "<td>"+ recommendation.score +"%</td>";
 				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
@@ -62,7 +61,7 @@
 
 				$(" #row_" + counter).click(function() {
 					const currentIssue = conDecDecisionTable.getCurrentIssue();
-					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  alternative.summary, alternative.description);
+					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendations, "");
 				});
 		});
 		conDecAPI.showFlag("success", "Results: " +  counter);

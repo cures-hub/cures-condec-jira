@@ -27,8 +27,7 @@ public class TestProjectSource extends TestSetUp {
 		List<Recommendation> recommendations = projectSource.getResults("feature");
 
 		assertEquals(1, recommendations.size());
-		assertEquals("We could do it like this!", recommendations.get(0).getRecommendations().getSummary());
-		assertEquals(KnowledgeType.ALTERNATIVE, recommendations.get(0).getRecommendations().getType());
+		assertEquals("We could do it like this!", recommendations.get(0).getRecommendations());
 		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
 	}
 

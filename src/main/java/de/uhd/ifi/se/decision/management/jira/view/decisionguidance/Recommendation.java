@@ -14,9 +14,12 @@ public class Recommendation {
 	protected String knowledgeSourceName;
 
 	@XmlElement
-	protected KnowledgeElement recommendations;
+	protected String recommendations;
 
 	protected KnowledgeSourceType knowledgeSourceType;
+
+	@XmlElement
+	protected String url;
 
 	protected int score;
 
@@ -24,10 +27,11 @@ public class Recommendation {
 
 	}
 
-	public Recommendation(String knowledgeSourceName, KnowledgeElement recommendations, KnowledgeSourceType knowledgeSourceType) {
+	public Recommendation(String knowledgeSourceName, String recommendations, KnowledgeSourceType knowledgeSourceType, String url) {
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.recommendations = recommendations;
 		this.knowledgeSourceType = knowledgeSourceType;
+		this.url = url;
 	}
 
 	public String getKnowledgeSourceName() {
@@ -38,11 +42,11 @@ public class Recommendation {
 		this.knowledgeSourceName = knowledgeSourceName;
 	}
 
-	public KnowledgeElement getRecommendations() {
+	public String getRecommendations() {
 		return recommendations;
 	}
 
-	public void setRecommendations(KnowledgeElement recommendations) {
+	public void setRecommendations(String recommendations) {
 		this.recommendations = recommendations;
 	}
 
@@ -52,6 +56,14 @@ public class Recommendation {
 
 	public void setKnowledgeSourceType(KnowledgeSourceType knowledgeSourceType) {
 		this.knowledgeSourceType = knowledgeSourceType;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	@XmlElement(name = "score")

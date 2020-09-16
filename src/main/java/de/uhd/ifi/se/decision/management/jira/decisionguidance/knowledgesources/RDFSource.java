@@ -10,6 +10,9 @@ import org.apache.jena.query.*;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +27,9 @@ public class RDFSource implements KnowledgeSource {
 	protected String timeout;
 	protected boolean isActivated;
 
+	public RDFSource() {
+
+	}
 
 	/**
 	 * @param projectKey
@@ -85,7 +91,8 @@ public class RDFSource implements KnowledgeSource {
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
-
+		inputs = inputs.replace(' ', '_');
+		inputs = "<http://dbpedia.org/resource/" + inputs + ">";
 		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
 
 
@@ -94,16 +101,10 @@ public class RDFSource implements KnowledgeSource {
 		this.recommendations = new ArrayList<>();
 		while (resultSet != null && resultSet.hasNext()) {
 			QuerySolution row = resultSet.nextSolution();
-			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?alternative").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
-			Recommendation recommendation = new Recommendation(this.name, alternative, KnowledgeSourceType.RDF);
+			Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), KnowledgeSourceType.RDF, row.get("?url").toString());
 			this.recommendations.add(recommendation);
 
 		}
-		KnowledgeElement alternative = new KnowledgeElement();
-		alternative.setSummary("Test Summary from RDF Source");
-		alternative.setDescription("TEst Description from RDF Source");
-		Recommendation recommendation = new Recommendation(this.name, alternative, KnowledgeSourceType.RDF);
-		this.recommendations.add(recommendation);
 		return this.recommendations;
 	}
 

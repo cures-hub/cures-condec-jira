@@ -86,7 +86,8 @@ public class ProjectSource implements KnowledgeSource {
 						issue.getLinks().stream()
 							.filter(link -> link.getTarget().getType() == KnowledgeType.ALTERNATIVE)
 							.forEach(child -> {
-								Recommendation recommendation = new ProjectRecommendation(this.projectSourceName, child.getTarget(), keywords, issue);
+								Recommendation recommendation =
+									new ProjectRecommendation(this.projectSourceName, child.getTarget().getSummary(), keywords, issue, child.getTarget().getUrl());
 								recommendations.add(recommendation);
 							});
 					}

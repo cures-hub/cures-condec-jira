@@ -5,24 +5,17 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFa
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-@XmlRootElement(name = "Recommendation")
 public class ProjectRecommendation extends Recommendation {
 
 	List<String> keywords;
 	KnowledgeElement parentIssue;
 
-	public ProjectRecommendation(String knowledgeSourceName, KnowledgeElement recommendations, List<String> keywords, KnowledgeElement parentIssue) {
-		this.knowledgeSourceName = knowledgeSourceName;
-		this.recommendations = recommendations;
-		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
+	public ProjectRecommendation(String knowledgeSourceName, String recommendations, List<String> keywords, KnowledgeElement parentIssue, String url) {
+		super(knowledgeSourceName, recommendations,KnowledgeSourceType.PROJECT,url);
 		this.parentIssue = parentIssue;
 		this.keywords = keywords;
-
 	}
 
 	@Override

@@ -16,7 +16,7 @@
             <div class="field-group">
                 <label for="create-uri-knowledgesource">RDF-Service</label>
                 <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
-                       placeholder="http://dbpedia.org/sparql">
+                       placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql">
                 <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
             </div>
             <div class="field-group">
@@ -28,7 +28,7 @@
             </div>
             <div class="field-group">
                 <label for="create-param-knowledgesource">Timeout</label>
-                <input type="number" min="1" value="10000" id="create-param-knowledgesource"
+                <input type="number" min="1" value="30000" id="create-param-knowledgesource"
                        class="text short-field"
                        name="param-knowledgesource">
                 <div class="description">Enter the timeout in milliseconds.</div>

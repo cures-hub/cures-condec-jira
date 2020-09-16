@@ -32,6 +32,6 @@ public class SimpleRecommender extends BaseRecommender {
 				}
 			}
 		}
-		return removeDuplicated(this.recommendations);
+		return this.recommendations;
 	}
 }

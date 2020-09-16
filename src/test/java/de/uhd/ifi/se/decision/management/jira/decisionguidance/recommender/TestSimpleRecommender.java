@@ -87,11 +87,8 @@ public class TestSimpleRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		KnowledgeElement alternative = new KnowledgeElement();
-		alternative.setSummary("SUMMARY 1");
-		alternative.setDescription("Summary 2");
-		Recommendation recommendation = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
-		Recommendation recommendation2 = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
+		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
+		Recommendation recommendation2 = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -106,11 +103,8 @@ public class TestSimpleRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		KnowledgeElement alternative = new KnowledgeElement();
-		alternative.setSummary("SUMMARY 1");
-		alternative.setDescription("Summary 2");
-		Recommendation recommendation = new Recommendation("SOURCE A", alternative, KnowledgeSourceType.RDF);
-		Recommendation recommendation2 = new Recommendation("SOURCE B", alternative, KnowledgeSourceType.RDF);
+		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
+		Recommendation recommendation2 = new Recommendation("SOURCE B", "SUMMARY 1", KnowledgeSourceType.RDF, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
