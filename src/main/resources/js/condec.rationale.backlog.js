@@ -62,6 +62,7 @@
 			});
 			conDecVis.buildVis(filterSettings, "graph-rationale-backlog");
 			conDecMatrix.buildMatrix(filterSettings, "rationale-backlog");
+			conDecDecisionTable.build(filterSettings, "decision-table-rationale-backlog");
 		});
 	}
 	

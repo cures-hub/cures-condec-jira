@@ -1,37 +1,34 @@
  <div class="aui-tabs horizontal-tabs" id="$viewIdentifier-tabs" data-aui-persist="username">
 	<ul class="tabs-menu">
 		<li class="menu-item active-tab">
-			<a href="#treant-tab-$viewIdentifier" title="Treant">
+			<a href="#treant-$viewIdentifier" title="Treant">
 				Tree Visualization
 			<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
 			</a>
 		</li>
 		<li class="menu-item">
-			<a href="#jstree-tab-$viewIdentifier" title="jsTree">
+			<a href="#jstree-$viewIdentifier" title="jsTree">
 				Tree Visualization 
 				<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
 			</a>
 		</li>				
 		<li class="menu-item">
-			<a href="#graph-tab-$viewIdentifier" title="vis.js">Graph Visualization</a>
+			<a href="#graph-$viewIdentifier" title="vis.js">Graph Visualization</a>
 		</li>
 		<li class="menu-item">
-			<a href="#matrix-tab-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
+			<a href="#matrix-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
 		</li>
 		<li class="menu-item">
-			<a href="#decision-table-tab-$viewIdentifier">Decision Table</a>
+			<a href="#decision-table-$viewIdentifier">Decision Table</a>
 		</li>
 	</ul>
-	<div class="tabs-pane active-pane" id="treant-tab-$viewIdentifier">
-		<div id="treant-$viewIdentifier"></div>
+	<div class="tabs-pane active-pane" id="treant-$viewIdentifier">
 	</div>
-	<div class="tabs-pane" id="jstree-tab-$viewIdentifier">
-		<div id="jstree-$viewIdentifier"></div>
+	<div class="tabs-pane" id="jstree-$viewIdentifier">
 	</div>
-	<div class="tabs-pane" id="graph-tab-$viewIdentifier">
-		<div id="graph-$viewIdentifier"></div>
+	<div class="tabs-pane" id="graph-$viewIdentifier">
 	</div>
-	<div class="tabs-pane" id="matrix-tab-$viewIdentifier">
+	<div class="tabs-pane" id="matrix-$viewIdentifier">
 		<table class="aui aui-table-list matrix">
 			<thead>
 				<tr id="matrix-header-row$viewIdentifier"></tr>
@@ -40,7 +37,6 @@
 			</tbody>    
 		</table>
 	</div>
-	<div class="tabs-pane" id="decision-table-tab-$viewIdentifier">
-		Please implement me :-)!
+	<div class="tabs-pane" id="decision-table-$viewIdentifier">
 	</div>
 </div>    

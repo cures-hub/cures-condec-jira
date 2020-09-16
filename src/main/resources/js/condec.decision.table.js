@@ -3,7 +3,7 @@
 	let ConDecDecisionTable = function ConDecDecisionTable() {
 	};
 
-	const decisionTableID = "decisionTable-container";
+	let decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
 	const dropDownID = "selectDecisionProblem";
 	const alternativeClmTitle = "Solution options (Alternatives and Decision)";
@@ -58,6 +58,15 @@
 	 */
 	function isSelectedElement(element, elementKey) {
 		return elementKey.match(element.key);
+	}
+	
+	ConDecDecisionTable.prototype.build = function (filterSettings, container) {
+		if (container !== null && container !== undefined) {
+			decisionTableID = container;
+		}
+		conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
+			buildDecisionTable(decisionTable);
+		});
 	}
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function () {
