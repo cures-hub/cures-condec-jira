@@ -135,10 +135,11 @@ public class DecisionTable {
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+		Set<Link> linksOfArgument = this.graph.edgesOf(rootElement);
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
+		for (Link currentLink : linksOfArgument) {
+			KnowledgeElement elem = currentLink.getOppositeElement(rootElement);
+			// TODO Make checking criteria type more explicit
 			if (elem.getType() == KnowledgeType.OTHER) {
 				argument.setCriterion(elem);
 				if (!criteria.contains(new Criterion(elem))) {

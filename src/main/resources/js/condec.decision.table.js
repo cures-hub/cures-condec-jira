@@ -138,7 +138,7 @@
 		if (Object.keys(alternatives).length === 0) {
 			body.innerHTML += `<tr id="bodyRowAlternatives"></tr>`;
 			let rowElement = document.getElementById(`bodyRowAlternatives`);
-			rowElement.innerHTML += `<td headers="${alternativeClmTitle}">Please add at least one solution option for this issue</td>`;
+			rowElement.innerHTML += `<td>Please add at least one solution option for this issue</td>`;
 		} else {
 			for (let i in alternatives) {
 				const alternative = alternatives[i];
@@ -155,7 +155,7 @@
 					    <p> ${alternative.summary}</p>
 					</div>`;
 				
-				rowElement.innerHTML += `<td headers="${alternativeClmTitle}">
+				rowElement.innerHTML += `<td>
 					<div class="alternative" id="${alternative.id}">${content}</div></td>`;
 				if (Object.keys(criteria).length > 0) {
 					for (x in criteria) {
