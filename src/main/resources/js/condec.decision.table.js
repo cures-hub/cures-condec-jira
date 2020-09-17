@@ -42,23 +42,23 @@
 	ConDecDecisionTable.prototype.loadDecisionProblems = function () {
 		console.log("conDecDecisionTable loadDecisionProblems");
 		const linkDistance = document.getElementById("link-distance-input-decision-table").value;		
-		const elementKey = conDecAPI.getIssueKey();		
+		const selectedElementKey = conDecAPI.getIssueKey();		
 		const filterSettings = {
 				"linkDistance": linkDistance,
-				"selectedElement": elementKey,
+				"selectedElement": selectedElementKey,
 				"knowledgeTypes": ["Issue", "Problem", "Goal"]
 		};
 		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
-			issues = knowledgeElements.filter(element => !isSelectedElement(element, elementKey) || filterSettings["knowledgeTypes"].includes(element.type));
-			addDropDownItems(issues, elementKey);
+			issues = knowledgeElements.filter(element => !isSelectedElement(element, selectedElementKey) || filterSettings["knowledgeTypes"].includes(element.type));
+			addDropDownItems(issues, selectedElementKey);
 		});
 	};
 	
 	/**
 	 * True if the element is the selected element in the filter settings.
 	 */
-	function isSelectedElement(element, elementKey) {
-		return elementKey.match(element.key);
+	function isSelectedElement(element, selectedElementKey) {
+		return selectedElementKey.match(element.key);
 	}
 	
 	ConDecDecisionTable.prototype.build = function (filterSettings, viewIdentifier = "decision-table") {
@@ -68,26 +68,75 @@
 	}
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function () {
-		conDecDialog.showAddCriterionToDecisionTableDialog(decisionTableData["criteria"], function (newCriteria) {		
-			for (key of newCriteria.keys()) {
-				const tmpCriterion = newCriteria.get(key).criterion;
-				if (newCriteria.get(key).status) {
-					decisionTableData["criteria"].push(tmpCriterion)
-				} else {
-					const index = decisionTableData["criteria"].findIndex(criterion => criterion.id === tmpCriterion.id);
-					decisionTableData["criteria"].splice(index, index >= 0 ? 1 : 0);
-					
-					for (alternative of decisionTableData["alternatives"]) {
-						for (argument of alternative.arguments) {
-							if (argument.hasOwnProperty("criterion") && argument.criterion.id == tmpCriterion.id) {
-								deleteLink(argument, argument.criterion);
-							}
+		this.showAddCriterionToDecisionTableDialog(decisionTableData["criteria"], function (selectedCriteria) {					
+			var removedCriteria = decisionTableData["criteria"].filter(criterion => !selectedCriteria.find(item => item.id === criterion.id));
+			for (removedCriterion of removedCriteria) {
+				const index = decisionTableData["criteria"].findIndex(criterion => criterion.id === removedCriterion.id);
+				decisionTableData["criteria"].splice(index, index >= 0 ? 1 : 0);
+				
+				for (alternative of decisionTableData["alternatives"]) {
+					for (argument of alternative.arguments) {
+						if (argument.hasOwnProperty("criterion") && argument.criterion.id == removedCriterion.id) {
+							deleteLink(argument, argument.criterion);
 						}
 					}
 				}
 			}
+			
+			for (selectedCriterion of selectedCriteria) {
+				var isCriteriaAlreadyShown = decisionTableData["criteria"].find(item => item.id === selectedCriterion.id) ? true : false;
+				if (!isCriteriaAlreadyShown) {
+					decisionTableData["criteria"].push(selectedCriterion);
+				}
+			}
+
 			buildDecisionTable(decisionTableData);
 		});
+	}
+	
+	ConDecDecisionTable.prototype.showAddCriterionToDecisionTableDialog = function (currentCriteria, callback) {
+		let criteriaDialog = document.getElementById("criteria-dialog");
+		let submitButton = document.getElementById("dialog-apply-button");
+		let exitButton = document.getElementById("dialog-exit-button");
+        
+		conDecAPI.getDecisionTableCriteria(function (allCriteria) {
+			createDialogContent(currentCriteria, allCriteria);
+			
+			submitButton.onclick = function () {				
+				var selectedCriteria = $('input[type="checkbox"][name="criteria-checkboxes"]:checked').map(function() { 
+					return allCriteria.find(criterion => (this.value).match(criterion.id));
+				}).get();
+				callback(selectedCriteria);
+				AJS.dialog2(criteriaDialog).hide();
+			}
+		});
+        
+        function createDialogContent(currentCriteria, allCriteria) {
+        	let tableBody = document.getElementById("criteria-table-body");
+        	tableBody.innerHTML = "";
+        	
+        	for (let criterion of allCriteria) {
+        		let tableRow = document.createElement("tr");
+        		tableBody.appendChild(tableRow);
+           		let isChecked = currentCriteria.find(item => item.id === criterion.id) ? "checked" : "";
+           		let summary = allCriteria.find(item => item.id === criterion.id).summary;
+   
+           		tableRow.innerHTML += `<td headers="criterion-number">`
+           			+ `<input class="checkbox" type="checkbox" name="criteria-checkboxes" id="checkBoxOne" ${isChecked} value="${criterion.id}">`
+        			+ `</td>`
+        			+ `<td headers="criterion-name">${summary}</td>`;
+        	}
+        	
+        	document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey() 
+        		+ "&category=rationaleModel";
+        }
+        
+        // Show dialog
+        AJS.dialog2(criteriaDialog).show();
+
+        exitButton.onclick = function () {
+			AJS.dialog2(criteriaDialog).hide();
+        }
 	}
 	
 	ConDecDecisionTable.prototype.showCreateDialogForIssue = function () {

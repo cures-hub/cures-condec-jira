@@ -17,9 +17,7 @@
 <div class="decision-table">
 	<table id="decision-table-$viewIdentifier" class="aui aui-table-list">
 		<thead>
-			<tr id="decision-table-header-row-$viewIdentifier">
-				<th>Solution options (Alternatives and Decision)</th>
-			</tr>
+			<tr id="decision-table-header-row-$viewIdentifier"></tr>
 		</thead>
 		<tbody id="decision-table-body-$viewIdentifier">
 		</tbody>

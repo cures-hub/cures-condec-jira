@@ -142,6 +142,7 @@ public class DecisionTable {
 			// TODO Make checking criteria type more explicit
 			if (elem.getType() == KnowledgeType.OTHER) {
 				argument.setCriterion(elem);
+				// TODO Use set and equals method in Criterion
 				if (!criteria.contains(new Criterion(elem))) {
 					criteria.add(new Criterion(elem));
 				}
