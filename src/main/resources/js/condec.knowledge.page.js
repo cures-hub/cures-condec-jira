@@ -100,7 +100,7 @@
 			});
 			conDecVis.buildVis(filterSettings, "graph-overview");		
 			conDecMatrix.buildMatrix(filterSettings, "overview");		
-			conDecDecisionTable.build(filterSettings, "overview");
+			conDecDecisionTable.build(filterSettings, "overview", node);
 		});
 	}
 

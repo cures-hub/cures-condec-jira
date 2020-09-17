@@ -1,7 +1,7 @@
 <section id="criteria-dialog" class="aui-dialog2 aui-dialog2-small aui-layer" role="dialog" aria-hidden="true">
     <header class="aui-dialog2-header">
         <h2 class="aui-dialog2-header-main">Edit Criteria</h2>
-        <button class="aui-close-button" type="button" id="dialog-exit-button" aria-label="close"></button>
+        <button class="aui-close-button" type="button" aria-label="close"></button>
     </header>
     <div class="aui-dialog2-content">
     	<form>
@@ -20,7 +20,8 @@
 	</div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
-			<button id="dialog-apply-button" class="aui-button aui-button-primary">Apply</button>
+			<button id="criteria-dialog-submit-button" class="aui-button aui-button-primary">Apply</button>
+			<button id="criteria-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
 		</div>
     </footer>
 </section>

@@ -114,6 +114,6 @@ public class TestDecisionTable extends TestSetUp {
 				KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager().getKnowledgeElement(5));
 		decisionTable.getArgumentCriteria(argument, criteriaList);
 		assertNotNull(argument.getCriterion());
-		assertEquals(1, criteriaList.size());
+		assertEquals(2, criteriaList.size());
 	}
 }
