@@ -49,7 +49,12 @@ a:focus a:hover {
 	margin-bottom: 20px;
 }
 
-.noDots{
+.noDots {
 	list-style: none;
 	padding-left: 0;
+}
+
+.decision-table {
+	height: auto; 
+	overflow-x: auto;
 }

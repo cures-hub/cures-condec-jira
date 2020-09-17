@@ -1,23 +1,26 @@
-<section id="decisionTableCriteriaDialog" class="aui-dialog2 aui-dialog2-small aui-layer" role="dialog" aria-hidden="true">
+<section id="criteria-dialog" class="aui-dialog2 aui-dialog2-small aui-layer" role="dialog" aria-hidden="true">
     <header class="aui-dialog2-header">
         <h2 class="aui-dialog2-header-main">Edit Criteria</h2>
         <button class="aui-close-button" type="button" id="dialog-exit-button" aria-label="close"></button>
     </header>
     <div class="aui-dialog2-content">
-	<table id="dialog-table-content" class="aui">
-	    <thead>
-	        <tr>
-	            <th id="basic-number">Enabled</th>
-	            <th id="basic-fname">Criterion</th>
-	        </tr>
-	    </thead>
-	    <tbody id="table-body">
-	    </tbody>
-	</table>
-	<div id="decisionTableCriteriaQueryReference"></div>  
- <footer class="aui-dialog2-footer">
-        <div class="aui-dialog2-footer-actions">
-            <button id="dialog-apply-button" class="aui-button aui-button-primary">Apply</button>
-        </div>
+    	<form>
+    		<table class="aui aui-table-list">
+    			<thead>
+    				<tr>
+    					<th id="criterion-number">Enabled</th>
+    					<th id="criterion-name">Criterion</th>
+    				</tr>
+    			</thead>
+    			<tbody id="criteria-table-body">
+    			</tbody>
+    		</table>
+    	</form>
+    	<p>Available criteria are configured at the <a id="link-to-settings" target="_blank">rationale model settings page</a>.</p>
+	</div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="dialog-apply-button" class="aui-button aui-button-primary">Apply</button>
+		</div>
     </footer>
 </section>

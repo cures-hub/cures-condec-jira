@@ -597,8 +597,8 @@
         AJS.dialog2(summarizedDialog).show();
     };
 
-	ConDecDialog.prototype.showAddCriterionToDecisionTableDialog = function (projectKey, currentCriteria, callback) {
-		let addCriterionDialog = document.getElementById("decisionTableCriteriaDialog");
+	ConDecDialog.prototype.showAddCriterionToDecisionTableDialog = function (currentCriteria, callback) {
+		let criteriaDialog = document.getElementById("criteria-dialog");
 		let closeButton = document.getElementById("dialog-apply-button");
 		let exitButton = document.getElementById("dialog-exit-button");
 		
@@ -609,37 +609,33 @@
 		conDecAPI.getDecisionTableCriteria(function (criteria) {
 			allCriteria = criteria.concat(currentCriteria);
 			uniqueCriteria = new Set(allCriteria.map(item => item.id));
-			createDialogContent(criteria, currentCriteria, projectKey);
+			createDialogContent(criteria, currentCriteria);
 		});
         
-        function createDialogContent(criteria, currentCriteria, projectKey) {
-        	let tableBody = document.getElementById("table-body");
-        	let queryReference = document.getElementById("decisionTableCriteriaQueryReference");
+        function createDialogContent(criteria, currentCriteria) {
+        	let tableBody = document.getElementById("criteria-table-body");
         	tableBody.innerHTML = "";
-        	queryReference.innerHTML = "";
         	
         	for (let criterion of uniqueCriteria) {
-        		tableBody.innerHTML += `<tr id="bodyRowCriteria${criterion}"></tr>`;
-        		let rowElement = document.getElementById(`bodyRowCriteria${criterion}`);
-           		let checked = currentCriteria.find(item => item.id === criterion) ? "checked" : "";
+        		let tableRow = document.createElement("tr");
+        		tableBody.appendChild(tableRow);
+           		let isChecked = currentCriteria.find(item => item.id === criterion) ? "checked" : "";
+           		let summary = allCriteria.find(item => item.id === criterion).summary;
    
-        		rowElement.innerHTML += `<td headers="basic-number">
-        			<div class="checkbox">
-        				<input id="ckb${criterion}" class="checkbox" type="checkbox" name="ckbCriterion" id="checkBoxOne" ${checked}>
-        			</div>
-        			</td>
-        			<td headers="basic-fname">${allCriteria.find(item => item.id === criterion).summary}</td>`;
+           		tableRow.innerHTML += `<td headers="criterion-number">`
+           			+ `<input id="ckb${criterion}" class="checkbox" type="checkbox" name="criteria-checkboxes" id="checkBoxOne" ${isChecked}>`
+        			+ `</td>`
+        			+ `<td headers="criterion-name">${summary}</td>`;
         	}
         	
-        	queryReference.innerHTML = `<div>Available criteria are fetched from decision table criteria query from 
-        		<a href="../../../plugins/servlet/condec/settings?projectKey=${projectKey}&category=rationaleModel">
-        		rationale model settings page</a>.</div>`;
+        	document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey() 
+        		+ "&category=rationaleModel";
         	
         	addCheckboxEventListener();
         }
         
         function addCheckboxEventListener() {
-        	let checkboxes = document.querySelectorAll("input[type=checkbox][class=checkbox][name=ckbCriterion]");
+        	let checkboxes = document.querySelectorAll("input[type=checkbox][class=checkbox][name=criteria-checkboxes]");
         	for (let checkbox of checkboxes) {
         		checkbox.addEventListener("change", function () {
         			let tmpCriterionId = this.id.replace("ckb", "");
@@ -661,29 +657,16 @@
         }
         
         // Show dialog
-        AJS.dialog2(addCriterionDialog).show();
-        
-        // send callback when dialog was closed not via apply or close button
-		// AJS.dialog2(addCriterionDialog).on("hide",
-		// removeDialogHideListener());
+        AJS.dialog2(criteriaDialog).show();
 
         exitButton.onclick = function () {
-        	applyChanges([]);
-			AJS.dialog2(addCriterionDialog).hide();
+        	callback([]);
+			AJS.dialog2(criteriaDialog).hide();
         }
         
 		closeButton.onclick = function () {
-			applyChanges(changes);
-			AJS.dialog2(addCriterionDialog).hide();
-		}
-				
-		function removeDialogHideListener() {
-			applyChanges([]);
-        	addCriterionDialog.removeEventListener("hide", removeDialogHideListener);
-		}
-		
-		function applyChanges(changes) {
 			callback(changes);
+			AJS.dialog2(criteriaDialog).hide();
 		}
 	}
 
