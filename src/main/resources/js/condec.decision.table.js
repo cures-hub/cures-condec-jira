@@ -3,7 +3,6 @@
 	let ConDecDecisionTable = function ConDecDecisionTable() {
 	};
 
-	let decisionTableID = "decisionTable-container";
 	const auiTableID = "tbldecisionTable";
 	const dropDownID = "selectDecisionProblem";
 	const alternativeClmTitle = "Solution options (Alternatives and Decision)";
@@ -60,12 +59,10 @@
 		return elementKey.match(element.key);
 	}
 	
-	ConDecDecisionTable.prototype.build = function (filterSettings, container) {
-		if (container !== null && container !== undefined) {
-			decisionTableID = container;
-		}
+	ConDecDecisionTable.prototype.build = function (filterSettings, viewIdentifier = "decision-table") {
+		var container = document.getElementById("decision-table-container-" + viewIdentifier);
 		conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
-			buildDecisionTable(decisionTable);
+			buildDecisionTable(decisionTable, container);
 		});
 	}
 
@@ -88,7 +85,8 @@
 					}
 				}
 			}
-			buildDecisionTable(decisionTableData);
+			var container = document.getElementById("decision-table-container-decision-table");
+			buildDecisionTable(decisionTableData, container);
 		});
 	}
 	
@@ -98,9 +96,8 @@
 		}
 	}
 
-	function buildDecisionTable(decisionTable) {
+	function buildDecisionTable(decisionTable, container) {
 		decisionTableData = decisionTable;
-		let container = document.getElementById(decisionTableID);
 		container.innerHTML = "";
 		container.innerHTML += `<table id="${auiTableID}" class="aui">`;
 
@@ -287,7 +284,8 @@
 							"selectedElement" : issues[i].key
 					}
 					conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
-						buildDecisionTable(decisionTable);
+						var container = document.getElementById("decision-table-container-decision-table");
+						buildDecisionTable(decisionTable, container);
 					});
 				} else {
 					dropDown.innerHTML += "<option value=\"" + issues[i].id + "\">" + issues[i].summary + "</option>";
@@ -303,7 +301,8 @@
 					"selectedElement" : currentIssue.key
 			}
 			conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
-					buildDecisionTable(decisionTable);
+				var container = document.getElementById("decision-table-container-decision-table");
+					buildDecisionTable(decisionTable, container);
 			});
 		} else {
 			addAlternativesToDecisionTable([], []);

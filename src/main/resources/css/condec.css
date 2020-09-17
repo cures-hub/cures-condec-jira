@@ -32,7 +32,7 @@ a:focus a:hover {
 	resize: both;	
 }
 
-#treant-container {
+.treant {
 	height: auto;
 }
 

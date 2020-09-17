@@ -1,0 +1,7 @@
+<table class="aui aui-table-list matrix">
+	<thead>
+    	<tr id="matrix-header-row-$viewIdentifier"></tr>
+    </thead>
+    <tbody id="matrix-body-$viewIdentifier">
+    </tbody>    
+</table>

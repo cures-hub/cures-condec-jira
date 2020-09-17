@@ -17,13 +17,7 @@
 </div>
 <div class="aui-group" id="legend"></div>
 <div class="aui-group">
-    <table class="aui aui-table-list matrix">
-    	<thead>
-    		<tr id="matrix-header-row"></tr>
-    	</thead>
-    	<tbody id="matrix-body">
-    	</tbody>    
-    </table>
+    #parse("templates/tabs/matrix/matrix.vm")
 </div>
 <script>
 /* Adds the on click listener on tab opening */

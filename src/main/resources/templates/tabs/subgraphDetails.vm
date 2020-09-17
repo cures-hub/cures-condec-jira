@@ -1,7 +1,7 @@
  <div class="aui-tabs horizontal-tabs" id="$viewIdentifier-tabs" data-aui-persist="username">
 	<ul class="tabs-menu">
 		<li class="menu-item active-tab">
-			<a href="#treant-$viewIdentifier" title="Treant">
+			<a href="#treant-tab-$viewIdentifier" title="Treant">
 				Tree Visualization
 			<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
 			</a>
@@ -22,21 +22,17 @@
 			<a href="#decision-table-$viewIdentifier">Decision Table</a>
 		</li>
 	</ul>
-	<div class="tabs-pane active-pane" id="treant-$viewIdentifier">
+	<div class="tabs-pane active-pane treant" id="treant-tab-$viewIdentifier">
+		<div id="treant-$viewIdentifier" class="treant"></div>
 	</div>
 	<div class="tabs-pane" id="jstree-$viewIdentifier">
 	</div>
 	<div class="tabs-pane" id="graph-$viewIdentifier">
 	</div>
 	<div class="tabs-pane" id="matrix-$viewIdentifier">
-		<table class="aui aui-table-list matrix">
-			<thead>
-				<tr id="matrix-header-row$viewIdentifier"></tr>
-			</thead>
-			<tbody id="matrix-body$viewIdentifier">
-			</tbody>    
-		</table>
+		#parse("templates/tabs/matrix/matrix.vm")
 	</div>
 	<div class="tabs-pane" id="decision-table-$viewIdentifier">
+		#parse("templates/tabs/decisiontable/decisionTable.vm")
 	</div>
 </div>    
