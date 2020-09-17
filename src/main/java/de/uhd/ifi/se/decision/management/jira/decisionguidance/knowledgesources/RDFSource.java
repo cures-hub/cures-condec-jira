@@ -38,7 +38,7 @@ public class RDFSource implements KnowledgeSource {
 		this.projectKey = projectKey;
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?capital WHERE { ?alternative a dbo:Country.	?country dbo:capital ?alternative } LIMIT 10";
+			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country.	?url dbo:capital ?alternative } LIMIT 10";
 		this.name = "DBPedia";
 		this.timeout = "30000";
 		this.isActivated = true;
@@ -91,6 +91,7 @@ public class RDFSource implements KnowledgeSource {
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
+		if(inputs == null) inputs = "";
 		inputs = inputs.replace(' ', '_');
 		inputs = "<http://dbpedia.org/resource/" + inputs + ">";
 		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
