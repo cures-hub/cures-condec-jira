@@ -28,9 +28,7 @@
 
 				if (error === null) {
 					buildRecommendationTable(results);
-				} else {
-					$("#recommendation-error").show();
-				}
+				} 
 				$("#recommendation-button").prop("disabled",false);
 				spinner.hide();
 
