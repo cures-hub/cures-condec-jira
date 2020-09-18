@@ -33,7 +33,7 @@ public class RDFSource implements KnowledgeSource {
 		this.projectKey = projectKey;
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country.	?url dbo:capital ?alternative } LIMIT 10";
+			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country.	?url dbo:capital ?alternative }";
 		this.name = "DBPedia";
 		this.timeout = "30000";
 		this.isActivated = true;
