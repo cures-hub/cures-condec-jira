@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 @XmlRootElement(name = "Argument")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -14,21 +15,21 @@ public class Argument extends DecisionTableElement {
 
 	@XmlElement
 	private long id;
-	
+
 	@XmlElement
 	private String summary;
-	
+
 	@XmlElement
 	private String documentationLocation;
-	
+
 	private String type;
-	
+
 	@XmlElement
 	private Criterion criterion;
-	
+
 	@XmlElement
 	private String image;
-	
+
 	public Argument(KnowledgeElement argument) {
 		this.id = argument.getId();
 		this.summary = argument.getSummary();
@@ -36,7 +37,12 @@ public class Argument extends DecisionTableElement {
 		this.type = argument.getTypeAsString();
 		this.image = KnowledgeType.getIconUrl(argument);
 	}
-	
+
+	public Argument(KnowledgeElement argument, Link link) {
+		this(argument);
+		this.image = KnowledgeType.getIconUrl(argument, link.getType());
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -52,7 +58,7 @@ public class Argument extends DecisionTableElement {
 	public void setCriterion(KnowledgeElement criterion) {
 		this.criterion = new Criterion(criterion);
 	}
-	
+
 	public String getDocumentationLocation() {
 		return documentationLocation;
 	}
@@ -60,7 +66,7 @@ public class Argument extends DecisionTableElement {
 	public String getType() {
 		return type;
 	}
-	
+
 	public String getImage() {
 		return this.image;
 	}

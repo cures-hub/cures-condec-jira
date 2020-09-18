@@ -123,7 +123,7 @@ public class DecisionTable {
 			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
 						.get(numberOfAlternatives - 1);
-				Argument argument = new Argument(sourceElement);
+				Argument argument = new Argument(sourceElement, currentLink);
 				getArgumentCriteria(argument, decisionTableData.get("criteria"));
 				alternative.addArgument(argument);
 			}

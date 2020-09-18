@@ -94,7 +94,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(1, treant.getNodeStructure().getChildren().size());
+		assertEquals(2, treant.getNodeStructure().getChildren().size());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(1, treant.getNodeStructure().getChildren().size());
+		assertEquals(2, treant.getNodeStructure().getChildren().size());
 	}
 
 	@Test

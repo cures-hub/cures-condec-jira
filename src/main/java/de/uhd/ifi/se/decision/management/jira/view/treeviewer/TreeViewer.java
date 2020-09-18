@@ -109,8 +109,9 @@ public class TreeViewer {
 	 *           resolve the loop! Store edge traversed by the breadth first
 	 *           iterator and traverse the remaining edges afterwards!
 	 * @alternative Only use breadth first iteration to traverse the graph!
-	 * @con Criteria linked to many arguments would only be shown for one argument
-	 *      in the tree, which is misleading and information loss.
+	 * @con The breadth first iterator does not traverse all edges but every node
+	 *      once. Criteria linked to many arguments would only be shown for one
+	 *      argument in the tree, which is misleading and information loss.
 	 */
 	public TreeViewerNode getTreeViewerNodeWithChildren(KnowledgeElement rootElement) {
 		if (rootElement == null) {
