@@ -1,8 +1,8 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner">
         <form class="aui">
-            <label for="selectDecisionProblem">Issues: </label>
-            <select class="select medium-long-field" id="selectDecisionProblem" name="selectDecisionProblem"></select>
+            <label for="decision-problem-dropdown">Issues: </label>
+            <select class="select medium-long-field" id="decision-problem-dropdown"></select>
             #set ($viewIdentifier = "decision-table")
             #parse("templates/filter/linkDistance.vm")
         </form>

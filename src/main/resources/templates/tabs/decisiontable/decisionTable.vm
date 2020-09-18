@@ -11,7 +11,7 @@
 		Create argument for solution option
 	</button>
 	<div id="dropdown2-more" class="aui-dropdown2 aui-style-default">
-		<ul class="aui-list-truncate" id="alternative-dropdown-items"></ul>
+		<ul class="aui-list-truncate" id="alternative-dropdown-items-$viewIdentifier"></ul>
 	</div>
 </div>
 <div class="decision-table">
