@@ -299,7 +299,7 @@ public class FilterSettings {
 	 * @param linkDistance
 	 *            nodes within this distance from the start node are included in the
 	 *            filtered graph. All nodes with a greater distance are not
-	 *            included.
+	 *            included. Also called "number of hops".
 	 */
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;

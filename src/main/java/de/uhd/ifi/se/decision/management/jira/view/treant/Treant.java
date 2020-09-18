@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -64,6 +67,14 @@ public class Treant {
 	 *        of a knowledge element (=node)?
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
+	 * 
+	 * @issue How to handle loops in the graph?
+	 * @decision Traverse all edges in the graph and duplicate knowledge elements to
+	 *           resolve the loop! Store edge traversed by the breadth first
+	 *           iterator and traverse the remaining edges afterwards!
+	 * @alternative Only use breadth first iteration to traverse the graph!
+	 * @con Criteria linked to many arguments would only be shown for one argument
+	 *      in the tree, which is misleading and information loss.
 	 */
 	public TreantNode getTreantNodeWithChildren(KnowledgeElement rootElement) {
 		if (rootElement == null || rootElement.getProject() == null) {
@@ -79,6 +90,7 @@ public class Treant {
 
 		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
 				rootElement);
+		Set<Link> traversedEdges = new HashSet<>();
 
 		while (iterator.hasNext()) {
 			KnowledgeElement childElement = iterator.next();
@@ -93,6 +105,30 @@ public class Treant {
 			elementToTreantNodeMap.put(childElement, childNode);
 
 			TreantNode parentNode = elementToTreantNodeMap.get(parentElement);
+			parentNode.getChildren().add(childNode);
+
+			traversedEdges.add(edge);
+		}
+
+		Set<Link> remainingEdges = undirectedGraph.edgeSet().stream().filter(edge -> !traversedEdges.contains(edge))
+				.collect(Collectors.toSet());
+
+		for (Link edge : remainingEdges) {
+			KnowledgeElement sourceElement = edge.getSource();
+			KnowledgeElement targetElement = edge.getTarget();
+
+			KnowledgeElement childElement = targetElement;
+			TreantNode parentNode = elementToTreantNodeMap.get(sourceElement);
+			if (parentNode == null) {
+				parentNode = elementToTreantNodeMap.get(targetElement);
+				childElement = sourceElement;
+			}
+			if (parentNode == null) {
+				continue;
+			}
+
+			TreantNode childNode = new TreantNode(childElement, edge, false, isHyperlinked);
+			elementToTreantNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}
 
