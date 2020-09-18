@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ public class SimpleRecommender extends BaseRecommender {
 
 	private List<Recommendation> recommendations;
 	private String keywords;
-	KnowledgeElement rootElement;
 
 	public SimpleRecommender(String keywordsString) {
 		this.recommendations = new ArrayList<>();

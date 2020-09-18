@@ -94,7 +94,7 @@ public class ProjectSource implements KnowledgeSource {
 				});
 			}
 		}
-		return recommendations; //TODO remove duplicates
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
 }

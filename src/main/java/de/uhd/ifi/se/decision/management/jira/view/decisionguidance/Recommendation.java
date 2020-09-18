@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
