@@ -190,6 +190,7 @@
            const timeout = $("#create-param-knowledgesource");
 
            var rdfSourceJSON = {
+                "projectKey": "$projectKey",
                 "name": name.val(),
                 "service": service.val(),
                 "queryString": queryString.val(),

@@ -1,18 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +20,7 @@ public class RDFSource implements KnowledgeSource {
 	protected String queryString;
 	protected String timeout;
 	protected boolean isActivated;
+	protected int limit;
 
 	public RDFSource() {
 
@@ -95,6 +90,7 @@ public class RDFSource implements KnowledgeSource {
 		inputs = inputs.replace(' ', '_');
 		inputs = "<http://dbpedia.org/resource/" + inputs + ">";
 		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
+		queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
 
 		ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
@@ -161,6 +157,9 @@ public class RDFSource implements KnowledgeSource {
 		isActivated = activated;
 	}
 
+	public int getLimit() {
+		return ConfigPersistenceManager.getMaxNumberRecommendations(this.projectKey);
+	}
 
 	@Override
 	public boolean equals(Object o) {
