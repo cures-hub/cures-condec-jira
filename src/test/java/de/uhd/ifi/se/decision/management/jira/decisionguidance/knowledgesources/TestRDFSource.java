@@ -5,6 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class TestRDFSource extends TestSetUp {
@@ -18,9 +20,9 @@ public class TestRDFSource extends TestSetUp {
 	public void testRDFSource() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
-		Recommendation recommendations = source.getResults(null);
-		assertEquals(recommendations.getRecommendations().size(), 10);
-		assertEquals("RDFSource", recommendations.getKnowledgeSourceName());
+		List<Recommendation> recommendations = source.getResults(null);
+		assertEquals(46, recommendations.size());
+		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
 		assertEquals(true, source.isActivated());
 	}
 

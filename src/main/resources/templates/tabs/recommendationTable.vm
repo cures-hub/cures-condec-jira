@@ -1,7 +1,7 @@
 <h2>Recommend Solution Options</h2>
 <form class="aui">
     <div style="display:flex; align-items:center; gap:12px">
-        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords"/>
+        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
         <button class="aui-button" id="recommendation-button"
                 title="Adds a new criterion column to decision table">
             <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Get Recommendations</span>
@@ -14,7 +14,7 @@
     </div>
 </form>
 
-<table id="recommendation-container" class="aui aui-table-sortable">
+<table id="recommendation-container" class="aui">
     <thead>
     <tr>
         <th>Recommendation</th>
@@ -26,6 +26,9 @@
     <tbody>
     </tbody>
 </table>
+<script>
+    conDecDecisionGuidance.initView();
+</script>
 
 
 

@@ -25,6 +25,14 @@
 		//conDecObservable.subscribe(this);
 		
 	};
+
+	ConDecDecisionTable.prototype.updateView = function() {
+		if(decisionTableData) buildDecisionTable(decisionTableData);
+	};
+
+	ConDecDecisionTable.prototype.getCurrentIssue = function() {
+		return currentIssue;
+	};
 	
 	function addOnClickEventToDecisionTableButtons () {
 		document.getElementById("btnAddCriterion").addEventListener("click", function (event) {
@@ -296,6 +304,9 @@
 			conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
 					buildDecisionTable(decisionTable);
 			});
+
+			$("#recommendation-keyword").val( currentIssue.summary )
+
 		} else {
 			addAlternativesToDecisionTable([], []);
 			}

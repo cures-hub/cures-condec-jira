@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
@@ -17,13 +14,17 @@ import java.util.Objects;
 public class RDFSource implements KnowledgeSource {
 
 	protected String projectKey;
-	protected List<KnowledgeElement> recommendations;
+	protected List<Recommendation> recommendations;
 	protected String name;
 	protected String service;
 	protected String queryString;
 	protected String timeout;
 	protected boolean isActivated;
+	protected int limit;
 
+	public RDFSource() {
+
+	}
 
 	/**
 	 * @param projectKey
@@ -32,7 +33,7 @@ public class RDFSource implements KnowledgeSource {
 		this.projectKey = projectKey;
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?capital WHERE { ?alternative a dbo:Country.	?country dbo:capital ?alternative } LIMIT 10";
+			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country.	?url dbo:capital ?alternative }";
 		this.name = "DBPedia";
 		this.timeout = "30000";
 		this.isActivated = true;
@@ -84,9 +85,12 @@ public class RDFSource implements KnowledgeSource {
 	}
 
 	@Override
-	public Recommendation getResults(String inputs) {
-
+	public List<Recommendation> getResults(String inputs) {
+		if(inputs == null) inputs = "";
+		inputs = inputs.replace(' ', '_');
+		inputs = "<http://dbpedia.org/resource/" + inputs + ">";
 		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
+		queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
 
 		ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
@@ -94,12 +98,11 @@ public class RDFSource implements KnowledgeSource {
 		this.recommendations = new ArrayList<>();
 		while (resultSet != null && resultSet.hasNext()) {
 			QuerySolution row = resultSet.nextSolution();
-			KnowledgeElement alternative = new KnowledgeElement(10L, row.get("?alternative").toString(), "blabla", KnowledgeType.ALTERNATIVE, this.projectKey, "KEY", DocumentationLocation.JIRAISSUETEXT, KnowledgeStatus.IDEA);
-			this.recommendations.add(alternative);
+			Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), KnowledgeSourceType.RDF, row.get("?url").toString());
+			this.recommendations.add(recommendation);
 
 		}
-		Recommendation recommendation = new Recommendation(this.name, this.recommendations);
-		return recommendation;
+		return this.recommendations;
 	}
 
 	public String getProjectKey() {
@@ -154,6 +157,9 @@ public class RDFSource implements KnowledgeSource {
 		isActivated = activated;
 	}
 
+	public int getLimit() {
+		return ConfigPersistenceManager.getMaxNumberRecommendations(this.projectKey);
+	}
 
 	@Override
 	public boolean equals(Object o) {
