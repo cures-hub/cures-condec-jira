@@ -4,17 +4,16 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SimpleRecommender extends BaseRecommender {
 
 	private List<Recommendation> recommendations;
-	private List<String> keywords;
+	private String keywords;
 
 	public SimpleRecommender(String keywordsString) {
 		this.recommendations = new ArrayList<>();
-		this.keywords = Arrays.asList(keywordsString.split(" "));
+		this.keywords = keywordsString;
 	}
 
 	public SimpleRecommender(String keywordsString, List<KnowledgeSource> knowledgeSources) {
@@ -24,16 +23,13 @@ public class SimpleRecommender extends BaseRecommender {
 
 	@Override
 	public List<Recommendation> getRecommendation() {
-		for (String keyword : this.keywords) {
-			if (this.knowledgeSources != null) {
-				for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
-					if (knowledgeSource.isActivated()) {
-						this.recommendations.add(knowledgeSource.getResults(keyword));
-					}
+		if (this.knowledgeSources != null) {
+			for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
+				if (knowledgeSource.isActivated()) {
+					this.recommendations.addAll(knowledgeSource.getResults(this.keywords));
 				}
 			}
 		}
-
 		return this.recommendations;
 	}
 }

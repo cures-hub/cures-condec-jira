@@ -5,6 +5,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BaseRecommender {
 
@@ -28,6 +29,7 @@ public abstract class BaseRecommender {
 
 	/**
 	 * Checks if the knowledge source exists and activates it
+	 *
 	 * @param knowledgeSources
 	 * @param knowledgeSourceName
 	 * @return
@@ -42,8 +44,12 @@ public abstract class BaseRecommender {
 		return this;
 	}
 
-	 public List<Recommendation> evaluate() {
+	protected List<Recommendation> removeDuplicated(List<? extends Recommendation> recommendations) {
+		return recommendations.stream().distinct().collect(Collectors.toList());
+	}
+
+	public List<Recommendation> evaluate() {
 		return this.getRecommendation();
-	 }
+	}
 
 }

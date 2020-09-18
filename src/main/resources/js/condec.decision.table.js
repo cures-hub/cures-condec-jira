@@ -24,6 +24,10 @@
 	ConDecDecisionTable.prototype.updateView = function () {
 		this.loadDecisionProblems();
 	};
+
+	ConDecDecisionTable.prototype.getCurrentIssue = function() {
+		return currentIssue;
+	};
 	
 	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function (viewIdentifier = "decision-table") {
 		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function (event) {
@@ -84,6 +88,7 @@
 				"selectedElement" : currentIssue.key
 			}
 			conDecDecisionTable.build(filterSettings, viewIdentifier, currentIssue);
+			$("#recommendation-keyword").val(currentIssue.summary);
 		}		
 
 		dropDown.addEventListener("change", selectDecisionProblem);

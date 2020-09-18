@@ -3,9 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,8 +63,11 @@ public class ProjectSource implements KnowledgeSource {
 	}
 
 	@Override
-	public Recommendation getResults(String inputs) {
-		List<KnowledgeElement> recommendations = new ArrayList<>();
+	public List<Recommendation> getResults(String inputs) {
+
+		List<String> keywords = Arrays.asList(inputs.split(" "));
+
+		List<Recommendation> recommendations = new ArrayList<>();
 
 		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
 
@@ -74,16 +79,22 @@ public class ProjectSource implements KnowledgeSource {
 				.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
 				.collect(Collectors.toList());
 
-			//get all alternatives, which parent contains the pattern"
-			issues.forEach(issue -> {
-				if (issue.getSummary().contains(inputs)) {
-					issue.getLinks().stream()
-						.filter(link -> link.getTarget().getType() == KnowledgeType.ALTERNATIVE)
-						.forEach(child -> recommendations.add(child.getTarget()));
-				}
-			});
+			for (String keyword : keywords) {
+				//get all alternatives, which parent contains the pattern"
+				issues.forEach(issue -> {
+					if (issue.getSummary().contains(keyword)) {
+						issue.getLinks().stream()
+							.filter(link -> link.getTarget().getType() == KnowledgeType.ALTERNATIVE)
+							.forEach(child -> {
+								Recommendation recommendation =
+									new ProjectRecommendation(this.projectSourceName, child.getTarget().getSummary(), keywords, issue, child.getTarget().getUrl());
+								recommendations.add(recommendation);
+							});
+					}
+				});
+			}
 		}
-		Recommendation recommendation = new Recommendation(this.projectSourceName, recommendations);
-		return recommendation;
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
+
 }

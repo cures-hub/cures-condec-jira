@@ -14,9 +14,17 @@
                 <div class="description">Name your knowledge source.</div>
             </div>
             <div class="field-group">
+                <label for="create-uri-knowledgesource">Select RDF-Service</label>
+                <select class="select medium-field" id="select-rdf-service">
+                    <option value="DBPedia">DBPedia</option>
+                    <option value="OtherSource">Other</option>
+                </select>
+                <div class="description">Select an RDF Service.</div>
+            </div>
+            <div class="field-group">
                 <label for="create-uri-knowledgesource">RDF-Service</label>
                 <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
-                       placeholder="http://dbpedia.org/sparql">
+                       placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql">
                 <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
             </div>
             <div class="field-group">
@@ -25,10 +33,11 @@
                           placeholder="SPARQL-Query" class="textarea
                           large-field"></textarea>
                 <div class="description">Enter a SPARQL-Query.</div>
+                <button class="aui-button" id="insert-prefix">Insert DBPedia Prefix.</button>
             </div>
             <div class="field-group">
                 <label for="create-param-knowledgesource">Timeout</label>
-                <input type="number" min="1" value="10000" id="create-param-knowledgesource"
+                <input type="number" min="1" value="30000" id="create-param-knowledgesource"
                        class="text short-field"
                        name="param-knowledgesource">
                 <div class="description">Enter the timeout in milliseconds.</div>
@@ -181,6 +190,7 @@
            const timeout = $("#create-param-knowledgesource");
 
            var rdfSourceJSON = {
+                "projectKey": "$projectKey",
                 "name": name.val(),
                 "service": service.val(),
                 "queryString": queryString.val(),
@@ -241,7 +251,37 @@
 
          });
 
+
+        var DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+                            "PREFIX dct: <http://purl.org/dc/terms/>\n"+
+                            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                            "PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\n";
+
+         $("#insert-prefix").click(function(event) {
+            event.preventDefault();
+            var currentText = $("#create-query-knowledgesource").val();
+            $("#create-query-knowledgesource").val(DBPEDIAPREFIX + currentText);
+         });
+
+         $("#select-rdf-service").change(function() {
+               var value = $(this).val();
+               if(value == "DBPedia") {
+                    $("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")
+               } else {
+                    $("#create-uri-knowledgesource").val("")
+               }
+         });
+
+
+
     });
+
+
+
+
+
+
+
 
 
 

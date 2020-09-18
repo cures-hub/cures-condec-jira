@@ -18,7 +18,7 @@
     var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative") {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative", summary = "", description = "") {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
@@ -34,9 +34,9 @@
         var cancelButton = document.getElementById("create-dialog-cancel-button");
 
         // Fill HTML elements
-        fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
-        inputSummaryField.value = "";
-        inputDescriptionField.value = "";
+ 		fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
+        inputSummaryField.value = summary;
+        inputDescriptionField.value = description;
         fillSelectTypeField(selectTypeField, selectedType);
         fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
