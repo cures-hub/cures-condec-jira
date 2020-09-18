@@ -11,8 +11,7 @@
 		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
 			conDecDecisionTable.loadDecisionProblems();
 		});
-		addOnClickEventToDecisionTableButtons();
-		
+		this.addOnClickEventToDecisionTableButtons();		
 		conDecDecisionGuidance.addOnClickListenerForRecommendations();
 		
 		// Register/subscribe this view as an observer
@@ -26,18 +25,14 @@
 		this.loadDecisionProblems();
 	};
 	
-	function addOnClickEventToDecisionTableButtons (viewIdentifier = "decision-table") {
-		var addCriterionButton = document.getElementById("add-criterion-button-" + viewIdentifier);
-		if (!addCriterionButton.hasAttribute("listener")) {
-			addCriterionButton.addEventListener("click", function (event) {
-				conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);		
-				this.setAttribute("listener", "true");			
-			});
-		}
+	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function (viewIdentifier = "decision-table") {
+		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function (event) {
+			conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);			
+		});
 		document.getElementById("add-alternative-button-" + viewIdentifier).addEventListener("click", function (event) {
 			conDecDecisionTable.showCreateDialogForIssue();
 		});
-	}
+	};
 	
  	/**
 	 * external references: none, called in updateView function
@@ -108,7 +103,6 @@
 	ConDecDecisionTable.prototype.build = function (filterSettings, viewIdentifier = "decision-table", decisionProblem) {
 		this.viewIdentifier = viewIdentifier;
 		currentIssue = decisionProblem;
-		addOnClickEventToDecisionTableButtons(viewIdentifier);
 		conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
 			buildDecisionTable(decisionTable, viewIdentifier);
 		});
@@ -203,8 +197,8 @@
 		let dropDownMenu = document.getElementById("alternative-dropdown-items-" + viewIdentifier);
 		dropDownMenu.innerHTML = "";
 		for (alternative of alternatives) {
-			dropDownMenu.innerHTML += `<li id="${alternative.id}"><a><img src="${alternative.image}"</img> `
-			+ `${alternative.summary}</a></li>`;
+			dropDownMenu.innerHTML += `<aui-item-link id="${alternative.id}"><img src="${alternative.image}"</img> `
+			+ `${alternative.summary}</aui-item-link>`;
 		}
 		
 		dropDownMenu.addEventListener("click", function (event) {

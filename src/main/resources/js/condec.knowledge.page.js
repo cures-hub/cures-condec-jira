@@ -59,6 +59,8 @@
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
 		
 		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
+		
+		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");	
 
 		this.updateView();
 	};
