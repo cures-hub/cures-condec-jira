@@ -1,7 +1,12 @@
 <h2>Recommend Solution Options</h2>
+<div style="background:#FF5630; padding: 4px; border-radius: 3px; display:none; width:50%; color:white;" id="recommendation-error">
+    <ul>
+        <li>Please enter a keyword.</li>
+    </ul>
+</div>
 <form class="aui">
     <div style="display:flex; align-items:center; gap:12px">
-        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords"/>
+        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
         <button class="aui-button" id="recommendation-button"
                 title="Adds a new criterion column to decision table">
             <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Get Recommendations</span>

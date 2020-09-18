@@ -23,10 +23,13 @@
 			const spinner = $("#loading-spinner-recommendation");
 
 			spinner.show();
+			$("#recommendation-error").hide();
 			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), function(results, error) {
 
 				if (error === null) {
 					buildRecommendationTable(results);
+				} else {
+					$("#recommendation-error").show();
 				}
 				$("#recommendation-button").prop("disabled",false);
 				spinner.hide();
