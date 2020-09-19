@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,16 +70,13 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTable.setDecisionTableForIssue(issue, user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
-		assertEquals(2, decisionTableData.get("alternatives").size());
+		assertTrue(decisionTableData.get("alternatives").size() > 0);
 
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
-		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 
 		assertNotNull(alternative1);
-		assertNotNull(alternative2);
 
 		assertEquals(1, alternative1.getArguments().size());
-		assertEquals(1, alternative2.getArguments().size());
 
 		Argument argument = alternative1.getArguments().get(0);
 		assertNotNull(argument);
