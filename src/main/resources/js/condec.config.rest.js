@@ -33,5 +33,15 @@
 				+ projectKey + "&isConsistencyActivated=" + isActivated, null);
 		}
 
+		ConfigAPI.prototype.getActivationStatusOfQualityEvent = function(projectKey, eventKey){
+			return generalApi.getJSONReturnPromise(this.restPrefix + `/isQualityEventActivated?
+				projectKey=${projectKey}&eventKey=${eventKey}`, null);
+		}
+
+		ConfigAPI.prototype.setActivationStatusOfQualityEvent = function(projectKey, eventKey, isActivated){
+			return generalApi.postJSONReturnPromise(this.restPrefix + `/activateQualityEvent.json?
+				projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null);
+		}
+
 		global.configAPI = new ConfigAPI();
 })(window);

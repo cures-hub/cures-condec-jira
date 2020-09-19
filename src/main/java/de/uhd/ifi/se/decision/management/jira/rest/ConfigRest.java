@@ -1,25 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLinkType;
@@ -27,21 +7,16 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -52,6 +27,19 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -377,11 +365,7 @@ public class ConfigRest {
 	public Response getAllDecisionElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("group") String group) {
 		List<String> keys = DecisionGroupManager.getAllDecisionElementsWithCertainGroup(group, projectKey);
-		if (keys == null) {
-			return Response.ok(Collections.emptyList()).build();
-		} else {
-			return Response.ok(keys).build();
-		}
+		return Response.ok(keys).build();
 	}
 
 	@Path("/getAllClassElementsWithCertainGroup")
@@ -389,11 +373,7 @@ public class ConfigRest {
 	public Response getAllClassElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("group") String group) {
 		List<String> keys = DecisionGroupManager.getAllClassElementsWithCertainGroup(group, projectKey);
-		if (keys == null) {
-			return Response.ok(Collections.emptyList()).build();
-		} else {
-			return Response.ok(keys).build();
-		}
+		return Response.ok(keys).build();
 	}
 
 	@Path("/renameDecisionGroup")
@@ -424,11 +404,7 @@ public class ConfigRest {
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
 		List<String> groups = DecisionGroupManager.getAllDecisionGroups(projectKey);
-		if (groups == null) {
-			return Response.ok(Collections.emptyList()).build();
-		} else {
-			return Response.ok(groups).build();
-		}
+		return Response.ok(groups).build();
 	}
 
 	@Path("/setWebhookEnabled")
@@ -903,63 +879,9 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/activateConsistencyEvent")
-	@POST
-	public Response activateConsistencyEvent(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = this.checkIfConsistencyTriggerRequestIsValid(request, projectKey, eventKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent(projectKey, eventKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
-	}
 
-	@Path("/isConsistencyEventActivated")
-	@GET
-	public Response isConsistencyEventActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
 
-		Response isValidDataResponse = this.checkIfConsistencyTriggerRequestIsValid(request, projectKey, eventKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(projectKey, eventKey);
-		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
-	}
 
-	@Path("/getConsistencyEventTriggerNames")
-	@GET
-	public Response getAllConsistencyCheckEventTriggerNames() {
-		ConsistencyCheckEventListenerSingleton listener = (ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton
-				.getInstance();
-		return Response.ok(Status.ACCEPTED)
-				.entity(ImmutableMap.of("names", listener.getAllConsistencyCheckEventTriggerNames())).build();
-
-	}
-
-	private boolean checkIfTriggerExists(String triggerName) {
-		return ((ConsistencyCheckEventListenerSingleton) ConsistencyCheckEventListenerSingleton.getInstance())
-				.doesConsistencyCheckEventTriggerNameExist(triggerName);
-	}
-
-	private Response checkIfConsistencyTriggerRequestIsValid(HttpServletRequest request, String projectKey,
-			String eventKey) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		if (!this.checkIfTriggerExists(eventKey)) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
-		}
-		return Response.status(Status.OK).build();
-	}
 
 	/* **************************************/
 	/*										*/
@@ -1015,7 +937,7 @@ public class ConfigRest {
 		}
 
 		try {
-			int timeout = Integer.valueOf(rdfSource.getTimeout());
+			int timeout = Integer.parseInt(rdfSource.getTimeout());
 			if (timeout <= 0) {
 				return Response.status(Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
@@ -1102,7 +1024,7 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog */
+	/* Configuration for Rationale Backlog  */
 	/*										*/
 	/* **************************************/
 
@@ -1140,4 +1062,67 @@ public class ConfigRest {
 		return Response.ok(definitionOfDone.getCriteriaMap()).build();
 	}
 
+	/* **********************************************************/
+	/*															*/
+	/* Configuration for quality = completeness + consistency   */
+	/*															*/
+	/* **********************************************************/
+
+	@Path("/isQualityEventActivated")
+	@GET
+	public Response isQualityEventActivated(@Context HttpServletRequest request,
+												@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
+
+		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfQualityEvent(projectKey, eventKey);
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
+	}
+
+	@Path("/activateQualityEvent")
+	@POST
+	public Response activateQualityEvent(@Context HttpServletRequest request,
+											 @QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
+											 @QueryParam("isActivated") boolean isActivated) {
+		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent(projectKey, eventKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	private boolean checkIfQualityTriggerExists(String triggerName) {
+		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
+			.doesQualityCheckEventTriggerNameExist(triggerName);
+	}
+
+	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
+															 String eventKey) {
+		Response response = this.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		response = checkIfProjectKeyIsValid(projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (!this.checkIfQualityTriggerExists(eventKey)) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
+		}
+		return Response.status(Status.OK).build();
+	}
+
+	@Path("/getQualityEventTriggerNames")
+	@GET
+	public Response getAllConsistencyCheckEventTriggerNames() {
+		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
+			.getInstance();
+		return Response.ok(Status.ACCEPTED)
+			.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
+
+	}
 }

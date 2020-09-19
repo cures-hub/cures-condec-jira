@@ -15,12 +15,7 @@ public class TestConsistencyConfig extends TestConfigSuper {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
-	protected static String INVALID_PROJECT_KEY = "InvalidKey";
 	protected static String VALID_PROJECT_KEY = "TEST";
-
-	protected static String INVALID_EVENT_KEY = "InvalidKey";
-	protected static String VALID_EVENT_KEY = "done";
-
 
 	@Before
 	public void setUp() {
@@ -82,34 +77,34 @@ public class TestConsistencyConfig extends TestConfigSuper {
 		assertEquals(200, configRest.setMinimumDuplicateLength(request, VALID_PROJECT_KEY, 9).getStatus());
 	}
 
-	// Tests for the method activateConsistencyEvent
+	// Tests for the method activateQualityEvent
 	@Test
-	@DisplayName("Tests the method activateConsistencyEvent.")
+	@DisplayName("Tests the method activateQualityEvent.")
 	public void testActivateConsistencyEventWithValidData(){
-		assertEquals(200, configRest.activateConsistencyEvent(request, VALID_PROJECT_KEY, "done", true).getStatus());
+		assertEquals(200, configRest.activateQualityEvent(request, VALID_PROJECT_KEY, "done", true).getStatus());
 	}
 
 	@Test
-	@DisplayName("Tests the method activateConsistencyEvent.")
+	@DisplayName("Tests the method activateQualityEvent.")
 	public void testActivateConsistencyEventWithInvalidData(){
-		assertEquals(400, configRest.activateConsistencyEvent(request, VALID_PROJECT_KEY, "none", true).getStatus());
+		assertEquals(400, configRest.activateQualityEvent(request, VALID_PROJECT_KEY, "none", true).getStatus());
 	}
 
-	// Tests for the method isConsistencyEventActivated
+	// Tests for the method isQualityEventActivated
 	@Test
-	@DisplayName("Tests the method isConsistencyEventActivated.")
+	@DisplayName("Tests the method isQualityEventActivated.")
 	public void testIsConsistencyEventActivatedWithValidData(){
-		assertEquals(200, configRest.isConsistencyEventActivated(request, VALID_PROJECT_KEY, "done").getStatus());
+		assertEquals(200, configRest.isQualityEventActivated(request, VALID_PROJECT_KEY, "done").getStatus());
 	}
 	@Test
-	@DisplayName("Tests the method isConsistencyEventActivated.")
+	@DisplayName("Tests the method isQualityEventActivated.")
 	public void testIsConsistencyEventActivatedWithInvalidData(){
-		assertEquals(400, configRest.isConsistencyEventActivated(request, VALID_PROJECT_KEY, "none").getStatus());
+		assertEquals(400, configRest.isQualityEventActivated(request, VALID_PROJECT_KEY, "none").getStatus());
 	}
 
-	// Tests for the method getAllConsistencyCheckEventTriggerNames
+	// Tests for the method getAllQualityCheckEventTriggerNames
 	@Test
-	@DisplayName("Tests the method getAllConsistencyCheckEventTriggerNames.")
+	@DisplayName("Tests the method getAllQualityCheckEventTriggerNames.")
 	public void getAllConsistencyCheckEventTriggerNames(){
 		assertEquals(200, configRest.getAllConsistencyCheckEventTriggerNames().getStatus());
 	}
