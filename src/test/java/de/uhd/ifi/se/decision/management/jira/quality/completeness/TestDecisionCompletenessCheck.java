@@ -16,6 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -61,7 +62,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
 			if (link.getOppositeElement(decision).getType() == KnowledgeType.ISSUE) {
-				KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
+				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
 			}
 		}
 		assertFalse(decisionCompletenessCheck.execute(decision));

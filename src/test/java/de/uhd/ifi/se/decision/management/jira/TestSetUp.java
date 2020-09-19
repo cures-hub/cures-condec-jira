@@ -37,7 +37,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public abstract class TestSetUp {
 
 	private static EntityManager entityManager;
-	private static ComponentAccessor componentAccessor;
 
 	/**
 	 * Inits Jira's {@link ComponentAccessor} including test data (e.g.,
@@ -59,7 +58,7 @@ public abstract class TestSetUp {
 	 * @see MockComponentAccessor
 	 */
 	public static void initComponentAccessor() {
-		componentAccessor = new MockComponentAccessor();
+		new MockComponentAccessor();
 	}
 
 	/**
