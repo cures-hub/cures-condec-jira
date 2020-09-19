@@ -11,14 +11,14 @@ public class JiraIssueLinks {
 
 	private static List<IssueLink> jiraIssueLinks;
 
+	private static int currentLinkId;
+
 	public static List<IssueLink> getTestJiraIssueLinks() {
 		if (jiraIssueLinks == null || jiraIssueLinks.isEmpty()) {
 			jiraIssueLinks = createIssueLinks();
 		}
 		return jiraIssueLinks;
 	}
-
-	private static int currentLinkId;
 
 	private static List<IssueLink> createIssueLinks() {
 		currentLinkId = 0;

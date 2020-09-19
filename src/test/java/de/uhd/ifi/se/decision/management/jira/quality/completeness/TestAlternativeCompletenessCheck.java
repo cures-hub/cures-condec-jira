@@ -86,6 +86,9 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(argument, alternative);
 		assertNull(alternative.getLink(argument));
 		assertFalse(alternativeCompletenessCheck.execute(alternative));
+
+		// reset changes
+		KnowledgeGraph.getOrCreate("TEST").addEdge(argument, alternative);
 	}
 
 	@Test
