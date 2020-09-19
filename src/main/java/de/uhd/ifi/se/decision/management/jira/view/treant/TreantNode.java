@@ -63,15 +63,14 @@ public class TreantNode {
 			return;
 		}
 		String title = "";
-		if (knowledgeElement.getSummary().length() > 25
-				&& !knowledgeElement.getSummary().contains(" ")) {
-			title = (knowledgeElement.getSummary().substring(0, 24) + "...");
+		if (knowledgeElement.getSummary().length() > 25) {
+			title = knowledgeElement.getSummary().substring(0, 24) + "...";
 		} else {
 			title = knowledgeElement.getSummary();
 		}
 		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
-				knowledgeElement.getDocumentationLocationAsString(), "status",
-				knowledgeElement.getStatusAsString(), "desc", knowledgeElement.getKey());
+				knowledgeElement.getDocumentationLocationAsString(), "status", knowledgeElement.getStatusAsString(),
+				"desc", knowledgeElement.getKey());
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
 		DecisionKnowledgeProject project = knowledgeElement.getProject();
@@ -89,8 +88,7 @@ public class TreantNode {
 		this.image = KnowledgeType.getIconUrl(knowledgeElement);
 	}
 
-	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed,
-			boolean isHyperlinked) {
+	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed, boolean isHyperlinked) {
 		this(knowledgeElement, isCollapsed, isHyperlinked);
 		this.image = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
 		switch (link.getType()) {
@@ -167,9 +165,5 @@ public class TreantNode {
 
 	public Map<String, Boolean> getCollapsed() {
 		return collapsed;
-	}
-
-	public void setCollapsed(Map<String, Boolean> collapsed) {
-		this.collapsed = collapsed;
 	}
 }

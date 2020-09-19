@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
-public class TestNode extends TestSetUp {
+public class TestTreantNode extends TestSetUp {
 
 	private Map<String, String> nodeContent;
 	private Map<String, String> link;
@@ -66,6 +67,12 @@ public class TestNode extends TestSetUp {
 	@Test
 	public void testConstructor() {
 		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
+		assertNotNull(node);
+	}
+
+	@Test
+	public void testConstructorElementNull() {
+		this.node = new TreantNode(null, isCollapsed, isHyperlinked);
 		assertNotNull(node);
 	}
 
@@ -167,5 +174,21 @@ public class TestNode extends TestSetUp {
 		Map<String, Map<String, String>> newConnectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000001"));
 		node.setConnectors(newConnectors);
 		assertEquals(newConnectors, node.getConnectors());
+	}
+
+	@Test
+	public void testLongSummary() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setKey("TEST-42");
+		element.setProject("TEST");
+		element.setSummary("this is a very long summary, much too long for a little Treant node.");
+		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
+		assertTrue(element.getSummary().length() > node.getNodeContent().get("title").length());
+	}
+
+	@Test
+	public void testCollapsedTrue() {
+		this.node = new TreantNode(element, true, isHyperlinked);
+		assertTrue(node.getCollapsed().get("collapsed"));
 	}
 }
