@@ -24,7 +24,7 @@ public class WorkflowDoneTrigger extends TriggerChain {
 
 	@Override
 	public String getName() {
-		return "done";
+		return "consistency-done";
 	}
 
 

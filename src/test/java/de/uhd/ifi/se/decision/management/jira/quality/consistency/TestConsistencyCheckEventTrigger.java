@@ -51,7 +51,7 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 	public void testWorkflowDoneTrigger() {
 		trigger = new WorkflowDoneTrigger(null);
 
-		assertEquals("The name should be 'done'.", "done", trigger.getName());
+		assertEquals("The name should be 'consistency-done'.", "consistency-done", trigger.getName());
 
 		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID);
 		trigger = new WorkflowDoneTrigger( event);
@@ -73,7 +73,7 @@ public class TestConsistencyCheckEventTrigger extends TestSetUp {
 	@Test
 	public void testStatusClosedTrigger() {
 		trigger = new IssueClosedTrigger(null);
-		assertEquals("The name should be 'closed'.", "closed", trigger.getName());
+		assertEquals("The name should be 'consistency-closed'.", "consistency-closed", trigger.getName());
 
 		IssueEvent event = generateWorkflowIssueEvent(issue, user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_CLOSED_ID);
 		trigger = new IssueClosedTrigger( event);

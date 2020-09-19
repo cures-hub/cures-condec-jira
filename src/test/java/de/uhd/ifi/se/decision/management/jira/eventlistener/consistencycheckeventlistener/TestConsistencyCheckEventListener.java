@@ -42,9 +42,9 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 
 	@Test
 	public void testGetter() {
-		assertEquals("Two consistency check event trigger names should be registered.", 2, eventListener.getAllQualityCheckEventTriggerNames().size());
+		assertEquals("Two quality check event trigger names should be registered.", 2, eventListener.getAllQualityCheckEventTriggerNames().size());
 
-		assertTrue("Name 'done' should exist.", eventListener.doesQualityCheckEventTriggerNameExist("done"));
+		assertTrue("Name 'done' should exist.", eventListener.doesQualityCheckEventTriggerNameExist("consistency-done"));
 
 		assertFalse("Name 'none' should NOT exist.", eventListener.doesQualityCheckEventTriggerNameExist("none"));
 
@@ -61,15 +61,15 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 		assertTrue("Now a pending check should exist.", check.isPresent());
 		reset();
 
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "done", false);
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "consistency-done", false);
 		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
 		check = ConsistencyCheckLogHelper.getCheck(knowledgeElement);
 		assertFalse("No pending check should exist.", check.isPresent());
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "done", true);
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "consistency-done", true);
 
 		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Open", StatusCategoryImpl.findByKey(StatusCategory.IN_PROGRESS), EventType.ISSUE_GENERICEVENT_ID));
 
-		assertFalse("After resetting the workflow the chock does no longer need approval.", ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(knowledgeElement));
+		assertFalse("After resetting the workflow the check does no longer need approval.", ConsistencyCheckLogHelper.doesKnowledgeElementNeedApproval(knowledgeElement));
 
 
 

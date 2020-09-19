@@ -20,7 +20,7 @@ public class IssueClosedTrigger extends TriggerChain {
 
 	@Override
 	public String getName() {
-		return "closed";
+		return "consistency-closed";
 	}
 
 
