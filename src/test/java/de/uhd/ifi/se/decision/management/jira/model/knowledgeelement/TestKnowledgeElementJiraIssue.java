@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -84,8 +86,17 @@ public class TestKnowledgeElementJiraIssue extends TestSetUp {
 	}
 
 	@Test
+	public void testGetCreationDate() {
+		decisionKnowledgeElement.setCreationDate(null);
+		assertNotNull(decisionKnowledgeElement.getCreationDate());
+	}
+
+	@Test
 	public void testGetUpdatingDate() {
 		decisionKnowledgeElement.setUpdatingDate(null);
+		assertNotNull(decisionKnowledgeElement.getUpdatingDate());
+
+		decisionKnowledgeElement.setUpdatingDate(new Date());
 		assertNotNull(decisionKnowledgeElement.getUpdatingDate());
 	}
 }

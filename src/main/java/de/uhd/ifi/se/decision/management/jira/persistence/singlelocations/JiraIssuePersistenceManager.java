@@ -48,7 +48,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issues to
- * store decision knowledge.
+ * store decision knowledge elements and links.
  *
  * @see AbstractPersistenceManagerForSingleLocation
  */
