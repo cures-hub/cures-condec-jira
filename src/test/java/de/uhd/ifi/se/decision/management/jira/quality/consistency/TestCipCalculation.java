@@ -56,7 +56,8 @@ public class TestCipCalculation extends TestSetUp {
 		Issue baseIssue = TestCipCalculation.testIssues.get(0);
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		try {
-			GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(), DocumentationLocation.JIRAISSUE);
+			GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
+					DocumentationLocation.JIRAISSUE);
 			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
 			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions.stream().sorted((LinkSuggestion::compareTo))
 					.collect(Collectors.toList());
@@ -147,7 +148,7 @@ public class TestCipCalculation extends TestSetUp {
 
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);
-		assertEquals(0.25, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0.01);
+		assertEquals(0.25, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0.1);
 
 	}
 

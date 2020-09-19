@@ -77,7 +77,7 @@ public class TestDecisionTable extends TestSetUp {
 		assertNotNull(alternative2);
 
 		assertEquals(1, alternative1.getArguments().size());
-		assertEquals(0, alternative2.getArguments().size());
+		assertEquals(1, alternative2.getArguments().size());
 
 		Argument argument = alternative1.getArguments().get(0);
 		assertNotNull(argument);

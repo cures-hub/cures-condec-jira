@@ -23,7 +23,7 @@ public class TestMatrix extends TestSetUp {
 
 	@Test
 	public void testGetHeaderElements() {
-		assertEquals(9, this.matrix.getHeaderElements().size());
+		assertEquals(10, this.matrix.getHeaderElements().size());
 	}
 
 	@Test
