@@ -6,8 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -26,7 +25,7 @@ public class TestRecommendation extends TestSetUp {
 	@Test
 	public void testSetAndGetKnowledgeSourceType() {
 		Recommendation recommendation = new Recommendation();
-		assertEquals(null, recommendation.getKnowledgeSourceType());
+		assertNull(recommendation.getKnowledgeSourceType());
 		recommendation.setKnowledgeSourceType(KnowledgeSourceType.PROJECT);
 		assertEquals(KnowledgeSourceType.PROJECT, recommendation.getKnowledgeSourceType());
 	}

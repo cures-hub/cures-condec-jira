@@ -72,7 +72,7 @@
 			this.saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'true');
 			this.saveMinProbabilityLinkBtn.busy();
 			configAPI.setMinimumLinkSuggestionProbability(conDecAPI.getProjectKey(), this.minProbabilityInput.value)
-				.then(() => showSuccessFlag())
+				.then(() => conDecJiraIssueQualityModule.showSuccessFlag())
 				.catch(() => conDecAPI.showFlag("error", "An error occurred while updating the configuration!"))
 				.finally(() => {
 					this.saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'false');

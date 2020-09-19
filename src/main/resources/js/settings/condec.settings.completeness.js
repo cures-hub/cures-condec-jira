@@ -6,7 +6,7 @@
  */
 (function (global) {
 
-	let ConDecJiraIssueCompletenessModule = function() {
+	let ConDecJiraIssueCompletenessModule = function ConDecJiraIssueCompletenessModule() {
 		this.isInitialized = false;
 		this.projectKey = conDecAPI.getProjectKey();
 	};
@@ -15,9 +15,6 @@
 		return this.isInitialized;
 	}
 
-	/**
-	 * Initializes the buttons and toggles by loading the currently set values and registering listeners.
-	 */
 	ConDecJiraIssueCompletenessModule.prototype.init = function init() {
 		//Check event toggles
 		this.isDoneActivatedToggle = document.getElementById("isCompletenessDoneActivated-toggle");

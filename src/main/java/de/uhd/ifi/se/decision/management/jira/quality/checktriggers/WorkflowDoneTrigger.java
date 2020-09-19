@@ -12,7 +12,6 @@ public class WorkflowDoneTrigger extends TriggerChain {
 	public WorkflowDoneTrigger() {
 	}
 
-
 	@Override
 	public boolean isTriggered() {
 		return super.getIssueEvent() != null &&
@@ -20,12 +19,9 @@ public class WorkflowDoneTrigger extends TriggerChain {
 			&& "done".equals(super.getIssueEvent().getIssue().getStatus().getStatusCategory().getKey());
 	}
 
-
-
 	@Override
 	public String getName() {
-		return "consistency-done";
+		return "done";
 	}
-
 
 }

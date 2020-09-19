@@ -15,15 +15,6 @@
 			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null);
 		}
 
-		ConfigAPI.prototype.setActivationStatusOfConsistencyEvent = function(projectKey, eventKey, isActivated){
-			return generalApi.postJSONReturnPromise(this.restPrefix + `/activateConsistencyEvent.json?
-			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null);
-		}
-
-		ConfigAPI.prototype.getActivationStatusOfConsistencyEvent = function(projectKey, eventKey){
-			return generalApi.getJSONReturnPromise(this.restPrefix + `/isConsistencyEventActivated?
-			projectKey=${projectKey}&eventKey=${eventKey}`, null);
-		}
 		ConfigAPI.prototype.getConsistencyEventTriggerNames = function(){
 			return generalApi.getJSONReturnPromise(this.restPrefix + `/getConsistencyEventTriggerNames`, null);
 		}

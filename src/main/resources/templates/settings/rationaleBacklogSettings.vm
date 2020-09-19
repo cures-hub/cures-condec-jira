@@ -23,5 +23,6 @@
             }
             conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         }))
+        conDecJiraIssueCompletenessModule.init();
     });
 </script>

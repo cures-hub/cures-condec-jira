@@ -14,7 +14,7 @@ import java.util.List;
 public class QualityCheckEventListenerSingleton implements IssueEventListener {
 
 	private static IssueEventListener instance;
-	private TriggerChain chainStart;
+	private final TriggerChain chainStart;
 
 	private QualityCheckEventListenerSingleton() {
 		this.chainStart = new IssueClosedTrigger();
@@ -55,7 +55,7 @@ public class QualityCheckEventListenerSingleton implements IssueEventListener {
 	}
 
 	public List<String> getAllQualityCheckEventTriggerNames() {
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
 			names.add(currentChainLink.getName());

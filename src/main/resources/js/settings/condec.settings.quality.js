@@ -8,18 +8,16 @@
  */
 (function (global) {
 
-	let ConDecJiraIssueQualityModule = function() {
+	let ConDecJiraIssueQualityModule = function ConDecJiraIssueQualityModule() {
 		this.projectKey = conDecAPI.getProjectKey();
 	};
-
-
 
 
 	ConDecJiraIssueQualityModule.prototype.callSetActivationStatusOfQualityEvent = function(toggle, eventKey) {
 		return () => {
 			toggle.busy = true;
 			configAPI.setActivationStatusOfQualityEvent(this.projectKey, eventKey, toggle.checked)
-				.then(() => showSuccessFlag())
+				.then(() => this.showSuccessFlag())
 				.catch((error) => {
 					conDecAPI.showFlag("error", "Could not activate quality event. " + error);
 					toggle.checked = !toggle.checked;
