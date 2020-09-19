@@ -181,8 +181,7 @@ public class TestTreantNode extends TestSetUp {
 		KnowledgeElement element = new KnowledgeElement();
 		element.setKey("TEST-42");
 		element.setProject("TEST");
-		element.setSummary("This is a very long summary, much too long for a little Treant node."
-				+ " This is a very long summary, much too long for a little Treant node.");
+		element.setSummary("Thisisaverylongsummary,muchtoolongforalittleTreantnode.");
 		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
 		assertTrue(element.getSummary().length() > node.getNodeContent().get("title").length());
 	}

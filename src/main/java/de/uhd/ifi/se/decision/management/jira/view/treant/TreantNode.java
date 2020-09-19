@@ -63,8 +63,8 @@ public class TreantNode {
 			return;
 		}
 		String title = "";
-		if (knowledgeElement.getSummary().length() > 100) {
-			title = knowledgeElement.getSummary().substring(0, 100) + "...";
+		if (knowledgeElement.getSummary().length() > 25 && !knowledgeElement.getSummary().contains(" ")) {
+			title = knowledgeElement.getSummary().substring(0, 24) + "...";
 		} else {
 			title = knowledgeElement.getSummary();
 		}
