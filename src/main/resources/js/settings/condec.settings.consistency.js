@@ -33,8 +33,8 @@
 		this.saveMinLengthDuplicateBtn.addEventListener('click', event => this.saveMinLengthDuplicate(event));
 
 		//Check event toggles
-		this.isDoneActivatedToggle = document.getElementById("isDoneActivated-toggle");
-		this.isClosedActivatedToggle = document.getElementById("isClosedActivated-toggle");
+		this.isDoneActivatedToggle = document.getElementById("isConsistencyDoneActivated-toggle");
+		this.isClosedActivatedToggle = document.getElementById("isConsistencyClosedActivated-toggle");
 		initToggles(this.isClosedActivatedToggle, this.projectKey, "closed");
 		initToggles(this.isDoneActivatedToggle, this.projectKey, "done");
 		// add listeners
