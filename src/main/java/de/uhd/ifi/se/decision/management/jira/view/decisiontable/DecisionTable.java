@@ -28,8 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
-// TODO Improve JavaDoc (not only parameter names should be given but a short
-// explanation!)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -96,7 +94,6 @@ public class DecisionTable {
 		// not be shown as solution option for this derived decision problem.
 		for (Link currentLink : graph.edgesOf(rootElement)) {
 			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			System.out.println(oppositeElement);
 			if (oppositeElement.getType() == KnowledgeType.ALTERNATIVE
 					|| oppositeElement.getType() == KnowledgeType.DECISION
 					|| oppositeElement.getType() == KnowledgeType.SOLUTION) {
@@ -135,7 +132,7 @@ public class DecisionTable {
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
-		Set<Link> linksOfArgument = this.graph.edgesOf(rootElement);
+		Set<Link> linksOfArgument = graph.edgesOf(rootElement);
 
 		for (Link currentLink : linksOfArgument) {
 			KnowledgeElement elem = currentLink.getOppositeElement(rootElement);
