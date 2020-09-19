@@ -94,8 +94,11 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a pro-argument
+		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, "pro");
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, proArgument, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(alternative.getLink(proArgument));
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 	}
@@ -109,8 +112,11 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a con-argument
+		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, "con");
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, conArgument, user);
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(conArgument, alternative, user);
 		assertNotNull(alternative.getLink(conArgument));
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 	}
