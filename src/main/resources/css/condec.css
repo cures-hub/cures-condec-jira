@@ -32,7 +32,7 @@ a:focus a:hover {
 	resize: both;	
 }
 
-#treant-container {
+.treant {
 	height: auto;
 }
 
@@ -49,7 +49,12 @@ a:focus a:hover {
 	margin-bottom: 20px;
 }
 
-.noDots{
+.noDots {
 	list-style: none;
 	padding-left: 0;
+}
+
+.decision-table {
+	height: auto; 
+	overflow-x: auto;
 }

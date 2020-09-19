@@ -1,14 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestGetUnlinkedElements extends TestSetUp {
 
@@ -22,13 +24,13 @@ public class TestGetUnlinkedElements extends TestSetUp {
 
 	@Test
 	public void testElementNull() {
-		assertEquals(9, graph.getUnlinkedElements(null).size());
+		assertEquals(10, graph.getUnlinkedElements(null).size());
 	}
 
 	@Test
 	public void testElementValid() {
 		Issue issue = JiraIssues.getTestJiraIssues().get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);
-		assertEquals(3, graph.getUnlinkedElements(element).size());
+		assertEquals(4, graph.getUnlinkedElements(element).size());
 	}
 }

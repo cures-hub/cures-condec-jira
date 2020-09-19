@@ -12,6 +12,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestKnowledgeClassificationMacro extends TestSetUp {
 
@@ -111,5 +112,18 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 		result = conMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{con}<p>This is an attacking argument.</p>\\{con}", result);
+	}
+
+	@Test
+	public void testGetKnowledgeType() {
+		IssueMacro issueMacro = new IssueMacro();
+		assertEquals(KnowledgeType.ISSUE, issueMacro.getKnowledgeType());
+	}
+
+	@Test
+	public void testGetTag() {
+		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((String) null));
+		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((KnowledgeType) null));
+		assertEquals("", AbstractKnowledgeClassificationMacro.getTag(KnowledgeType.OTHER));
 	}
 }

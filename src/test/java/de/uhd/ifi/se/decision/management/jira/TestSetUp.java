@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -80,8 +81,9 @@ public abstract class TestSetUp {
 	 * Resets the test data.
 	 */
 	public static void initTestData() {
-		// KnowledgeElements.elements.clear();
-		// JiraIssues.jiraIssues.clear();
+		KnowledgeElements.elements.clear();
+		JiraIssues.jiraIssues.clear();
+		JiraIssueLinks.jiraIssueLinks.clear();
 		KnowledgeGraph.instances.clear();
 	}
 

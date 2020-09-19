@@ -41,7 +41,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/comparison.vm")
     </div>
     <div class="tabs-pane" id="matrix-tab">
-        #parse("templates/tabs/matrix.vm")
+        #parse("templates/tabs/matrix/view.vm")
     </div>
     <div class="tabs-pane" id="decision-groups-tab">
         #parse("templates/tabs/decisionGroups.vm")

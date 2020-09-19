@@ -45,7 +45,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 		ConstantsManager constantsManager = initConstantsManager();
 		IssueManager issueManager = initIssueManager();
 
-		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
+		super.initialiseWorker(new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, initIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 				.addMock(IssueService.class, new MockIssueService()).addMock(ProjectManager.class, projectManager)
@@ -64,7 +64,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(SearchService.class, new MockSearchService())
 				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
 				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class))
-				.addMock(PermissionManager.class, mock(PermissionManager.class));
+				.addMock(PermissionManager.class, mock(PermissionManager.class)));
 	}
 
 	public UserManager initUserManager() {

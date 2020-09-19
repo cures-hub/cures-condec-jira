@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -102,6 +103,15 @@ public class TreeViewer {
 	 *        of a knowledge element (=node)?
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
+	 * 
+	 * @issue How to handle loops in the graph?
+	 * @decision Traverse all edges in the graph and duplicate knowledge elements to
+	 *           resolve the loop! Store edge traversed by the breadth first
+	 *           iterator and traverse the remaining edges afterwards!
+	 * @alternative Only use breadth first iteration to traverse the graph!
+	 * @con The breadth first iterator does not traverse all edges but every node
+	 *      once. Criteria linked to many arguments would only be shown for one
+	 *      argument in the tree, which is misleading and information loss.
 	 */
 	public TreeViewerNode getTreeViewerNodeWithChildren(KnowledgeElement rootElement) {
 		if (rootElement == null) {
@@ -118,6 +128,7 @@ public class TreeViewer {
 
 		BreadthFirstIterator<KnowledgeElement, Link> iterator = new BreadthFirstIterator<>(undirectedGraph,
 				rootElement);
+		Set<Link> traversedEdges = new HashSet<>();
 
 		while (iterator.hasNext()) {
 			KnowledgeElement childElement = iterator.next();
@@ -126,11 +137,35 @@ public class TreeViewer {
 				continue;
 			}
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
-			TreeViewerNode childNode = new TreeViewerNode(childElement, edge);
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge));
 			childNode = this.makeIdUnique(childNode);
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 
 			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(parentElement);
+			parentNode.getChildren().add(childNode);
+
+			traversedEdges.add(edge);
+		}
+
+		Set<Link> remainingEdges = undirectedGraph.edgeSet().stream().filter(edge -> !traversedEdges.contains(edge))
+				.collect(Collectors.toSet());
+
+		for (Link edge : remainingEdges) {
+			KnowledgeElement sourceElement = edge.getSource();
+			KnowledgeElement targetElement = edge.getTarget();
+
+			KnowledgeElement childElement = targetElement;
+			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(sourceElement);
+			if (parentNode == null) {
+				parentNode = elementToTreeViewerNodeMap.get(targetElement);
+				childElement = sourceElement;
+			}
+			if (parentNode == null) {
+				continue;
+			}
+
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge));
+			elementToTreeViewerNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}
 

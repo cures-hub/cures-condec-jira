@@ -28,8 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 @XmlRootElement(name = "decisiontable")
 @XmlAccessorType(XmlAccessType.FIELD)
-// TODO Improve JavaDoc (not only parameter names should be given but a short
-// explanation!)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
@@ -89,16 +87,18 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
 		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
 		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement targetElement = currentLink.getTarget();
-			if (targetElement.getType() == KnowledgeType.ALTERNATIVE
-					|| targetElement.getType() == KnowledgeType.DECISION) {
-				decisionTableData.get("alternatives").add(new Alternative(targetElement));
-				getArguments(targetElement);
+		// TODO Check link type. A decision that leads to a new decision problem should
+		// not be shown as solution option for this derived decision problem.
+		for (Link currentLink : graph.edgesOf(rootElement)) {
+			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
+			if (oppositeElement.getType() == KnowledgeType.ALTERNATIVE
+					|| oppositeElement.getType() == KnowledgeType.DECISION
+					|| oppositeElement.getType() == KnowledgeType.SOLUTION) {
+				decisionTableData.get("alternatives").add(new Alternative(oppositeElement));
+				getArguments(oppositeElement);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public class DecisionTable {
 			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
 				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
 						.get(numberOfAlternatives - 1);
-				Argument argument = new Argument(sourceElement);
+				Argument argument = new Argument(sourceElement, currentLink);
 				getArgumentCriteria(argument, decisionTableData.get("criteria"));
 				alternative.addArgument(argument);
 			}
@@ -132,12 +132,14 @@ public class DecisionTable {
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
 				argument.getDocumentationLocation());
-		Set<Link> outgoingLinks = this.graph.outgoingEdgesOf(rootElement);
+		Set<Link> linksOfArgument = graph.edgesOf(rootElement);
 
-		for (Link currentLink : outgoingLinks) {
-			KnowledgeElement elem = currentLink.getTarget();
+		for (Link currentLink : linksOfArgument) {
+			KnowledgeElement elem = currentLink.getOppositeElement(rootElement);
+			// TODO Make checking criteria type more explicit
 			if (elem.getType() == KnowledgeType.OTHER) {
 				argument.setCriterion(elem);
+				// TODO Use set and equals method in Criterion
 				if (!criteria.contains(new Criterion(elem))) {
 					criteria.add(new Criterion(elem));
 				}

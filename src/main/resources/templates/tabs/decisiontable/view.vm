@@ -1,0 +1,24 @@
+<div class="aui-toolbar2" role="toolbar">
+    <div class="aui-toolbar-2-inner">
+        <form class="aui">
+            <label for="decision-problem-dropdown">Issues: </label>
+            <select class="select medium-long-field" id="decision-problem-dropdown"></select>
+            #set ($viewIdentifier = "decision-table")
+            #parse("templates/filter/linkDistance.vm")
+        </form>
+	</div>
+</div>
+#parse("templates/tabs/decisiontable/decisionTable.vm")
+#parse("templates/tabs/recommendationTable.vm")
+<script>
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+    		conDecDecisionTable.initView();
+			isOnceClicked = true;
+		}
+	});
+});
+</script>

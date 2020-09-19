@@ -17,6 +17,7 @@
 		
 		// Add event listeners on filter HTML elements
 		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
+		conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -62,6 +63,7 @@
 			});
 			conDecVis.buildVis(filterSettings, "graph-rationale-backlog");
 			conDecMatrix.buildMatrix(filterSettings, "rationale-backlog");
+			conDecDecisionTable.build(filterSettings, "rationale-backlog", node);
 		});
 	}
 	

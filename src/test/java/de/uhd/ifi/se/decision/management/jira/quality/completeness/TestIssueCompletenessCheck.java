@@ -14,16 +14,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -32,12 +28,10 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	private List<KnowledgeElement> elements;
 	private KnowledgeElement issue;
 	private IssueCompletenessCheck issueCompletenessCheck;
-	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
 		init();
-		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		issueCompletenessCheck = new IssueCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = elements.get(3);
@@ -77,7 +71,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		Link linkToDecision = issue.getLink(decision);
 		assertNotNull(linkToDecision);
 
-		KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(linkToDecision, user);
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(linkToDecision);
 		linkToDecision = issue.getLink(decision);
 		assertNull(linkToDecision);
 
@@ -99,7 +93,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		Set<Link> links = issue.getLinks();
 		for (Link link : links) {
 			if (link.getOppositeElement(issue).getType() == KnowledgeType.ALTERNATIVE) {
-				KnowledgePersistenceManager.getOrCreate("TEST").deleteLink(link, user);
+				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
 			}
 		}
 		assertFalse(issueCompletenessCheck.execute(issue));

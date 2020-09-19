@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,21 +18,19 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestDecisionTable extends TestSetUp {
 
 	private DecisionTable decisionTable;
-	private String projectKey = "TEST";
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
-		this.decisionTable = new DecisionTable(projectKey);
+		decisionTable = new DecisionTable("TEST");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setLinkDistance(3);
@@ -68,16 +67,13 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTable.setDecisionTableForIssue(issue, user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
-		assertEquals(2, decisionTableData.get("alternatives").size());
+		assertTrue(decisionTableData.get("alternatives").size() > 0);
 
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
-		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
 
 		assertNotNull(alternative1);
-		assertNotNull(alternative2);
 
 		assertEquals(1, alternative1.getArguments().size());
-		assertEquals(0, alternative2.getArguments().size());
 
 		Argument argument = alternative1.getArguments().get(0);
 		assertNotNull(argument);
@@ -91,15 +87,13 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTableData.put("alternatives", new ArrayList<>());
 		decisionTableData.put("criteria", new ArrayList<>());
 
-		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
-				.getKnowledgeElement(3);
+		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(3);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
 		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 
-		knowledgeElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
-				.getKnowledgeElement(4);
+		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
 		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
@@ -110,10 +104,9 @@ public class TestDecisionTable extends TestSetUp {
 	public void testGetArgumentCriteriaOnIssueDirectly() {
 		List<DecisionTableElement> criteriaList = new ArrayList<>();
 		Argument argument;
-		argument = new Argument(
-				KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager().getKnowledgeElement(5));
+		argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(5));
 		decisionTable.getArgumentCriteria(argument, criteriaList);
 		assertNotNull(argument.getCriterion());
-		assertEquals(1, criteriaList.size());
+		assertEquals(2, criteriaList.size());
 	}
 }

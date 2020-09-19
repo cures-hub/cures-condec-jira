@@ -73,8 +73,12 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(jiraIssue);
 
+		// Con-Argument
+		jiraIssue = createJiraIssue(6, jiraIssueTypes.get(4), project, "This sucks!", user);
+		jiraIssues.add(jiraIssue);
+
 		// Non-functional requirement (used as criteria in decision table)
-		jiraIssue = createJiraIssue(6, jiraIssueTypes.get(5), project, "NFR: Usabililty", user);
+		jiraIssue = createJiraIssue(7, jiraIssueTypes.get(5), project, "NFR: Usabililty", user);
 		jiraIssues.add(jiraIssue);
 
 		return jiraIssues;

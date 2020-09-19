@@ -1,0 +1,24 @@
+<div class="aui-buttons">
+	<button class="aui-button" id="add-criterion-button-$viewIdentifier" title="Adds a new criterion column to the decision table.">
+		<span class="aui-icon aui-icon-small aui-iconfont-new-edit">Adds a new criterion column to decision table</span>
+		Criterion
+	</button>
+	<button class="aui-button" id="add-alternative-button-$viewIdentifier" title="Adds a new solution option to the decision table.">
+		<span class="aui-icon aui-icon-small aui-iconfont-add">Adds a new solution option to decision table</span>
+		Solution option
+	</button>
+	<button class="aui-button aui-dropdown2-trigger" id="add-argument-button-$viewIdentifier" aria-owns="alternative-dropdown-items-$viewIdentifier" aria-haspopup="true">
+		Create argument for solution option
+	</button>
+	<aui-dropdown-menu id="alternative-dropdown-items-$viewIdentifier">
+	</aui-dropdown-menu>
+</div>
+<div class="decision-table">
+	<table id="decision-table-$viewIdentifier" class="aui aui-table-list">
+		<thead>
+			<tr id="decision-table-header-row-$viewIdentifier"></tr>
+		</thead>
+		<tbody id="decision-table-body-$viewIdentifier">
+		</tbody>
+	</table>
+</div>
