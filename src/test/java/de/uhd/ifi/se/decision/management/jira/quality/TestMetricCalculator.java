@@ -95,11 +95,8 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void testGetLinksToIssueTypeMapTypeFilled() {
 		addComment(getTestJiraIssues().get(6));
 		calculator.setJiraIssues(getTestJiraIssues());
-		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
-		LOGGER.info(map.toString());
-		assertEquals(
-				"{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 TEST-6 TEST-7 }",
-				map.toString());
+		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 1);
+		assertEquals("{Links from  to Argument=, No links from  to Argument=}", map.toString());
 	}
 
 	@Test
