@@ -9,7 +9,9 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 
 public class JiraIssueLinks {
 
-	private static List<IssueLink> jiraIssueLinks;
+	public static List<IssueLink> jiraIssueLinks = new ArrayList<IssueLink>();
+
+	private static int currentLinkId;
 
 	public static List<IssueLink> getTestJiraIssueLinks() {
 		if (jiraIssueLinks == null || jiraIssueLinks.isEmpty()) {

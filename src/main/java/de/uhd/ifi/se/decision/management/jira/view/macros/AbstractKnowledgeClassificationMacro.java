@@ -46,9 +46,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		return this.getCommentBody(body, renderContext, knowledgeType, color);
 	}
 
-	public KnowledgeType getKnowledgeType() {
-		return KnowledgeType.ISSUE;
-	}
+	protected abstract KnowledgeType getKnowledgeType();
 
 	private String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
 			String colorCode) {
@@ -125,14 +123,14 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	public static String getTag(String type) {
-		if (type == null || type.equals("") || type.equalsIgnoreCase("other")) {
+		if (type == null || type.isBlank() || type.equalsIgnoreCase("other")) {
 			return "";
 		}
 		return "{" + type + "}";
 	}
 
 	public static String getTag(KnowledgeType type) {
-		if (type == KnowledgeType.OTHER) {
+		if (type == null || type == KnowledgeType.OTHER) {
 			return "";
 		}
 		return getTag(type.name().toLowerCase());

@@ -1,18 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
@@ -20,6 +7,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestMetricCalculator extends TestSetUpGit {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestMetricCalculator.class);
@@ -40,7 +42,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
 		Map<String, Integer> map = calculator.numberOfCommentsPerIssue();
-		assertEquals(9, map.size());
+		assertEquals(10, map.size());
 	}
 
 	@Test
@@ -93,17 +95,14 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void testGetLinksToIssueTypeMapTypeFilled() {
 		addComment(getTestJiraIssues().get(6));
 		calculator.setJiraIssues(getTestJiraIssues());
-		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 0);
-		LOGGER.info(map.toString());
-		assertEquals(
-				"{Links from  to Argument=, No links from  to Argument=TEST-1 TEST-14 TEST-30 TEST-2 TEST-12 TEST-3 TEST-4 TEST-5 TEST-6 }",
-				map.toString());
+		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 1);
+		assertEquals("{Links from  to Argument=, No links from  to Argument=}", map.toString());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(9, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
+		assertEquals(10, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
 	}
 
 	@Test

@@ -132,13 +132,13 @@
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-api</artifactId>
-			<version>8.7.1</version>
+			<version>8.8.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atlassian.plugins.rest</groupId>
 			<artifactId>atlassian-rest-common</artifactId>
-			<version>6.1.3</version>
+			<version>6.1.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Servlets -->
@@ -234,7 +234,7 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-func-tests</artifactId>
-            <version>8.5.2</version>
+            <version>8.7.1</version>
             <scope>test</scope>
         </dependency>
         <!-- Classification of text as decision knowledge -->
