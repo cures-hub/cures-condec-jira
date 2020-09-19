@@ -1,0 +1,15 @@
+<h4>Settings for the completeness check events</h4>
+
+<div class="field-group">
+    <label for="isDoneActivated-toggle">Completeness check for done event activated?</label>
+    <aui-toggle id="isDoneActivated-toggle" label="Resolved event activated?"></aui-toggle>
+    <div class="description">Enables or disables the check dialog for the done event of an issue.
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="isClosedActivated-toggle">Completeness event check for closed event activated?</label>
+    <aui-toggle id="isClosedActivated-toggle" label="Closed event activated?"></aui-toggle>
+    <div class="description">Enables or disables the check dialog for the closed event of an issue.
+    </div>
+</div>

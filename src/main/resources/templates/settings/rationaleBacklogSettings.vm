@@ -1,44 +1,10 @@
 <h2>Rationale Backlog Configuration</h2>
 
-<p>Set the <i>definition of done</i> for each type of decision knowledge.</p>
-<p>All elements that do <strong>not</strong> match the definition of done are shown in the
- Rationale Backlog View. Some of these Criteria are default and can not be changed, others can be configured.</p>
-<p>Criteria to match the definition of done:</p>
-            	
-<div class="field-group">
-	<label>Issue (Decision Problem):</label>
-	<ul>
-		<li>is <i>resolved</i> <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>is linked to a decision <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>is linked to an alternative <input type="checkbox" id="issue-link-alternative-checkbox" value="issueLinkAlternative"></li>
-	</ul>
-</div>
-<div class="field-group">
-	<label>Decision (Solution):</label>
-	<ul>
-		<li>is <b>not</b> <i>challenged</i> <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>is linked to an issue (=decision problem) <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>is linked to a pro-argument <input type="checkbox" id="decision-link-pro-checkbox" value="decisionLinkPro"></li>
-	</ul>
-</div>
-<div class="field-group">
-	<label>Alternative:</label>
-	<ul>
-		<li>is linked to an issue <input type="checkbox" disabled="disabled" checked="checked"></li>
-		<li>is linked to an argument (either pro or con) <input type="checkbox" id="alternative-link-argument-checkbox" value="alternativeLinkArgument"></li>
-	</ul>
-</div>
-<div class="field-group">
-	<label>Argument (Pro or Con):</label>
-	<ul>
-		<li>is linked to a solution option (decision or alternative) <input type="checkbox" disabled="disabled" checked="checked"></li>
-	</ul>
-</div>
-<div class="field-group">
-	<label for="change-definition-of-done">Save Definition of Done</label>
-	<button class="aui-button-primary aui-button" id="change-definition-of-done">Save</button>
-	<div class="description">Saves all criteria for the definition of done.</div>
-</div>
+<form class="aui">
+    #parse("templates/settings/fragments/completenessCriteriaSettings.vm")
+    #parse("templates/settings/fragments/completenessEventSettings.vm")
+</form>
+
 
 <script>
     $(document).ready(function () {
