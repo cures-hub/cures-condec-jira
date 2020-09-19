@@ -428,7 +428,7 @@ public class KnowledgeElement {
 	 */
 	public Date getUpdatingDate() {
 		if (updatingDate == null) {
-			return new Date();
+			return getCreationDate();
 		}
 		return updatingDate;
 	}
