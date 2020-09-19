@@ -81,14 +81,8 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 
-		// unlink argument from alternative
-		KnowledgeElement argument = elements.get(8);
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(argument, alternative);
-		assertNull(alternative.getLink(argument));
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
 		assertFalse(alternativeCompletenessCheck.execute(alternative));
-
-		// reset changes
-		KnowledgeGraph.getOrCreate("TEST").addEdge(argument, alternative);
 	}
 
 	@Test

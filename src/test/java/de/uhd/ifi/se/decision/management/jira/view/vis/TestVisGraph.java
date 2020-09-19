@@ -37,7 +37,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetEdges() {
-		assertEquals(14, visGraph.getEdges().size());
+		assertEquals(15, visGraph.getEdges().size());
 	}
 
 	@Test
