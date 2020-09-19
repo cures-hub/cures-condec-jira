@@ -77,7 +77,7 @@ public class AutomaticLinkCreator {
 		if (second == null) {
 			return first;
 		}
-		if (first.getCreated().compareTo(second.getCreated()) > 0) {
+		if (first.getCreationDate().compareTo(second.getCreationDate()) > 0) {
 			return first;
 		}
 		return second;

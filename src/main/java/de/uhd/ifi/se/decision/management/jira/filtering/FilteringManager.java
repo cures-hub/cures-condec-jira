@@ -205,16 +205,16 @@ public class FilteringManager {
 	 * @param element
 	 *            {@link KnowledgeElement} object.
 	 * @return true if the element is created in the given time frame in the
-	 *         {@link FilterSettings}. See {@link KnowledgeElement#getCreated()}.
+	 *         {@link FilterSettings}. See {@link KnowledgeElement#getCreationDate()}.
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getStartDate() > 0) {
-			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getStartDate();
+			isMatchingTimeFilter = element.getCreationDate().getTime() >= filterSettings.getStartDate();
 		}
 		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getEndDate() + 86400000;
+					&& element.getCreationDate().getTime() <= filterSettings.getEndDate() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}

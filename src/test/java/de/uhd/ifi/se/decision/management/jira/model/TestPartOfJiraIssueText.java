@@ -71,8 +71,8 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetCreated() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		sentence.setCreated(new Date());
-		assertNotNull(sentence.getCreated());
+		sentence.setCreationDate(new Date());
+		assertNotNull(sentence.getCreationDate());
 	}
 
 	@Test

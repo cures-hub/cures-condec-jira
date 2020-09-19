@@ -33,7 +33,6 @@ public class VisTimeLineNode {
 	@XmlElement
 	private String documentationLocation;
 
-	private String end;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public VisTimeLineNode(KnowledgeElement element) {
@@ -42,9 +41,7 @@ public class VisTimeLineNode {
 		}
 		this.id = ((int) element.getId());
 		this.content = createContentString(element);
-
-		this.start = createDateString(element.getCreated());
-		this.end = createDateString(element.getClosed());
+		this.start = createDateString(element.getUpdatingDate());
 		this.className = element.getTypeAsString().toLowerCase();
 		this.title = element.getDescription();
 		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
@@ -102,14 +99,6 @@ public class VisTimeLineNode {
 
 	public void setClassName(String className) {
 		this.className = className;
-	}
-
-	public String getEnd() {
-		return end;
-	}
-
-	public void setEnd(String end) {
-		this.end = end;
 	}
 
 	public long getGroup() {

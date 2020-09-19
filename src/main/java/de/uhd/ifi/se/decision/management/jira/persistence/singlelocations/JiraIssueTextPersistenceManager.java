@@ -597,7 +597,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			sentence.setCommentId(0);
 			sentence.setDescription(sentence.getText());
 			sentence.setJiraIssueId(jiraIssue.getId());
-			sentence.setCreated(jiraIssue.getCreated());
+			sentence.setCreationDate(jiraIssue.getCreated());
 			if (i < numberOfTextParts) {
 				// Update AO entry
 				sentence.setId(parts.get(i).getId());

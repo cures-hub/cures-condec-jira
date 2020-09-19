@@ -42,8 +42,8 @@ public class KnowledgeElement {
 	private String description;
 	protected KnowledgeType type;
 	private String key;
-	private Date created;
-	private Date closed;
+	private Date creationDate;
+	private Date updatingDate;
 	protected DocumentationLocation documentationLocation;
 	protected KnowledgeStatus status;
 
@@ -100,7 +100,8 @@ public class KnowledgeElement {
 		}
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
-		this.created = issue.getCreated();
+		this.creationDate = issue.getCreated();
+		this.updatingDate = issue.getUpdated();
 		// TODO Manage status for decision knowledge elements stored as entire Jira
 		// issues
 		this.status = KnowledgeStatus.RESOLVED;
@@ -407,34 +408,37 @@ public class KnowledgeElement {
 	/**
 	 * @return creation date of the knowledge element.
 	 */
-	public Date getCreated() {
-		if (created == null) {
+	public Date getCreationDate() {
+		if (creationDate == null) {
 			return new Date();
 		}
-		return this.created;
+		return creationDate;
 	}
 
 	/**
-	 * @param date
+	 * @param creationDate
 	 *            of creation of the knowledge element.
 	 */
-	public void setCreated(Date date) {
-		this.created = date;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	/**
-	 * @return close date for the knowledge element.
+	 * @return date of last update of the knowledge element.
 	 */
-	public Date getClosed() {
-		return this.closed;
+	public Date getUpdatingDate() {
+		if (updatingDate == null) {
+			return new Date();
+		}
+		return updatingDate;
 	}
 
 	/**
-	 * @param date
-	 *            close date of the knowledge element.
+	 * @param updatingDate
+	 *            date of last update of the knowledge element.
 	 */
-	public void setClosed(Date date) {
-		this.closed = date;
+	public void setUpdatingDate(Date updatingDate) {
+		this.updatingDate = updatingDate;
 	}
 
 	/**

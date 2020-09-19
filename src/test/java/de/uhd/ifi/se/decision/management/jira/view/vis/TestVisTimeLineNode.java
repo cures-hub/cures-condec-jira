@@ -70,14 +70,6 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
-	public void testSetGetEnd() {
-		Date date = new Date(System.currentTimeMillis() - 1000);
-		String closedString = timeNode.createDateString(date);
-		timeNode.setEnd(closedString);
-		assertEquals(closedString, timeNode.getEnd());
-	}
-
-	@Test
 	public void testGetClassName() {
 		assertEquals(element.getTypeAsString().toLowerCase(), timeNode.getClassName());
 	}
