@@ -1095,7 +1095,11 @@ public class ConfigRest {
 	}
 
 	private boolean checkIfQualityTriggerExists(String triggerName) {
-		triggerName = triggerName.split("-")[1];
+		String triggerNameShort = triggerName;
+		String[] triggerNameParts = triggerName.split("-");
+		if (triggerNameParts.length > 0) {
+			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
+		}
 		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
 			.doesQualityCheckEventTriggerNameExist(triggerName);
 	}
