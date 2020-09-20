@@ -484,6 +484,15 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @return name of the creator of an element as a String.
+	 */
+	@XmlElement(name = "creator")
+	public String getCreatorName() {
+		ApplicationUser user = getCreator();
+		return user != null ? user.getDisplayName() : "";
+	}
+
+	/**
 	 * @param knowledgeType
 	 *            the {@link KnowledgeType} of the element.
 	 * @return true if this knowledge element is linked to another knowledge element
