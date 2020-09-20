@@ -13,13 +13,13 @@
 <div class="aui-group">
     <div  class="aui-item">
     	<!-- filter criteria for the left side -->
-    	#parse("templates/filter/creationDate.vm")
+    	#parse("templates/filter/documentationDate.vm")
         <div id="left-network"></div>
     </div>
     <div class="aui-item">
     	<!--  filter criteria for the right side -->
     	#set ($viewIdentifier = "comparison-right")	
-    	#parse("templates/filter/creationDate.vm")
+    	#parse("templates/filter/documentationDate.vm")
         <div id="right-network"></div>
     </div>
 </div>

@@ -51,9 +51,9 @@ public class TestGetMostRecentElement extends TestSetUp {
 	public void testMostRecentElementUnequalCreationDate() {
 		KnowledgeElement source = link.getSource();
 		KnowledgeElement target = link.getTarget();
-		Date oldCreationDate = target.getCreated();
-		target.setCreated(new Date());
+		Date oldCreationDate = target.getCreationDate();
+		target.setCreationDate(new Date());
 		assertEquals(target, AutomaticLinkCreator.getMostRecentElement(source, target));
-		target.setCreated(oldCreationDate);
+		target.setCreationDate(oldCreationDate);
 	}
 }

@@ -22,7 +22,6 @@ public class TestGetEvolutionData extends TestSetUp {
 	private FilterSettings filterSettings;
 	protected HttpServletRequest request;
 
-
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
@@ -34,22 +33,26 @@ public class TestGetEvolutionData extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullFilterSettingsNull(){
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), viewRest.getEvolutionData(null, null).getStatus());
+	public void testRequestNullFilterSettingsNull() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getEvolutionData(null, null, false, false).getStatus());
 	}
 
 	@Test
-	public void testRequestNullFilterSettingsFilled(){
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), viewRest.getEvolutionData(null, filterSettings).getStatus());
+	public void testRequestNullFilterSettingsFilled() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getEvolutionData(null, filterSettings, false, false).getStatus());
 	}
 
 	@Test
-	public void testRequestFilledSettingsNull(){
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), viewRest.getEvolutionData(request, null).getStatus());
+	public void testRequestFilledSettingsNull() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getEvolutionData(request, null, false, false).getStatus());
 	}
 
 	@Test
-	public void testRequestFilledSettingsFilled(){
-		assertEquals(Response.Status.OK.getStatusCode(), viewRest.getEvolutionData(request, filterSettings).getStatus());
+	public void testRequestFilledSettingsFilled() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				viewRest.getEvolutionData(request, filterSettings, true, true).getStatus());
 	}
 }

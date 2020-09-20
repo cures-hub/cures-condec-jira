@@ -53,7 +53,6 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<>();
 		}
-		// String searchString = filterSettings.getSearchTerm().toLowerCase();
 		Set<KnowledgeElement> elements;
 
 		if (filterSettings.getSelectedElement() != null) {
@@ -204,17 +203,19 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element is created in the given time frame in the
-	 *         {@link FilterSettings}. See {@link KnowledgeElement#getCreated()}.
+	 * @return true if the element is created or updated in the given time frame in
+	 *         the {@link FilterSettings}. See
+	 *         {@link KnowledgeElement#getCreationDate()} and
+	 *         {@link KnowledgeElement#getUpdatingDate()}.
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getStartDate() > 0) {
-			isMatchingTimeFilter = element.getCreated().getTime() >= filterSettings.getStartDate();
+			isMatchingTimeFilter = element.getUpdatingDate().getTime() >= filterSettings.getStartDate();
 		}
 		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getCreated().getTime() <= filterSettings.getEndDate() + 86400000;
+					&& element.getCreationDate().getTime() <= filterSettings.getEndDate() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}
