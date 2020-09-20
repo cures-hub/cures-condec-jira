@@ -241,5 +241,30 @@ public class ConsistencyRest {
 
 		return Optional.ofNullable(knowledgeElement);
 	}
+	//--------------------
+	// Completeness checks
+	//--------------------
 
+	@Path("/doesElementNeedCompletenessApproval")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response doesElementNeedCompletenessApproval(@Context HttpServletRequest request, @QueryParam("projectKey") String
+		projectKey, @QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation) {
+		Optional<KnowledgeElement> knowledgeElement;
+		Response response;
+		try {
+			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, documentationLocation);
+			if (knowledgeElement.isPresent()) {
+				boolean doesIssueNeedApproval = knowledgeElement.get().isIncomplete();
+				response = Response.ok().entity(ImmutableMap.of("needsCompletenessApproval", doesIssueNeedApproval)).build();
+			} else {
+				response = Response.status(400).entity(
+					ImmutableMap.of("error", "No issue with the given key exists!")).build();
+			}
+		} catch (Exception e) {
+			//LOGGER.error(e.getMessage());
+			response = Response.status(500).entity(e).build();
+		}
+		return response;
+	}
 }

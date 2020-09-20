@@ -1101,7 +1101,7 @@ public class ConfigRest {
 			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
 		}
 		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
-			.doesQualityCheckEventTriggerNameExist(triggerName);
+			.doesQualityCheckEventTriggerNameExist(triggerNameShort);
 	}
 
 	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
