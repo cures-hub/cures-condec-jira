@@ -408,6 +408,7 @@ public class KnowledgeElement {
 	/**
 	 * @return creation date of the knowledge element.
 	 */
+	@XmlElement(name = "creationDate")
 	public Date getCreationDate() {
 		if (creationDate == null) {
 			return new Date();
@@ -426,6 +427,7 @@ public class KnowledgeElement {
 	/**
 	 * @return date of last update of the knowledge element.
 	 */
+	@XmlElement(name = "updatingDate")
 	public Date getUpdatingDate() {
 		if (updatingDate == null) {
 			return getCreationDate();
