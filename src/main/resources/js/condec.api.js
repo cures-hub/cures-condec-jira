@@ -365,14 +365,20 @@
 			});
 	};
 
-	/*
+	/**
+	 * @param isPlacedAtCreationDate elements will be placed at their creation date.
+	 * @param isPlacedAtUpdatingDate elements will be placed at the date of their last update.
+	 * 
+	 * If both isPlacedAtCreationDate and isPlacedAtUpdatingDate are true, a bar connecting 
+	 * both dates is shown in chronology view.
+	 * 
 	 * external references: condec.evolution.page
 	 */
 	ConDecAPI.prototype.getEvolutionData = function (filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json?isPlacedAtCreationDate" + isPlacedAtCreationDate 
-			+ "&isPlacedAtUpdatingDate" + isPlacedAtUpdatingDate, filterSettings, function (
-			error, evolutionData) {
+		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json?isPlacedAtCreationDate=" + isPlacedAtCreationDate
+			+ "&isPlacedAtUpdatingDate=" + isPlacedAtUpdatingDate, filterSettings, function (
+				error, evolutionData) {
 			if (error === null) {
 				callback(evolutionData);
 			}

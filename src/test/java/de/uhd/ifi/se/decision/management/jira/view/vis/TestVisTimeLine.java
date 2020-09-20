@@ -63,7 +63,7 @@ public class TestVisTimeLine extends TestSetUp {
 	public void testConstructorUserValidFilterSettingsValid() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		VisTimeLine visTimeLine = new VisTimeLine(user, filterSettings);
+		VisTimeLine visTimeLine = new VisTimeLine(user, filterSettings, true, true);
 		assertNotNull(visTimeLine);
 		assertEquals(1, visTimeLine.getGroups().size());
 		assertEquals(10, visTimeLine.getTimeLineNodes().size());
@@ -71,7 +71,7 @@ public class TestVisTimeLine extends TestSetUp {
 
 	@Test
 	public void testConstructorUserNullFilterSettingsNull() {
-		VisTimeLine visTimeLine = new VisTimeLine(null, null);
+		VisTimeLine visTimeLine = new VisTimeLine(null, null, false, false);
 		assertNotNull(visTimeLine);
 		assertEquals(0, visTimeLine.getGroups().size());
 		assertEquals(0, visTimeLine.getTimeLineNodes().size());

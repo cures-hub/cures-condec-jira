@@ -211,11 +211,11 @@ public class FilteringManager {
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getStartDate() > 0) {
-			isMatchingTimeFilter = element.getCreationDate().getTime() >= filterSettings.getStartDate();
+			isMatchingTimeFilter = element.getUpdatingDate().getTime() >= filterSettings.getStartDate();
 		}
 		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter
-					&& element.getUpdatingDate().getTime() <= filterSettings.getEndDate() + 86400000;
+					&& element.getCreationDate().getTime() <= filterSettings.getEndDate() + 86400000;
 		}
 		return isMatchingTimeFilter;
 	}
