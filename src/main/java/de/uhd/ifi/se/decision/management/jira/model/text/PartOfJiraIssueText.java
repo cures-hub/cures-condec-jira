@@ -86,11 +86,13 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		if (comment == null) {
 			text = getJiraIssueDescription();
 			if (issue != null) {
-				this.setCreated(issue.getCreated());
+				this.setCreationDate(issue.getCreated());
+				this.setUpdatingDate(issue.getUpdated());
 			}
 		} else {
 			text = comment.getBody();
-			this.setCreated(comment.getCreated());
+			this.setCreationDate(comment.getCreated());
+			this.setUpdatingDate(comment.getUpdated());
 		}
 		try {
 			if (endSubstringCount < text.length()) {
@@ -353,7 +355,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		if (comment != null) {
 			this.setCommentId(comment.getId());
 			this.setJiraIssueId(comment.getIssue().getId());
-			this.setCreated(comment.getCreated());
+			this.setCreationDate(comment.getCreated());
 		}
 	}
 

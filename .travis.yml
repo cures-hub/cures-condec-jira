@@ -22,6 +22,7 @@ deploy:
   provider: releases
   file: $TRAVIS_BUILD_DIR/target/cures-condec-jira.jar
   skip_cleanup: true
+  github_token: $github_token
   on:
       tags: true
   overwrite: true

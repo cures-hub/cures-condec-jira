@@ -27,6 +27,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 
 /**
  * Models a changed file as part of a {@link Diff}.
+ * 
+ * @issue How can we get the creation time and the updating time of the file?
+ * @alternative Pass RevCommit::getCommitTime() to this class to store the
+ *              updating time of the file.
  */
 public class ChangedFile extends File {
 

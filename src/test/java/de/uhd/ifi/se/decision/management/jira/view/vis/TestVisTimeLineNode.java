@@ -3,14 +3,13 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisTimeLineNode extends TestSetUp {
@@ -22,19 +21,25 @@ public class TestVisTimeLineNode extends TestSetUp {
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		timeNode = new VisTimeLineNode(element);
+		timeNode = new VisTimeLineNode(element, true, true);
 	}
 
 	@Test
 	public void testConstructorNull() {
-		VisTimeLineNode node = new VisTimeLineNode(null);
+		VisTimeLineNode node = new VisTimeLineNode(null, false, false);
 		assertEquals(0, node.getId());
 	}
 
 	@Test
-	public void testConstructorFilled() {
-		VisTimeLineNode node = new VisTimeLineNode(element);
+	public void testConstructorFilledCreationAndUpdatingDateConsidered() {
+		VisTimeLineNode node = new VisTimeLineNode(element, true, true);
 		assertEquals(element.getId(), node.getId());
+	}
+
+	@Test
+	public void testConstructorWithGroup() {
+		VisTimeLineNode node = new VisTimeLineNode(element, 123, false, true);
+		assertEquals(123, node.getGroup());
 	}
 
 	@Test
@@ -43,38 +48,19 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
-	public void testSetId() {
-		VisTimeLineNode node = new VisTimeLineNode(element);
-		node.setId(12345);
-		assertEquals(12345, node.getId());
-	}
-
-	@Test
 	public void testGetContent() {
-		element.setStatus(KnowledgeStatus.DECIDED);
 		assertTrue(timeNode.getContent().startsWith("<img src="));
+		assertTrue(timeNode.getContent().contains(element.getSummary()));
 	}
 
 	@Test
-	public void testSetContent() {
-		timeNode.setContent("Test new Content");
-		assertEquals("Test new Content", timeNode.getContent());
+	public void testGetStart() {
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(element.getCreationDate()), timeNode.getStart());
 	}
 
 	@Test
-	public void testSetGetStart() {
-		Date date = new Date(System.currentTimeMillis() - 1000);
-		String createdString = timeNode.createDateString(date);
-		timeNode.setStart(createdString);
-		assertEquals(createdString, timeNode.getStart());
-	}
-
-	@Test
-	public void testSetGetEnd() {
-		Date date = new Date(System.currentTimeMillis() - 1000);
-		String closedString = timeNode.createDateString(date);
-		timeNode.setEnd(closedString);
-		assertEquals(closedString, timeNode.getEnd());
+	public void testGetEnd() {
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(element.getUpdatingDate()), timeNode.getEnd());
 	}
 
 	@Test
@@ -83,20 +69,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
-	public void testSetClassName() {
-		timeNode.setClassName("Test Class name");
-		assertEquals("Test Class name", timeNode.getClassName());
-	}
-
-	@Test
-	public void testGetAndSetGroup() {
-		timeNode.setGroup(19012);
-		assertEquals(19012, timeNode.getGroup());
-	}
-
-	@Test
-	public void testGetAndSetTitle() {
-		timeNode.setTitle("TestTitle");
-		assertEquals("TestTitle", timeNode.getTitle());
+	public void testGetTitle() {
+		assertEquals(element.getSummary(), timeNode.getTitle());
 	}
 }

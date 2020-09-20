@@ -37,7 +37,9 @@
         });
         
         conDecFiltering.addOnClickEventToFilterButton("chronology", function(filterSettings) {
-        	conDecAPI.getEvolutionData(filterSettings, function (visData) {
+            var isPlacedAtCreationDate = document.getElementById("is-placed-at-creation-date-input").checked;
+            var isPlacedAtUpdatingDate = document.getElementById("is-placed-at-update-date-input").checked;
+            conDecAPI.getEvolutionData(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, function (visData) {
                 var data = visData.dataSet;
                 var groups = visData.groupSet;
                 var item = new vis.DataSet(data);
