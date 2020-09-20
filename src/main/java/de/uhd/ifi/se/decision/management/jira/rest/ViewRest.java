@@ -1,5 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
@@ -7,6 +28,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -28,21 +50,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * REST resource for view
@@ -69,10 +76,10 @@ public class ViewRest {
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
-		throws PermissionException {
+			throws PermissionException {
 		if (request == null || issueKey == null || issueKey.isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
+					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
 		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
 		String projectKey = getProjectKey(normalizedIssueKey);
@@ -84,11 +91,11 @@ public class ViewRest {
 			return Response.status(Status.OK).build();
 		}
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
-			+ normalizedIssueKey.toUpperCase() + "\\-";
+				+ normalizedIssueKey.toUpperCase() + "\\-";
 
 		// get feature branches of an issue
 		return getDiffViewerResponse(projectKey, regexFilter,
-			ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
+				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
@@ -152,16 +159,17 @@ public class ViewRest {
 	 * comprises only one tree with the selected element as the root element. If no
 	 * element is selected, the tree viewer contains a list of trees.
 	 *
-	 * @param filterSettings For example, the {@link FilterSettings} cover the selected element
-	 *                       and the knowledge types to be shown. The selected element can be
-	 *                       null.
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            and the knowledge types to be shown. The selected element can be
+	 *            null.
 	 */
 	@Path("/getTreeViewer")
 	@POST
 	public Response getTreeViewer(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
+					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -174,31 +182,33 @@ public class ViewRest {
 
 	@Path("/getEvolutionData")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings) {
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings,
+			@QueryParam("isPlacedAtCreationDate") boolean isPlacedAtCreationDate,
+			@QueryParam("isPlacedAtUpdatingDate") boolean isPlacedAtUpdatingDate) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
-				.build();
+					.entity(ImmutableMap.of("error", "HttpServletRequest is null. Timeline could not be created."))
+					.build();
 		}
 		if (filterSettings == null || filterSettings.getProjectKey() == null
-			|| filterSettings.getProjectKey().isBlank()) {
+				|| filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is not valid."))
-				.build();
+					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisTimeLine timeLine = new VisTimeLine(user, filterSettings);
+		VisTimeLine timeLine = new VisTimeLine(user, filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate);
 		return Response.ok(timeLine).build();
 	}
 
 	@Path("/decisionTable")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
-				.build();
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
+					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -214,17 +224,17 @@ public class ViewRest {
 
 	/**
 	 * @return all available criteria (e.g. quality attributes, non-functional
-	 * requirements) for a project.
+	 *         requirements) for a project.
 	 */
 	@Path("/decisionTableCriteria")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
-											 @QueryParam("projectKey") String projectKey) {
+			@QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-				ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
-				.build();
+					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
+					.build();
 		}
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -237,13 +247,13 @@ public class ViewRest {
 
 	@Path("/getTreant")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
-			|| filterSettings.getSelectedElement().getKey() == null) {
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
-				.build();
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
+					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -256,13 +266,13 @@ public class ViewRest {
 
 	@Path("/getVis")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error",
-					"The HttpServletRequest or the filter settings are null. Vis graph could not be created."))
-				.build();
+					.entity(ImmutableMap.of("error",
+							"The HttpServletRequest or the filter settings are null. Vis graph could not be created."))
+					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -276,9 +286,9 @@ public class ViewRest {
 
 	@Path("/getFilterSettings")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-									  @QueryParam("elementKey") String elementKey) {
+			@QueryParam("elementKey") String elementKey) {
 		String projectKey;
 		if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
 			projectKey = elementKey;
@@ -292,20 +302,21 @@ public class ViewRest {
 	}
 
 	/**
-	 * @param filterSettings For example, the {@link FilterSettings} cover the
-	 *                       {@link KnowledgeType}s to be shown.
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the
+	 *            {@link KnowledgeType}s to be shown.
 	 * @return adjacency matrix of the {@link KnowledgeGraph} or a filtered subgraph
-	 * provided by the {@link FilteringManager}.
+	 *         provided by the {@link FilteringManager}.
 	 */
 	@Path("/getMatrix")
 	@POST
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getProjectKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error",
-					"Matrix cannot be shown since the HttpServletRequest or filter settings are invalid."))
-				.build();
+					.entity(ImmutableMap.of("error",
+							"Matrix cannot be shown since the HttpServletRequest or filter settings are invalid."))
+					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -358,12 +369,12 @@ public class ViewRest {
 
 	@Path("/getRecommendation")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									  @QueryParam("keyword") String keyword) {
+			@QueryParam("keyword") String keyword) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not correct!"))
-				.build();
+					.build();
 		}
 
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -373,7 +384,7 @@ public class ViewRest {
 
 		if (keyword.isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
+					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
@@ -383,9 +394,9 @@ public class ViewRest {
 		// TODO move the text
 		if (checkIfKnowledgeSourceNotConfigured(simpleRecommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
-					+ projectKey + "&category=decisionGuidance'>Configure</a>"))
-				.build();
+					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
+							+ projectKey + "&category=decisionGuidance'>Configure</a>"))
+					.build();
 		}
 
 		List<Recommendation> recommendationList = simpleRecommender.getRecommendation();
@@ -394,12 +405,13 @@ public class ViewRest {
 
 	@Path("/getRecommendationEvaluation")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRecommendationEvaluation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-												@QueryParam("keyword") String keyword, @QueryParam("knowledgeSource") String knowledgeSourceName) {
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
+			@QueryParam("knowledgeSource") String knowledgeSourceName) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not correct!"))
-				.build();
+					.build();
 		}
 
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -409,15 +421,14 @@ public class ViewRest {
 
 		if (keyword.isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
+					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
 		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
 		List<Recommendation> recommendationList = simpleRecommender
-			.addKnowledgeSourceForEvaluation(allKnowledgeSources, knowledgeSourceName)
-			.evaluate();
+				.addKnowledgeSourceForEvaluation(allKnowledgeSources, knowledgeSourceName).evaluate();
 
 		return Response.ok(recommendationList).build();
 	}

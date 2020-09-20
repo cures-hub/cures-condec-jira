@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -22,6 +21,9 @@ public class VisTimeLineNode {
 	private String start;
 
 	@XmlElement
+	private String end;
+
+	@XmlElement
 	private String className;
 
 	@XmlElement
@@ -35,28 +37,29 @@ public class VisTimeLineNode {
 
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-	public VisTimeLineNode(KnowledgeElement element) {
+	public VisTimeLineNode(KnowledgeElement element, boolean isPlacedAtCreationDate, boolean isPlacedAtUpdatingDate) {
 		if (element == null) {
 			return;
 		}
 		this.id = ((int) element.getId());
 		this.content = createContentString(element);
-		this.start = createDateString(element.getUpdatingDate());
+		if (isPlacedAtCreationDate) {
+			this.start = DATEFORMAT.format(element.getCreationDate());
+		} else {
+			this.start = DATEFORMAT.format(element.getUpdatingDate());
+		}
+		if (isPlacedAtCreationDate && isPlacedAtUpdatingDate) {
+			this.end = DATEFORMAT.format(element.getUpdatingDate());
+		}
 		this.className = element.getTypeAsString().toLowerCase();
 		this.title = element.getDescription();
 		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
 	}
 
-	public VisTimeLineNode(KnowledgeElement element, long group) {
-		this(element);
+	public VisTimeLineNode(KnowledgeElement element, long group, boolean isPlacedAtCreationDate,
+			boolean isPlacedAtUpdatingDate) {
+		this(element, isPlacedAtCreationDate, isPlacedAtUpdatingDate);
 		this.group = group;
-	}
-
-	public String createDateString(Date created) {
-		if (created == null) {
-			return "";
-		}
-		return DATEFORMAT.format(created);
 	}
 
 	private String createContentString(KnowledgeElement element) {

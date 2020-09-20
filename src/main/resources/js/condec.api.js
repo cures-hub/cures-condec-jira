@@ -39,11 +39,11 @@
 		this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
-		
+
 		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Commit", "PullRequest"];
-		
+
 		this.linkTypes = [];
-		
+
 		this.decisionGroups = [];
 	};
 
@@ -62,13 +62,13 @@
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
 		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
-			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(conDecAPI.restPrefix 
-					+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(conDecAPI.restPrefix
+				+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
 			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
 		}
 		return this.extendedKnowledgeTypes;
 	};
-	
+
 	/**
 	 * Replaces argument with pro-argument and con-argument in knowledge types
 	 * array.
@@ -98,8 +98,8 @@
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function (id, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
-						decisionKnowledgeElement) {
+			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error,
+				decisionKnowledgeElement) {
 			if (error === null) {
 				callback(decisionKnowledgeElement);
 			}
@@ -111,11 +111,11 @@
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function (id, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/knowledge/getUnlinkedElements.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error, unlinkedElements) {
-			if (error === null) {
-				callback(unlinkedElements);
-			}
-		});
+			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function (error, unlinkedElements) {
+				if (error === null) {
+					callback(unlinkedElements);
+				}
+			});
 	};
 
 	/*
@@ -127,38 +127,38 @@
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function (summary, description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
 		var newElement = {
-				"summary": summary,
-				"type": type,
-				"projectKey": projectKey,
-				"description": description,
-				"documentationLocation": documentationLocation
+			"summary": summary,
+			"type": type,
+			"projectKey": projectKey,
+			"description": description,
+			"documentationLocation": documentationLocation
 		};
 		console.log(newElement);
 		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
-				+ idOfExistingElement + "&documentationLocationOfExistingElement="
-				+ documentationLocationOfExistingElement, newElement, function (error, newElement) {
-			if (error === null) {
-				showFlag("success", type + " and link have been created.");
-				callback(newElement.id);
-			}
-		});
+			+ idOfExistingElement + "&documentationLocationOfExistingElement="
+			+ documentationLocationOfExistingElement, newElement, function (error, newElement) {
+				if (error === null) {
+					showFlag("success", type + " and link have been created.");
+					callback(newElement.id);
+				}
+			});
 	};
 
 	ConDecAPI.prototype.assignDecisionGroup = function (level, existingGroups, addgroup, sourceId, documentationLocation, callback) {
 		var newElement = {};
 		var projectKey = getProjectKey();
 		generalApi.postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
-				+ sourceId + "&documentationLocation="
-				+ documentationLocation + "&projectKey="
-				+ projectKey + "&level="
-				+ level + "&existingGroups="
-				+ existingGroups + "&addGroup="
-				+ addgroup, newElement, function (error, newElement) {
-			if (error === null) {
-				showFlag("Success", "Group Assignments have been created.");
-				callback(sourceId);
-			}
-		});
+			+ sourceId + "&documentationLocation="
+			+ documentationLocation + "&projectKey="
+			+ projectKey + "&level="
+			+ level + "&existingGroups="
+			+ existingGroups + "&addGroup="
+			+ addgroup, newElement, function (error, newElement) {
+				if (error === null) {
+					showFlag("Success", "Group Assignments have been created.");
+					callback(sourceId);
+				}
+			});
 	};
 
 	/*
@@ -166,23 +166,23 @@
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function (id, summary, description, type, documentationLocation, status, callback) {
 		var element = {
-				"id": id,
-				"summary": summary,
-				"type": type,
-				"projectKey": projectKey,
-				"description": description,
-				"documentationLocation": documentationLocation,
-				"status": status
+			"id": id,
+			"summary": summary,
+			"type": type,
+			"projectKey": projectKey,
+			"description": description,
+			"documentationLocation": documentationLocation,
+			"status": status
 		};
 		var parentElement = conDecTreant.findParentElement(id);
 		generalApi.postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
-				+ parentElement["id"] + "&documentationLocationOfParentElement="
-				+ parentElement["documentationLocation"], element, function (error, response) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
+			+ parentElement["id"] + "&documentationLocationOfParentElement="
+			+ parentElement["documentationLocation"], element, function (error, response) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback();
+				}
+			});
 	};
 
 	/*
@@ -197,17 +197,17 @@
 	 */
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function (id, documentationLocation, callback) {
 		var element = {
-				"id": id,
-				"projectKey": projectKey,
-				"documentationLocation": documentationLocation
+			"id": id,
+			"projectKey": projectKey,
+			"documentationLocation": documentationLocation
 		};
 		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement.json", element,
-				function (error, isDeleted) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been deleted.");
-				callback();
-			}
-		});
+			function (error, isDeleted) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been deleted.");
+					callback();
+				}
+			});
 	};
 
 	/*
@@ -215,33 +215,33 @@
 	 */
 	ConDecAPI.prototype.createLink = function (idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
 		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey
-				+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
-				+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been created.");
-				callback(link);
-			}
-		});
+			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function (error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				}
+			});
 	};
 
 	/*
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.deleteLink = function (idOfDestinationElement, idOfSourceElement,
-			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
+		documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
 		var link = {
-				"idOfSourceElement": idOfSourceElement,
-				"idOfDestinationElement": idOfDestinationElement,
-				"documentationLocationOfSourceElement": documentationLocationOfSourceElement,
-				"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement
+			"idOfSourceElement": idOfSourceElement,
+			"idOfDestinationElement": idOfDestinationElement,
+			"documentationLocationOfSourceElement": documentationLocationOfSourceElement,
+			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement
 		};
 		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink.json?projectKey=" + projectKey,
-				link, function (error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been deleted.");
-				callback(link);
-			}
-		});
+			link, function (error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been deleted.");
+					callback(link);
+				}
+			});
 	};
 
 	/*
@@ -268,12 +268,12 @@
 	 */
 	ConDecAPI.prototype.setSentenceIrrelevant = function (id, callback) {
 		var jsondata = {
-				"id": id,
-				"documentationLocation": "s",
-				"projectKey": projectKey
+			"id": id,
+			"documentationLocation": "s",
+			"projectKey": projectKey
 		};
 		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function (
-				error) {
+			error) {
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
 				callback();
@@ -286,16 +286,16 @@
 	 */
 	ConDecAPI.prototype.createIssueFromSentence = function (id, callback) {
 		var jsondata = {
-				"id": id,
-				"projectKey": projectKey
+			"id": id,
+			"projectKey": projectKey
 		};
 		generalApi.postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
-				function (error, id, type) {
-			if (error === null) {
-				showFlag("success", "JIRA Issue has been created.");
-				callback();
-			}
-		});
+			function (error, id, type) {
+				if (error === null) {
+					showFlag("success", "JIRA Issue has been created.");
+					callback();
+				}
+			});
 	};
 
 	/*
@@ -327,12 +327,12 @@
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function (id, documentationLocation, probability, callback) {
 		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
-				function (error, summary) {
-			if (error === null) {
-				callback(summary);
-			}
-		});
+			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
+			function (error, summary) {
+				if (error === null) {
+					callback(summary);
+				}
+			});
 	};
 
 	/*
@@ -346,7 +346,7 @@
 			}
 		});
 	};
-	
+
 	/**
 	 * If the search term is a Jira query in JQL, this function provides the
 	 * filter settings matching the JQL. Otherwise it provides the default
@@ -358,20 +358,21 @@
 	 */
 	ConDecAPI.prototype.getFilterSettings = function (elementKey, searchTerm, callback) {
 		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
-				+ "&searchTerm=" + searchTerm, function (error, filterSettings) {
-			if (error === null) {
-				callback(filterSettings);
-			}
-		});
+			+ "&searchTerm=" + searchTerm, function (error, filterSettings) {
+				if (error === null) {
+					callback(filterSettings);
+				}
+			});
 	};
 
 	/*
 	 * external references: condec.evolution.page
 	 */
-	ConDecAPI.prototype.getEvolutionData = function (filterSettings, callback) {
+	ConDecAPI.prototype.getEvolutionData = function (filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json", filterSettings, function (
-				error, evolutionData) {
+		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json?isPlacedAtCreationDate" + isPlacedAtCreationDate 
+			+ "&isPlacedAtUpdatingDate" + isPlacedAtUpdatingDate, filterSettings, function (
+			error, evolutionData) {
 			if (error === null) {
 				callback(evolutionData);
 			}
@@ -396,11 +397,11 @@
 	 */
 	ConDecAPI.prototype.setActivated = function (isActivated, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setActivated.json?projectKey=" + projectKey
-				+ "&isActivated=" + isActivated, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
-			}
-		});
+			+ "&isActivated=" + isActivated, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
+				}
+			});
 	};
 
 	/*
@@ -408,11 +409,11 @@
 	 */
 	ConDecAPI.prototype.isActivated = function (callback) {
 		generalApi.getJSON(this.restPrefix + "/config/isActivated.json?projectKey=" + projectKey,
-				function (error, isActivatedBoolean) {
-			if (error === null) {
-				callback(isActivatedBoolean);
-			}
-		});
+			function (error, isActivatedBoolean) {
+				if (error === null) {
+					callback(isActivatedBoolean);
+				}
+			});
 	};
 
 	/*
@@ -421,11 +422,11 @@
 	 */
 	ConDecAPI.prototype.setIssueStrategy = function (isIssueStrategy, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setIssueStrategy.json?projectKey=" + projectKey
-				+ "&isIssueStrategy=" + isIssueStrategy, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "Strategy has been selected.");
-			}
-		});
+			+ "&isIssueStrategy=" + isIssueStrategy, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "Strategy has been selected.");
+				}
+			});
 	};
 
 	/*
@@ -433,11 +434,11 @@
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function (callback) {
 		generalApi.getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,
-				function (error, isIssueStrategyBoolean) {
-			if (error === null) {
-				callback(isIssueStrategyBoolean);
-			}
-		});
+			function (error, isIssueStrategyBoolean) {
+				if (error === null) {
+					callback(isIssueStrategyBoolean);
+				}
+			});
 	};
 
 	/*
@@ -446,11 +447,11 @@
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromGit = function (isKnowledgeExtractedFromGit, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
-				+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
-						response) {
+			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
-						+ ".");
+					+ ".");
 			}
 		});
 	};
@@ -460,11 +461,11 @@
 	 */
 	ConDecAPI.prototype.setPostFeatureBranchCommits = function (checked, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setPostFeatureBranchCommits.json?projectKey="
-				+ projectKey + "&newSetting=" + checked, null, function (error,
-						response) {
+			+ projectKey + "&newSetting=" + checked, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success", "Post Feature Branch Commits for this project has been set to " + checked
-						+ ".");
+					+ ".");
 				return checked;
 			} else {
 				return !checked;
@@ -477,11 +478,11 @@
 	 */
 	ConDecAPI.prototype.setPostSquashedCommits = function (checked, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setPostSquashedCommits.json?projectKey="
-				+ projectKey + "&newSetting=" + checked, null, function (error,
-						response) {
+			+ projectKey + "&newSetting=" + checked, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success", "Post Squashed Commits for this project has been set to " + checked
-						+ ".");
+					+ ".");
 				return checked;
 			} else {
 				return !checked;
@@ -496,11 +497,11 @@
 		// TODO Pass gitUris and branches as the JSON payload. Do not pass
 		// concatenated strings separated with ;;
 		generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
-				+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The git URIs for this project have been set.");
-			}
-		});
+			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The git URIs for this project have been set.");
+				}
+			});
 	};
 
 	/*
@@ -508,11 +509,11 @@
 	 */
 	ConDecAPI.prototype.deleteGitRepos = function (projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null,
-				function (error, response) {
-			if (error === null) {
-				showFlag("success", "The git repos for this project were deleted.");
-			}
-		});
+			function (error, response) {
+				if (error === null) {
+					showFlag("success", "The git repos for this project were deleted.");
+				}
+			});
 	};
 
 	/*
@@ -520,13 +521,13 @@
 	 */
 	ConDecAPI.prototype.setKnowledgeTypeEnabled = function (isKnowledgeTypeEnabled, knowledgeType, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeTypeEnabled.json?projectKey="
-				+ projectKey + "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled,
-				null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The activation of the " + knowledgeType
+			+ projectKey + "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled,
+			null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The activation of the " + knowledgeType
 						+ " knowledge type for this project has been set to " + isKnowledgeTypeEnabled + ".");
-			}
-		});
+				}
+			});
 	};
 
 	/*
@@ -535,10 +536,10 @@
 	ConDecAPI.prototype.isKnowledgeTypeEnabled = function (knowledgeType, projectKey, toggle, callback) {
 		generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
 			+ knowledgeType + "&projectKey=" + projectKey, function (error, isKnowledgeTypeEnabled) {
-			if (error === null) {
-				callback(isKnowledgeTypeEnabled, toggle);
-			}
-		});
+				if (error === null) {
+					callback(isKnowledgeTypeEnabled, toggle);
+				}
+			});
 	};
 
 	/*
@@ -561,10 +562,10 @@
 	ConDecAPI.prototype.isLinkTypeEnabled = function (linkType, projectKey, toggle, callback) {
 		generalApi.getJSON(this.restPrefix + "/config/isLinkTypeEnabled.json?linkType="
 			+ linkType + "&projectKey=" + projectKey, function (error, isLinkTypeEnabled) {
-			if (error === null) {
-				callback(isLinkTypeEnabled, toggle);
-			}
-		});
+				if (error === null) {
+					callback(isLinkTypeEnabled, toggle);
+				}
+			});
 	};
 
 	/*
@@ -578,7 +579,7 @@
 		}
 		return this.knowledgeTypes;
 	};
-	
+
 	/*
 	 * external references: condec.dialog, condec.filtering
 	 */
@@ -605,11 +606,11 @@
 	ConDecAPI.prototype.getDecisionTable = function (filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/view/decisionTable.json", filterSettings,
-				function (error, issues) {
-			if (error === null) {
-				callback(issues);
-			}
-		});
+			function (error, issues) {
+				if (error === null) {
+					callback(issues);
+				}
+			});
 	};
 
 	/*
@@ -617,76 +618,76 @@
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteria = function (callback) {
 		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria.json?projectKey=${projectKey}`,
-				function (error, query) {
-			if (error === null) {
-				callback(query);
-			}
-		});
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				}
+			});
 	};
 
 	/*
 	 * external references: condec.decision.guidance
 	 */
 	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" +  projectKey + "&keyword=" + keyword,
-				function (error, results) {
-					callback(results, error);
-				});
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword,
+			function (error, results) {
+				callback(results, error);
+			});
 	};
 
-		/*
-    	 * external references: condec.decision guidance
-    	 */
-    	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, knowledgeSources, callback) {
-    		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" +  projectKey + "&keyword=" + keyword + "&knowledgeSource="+  knowledgeSources,
-    				function (error, results) {
-    					callback(results, error);
-    				});
-    	};
+	/*
+	 * external references: condec.decision guidance
+	 */
+	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, knowledgeSources, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&knowledgeSource=" + knowledgeSources,
+			function (error, results) {
+				callback(results, error);
+			});
+	};
 
 	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
-	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function(projectKey, query, callback) {
+	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function (projectKey, query, callback) {
 		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-				null, function (error, issues) {
-			if (error === null) {
-				callback(issues);
-			}
-		});
+			null, function (error, issues) {
+				if (error === null) {
+					callback(issues);
+				}
+			});
 	};
 
 	/*
 	 * external reference: rationalModelSettings.vm
 	 */
-	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function(projectKey, query) {
+	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function (projectKey, query) {
 		if (!query.length > 0) {
 			return showFlag("error", "Query length must be greater than 0");
 		}
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-				null, function (error, status) {
-			if (error === null && status.hasOwnProperty("criteriaCount")) {
-				if (status.criteriaCount > 0) {
-					showFlag("success", "Query was successfully saved. \nEnabled: " + status.criteriaCount + " criteria for decision table");
+			null, function (error, status) {
+				if (error === null && status.hasOwnProperty("criteriaCount")) {
+					if (status.criteriaCount > 0) {
+						showFlag("success", "Query was successfully saved. \nEnabled: " + status.criteriaCount + " criteria for decision table");
+					} else {
+						showFlag("error", "Query could not be saved due to no criteria were found.");
+					}
 				} else {
-					showFlag("error", "Query could not be saved due to no criteria were found.");
+					showFlag("error", "Query could not be saved due to an error.");
 				}
-			} else {
-				showFlag("error", "Query could not be saved due to an error.");
-			}
-		});
+			});
 	};
 
 	/*
 	 * external reference: rationaleModelSettings.vm
 	 */
-	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function(projectKey, callback) {
+	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function (projectKey, callback) {
 		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
-				function (error, query) {
-			if (error === null) {
-				callback(query);
-			}
-		});
+			function (error, query) {
+				if (error === null) {
+					callback(query);
+				}
+			});
 	};
 
 	/*
@@ -694,12 +695,12 @@
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
-				+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
-						response) {
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success",
-						"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-						+ isClassifierUsedForIssues + ".");
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
 			}
 		});
 	};
@@ -709,27 +710,27 @@
 	 */
 	ConDecAPI.prototype.setConsistencyActivated = function (isConsistencyActivated, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
-				+ projectKey + "&isConsistencyActivated=" + isConsistencyActivated, null, function (error,
-						response) {
+			+ projectKey + "&isConsistencyActivated=" + isConsistencyActivated, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success",
-						"Usage of the consistency module of the ConDec plugin has been set to "
-						+ isConsistencyActivated + ".");
+					"Usage of the consistency module of the ConDec plugin has been set to "
+					+ isConsistencyActivated + ".");
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromGit = function (isKnowledgeExtractedFromGit, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
-				+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
-						response) {
+			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
-						+ ".");
+					+ ".");
 			}
 		});
 	};
@@ -739,11 +740,11 @@
 	 */
 	ConDecAPI.prototype.setWebhookData = function (projectKey, webhookUrl, webhookSecret) {
 		generalApi.postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
-				+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The webhook for this project has been set.");
-			}
-		});
+			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The webhook for this project has been set.");
+				}
+			});
 	};
 
 	/*
@@ -751,11 +752,11 @@
 	 */
 	ConDecAPI.prototype.setWebhookEnabled = function (isActivated, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setWebhookEnabled.json?projectKey=" + projectKey
-				+ "&isActivated=" + isActivated, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The webhook activation for this project has been changed.");
-			}
-		});
+			+ "&isActivated=" + isActivated, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The webhook activation for this project has been changed.");
+				}
+			});
 	};
 
 	/*
@@ -763,8 +764,8 @@
 	 */
 	ConDecAPI.prototype.setWebhookType = function (webhookType, projectKey, isWebhookTypeEnabled) {
 		generalApi.postJSON(this.restPrefix + "/config/setWebhookType.json?projectKey=" + projectKey
-				+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function (
-						error, response) {
+			+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function (
+				error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook root element type was changed for this project.");
 			}
@@ -776,11 +777,11 @@
 	 */
 	ConDecAPI.prototype.sendTestPost = function (projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey="
-				+ projectKey, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The webhook test was send.");
-			}
-		});
+			+ projectKey, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The webhook test was send.");
+				}
+			});
 	};
 
 	/*
@@ -788,11 +789,11 @@
 	 */
 	ConDecAPI.prototype.cleanDatabases = function (projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/cleanDatabases.json?projectKey="
-				+ projectKey, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "The databases have been cleaned.");
-			}
-		});
+			+ projectKey, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "The databases have been cleaned.");
+				}
+			});
 	};
 
 	/*
@@ -800,12 +801,12 @@
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
-				+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
-						response) {
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
+				response) {
 			if (error === null) {
 				showFlag("success",
-						"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-						+ isClassifierUsedForIssues + ".");
+					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
 			}
 		});
 	};
@@ -815,13 +816,13 @@
 	 */
 	ConDecAPI.prototype.testClassifierWithText = function (text, projectKey, resultDomElement) {
 		generalApi.postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
-				+ projectKey + "&text=" + text, null, function (error, response) {
-			if (error === null) {
-				resultDomElement.innerText = response.content;
-			} else {
-				resultDomElement.innerText = "Error! Please check if the classifier is trained.";
-			}
-		});
+			+ projectKey + "&text=" + text, null, function (error, response) {
+				if (error === null) {
+					resultDomElement.innerText = response.content;
+				} else {
+					resultDomElement.innerText = "Error! Please check if the classifier is trained.";
+				}
+			});
 	};
 
 	/*
@@ -830,27 +831,27 @@
 	ConDecAPI.prototype.classifyWholeProject = function (projectKey, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
 		generalApi.postJSON(this.restPrefix + "/config/classifyWholeProject.json?projectKey=" + projectKey,
-				null,
-				function (error, response) {
-			animatedElement.classList.remove("aui-progress-indicator-value");
+			null,
+			function (error, response) {
+				animatedElement.classList.remove("aui-progress-indicator-value");
 
-			if (error === null) {
-				showFlag("success", "The whole project has been classified.");
-			} else {
-				showFlag("error", "The classification process failed.");
-			}
-		});
+				if (error === null) {
+					showFlag("success", "The whole project has been classified.");
+				} else {
+					showFlag("error", "The classification process failed.");
+				}
+			});
 
 	};
 
 	ConDecAPI.prototype.getDecisionGroups = function (id, location, callback) {
 		// TODO Change to POST method and post knowledgeElement
 		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
-				+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
-			if (error === null) {
-				callback(decisionGroups);
-			}
-		});		
+			+ "&location=" + location + "&projectKey=" + projectKey, function (error, decisionGroups) {
+				if (error === null) {
+					callback(decisionGroups);
+				}
+			});
 	};
 
 	/*
@@ -859,21 +860,21 @@
 	ConDecAPI.prototype.trainClassifier = function (projectKey, arffFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
 		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
-				+ arffFileName,
-				null,
-				function (error, response) {
-			animatedElement.classList.remove("aui-progress-indicator-value");
-			if (error === null) {
-				showFlag("success", "The classifier was successfully retrained.");
-			} else {
-				showFlag("error", "Training of the classifier failed.");
-			}
-		});
+			+ arffFileName,
+			null,
+			function (error, response) {
+				animatedElement.classList.remove("aui-progress-indicator-value");
+				if (error === null) {
+					showFlag("success", "The classifier was successfully retrained.");
+				} else {
+					showFlag("error", "Training of the classifier failed.");
+				}
+			});
 	};
 
 	ConDecAPI.prototype.renameDecisionGroup = function (oldName, newName, callback) {
 		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
-				+ "&oldName=" + oldName + "&newName=" + newName);
+			+ "&oldName=" + oldName + "&newName=" + newName);
 		callback();
 	};
 
@@ -881,29 +882,29 @@
 		// console.log("ConDecAPI.prototype.evaluateModel");
 		animatedElement.classList.add("aui-progress-indicator-value");
 		generalApi.postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey,
-				null,
-				function (error, response) {
-			animatedElement.classList.remove("aui-progress-indicator-value");
-			if (error === null) {
-				showFlag("success", "The evaluation results file was successfully created.");
-				// //console.log(response["content"]);
-				callback(response["content"]);
-			}
-		});
+			null,
+			function (error, response) {
+				animatedElement.classList.remove("aui-progress-indicator-value");
+				if (error === null) {
+					showFlag("success", "The evaluation results file was successfully created.");
+					// //console.log(response["content"]);
+					callback(response["content"]);
+				}
+			});
 	};
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.saveArffFile = function (projectKey, useOnlyValidatedData, callback) {
 		generalApi.postJSON(this.restPrefix + "/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
-				function (error, response) {
-			if (error === null) {
-				showFlag("success", "The ARFF file was successfully created and saved in "
+			function (error, response) {
+				if (error === null) {
+					showFlag("success", "The ARFF file was successfully created and saved in "
 						+ response["arffFile"] + ".");
-				// console.log(response["content"]);
-				callback(response["content"]);
-			}
-		});
+					// console.log(response["content"]);
+					callback(response["content"]);
+				}
+			});
 	};
 
 	/*
@@ -911,11 +912,11 @@
 	 */
 	ConDecAPI.prototype.setIconParsing = function (projectKey, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/config/setIconParsing.json?projectKey=" + projectKey
-				+ "&isActivatedString=" + isActivated, null, function (error, response) {
-			if (error === null) {
-				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
-			}
-		});
+			+ "&isActivatedString=" + isActivated, null, function (error, response) {
+				if (error === null) {
+					showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
+				}
+			});
 	};
 
 	/*
@@ -925,7 +926,7 @@
 		generalApi.postJSON(this.restPrefix + "/config/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations );
+				showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations);
 			}
 		});
 	};
@@ -934,10 +935,10 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, rdfSource) {
-		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey , rdfSource, function (
+		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledgesource is successfully created. <b>Please refresh the page.</b> " );
+				showFlag("success", "The Knowledgesource is successfully created. <b>Please refresh the page.</b> ");
 			}
 		});
 	};
@@ -949,7 +950,7 @@
 		generalApi.postJSON(this.restPrefix + "/config/setDefinitionOfDone.json?projectKey=" + projectKey, definitionOfDone, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The definition of done is updated." );
+				showFlag("success", "The definition of done is updated.");
 			}
 		});
 	};
@@ -958,7 +959,7 @@
 	 * TODO Remove this REST method and use a velocity parameter in the SettingsForSingleProject servlet instead
 	 * external reference: rationaleBacklogSettings.vm
 	 */
-	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
+	ConDecAPI.prototype.getDefinitionOfDone = function (projectKey, callback) {
 		generalApi.getJSON(this.restPrefix + `/config/getDefinitionOfDone.json?projectKey=${projectKey}`,
 			function (error, definitionOfDone) {
 				if (error === null) {
@@ -971,13 +972,13 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeSourceActivated = function (projectKey, knowledgeSourceName, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated ,null, function (
+		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated, null, function (
 			error, response) {
 			if (error === null) {
-				if(isActivated)
-					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is activated." );
+				if (isActivated)
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName + " is activated.");
 				else {
-					showFlag("success", "The Knowledgesource " + knowledgeSourceName+" is deactivated." );
+					showFlag("success", "The Knowledgesource " + knowledgeSourceName + " is deactivated.");
 				}
 			}
 		});
@@ -988,15 +989,15 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setProjectSource = function (projectKey, projectSourceKey, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated ,null, function (
+		generalApi.postJSON(this.restPrefix + "/config/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated, null, function (
 			error, response) {
 			if (error === null) {
-			if(isActivated) {
-				showFlag("success", "The project  <b>" + projectSourceKey + "</b> is now  <b>activated</b> as a knowledge source!!");
-			}
-			else {
-				showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
-			}
+				if (isActivated) {
+					showFlag("success", "The project  <b>" + projectSourceKey + "</b> is now  <b>activated</b> as a knowledge source!!");
+				}
+				else {
+					showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
+				}
 			}
 		});
 	};
@@ -1006,10 +1007,10 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.deleteKnowledgeSource = function (projectKey, knowledgeSourceName) {
-		generalApi.postJSON(this.restPrefix + "/config/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName  ,null, function (
+		generalApi.postJSON(this.restPrefix + "/config/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, null, function (
 			error, response) {
 			if (error === null) {
-				showFlag("success", "The Knowledgesource " + knowledgeSourceName+" was successfully deleted." );
+				showFlag("success", "The Knowledgesource " + knowledgeSourceName + " was successfully deleted.");
 			}
 		});
 	};
@@ -1050,7 +1051,7 @@
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
 	};
-	
+
 	ConDecAPI.prototype.showFlag = function (type, message, status) {
 		if (status === null || status === undefined) {
 			status = "";

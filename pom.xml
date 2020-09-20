@@ -14,7 +14,7 @@
  <name>Decision Documentation and Exploration</name>
  <description>Enables developers to continuously document and explore decision knowledge. Decision knowledge covers
         knowledge about decisions, the problems they address, solution proposals, their context, and justifications
-        (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement
+        (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement
         a feature, or bug reports.
     </description>
  <developers>
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.atlassian.jira.plugins</groupId>
             <artifactId>jira-greenhopper-plugin</artifactId>
-            <version>6.3.12</version>
+            <version>8.7.1</version>
             <scope>provided</scope>
         </dependency>
 		<dependency>
@@ -385,7 +385,7 @@
 		<jira.version>8.12.0</jira.version>
 		<amps.version>8.0.2</amps.version>
 		<ao.version>3.2.10</ao.version>
-		<jacoco-version>0.8.5</jacoco-version>
+		<jacoco-version>0.8.6</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>

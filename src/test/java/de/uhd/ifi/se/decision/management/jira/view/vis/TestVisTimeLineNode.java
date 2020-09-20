@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Before;
@@ -38,6 +39,12 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
+	public void testConstructorWithGroup() {
+		VisTimeLineNode node = new VisTimeLineNode(element, 123);
+		assertEquals(123, node.getGroup());
+	}
+
+	@Test
 	public void testGetId() {
 		assertEquals(element.getId(), timeNode.getId());
 	}
@@ -64,7 +71,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 	@Test
 	public void testSetGetStart() {
 		Date date = new Date(System.currentTimeMillis() - 1000);
-		String createdString = timeNode.createDateString(date);
+		String createdString = new SimpleDateFormat("yyyy-MM-dd").format(date);
 		timeNode.setStart(createdString);
 		assertEquals(createdString, timeNode.getStart());
 	}

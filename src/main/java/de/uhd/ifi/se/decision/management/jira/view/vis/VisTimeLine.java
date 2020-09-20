@@ -21,6 +21,9 @@ public class VisTimeLine {
 	@XmlElement(name = "dataSet")
 	private Set<VisTimeLineNode> nodes;
 
+	private boolean isPlacedAtCreationDate;
+	private boolean isPlacedAtUpdatingDate;
+
 	public VisTimeLine() {
 		this.nodes = new HashSet<VisTimeLineNode>();
 		this.groups = new HashSet<VisTimeLineGroup>();
@@ -32,11 +35,14 @@ public class VisTimeLine {
 		addElements(elements);
 	}
 
-	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings) {
+	public VisTimeLine(ApplicationUser user, FilterSettings filterSettings, boolean isPlacedAtCreationDate,
+			boolean isPlacedAtUpdatingDate) {
 		this();
 		if (user == null || filterSettings == null) {
 			return;
 		}
+		this.isPlacedAtCreationDate = isPlacedAtCreationDate;
+		this.isPlacedAtUpdatingDate = isPlacedAtUpdatingDate;
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		Set<KnowledgeElement> elements = filteringManager.getElementsMatchingFilterSettings();
 		addElements(elements);
@@ -61,7 +67,7 @@ public class VisTimeLine {
 			applicationUserIds.add(userId);
 			groups.add(new VisTimeLineGroup(user));
 		}
-		VisTimeLineNode node = new VisTimeLineNode(element, userId);
+		VisTimeLineNode node = new VisTimeLineNode(element, userId, isPlacedAtCreationDate, isPlacedAtUpdatingDate);
 		nodes.add(node);
 		return true;
 	}
