@@ -6,7 +6,7 @@
         	#parse("templates/filter/knowledgeType.vm")
         	#parse("templates/filter/status.vm")
         	#parse("templates/filter/decisionGroup.vm")
-        	#parse("templates/filter/creationDate.vm")
+        	#parse("templates/filter/documentationDate.vm")
         	#parse("templates/filter/degree.vm")
         	#parse("templates/filter/linkDistance.vm")
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")     
