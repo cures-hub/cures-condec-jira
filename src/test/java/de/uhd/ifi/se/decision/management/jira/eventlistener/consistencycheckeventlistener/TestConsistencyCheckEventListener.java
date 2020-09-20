@@ -44,7 +44,7 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 	public void testGetter() {
 		assertEquals("Two quality check event trigger names should be registered.", 2, eventListener.getAllQualityCheckEventTriggerNames().size());
 
-		assertTrue("Name 'done' should exist.", eventListener.doesQualityCheckEventTriggerNameExist("consistency-done"));
+		assertTrue("Name 'done' should exist.", eventListener.doesQualityCheckEventTriggerNameExist("done"));
 
 		assertFalse("Name 'none' should NOT exist.", eventListener.doesQualityCheckEventTriggerNameExist("none"));
 
@@ -61,7 +61,7 @@ public class TestConsistencyCheckEventListener extends TestSetUp {
 		assertTrue("Now a pending check should exist.", check.isPresent());
 		reset();
 
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "consistency-done", false);
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent(knowledgeElement.getProject().getProjectKey(), "done", false);
 		eventListener.onIssueEvent(generateWorkflowIssueEvent((MutableIssue) knowledgeElement.getJiraIssue(), user, jiraComment, "Done", StatusCategoryImpl.findByKey(StatusCategory.COMPLETE), EventType.ISSUE_GENERICEVENT_ID));
 		check = ConsistencyCheckLogHelper.getCheck(knowledgeElement);
 		assertFalse("No pending check should exist.", check.isPresent());
