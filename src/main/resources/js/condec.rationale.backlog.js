@@ -33,8 +33,6 @@
 	function updateView(nodeId) {		
 		var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 		
-		// so that jstree tree viewer only shows a list of elements:
-		filterSettings["linkDistance"] = 0; 
 		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
 		
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");

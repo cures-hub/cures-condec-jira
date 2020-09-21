@@ -88,13 +88,22 @@ public class TreeViewer {
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 
 		if (rootElement != null) {
+			// only one tree is shown
 			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
 			nodes.add(rootNode);
 			return;
 		}
 
-		for (KnowledgeElement element : graph.vertexSet()) {
-			nodes.add(makeIdUnique(new TreeViewerNode(element)));
+		// many trees are shown in overview and rationale backlog
+		Set<KnowledgeElement> rootElements = graph.vertexSet();
+		filteringManager.getFilterSettings().setKnowledgeTypes(null);
+		filteringManager.getFilterSettings().setStatus(null);
+
+		for (KnowledgeElement element : rootElements) {
+			filteringManager.getFilterSettings().setSelectedElement(element);
+			filteringManager.getFilterSettings().setLinkDistance(2);
+			graph = filteringManager.getSubgraphMatchingFilterSettings();
+			nodes.add(getTreeViewerNodeWithChildren(element));
 		}
 	}
 
