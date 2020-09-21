@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 import java.util.Map;
 
@@ -30,5 +31,21 @@ final public class CompletenessHandler {
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}
+
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement source) {
+		if (source.isLinked() != 0) {
+			for (Link link : source.getLinks()
+				 ) {
+				if (link.getTarget().isIncomplete() || link.getSource().isIncomplete()) {
+					return true;
+				} else if (hasIncompleteKnowledgeLinked(link.getTarget())){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 
 }

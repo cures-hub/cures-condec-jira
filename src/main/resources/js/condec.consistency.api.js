@@ -142,7 +142,7 @@
 			if (that.issueId !== null && that.issueId !== undefined) {
 				this.doesElementNeedCompletenessApproval(that.projectKey, that.issueId, "i")
 					.then((response) => {
-						if (response.needsApproval) {
+						if (response.needsCompletenessApproval) {
 							Promise.all([]).then(
 								() => {
 										that.consistencyCheckFlag = AJS.flag({
@@ -155,7 +155,8 @@
 												+ '<ul class="aui-nav-actions-list">'
 												+ '<li>'
 												+ '<button id="completeness-check-dialog-submit-button" '
-												+ 'onclick="this.consistencyCheckFlag.close()" class="aui-button aui-button-link">'
+												+ 'onclick="consistencyAPI.consistencyCheckFlag.close()" class="aui-button aui-button-link">'
+												+ 'Confirm'
 												+ '</button>'
 												+ '</li>'
 												+ '</ul>'
@@ -164,6 +165,10 @@
 						}
 					});
 			}
+		}
+
+		ConsistencyAPI.prototype.confirmIncompleteMessage = function () {
+			this.consistencyCheckFlag.close();
 		}
 
 		// export ConsistencyAPI
