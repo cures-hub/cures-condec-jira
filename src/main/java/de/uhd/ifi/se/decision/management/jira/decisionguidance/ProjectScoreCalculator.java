@@ -24,9 +24,11 @@ public class ProjectScoreCalculator implements ScoreCalculator {
 
 		float numberOfKeywords = keywords.size();
 		int matchedKeyWord = 0;
+		int numberOfIssues = 0;
 
 		for (Link link : knowledgeElement.getLinks()) {
 			if (link.getTarget().getType() == KnowledgeType.ISSUE) {
+				numberOfIssues += 1;
 				for (String keyword : keywords) {
 					if (link.getTarget().getSummary().contains(keyword)) {
 						matchedKeyWord += 1;
@@ -37,7 +39,7 @@ public class ProjectScoreCalculator implements ScoreCalculator {
 
 		float score = 0;
 		if (numberOfKeywords != 0)
-			score = (matchedKeyWord / numberOfKeywords) * 100;
+			score = (matchedKeyWord / (numberOfKeywords * numberOfIssues)) * 100;
 
 		return Math.round(score);
 	}
