@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculation;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DBPediaScoreCalculator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ProjectScoreCalculator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFactory;
@@ -8,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +34,14 @@ public class TestScoreCalculations extends TestSetUp {
 		scoreCalculatorFactory = new ScoreCalculatorFactory(KnowledgeSourceType.PROJECT);
 		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
 		assertNotEquals(null, scoreCalculator);
+		assertEquals(ProjectScoreCalculator.class, scoreCalculator.getClass());
+
+		scoreCalculatorFactory = new ScoreCalculatorFactory(KnowledgeSourceType.RDF);
+		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
+		assertNotEquals(null, scoreCalculator);
+		assertNotEquals(null, scoreCalculator);
+		assertEquals(DBPediaScoreCalculator.class, scoreCalculator.getClass());
+
 	}
 
 	@Test
@@ -51,6 +61,16 @@ public class TestScoreCalculations extends TestSetUp {
 		recommendation.setKeywords(keywords);
 
 		assertEquals(50, scoreCalculator.calculateScore(recommendation));
+	}
+
+	@Test
+	public void testCalculateDBPedia() {
+		scoreCalculator = new DBPediaScoreCalculator();
+
+		Recommendation recommendation = new Recommendation("TEST", "Test recommendation", KnowledgeSourceType.RDF, "" );
+
+		assertEquals(50, scoreCalculator.calculateScore(recommendation));
+
 	}
 
 
