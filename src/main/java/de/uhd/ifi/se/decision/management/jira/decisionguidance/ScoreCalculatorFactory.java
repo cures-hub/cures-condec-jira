@@ -11,6 +11,13 @@ public class ScoreCalculatorFactory {
 	}
 
 	public ScoreCalculator createScoreCalculator() {
+		switch (this.knowledgeSourceType) {
+
+			case RDF:
+				return new DBPediaScoreCalculator();
+			case PROJECT:
+				return new ProjectScoreCalculator();
+		}
 		return new ProjectScoreCalculator();
 	}
 

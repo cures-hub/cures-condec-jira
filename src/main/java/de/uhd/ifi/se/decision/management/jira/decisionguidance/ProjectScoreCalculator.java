@@ -3,30 +3,25 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public class ProjectScoreCalculator implements ScoreCalculator {
-
-	int score;
-
-	public ProjectScoreCalculator() {
-		this.score = 0;
-	}
+public class ProjectScoreCalculator implements ScoreCalculator<ProjectRecommendation> {
 
 	@Override
-	public int calculateScore() {
-		return 0;
-	}
+	public int calculateScore(ProjectRecommendation recommendation) {
 
-	@Override
-	public int calculateScore(List<String> keywords, KnowledgeElement knowledgeElement) {
+		List<String> keywords = recommendation.getKeywords();
+		KnowledgeElement parentIssue = recommendation.getParentIssue();
+
 
 		float numberOfKeywords = keywords.size();
 		int matchedKeyWord = 0;
 		int numberOfIssues = 0;
 
-		for (Link link : knowledgeElement.getLinks()) {
+		for (Link link : parentIssue.getLinks()) {
 			if (link.getTarget().getType() == KnowledgeType.ISSUE) {
 				numberOfIssues += 1;
 				for (String keyword : keywords) {
@@ -43,4 +38,5 @@ public class ProjectScoreCalculator implements ScoreCalculator {
 
 		return Math.round(score);
 	}
+
 }

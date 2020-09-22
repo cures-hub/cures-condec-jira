@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculator;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFactory;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -67,7 +69,9 @@ public class Recommendation {
 
 	@XmlElement(name = "score")
 	public int getScore() {
-		return 0;
+		ScoreCalculatorFactory scoreCalculatorFactory = new ScoreCalculatorFactory(this.getKnowledgeSourceType());
+		ScoreCalculator scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
+		return scoreCalculator.calculateScore(this);
 	}
 
 	@Override

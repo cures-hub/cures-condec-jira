@@ -4,18 +4,10 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ProjectScoreCalculator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,12 +40,17 @@ public class TestScoreCalculations extends TestSetUp {
 		KnowledgeElement rootIssue = KnowledgeElements.getTestKnowledgeElements().get(3);
 
 		List<String> keywords = new ArrayList<>();
-
 		keywords.add("feature");
-		assertEquals(100, scoreCalculator.calculateScore(keywords, rootIssue));
+
+		ProjectRecommendation recommendation = new ProjectRecommendation("TEST", "Test recommendation", keywords, rootIssue, "" );
+
+		assertEquals(100, scoreCalculator.calculateScore(recommendation));
 
 		keywords.add("feature otherword");
-		assertEquals(50, scoreCalculator.calculateScore(keywords, rootIssue));
+
+		recommendation.setKeywords(keywords);
+
+		assertEquals(50, scoreCalculator.calculateScore(recommendation));
 	}
 
 
