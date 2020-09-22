@@ -39,9 +39,11 @@ public class TestScoreCalculations extends TestSetUp {
 		scoreCalculatorFactory = new ScoreCalculatorFactory(KnowledgeSourceType.RDF);
 		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
 		assertNotEquals(null, scoreCalculator);
-		assertNotEquals(null, scoreCalculator);
 		assertEquals(DBPediaScoreCalculator.class, scoreCalculator.getClass());
 
+		scoreCalculatorFactory = new ScoreCalculatorFactory(null);
+		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
+		assertEquals(null, scoreCalculator);
 	}
 
 	@Test

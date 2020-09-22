@@ -11,14 +11,15 @@ public class ScoreCalculatorFactory {
 	}
 
 	public ScoreCalculator createScoreCalculator() {
+		if(this.knowledgeSourceType == null) return null;
 		switch (this.knowledgeSourceType) {
-
 			case RDF:
 				return new DBPediaScoreCalculator();
 			case PROJECT:
 				return new ProjectScoreCalculator();
+			default:
+				return null;
 		}
-		return null; //TODO how could we implement a default instead of returning null?
 	}
 
 }
