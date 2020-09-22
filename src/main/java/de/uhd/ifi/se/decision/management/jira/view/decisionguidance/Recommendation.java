@@ -69,6 +69,8 @@ public class Recommendation {
 
 	@XmlElement(name = "score")
 	public int getScore() {
+		if(this.getKnowledgeSourceType() == null) return 0;
+
 		ScoreCalculatorFactory scoreCalculatorFactory = new ScoreCalculatorFactory(this.getKnowledgeSourceType());
 		ScoreCalculator scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
 		return scoreCalculator.calculateScore(this);

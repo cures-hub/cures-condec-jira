@@ -8,7 +8,7 @@ public class DBPediaScoreCalculator implements ScoreCalculator {
 	@Override
 	public int calculateScore(Recommendation recommendation) {
 
-		return 0;
+		return 50;
 
 	}
 

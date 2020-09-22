@@ -18,7 +18,7 @@ public class ScoreCalculatorFactory {
 			case PROJECT:
 				return new ProjectScoreCalculator();
 		}
-		return new ProjectScoreCalculator();
+		return null; //TODO how could we implement a default instead of returning null?
 	}
 
 }
