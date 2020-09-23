@@ -59,5 +59,12 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**" ,"TEST")); //expcet QueryParseException to be catched
 	}
 
+	@Test
+	public void testToString() {
+		RDFSource source = new RDFSource("Test");
+		source.setName("One Two Three");
+		assertEquals("One-Two-Three", source.toString());
+	}
+
 
 }
