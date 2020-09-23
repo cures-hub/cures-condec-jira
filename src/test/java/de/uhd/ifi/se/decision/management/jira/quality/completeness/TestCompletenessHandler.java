@@ -5,8 +5,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,7 +91,7 @@ public class TestCompletenessHandler extends TestSetUp {
 	}
 
 	/**
-	 * Test with knowledge Element, that is only directly linked to one other (target) element.
+	 * Test with knowledge Element, that is only directly linked to one other element.
 	 * The target element is completely documented and has no links to other elements.
 	 */
 	@Test
@@ -112,7 +114,7 @@ public class TestCompletenessHandler extends TestSetUp {
 	}
 
 	/**
-	 * Test with knowledge Element, that is only directly linked to one other (target) element.
+	 * Test with knowledge Element, that is only directly linked to one other element.
 	 * The target element is incompletely documented and has no links to other elements.
 	 */
 	@Test
@@ -128,6 +130,32 @@ public class TestCompletenessHandler extends TestSetUp {
 		assertTrue(decision.isIncomplete());
 		assertNotNull(workItem.getLink(decision));
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+	}
+
+	/**
+	 * Test with knowledge Element, that linked to incomplete elements over a link-distance of two.
+	 */
+	@Test
+	@NonTransactional
+	public void testHasIncompleteKnowledgeLinkedIncompleteDistanceTwo() {
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
+		assertFalse(decision.isIncomplete());
+		assertNotNull(decision.getLink(issue));
+		assertFalse(issue.isIncomplete());
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(issue.getLink(alternative));
+		assertNull(issue.getLink(alternative));
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(issue.isIncomplete());
+		assertFalse(decision.isIncomplete());
+		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+	}
+
+	@After
+	public void tearDown() {
+		// restore default
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 
 }
