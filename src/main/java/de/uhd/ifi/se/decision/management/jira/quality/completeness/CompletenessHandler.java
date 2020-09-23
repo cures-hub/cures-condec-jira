@@ -36,16 +36,17 @@ final public class CompletenessHandler {
 	 * Iterates recursively over the knowledge graph of @param source {@link KnowledgeElement} and
 	 * @return true if there is at least one incompletely documented knowledge element, else it returns false.
 	 */
-	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement source) {
-		if (source.isIncomplete()) {
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement.isIncomplete()) {
 			return true;
 		}
-		else if (source.isLinked() != 0) {
-			for (Link link : source.getLinks()
+		else if (knowledgeElement.isLinked() != 0) {
+			for (Link link : knowledgeElement.getLinks()
 				 ) {
-				if (link.getTarget().isIncomplete()) {
+				KnowledgeElement oppositeElement = link.getOppositeElement(knowledgeElement);
+				if (oppositeElement.isIncomplete()) {
 					return true;
-				} else if (hasIncompleteKnowledgeLinked(link.getTarget(), source)){
+				} else if (hasIncompleteKnowledgeLinked(oppositeElement, knowledgeElement)){
 					return true;
 				}
 			}
@@ -54,16 +55,16 @@ final public class CompletenessHandler {
 	}
 
 
-	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement target, KnowledgeElement source) {
-		if (target.isLinked() != 0) {
-			for (Link link : target.getLinks()) {
-				KnowledgeElement nextTarget = link.getTarget();
-				if (nextTarget.equals(source)) {
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement oppositeElement, KnowledgeElement knowledgeElement) {
+		if (oppositeElement.isLinked() != 0) {
+			for (Link link : oppositeElement.getLinks()) {
+				KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
+				if (nextElement.equals(knowledgeElement)) {
 					continue;
 				}
-				else if (nextTarget.isIncomplete()) {
+				else if (nextElement.isIncomplete()) {
 					return true;
-				} else if (hasIncompleteKnowledgeLinked(nextTarget, target)) {
+				} else if (hasIncompleteKnowledgeLinked(nextElement, oppositeElement)) {
 					return true;
 				}
 			}
