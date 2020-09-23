@@ -32,13 +32,20 @@ final public class CompletenessHandler {
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}
 
+	/**
+	 * Iterates recursively over the knowledge graph of @param source {@link KnowledgeElement} and
+	 * @return true if there is at least one incompletely documented knowledge element, else it returns false.
+	 */
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement source) {
-		if (source.isLinked() != 0) {
+		if (source.isIncomplete()) {
+			return true;
+		}
+		else if (source.isLinked() != 0) {
 			for (Link link : source.getLinks()
 				 ) {
-				if (link.getTarget().isIncomplete() || link.getSource().isIncomplete()) {
+				if (link.getTarget().isIncomplete()) {
 					return true;
-				} else if (hasIncompleteKnowledgeLinked(link.getTarget())){
+				} else if (hasIncompleteKnowledgeLinked(link.getTarget(), source)){
 					return true;
 				}
 			}
@@ -47,5 +54,21 @@ final public class CompletenessHandler {
 	}
 
 
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement target, KnowledgeElement source) {
+		if (target.isLinked() != 0) {
+			for (Link link : target.getLinks()) {
+				KnowledgeElement nextTarget = link.getTarget();
+				if (nextTarget.equals(source)) {
+					continue;
+				}
+				else if (nextTarget.isIncomplete()) {
+					return true;
+				} else if (hasIncompleteKnowledgeLinked(nextTarget, target)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

@@ -20,6 +20,8 @@ public class TestCompletenessHandler extends TestSetUp {
 	private KnowledgeElement proArgument;
 	private KnowledgeElement workItem;
 	private KnowledgeElement anotherWorkItem;
+	private KnowledgeElement yetAnotherWorkItem;
+	private AlternativeCompletenessCheck alternativeCompletenessCheck;
 
 	@Before
 	public void setUp() {
@@ -31,6 +33,8 @@ public class TestCompletenessHandler extends TestSetUp {
 		proArgument = elements.get(7);
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
+		yetAnotherWorkItem = elements.get(0);
+		alternativeCompletenessCheck = new AlternativeCompletenessCheck();
 	}
 
 	@Test
@@ -57,15 +61,51 @@ public class TestCompletenessHandler extends TestSetUp {
 		assertTrue(CompletenessHandler.checkForCompletion(proArgument));
 	}
 
+
+	/**
+	 * Test with knowledge Element, that is incompletely documented
+	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedNoLinks() {
+	public void testHasIncompleteKnowledgeLinkedIncompleteSource() {
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(alternative.getLink(issue));
+		assertFalse(alternativeCompletenessCheck.execute(alternative));
+		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(alternative));
+	}
+
+	/**
+	 * Test with knowledge Element, that has no Links to other elements.
+	 */
+	@Test
+	@NonTransactional
+	public void testHasIncompleteKnowledgeLinkedNoElementsLinked() {
 		assertEquals(KnowledgeType.OTHER, workItem.getType());
 		assertEquals(30, workItem.getId());
 		assertNotEquals(0, workItem.isLinked());
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(decision));
 		assertEquals(0, workItem.isLinked());
+		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+	}
+
+	/**
+	 * Test with knowledge Element, that is only directly linked to one other (target) element.
+	 * The target element is completely documented and has no links to other elements.
+	 */
+	@Test
+	@NonTransactional
+	public void testHasIncompleteKnowledgeLinkedCompleteLinkDistanceOne() {
+		assertNotEquals(0, workItem.isLinked());
+		// remove all links, that are not needed.
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(decision));
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(anotherWorkItem.getLink(alternative));
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(anotherWorkItem.getLink(yetAnotherWorkItem));
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(anotherWorkItem.getLink(decision));
+		//assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+		assertEquals(1, workItem.getLinks().size());
+		assertEquals(1, anotherWorkItem.getLinks().size());
+		assertTrue(CompletenessHandler.checkForCompletion(workItem));
+		assertTrue(CompletenessHandler.checkForCompletion(anotherWorkItem));
 		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
 
