@@ -68,13 +68,13 @@
             </div>
         </div>
 
-        <a href="#" style="position: absolute; right: 16px; top:16px;" class="aui-expander-trigger"
-           aria-controls="$rdfSource.getName()"><span
+        <a style="position: absolute; right: 16px; top:16px;" class="aui-expander-trigger"
+           aria-controls="$rdfSource.toString()"><span
             class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
         </a>
     </div>
 
-    <div id="$rdfSource.getName()" class="aui-item settings-border aui-expander-content">
+    <div id="$rdfSource.toString()" class="aui-item settings-border aui-expander-content">
         <!--RDF SOURCE FORM -->
         <div class="field-group">
             <label>Name*</label>
@@ -171,9 +171,7 @@
 
     $(document).ready(function() {
 
-        $(".aui-expander-trigger").click(function(event) {
-            event.preventDefault();
-        });
+
 
         $("#save-max-recommendation-btn").click((event) => {
            event.preventDefault();
@@ -275,6 +273,7 @@
 
 
     });
+
 
 
 
