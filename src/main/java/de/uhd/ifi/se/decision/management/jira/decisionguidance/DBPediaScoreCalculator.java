@@ -1,14 +1,29 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.DBPediaRecommendation;
 
-public class DBPediaScoreCalculator implements ScoreCalculator {
+import java.util.Arrays;
+import java.util.List;
+
+public class DBPediaScoreCalculator implements ScoreCalculator<DBPediaRecommendation> {
 
 
 	@Override
-	public int calculateScore(Recommendation recommendation) {
+	public int calculateScore(DBPediaRecommendation recommendation) {
 
-		return 50;
+		List<String> keywords = Arrays.asList(recommendation.getKeywords().split("_"));
+		List<String> inputs = Arrays.asList(recommendation.getInput().split(" "));
+
+		float inputLength = inputs.size();
+		int match = 0;
+
+		for (String keyword : keywords) {
+			if (inputs.contains(keyword)) match += 1;
+		}
+
+		float score = (match / inputLength) * 100;
+
+		return Math.round(score);
 
 	}
 

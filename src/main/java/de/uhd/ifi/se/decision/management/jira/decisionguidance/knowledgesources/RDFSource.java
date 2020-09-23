@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.DBPediaRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
@@ -8,6 +9,7 @@ import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,23 +88,56 @@ public class RDFSource implements KnowledgeSource {
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
-		if(inputs == null) inputs = "";
-		inputs = inputs.replace(' ', '_');
-		inputs = "<http://dbpedia.org/resource/" + inputs + ">";
-		String queryStringWithInput = this.queryString.replaceAll("%variable%", inputs).replaceAll("\\r|\\n", " ");
-		queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
+		if (inputs == null) inputs = "";
 
 
-		ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
+		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
+		List<String> combinedKeywords = this.combineKeywords(keywords);
 
 		this.recommendations = new ArrayList<>();
-		while (resultSet != null && resultSet.hasNext()) {
-			QuerySolution row = resultSet.nextSolution();
-			Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), KnowledgeSourceType.RDF, row.get("?url").toString());
-			this.recommendations.add(recommendation);
+
+		for (String combinedKeyword : combinedKeywords) {
+
+			String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
+			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("\\r|\\n", " ");
+			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
+
+
+			ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
+
+
+			while (resultSet != null && resultSet.hasNext()) {
+				QuerySolution row = resultSet.nextSolution();
+				Recommendation recommendation = new DBPediaRecommendation(this.name, row.get("?alternative").toString(), combinedKeyword, inputs, row.get("?url").toString());
+				this.recommendations.add(recommendation);
+
+			}
 
 		}
 		return this.recommendations;
+	}
+
+	private List<String> combineKeywords(List<String> keywords) {
+
+		List<String> combinedKeywords = new ArrayList<>();
+		combinedKeywords.addAll(keywords);
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (String first : keywords) {
+			stringBuilder.append(first);
+			for (String second : keywords) {
+				if (!first.equals(second)) {
+					stringBuilder.append("_").append(second);
+					combinedKeywords.add(stringBuilder.toString());
+				}
+			}
+
+			stringBuilder.setLength(0);
+			break;
+		}
+
+		return combinedKeywords;
 	}
 
 	public String getProjectKey() {
