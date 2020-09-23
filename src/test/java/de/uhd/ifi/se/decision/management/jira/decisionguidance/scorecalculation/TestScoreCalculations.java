@@ -42,6 +42,10 @@ public class TestScoreCalculations extends TestSetUp {
 		assertNotEquals(null, scoreCalculator);
 		assertEquals(DBPediaScoreCalculator.class, scoreCalculator.getClass());
 
+		scoreCalculatorFactory = new ScoreCalculatorFactory(KnowledgeSourceType.UNDEFINED);
+		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
+		assertEquals(null, scoreCalculator);
+
 		scoreCalculatorFactory = new ScoreCalculatorFactory(null);
 		scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
 		assertEquals(null, scoreCalculator);

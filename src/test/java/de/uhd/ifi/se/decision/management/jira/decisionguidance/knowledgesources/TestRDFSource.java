@@ -27,6 +27,16 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	public void testRDFSourceWithInput() {
+		KnowledgeSource source = new RDFSource("Test");
+		source.setName("RDFSource");
+		List<Recommendation> recommendations = source.getResults("Test 123");
+		assertEquals(138, recommendations.size()); // 3*46 since there are 3 combinations possible with the input
+		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
+		assertEquals(true, source.isActivated());
+	}
+
+	@Test
 	public void testRDFSourceActivated() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
