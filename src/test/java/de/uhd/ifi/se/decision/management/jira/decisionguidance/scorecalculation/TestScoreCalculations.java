@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFa
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.DBPediaRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
@@ -69,9 +70,9 @@ public class TestScoreCalculations extends TestSetUp {
 	public void testCalculateDBPedia() {
 		scoreCalculator = new DBPediaScoreCalculator();
 
-		Recommendation recommendation = new Recommendation("TEST", "Test recommendation", KnowledgeSourceType.RDF, "" );
+		Recommendation recommendation = new DBPediaRecommendation("TEST", "Test recommendation", "MYSQL_NOSQL", "How could we use MYSQL Database?", "" );
 
-		assertEquals(50, scoreCalculator.calculateScore(recommendation));
+		assertEquals(17, scoreCalculator.calculateScore(recommendation));
 
 	}
 
