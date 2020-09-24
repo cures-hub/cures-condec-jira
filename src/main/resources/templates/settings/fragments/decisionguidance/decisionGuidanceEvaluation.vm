@@ -88,12 +88,8 @@
             spinner.show();
             conDecAPI.getRecommendationEvaluation("$projectKey", keywords, sourceName, function(results, error) {
                 if(results) {
-                    results.forEach((recommendation) => {
-
-                        $("#evaluation-results-table tbody").append("<tr><td>Simple</td><td>" + recommendation.knowledgeSourceName + "</td><td>"+
-
-                        recommendation.recommendations.length +"</td> </tr>");
-                    });
+                    $("#evaluation-results-table tbody").append("<tr><td>Simple</td><td>" + sourceName + "</td><td>"+
+                    results.length +"</td> </tr>");
                     spinner.hide();
                 }
             });
