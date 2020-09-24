@@ -1,5 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 public enum KnowledgeSourceType {
-	RDF, PROJECT
+	RDF, PROJECT, UNDEFINED
 }
