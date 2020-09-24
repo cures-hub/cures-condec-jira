@@ -58,12 +58,9 @@ final public class CompletenessHandler {
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement oppositeElement, KnowledgeElement knowledgeElement) {
 			for (Link link : oppositeElement.getLinks()) {
 				KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
-				if (nextElement.equals(knowledgeElement)) {
+				if (nextElement.getId() == knowledgeElement.getId()){
 					continue;
-				}
-				else if (nextElement.isIncomplete()) {
-					return true;
-				} else if (hasIncompleteKnowledgeLinked(nextElement, oppositeElement)) {
+				} else if (nextElement.isIncomplete()) {
 					return true;
 				}
 			}

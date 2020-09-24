@@ -124,25 +124,6 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	}
 
 
-	/**
-	 * Test with complete root element (workItem), which is linked to an incomplete element (alternative)
-	 * with a link distance of three.
-	 */
-	@Test
-	@NonTransactional
-	public void testIncompleteLinkDistanceThree() {
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
-		assertFalse(alternative.isIncomplete());
-		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		definitionOfDone.setAlternativeLinkedToArgument(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(alternative.getLink(conArgument));
-		assertTrue(alternative.isIncomplete());
-		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
-	}
-
-
-
 	@After
 	public void tearDown() {
 		// restore default
