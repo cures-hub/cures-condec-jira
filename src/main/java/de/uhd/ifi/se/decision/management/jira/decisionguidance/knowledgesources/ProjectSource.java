@@ -1,21 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceSubstringAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.ProjectRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ProjectSource implements KnowledgeSource {
+public class ProjectSource extends KnowledgeSource {
 
-	private String projectKey;
 	private String projectSourceName;
-	private boolean isActivated;
 	KnowledgePersistenceManager knowledgePersistenceManager;
 
 	public ProjectSource(String projectKey) {
@@ -32,15 +26,12 @@ public class ProjectSource implements KnowledgeSource {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		this.isActivated = isActivated;
+		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectSourceName);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-	}
-
-	protected List<KnowledgeElement> queryDatabase() {
-		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
 	}
 
 	@Override
@@ -64,37 +55,13 @@ public class ProjectSource implements KnowledgeSource {
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
-
-		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-
-		List<Recommendation> recommendations = new ArrayList<>();
-
-		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
-
-		if (knowledgeElements != null) {
-
-			//filter all knowledge elements by the type "issue"
-			List<KnowledgeElement> issues = knowledgeElements
-				.stream()
-				.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-				.collect(Collectors.toList());
-
-			for (String keyword : keywords) {
-				//get all alternatives, which parent contains the pattern"
-				issues.forEach(issue -> {
-					if (issue.getSummary().contains(keyword)) {
-						issue.getLinks().stream()
-							.filter(link -> link.getTarget().getType() == KnowledgeType.ALTERNATIVE)
-							.forEach(child -> {
-								Recommendation recommendation =
-									new ProjectRecommendation(this.projectSourceName, child.getTarget().getSummary(), keywords, issue, child.getTarget().getUrl());
-								recommendations.add(recommendation);
-							});
-					}
-				});
-			}
+		KnowledgeSourceAlgorithm knowledgeSourceAlgorithm;
+		switch (this.knowledgeSourceAlgorithmType) {
+			case SUBSTRING:
+				knowledgeSourceAlgorithm = new ProjectSourceSubstringAlgorithm(projectKey, projectSourceName, inputs);
+				return knowledgeSourceAlgorithm.getResults();
 		}
-		return recommendations.stream().distinct().collect(Collectors.toList());
+		return null;
 	}
 
 }

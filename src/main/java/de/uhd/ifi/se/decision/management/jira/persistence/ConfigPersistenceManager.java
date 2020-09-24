@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -364,7 +365,7 @@ public class ConfigPersistenceManager {
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
-		if(projectKey == null) return rdfSourceList;
+		if (projectKey == null) return rdfSourceList;
 
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
@@ -417,7 +418,7 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
-		if(projectKey == null) return projectSources;
+		if (projectKey == null) return projectSources;
 
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		if (currentProject != null) {
@@ -440,7 +441,19 @@ public class ConfigPersistenceManager {
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		//New KnowledgeSources could be added here.
 
+		for (int i = 0; i < knowledgeSources.size(); i++) {
+			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
+			knowledgeSource.setKnowledgeSourceAlgorithmType(getKnowledgeSourceAlgorithmType(projectKey));
+			knowledgeSources.set(i, knowledgeSource);
+		}
+
+
 		return knowledgeSources;
+	}
+
+	public static KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType(String projectKey) {
+		//return getValue(projectKey, "knowledgesourcealgorithm");
+		return KnowledgeSourceAlgorithmType.valueOf("SUBSTRING");
 	}
 
 	/* **************************************/

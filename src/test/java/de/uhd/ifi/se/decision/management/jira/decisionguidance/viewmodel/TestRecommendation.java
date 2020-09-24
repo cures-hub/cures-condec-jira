@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,13 +22,6 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals(0, recommendation.getScore());
 	}
 
-	@Test
-	public void testSetAndGetKnowledgeSourceType() {
-		Recommendation recommendation = new Recommendation();
-		assertEquals(null, recommendation.getKnowledgeSourceType());
-		recommendation.setKnowledgeSourceType(KnowledgeSourceType.PROJECT);
-		assertEquals(KnowledgeSourceType.PROJECT, recommendation.getKnowledgeSourceType());
-	}
 
 	@Test
 	public void testEquals() {

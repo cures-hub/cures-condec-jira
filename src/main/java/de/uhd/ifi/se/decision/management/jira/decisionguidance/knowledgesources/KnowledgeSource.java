@@ -1,18 +1,51 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public interface KnowledgeSource {
+public abstract class KnowledgeSource {
 
-	List<Recommendation> getResults(String inputs);
+	protected KnowledgeSourceType knowledgeSourceType;
+	protected KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
 
-	String getName();
+	protected String projectKey;
+	protected boolean isActivated;
+	protected String name;
 
-	void setName(String name);
+	public abstract List<Recommendation> getResults(String inputs);
 
-	boolean isActivated();
 
-	void setActivated(boolean activated);
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isActivated() {
+		return isActivated;
+	}
+
+	public void setActivated(boolean activated) {
+		isActivated = activated;
+	}
+
+	public KnowledgeSourceType getKnowledgeSourceType() {
+		return knowledgeSourceType;
+	}
+
+	public void setKnowledgeSourceType(KnowledgeSourceType knowledgeSourceType) {
+		this.knowledgeSourceType = knowledgeSourceType;
+	}
+
+	public KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType() {
+		return knowledgeSourceAlgorithmType;
+	}
+
+	public void setKnowledgeSourceAlgorithmType(KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType) {
+		this.knowledgeSourceAlgorithmType = knowledgeSourceAlgorithmType;
+	}
 }

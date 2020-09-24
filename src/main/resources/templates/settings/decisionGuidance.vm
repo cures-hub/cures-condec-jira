@@ -145,6 +145,23 @@
         </table>
     </div>
 
+    <div class="settings-divider">
+        <fieldset class="group">
+            <legend><span>Algorithm
+        </span></legend>
+            <div class="radio">
+                <input class="radio" type="radio" checked="checked"
+                       name="radiobuttons" id="radioButtonOne">
+                <label for="radioButtonOne">Simple</label>
+            </div>
+            <div class="radio">
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="radioButtonTwo">
+                <label for="radioButtonTwo">Advanced</label>
+            </div>
+        </fieldset>
+    </div>
+
 
     <div class="field-group">
         <label for="max-recommendation">Maximum number of results</label>
@@ -275,6 +292,8 @@
 
 
     });
+
+
 
 
 
