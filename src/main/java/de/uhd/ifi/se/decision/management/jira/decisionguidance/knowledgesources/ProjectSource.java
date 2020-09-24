@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceSubstringAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -14,6 +15,8 @@ public class ProjectSource extends KnowledgeSource {
 
 	public ProjectSource(String projectKey) {
 		this.projectKey = projectKey;
+		this.knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
 		} catch (IllegalArgumentException e) {
@@ -26,6 +29,7 @@ public class ProjectSource extends KnowledgeSource {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		this.isActivated = isActivated;
+		this.knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
 		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectSourceName);
@@ -60,8 +64,10 @@ public class ProjectSource extends KnowledgeSource {
 			case SUBSTRING:
 				knowledgeSourceAlgorithm = new ProjectSourceSubstringAlgorithm(projectKey, projectSourceName, inputs);
 				return knowledgeSourceAlgorithm.getResults();
+			default:
+				knowledgeSourceAlgorithm = new ProjectSourceSubstringAlgorithm(projectKey, projectSourceName, inputs);
+				return knowledgeSourceAlgorithm.getResults();
 		}
-		return null;
 	}
 
 }
