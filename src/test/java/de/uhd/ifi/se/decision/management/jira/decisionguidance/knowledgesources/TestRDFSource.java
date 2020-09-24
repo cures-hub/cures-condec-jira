@@ -27,6 +27,16 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	public void testRDFSourceWithInput() {
+		KnowledgeSource source = new RDFSource("Test");
+		source.setName("RDFSource");
+		List<Recommendation> recommendations = source.getResults("Test 123");
+		assertEquals(138, recommendations.size()); // 3*46 since there are 3 combinations possible with the input
+		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
+		assertEquals(true, source.isActivated());
+	}
+
+	@Test
 	public void testRDFSourceActivated() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
@@ -46,7 +56,14 @@ public class TestRDFSource extends TestSetUp {
 		RDFSource source = new RDFSource("Test");
 		source.setName("RDFSource");
 		source.setActivated(true);
-		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**" ,"TEST")); //expcet QueryParseException to be catched
+		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**", "TEST")); //expcet QueryParseException to be catched
+	}
+
+	@Test
+	public void testToString() {
+		RDFSource source = new RDFSource("Test");
+		source.setName("One Two Three");
+		assertEquals("One-Two-Three", source.toString());
 	}
 
 

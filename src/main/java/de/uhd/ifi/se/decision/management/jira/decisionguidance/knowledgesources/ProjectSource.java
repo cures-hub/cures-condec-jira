@@ -65,7 +65,7 @@ public class ProjectSource implements KnowledgeSource {
 	@Override
 	public List<Recommendation> getResults(String inputs) {
 
-		List<String> keywords = Arrays.asList(inputs.split(" "));
+		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
