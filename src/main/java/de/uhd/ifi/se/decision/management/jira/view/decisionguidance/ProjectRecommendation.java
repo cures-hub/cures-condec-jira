@@ -11,7 +11,7 @@ public class ProjectRecommendation extends Recommendation {
 	KnowledgeElement parentIssue;
 
 	public ProjectRecommendation(String knowledgeSourceName, String recommendations, List<String> keywords, KnowledgeElement parentIssue, String url) {
-		super(knowledgeSourceName, recommendations,KnowledgeSourceType.PROJECT,url);
+		super(knowledgeSourceName, recommendations, KnowledgeSourceType.PROJECT, url);
 		this.parentIssue = parentIssue;
 		this.keywords = keywords;
 	}

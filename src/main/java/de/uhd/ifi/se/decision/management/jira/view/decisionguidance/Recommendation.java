@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculator;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.ScoreCalculatorFactory;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculator.ScoreCalculator;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculator.ScoreCalculatorFactory;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 
 import javax.xml.bind.annotation.XmlElement;

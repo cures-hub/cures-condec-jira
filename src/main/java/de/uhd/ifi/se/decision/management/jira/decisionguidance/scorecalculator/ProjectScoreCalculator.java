@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculator;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
