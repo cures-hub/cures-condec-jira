@@ -27,7 +27,7 @@ final public class CompletenessHandler {
 	 * @decision If no definition of done can be found, the knowledge element is
 	 *           assumed to be complete!
 	 */
-	public static boolean checkForCompletion(KnowledgeElement knowledgeElement) {
+	public static boolean checkForCompleteness(KnowledgeElement knowledgeElement) {
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}
@@ -56,7 +56,6 @@ final public class CompletenessHandler {
 
 
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement oppositeElement, KnowledgeElement knowledgeElement) {
-		if (oppositeElement.isLinked() != 0) {
 			for (Link link : oppositeElement.getLinks()) {
 				KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
 				if (nextElement.equals(knowledgeElement)) {
@@ -68,8 +67,6 @@ final public class CompletenessHandler {
 					return true;
 				}
 			}
-		}
 		return false;
 	}
-
 }

@@ -16,16 +16,15 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-public class TestCompletenessHandler extends TestSetUp {
+public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;
-	private KnowledgeElement proArgument;
+	private KnowledgeElement conArgument;
 	private KnowledgeElement workItem;
 	private KnowledgeElement anotherWorkItem;
-	private KnowledgeElement yetAnotherWorkItem;
-	private KnowledgeElement conArgument;
 
 	@Before
 	public void setUp() {
@@ -34,55 +33,25 @@ public class TestCompletenessHandler extends TestSetUp {
 		issue = elements.get(3);
 		decision = elements.get(6);
 		alternative = elements.get(5);
-		proArgument = elements.get(7);
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
-		yetAnotherWorkItem = elements.get(0);
 		conArgument = elements.get(8);
 	}
 
 	@Test
 	@NonTransactional
-	public void testCompleteIssue() {
-		assertTrue(CompletenessHandler.checkForCompletion(issue));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCompleteDecision() {
-		assertTrue(CompletenessHandler.checkForCompletion(decision));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCompleteAlternative() {
-		assertTrue(CompletenessHandler.checkForCompletion(alternative));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCompleteArgument() {
-		assertTrue(CompletenessHandler.checkForCompletion(proArgument));
-	}
-
-
-	/**
-	 * Test with knowledge Element, that is incompletely documented
-	 */
-	@Test
-	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedIncompleteSource() {
+	public void testIncompleteRootElement() {
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(alternative.getLink(issue));
 		assertTrue(alternative.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(alternative));
 	}
 
 	/**
-	 * Test with knowledge Element, that has no Links to other elements.
+	 * Test with complete root element (workItem), that is not linked to other elements.
 	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedNoElementsLinked() {
+	public void testCompleteRootElementNoLinks() {
 		assertEquals(KnowledgeType.OTHER, workItem.getType());
 		assertEquals(30, workItem.getId());
 		assertNotEquals(0, workItem.isLinked());
@@ -93,12 +62,12 @@ public class TestCompletenessHandler extends TestSetUp {
 	}
 
 	/**
-	 * Test with knowledge Element, that is only directly linked to one other element.
-	 * The target element is completely documented and has no links to other elements.
+	 * Test with complete root element (workItem), that is linked to one other element (anotherWorkItem). The other element is
+	 * also complete and is not linked to any elements.
 	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedCompleteLinkDistanceOne() {
+	public void testCompleteLinkDistanceOne() {
 		assertNotEquals(0, workItem.isLinked());
 		// remove all links, that are not needed.
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(decision));
@@ -110,18 +79,18 @@ public class TestCompletenessHandler extends TestSetUp {
 		}
 		assertEquals(1, workItem.getLinks().size());
 		assertEquals(1, anotherWorkItem.getLinks().size());
-		assertTrue(CompletenessHandler.checkForCompletion(workItem));
-		assertTrue(CompletenessHandler.checkForCompletion(anotherWorkItem));
+		assertTrue(CompletenessHandler.checkForCompleteness(workItem));
+		assertTrue(CompletenessHandler.checkForCompleteness(anotherWorkItem));
 		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
-	 * Test with knowledge Element, that is only directly linked to one other element.
-	 * The target element is incompletely documented and has no links to other elements.
+	 * Test with complete root element (workItem), that is linked to one other element (decision). The other element
+	 * is incomplete.
 	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedIncompleteDistanceOne() {
+	public void testIncompleteLinkDistanceOne() {
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
@@ -135,11 +104,12 @@ public class TestCompletenessHandler extends TestSetUp {
 	}
 
 	/**
-	 * Test with knowledge Element, that linked to incomplete elements with a link-distance of two.
+	 * Test with complete root element (workItem), that is linked to one other element (decision). The other element
+	 * is complete, but is linked to another element (issue), which is incomplete.
 	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedIncompleteDistanceTwo() {
+	public void testIncompleteLinkDistanceTwo() {
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		assertFalse(decision.isIncomplete());
 		assertNotNull(decision.getLink(issue));
@@ -153,9 +123,14 @@ public class TestCompletenessHandler extends TestSetUp {
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
 
+
+	/**
+	 * Test with complete root element (workItem), which is linked to an incomplete element (alternative)
+	 * with a link distance of three.
+	 */
 	@Test
 	@NonTransactional
-	public void testHasIncompleteKnowledgeLinkedIncompleteDistanceThree() {
+	public void testIncompleteLinkDistanceThree() {
 		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		assertFalse(alternative.isIncomplete());
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
@@ -165,6 +140,8 @@ public class TestCompletenessHandler extends TestSetUp {
 		assertTrue(alternative.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
+
+
 
 	@After
 	public void tearDown() {
