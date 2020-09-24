@@ -25,6 +25,7 @@ public class TestCompletenessHandler extends TestSetUp {
 	private KnowledgeElement workItem;
 	private KnowledgeElement anotherWorkItem;
 	private KnowledgeElement yetAnotherWorkItem;
+	private KnowledgeElement conArgument;
 
 	@Before
 	public void setUp() {
@@ -37,6 +38,7 @@ public class TestCompletenessHandler extends TestSetUp {
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
 		yetAnotherWorkItem = elements.get(0);
+		conArgument = elements.get(8);
 	}
 
 	@Test
@@ -133,7 +135,7 @@ public class TestCompletenessHandler extends TestSetUp {
 	}
 
 	/**
-	 * Test with knowledge Element, that linked to incomplete elements over a link-distance of two.
+	 * Test with knowledge Element, that linked to incomplete elements with a link-distance of two.
 	 */
 	@Test
 	@NonTransactional
@@ -148,7 +150,19 @@ public class TestCompletenessHandler extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(issue.isIncomplete());
-		assertFalse(decision.isIncomplete());
+		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+	}
+
+	@Test
+	@NonTransactional
+	public void testHasIncompleteKnowledgeLinkedIncompleteDistanceThree() {
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
+		assertFalse(alternative.isIncomplete());
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setAlternativeLinkedToArgument(true);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		KnowledgeGraph.getOrCreate("TEST").removeEdge(alternative.getLink(conArgument));
+		assertTrue(alternative.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
 
