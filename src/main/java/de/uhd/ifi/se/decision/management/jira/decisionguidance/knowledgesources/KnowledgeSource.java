@@ -7,7 +7,6 @@ import java.util.List;
 
 public abstract class KnowledgeSource {
 
-	protected KnowledgeSourceType knowledgeSourceType;
 	protected KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
 
 	protected String projectKey;
@@ -31,14 +30,6 @@ public abstract class KnowledgeSource {
 
 	public void setActivated(boolean activated) {
 		isActivated = activated;
-	}
-
-	public KnowledgeSourceType getKnowledgeSourceType() {
-		return knowledgeSourceType;
-	}
-
-	public void setKnowledgeSourceType(KnowledgeSourceType knowledgeSourceType) {
-		this.knowledgeSourceType = knowledgeSourceType;
 	}
 
 	public KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType() {

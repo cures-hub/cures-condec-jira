@@ -16,7 +16,7 @@ public class ProjectSourceSubstringAlgorithm implements KnowledgeSourceAlgorithm
 	private String projectKey;
 	private String projectSourceName;
 	private String inputs;
-	KnowledgePersistenceManager knowledgePersistenceManager;
+	private KnowledgePersistenceManager knowledgePersistenceManager;
 
 
 	public ProjectSourceSubstringAlgorithm(String projectKey, String projectSourceName, String input) {

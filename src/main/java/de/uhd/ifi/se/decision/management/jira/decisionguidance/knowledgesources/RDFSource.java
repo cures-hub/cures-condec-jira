@@ -35,7 +35,6 @@ public class RDFSource extends KnowledgeSource {
 		this.name = "DBPedia";
 		this.timeout = "30000";
 		this.isActivated = true;
-		this.knowledgeSourceType = KnowledgeSourceType.RDF;
 	}
 
 	/**
@@ -52,7 +51,6 @@ public class RDFSource extends KnowledgeSource {
 		this.name = name;
 		this.timeout = timeout;
 		this.isActivated = true;
-		this.knowledgeSourceType = KnowledgeSourceType.RDF;
 	}
 
 	/**

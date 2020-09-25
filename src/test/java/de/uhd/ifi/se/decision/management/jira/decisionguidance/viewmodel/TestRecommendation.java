@@ -17,7 +17,7 @@ public class TestRecommendation extends TestSetUp {
 	}
 
 	@Test
-	public void testsetAndGetScore() {
+	public void testSetAndGetScore() {
 		Recommendation recommendation = new Recommendation();
 		assertEquals(0, recommendation.getScore());
 	}
