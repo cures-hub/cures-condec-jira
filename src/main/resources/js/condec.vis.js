@@ -12,6 +12,7 @@
 			conDecFiltering.addOnClickEventToFilterButton("graph", function(filterSettings) {
 				var issueKey = conDecAPI.getIssueKey();
 				filterSettings["selectedElement"] = issueKey;
+				filterSettings["isHierarchical"] = document.getElementById("is-hierarchical-input").checked;
 				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
 		} else {
