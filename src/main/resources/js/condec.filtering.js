@@ -20,9 +20,9 @@
  *           conDecRationaleBacklog! Perform filtering using a "filter" button
  *           in other views, e.g. chronology view!
  */
-(function(global) {
+(function (global) {
 
-	var ConDecFiltering = function() {
+	var ConDecFiltering = function () {
 		console.log("conDecFiltering constructor");
 	};
 
@@ -33,10 +33,10 @@
 	 * external references: condec.jira.issue.module, condec.evolution.page,
 	 * condec.relationship.page, condec.matrix
 	 */
-	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
+	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
-		        selectedKnowledgeTypes, ["Other"]);
+			selectedKnowledgeTypes, ["Other"]);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
@@ -48,10 +48,10 @@
 	 * external references: condec.jira.issue.module, condec.evolution.page,
 	 * condec.relationship.page, condec.matrix
 	 */
-	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
+	ConDecFiltering.prototype.addOnClickEventToFilterButton = function (viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
 
-		filterButton.addEventListener("click", function(event) {
+		filterButton.addEventListener("click", function (event) {
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 			callback(filterSettings);
 		});
@@ -63,39 +63,39 @@
 	 * external references: condec.jira.issue.module, condec.knowledge.page,
 	 * condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function(viewIdentifier, callback, isSearchInputEvent = true) {
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2", 
-				function() {
-					callback();
-				});
-		
+	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function (viewIdentifier, callback, isSearchInputEvent = true) {
+		$("#select2-decision-group-" + viewIdentifier).on("change.select2",
+			function () {
+				callback();
+			});
+
 		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
 		if (knowledgeTypeDropdown !== null) {
 			knowledgeTypeDropdown.addEventListener("click", () => callback());
 		}
-		
+
 		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
 		if (statusDropdown !== null) {
 			statusDropdown.addEventListener("click", () => callback());
 		}
-		
+
 		var filterElements = [];
-		
+
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);
 		if (isSearchInputEvent && searchInput !== null) {
 			filterElements.push(searchInput);
 		}
-		
+
 		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
 		if (linkDistanceInput !== null) {
 			filterElements.push(linkDistanceInput);
-		}			
-		
+		}
+
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
 			filterElements.push(isOnlyDecisionKnowledgeShownInput);
-		}		
-		
+		}
+
 		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
 		if (minLinkNumberInput !== null) {
 			filterElements.push(minLinkNumberInput);
@@ -109,19 +109,19 @@
 		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
 		if (endDatePicker !== null) {
 			filterElements.push(endDatePicker);
-		}		
+		}
 
 		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
 		if (startDatePicker !== null) {
 			filterElements.push(startDatePicker);
 		}
-		
+
 		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
 		if (isIrrelevantTextShownInput !== null) {
 			filterElements.push(isIrrelevantTextShownInput);
 		}
-		
-		filterElements.forEach(function(filterElement) {
+
+		filterElements.forEach(function (filterElement) {
 			filterElement.addEventListener("input", () => callback());
 		});
 	};
@@ -132,7 +132,7 @@
 	 * external references: condec.jira.issue.module, condec.knowledge.page,
 	 * condec.evolution.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
+	ConDecFiltering.prototype.getFilterSettings = function (viewIdentifier) {
 		var filterSettings = {};
 
 		// Read search term
@@ -180,7 +180,7 @@
 		// Read whether only decision knowledge elements (issue, decision,
 		// alternative, arguments, ...) should be shown
 		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-"
-		        + viewIdentifier);
+			+ viewIdentifier);
 		if (isOnlyDecisionKnowledgeShownInput !== null) {
 			filterSettings["isOnlyDecisionKnowledgeShown"] = isOnlyDecisionKnowledgeShownInput.checked;
 		}
@@ -203,15 +203,21 @@
 		// Read selected documentation locations, e.g. Jira issue comments +
 		// description, code, ...
 		var documentationLocations = conDecFiltering.getSelectedItems("documentation-location-dropdown-"
-		        + viewIdentifier);
+			+ viewIdentifier);
 		filterSettings["documentationLocations"] = documentationLocations;
-		
+
 		// Read whether sentences that are not classified as decision knowledge elements should
-		// be included in the filtered knowledge graph.
+		// be included in the filtered knowledge graph
 		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
 		if (isIrrelevantTextShownInput !== null) {
 			filterSettings["isIrrelevantTextShown"] = isIrrelevantTextShownInput.checked;
-		}		
+		}
+
+		// Read whether knowledge graph should be shown with hierarchy of nodes/knowledge elements
+		var isHierarchicalGraphInput = document.getElementById("is-hierarchical-input");
+		if (isHierarchicalGraphInput !== null) {
+			filterSettings["isHierarchical"] = isHierarchicalGraphInput.checked;
+		}
 
 		return filterSettings;
 	};
@@ -219,7 +225,7 @@
 	/*
 	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
+	ConDecFiltering.prototype.initDropdown = function (dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
@@ -238,7 +244,7 @@
 				}
 			}
 			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
-			        + items[index] + "</aui-item-checkbox>");
+				+ items[index] + "</aui-item-checkbox>");
 		}
 		return dropdown;
 	};
@@ -246,12 +252,12 @@
 	/*
 	 * external references: none, only used locally in condec.filtering
 	 */
-	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
+	ConDecFiltering.prototype.getSelectedItems = function (dropdownId) {
 		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
 		}
-		var selectedItems = [];		
+		var selectedItems = [];
 		if (dropdown.children.length === 1) {
 			/*
 			 * @issue In some cases a <div role="application"> is added for
@@ -273,7 +279,7 @@
 	 * external references: condec.knowledge.page, condec.evolution.page,
 	 * condec.relationship.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
+	ConDecFiltering.prototype.getSelectedGroups = function (selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
 		if (selectedGroupsObj === null || selectedGroupsObj === undefined) {
 			return null;
@@ -290,25 +296,25 @@
 	/*
 	 * external references: condec.jira.issue.module, condec.knowledge.page
 	 */
-	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
+	ConDecFiltering.prototype.fillDatePickers = function (viewIdentifier, deltaDays) {
 		var startDate = new Date();
 		startDate.setDate(startDate.getDate() - deltaDays);
 		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10);
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
 	};
-	
+
 	ConDecFiltering.prototype.fillDecisionGroupSelect = function (elementId) {
 		var selectGroupField = document.getElementById(elementId);
 		if (selectGroupField === null || selectGroupField === undefined) {
 			return null;
 		}
 		groups = conDecAPI.getAllDecisionGroups();
-		if (groups !== null && groups.length > 0) {				
+		if (groups !== null && groups.length > 0) {
 			for (var i = 0; i < groups.length; i++) {
 				if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
 					selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
 				}
-			}				
+			}
 		}
 		AJS.$("#" + elementId).auiSelect2();
 	};

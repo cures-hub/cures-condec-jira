@@ -28,7 +28,7 @@
 
     ConDecComparison.prototype.buildCompare = function buildCompare() {        
         var containerLeft = document.getElementById('left-network');
-        networkLeft = new vis.Network(containerLeft, new vis.DataSet(), getOptions());
+        networkLeft = new vis.Network(containerLeft, new vis.DataSet(), conDecVis.getOptionsForHierarchicalGraph());
         networkLeft.setSize("100%", "500px");
         networkLeft.on("oncontext", function (params) {
             conDecVis.addContextMenu(params, networkLeft);
@@ -38,7 +38,7 @@
             networkLeft.focus(params.nodes[0]);
         });
         var containerRight = document.getElementById('right-network');
-        networkRight = new vis.Network(containerRight, new vis.DataSet(), getOptions());
+        networkRight = new vis.Network(containerRight, new vis.DataSet(), conDecVis.getOptionsForHierarchicalGraph());
         networkRight.setSize("100%", "500px");
         networkRight.on("oncontext", function (params) {
             conDecVis.addContextMenu(params, networkRight);
@@ -51,7 +51,7 @@
         
         conDecFiltering.addOnClickEventToFilterButton("comparison", function(filterSettings) {
         	// left side
-            var filterSettingsLeft = conDecFiltering.getFilterSettings("comparison");            
+            var filterSettingsLeft = filterSettings;            
             filterSettingsLeft ["isHierarchical"] = true;
             conDecAPI.getVis(filterSettingsLeft, function (visDataLeft) {
             	visDataLeft.nodes.sort(sortVis);
@@ -60,7 +60,7 @@
                     edges: visDataLeft.edges
                 };
                 networkLeft.setData(dateLeft);
-                networkLeft.setOptions(getOptions(visDataLeft));
+                networkLeft.setOptions(conDecVis.getOptionsForHierarchicalGraph(visDataLeft));
             });
             
             // right side
@@ -76,7 +76,7 @@
                     edges: visDataRight.edges
                 };
                 networkRight.setData(dateRight);
-                networkRight.setOptions(getOptions(visDataRight));
+                networkRight.setOptions(conDecVis.getOptionsForHierarchicalGraph(visDataRight));
             });
         });
         
@@ -91,17 +91,6 @@
             return -1;
         }
         return 0;
-    }
-
-    function getOptions(visData) {
-    	var options = conDecVis.getOptions(visData);
-    	options["layout"] = {
-                randomSeed: 1,
-                hierarchical: {
-                    direction: "UD"
-                }
-    		};
-        return options;
     }
 
     global.conDecComparison = new ConDecComparison();
