@@ -1,0 +1,2 @@
+<label for="is-hierarchical-input-$viewIdentifier">Hierarchical</label>
+<input type="checkbox" id="is-hierarchical-input-$viewIdentifier" />
