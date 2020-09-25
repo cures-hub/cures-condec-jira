@@ -100,6 +100,9 @@ public class TreeViewer {
 		filteringManager.getFilterSettings().setStatus(null);
 
 		for (KnowledgeElement element : rootElements) {
+			if (element.getSummary().isBlank()) {
+				continue;
+			}
 			filteringManager.getFilterSettings().setSelectedElement(element);
 			filteringManager.getFilterSettings().setLinkDistance(2);
 			graph = filteringManager.getSubgraphMatchingFilterSettings();

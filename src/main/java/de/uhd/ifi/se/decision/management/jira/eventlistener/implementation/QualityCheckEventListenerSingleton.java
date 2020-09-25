@@ -1,33 +1,32 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
 import com.atlassian.jira.event.issue.IssueEvent;
-
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.IssueClosedTrigger;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.TriggerChain;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.WorkflowDoneTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.IssueClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.TriggerChain;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.WorkflowDoneTrigger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConsistencyCheckEventListenerSingleton implements IssueEventListener {
+public class QualityCheckEventListenerSingleton implements IssueEventListener {
 
 	private static IssueEventListener instance;
-	private TriggerChain chainStart;
+	private final TriggerChain chainStart;
 
-	private ConsistencyCheckEventListenerSingleton() {
+	private QualityCheckEventListenerSingleton() {
 		this.chainStart = new IssueClosedTrigger();
 		this.chainStart
 			.setNextChain(new WorkflowDoneTrigger());
 	}
 
 	public static IssueEventListener getInstance() {
-		if (ConsistencyCheckEventListenerSingleton.instance == null) {
-			ConsistencyCheckEventListenerSingleton.instance = new ConsistencyCheckEventListenerSingleton();
+		if (QualityCheckEventListenerSingleton.instance == null) {
+			QualityCheckEventListenerSingleton.instance = new QualityCheckEventListenerSingleton();
 		}
-		return ConsistencyCheckEventListenerSingleton.instance;
+		return QualityCheckEventListenerSingleton.instance;
 	}
 
 	public void onIssueEvent(IssueEvent issueEvent) {
@@ -51,12 +50,12 @@ public class ConsistencyCheckEventListenerSingleton implements IssueEventListene
 	}
 
 
-	public boolean doesConsistencyCheckEventTriggerNameExist(String triggerName) {
-		return getAllConsistencyCheckEventTriggerNames().stream().anyMatch(name -> name.equals(triggerName));
+	public boolean doesQualityCheckEventTriggerNameExist(String triggerName) {
+		return getAllQualityCheckEventTriggerNames().stream().anyMatch(name -> name.equals(triggerName));
 	}
 
-	public List<String> getAllConsistencyCheckEventTriggerNames() {
-		List<String> names = new ArrayList<String>();
+	public List<String> getAllQualityCheckEventTriggerNames() {
+		List<String> names = new ArrayList<>();
 		TriggerChain currentChainLink = this.chainStart;
 		while (currentChainLink != null) {
 			names.add(currentChainLink.getName());

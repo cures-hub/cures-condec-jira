@@ -153,7 +153,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testIsIconParsingTrue() {
-		assertNotNull(ConfigPersistenceManager.isIconParsing("TEST"));
+		ConfigPersistenceManager.isIconParsing("TEST");
 	}
 
 	@Test
@@ -382,7 +382,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetReleaseNoteMapping() {
-		List<String> input = new ArrayList<String>();
+		List<String> input = new ArrayList<>();
 		input.add("someOtherString");
 		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
@@ -418,20 +418,17 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetActivationStatusOfConsistencyEvent() {
+	public void testSetAndGetActivationStatusOfQualityEvent() {
 		String consistencyEvent = "done";
-		boolean isActivated = true;
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", consistencyEvent, isActivated);
-		assertTrue("Activated should be true.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
+		assertTrue("Activated should be true.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
-		isActivated = false;
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", consistencyEvent, isActivated);
-		assertFalse("Activated should be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
+		assertFalse("Activated should be false.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		String otherConsistencyEvent = "none";
-		isActivated = true;
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("TEST", otherConsistencyEvent, isActivated);
-		assertFalse("Activated for 'done' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
+		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
+		assertFalse("Activated for 'done' should still be false.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
 		/*
@@ -453,7 +450,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 		//Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name", false);
-		assertEquals("The knowledge source should be dectivated!", false, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
+		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
 
 		//Delete KnowledgeSource
 		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name");
@@ -463,14 +460,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetProjectKnowledgeSources() {
 		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", true);
-		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
 		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", false);
-		assertEquals(false, ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
+		assertFalse(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
 	}
 
 	@Test
 	public void testGetProjectSourceIfInitial() {
-		assertEquals(true, ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
+		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
 	}
 
 	@Test

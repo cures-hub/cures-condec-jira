@@ -1,18 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestCompletenessHandler extends TestSetUp {
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+
+public class TestCheckForCompleteness extends TestSetUp {
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;
@@ -31,25 +30,25 @@ public class TestCompletenessHandler extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCompleteIssue() {
-		assertTrue(CompletenessHandler.checkForCompletion(issue));
+		assertTrue(CompletenessHandler.checkForCompleteness(issue));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteDecision() {
-		assertTrue(CompletenessHandler.checkForCompletion(decision));
+		assertTrue(CompletenessHandler.checkForCompleteness(decision));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteAlternative() {
-		assertTrue(CompletenessHandler.checkForCompletion(alternative));
+		assertTrue(CompletenessHandler.checkForCompleteness(alternative));
 	}
 
 	@Test
 	@NonTransactional
-	public void testArgument() {
-		assertTrue(CompletenessHandler.checkForCompletion(proArgument));
+	public void testCompleteArgument() {
+		assertTrue(CompletenessHandler.checkForCompleteness(proArgument));
 	}
 
 }

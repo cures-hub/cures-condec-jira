@@ -8,19 +8,19 @@
  */
 (function (global) {
 
-	let ConDecJiraIssueConsistencyModule = function ConDecJiraIssueConsistencyModule() {
+	let ConDecJiraIssueConsistencyModule = function() {
 		this.isInitialized = false;
 		this.projectKey = conDecAPI.getProjectKey();
 	};
 
-	ConDecJiraIssueConsistencyModule.prototype.isInitialized = function isInitialized() {
+	ConDecJiraIssueConsistencyModule.prototype.isInitialized = function() {
 		return this.isInitialized;
 	}
 
 	/**
 	 * Initializes the buttons and toggles by loading the currently set values and registering listeners.
 	 */
-	ConDecJiraIssueConsistencyModule.prototype.init = function init() {
+	ConDecJiraIssueConsistencyModule.prototype.init = function() {
 
 		//Link suggestion score settings
 		this.saveMinProbabilityLinkBtn = document.getElementById("save-min-probability-link-btn");
@@ -33,13 +33,13 @@
 		this.saveMinLengthDuplicateBtn.addEventListener('click', event => this.saveMinLengthDuplicate(event));
 
 		//Check event toggles
-		this.isDoneActivatedToggle = document.getElementById("isDoneActivated-toggle");
-		this.isClosedActivatedToggle = document.getElementById("isClosedActivated-toggle");
-		initToggles(this.isClosedActivatedToggle, this.projectKey, "closed");
-		initToggles(this.isDoneActivatedToggle, this.projectKey, "done");
+		this.isDoneActivatedToggle = document.getElementById("isConsistencyDoneActivated-toggle");
+		this.isClosedActivatedToggle = document.getElementById("isConsistencyClosedActivated-toggle");
+		conDecJiraIssueQualityModule.initToggles(this.isClosedActivatedToggle, this.projectKey, "consistency-closed");
+		conDecJiraIssueQualityModule.initToggles(this.isDoneActivatedToggle, this.projectKey, "consistency-done");
 		// add listeners
-		this.isDoneActivatedToggle.addEventListener("change", this.callSetActivationStatusOfConsistencyEvent(this.isDoneActivatedToggle, "done"));
-		this.isClosedActivatedToggle.addEventListener("change", this.callSetActivationStatusOfConsistencyEvent(this.isClosedActivatedToggle, "closed"));
+		this.isDoneActivatedToggle.addEventListener("change", conDecJiraIssueQualityModule.callSetActivationStatusOfQualityEvent(this.isDoneActivatedToggle, "consistency-done"));
+		this.isClosedActivatedToggle.addEventListener("change", conDecJiraIssueQualityModule.callSetActivationStatusOfQualityEvent(this.isClosedActivatedToggle, "consistency-closed"));
 		this.isInitialized = true;
 	}
 
@@ -64,7 +64,7 @@
 	}
 
 
-	ConDecJiraIssueConsistencyModule.prototype.saveMinProbabilityLink = function saveMinProbabilityLink(event) {
+	ConDecJiraIssueConsistencyModule.prototype.saveMinProbabilityLink = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		window.onbeforeunload = null;
@@ -72,7 +72,7 @@
 			this.saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'true');
 			this.saveMinProbabilityLinkBtn.busy();
 			configAPI.setMinimumLinkSuggestionProbability(conDecAPI.getProjectKey(), this.minProbabilityInput.value)
-				.then(() => showSuccessFlag())
+				.then(() => conDecJiraIssueQualityModule.showSuccessFlag())
 				.catch(() => conDecAPI.showFlag("error", "An error occurred while updating the configuration!"))
 				.finally(() => {
 					this.saveMinProbabilityLinkBtn.setAttribute('aria-disabled', 'false');
@@ -82,46 +82,6 @@
 
 	}
 
-	ConDecJiraIssueConsistencyModule.prototype.callSetActivationStatusOfConsistencyEvent = function callSetActivationStatusOfConsistencyEvent(toggle, eventKey) {
-		return () => {
-			toggle.busy = true;
-			configAPI.setActivationStatusOfConsistencyEvent(this.projectKey, eventKey, toggle.checked)
-				.then(() => showSuccessFlag())
-				.catch((error) => {
-					conDecAPI.showFlag("error", "Could not activate consistency event. " + error);
-					toggle.checked = !toggle.checked;
-				})
-				.finally(() => toggle.busy = false);
-		}
-	}
-
-	/**
-	 * FUNCTIONS!
-	 */
-
-	function showSuccessFlag() {
-		conDecAPI.showFlag("success", "Configuration successfully updated!");
-	}
-
-	//show current toggle status
-	function initToggles(toggleElement, projectKey, eventKey) {
-		toggleElement.busy = true;
-		toggle.disabled = true;
-
-		configAPI.getActivationStatusOfConsistencyEvent(projectKey, eventKey)
-			.then(response => {
-				toggleElement.checked = response.isActivated;
-				showSuccessFlag();
-			})
-			.catch((error) =>
-				conDecAPI.showFlag("error", "Could not load activation status of consistency event. " + error)
-			)
-			.finally(() => {
-					toggleElement.busy = false;
-					toggle.disabled = false;
-				}
-			);
-	}
 
 	global.conDecJiraIssueConsistencyModule = new ConDecJiraIssueConsistencyModule();
 })(window);

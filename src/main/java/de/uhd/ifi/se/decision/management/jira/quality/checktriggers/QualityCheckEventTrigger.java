@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers;
+package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
 
 import com.atlassian.jira.event.issue.IssueEvent;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public interface ConsistencyCheckEventTrigger {
+public interface QualityCheckEventTrigger {
 
 	boolean isTriggered();
 
@@ -12,7 +12,7 @@ public interface ConsistencyCheckEventTrigger {
 	void setIssueEvent(IssueEvent event);
 
 	default boolean isActivated(){
-		return ConfigPersistenceManager.getActivationStatusOfConsistencyEvent(getCurrentProjectKey(), this.getName());
+		return ConfigPersistenceManager.getActivationStatusOfQualityEvent(getCurrentProjectKey(), this.getName());
 	}
 
 	String getName();
