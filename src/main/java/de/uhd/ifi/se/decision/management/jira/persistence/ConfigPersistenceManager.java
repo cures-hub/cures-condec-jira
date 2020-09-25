@@ -325,13 +325,11 @@ public class ConfigPersistenceManager {
 		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
 	}
 
-	public static void setActivationStatusOfConsistencyEvent(String projectKey, String eventKey, boolean isActivated) {
-		setValue(projectKey, eventKey, Boolean.toString(isActivated));
-	}
-
-	public static boolean getActivationStatusOfConsistencyEvent(String projectKey, String eventKey) {
-		return "true".equals(getValue(projectKey, eventKey));
-	}
+	/* **************************************/
+	/*										*/
+	/* Configuration for Decision Guidance  */
+	/*										*/
+	/* **************************************/
 
 	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
 		setValue(projectKey, "maxNumberRecommendations", Integer.toString(maxNumberRecommendation));
@@ -362,6 +360,7 @@ public class ConfigPersistenceManager {
 		}
 
 	}
+
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
@@ -458,9 +457,10 @@ public class ConfigPersistenceManager {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog */
+	/* Configuration for Rationale Backlog  */
 	/*										*/
 	/* **************************************/
+
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
@@ -481,4 +481,19 @@ public class ConfigPersistenceManager {
 		}
 		return definitionOfDone;
 	}
+
+	/* **********************************************************/
+	/*										 					*/
+	/* Configuration for quality = completeness + consistency   */
+	/*															*/
+	/* **********************************************************/
+
+	public static void setActivationStatusOfQualityEvent(String projectKey, String eventKey, boolean isActivated) {
+		setValue(projectKey, eventKey, Boolean.toString(isActivated));
+	}
+
+	public static boolean getActivationStatusOfQualityEvent(String projectKey, String eventKey) {
+		return "true".equals(getValue(projectKey, eventKey));
+	}
+
 }

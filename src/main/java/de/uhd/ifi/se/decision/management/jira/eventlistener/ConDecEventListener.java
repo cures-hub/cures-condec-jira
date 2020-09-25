@@ -6,8 +6,8 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.ConsistencyCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.WebhookEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -50,7 +50,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		attach((IssueEventListener) new WebhookEventListener());
 		attach(new JiraIssueTextExtractionEventListener());
 		attach(new SummarizationEventListener());
-		attach(ConsistencyCheckEventListenerSingleton.getInstance());
+		attach(QualityCheckEventListenerSingleton.getInstance());
 
 		attach((LinkEventListener) new WebhookEventListener());
 

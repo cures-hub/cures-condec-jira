@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 import java.util.Map;
 
@@ -26,9 +27,43 @@ final public class CompletenessHandler {
 	 * @decision If no definition of done can be found, the knowledge element is
 	 *           assumed to be complete!
 	 */
-	public static boolean checkForCompletion(KnowledgeElement knowledgeElement) {
+	public static boolean checkForCompleteness(KnowledgeElement knowledgeElement) {
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}
 
+	/**
+	 * Iterates recursively over the knowledge graph of @param source {@link KnowledgeElement} and
+	 * @return true if there is at least one incompletely documented knowledge element, else it returns false.
+	 */
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement.isIncomplete()) {
+			return true;
+		}
+		else if (knowledgeElement.isLinked() != 0) {
+			for (Link link : knowledgeElement.getLinks()
+				 ) {
+				KnowledgeElement oppositeElement = link.getOppositeElement(knowledgeElement);
+				if (oppositeElement.isIncomplete()) {
+					return true;
+				} else if (hasIncompleteKnowledgeLinked(oppositeElement, knowledgeElement)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
+	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement oppositeElement, KnowledgeElement knowledgeElement) {
+			for (Link link : oppositeElement.getLinks()) {
+				KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
+				if (nextElement.getId() == knowledgeElement.getId()){
+					continue;
+				} else if (nextElement.isIncomplete()) {
+					return true;
+				}
+			}
+		return false;
+	}
 }

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers;
+package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
 
 
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -6,7 +6,7 @@ import com.atlassian.jira.event.issue.IssueEvent;
 /**
  * Implementation of the next of responsibility pattern.
  */
-public abstract class TriggerChain implements ConsistencyCheckEventTrigger {
+public abstract class TriggerChain implements QualityCheckEventTrigger {
 
 	private TriggerChain nextChainLink;
 	private IssueEvent issueEvent;

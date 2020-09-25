@@ -11,9 +11,9 @@ import com.atlassian.jira.issue.status.category.StatusCategoryImpl;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.ConsistencyCheckEventTrigger;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.IssueClosedTrigger;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers.WorkflowDoneTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.QualityCheckEventTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.IssueClosedTrigger;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.WorkflowDoneTrigger;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +25,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TestConsistencyCheckEventTrigger extends TestSetUp {
-	private ConsistencyCheckEventTrigger trigger;
+	private QualityCheckEventTrigger trigger;
 	private ApplicationUser user;
 	private MutableIssue issue;
 	private Comment jiraComment;
 
 	public static IssueEvent generateWorkflowIssueEvent(MutableIssue issue, ApplicationUser user, Comment jiraComment, String status, StatusCategory category, Long eventType) {
-		HashMap<String, String> params = new HashMap<String, String>();
+		HashMap<String, String> params = new HashMap<>();
 		params.put("eventsource", "workflow");
 		issue.setStatus(new MockStatus(status, status, category));
 

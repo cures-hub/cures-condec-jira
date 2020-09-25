@@ -375,6 +375,7 @@
 		}
 	}
 
+	// TODO Simplify
 	function updateArgumentCriteriaLink(source, target, elemId) {
 		// moved arg. from unknown to criteria column
 		if (source.toLowerCase().includes("unknown") && target.toLowerCase().includes("unknown")) {

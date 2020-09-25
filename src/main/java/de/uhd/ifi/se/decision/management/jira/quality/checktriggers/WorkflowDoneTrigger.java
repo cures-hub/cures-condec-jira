@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.checktriggers;
+package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
 
 
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -12,7 +12,6 @@ public class WorkflowDoneTrigger extends TriggerChain {
 	public WorkflowDoneTrigger() {
 	}
 
-
 	@Override
 	public boolean isTriggered() {
 		return super.getIssueEvent() != null &&
@@ -20,12 +19,9 @@ public class WorkflowDoneTrigger extends TriggerChain {
 			&& "done".equals(super.getIssueEvent().getIssue().getStatus().getStatusCategory().getKey());
 	}
 
-
-
 	@Override
 	public String getName() {
 		return "done";
 	}
-
 
 }

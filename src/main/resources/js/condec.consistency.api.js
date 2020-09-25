@@ -5,7 +5,7 @@
 			this.projectKey = conDecAPI.getProjectKey();
 			this.consistencyCheckFlag = undefined;
 			let that = this;
-			global.addEventListener("DOMContentLoaded", (ev) => {
+			global.addEventListener("DOMContentLoaded", () => {
 				that.displayConsistencyCheck();
 			});
 
@@ -58,6 +58,15 @@
 		ConsistencyAPI.prototype.doesElementNeedApproval = function (projectKey, elementId, elementLocation) {
 			return generalApi.getJSONReturnPromise(
 				`${this.restPrefix}/doesElementNeedApproval.json
+				?projectKey=${projectKey}
+				&elementId=${elementId}
+				&elementLocation=${elementLocation}`
+			);
+		};
+
+		ConsistencyAPI.prototype.doesElementNeedCompletenessApproval = function (projectKey, elementId, elementLocation) {
+			return generalApi.getJSONReturnPromise(
+				`${this.restPrefix}/doesElementNeedCompletenessApproval.json
 				?projectKey=${projectKey}
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}`
@@ -122,8 +131,44 @@
 						}
 					});
 			}
+		}
 
+		ConsistencyAPI.prototype.displayCompletenessCheck = function () {
+			let that = this;
+			this.issueId = JIRA.Issue.getIssueId();
 
+			console.log("displayCompletenessCheck: " + this.issueId);
+
+			if (that.issueId !== null && that.issueId !== undefined) {
+				this.doesElementNeedCompletenessApproval(that.projectKey, that.issueId, "i")
+					.then((response) => {
+						if (response.needsCompletenessApproval) {
+							Promise.all([]).then(
+								() => {
+										that.consistencyCheckFlag = AJS.flag({
+											type: 'warning',
+											title: 'Imcomplete decision knowledge!',
+											close: 'manual',
+											body: 'Issue <strong>'
+												+ conDecAPI.getIssueKey()
+												+ '</strong> contains some incomplete documented decision knowledge. <br/>'
+												+ '<ul class="aui-nav-actions-list">'
+												+ '<li>'
+												+ '<button id="completeness-check-dialog-submit-button" '
+												+ 'onclick="consistencyAPI.consistencyCheckFlag.close()" class="aui-button aui-button-link">'
+												+ 'Confirm'
+												+ '</button>'
+												+ '</li>'
+												+ '</ul>'
+										});
+								});
+						}
+					});
+			}
+		}
+
+		ConsistencyAPI.prototype.confirmIncompleteMessage = function () {
+			this.consistencyCheckFlag.close();
 		}
 
 		// export ConsistencyAPI

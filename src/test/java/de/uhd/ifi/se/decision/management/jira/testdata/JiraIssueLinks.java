@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
+import com.atlassian.jira.issue.link.IssueLink;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 
 public class JiraIssueLinks {
 

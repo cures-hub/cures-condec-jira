@@ -24,6 +24,17 @@ public class TestChecks extends TestConsistencyRestSuper {
 
 	}
 
+	@Test
+	public void testDoesIssueNeedCompletenessApproval() {
+		KnowledgeElement knowledgeElement = new KnowledgeElement(issues.get(0));
+		Response response = consistencyRest.doesElementNeedCompletenessApproval(request, knowledgeElement.getProject().getProjectKey(), knowledgeElement.getId(), knowledgeElement.getDocumentationLocationAsString());
+		assertEquals("Response should be OK (200).", 200, response.getStatus());
+		response = consistencyRest.doesElementNeedCompletenessApproval(request, "InvalidKey", null, null);
+		assertEquals("Response should be 400.", 400, response.getStatus());
+		response = consistencyRest.doesElementNeedCompletenessApproval(request, null, null, null);
+		assertEquals("Response should be 500.", 400, response.getStatus());
+
+	}
 
 	@Test
 	public void testApproveIssue() {
