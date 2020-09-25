@@ -22,7 +22,6 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;
-	private KnowledgeElement conArgument;
 	private KnowledgeElement workItem;
 	private KnowledgeElement anotherWorkItem;
 
@@ -35,7 +34,6 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		alternative = elements.get(5);
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
-		conArgument = elements.get(8);
 	}
 
 	@Test
