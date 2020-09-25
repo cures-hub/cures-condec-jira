@@ -40,10 +40,7 @@
 	ConDecVis.prototype.buildVis = function (filterSettings, container) {
 		console.log("conDecVis buildVis");
 		conDecAPI.getVis(filterSettings, function (visData) {
-			var options = conDecVis.getOptions(visData);
-			if (filterSettings["isHierarchical"]) {	
-				options = conDecVis.getOptionsForHierarchicalGraph(visData);
-			}
+			options = conDecVis.getOptions(visData, filterSettings["isHierarchical"]);
 
 			var graphContainer = document.getElementById(container);
 			var graphNetwork = new vis.Network(graphContainer, visData, options);
@@ -58,26 +55,11 @@
 		});
 	};
 
-	ConDecVis.prototype.getOptionsForHierarchicalGraph = function (visData) {
-		var options = this.getOptions(visData);
-		options["layout"] = {
-			randomSeed: 1,
-			hierarchical: {
-				direction: "UD"
-			}
-		};
-		return options;
-	};
-
-	ConDecVis.prototype.getOptions = function (visData) {
+	ConDecVis.prototype.getOptions = function (visData, isHierarchical) {
 		var options = {
 			edges: {
 				arrows: "to",
 				length: 200
-			},
-			layout: {
-				randomSeed: 1,
-				improvedLayout: false
 			},
 			manipulation: {
 				enabled: true,
@@ -111,8 +93,29 @@
 				}
 			}
 		};
+		if (isHierarchical) {
+			options["layout"] = getHierarchicalLayout();
+		} else {
+			options["layout"] = getRandomLayout();
+		}
 		return options;
 	};
+
+	function getHierarchicalLayout() {
+		return {
+			randomSeed: 1,
+			hierarchical: {
+				direction: "UD"
+			}
+		}
+	}
+
+	function getRandomLayout() {
+		return {
+			randomSeed: 1,
+			improvedLayout: false
+		}
+	}
 
 	ConDecVis.prototype.addContextMenu = function (params, network) {
 		params.event.preventDefault();

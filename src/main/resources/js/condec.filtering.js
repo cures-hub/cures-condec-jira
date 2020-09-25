@@ -214,7 +214,7 @@
 		}
 
 		// Read whether knowledge graph should be shown with hierarchy of nodes/knowledge elements
-		var isHierarchicalGraphInput = document.getElementById("is-hierarchical-input");
+		var isHierarchicalGraphInput = document.getElementById("is-hierarchical-input-" + viewIdentifier);
 		if (isHierarchicalGraphInput !== null) {
 			filterSettings["isHierarchical"] = isHierarchicalGraphInput.checked;
 		}
