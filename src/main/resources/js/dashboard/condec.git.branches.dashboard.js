@@ -139,6 +139,7 @@ var ConDecDevBranches = [];
     }
 
     ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data, uid) {
+        console.log(data.responseJSON.error);
         showDashboardSection(dashboardDataErrorNode);
     };
 

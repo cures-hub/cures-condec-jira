@@ -5,80 +5,62 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
+
+	protected HttpServletRequest request;
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+	}
+
 	@Test
-	public void testSetKnowledgeExtractedNullNullNull() {
+	public void testRequestNullProjectKeyNullIsExtractedFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(null, null, null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, null, false).getStatus());
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedNullFilledNull() {
+	public void testRequestNullProjectKeyValidIsExtractedFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(null, "TEST", null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, "TEST", false).getStatus());
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedNullNullFilled() {
+	public void testRequestValidProjectKeyNullIsExtractedFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(null, null, "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, null, false).getStatus());
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedFilledNullNull() {
-		request.setAttribute("user", null);
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, null, null).getStatus());
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledFilledNull() {
-		request.setAttribute("user", null);
-		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledNoFailsFilledNull() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedNullFilledFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(null, "TEST", "false").getStatus());
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledFilledFilled() {
-		HttpServletRequest request = new MockHttpServletRequest();
+	public void testRequestUserNullProjectKeyValidIsExtractedFalse() {
 		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", false).getStatus());
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedFilledWithFailsFilledFilled() {
-		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", null);
-		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
-	}
-
-	@Test
-	public void testSetKnowledgeExtractedFilledNoFailsFilledFilled() {
+	public void testRequestValidProjectKeyValidIsExtractedFalse() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", false).getStatus());
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedFilledNoFailsFilledInvalid() {
+	public void testRequestValidProjectKeyValidIsExtractedTrue() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", "testNotABoolean").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", false).getStatus());
 	}
 }

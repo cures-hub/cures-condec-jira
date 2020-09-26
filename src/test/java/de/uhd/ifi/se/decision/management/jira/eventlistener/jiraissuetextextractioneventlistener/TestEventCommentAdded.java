@@ -51,9 +51,18 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		Comment comment = createCommentAndTestWhetherExistent("{code}public static class{code}");
+		Comment comment = createCommentAndTestWhetherExistent("{code:java}public static class{code}");
 		KnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("{code}public static class{code}", element.getDescription());
+		assertEquals("{code:java}public static class{code}", element.getDescription());
+		assertEquals(KnowledgeType.OTHER, element.getType());
+	}
+
+	@Test
+	@NonTransactional
+	public void testAnotherExcludedTag() {
+		Comment comment = createCommentAndTestWhetherExistent("{color}public static class{color}");
+		KnowledgeElement element = getFirstElementInComment(comment);
+		assertEquals("{color}public static class{color}", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
 

@@ -1,70 +1,66 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import org.junit.Test;
-
-import javax.ws.rs.core.Response;
-
 import static org.junit.Assert.assertEquals;
 
-public class TestIsLinkTypeEnabled extends TestConfigSuper {
-	@Test
-	public void testProjectKyNullKnowledgeTypeNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled(null, null).getEntity());
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestIsLinkTypeEnabled extends TestSetUp {
+	protected HttpServletRequest request;
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
-	public void testProjectKeyEmptyKnowledgeTypeNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled("", null).getEntity());
+	public void testProjectKeyNullLinkTypeNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isLinkTypeEnabled(null, null).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyFalseKnowledgeTypeNull() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.isLinkTypeEnabled("InvalidKey", null).getStatus());
+	public void testProjectKeyEmptyLinkTypeNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isLinkTypeEnabled("", null).getStatus());
 	}
 
 	@Test
-	public void testProjectKyNullKnowledgeTypeEmpty() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled(null, "").getEntity());
+	public void testProjectKeyInvalidLinkTypeNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isLinkTypeEnabled("InvalidKey", null).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyEmptyKnowledgeTypeEmpty() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled("", "").getEntity());
+	public void testProjectKeyNullLinkTypeEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isLinkTypeEnabled(null, "").getStatus());
 	}
 
 	@Test
-	public void testProjectKeyFalseKnowledgeTypeEmpty() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.isLinkTypeEnabled("InvalidKey", "").getStatus());
+	public void testProjectKeyEmptyLinkTypeEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isLinkTypeEnabled("", "").getStatus());
 	}
 
 	@Test
-	public void testProjectKyNullKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled(null, KnowledgeType.SOLUTION.toString()).getEntity());
+	public void testProjectKeyInvalidLinkTypeFilled() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.isLinkTypeEnabled("InvalidKey", KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyEmptyKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-			configRest.isLinkTypeEnabled("", KnowledgeType.SOLUTION.toString()).getEntity());
-	}
-
-	@Test
-	public void testProjectKeyFalseKnowledgeTypeFilled() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.isLinkTypeEnabled("InvalidKey", KnowledgeType.SOLUTION.toString()).getStatus());
-	}
-
-	@Test
-	public void testIsIssueStrategyProjectKeyOK() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-			configRest.isLinkTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()).getStatus());
+	public void testProjectKeyValidLinkTypeFilled() {
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.isLinkTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 }

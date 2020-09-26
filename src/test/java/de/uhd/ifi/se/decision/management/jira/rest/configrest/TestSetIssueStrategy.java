@@ -27,33 +27,27 @@ public class TestSetIssueStrategy extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNullIsIssueStrategyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, null).getStatus());
+	public void testRequestNullProjectKeyNullIsIssueStrategyFalse() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, false).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullIsIssueStrategyTrue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, "true").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(null, null, true).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyNullIsIssueStrategyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(request, null, null).getStatus());
-	}
-
-	@Test
-	public void testRequestValidProjectKeyExistsIsIssueStrategyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setIssueStrategy(request, "TEST", null).getStatus());
+	public void testRequestValidProjectKeyNullIsIssueStrategyFalse() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setIssueStrategy(request, null, false).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsIsIssueStrategyTrue() {
-		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", "true").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", true).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsIsIssueStrategyFalse() {
-		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", "false").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.setIssueStrategy(request, "TEST", false).getStatus());
 	}
 }

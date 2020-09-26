@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
-		assertEquals(7, filterSettings.getKnowledgeTypes().size());
+		assertTrue(filterSettings.getKnowledgeTypes().size() > 0);
 		assertEquals(-1, filterSettings.getStartDate());
 		assertEquals(-1, filterSettings.getEndDate());
 	}

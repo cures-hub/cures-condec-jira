@@ -33,7 +33,8 @@ public class TestGetKnowledgeTypes extends TestSetUp {
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Response.Status.OK.getStatusCode(), configRest.getKnowledgeTypes("InvalidKey").getStatus());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				configRest.getKnowledgeTypes("InvalidKey").getStatus());
 	}
 
 	@Test

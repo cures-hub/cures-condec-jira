@@ -32,7 +32,7 @@ public class TestGetLinkTypes extends TestSetUp {
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Status.OK.getStatusCode(), configRest.getLinkTypes("InvalidKey").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getLinkTypes("InvalidKey").getStatus());
 	}
 
 	@Test

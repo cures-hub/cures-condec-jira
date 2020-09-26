@@ -169,7 +169,7 @@ public class GitCodeClassExtractor {
 		element.setProject(gitClient.getProjectKey());
 		element.setDocumentationLocation(DocumentationLocation.COMMIT);
 		element.setStatus(KnowledgeStatus.UNDEFINED);
-		element.setType(KnowledgeType.OTHER);
+		element.setType(KnowledgeType.CODE);
 		element.setDescription(keyString);
 		return element;
 	}

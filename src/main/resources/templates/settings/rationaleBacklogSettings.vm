@@ -5,16 +5,10 @@
     #parse("templates/settings/fragments/completenessEventSettings.vm")
 </form>
 
-
 <script>
     $(document).ready(function () {
-        conDecAPI.getDefinitionOfDone("$projectKey", function (definitionOfDone) {
-            $("#issue-link-alternative-checkbox").prop("checked", definitionOfDone["issueIsLinkedToAlternative"]);
-            $("#decision-link-pro-checkbox").prop("checked", definitionOfDone["decisionIsLinkedToPro"]);
-            $("#alternative-link-argument-checkbox").prop("checked", definitionOfDone["alternativeIsLinkedToArgument"]);
-        });
         const saveDefinitionOfDoneButton = $("#change-definition-of-done");
-        saveDefinitionOfDoneButton.click((event => {
+        saveDefinitionOfDoneButton.click(event => {
             event.preventDefault();
             let definitionOfDone = {
                 "issueIsLinkedToAlternative": $("#issue-link-alternative-checkbox").prop("checked"),
@@ -22,7 +16,7 @@
                 "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked")
             }
             conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
-        }))
+        });
         conDecJiraIssueCompletenessModule.init();
     });
 </script>

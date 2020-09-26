@@ -1,5 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLinkType;
@@ -7,6 +27,7 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -16,7 +37,11 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -27,19 +52,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.io.File;
-import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -51,32 +63,15 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response != null) {
-			return response;
+			@QueryParam("isActivated") boolean isActivated) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setActivated(projectKey, isActivated);
 		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 		resetKnowledgeGraph(projectKey);
 		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	private Response checkRequest(HttpServletRequest request, String projectKey, String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid"))
-					.build();
-		}
-
-		return null;
 	}
 
 	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
@@ -94,7 +89,7 @@ public class ConfigRest {
 	@Path("/isActivated")
 	@GET
 	public Response isActivated(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -105,7 +100,7 @@ public class ConfigRest {
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -116,16 +111,11 @@ public class ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+			@QueryParam("isIssueStrategy") boolean isIssueStrategy) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isIssueStrategyString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
-					.build();
-		}
-		boolean isIssueStrategy = Boolean.parseBoolean(isIssueStrategyString);
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
 		manageDefaultIssueTypes(projectKey, isIssueStrategy);
 		return Response.ok(Status.ACCEPTED).build();
@@ -148,11 +138,15 @@ public class ConfigRest {
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeType") String knowledgeType) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+		if (knowledgeType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The knowledge type is null."))
+					.build();
+		}
+		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
@@ -160,17 +154,17 @@ public class ConfigRest {
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
+			@QueryParam("isKnowledgeTypeEnabled") boolean isKnowledgeTypeEnabled,
 			@QueryParam("knowledgeType") String knowledgeType) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isKnowledgeTypeEnabledString == null || knowledgeType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
+		if (knowledgeType == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The knowledge type could not be enabled because it is null."))
 					.build();
 		}
-		boolean isKnowledgeTypeEnabled = Boolean.parseBoolean(isKnowledgeTypeEnabledString);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
 		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 			if (isKnowledgeTypeEnabled) {
@@ -192,7 +186,7 @@ public class ConfigRest {
 	@Path("/getKnowledgeTypes")
 	@GET
 	public Response getKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -209,19 +203,18 @@ public class ConfigRest {
 	@Path("/getDecisionKnowledgeTypes")
 	@GET
 	public Response getDecisionKnowledgeTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Set<String> rationaleTypesAsString = new DecisionKnowledgeProject(projectKey)
-				.getNamesOfDecisionKnowledgeTypes();
+		Set<String> rationaleTypesAsString = new DecisionKnowledgeProject(projectKey).getNamesOfConDecKnowledgeTypes();
 		return Response.ok(rationaleTypesAsString).build();
 	}
 
 	@Path("/getDecisionTableCriteriaQuery")
 	@GET
 	public Response getDesionTabelCriteriaQuery(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -233,7 +226,7 @@ public class ConfigRest {
 	@POST
 	public Response setDesionTabelCriteriaQuery(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -253,7 +246,7 @@ public class ConfigRest {
 	@POST
 	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -271,7 +264,7 @@ public class ConfigRest {
 	@GET
 	public Response isLinkTypeEnabled(@QueryParam("projectKey") String projectKey,
 			@QueryParam("linkType") String linkType) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -284,16 +277,15 @@ public class ConfigRest {
 	@Path("/setLinkTypeEnabled")
 	@POST
 	public Response setLinkTypeEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isLinkTypeEnabled") String isLinkTypeEnabledString, @QueryParam("linkType") String linkType) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+			@QueryParam("isLinkTypeEnabled") boolean isLinkTypeEnabled, @QueryParam("linkType") String linkType) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isLinkTypeEnabledString == null || linkType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
-					.build();
+		if (linkType == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The link type could not be enabled because it is null.")).build();
 		}
-		boolean isLinkTypeEnabled = Boolean.parseBoolean(isLinkTypeEnabledString);
 		if (isLinkTypeEnabled) {
 			PluginInitializer.createLinkType(linkType);
 			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);
@@ -325,7 +317,7 @@ public class ConfigRest {
 	@Path("/getLinkTypes")
 	@GET
 	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -411,7 +403,7 @@ public class ConfigRest {
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivated") String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -428,7 +420,7 @@ public class ConfigRest {
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -445,7 +437,7 @@ public class ConfigRest {
 	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("webhookType") String webhookType,
 			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -469,7 +461,7 @@ public class ConfigRest {
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("releaseNoteCategory") ReleaseNotesCategory category, List<String> selectedIssueNames) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -480,7 +472,7 @@ public class ConfigRest {
 	@Path("/releaseNoteMapping")
 	@GET
 	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -493,7 +485,7 @@ public class ConfigRest {
 	@Path("/cleanDatabases")
 	@POST
 	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -511,53 +503,13 @@ public class ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response == null) {
-			boolean isActivated = Boolean.parseBoolean(isActivatedString);
-			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} else {
-			return response;
+			@QueryParam("isActivated") boolean isActivated) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-
-	}
-
-	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-		}
-
-		Response projectResponse = checkIfProjectKeyIsValid(projectKey);
-		if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
-			return projectResponse;
-		}
-
-		Response userResponse = checkIfUserIsAuthorized(request, projectKey);
-		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
-			return userResponse;
-		}
-
-		return Response.status(Status.OK).build();
-	}
-
-	private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
-		String username = AuthenticationManager.getUsername(request);
-		boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
-		if (isProjectAdmin) {
-			return Response.status(Status.OK).build();
-		}
-		LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
-		return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
-	}
-
-	private Response checkIfProjectKeyIsValid(String projectKey) {
-		if (projectKey == null || projectKey.isBlank()) {
-			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
-					.build();
-		}
-		return Response.status(Status.OK).build();
+		ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	/* **************************************/
@@ -570,19 +522,16 @@ public class ConfigRest {
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isKnowledgeExtractedFromGit == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
-		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
-				Boolean.parseBoolean(isKnowledgeExtractedFromGit));
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
+
 		// deactivate other git extraction if false
-		if (!Boolean.parseBoolean(isKnowledgeExtractedFromGit)) {
+		if (!isKnowledgeExtractedFromGit) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
 		}
@@ -593,7 +542,7 @@ public class ConfigRest {
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -614,7 +563,7 @@ public class ConfigRest {
 	@POST
 	public Response setPostSquashedCommits(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -637,7 +586,7 @@ public class ConfigRest {
 	@POST
 	public Response setGitUris(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -654,7 +603,7 @@ public class ConfigRest {
 	@Path("/deleteGitRepos")
 	@POST
 	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -676,13 +625,11 @@ public class ConfigRest {
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response != null) {
-			return response;
+			@QueryParam("projectKey") String projectKey, @QueryParam("isClassifierUsedForIssues") boolean isActivated) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
@@ -693,7 +640,7 @@ public class ConfigRest {
 			@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
 
 		Response returnResponse;
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
 			returnResponse = isValidDataResponse;
 		} else if (arffFileName == null || arffFileName.isEmpty()) {
@@ -720,7 +667,7 @@ public class ConfigRest {
 	@Path("/evaluateModel")
 	@POST
 	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -757,7 +704,7 @@ public class ConfigRest {
 	@POST
 	public Response testClassifierWithText(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("text") String text) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -788,7 +735,7 @@ public class ConfigRest {
 	@POST
 	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -809,7 +756,7 @@ public class ConfigRest {
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -842,12 +789,8 @@ public class ConfigRest {
 	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
@@ -863,12 +806,8 @@ public class ConfigRest {
 	@POST
 	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (fragmentLength < 3) {
@@ -878,10 +817,6 @@ public class ConfigRest {
 		ConfigPersistenceManager.setFragmentLength(projectKey, fragmentLength);
 		return Response.ok(Status.ACCEPTED).build();
 	}
-
-
-
-
 
 	/* **************************************/
 	/*										*/
@@ -894,12 +829,8 @@ public class ConfigRest {
 	public Response setMaxNumberRecommendations(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (maxNumberRecommendations < 0) {
@@ -916,12 +847,8 @@ public class ConfigRest {
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
 
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -963,12 +890,8 @@ public class ConfigRest {
 	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (knowledgeSourceName.isBlank()) {
@@ -985,12 +908,8 @@ public class ConfigRest {
 	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
 			@QueryParam("isActivated") boolean isActivated) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (knowledgeSourceName.isBlank()) {
@@ -1006,12 +925,8 @@ public class ConfigRest {
 	@POST
 	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (projectSourceKey.isBlank()) {
@@ -1024,7 +939,7 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog  */
+	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
 
@@ -1033,12 +948,8 @@ public class ConfigRest {
 	public Response setDefinitionOfDone(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
 
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
-			return response;
-		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -1051,27 +962,16 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/getDefinitionOfDone")
-	@GET
-	public Response getDefinitionOfDone(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return Response.ok(definitionOfDone.getCriteriaMap()).build();
-	}
-
 	/* **********************************************************/
 	/*															*/
-	/* Configuration for quality = completeness + consistency   */
+	/* Configuration for quality = completeness + consistency */
 	/*															*/
 	/* **********************************************************/
 
 	@Path("/isQualityEventActivated")
 	@GET
 	public Response isQualityEventActivated(@Context HttpServletRequest request,
-												@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
 
 		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -1084,8 +984,8 @@ public class ConfigRest {
 	@Path("/activateQualityEvent")
 	@POST
 	public Response activateQualityEvent(@Context HttpServletRequest request,
-											 @QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-											 @QueryParam("isActivated") boolean isActivated) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
+			@QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -1101,22 +1001,18 @@ public class ConfigRest {
 			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
 		}
 		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
-			.doesQualityCheckEventTriggerNameExist(triggerNameShort);
+				.doesQualityCheckEventTriggerNameExist(triggerNameShort);
 	}
 
 	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
-															 String eventKey) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+			String eventKey) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
-		response = checkIfProjectKeyIsValid(projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		if (!this.checkIfQualityTriggerExists(eventKey)) {
+		if (!checkIfQualityTriggerExists(eventKey)) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
+					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
 		}
 		return Response.status(Status.OK).build();
 	}
@@ -1125,9 +1021,9 @@ public class ConfigRest {
 	@GET
 	public Response getAllConsistencyCheckEventTriggerNames() {
 		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
-			.getInstance();
+				.getInstance();
 		return Response.ok(Status.ACCEPTED)
-			.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
+				.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
 
 	}
 }

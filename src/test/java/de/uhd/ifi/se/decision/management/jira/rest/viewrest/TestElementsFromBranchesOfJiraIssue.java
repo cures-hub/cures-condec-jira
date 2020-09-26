@@ -77,7 +77,8 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	public void testGitExtractionDisabled() {
 		try {
 			ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-			assertEquals(200, viewRest.getFeatureBranchTree(request, "TEST-2").getStatus());
+			assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
+					viewRest.getFeatureBranchTree(request, "TEST-2").getStatus());
 		} catch (PermissionException e) {
 			assertNull(e);
 		}
