@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
@@ -62,7 +60,7 @@ public class ViewRest {
 	@Path("/elementsFromBranchesOfProject")
 	@GET
 	public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -175,7 +173,7 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "Invalid parameters given. Tree viewer not be created.")).build();
 		}
 		String projectKey = filterSettings.getProjectKey();
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -214,7 +212,7 @@ public class ViewRest {
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -234,12 +232,12 @@ public class ViewRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
+		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
 		}
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -259,7 +257,7 @@ public class ViewRest {
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -278,7 +276,7 @@ public class ViewRest {
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -293,7 +291,7 @@ public class ViewRest {
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("elementKey") String elementKey) {
 		String projectKey;
-		if (checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
+		if (RestParameterChecker.checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
 			projectKey = elementKey;
 		} else if (checkIfElementIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
 			projectKey = getProjectKey(elementKey);
@@ -315,14 +313,14 @@ public class ViewRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null || filterSettings.getProjectKey() == null) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
 							"Matrix cannot be shown since the HttpServletRequest or filter settings are invalid."))
 					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -334,34 +332,16 @@ public class ViewRest {
 		return elementKey.split("-")[0];
 	}
 
-	private Response checkIfProjectKeyIsValid(String projectKey) {
-		if (projectKey == null) {
-			return projectKeyIsInvalid();
-		}
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = projectManager.getProjectByCurrentKey(projectKey);
-		if (project == null) {
-			return projectKeyIsInvalid();
-		}
-		return Response.status(Status.OK).build();
-	}
-
 	private Response checkIfElementIsValid(String elementKey) {
 		if (elementKey == null) {
 			return jiraIssueKeyIsInvalid();
 		}
 		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		return Response.status(Status.OK).build();
-	}
-
-	private Response projectKeyIsInvalid() {
-		String message = "Decision knowledge elements cannot be shown since the project key is invalid.";
-		LOGGER.error(message);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
 	}
 
 	private Response jiraIssueKeyIsInvalid() {
@@ -375,12 +355,10 @@ public class ViewRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("keyword") String keyword) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not correct!"))
-					.build();
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
-
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
@@ -412,12 +390,10 @@ public class ViewRest {
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
 			@QueryParam("knowledgeSource") String knowledgeSourceName) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project Key is not correct!"))
-					.build();
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
-
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}

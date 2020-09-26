@@ -62,7 +62,7 @@ public class TestSetKnowledgeTypeEnabled extends TestSetUp {
 	public void testUserUnauthorized() {
 		request.setAttribute("user", null);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				configRest.setKnowledgeTypeEnabled(request, "NotTEST", false, null).getStatus());
+				configRest.setKnowledgeTypeEnabled(request, "TEST", false, null).getStatus());
 	}
 
 	@Test
