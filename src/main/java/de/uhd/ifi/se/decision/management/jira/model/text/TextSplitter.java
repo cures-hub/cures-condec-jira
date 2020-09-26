@@ -227,7 +227,7 @@ public class TextSplitter {
 	}
 
 	public static Set<String> getAllTagsUsedInProject(String projectKey) {
-		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getDecisionKnowledgeTypes();
+		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getConDecKnowledgeTypes();
 		projectKnowledgeTypes.add(KnowledgeType.PRO);
 		projectKnowledgeTypes.add(KnowledgeType.CON);
 		Set<String> knowledgeTypeTags = new HashSet<String>();

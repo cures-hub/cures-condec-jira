@@ -33,7 +33,7 @@ public class TestGetDecisionKnowledgeTypes extends TestSetUp {
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Response.Status.OK.getStatusCode(),
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.getDecisionKnowledgeTypes("InvalidKey").getStatus());
 	}
 

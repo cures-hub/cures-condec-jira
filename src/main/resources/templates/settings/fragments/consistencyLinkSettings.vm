@@ -1,4 +1,4 @@
-<h4>Settings for the suggested related knowledge elements</h4>
+<h3>Settings for the suggested related knowledge elements</h3>
 
 <div class="field-group top-label">
     <label for="min-probability-link">Minimum score for link suggestion</label>

@@ -1,4 +1,4 @@
-<h4>Settings for the consistency check events</h4>
+<h3>Settings for the consistency check events</h3>
 
 <div class="field-group">
     <label for="isConsistencyDoneActivated-toggle">Consistency check for done event activated?</label>

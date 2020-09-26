@@ -43,8 +43,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleTag() {
-		KnowledgeElement element = getFirstKnowledgeElementInDescription(
-				"{issue}This is a very severe issue.{issue}");
+		KnowledgeElement element = getFirstKnowledgeElementInDescription("{issue}This is a very severe issue.{issue}");
 		assertTrue(element.getDescription().equals("This is a very severe issue."));
 		assertTrue(element.getType() == KnowledgeType.ISSUE);
 	}
@@ -52,8 +51,8 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		KnowledgeElement element = getFirstKnowledgeElementInDescription("{code}public static class{code}");
-		assertEquals("{code}public static class{code}", element.getDescription());
+		KnowledgeElement element = getFirstKnowledgeElementInDescription("{code:java}public static class{code}");
+		assertEquals("{code:java}public static class{code}", element.getDescription());
 		assertTrue(element.getType() == KnowledgeType.OTHER);
 	}
 

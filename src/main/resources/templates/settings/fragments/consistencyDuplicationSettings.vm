@@ -1,4 +1,4 @@
-<h4>Settings for the duplication detection</h4>
+<h3>Settings for the duplication detection</h3>
 
 <div class="field-group top-label">
     <label for="min-length-duplicate">Minimum length of similar text for duplication detection</label>

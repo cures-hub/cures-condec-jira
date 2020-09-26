@@ -2,70 +2,77 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.Response;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-public class TestIsKnowledgeTypeEnabled extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestIsKnowledgeTypeEnabled extends TestSetUp {
+	protected HttpServletRequest request;
+	protected ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+	}
+
 	@Test
-	public void testProjectKyNullKnowledgeTypeNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled(null, null).getEntity());
+	public void testProjectKeyNullKnowledgeTypeNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeTypeEnabled(null, null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmptyKnowledgeTypeNull() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled("", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeTypeEnabled("", null).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyFalseKnowledgeTypeNull() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-				configRest.isKnowledgeTypeEnabled("InvalidKey", null).getStatus());
+	public void testProjectKeyValidKnowledgeTypeNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeTypeEnabled("TEST", null).getStatus());
 	}
 
 	@Test
-	public void testProjectKyNullKnowledgeTypeEmpty() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled(null, "").getEntity());
+	public void testProjectKeyNullKnowledgeTypeEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeTypeEnabled(null, "").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmptyKnowledgeTypeEmpty() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled("", "").getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeTypeEnabled("", "").getStatus());
 	}
 
 	@Test
-	public void testProjectKeyFalseKnowledgeTypeEmpty() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
+	public void testProjectKeyInvalidKnowledgeTypeEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				configRest.isKnowledgeTypeEnabled("InvalidKey", "").getStatus());
 	}
 
 	@Test
-	public void testProjectKyNullKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()).getEntity());
+	public void testProjectKeyNullKnowledgeTypeFilled() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 
 	@Test
-	public void testProjectKeyEmptyKnowledgeTypeFilled() {
-		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-				configRest.isKnowledgeTypeEnabled("", KnowledgeType.SOLUTION.toString()).getEntity());
-	}
-
-	@Test
-	public void testProjectKeyFalseKnowledgeTypeFilled() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
+	public void testProjectKeyInvalidKnowledgeTypeFilled() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				configRest.isKnowledgeTypeEnabled("InvalidKey", KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 
 	@Test
-	public void testIsIssueStrategyProjectKeyOK() {
-		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
+	public void testProjectKeyValidKnowledgeTypeFilled() {
+		assertEquals(Status.OK.getStatusCode(),
 				configRest.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 }

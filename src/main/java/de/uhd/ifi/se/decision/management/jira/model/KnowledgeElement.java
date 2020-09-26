@@ -1,5 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.Graphs;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
@@ -7,17 +18,13 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.jgrapht.Graphs;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.*;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
@@ -111,10 +118,10 @@ public class KnowledgeElement {
 			issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
 		}
 		this.description = issueKeys.toString();
-		this.type = KnowledgeType.getKnowledgeType(null);
 		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
 		this.key = entry.getProjectKey() + "-" + entry.getId();
 		this.documentationLocation = DocumentationLocation.COMMIT;
+		this.type = KnowledgeType.CODE;
 		this.status = KnowledgeStatus.getKnowledgeStatus(null);
 	}
 

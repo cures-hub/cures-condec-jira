@@ -51,6 +51,10 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals(10, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
+	/**
+	 * @issue Why are test data changed and unit tests are not deterministic?
+	 */
+	// TODO Locally, this test returns 10, not 16
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager manager = new FilteringManager(user, new FilterSettings("TEST", ""));

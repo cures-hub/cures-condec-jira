@@ -62,8 +62,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeTypes() {
-		assertEquals(18, project.getDecisionKnowledgeTypes().size());
-		assertEquals(18, project.getNamesOfDecisionKnowledgeTypes().size());
+		assertEquals(18, project.getConDecKnowledgeTypes().size());
+		assertEquals(18, project.getNamesOfConDecKnowledgeTypes().size());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetKnowledgeTypesStorageInJiraIssuesActivated() {
-		assertEquals(7, project.getNamesOfKnowledgeTypes().size());
+		assertEquals(20, project.getNamesOfKnowledgeTypes().size());
 	}
 
 	@Test
@@ -117,7 +117,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(2, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
-
 	}
 
 	@AfterClass
