@@ -1,5 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLinkType;
@@ -7,6 +27,7 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -16,7 +37,11 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -27,19 +52,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.io.File;
-import java.util.*;
 
 /**
  * REST resource for plug-in configuration
@@ -570,19 +582,16 @@ public class ConfigRest {
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
+			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isKnowledgeExtractedFromGit == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
-		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
-				Boolean.parseBoolean(isKnowledgeExtractedFromGit));
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
+
 		// deactivate other git extraction if false
-		if (!Boolean.parseBoolean(isKnowledgeExtractedFromGit)) {
+		if (!isKnowledgeExtractedFromGit) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
 		}
@@ -879,10 +888,6 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-
-
-
-
 	/* **************************************/
 	/*										*/
 	/* Configuration for Decision Guidance */
@@ -1024,7 +1029,7 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog  */
+	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
 
@@ -1064,14 +1069,14 @@ public class ConfigRest {
 
 	/* **********************************************************/
 	/*															*/
-	/* Configuration for quality = completeness + consistency   */
+	/* Configuration for quality = completeness + consistency */
 	/*															*/
 	/* **********************************************************/
 
 	@Path("/isQualityEventActivated")
 	@GET
 	public Response isQualityEventActivated(@Context HttpServletRequest request,
-												@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
 
 		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -1084,8 +1089,8 @@ public class ConfigRest {
 	@Path("/activateQualityEvent")
 	@POST
 	public Response activateQualityEvent(@Context HttpServletRequest request,
-											 @QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-											 @QueryParam("isActivated") boolean isActivated) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
+			@QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -1101,11 +1106,11 @@ public class ConfigRest {
 			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
 		}
 		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
-			.doesQualityCheckEventTriggerNameExist(triggerNameShort);
+				.doesQualityCheckEventTriggerNameExist(triggerNameShort);
 	}
 
 	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
-															 String eventKey) {
+			String eventKey) {
 		Response response = this.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -1116,7 +1121,7 @@ public class ConfigRest {
 		}
 		if (!this.checkIfQualityTriggerExists(eventKey)) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
+					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
 		}
 		return Response.status(Status.OK).build();
 	}
@@ -1125,9 +1130,9 @@ public class ConfigRest {
 	@GET
 	public Response getAllConsistencyCheckEventTriggerNames() {
 		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
-			.getInstance();
+				.getInstance();
 		return Response.ok(Status.ACCEPTED)
-			.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
+				.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
 
 	}
 }
