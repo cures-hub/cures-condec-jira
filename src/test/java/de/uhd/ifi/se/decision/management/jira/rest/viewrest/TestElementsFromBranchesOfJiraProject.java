@@ -43,7 +43,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testExistingProjectKey() {
-		assertEquals(200, viewRest.getAllFeatureBranchesTree("TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getAllFeatureBranchesTree("TEST").getStatus());
 		Object receivedEntity = viewRest.getAllFeatureBranchesTree("TEST").getEntity();
 
 		Object expectedEntity = new DiffViewer(null);
@@ -53,7 +53,8 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 	@Test
 	public void testGitExtractionDisabled() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-		assertEquals(200, viewRest.getAllFeatureBranchesTree("TEST").getStatus());
+		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
+				viewRest.getAllFeatureBranchesTree("TEST").getStatus());
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 	}
 }

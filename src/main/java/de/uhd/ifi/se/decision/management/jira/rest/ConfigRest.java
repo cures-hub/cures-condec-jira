@@ -157,7 +157,8 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		if (knowledgeType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The knowledge type is null."))
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The knowledge type could not be enabled because it is null."))
 					.build();
 		}
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
@@ -279,8 +280,8 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		if (linkType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
-					.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The link type could not be enabled because it is null.")).build();
 		}
 		if (isLinkTypeEnabled) {
 			PluginInitializer.createLinkType(linkType);

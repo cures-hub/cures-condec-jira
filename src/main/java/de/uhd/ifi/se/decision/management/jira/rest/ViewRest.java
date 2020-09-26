@@ -67,7 +67,8 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.OK).build();
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
 		// get all project branches
 		return getDiffViewerResponse(projectKey, projectKey);
@@ -88,7 +89,8 @@ public class ViewRest {
 			return jiraIssueKeyIsInvalid();
 		}
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.OK).build();
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
 		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
 				+ normalizedIssueKey.toUpperCase() + "\\-";

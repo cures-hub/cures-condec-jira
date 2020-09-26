@@ -59,6 +59,15 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
+	public void testAnotherExcludedTag() {
+		Comment comment = createCommentAndTestWhetherExistent("{color}public static class{color}");
+		KnowledgeElement element = getFirstElementInComment(comment);
+		assertEquals("{color}public static class{color}", element.getDescription());
+		assertEquals(KnowledgeType.OTHER, element.getType());
+	}
+
+	@Test
+	@NonTransactional
 	public void testRationaleIcon() {
 		// Delete the element that was still in the Database
 		// FIXME: there should be a more elegant way.
