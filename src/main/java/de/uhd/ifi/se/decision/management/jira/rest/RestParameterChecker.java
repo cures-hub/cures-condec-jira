@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 
 public class RestParameterChecker {
 
-	static Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
+	public static Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
 		}
@@ -31,7 +31,7 @@ public class RestParameterChecker {
 		return Response.status(Status.OK).build();
 	}
 
-	static Response checkIfProjectKeyIsValid(String projectKey) {
+	public static Response checkIfProjectKeyIsValid(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {
 			return projectKeyIsInvalid();
 		}
@@ -43,12 +43,12 @@ public class RestParameterChecker {
 		return Response.status(Status.OK).build();
 	}
 
-	static Response projectKeyIsInvalid() {
+	public static Response projectKeyIsInvalid() {
 		String message = "The project key is invalid.";
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
 	}
 
-	static Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
+	public static Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
 		String username = AuthenticationManager.getUsername(request);
 		boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
 		if (isProjectAdmin) {
