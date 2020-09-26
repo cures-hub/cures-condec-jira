@@ -64,7 +64,7 @@ public class ConfigRest {
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -112,7 +112,7 @@ public class ConfigRest {
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isIssueStrategy") boolean isIssueStrategy) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -156,7 +156,7 @@ public class ConfigRest {
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("isKnowledgeTypeEnabled") boolean isKnowledgeTypeEnabled,
 			@QueryParam("knowledgeType") String knowledgeType) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -278,7 +278,7 @@ public class ConfigRest {
 	@POST
 	public Response setLinkTypeEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isLinkTypeEnabled") boolean isLinkTypeEnabled, @QueryParam("linkType") String linkType) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -403,7 +403,7 @@ public class ConfigRest {
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivated") String isActivatedString) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -420,7 +420,7 @@ public class ConfigRest {
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -437,7 +437,7 @@ public class ConfigRest {
 	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("webhookType") String webhookType,
 			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -461,7 +461,7 @@ public class ConfigRest {
 	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("releaseNoteCategory") ReleaseNotesCategory category, List<String> selectedIssueNames) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -485,7 +485,7 @@ public class ConfigRest {
 	@Path("/cleanDatabases")
 	@POST
 	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -512,34 +512,6 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-		}
-
-		Response projectResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
-			return projectResponse;
-		}
-
-		Response userResponse = checkIfUserIsAuthorized(request, projectKey);
-		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
-			return userResponse;
-		}
-
-		return Response.status(Status.OK).build();
-	}
-
-	private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
-		String username = AuthenticationManager.getUsername(request);
-		boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
-		if (isProjectAdmin) {
-			return Response.status(Status.OK).build();
-		}
-		LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
-		return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
-	}
-
 	/* **************************************/
 	/*										*/
 	/* Configuration for Git integration */
@@ -551,7 +523,7 @@ public class ConfigRest {
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -570,7 +542,7 @@ public class ConfigRest {
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -591,7 +563,7 @@ public class ConfigRest {
 	@POST
 	public Response setPostSquashedCommits(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -614,7 +586,7 @@ public class ConfigRest {
 	@POST
 	public Response setGitUris(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -631,7 +603,7 @@ public class ConfigRest {
 	@Path("/deleteGitRepos")
 	@POST
 	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -668,7 +640,7 @@ public class ConfigRest {
 			@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
 
 		Response returnResponse;
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
 			returnResponse = isValidDataResponse;
 		} else if (arffFileName == null || arffFileName.isEmpty()) {
@@ -695,7 +667,7 @@ public class ConfigRest {
 	@Path("/evaluateModel")
 	@POST
 	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -732,7 +704,7 @@ public class ConfigRest {
 	@POST
 	public Response testClassifierWithText(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("text") String text) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -763,7 +735,7 @@ public class ConfigRest {
 	@POST
 	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -784,7 +756,7 @@ public class ConfigRest {
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
@@ -817,7 +789,7 @@ public class ConfigRest {
 	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
-		Response response = this.checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -834,7 +806,7 @@ public class ConfigRest {
 	@POST
 	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -857,7 +829,7 @@ public class ConfigRest {
 	public Response setMaxNumberRecommendations(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -875,7 +847,7 @@ public class ConfigRest {
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
 
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -918,7 +890,7 @@ public class ConfigRest {
 	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -936,7 +908,7 @@ public class ConfigRest {
 	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
 			@QueryParam("isActivated") boolean isActivated) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -953,7 +925,7 @@ public class ConfigRest {
 	@POST
 	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -976,7 +948,7 @@ public class ConfigRest {
 	public Response setDefinitionOfDone(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
 
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
@@ -1045,11 +1017,11 @@ public class ConfigRest {
 
 	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
 			String eventKey) {
-		Response response = checkIfDataIsValid(request, projectKey);
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
-		if (!this.checkIfQualityTriggerExists(eventKey)) {
+		if (!checkIfQualityTriggerExists(eventKey)) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
 		}

@@ -62,8 +62,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeTypes() {
-		assertEquals(19, project.getConDecKnowledgeTypes().size());
-		assertEquals(19, project.getNamesOfConDecKnowledgeTypes().size());
+		assertEquals(18, project.getConDecKnowledgeTypes().size());
+		assertEquals(18, project.getNamesOfConDecKnowledgeTypes().size());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetKnowledgeTypesStorageInJiraIssuesActivated() {
-		assertEquals(21, project.getNamesOfKnowledgeTypes().size());
+		assertEquals(20, project.getNamesOfKnowledgeTypes().size());
 	}
 
 	@Test
