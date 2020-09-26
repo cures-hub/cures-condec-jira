@@ -23,11 +23,14 @@ import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
+import com.atlassian.jira.workflow.WorkflowManager;
+import com.atlassian.jira.workflow.WorkflowSchemeManager;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.velocity.VelocityManager;
@@ -54,6 +57,9 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager())
+				.addMock(JiraAuthenticationContext.class, new MockJiraAuthenticationContext())
+				.addMock(WorkflowManager.class, mock(WorkflowManager.class))
+				.addMock(WorkflowSchemeManager.class, new MockWorkflowSchemeManager())
 				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
