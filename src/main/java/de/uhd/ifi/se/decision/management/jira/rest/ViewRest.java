@@ -129,7 +129,8 @@ public class ViewRest {
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 		if (branches.isEmpty()) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "No branches were found.")).build();
 		}
 		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(projectKey);

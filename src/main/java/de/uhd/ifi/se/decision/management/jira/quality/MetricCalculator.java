@@ -42,7 +42,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 public class MetricCalculator {
@@ -239,11 +238,10 @@ public class MetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
-			CodeClassPersistenceManager ccpManager = new CodeClassPersistenceManager(projectKey);
-			summaryMap.put("Code Classes", ccpManager.getKnowledgeElements().size());
-		} else {
+		if (ignoreGit) {
 			summaryMap.put("Code Classes", 0);
+		} else {
+			summaryMap.put("Code Classes", graph.getElements(KnowledgeType.CODE).size());
 		}
 
 		return summaryMap;

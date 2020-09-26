@@ -24,13 +24,12 @@
 		<!-- general icons -->
 		<resource type="download" name="add.png" location="/images/add.png" />
 		<resource type="download" name="delete.png" location="/images/delete.png" />
-		<resource type="download" name="class.png" location="/images/class.png" />
 		<resource type="download" name="open.png" location="/images/open.png" />
 		<resource type="download" name="edit.png" location="/images/edit.png" />
 		<resource type="download" name="32px.png" location="/images/32px.png" />
 		<resource type="download" name="40px.png" location="/images/40px.png" />
-		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
-		<!-- default decision knowledge icons -->
+		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />		
+		<!-- default knowledge icons -->
 		<resource type="download" name="decision.png" location="/images/decision.png" />
 		<resource type="download" name="issue.png" location="/images/issue.png" />
 		<resource type="download" name="alternative.png" location="/images/alternative.png" />
@@ -39,6 +38,7 @@
 		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
 		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
 		<resource type="download" name="other.png" location="/images/other.png" />
+		<resource type="download" name="code.png" location="/images/code.png" />
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
