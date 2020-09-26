@@ -41,7 +41,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
 		assertEquals(4, filterSettings.getNamesOfDocumentationLocations().size());
-		assertEquals(7, filterSettings.getKnowledgeTypes().size());
+		assertEquals(21, filterSettings.getKnowledgeTypes().size());
 		assertEquals(-1, filterSettings.getStartDate());
 		assertEquals(-1, filterSettings.getEndDate());
 	}
