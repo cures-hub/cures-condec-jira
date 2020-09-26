@@ -273,16 +273,15 @@ public class ConfigRest {
 	@Path("/setLinkTypeEnabled")
 	@POST
 	public Response setLinkTypeEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isLinkTypeEnabled") String isLinkTypeEnabledString, @QueryParam("linkType") String linkType) {
+			@QueryParam("isLinkTypeEnabled") boolean isLinkTypeEnabled, @QueryParam("linkType") String linkType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isLinkTypeEnabledString == null || linkType == null) {
+		if (linkType == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isLinkTypeEnabled = null"))
 					.build();
 		}
-		boolean isLinkTypeEnabled = Boolean.parseBoolean(isLinkTypeEnabledString);
 		if (isLinkTypeEnabled) {
 			PluginInitializer.createLinkType(linkType);
 			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);

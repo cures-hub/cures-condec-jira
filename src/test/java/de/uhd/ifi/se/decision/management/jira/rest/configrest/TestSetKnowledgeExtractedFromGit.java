@@ -40,7 +40,7 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 	}
 
 	@Test
-	public void RequestValidProjectKeyNullIsExtractedFalse() {
+	public void testRequestValidProjectKeyNullIsExtractedFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, null, false).getStatus());
 	}
