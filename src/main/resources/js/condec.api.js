@@ -918,7 +918,7 @@
 	 */
 	ConDecAPI.prototype.setIconParsing = function (projectKey, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/config/setIconParsing.json?projectKey=" + projectKey
-			+ "&isActivatedString=" + isActivated, null, function (error, response) {
+			+ "&isActivated=" + isActivated, null, function (error, response) {
 				if (error === null) {
 					showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
 				}

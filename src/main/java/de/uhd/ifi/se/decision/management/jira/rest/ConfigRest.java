@@ -63,32 +63,15 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response != null) {
-			return response;
-		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
-		ConfigPersistenceManager.setActivated(projectKey, isActivated);
-		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
-		resetKnowledgeGraph(projectKey);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	private Response checkRequest(HttpServletRequest request, String projectKey, String isActivatedString) {
+			@QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		if (!"true".equals(isActivatedString) && !"false".equals(isActivatedString)) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated is invalid"))
-					.build();
-		}
-
-		return null;
+		ConfigPersistenceManager.setActivated(projectKey, isActivated);
+		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
+		resetKnowledgeGraph(projectKey);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
@@ -128,16 +111,11 @@ public class ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
+			@QueryParam("isIssueStrategy") boolean isIssueStrategy) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isIssueStrategyString == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
-					.build();
-		}
-		boolean isIssueStrategy = Boolean.parseBoolean(isIssueStrategyString);
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
 		manageDefaultIssueTypes(projectKey, isIssueStrategy);
 		return Response.ok(Status.ACCEPTED).build();
@@ -172,17 +150,16 @@ public class ConfigRest {
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
+			@QueryParam("isKnowledgeTypeEnabled") boolean isKnowledgeTypeEnabled,
 			@QueryParam("knowledgeType") String knowledgeType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isKnowledgeTypeEnabledString == null || knowledgeType == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
+		if (knowledgeType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The knowledge type is null."))
 					.build();
 		}
-		boolean isKnowledgeTypeEnabled = Boolean.parseBoolean(isKnowledgeTypeEnabledString);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
 		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 			if (isKnowledgeTypeEnabled) {
@@ -523,16 +500,13 @@ public class ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response == null) {
-			boolean isActivated = Boolean.parseBoolean(isActivatedString);
-			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-			return Response.ok(Status.ACCEPTED).build();
-		} else {
-			return response;
+			@QueryParam("isActivated") boolean isActivated) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-
+		ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
@@ -685,13 +659,11 @@ public class ConfigRest {
 	@Path("/setUseClassifierForIssueComments")
 	@POST
 	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
-		Response response = this.checkRequest(request, projectKey, isActivatedString);
-		if (response != null) {
-			return response;
+			@QueryParam("projectKey") String projectKey, @QueryParam("isClassifierUsedForIssues") boolean isActivated) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
