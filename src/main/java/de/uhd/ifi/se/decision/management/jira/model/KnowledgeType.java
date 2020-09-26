@@ -35,7 +35,7 @@ public enum KnowledgeType {
 	RATIONALE("#f5f5f5"), //
 	SOLUTION("#fce3be"), //
 	QUESTION("#ffffcc"), //
-	CODE("#cccccc"), // code is system knowledge
+	CODE("#f2f2f2"), // code is system knowledge
 	OTHER; // other system knowledge (requirements) and project knowledge (work items)
 
 	private String color;
