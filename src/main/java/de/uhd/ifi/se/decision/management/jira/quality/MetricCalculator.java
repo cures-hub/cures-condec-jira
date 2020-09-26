@@ -44,7 +44,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.ChartCreator;
 
 public class MetricCalculator {
 
@@ -63,7 +62,7 @@ public class MetricCalculator {
 	private List<String> knowledgeStatus;
 	private List<String> decisionGroups;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ChartCreator.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
 	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, boolean ignoreGit,
 			List<String> knowledgeTypes, List<String> knowledgeStatus, List<String> decisionGroups) {

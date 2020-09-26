@@ -16,11 +16,12 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 /**
  * Models the possible types of decision knowledge elements. The decision
  * knowledge types most often used are decision, issue, argument, and
- * alternative.
+ * alternative. In addition, code is modeled as a knowledge type. (Code is
+ * system knowledge).
  * 
  * Knowledge elements can also be of other types. For example, knowledge
- * elements of other types are requirements, development tasks (=work items),
- * and code classes, but they are not included in this enum (only as OTHER).
+ * elements of other types are requirements and development tasks (=work items)
+ * but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
 	ALTERNATIVE("#fff6e8"), //
@@ -34,6 +35,7 @@ public enum KnowledgeType {
 	RATIONALE("#f5f5f5"), //
 	SOLUTION("#fce3be"), //
 	QUESTION("#ffffcc"), //
+	CODE("#cccccc"), //
 	OTHER;
 
 	private String color;
