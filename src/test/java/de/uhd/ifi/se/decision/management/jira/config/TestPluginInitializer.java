@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 
 public class TestPluginInitializer {
 
@@ -113,13 +114,13 @@ public class TestPluginInitializer {
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
-		PluginInitializer.addIssueTypeToScheme("Decision", null);
+		PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), null);
 	}
 
 	@Ignore
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
-		PluginInitializer.addIssueTypeToScheme("Decision", "TEST");
+		PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), "TEST");
 	}
 
 	@Test

@@ -31,8 +31,20 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.scheme.Scheme;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.workflow.AssignableWorkflowScheme;
+import com.atlassian.jira.workflow.ConfigurableJiraWorkflow;
+import com.atlassian.jira.workflow.JiraWorkflow;
+import com.atlassian.jira.workflow.WorkflowManager;
+import com.atlassian.jira.workflow.WorkflowSchemeManager;
+import com.atlassian.jira.workflow.WorkflowUtil;
+import com.opensymphony.workflow.FactoryException;
+import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.config.workflows.IssueWorkflow;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -78,13 +90,13 @@ public class PluginInitializer implements InitializingBean {
 		return existingIssueTypeNames;
 	}
 
-	public static void createIssueType(String issueTypeName) {
+	public static IssueType createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
 		if (types != null) {
 			for (IssueType type : types) {
 				if (type.getName().equals(issueTypeName)) {
-					return;
+					return type;
 				}
 			}
 		}
@@ -97,15 +109,18 @@ public class PluginInitializer implements InitializingBean {
 				IconType.ISSUE_TYPE_ICON_TYPE);
 		Avatar issueAvatar = null;
 
+		IssueType newIssueType = null;
 		try {
 			issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar, inputStream, null);
 			if (issueAvatar != null) {
-				issueTypeManager.createIssueType(issueTypeName, issueTypeName, issueAvatar.getId());
+				newIssueType = issueTypeManager.createIssueType(issueTypeName, issueTypeName, issueAvatar.getId());
 			}
 		} catch (DataAccessException | IOException e) {
 			LOGGER.error("Issue type " + issueTypeName + " could not be created.");
 			LOGGER.error(e.getMessage());
 		}
+
+		return newIssueType;
 	}
 
 	public void createDecisionKnowledgeLinkTypes() {
@@ -175,26 +190,73 @@ public class PluginInitializer implements InitializingBean {
 		return ComponentGetter.getUrlOfImageFolder() + getFileName(issueTypeName);
 	}
 
-	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
+	public static void addIssueTypeToScheme(IssueType jiraIssueType, String projectKey) {
+		if (jiraIssueType == null || projectKey == null) {
 			return;
 		}
 
-		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		addWorkflowToWorkflowScheme(jiraIssueType, project);
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 
-		for (IssueType issueType : issueTypes) {
-			if (issueType.getName().equals(issueTypeName)
-					&& !issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
-				FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
-				OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
-				final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
-				options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
-				issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-				return;
-			}
+		if (!issueTypeSchemeManager.getIssueTypesForProject(project).contains(jiraIssueType)) {
+			FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
+			OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
+			final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+			options.addOption(IssueFieldConstants.ISSUE_TYPE, jiraIssueType.getId());
+			issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+			return;
+		}
+	}
+
+	private static void addWorkflowToWorkflowScheme(IssueType jiraIssueType, Project project) {
+		JiraWorkflow jiraWorkflow = createWorkflow(jiraIssueType);
+		if (jiraWorkflow == null) {
+			return;
+		}
+		WorkflowSchemeManager workflowSchemeManager = ComponentAccessor.getComponent(WorkflowSchemeManager.class);
+		Scheme scheme = workflowSchemeManager.getSchemeFor(project);
+		AssignableWorkflowScheme myWorkflowScheme = workflowSchemeManager.getWorkflowSchemeObj(scheme.getName());
+		AssignableWorkflowScheme.Builder myWorkflowSchemeBuilder = myWorkflowScheme.builder();
+		myWorkflowSchemeBuilder.setMapping(jiraIssueType.getId(), jiraWorkflow.getName());
+
+		workflowSchemeManager.updateWorkflowScheme(myWorkflowSchemeBuilder.build());
+		workflowSchemeManager.addSchemeToProject(project,
+				workflowSchemeManager.getSchemeObject(myWorkflowScheme.getId()));
+	}
+
+	private static JiraWorkflow createWorkflow(IssueType jiraIssueType) {
+		String workflowDescriptor = getXMLWorkflowDescriptor(jiraIssueType);
+		if (workflowDescriptor == null) {
+			return null;
+		}
+		// System.out.println(content);
+		JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
+		ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
+
+		WorkflowManager workflowManager = ComponentAccessor.getComponent(WorkflowManager.class);
+
+		JiraWorkflow jiraWorkflow = null;
+		try {
+			WorkflowDescriptor myWorkflowDescriptor = WorkflowUtil.convertXMLtoWorkflowDescriptor(workflowDescriptor);
+			jiraWorkflow = new ConfigurableJiraWorkflow("ConDec " + jiraIssueType.getName() + " Workflow",
+					myWorkflowDescriptor, workflowManager);
+			workflowManager.createWorkflow(user, jiraWorkflow);
+		} catch (FactoryException e) {
+			LOGGER.error("Workflow could not be created. " + e.getMessage());
+		}
+
+		return jiraWorkflow;
+	}
+
+	private static String getXMLWorkflowDescriptor(IssueType jiraIssueType) {
+		switch (jiraIssueType.getName()) {
+		case "Issue":
+			return IssueWorkflow.getXMLDescriptor();
+		case "Decision":
+			return null;
+		default:
+			return null;
 		}
 	}
 

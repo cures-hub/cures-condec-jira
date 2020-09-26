@@ -96,6 +96,10 @@ public class TreeViewer {
 
 		// many trees are shown in overview and rationale backlog
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
+		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
+			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element)));
+		}
+
 		filteringManager.getFilterSettings().setKnowledgeTypes(null);
 		filteringManager.getFilterSettings().setStatus(null);
 
@@ -104,7 +108,6 @@ public class TreeViewer {
 				continue;
 			}
 			filteringManager.getFilterSettings().setSelectedElement(element);
-			filteringManager.getFilterSettings().setLinkDistance(2);
 			graph = filteringManager.getSubgraphMatchingFilterSettings();
 			nodes.add(getTreeViewerNodeWithChildren(element));
 		}
