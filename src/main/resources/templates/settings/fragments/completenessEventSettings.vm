@@ -1,4 +1,4 @@
-<h4>Settings for the completeness check events</h4>
+<h3>Settings for the completeness check events</h4>
 
 <div class="field-group">
     <label for="isCompletenessDoneActivated-toggle">Completeness check for done event activated?</label>
