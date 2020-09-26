@@ -204,7 +204,7 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Set<String> rationaleTypesAsString = new DecisionKnowledgeProject(projectKey)
-				.getNamesOfDecisionKnowledgeTypes();
+				.getNamesOfConDecKnowledgeTypes();
 		return Response.ok(rationaleTypesAsString).build();
 	}
 

@@ -96,23 +96,23 @@ public class DecisionKnowledgeProject {
 	/**
 	 * @return {@link KnowledgeType}s that are used in this project.
 	 */
-	public Set<KnowledgeType> getDecisionKnowledgeTypes() {
-		Set<KnowledgeType> knowledgeTypes = new LinkedHashSet<KnowledgeType>();
+	public Set<KnowledgeType> getConDecKnowledgeTypes() {
+		Set<KnowledgeType> enabledKnowledgeTypes = new LinkedHashSet<KnowledgeType>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(getProjectKey(), knowledgeType);
 			if (isEnabled) {
-				knowledgeTypes.add(knowledgeType);
+				enabledKnowledgeTypes.add(knowledgeType);
 			}
 		}
-		return knowledgeTypes;
+		return enabledKnowledgeTypes;
 	}
 
 	/**
 	 * @return names of {@link KnowledgeType}s that are used in this project as
 	 *         Strings.
 	 */
-	public Set<String> getNamesOfDecisionKnowledgeTypes() {
-		Set<KnowledgeType> knowledgeTypes = getDecisionKnowledgeTypes();
+	public Set<String> getNamesOfConDecKnowledgeTypes() {
+		Set<KnowledgeType> knowledgeTypes = getConDecKnowledgeTypes();
 		Set<String> knowledgeTypesAsString = knowledgeTypes.stream().map(KnowledgeType::toString)
 				.collect(Collectors.toSet());
 		return knowledgeTypesAsString;
@@ -124,11 +124,7 @@ public class DecisionKnowledgeProject {
 	 */
 	public Set<String> getNamesOfKnowledgeTypes() {
 		Set<String> jiraIssueTypes = getJiraIssueTypeNames();
-		if (ConfigPersistenceManager.isIssueStrategy(this.getProjectKey())) {
-			return jiraIssueTypes;
-		}
-
-		Set<String> knowledgeTypes = getNamesOfDecisionKnowledgeTypes();
+		Set<String> knowledgeTypes = getNamesOfConDecKnowledgeTypes();
 		knowledgeTypes.addAll(jiraIssueTypes);
 		return knowledgeTypes;
 	}
