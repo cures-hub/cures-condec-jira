@@ -3,7 +3,6 @@
 #parse("templates/dialogs/deleteDialog.vm")
 #parse("templates/dialogs/linkDialog.vm")
 #parse("templates/dialogs/deleteLinkDialog.vm")
-#parse("templates/dialogs/changeTypeDialog.vm")
 
 <!-- Decision Groups -->
 #parse("templates/dialogs/assignDialog.vm")

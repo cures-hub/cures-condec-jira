@@ -489,37 +489,6 @@
         });
     }
 
-    ConDecDialog.prototype.showChangeTypeDialog = function (id, documentationLocation) {
-        console.log("conDecDialog showChangeTypeDialog");
-
-        // HTML elements
-        var changeTypeDialog = document.getElementById("change-type-dialog");
-        var selectTypeField = document.getElementById("change-type-form-select-type");
-        var submitButton = document.getElementById("change-type-dialog-submit-button");
-        var cancelButton = document.getElementById("change-type-dialog-cancel-button");
-
-        // Fill HTML elements
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-            fillSelectTypeField(selectTypeField, decisionKnowledgeElement.type);
-        });
-
-        // Set onclick listener on buttons
-        submitButton.onclick = function () {
-            var type = selectTypeField.value;
-            conDecAPI.changeKnowledgeType(id, type, documentationLocation, function () {
-                conDecObservable.notify();
-            });
-            AJS.dialog2(changeTypeDialog).hide();
-        };
-
-        cancelButton.onclick = function () {
-            AJS.dialog2(changeTypeDialog).hide();
-        };
-
-        // Show dialog
-        AJS.dialog2(changeTypeDialog).show();
-    };
-
     function fillSelectStatusField(selectField, element) {
         if (selectField === null) {
             return;
