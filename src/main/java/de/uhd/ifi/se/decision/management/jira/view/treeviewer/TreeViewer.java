@@ -98,6 +98,7 @@ public class TreeViewer {
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
 		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
 			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element)));
+			return;
 		}
 
 		filteringManager.getFilterSettings().setKnowledgeTypes(null);
