@@ -658,18 +658,6 @@
 	};
 
 	/*
-	 * external reference: rationaleModelSettings.vm
-	 */
-	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function (projectKey, query, callback) {
-		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-			null, function (error, issues) {
-				if (error === null) {
-					callback(issues);
-				}
-			});
-	};
-
-	/*
 	 * external reference: rationalModelSettings.vm
 	 */
 	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function (projectKey, query) {

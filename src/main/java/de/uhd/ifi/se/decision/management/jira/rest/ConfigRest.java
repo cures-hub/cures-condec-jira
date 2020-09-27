@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -212,6 +211,7 @@ public class ConfigRest {
 		return Response.ok(rationaleTypesAsString).build();
 	}
 
+	// TODO Replace by servlet parameter
 	@Path("/getDecisionTableCriteriaQuery")
 	@GET
 	public Response getDesionTabelCriteriaQuery(@QueryParam("projectKey") String projectKey) {
@@ -239,24 +239,6 @@ public class ConfigRest {
 			ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
 		} else {
 			map.put("criteriaCount", 0);
-		}
-		return Response.ok(map).build();
-	}
-
-	@Path("/testDecisionTableCriteriaQuery")
-	@POST
-	public Response testDecisionTableCriteriaQuery(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Map<Long, List<KnowledgeElement>> map = new HashMap<>();
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
-		for (Issue i : queryHandler.getJiraIssuesFromQuery()) {
-			map.put(i.getId(), new ArrayList<>());
-			map.get(i.getId()).add(new KnowledgeElement(i));
 		}
 		return Response.ok(map).build();
 	}
