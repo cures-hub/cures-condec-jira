@@ -58,7 +58,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager())
 				.addMock(JiraAuthenticationContext.class, new MockJiraAuthenticationContext())
-				.addMock(WorkflowManager.class, mock(WorkflowManager.class))
+				.addMock(WorkflowManager.class, new MockWorkflowManager())
 				.addMock(WorkflowSchemeManager.class, new MockWorkflowSchemeManager())
 				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())

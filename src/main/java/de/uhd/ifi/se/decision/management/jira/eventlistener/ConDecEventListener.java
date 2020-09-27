@@ -51,15 +51,15 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		issueEventListeners = new ArrayList<>();
 		linkEventListeners = new ArrayList<>();
 
-		// attach listeners
+		// attach Jira issue event listeners
 		attach((IssueEventListener) new WebhookEventListener());
 		attach(new JiraIssueTextExtractionEventListener());
 		attach(new SummarizationEventListener());
 		attach(QualityCheckEventListenerSingleton.getInstance());
 		attach(new JiraIssueChangeListener());
 
+		// attach Jira issue link event listeners
 		attach((LinkEventListener) new WebhookEventListener());
-
 	}
 
 	public void attach(IssueEventListener listener) {
@@ -99,7 +99,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 			return;
 		}
 		this.issueEventListeners.forEach(issueEventListener -> issueEventListener.onIssueEvent(issueEvent));
-
 	}
 
 	@EventListener

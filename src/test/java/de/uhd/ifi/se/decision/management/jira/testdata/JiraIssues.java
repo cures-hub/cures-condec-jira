@@ -10,6 +10,8 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.status.MockStatus;
+import com.atlassian.jira.issue.status.Status;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
@@ -94,7 +96,8 @@ public class JiraIssues {
 		issue.setDescription(summary);
 		issue.setCreated(new Timestamp(System.currentTimeMillis()));
 		issue.setResolutionDate(new Timestamp(System.currentTimeMillis() + 10000));
-		issue.setStatusId("1");
+		Status status = new MockStatus("1", "Unresolved");
+		issue.setStatus(status);
 		((MockIssue) issue).setReporter(user);
 		return issue;
 	}

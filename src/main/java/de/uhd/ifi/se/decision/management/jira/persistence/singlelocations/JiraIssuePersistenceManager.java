@@ -376,29 +376,32 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 
 	private boolean updateStatus(KnowledgeStatus newStatus, MutableIssue issueToBeUpdated, ApplicationUser user,
 			IssueService issueService) {
+		boolean isStatusUpdated = true;
 		WorkflowManager workflowManager = ComponentAccessor.getComponent(WorkflowManager.class);
 		JiraWorkflow workFlow = workflowManager.getWorkflow(issueToBeUpdated);
 		Status status = issueToBeUpdated.getStatus();
-		if (status == null) {
-			return false;
-		}
-		StepDescriptor currentStep = workFlow.getLinkedStep(status);
-		@SuppressWarnings("unchecked")
-		List<ActionDescriptor> possibleActionsList = currentStep.getActions();
+		try {
+			StepDescriptor currentStep = workFlow.getLinkedStep(status);
+			@SuppressWarnings("unchecked")
+			List<ActionDescriptor> possibleActionsList = currentStep.getActions();
 
-		int actionId = 0;
-		for (ActionDescriptor actionDescriptor : possibleActionsList) {
-			if (actionDescriptor.getName().equalsIgnoreCase("set " + newStatus.toString())) {
-				actionId = actionDescriptor.getId();
+			int actionId = 0;
+			for (ActionDescriptor actionDescriptor : possibleActionsList) {
+				if (actionDescriptor.getName().equalsIgnoreCase("set " + newStatus.toString())) {
+					actionId = actionDescriptor.getId();
+				}
 			}
-		}
 
-		TransitionValidationResult transitionValidationResult = issueService.validateTransition(user,
-				issueToBeUpdated.getId(), actionId, issueService.newIssueInputParameters());
-		if (transitionValidationResult.isValid()) {
-			issueService.transition(user, transitionValidationResult);
+			TransitionValidationResult transitionValidationResult = issueService.validateTransition(user,
+					issueToBeUpdated.getId(), actionId, issueService.newIssueInputParameters());
+			if (transitionValidationResult.isValid()) {
+				issueService.transition(user, transitionValidationResult);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Updating decision knowledge element in database failed. " + e.getLocalizedMessage());
+			isStatusUpdated = false;
 		}
-		return true;
+		return isStatusUpdated;
 	}
 
 	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
