@@ -117,4 +117,13 @@ public class TestTreeViewer extends TestSetUp {
 		assertEquals(10, treeViewer.getNodes().size());
 	}
 
+	@Test
+	@NonTransactional
+	public void testLinkDistanceZero() {
+		filterSettings.setLinkDistance(0);
+		filterSettings.setSelectedElement((KnowledgeElement) null);
+		treeViewer = new TreeViewer(filterSettings);
+		assertEquals(20, treeViewer.getNodes().size());
+	}
+
 }
