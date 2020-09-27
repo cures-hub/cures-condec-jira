@@ -1,6 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.config.workflows;
 
+import java.util.Collection;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.config.StatusManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.status.Status;
 
 /**
  * @issue How can we create workflows (i.e. status of knowledge elements and
@@ -26,4 +32,20 @@ public class WorkflowXMLDescriptorProvider {
 		}
 	}
 
+	public static String getStatusId(String statusName) {
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<Status> listOfJiraStatus = constantsManager.getStatuses();
+		for (Status status : listOfJiraStatus) {
+			if (status.getName().equalsIgnoreCase(statusName)) {
+				return status.getId();
+			}
+		}
+		Status newStatus = createNewStatus(statusName);
+		return newStatus.getId();
+	}
+
+	private static Status createNewStatus(String statusName) {
+		StatusManager statusManager = ComponentAccessor.getComponent(StatusManager.class);
+		return statusManager.createStatus(statusName, "", "");
+	}
 }
