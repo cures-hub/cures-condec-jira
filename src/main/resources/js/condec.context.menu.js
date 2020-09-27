@@ -97,6 +97,10 @@
 			conDecDialog.showEditDialog(id, documentationLocation);
 		};
 
+		document.getElementById("condec-context-menu-change-status-item").onclick = function() {
+			conDecDialog.showChangeStatusDialog(id, documentationLocation);
+		};
+
 		document.getElementById("condec-context-menu-issue-item").onclick = function() {
 			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function() {
 				conDecObservable.notify();
@@ -252,6 +256,16 @@
 			document.getElementById("second-context-section").style.display = "block";
 			document.getElementById("third-context-section").style.display = "block";
 			document.getElementById("fourth-context-section").style.display = "block";
+		}
+		if (documentationLocation !== "groups") {
+			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+				var typesForStatus = new Array("issue", "alternative", "decision");
+				if (!typesForStatus.includes(decisionKnowledgeElement.type.toLowerCase())) {
+					document.getElementById("condec-context-menu-change-status-item").style.display = "none";
+				} else {
+					document.getElementById("condec-context-menu-change-status-item").style.display = "initial";
+				}
+			});
 		}
 		if (container === null || container.includes("vis")) {
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";

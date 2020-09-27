@@ -247,6 +247,16 @@
 			});
 	};
 
+	/**
+	 * Updates the knowledge status of the element. The summary and description are set null 
+	 * to indicate that only the knowledge status is updated. 
+	 *
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.setStatus = function (id, documentationLocation, type, status, callback) {
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
+	};
+
 	/*
 	 * external references: condec.export, condec.decision.table
 	 */
