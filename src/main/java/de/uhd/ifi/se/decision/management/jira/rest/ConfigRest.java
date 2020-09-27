@@ -211,18 +211,6 @@ public class ConfigRest {
 		return Response.ok(rationaleTypesAsString).build();
 	}
 
-	// TODO Replace by servlet parameter
-	@Path("/getDecisionTableCriteriaQuery")
-	@GET
-	public Response getDesionTabelCriteriaQuery(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
-		return Response.ok(Status.OK).entity(ImmutableMap.of("query", query)).build();
-	}
-
 	@Path("/setDecisionTableCriteriaQuery")
 	@POST
 	public Response setDesionTabelCriteriaQuery(@Context HttpServletRequest request,

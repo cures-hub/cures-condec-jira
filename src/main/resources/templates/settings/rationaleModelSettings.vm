@@ -2,7 +2,8 @@
 <div class="field-group">
 	<label for="criteria-query">Decision table criteria query</label>
 	<div class="aui-group">
- 		<input class="text long-field" type="text" id="criteria-query" placeholder="project=CON AND type = &quot;Non-Functional Requirement&quot;" title="JQL input">
+ 		<input class="text long-field" type="text" id="criteria-query" placeholder="project=CON AND type = &quot;Non-Functional Requirement&quot;" 
+		 	title="JQL input" value="$criteriaQuery">
  		<button type="button" class="aui-button aui-button-primary" id="btn_save_query" onclick="saveQuery(event)">Save</button>
  	</div>
  	<div class="description">Enables to configure which Jira issue types can be used as criteria in the decision table.</div>
@@ -46,10 +47,6 @@
 	        this.busy = false;
 	    });
 	}
-
-	conDecAPI.getDecisionTableCriteriaQuery("$projectKey", function(query) {
-		document.getElementById("criteria-query").value = query.query;
-	});
 
 	function saveQuery(event) {
 		event.preventDefault()

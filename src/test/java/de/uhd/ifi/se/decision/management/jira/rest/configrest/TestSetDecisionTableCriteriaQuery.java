@@ -14,10 +14,12 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetDecisionTableCriteriaQuery extends TestSetUp {
+public class TestSetDecisionTableCriteriaQuery extends TestSetUp {
 
 	protected ConfigRest configRest;
 	protected HttpServletRequest request;
+	private String projectKey = "TEST";
+	private String testQuery = "project=Test";
 
 	@Before
 	public void setUp() {
@@ -27,22 +29,15 @@ public class TestGetDecisionTableCriteriaQuery extends TestSetUp {
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
-	private String projectKey = "TEST";
-	private String testQuery = "project=Test";
-
 	@Test
-	public void testGetDecisionTableCriteriaQueryWithInvalidProjectKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getDesionTabelCriteriaQuery(null).getStatus());
-	}
-
-	@Test
-	public void testSetDecisionTableCriteriaQuery() {
+	public void testRequestValidProjectKeyValidQueryValid() {
 		assertEquals(Status.OK.getStatusCode(),
 				configRest.setDesionTabelCriteriaQuery(request, projectKey, testQuery).getStatus());
 	}
 
 	@Test
-	public void testGetDecisionTableCriteriaQuery() {
-		assertEquals(Status.OK.getStatusCode(), configRest.getDesionTabelCriteriaQuery(projectKey).getStatus());
+	public void testRequestValidProjectKeyNullQueryValid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.setDesionTabelCriteriaQuery(request, null, testQuery).getStatus());
 	}
 }

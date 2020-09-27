@@ -679,18 +679,6 @@
 	};
 
 	/*
-	 * external reference: rationaleModelSettings.vm
-	 */
-	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function (projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
-			function (error, query) {
-				if (error === null) {
-					callback(query);
-				}
-			});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
