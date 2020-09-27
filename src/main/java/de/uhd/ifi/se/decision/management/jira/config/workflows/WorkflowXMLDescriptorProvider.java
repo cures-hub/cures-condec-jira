@@ -8,6 +8,8 @@ import com.atlassian.jira.config.StatusManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.status.Status;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
 /**
  * @issue How can we create workflows (i.e. status of knowledge elements and
  *        their transitions) programmatically?
@@ -41,11 +43,14 @@ public class WorkflowXMLDescriptorProvider {
 			}
 		}
 		Status newStatus = createNewStatus(statusName);
+		if (newStatus == null) {
+			return "";
+		}
 		return newStatus.getId();
 	}
 
 	private static Status createNewStatus(String statusName) {
 		StatusManager statusManager = ComponentAccessor.getComponent(StatusManager.class);
-		return statusManager.createStatus(statusName, "", "");
+		return statusManager.createStatus(statusName, "", KnowledgeType.OTHER.getIconUrl());
 	}
 }
