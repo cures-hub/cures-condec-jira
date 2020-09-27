@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class VisTimeLineNode {
@@ -63,13 +62,9 @@ public class VisTimeLineNode {
 	}
 
 	private String createContentString(KnowledgeElement element) {
-		String contentString = "<img src=" + '"' + KnowledgeType.getIconUrl(element) + '"' + "> ";
-		KnowledgeStatus elementStatus = element.getStatus();
-		if (elementStatus == KnowledgeStatus.DISCARDED || elementStatus == KnowledgeStatus.REJECTED
-				|| elementStatus == KnowledgeStatus.UNRESOLVED) {
-			return contentString + "<p style=\"color:red; display:inline\">" + element.getSummary() + "</p>";
-		}
-		return contentString + element.getSummary();
+		String image = "<img src=" + '"' + KnowledgeType.getIconUrl(element) + '"' + "> ";
+		return image + "<p style=\"color:" + element.getStatus().getColor() + "; display:inline\">"
+				+ element.getSummary() + "</p>";
 	}
 
 	public int getId() {
