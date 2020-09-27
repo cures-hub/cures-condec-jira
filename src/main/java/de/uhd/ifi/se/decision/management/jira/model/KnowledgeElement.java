@@ -102,7 +102,9 @@ public class KnowledgeElement {
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		this.creationDate = issue.getCreated();
 		this.updatingDate = issue.getUpdated();
-		this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
+		if (issue.getStatus() != null) {
+			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
+		}
 	}
 
 	public KnowledgeElement(CodeClassInDatabase entry) {

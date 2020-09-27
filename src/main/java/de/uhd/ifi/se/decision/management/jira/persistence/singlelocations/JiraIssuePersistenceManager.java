@@ -379,6 +379,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		WorkflowManager workflowManager = ComponentAccessor.getComponent(WorkflowManager.class);
 		JiraWorkflow workFlow = workflowManager.getWorkflow(issueToBeUpdated);
 		Status status = issueToBeUpdated.getStatus();
+		if (status == null) {
+			return false;
+		}
 		StepDescriptor currentStep = workFlow.getLinkedStep(status);
 		@SuppressWarnings("unchecked")
 		List<ActionDescriptor> possibleActionsList = currentStep.getActions();

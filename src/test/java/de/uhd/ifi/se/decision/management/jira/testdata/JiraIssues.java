@@ -94,6 +94,7 @@ public class JiraIssues {
 		issue.setDescription(summary);
 		issue.setCreated(new Timestamp(System.currentTimeMillis()));
 		issue.setResolutionDate(new Timestamp(System.currentTimeMillis() + 10000));
+		issue.setStatusId("1");
 		((MockIssue) issue).setReporter(user);
 		return issue;
 	}
