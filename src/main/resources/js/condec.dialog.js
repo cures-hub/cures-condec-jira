@@ -520,37 +520,6 @@
         AJS.dialog2(changeTypeDialog).show();
     };
 
-    ConDecDialog.prototype.showChangeStatusDialog = function (id, documentationLocation) {
-        console.log("conDecDialog showChangeStatusDialog");
-
-        // HTML elements
-        var changeStatusDialog = document.getElementById("change-status-dialog");
-        var selectStatusField = document.getElementById("change-status-form-select-status");
-        var submitButton = document.getElementById("change-status-dialog-submit-button");
-        var cancelButton = document.getElementById("change-status-dialog-cancel-button");
-
-        // Fill HTML elements
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-            fillSelectStatusField(selectStatusField, decisionKnowledgeElement);
-
-            // Set onclick listener on buttons
-            submitButton.onclick = function () {
-                var status = selectStatusField.value;
-                conDecAPI.setStatus(id, documentationLocation, decisionKnowledgeElement.type, status, function () {
-                    conDecObservable.notify();
-                });
-                AJS.dialog2(changeStatusDialog).hide();
-            };
-        });
-
-        cancelButton.onclick = function () {
-            AJS.dialog2(changeStatusDialog).hide();
-        };
-
-        // Show dialog
-        AJS.dialog2(changeStatusDialog).show();
-    };
-
     function fillSelectStatusField(selectField, element) {
         if (selectField === null) {
             return;

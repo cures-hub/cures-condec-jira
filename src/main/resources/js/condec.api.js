@@ -245,13 +245,6 @@
 	};
 
 	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.setStatus = function (id, documentationLocation, type, status, callback) {
-		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
-	};
-
-	/*
 	 * external references: condec.export, condec.decision.table
 	 */
 	ConDecAPI.prototype.getKnowledgeElements = function (filterSettings, callback) {
