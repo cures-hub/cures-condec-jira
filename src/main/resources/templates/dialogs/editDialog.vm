@@ -22,6 +22,10 @@
                 <select id="edit-form-select-type" class="select full-width-field"></select>
             </div>
             <div class="field-group">
+                <label for="edit-form-select-status">$i18n.getText("condec.label.knowledge.status"):</label>
+                <select id="edit-form-select-status" class="select full-width-field"></select>
+            </div>
+            <div class="field-group">
                 <label for="edit-form-select-location">$i18n.getText("condec.label.documentation.location"):</label>
                 <select id="edit-form-select-location" class="select full-width-field"></select>
             </div>

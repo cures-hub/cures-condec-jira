@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -60,17 +58,16 @@ public class ComponentGetter {
 		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
-	private static String getUrlOfResourceFolder() {
+	private static String getUrlOfResourcesFolder() {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + File.separator + "download" + File.separator
-				+ "resources" + File.separator + PLUGIN_KEY;
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY;
 	}
 
 	public static String getUrlOfImageFolder() {
-		return getUrlOfResourceFolder() + ":stylesheet-and-icon-resources" + File.separator;
+		return getUrlOfResourcesFolder() + ":stylesheet-and-icon-resources/";
 	}
 
 	public static String getUrlOfClassifierFolder() {
-		return getUrlOfResourceFolder() + ":classifier-resources" + File.separator;
+		return getUrlOfResourcesFolder() + ":classifier-resources/";
 	}
 }
