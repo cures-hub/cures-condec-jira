@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.config.workflows;
 
-/**
- * @issue How can we create workflows programmatically?
- * @issue How can we read XML files from the resources folder?
- */
 public class IssueWorkflow {
 
 	public static String getXMLDescriptor() {

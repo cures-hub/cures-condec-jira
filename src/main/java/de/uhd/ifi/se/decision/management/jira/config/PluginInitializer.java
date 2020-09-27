@@ -44,9 +44,7 @@ import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.config.workflows.AlternativeWorkflow;
-import de.uhd.ifi.se.decision.management.jira.config.workflows.DecisionWorkflow;
-import de.uhd.ifi.se.decision.management.jira.config.workflows.IssueWorkflow;
+import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescriptorProvider;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -247,7 +245,7 @@ public class PluginInitializer implements InitializingBean {
 	}
 
 	private static JiraWorkflow createWorkflow(IssueType jiraIssueType) {
-		String workflowDescriptor = getXMLWorkflowDescriptor(jiraIssueType);
+		String workflowDescriptor = WorkflowXMLDescriptorProvider.getXMLWorkflowDescriptor(jiraIssueType);
 		if (workflowDescriptor == null) {
 			return null;
 		}
@@ -268,19 +266,6 @@ public class PluginInitializer implements InitializingBean {
 		}
 
 		return jiraWorkflow;
-	}
-
-	private static String getXMLWorkflowDescriptor(IssueType jiraIssueType) {
-		switch (jiraIssueType.getName()) {
-		case "Issue":
-			return IssueWorkflow.getXMLDescriptor();
-		case "Decision":
-			return DecisionWorkflow.getXMLDescriptor();
-		case "Alternative":
-			return AlternativeWorkflow.getXMLDescriptor();
-		default:
-			return null;
-		}
 	}
 
 	public static void removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
