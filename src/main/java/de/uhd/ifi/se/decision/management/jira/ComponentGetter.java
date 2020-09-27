@@ -58,15 +58,16 @@ public class ComponentGetter {
 		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
-	public static String getUrlOfImageFolder() {
+	private static String getUrlOfResourcesFolder() {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY
-				+ ":stylesheet-and-icon-resources/";
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY;
+	}
+
+	public static String getUrlOfImageFolder() {
+		return getUrlOfResourcesFolder() + ":stylesheet-and-icon-resources/";
 	}
 
 	public static String getUrlOfClassifierFolder() {
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY
-				+ ":classifier-resources/";
+		return getUrlOfResourcesFolder() + ":classifier-resources/";
 	}
 }

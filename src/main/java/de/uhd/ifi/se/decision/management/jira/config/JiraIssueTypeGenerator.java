@@ -5,15 +5,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ofbiz.core.entity.GenericValue;
+
 import com.atlassian.configurable.ValuesGenerator;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
-import org.ofbiz.core.entity.GenericValue;
 
 /**
- * Provides a list of JIRA issue types for the decision knowledge report. The
+ * Provides a list of Jira issue types for the decision knowledge report. The
  * user needs to select one from this list.
  */
 public class JiraIssueTypeGenerator implements ValuesGenerator<String> {

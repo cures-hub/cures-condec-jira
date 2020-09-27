@@ -34,6 +34,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestJiraIssuePersistence
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
+		element.setStatus("unresolved");
 		assertNotNull(issueStrategy.updateKnowledgeElement(element, user));
 	}
 

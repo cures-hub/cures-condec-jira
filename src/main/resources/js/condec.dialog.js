@@ -23,7 +23,7 @@
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
         console.log(selectedType);
-        
+
         // HTML elements
         var createDialog = document.getElementById("create-dialog");
         var inputSummaryField = document.getElementById("create-form-input-summary");
@@ -34,7 +34,7 @@
         var cancelButton = document.getElementById("create-dialog-cancel-button");
 
         // Fill HTML elements
- 		fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
+        fillElementField("create-form-source-element", idOfParentElement, documentationLocationOfParentElement);
         inputSummaryField.value = summary;
         inputDescriptionField.value = description;
         fillSelectTypeField(selectTypeField, selectedType);
@@ -60,17 +60,17 @@
         // Show dialog
         AJS.dialog2(createDialog).show();
     };
-    
+
     function fillElementField(elementFieldName, id, documentationLocation) {
-    	var elementField = document.getElementById(elementFieldName);
-    	if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
-    		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
-        		elementField.value = sourceElement.type + " / " + sourceElement.summary;
-        	});
-    		document.getElementById(elementFieldName + "-group").style.display = "block";
-    	} else {
-    		document.getElementById(elementFieldName + "-group").style.display = "none";
-    	}   	
+        var elementField = document.getElementById(elementFieldName);
+        if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
+            conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (sourceElement) {
+                elementField.value = sourceElement.type + " / " + sourceElement.summary;
+            });
+            document.getElementById(elementFieldName + "-group").style.display = "block";
+        } else {
+            document.getElementById(elementFieldName + "-group").style.display = "none";
+        }
     }
 
     ConDecDialog.prototype.showAssignDialog = function (sourceId, documentationLocation) {
@@ -89,10 +89,10 @@
         inputAddGroupField.value = "";
 
         conDecAPI.getDecisionGroups(sourceId, documentationLocation, function (groups) {
-        	if (groups.length > 0) {
-        		var level = groups[0];
-        		selectLevelField.value = level;
-        	}
+            if (groups.length > 0) {
+                var level = groups[0];
+                selectLevelField.value = level;
+            }
             if (groups.length > 1) {
                 groups.shift();
                 inputExistingGroupsField.value = groups;
@@ -112,7 +112,7 @@
                 });
             AJS.dialog2(assignDialog).hide();
         };
-        
+
         cancelButton.onclick = function () {
             AJS.dialog2(assignDialog).hide();
         };
@@ -184,7 +184,7 @@
         }
     };
 
-    ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation, callback = function(){}) {
+    ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation, callback = function () { }) {
         console.log("conDecDialog showDeleteDialog");
 
         // HTML elements
@@ -201,7 +201,7 @@
             });
             AJS.dialog2(deleteDialog).hide();
         };
-        
+
         cancelIcon.onclick = function () {
             callback(null);
         };
@@ -215,7 +215,7 @@
         AJS.dialog2(deleteDialog).show();
     };
 
-    ConDecDialog.prototype.showDeleteLinkDialog = function (id, documentationLocation, idOfParent, documentationLocationOfParent, callback = function(){}) {
+    ConDecDialog.prototype.showDeleteLinkDialog = function (id, documentationLocation, idOfParent, documentationLocationOfParent, callback = function () { }) {
         console.log("conDecDialog showDeleteLinkDialog");
 
         // HTML elements
@@ -224,7 +224,7 @@
         var submitButton = document.getElementById("delete-link-dialog-submit-button");
         var cancelIcon = document.getElementById("delete-link-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
-        
+
         // Fill HTML elements
         fillElementField("delete-link-dialog-source-element", id, documentationLocation);
         if (idOfParent === null || idOfParent === undefined || idOfParent <= 0) {
@@ -242,7 +242,7 @@
                 });
             AJS.dialog2(deleteLinkDialog).hide();
         };
-        
+
         cancelIcon.onclick = function () {
             callback(null);
         };
@@ -266,35 +266,35 @@
         var selectLinkTypeField = document.getElementById("link-form-select-linktype");
         var submitButton = document.getElementById("link-dialog-submit-button");
         var cancelButton = document.getElementById("link-dialog-cancel-button");
-        
+
         // Fill HTML elements
         fillElementField("link-form-source-element", id, documentationLocation);
-        
+
         if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
-        	conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {
-        		selectElementField.innerHTML = "";
-        		var text = targetElement.type + " / " + targetElement.summary;
-        		var value = targetElement.id + ":" + targetElement.documentationLocation;
-        		var option = new Option(text, value, false, false);
-        		$(selectElementField).append(option);
-        		if (linkType === null || linkType === undefined) {
-        			$(selectElementField).trigger("change");
-        		}        		
-        	});
+            conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function (targetElement) {
+                selectElementField.innerHTML = "";
+                var text = targetElement.type + " / " + targetElement.summary;
+                var value = targetElement.id + ":" + targetElement.documentationLocation;
+                var option = new Option(text, value, false, false);
+                $(selectElementField).append(option);
+                if (linkType === null || linkType === undefined) {
+                    $(selectElementField).trigger("change");
+                }
+            });
         } else {
-        	fillSelectElementField(selectElementField, id, documentationLocation);        	
+            fillSelectElementField(selectElementField, id, documentationLocation);
         }
 
         fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation, linkType);
 
         selectElementField.onchange = function () {
-        	var idOfSelectedElement = this.value.split(":")[0];
-        	var documentationLocationOfSelectedElement = this.value.split(":")[1];
-            conDecAPI.getDecisionKnowledgeElement(idOfSelectedElement, documentationLocationOfSelectedElement, 
-            		function (element) {
-                selectLinkTypeField.value = suggestLinkType(element.type);
-                AJS.$(selectLinkTypeField).auiSelect2();
-            });
+            var idOfSelectedElement = this.value.split(":")[0];
+            var documentationLocationOfSelectedElement = this.value.split(":")[1];
+            conDecAPI.getDecisionKnowledgeElement(idOfSelectedElement, documentationLocationOfSelectedElement,
+                function (element) {
+                    selectLinkTypeField.value = suggestLinkType(element.type);
+                    AJS.$(selectLinkTypeField).auiSelect2();
+                });
         };
 
         // Set onclick listener on buttons
@@ -302,8 +302,8 @@
             var idOfChild = selectElementField.value.split(":")[0];
             var documentationLocationOfChild = selectElementField.value.split(":")[1];
             var linkType = selectLinkTypeField.value;
-            conDecAPI.createLink(id, idOfChild, documentationLocation, documentationLocationOfChild, 
-            		linkType, function () {conDecObservable.notify()});
+            conDecAPI.createLink(id, idOfChild, documentationLocation, documentationLocationOfChild,
+                linkType, function () { conDecObservable.notify() });
             AJS.dialog2(linkDialog).hide();
         };
 
@@ -323,8 +323,8 @@
         conDecAPI.getUnlinkedElements(id, documentationLocation, function (unlinkedElements) {
             var insertString = "";
             for (var index = 0; index < unlinkedElements.length; index++) {
-                insertString += "<option value='" + unlinkedElements[index].id + ":" 
-                	+ unlinkedElements[index].documentationLocation + "'>"
+                insertString += "<option value='" + unlinkedElements[index].id + ":"
+                    + unlinkedElements[index].documentationLocation + "'>"
                     + unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
             }
             selectField.insertAdjacentHTML("afterBegin", insertString);
@@ -345,27 +345,27 @@
         }
         selectField.insertAdjacentHTML("afterBegin", insertString);
         if (linkType !== null && linkType !== undefined) {
-        	console.log(linkType);
-        	selectField.value = linkTypes.find(type => type.toLowerCase().startsWith(linkType));
+            console.log(linkType);
+            selectField.value = linkTypes.find(type => type.toLowerCase().startsWith(linkType));
         } else {
-        	selectField.value = "Relates";
+            selectField.value = "Relates";
         }
         AJS.$(selectField).auiSelect2();
     }
-    
+
     function suggestLinkType(knowledgeType) {
-    	if (knowledgeType === "Argument" || knowledgeType === "Pro") {
-    		return "Supports";                
-    	} else if (knowledgeType === "Con") {
-    		return "Attacks";                
-    	} 
-    	return "Relates";   
-	}
+        if (knowledgeType === "Argument" || knowledgeType === "Pro") {
+            return "Supports";
+        } else if (knowledgeType === "Con") {
+            return "Attacks";
+        }
+        return "Relates";
+    }
 
     /**
 	 * external references: conDecVis
 	 */
-    ConDecDialog.prototype.showEditDialog = function (id, documentationLocation, callback = function(){}) {
+    ConDecDialog.prototype.showEditDialog = function (id, documentationLocation, callback = function () { }) {
         console.log("conDecDialog showEditDialog");
 
         conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
@@ -387,6 +387,7 @@
             var inputSummaryField = document.getElementById("edit-form-input-summary");
             var inputDescriptionField = document.getElementById("edit-form-input-description");
             var selectTypeField = document.getElementById("edit-form-select-type");
+            var selectStatusField = document.getElementById("edit-form-select-status");
             var selectLocationField = document.getElementById("edit-form-select-location");
             var submitButton = document.getElementById("edit-dialog-submit-button");
             var cancelIcon = document.getElementById("edit-dialog-cancel-icon");
@@ -399,16 +400,17 @@
             inputSummaryField.value = summary;
             inputDescriptionField.value = description;
             fillSelectTypeField(selectTypeField, type);
+            fillSelectStatusField(selectStatusField, decisionKnowledgeElement);
             fillSelectLocationField(selectLocationField, documentationLocation);
             if (documentationLocation === "s") {
                 inputSummaryField.disabled = true;
                 selectLocationField.disabled = true;
             }
             conDecAPI.getDecisionGroups(id, documentationLocation, function (groups) {
-            	if (groups.length > 0) {
-            		var level = groups[0];
-            		selectLevelField.value = level;
-            	}
+                if (groups.length > 0) {
+                    var level = groups[0];
+                    selectLevelField.value = level;
+                }
                 if (groups.length > 1) {
                     groups.shift();
                     inputExistingGroupsField.value = groups;
@@ -422,7 +424,8 @@
                 var summary = inputSummaryField.value;
                 var description = inputDescriptionField.value;
                 var type = selectTypeField.value;
-                conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, null,
+                var status = selectStatusField.value;
+                conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, status,
                     function () {
                         conDecObservable.notify();
                     });
@@ -435,15 +438,15 @@
                     });
                 AJS.dialog2(editDialog).hide();
             };
-            
+
             cancelIcon.onclick = function () {
                 callback(null);
             };
 
             cancelButton.onclick = function () {
                 AJS.dialog2(editDialog).hide();
-                callback(null); 
-            };       
+                callback(null);
+            };
 
             // Show dialog
             AJS.dialog2(editDialog).show();
@@ -486,43 +489,12 @@
         });
     }
 
-    ConDecDialog.prototype.showChangeTypeDialog = function (id, documentationLocation) {
-        console.log("conDecDialog showChangeTypeDialog");
-
-        // HTML elements
-        var changeTypeDialog = document.getElementById("change-type-dialog");
-        var selectTypeField = document.getElementById("change-type-form-select-type");
-        var submitButton = document.getElementById("change-type-dialog-submit-button");
-        var cancelButton = document.getElementById("change-type-dialog-cancel-button");
-
-        // Fill HTML elements
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-            fillSelectTypeField(selectTypeField, decisionKnowledgeElement.type);
-        });
-
-        // Set onclick listener on buttons
-        submitButton.onclick = function () {
-            var type = selectTypeField.value;
-            conDecAPI.changeKnowledgeType(id, type, documentationLocation, function () {
-                conDecObservable.notify();
-            });
-            AJS.dialog2(changeTypeDialog).hide();
-        };
-
-        cancelButton.onclick = function () {
-            AJS.dialog2(changeTypeDialog).hide();
-        };
-
-        // Show dialog
-        AJS.dialog2(changeTypeDialog).show();
-    };
-
     ConDecDialog.prototype.showChangeStatusDialog = function (id, documentationLocation) {
         console.log("conDecDialog showChangeStatusDialog");
 
         // HTML elements
         var changeStatusDialog = document.getElementById("change-status-dialog");
-        var selectStatusField = document.getElementById("change-status-form-select-type");
+        var selectStatusField = document.getElementById("change-status-form-select-status");
         var submitButton = document.getElementById("change-status-dialog-submit-button");
         var cancelButton = document.getElementById("change-status-dialog-cancel-button");
 
@@ -557,9 +529,11 @@
             knowledgeStatus = conDecAPI.issueStatus;
         } else if (element.type === "Decision") {
             knowledgeStatus = conDecAPI.decisionStatus;
+        } else if (element.type === "Alternative") {
+            knowledgeStatus = conDecAPI.alternativeStatus;
         } else {
-        	knowledgeStatus = conDecAPI.alternativeStatus;
-		}
+            knowledgeStatus = [];
+        }
         selectField.innerHTML = "";
         for (var index = 0; index < knowledgeStatus.length; index++) {
             var isSelected = "";

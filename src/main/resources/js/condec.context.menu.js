@@ -97,10 +97,6 @@
 			conDecDialog.showEditDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id, documentationLocation);
-		};
-
 		document.getElementById("condec-context-menu-change-status-item").onclick = function() {
 			conDecDialog.showChangeStatusDialog(id, documentationLocation);
 		};
@@ -271,7 +267,7 @@
 				}
 			});
 		}
-		if (container == null || container.includes("vis")) {
+		if (container === null || container.includes("vis")) {
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
 		} else if (documentationLocation !== "c" && container !== "tbldecisionTable") {
