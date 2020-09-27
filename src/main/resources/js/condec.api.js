@@ -661,19 +661,17 @@
 	 * external reference: rationalModelSettings.vm
 	 */
 	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function (projectKey, query) {
-		if (!query.length > 0) {
-			return showFlag("error", "Query length must be greater than 0");
+		if (query.length === 0) {
+			return showFlag("error", "Query length must not be empty.");
 		}
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-			null, function (error, status) {
-				if (error === null && status.hasOwnProperty("criteriaCount")) {
-					if (status.criteriaCount > 0) {
-						showFlag("success", "Query was successfully saved. \nEnabled: " + status.criteriaCount + " criteria for decision table");
-					} else {
-						showFlag("error", "Query could not be saved due to no criteria were found.");
+			null, function (error, numberOfCriteria) {
+				if (error === null) {
+					var message = "Query was saved. Enabled " + numberOfCriteria + " criteria for the decision table. ";
+					if (numberOfCriteria === 0) {
+						message += "The query might be wrong because no criteria were found."
 					}
-				} else {
-					showFlag("error", "Query could not be saved due to an error.");
+					showFlag("success", message);
 				}
 			});
 	};
