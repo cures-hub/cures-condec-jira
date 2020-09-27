@@ -6,8 +6,8 @@
     <div id="change-status-dialog-content" class="aui-dialog2-content">
         <form class="aui">
             <div class="field-group">
-                <label for="change-status-form-select-type">$i18n.getText("condec.label.knowledge.status"):</label>
-                <select id="change-status-form-select-type" class="select full-width-field"></select>
+                <label for="change-status-form-select-status">$i18n.getText("condec.label.knowledge.status"):</label>
+                <select id="change-status-form-select-status" class="select full-width-field"></select>
             </div>
         </form>
     </div>

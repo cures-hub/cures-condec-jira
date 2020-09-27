@@ -73,6 +73,7 @@
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
 		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
 		filterSettings["knowledgeTypes"] = [ knowledgeType ];
+		filterSettings["linkDistance"] = 0; // to speed-up loading
 		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
 		if (nodeId === undefined) {

@@ -102,9 +102,9 @@ public class KnowledgeElement {
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		this.creationDate = issue.getCreated();
 		this.updatingDate = issue.getUpdated();
-		// TODO Manage status for decision knowledge elements stored as entire Jira
-		// issues
-		this.status = KnowledgeStatus.RESOLVED;
+		if (issue.getStatus() != null) {
+			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
+		}
 	}
 
 	public KnowledgeElement(CodeClassInDatabase entry) {

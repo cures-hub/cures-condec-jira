@@ -185,8 +185,11 @@
 			});
 	};
 
-	/*
-	 * external references: condec.context.menu, condec.dialog
+	/**
+	 * Updates the knowledge type of the element. The summary and description are set null 
+	 * to indicate that only the knowledge type is updated. 
+	 *
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function (id, type, documentationLocation, callback) {
 		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, null, callback);
@@ -244,7 +247,10 @@
 			});
 	};
 
-	/*
+	/**
+	 * Updates the knowledge status of the element. The summary and description are set null 
+	 * to indicate that only the knowledge status is updated. 
+	 *
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.setStatus = function (id, documentationLocation, type, status, callback) {

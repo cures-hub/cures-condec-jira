@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -126,8 +127,8 @@ public class ConfigRest {
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
 				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
-				PluginInitializer.createIssueType(knowledgeType.toString());
-				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
+				IssueType jiraIssueType = PluginInitializer.createIssueType(knowledgeType.toString());
+				PluginInitializer.addIssueTypeToScheme(jiraIssueType, projectKey);
 			} else {
 				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
 			}
@@ -168,8 +169,8 @@ public class ConfigRest {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
 		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 			if (isKnowledgeTypeEnabled) {
-				PluginInitializer.createIssueType(knowledgeType);
-				PluginInitializer.addIssueTypeToScheme(knowledgeType, projectKey);
+				IssueType jiraIssueType = PluginInitializer.createIssueType(knowledgeType);
+				PluginInitializer.addIssueTypeToScheme(jiraIssueType, projectKey);
 			} else {
 				PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
 			}

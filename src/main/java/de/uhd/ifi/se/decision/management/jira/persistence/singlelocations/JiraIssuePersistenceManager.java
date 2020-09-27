@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
+import com.atlassian.jira.bc.issue.IssueService.TransitionValidationResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
@@ -30,13 +31,18 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.issue.status.Status;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.jira.workflow.JiraWorkflow;
+import com.atlassian.jira.workflow.WorkflowManager;
 import com.atlassian.query.Query;
+import com.opensymphony.workflow.loader.ActionDescriptor;
+import com.opensymphony.workflow.loader.StepDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -198,7 +204,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-		// TODO Manage status
 	}
 
 	@Override
@@ -216,7 +221,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			}
 			ErrorCollection errorCollection = issueService.delete(user, result);
 			if (!errorCollection.hasAnyErrors()) {
-				// KnowledgePersistenceManager.removeGraphNode(elementToDeletion);
 				return true;
 			}
 		}
@@ -249,14 +253,14 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		if (this.projectKey == null) {
-			return decisionKnowledgeElements;
+			return knowledgeElements;
 		}
 		for (Issue issue : getIssueIdCollection()) {
-			decisionKnowledgeElements.add(new KnowledgeElement(issue));
+			knowledgeElements.add(new KnowledgeElement(issue));
 		}
-		return decisionKnowledgeElements;
+		return knowledgeElements;
 	}
 
 	@Override
@@ -307,7 +311,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		Issue issue = issueResult.getIssue();
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
-		// KnowledgePersistenceManager.updateGraphNode(element);
 		return element;
 	}
 
@@ -367,9 +370,38 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			}
 			return false;
 		}
-		// KnowledgePersistenceManager.updateGraphNode(element);
 		issueService.update(user, result);
-		return true;
+		return updateStatus(element.getStatus(), issueToBeUpdated, user, issueService);
+	}
+
+	private boolean updateStatus(KnowledgeStatus newStatus, MutableIssue issueToBeUpdated, ApplicationUser user,
+			IssueService issueService) {
+		boolean isStatusUpdated = true;
+		WorkflowManager workflowManager = ComponentAccessor.getComponent(WorkflowManager.class);
+		JiraWorkflow workFlow = workflowManager.getWorkflow(issueToBeUpdated);
+		Status status = issueToBeUpdated.getStatus();
+		try {
+			StepDescriptor currentStep = workFlow.getLinkedStep(status);
+			@SuppressWarnings("unchecked")
+			List<ActionDescriptor> possibleActionsList = currentStep.getActions();
+
+			int actionId = 0;
+			for (ActionDescriptor actionDescriptor : possibleActionsList) {
+				if (actionDescriptor.getName().equalsIgnoreCase("set " + newStatus.toString())) {
+					actionId = actionDescriptor.getId();
+				}
+			}
+
+			TransitionValidationResult transitionValidationResult = issueService.validateTransition(user,
+					issueToBeUpdated.getId(), actionId, issueService.newIssueInputParameters());
+			if (transitionValidationResult.isValid()) {
+				issueService.transition(user, transitionValidationResult);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Updating decision knowledge element in database failed. " + e.getLocalizedMessage());
+			isStatusUpdated = false;
+		}
+		return isStatusUpdated;
 	}
 
 	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
