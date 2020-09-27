@@ -44,6 +44,8 @@ import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.config.workflows.AlternativeWorkflow;
+import de.uhd.ifi.se.decision.management.jira.config.workflows.DecisionWorkflow;
 import de.uhd.ifi.se.decision.management.jira.config.workflows.IssueWorkflow;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -209,6 +211,25 @@ public class PluginInitializer implements InitializingBean {
 		}
 	}
 
+	/**
+	 * @issue Should we do the workflow migration programmatically if issue types
+	 *        already existed?
+	 * @decision We do not do the workflow migration programmatically if issue types
+	 *           already existed!
+	 * @pro No extra implementation needed.
+	 * @con Requires that the system admin does the migration manually in the admin
+	 *      page for workflow schemes.
+	 * @alternative We could do the workflow migration programmatically if issue
+	 *              types already existed!
+	 * @pro This would
+	 * @con This might be error prone and we do not now the former status to be
+	 *      migrated.
+	 * 
+	 * @param jiraIssueType
+	 *            to add a workflow (i.e. status and their transitions) for.
+	 * @param project
+	 *            Jira project.
+	 */
 	private static void addWorkflowToWorkflowScheme(IssueType jiraIssueType, Project project) {
 		JiraWorkflow jiraWorkflow = createWorkflow(jiraIssueType);
 		if (jiraWorkflow == null) {
@@ -254,7 +275,9 @@ public class PluginInitializer implements InitializingBean {
 		case "Issue":
 			return IssueWorkflow.getXMLDescriptor();
 		case "Decision":
-			return null;
+			return DecisionWorkflow.getXMLDescriptor();
+		case "Alternative":
+			return AlternativeWorkflow.getXMLDescriptor();
 		default:
 			return null;
 		}

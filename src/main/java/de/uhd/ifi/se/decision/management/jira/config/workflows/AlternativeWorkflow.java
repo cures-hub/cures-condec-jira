@@ -4,13 +4,13 @@ package de.uhd.ifi.se.decision.management.jira.config.workflows;
  * @issue How can we create workflows programmatically?
  * @issue How can we read XML files from the resources folder?
  */
-public class IssueWorkflow {
+public class AlternativeWorkflow {
 
 	public static String getXMLDescriptor() {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
 				+ "<!DOCTYPE workflow PUBLIC \"-//OpenSymphony Group//DTD OSWorkflow 2.8//EN\" \"http://www.opensymphony.com/osworkflow/workflow_2_8.dtd\">\r\n"
 				+ "<workflow>\r\n"
-				+ "  <meta name=\"jira.description\">Workflow for decision problems (issues)</meta>\r\n"
+				+ "  <meta name=\"jira.description\">Workflow for alternatives (solution options) to solve a decision problem</meta>\r\n"
 				+ "  <initial-actions>\r\n"
 				+ "    <action id=\"1\" name=\"Create\">\r\n"
 				+ "      <validators>\r\n"
@@ -20,7 +20,7 @@ public class IssueWorkflow {
 				+ "        </validator>\r\n"
 				+ "      </validators>\r\n"
 				+ "      <results>\r\n"
-				+ "        <unconditional-result old-status=\"null\" status=\"open\" step=\"1\">\r\n"
+				+ "        <unconditional-result old-status=\"null\" status=\"open\" step=\"2\">\r\n"
 				+ "          <post-functions>\r\n"
 				+ "            <function type=\"class\">\r\n"
 				+ "              <arg name=\"class.name\">com.atlassian.jira.workflow.function.issue.IssueCreateFunction</arg>\r\n"
@@ -38,10 +38,10 @@ public class IssueWorkflow {
 				+ "    </action>\r\n"
 				+ "  </initial-actions>\r\n"
 				+ "  <steps>\r\n"
-				+ "    <step id=\"1\" name=\"Open\">\r\n"
-				+ "      <meta name=\"jira.status.id\">1</meta>\r\n"
+				+ "    <step id=\"2\" name=\"Idea\">\r\n"
+				+ "      <meta name=\"jira.status.id\">10103</meta>\r\n"
 				+ "      <actions>\r\n"
-				+ "        <action id=\"11\" name=\"Set resolved\">\r\n"
+				+ "        <action id=\"11\" name=\"Set discarded\">\r\n"
 				+ "          <meta name=\"jira.description\"></meta>\r\n"
 				+ "          <meta name=\"jira.fieldscreen.id\"></meta>\r\n"
 				+ "          <results>\r\n"
@@ -69,14 +69,14 @@ public class IssueWorkflow {
 				+ "        </action>\r\n"
 				+ "      </actions>\r\n"
 				+ "    </step>\r\n"
-				+ "    <step id=\"3\" name=\"Resolved\">\r\n"
-				+ "      <meta name=\"jira.status.id\">5</meta>\r\n"
+				+ "    <step id=\"3\" name=\"Discarded\">\r\n"
+				+ "      <meta name=\"jira.status.id\">10104</meta>\r\n"
 				+ "      <actions>\r\n"
-				+ "        <action id=\"21\" name=\"Set unresolved\">\r\n"
+				+ "        <action id=\"21\" name=\"Set idea\">\r\n"
 				+ "          <meta name=\"jira.description\"></meta>\r\n"
 				+ "          <meta name=\"jira.fieldscreen.id\"></meta>\r\n"
 				+ "          <results>\r\n"
-				+ "            <unconditional-result old-status=\"null\" status=\"null\" step=\"1\">\r\n"
+				+ "            <unconditional-result old-status=\"null\" status=\"null\" step=\"2\">\r\n"
 				+ "              <post-functions>\r\n"
 				+ "                <function type=\"class\">\r\n"
 				+ "                  <arg name=\"class.name\">com.atlassian.jira.workflow.function.issue.UpdateIssueStatusFunction</arg>\r\n"
