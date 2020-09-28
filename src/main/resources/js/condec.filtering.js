@@ -79,6 +79,11 @@
 			statusDropdown.addEventListener("click", () => callback());
 		}
 
+		var documentationLocationDropdown = document.getElementById("documentation-location-dropdown-" + viewIdentifier);
+		if (documentationLocationDropdown !== null) {
+			documentationLocationDropdown.addEventListener("click", () => callback());
+		}
+
 		var filterElements = [];
 
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);

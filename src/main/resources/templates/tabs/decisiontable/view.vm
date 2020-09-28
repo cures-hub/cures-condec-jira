@@ -1,10 +1,20 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner">
         <form class="aui">
-            <label for="decision-problem-dropdown">Issues: </label>
-            <select class="select medium-long-field" id="decision-problem-dropdown"></select>
-            #set ($viewIdentifier = "decision-table")
-            #parse("templates/filter/linkDistance.vm")
+            <div>
+                #set ($viewIdentifier = "decision-table")
+                #parse("templates/filter/text.vm")	
+                #parse("templates/filter/status.vm")
+                #parse("templates/filter/decisionGroup.vm")
+        	    #parse("templates/filter/documentationDate.vm")
+                #parse("templates/filter/documentationLocation.vm")
+                #parse("templates/filter/linkDistance.vm")                
+                #parse("templates/filter/degree.vm")
+            </div>
+            <div>
+                <label for="decision-problem-dropdown">Issues: </label>
+                <select class="select medium-long-field" id="decision-problem-dropdown"></select>         
+            </div>   
         </form>
 	</div>
 </div>
@@ -16,9 +26,15 @@ $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
-    		conDecDecisionTable.initView();
+    		conDecDecisionTable.initView(true);
 			isOnceClicked = true;
 		}
+	});
+    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+    		conDecDecisionTable.initView();
+    		isOnceClicked = true;
+    	}
 	});
 });
 </script>

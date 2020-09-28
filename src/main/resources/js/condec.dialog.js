@@ -525,9 +525,9 @@
             return;
         }
         var knowledgeStatus = null;
-        if (element.type === "Issue") {
+        if (element.type === "Issue" || element.type === "Problem") {
             knowledgeStatus = conDecAPI.issueStatus;
-        } else if (element.type === "Decision") {
+        } else if (element.type === "Decision" || element.type === "Solution") {
             knowledgeStatus = conDecAPI.decisionStatus;
         } else if (element.type === "Alternative") {
             knowledgeStatus = conDecAPI.alternativeStatus;

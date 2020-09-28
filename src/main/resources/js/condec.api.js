@@ -658,46 +658,22 @@
 	};
 
 	/*
-	 * external reference: rationaleModelSettings.vm
-	 */
-	ConDecAPI.prototype.testDecisionTableCriteriaQuery = function (projectKey, query, callback) {
-		generalApi.postJSON(this.restPrefix + `/config/testDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-			null, function (error, issues) {
-				if (error === null) {
-					callback(issues);
-				}
-			});
-	};
-
-	/*
 	 * external reference: rationalModelSettings.vm
 	 */
 	ConDecAPI.prototype.setDecisionTableCriteriaQuery = function (projectKey, query) {
-		if (!query.length > 0) {
-			return showFlag("error", "Query length must be greater than 0");
+		if (query.length === 0) {
+			return showFlag("error", "Query length must not be empty.");
 		}
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
-			null, function (error, status) {
-				if (error === null && status.hasOwnProperty("criteriaCount")) {
-					if (status.criteriaCount > 0) {
-						showFlag("success", "Query was successfully saved. \nEnabled: " + status.criteriaCount + " criteria for decision table");
-					} else {
-						showFlag("error", "Query could not be saved due to no criteria were found.");
-					}
-				} else {
-					showFlag("error", "Query could not be saved due to an error.");
-				}
-			});
-	};
-
-	/*
-	 * external reference: rationaleModelSettings.vm
-	 */
-	ConDecAPI.prototype.getDecisionTableCriteriaQuery = function (projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDecisionTableCriteriaQuery.json?projectKey=${projectKey}`,
-			function (error, query) {
+			null, function (error, numberOfCriteria) {
 				if (error === null) {
-					callback(query);
+					var message = "Query was saved. ";
+					if (numberOfCriteria === 0) {
+						message += "However, the query might be wrong because no criteria were found."
+					} else {
+						message += "Enabled " + numberOfCriteria + " criteria for the decision table."
+					}
+					showFlag("success", message);
 				}
 			});
 	};
