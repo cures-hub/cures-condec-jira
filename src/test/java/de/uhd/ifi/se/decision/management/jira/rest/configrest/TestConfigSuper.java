@@ -16,15 +16,13 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
+// TODO Get rid of this class because (too much) inheritance in unit tests is hard to understand.
 public abstract class TestConfigSuper extends TestSetUp {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
 	protected static final String INVALID_PROJECTKEY = "The project key is invalid.";
 	protected static final String INVALID_REQUEST = "request = null";
-	protected static final String INVALID_STRATEGY = "isIssueStrategy = null";
-	protected static final String INVALID_ACTIVATION_NULL = "isActivated = null";
-	protected static final String INVALID_ACTIVATION_STRING = "isActivated is invalid";
 	protected static ApplicationUser user;
 
 	@Before

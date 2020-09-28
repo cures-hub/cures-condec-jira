@@ -667,9 +667,11 @@
 		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
 			null, function (error, numberOfCriteria) {
 				if (error === null) {
-					var message = "Query was saved. Enabled " + numberOfCriteria + " criteria for the decision table. ";
+					var message = "Query was saved. ";
 					if (numberOfCriteria === 0) {
-						message += "The query might be wrong because no criteria were found."
+						message += "However, the query might be wrong because no criteria were found."
+					} else {
+						message += "Enabled " + numberOfCriteria + " criteria for the decision table."
 					}
 					showFlag("success", message);
 				}
