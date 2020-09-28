@@ -63,6 +63,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		velocityParameters.put("definitionOfDone", ConfigPersistenceManager.getDefinitionOfDone(projectKey));
 
+		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
+
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
 		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));

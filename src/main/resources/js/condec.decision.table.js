@@ -7,10 +7,18 @@
 	let decisionTableData = [];
 	let currentIssue;
 	
-	ConDecDecisionTable.prototype.initView = function () {		
-		document.getElementById("link-distance-input-decision-table").addEventListener("change", function (event){
-			conDecDecisionTable.loadDecisionProblems();
-		});
+	ConDecDecisionTable.prototype.initView = function (isJiraIssueView = false) {		
+		// Fill HTML elements for filter criteria
+		conDecFiltering.fillFilterElements("decision-table");
+		conDecFiltering.initDropdown("status-dropdown-decision-table", conDecAPI.issueStatus);
+
+		if (!isJiraIssueView) {
+			document.getElementById("link-distance-input-label-decision-table").remove();
+			document.getElementById("link-distance-input-decision-table").remove();
+		}
+		
+		// Add event listeners to HTML elements for filtering
+		conDecFiltering.addOnChangeEventToFilterElements("decision-table", conDecDecisionTable.updateView);
 		this.addOnClickEventToDecisionTableButtons();		
 		conDecDecisionGuidance.addOnClickListenerForRecommendations();
 		
@@ -22,7 +30,7 @@
 	};
 	
 	ConDecDecisionTable.prototype.updateView = function () {
-		this.loadDecisionProblems();
+		conDecDecisionTable.loadDecisionProblems();
 	};
 
 	ConDecDecisionTable.prototype.getCurrentIssue = function() {
@@ -43,15 +51,17 @@
 	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function () {
 		console.log("conDecDecisionTable loadDecisionProblems");
-		const linkDistance = document.getElementById("link-distance-input-decision-table").value;		
+		var filterSettings = conDecFiltering.getFilterSettings("decision-table");
+		filterSettings["knowledgeTypes"] = ["Issue", "Problem", "Goal"];
 		const selectedElementKey = conDecAPI.getIssueKey();		
-		const filterSettings = {
-				"linkDistance": linkDistance,
-				"selectedElement": selectedElementKey,
-				"knowledgeTypes": ["Issue", "Problem", "Goal"]
-		};
+		if (selectedElementKey !== undefined) {
+			filterSettings["selectedElement"] = selectedElementKey;
+		}
 		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
-			issues = knowledgeElements.filter(element => !isSelectedElement(element, selectedElementKey) || filterSettings["knowledgeTypes"].includes(element.type));
+			issues = knowledgeElements;
+			if (selectedElementKey !== undefined) {
+				issues = knowledgeElements.filter(element => !isSelectedElement(element, selectedElementKey) || filterSettings["knowledgeTypes"].includes(element.type));
+			}
 			fillDecisionProblemDropDown(issues, "decision-table");
 		});
 	};
