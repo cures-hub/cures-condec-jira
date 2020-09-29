@@ -938,6 +938,20 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	@Path("/setRecommendationAlgorithm")
+	@POST
+	public Response setRecommendationAlgorithm(@Context HttpServletRequest request,
+												@QueryParam("projectKey") String projectKey,
+												@QueryParam("recommendationAlgorithm") String algorithm) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+
+		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType(projectKey, algorithm);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
 	/* **************************************/
 	/*										*/
 	/* Configuration for Rationale Backlog */

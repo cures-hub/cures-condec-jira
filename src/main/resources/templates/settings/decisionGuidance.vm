@@ -150,14 +150,16 @@
             <legend><span>Algorithm
         </span></legend>
             <div class="radio">
-                <input class="radio" type="radio" checked="checked"
-                       name="radiobuttons" id="radioButtonOne">
-                <label for="radioButtonOne">Simple</label>
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="substring" value="SUBSTRING"
+                />
+                <label for="substring">Simple</label>
             </div>
             <div class="radio">
                 <input class="radio" type="radio"
-                       name="radiobuttons" id="radioButtonTwo">
-                <label for="radioButtonTwo">Advanced</label>
+                       name="radiobuttons" id="tokenized" value="TOKENIZED"
+                />
+                <label for="tokenized">Advanced</label>
             </div>
         </fieldset>
     </div>
@@ -190,6 +192,14 @@
 
     $(document).ready(function() {
 
+        if("$knowledgeSourceAlgorithm" == "SUBSTRING")
+            $("#substring").prop("checked", true);
+        else
+            $("#tokenized").prop("checked", true);
+
+        $('input[type=radio][name=radiobuttons]').change(function() {
+            conDecAPI.setRecommendationAlgorithm("$projectKey", this.value);
+        });
 
 
         $("#save-max-recommendation-btn").click((event) => {
@@ -292,6 +302,12 @@
 
 
     });
+
+
+
+
+
+
 
 
 

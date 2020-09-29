@@ -450,9 +450,20 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType(String projectKey) {
+	public static void setKnowledgeSourceAlgorithmType(String projectKey, String knowledgeSourceAlgorithmType) {
 		//return getValue(projectKey, "knowledgesourcealgorithm");
-		return KnowledgeSourceAlgorithmType.valueOf("SUBSTRING");
+		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
+	}
+
+	public static KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType(String projectKey) {
+		KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
+		try {
+			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
+		} catch(IllegalArgumentException e) {
+			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+		}
+		return knowledgeSourceAlgorithmType;
+		//return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
 
 	/* **************************************/
