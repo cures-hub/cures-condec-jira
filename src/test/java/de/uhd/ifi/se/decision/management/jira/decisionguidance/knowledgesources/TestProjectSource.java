@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceSubstringAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceTokenizedAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
@@ -39,6 +41,15 @@ public class TestProjectSource extends TestSetUp {
 		List<Recommendation> recommendations = projectSource.getResults("feature");
 
 		assertEquals(2, recommendations.size());
+		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
+
+	}
+
+	@Test
+	public void testTokenizedAlgorithm() { //default is SUBSTRING
+		ProjectSourceTokenizedAlgorithm algorithm = new ProjectSourceTokenizedAlgorithm("TEST", "ProjectSource", "How can we implement the feature?" );
+		List<Recommendation> recommendations = algorithm.getResults();
+		assertEquals(4, recommendations.size());
 		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
 
 	}
