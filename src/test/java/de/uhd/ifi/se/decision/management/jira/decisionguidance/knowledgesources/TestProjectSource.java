@@ -26,8 +26,7 @@ public class TestProjectSource extends TestSetUp {
 
 		List<Recommendation> recommendations = projectSource.getResults("feature");
 
-		assertEquals(1, recommendations.size());
-		assertEquals("We could do it like this!", recommendations.get(0).getRecommendations());
+		assertEquals(2, recommendations.size());
 		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
 	}
 
@@ -39,8 +38,7 @@ public class TestProjectSource extends TestSetUp {
 
 		List<Recommendation> recommendations = projectSource.getResults("feature");
 
-		assertEquals(1, recommendations.size());
-		assertEquals("We could do it like this!", recommendations.get(0).getRecommendations());
+		assertEquals(2, recommendations.size());
 		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
 
 	}
@@ -49,7 +47,7 @@ public class TestProjectSource extends TestSetUp {
 	public void testScore() {
 		ProjectSourceSubstringAlgorithm algorithm = new ProjectSourceSubstringAlgorithm("TEST", "Test Source", "feature");
 
-		assertEquals(1, algorithm.getResults().size());
+		assertEquals(2, algorithm.getResults().size());
 		assertEquals(100, algorithm.getResults().get(0).getScore());
 	}
 

@@ -78,7 +78,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		knowledgeSources.add(rdfSource);
 		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
 		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
-		assertEquals(1, simpleRecommender.evaluate().size());
+		assertEquals(2, simpleRecommender.evaluate().size());
 	}
 
 	@Test
