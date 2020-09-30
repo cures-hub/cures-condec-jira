@@ -10,18 +10,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceSubstringAlgorithm implements KnowledgeSourceAlgorithm {
-
-	private String projectKey;
-	private String projectSourceName;
-	private String inputs;
-	private KnowledgePersistenceManager knowledgePersistenceManager;
+public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgorithm {
 
 
-	public ProjectSourceSubstringAlgorithm(String projectKey, String projectSourceName, String input) {
+	public ProjectSourceSubstringAlgorithm() {
+
+	}
+
+	public ProjectSourceSubstringAlgorithm(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
-		this.inputs = input;
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
 		} catch (IllegalArgumentException e) {
@@ -29,13 +27,13 @@ public class ProjectSourceSubstringAlgorithm implements KnowledgeSourceAlgorithm
 		}
 	}
 
-
 	protected List<KnowledgeElement> queryDatabase() {
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
 	}
 
+
 	@Override
-	public List<Recommendation> getResults() {
+	public List<Recommendation> getResults(String inputs) {
 
 		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 

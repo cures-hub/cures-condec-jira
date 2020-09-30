@@ -47,8 +47,8 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testTokenizedAlgorithm() { //default is SUBSTRING
-		ProjectSourceTokenizedAlgorithm algorithm = new ProjectSourceTokenizedAlgorithm("TEST", "ProjectSource", "How can we implement the feature?" );
-		List<Recommendation> recommendations = algorithm.getResults();
+		ProjectSourceTokenizedAlgorithm algorithm = new ProjectSourceTokenizedAlgorithm("TEST", "ProjectSource" );
+		List<Recommendation> recommendations = algorithm.getResults( "How can we implement the feature?");
 		assertEquals(4, recommendations.size());
 		assertEquals("ProjectSource", recommendations.get(0).getKnowledgeSourceName());
 
@@ -56,10 +56,10 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testScore() {
-		ProjectSourceSubstringAlgorithm algorithm = new ProjectSourceSubstringAlgorithm("TEST", "Test Source", "feature");
+		ProjectSourceSubstringAlgorithm algorithm = new ProjectSourceSubstringAlgorithm("TEST", "Test Source");
 
-		assertEquals(2, algorithm.getResults().size());
-		assertEquals(100, algorithm.getResults().get(0).getScore());
+		assertEquals(2, algorithm.getResults( "feature").size());
+		assertEquals(100, algorithm.getResults( "feature").get(0).getScore());
 	}
 
 

@@ -10,18 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceTokenizedAlgorithm implements KnowledgeSourceAlgorithm {
+public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgorithm {
 
-	private String projectKey;
-	private String projectSourceName;
-	private String inputs;
-	private KnowledgePersistenceManager knowledgePersistenceManager;
+	public ProjectSourceTokenizedAlgorithm() {
 
+	}
 
-	public ProjectSourceTokenizedAlgorithm(String projectKey, String projectSourceName, String input) {
+	public ProjectSourceTokenizedAlgorithm(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
-		this.inputs = input;
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
 		} catch (IllegalArgumentException e) {
@@ -29,13 +26,12 @@ public class ProjectSourceTokenizedAlgorithm implements KnowledgeSourceAlgorithm
 		}
 	}
 
-
 	protected List<KnowledgeElement> queryDatabase() {
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
 	}
 
 	@Override
-	public List<Recommendation> getResults() {
+	public List<Recommendation> getResults(String inputs) {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 

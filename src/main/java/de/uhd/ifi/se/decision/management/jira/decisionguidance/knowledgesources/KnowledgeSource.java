@@ -1,14 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactory;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactoryProvider;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public abstract class KnowledgeSource {
+public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
 
 	protected KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
+	protected T knowledgeSourceAlgorithm;
+	protected KnowledgeSourceType knowledgeSourceType;
 
+	protected List<Recommendation> recommendations;
 	protected String projectKey;
 	protected boolean isActivated;
 	protected String name;
@@ -32,8 +38,10 @@ public abstract class KnowledgeSource {
 		isActivated = activated;
 	}
 
-	public KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType() {
-		return knowledgeSourceAlgorithmType;
+	public T getKnowledgeSourceAlgorithm() {
+		KnowledgeSourceAlgorithmFactory<T> knowledgeSourceAlgorithmFactory = KnowledgeSourceAlgorithmFactoryProvider.getFactory(this.knowledgeSourceType);
+		this.knowledgeSourceAlgorithm = knowledgeSourceAlgorithmFactory.getAlgorithm(this.knowledgeSourceAlgorithmType);
+		return this.knowledgeSourceAlgorithm;
 	}
 
 	public void setKnowledgeSourceAlgorithmType(KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType) {

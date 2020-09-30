@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface KnowledgeSourceAlgorithm {
 
-	List<Recommendation> getResults();
-
+	List<Recommendation> getResults(String inputs);
 }

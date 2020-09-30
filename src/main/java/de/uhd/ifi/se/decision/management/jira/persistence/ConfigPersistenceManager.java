@@ -451,7 +451,6 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeSourceAlgorithmType(String projectKey, String knowledgeSourceAlgorithmType) {
-		//return getValue(projectKey, "knowledgesourcealgorithm");
 		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
 	}
 
