@@ -453,8 +453,12 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @issue Should code classes be assigned to all Jira issues that they were
+	 *        committed to?
+	 * 
 	 * @return Jira issue that the knowledge element or irrelevant text is part of.
 	 */
+	// TODO Improve this method. Code classes are not handled currently.
 	public Issue getJiraIssue() {
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			return ComponentAccessor.getIssueManager().getIssueObject(id);

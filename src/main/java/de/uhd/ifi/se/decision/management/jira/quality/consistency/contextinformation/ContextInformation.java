@@ -77,10 +77,10 @@ public class ContextInformation implements ContextInformationProvider {
 		// Create union of all issues to be filtered out.
 		Set<KnowledgeElement> filteredKnowledgeElements = new HashSet<>(projectKnowledgeElements);
 		Set<KnowledgeElement> filterOutElements = new HashSet<>(this.getLinkedKnowledgeElements());
-		filterOutElements.addAll(ConsistencyPersistenceHelper.getDiscardedLinkSuggestions(this.element));
-		filterOutElements.add(this.element);
+		filterOutElements.addAll(ConsistencyPersistenceHelper.getDiscardedLinkSuggestions(element));
+		filterOutElements.add(element);
 		filterOutElements.addAll(filteredKnowledgeElements.stream()
-				.filter(e -> e.getJiraIssue().getKey().equals(this.element.getJiraIssue().getKey()))
+				.filter(e -> e.getJiraIssue() != null && e.getJiraIssue().equals(element.getJiraIssue()))
 				.collect(Collectors.toList()));
 
 		// Calculate difference between all issues of project and the issues that need
