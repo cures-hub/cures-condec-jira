@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -506,6 +507,23 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetAllKnowledgeSourcesNullProject() {
 		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources(null).size());
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmTypeDefault() {
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmTypeInvalidType() {
+		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", "INVALIDTYPE");
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmType() {
+		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", KnowledgeSourceAlgorithmType.SUBSTRING.toString());
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
 	}
 
 	@Test
