@@ -72,5 +72,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $(document).ready(function () {
 	conDecAPI.checkIfProjectKeyIsValid();      
 	conDecExport.addOnClickEventToExportAsTable();
+	conDecContextMenu.addContextMenuToCommentTabPanel();
 });
 </script>

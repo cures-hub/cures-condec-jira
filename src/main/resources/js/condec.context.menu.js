@@ -244,5 +244,19 @@
 		}
 	}
 
+	ConDecContextMenu.prototype.addContextMenuToCommentTabPanel = function () {
+        console.log("conDecContextMenu addContextMenuToCommentTabPanel");
+        // ids are set in AbstractKnowledgeClassificationMacro Java class
+        var comments = document.querySelectorAll('[id^="commentnode-"]');
+        if (comments) {
+            for (i = 0; i < comments.length; i++) {
+                comments[i].addEventListener('contextmenu', function(event) {
+                    event.preventDefault();
+                    conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event);
+                });
+            }
+        }
+    };
+
 	global.conDecContextMenu = new ConDecContextMenu();
 })(window);
