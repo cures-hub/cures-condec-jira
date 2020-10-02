@@ -10,9 +10,10 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Responsible for automatic link creation (=edges) between nodes in the
- * {@link KnowledgeGraph}. Is currently only working for decision knowledge
- * elements documented in the description or the comments of a Jira issue.
+ * Responsible for automatic link creation (=creation of edges/relations)
+ * between nodes in the {@link KnowledgeGraph}. Is currently only working for
+ * decision knowledge elements documented in the description or the comments of
+ * a Jira issue.
  * 
  * @see Link
  * @see JiraIssueTextPersistenceManager
@@ -51,7 +52,7 @@ public class AutomaticLinkCreator {
 			return new KnowledgeElement(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
-			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
+			return getRecentlyUpdatedElement(potentialParentElements.get(0), potentialParentElements.get(1));
 		}
 		return potentialParentElements.get(0);
 	}
@@ -70,14 +71,14 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getMostRecentElement(KnowledgeElement first, KnowledgeElement second) {
+	public static KnowledgeElement getRecentlyUpdatedElement(KnowledgeElement first, KnowledgeElement second) {
 		if (first == null) {
 			return second;
 		}
 		if (second == null) {
 			return first;
 		}
-		if (first.getCreationDate().compareTo(second.getCreationDate()) > 0) {
+		if (first.getUpdatingDate().compareTo(second.getCreationDate()) > 0) {
 			return first;
 		}
 		return second;

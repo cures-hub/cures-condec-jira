@@ -29,21 +29,21 @@ public class TestGetMostRecentElement extends TestSetUp {
 	public void testMostRecentElementEqualCreationDate() {
 		KnowledgeElement source = link.getSource();
 		KnowledgeElement target = link.getTarget();
-		assertEquals(target, AutomaticLinkCreator.getMostRecentElement(source, target));
+		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(source, target));
 	}
 
 	@Test
 	@NonTransactional
 	public void testMostRecentElementFirstNull() {
 		KnowledgeElement target = link.getTarget();
-		assertEquals(target, AutomaticLinkCreator.getMostRecentElement(null, target));
+		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(null, target));
 	}
 
 	@Test
 	@NonTransactional
 	public void testMostRecentElementSecondNull() {
 		KnowledgeElement source = link.getSource();
-		assertEquals(source, AutomaticLinkCreator.getMostRecentElement(source, null));
+		assertEquals(source, AutomaticLinkCreator.getRecentlyUpdatedElement(source, null));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class TestGetMostRecentElement extends TestSetUp {
 		KnowledgeElement target = link.getTarget();
 		Date oldCreationDate = target.getCreationDate();
 		target.setCreationDate(new Date());
-		assertEquals(target, AutomaticLinkCreator.getMostRecentElement(source, target));
+		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(source, target));
 		target.setCreationDate(oldCreationDate);
 	}
 }
