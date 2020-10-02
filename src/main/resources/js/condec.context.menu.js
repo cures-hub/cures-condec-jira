@@ -66,13 +66,12 @@
 			return;
 		}
 
-		showOrHideContextMenuItems(id, documentationLocation, container);
+		showOrHideContextMenuItems(documentationLocation, container);
 		setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 
-		var position = getPosition(event, container);
 		$(contextMenuNode).css({
-		    left : position["x"],
-		    top : position["y"]
+		    left : event.pageX,
+		    top : event.pageY
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
@@ -181,54 +180,8 @@
 		};
 	}
 
-	// TODO Remove in Jira version 8.12
-	function getPosition(event, container) {
-		var element = event.target;
-		if (container === null && event !== null) {
-			return {
-			    x : event.pageX,
-			    y : event.pageY
-			};
-		}
-
-		if (container.includes("vis")) {
-			return {
-			    x : event.layerX + "px",
-			    y : event.screenY + "px"
-			};
-		}
-
-		var xPosition = 0;
-		var yPosition = 0;
-
-		while (element) {
-			if (element.tagName === "BODY") {
-				// deal with browser quirks with body/window/document and page
-				// scroll
-				var xScrollPos = element.scrollLeft || document.documentElement.scrollLeft;
-				var yScrollPos = element.scrollTop || document.documentElement.scrollTop;
-
-				xPosition += (element.offsetLeft - xScrollPos + element.clientLeft);
-				yPosition += (element.offsetTop - yScrollPos + element.clientTop);
-			} else {
-				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-			}
-
-			if (container !== null && (element.id === container || element.className === container)) {
-				break;
-			}
-
-			element = element.offsetParent;
-		}
-		return {
-		    x : xPosition,
-		    y : yPosition
-		};
-	}
-
 	// TODO Simplify, this is too complicated!
-	function showOrHideContextMenuItems(id, documentationLocation, container) {
+	function showOrHideContextMenuItems(documentationLocation, container) {
 		document.getElementById("fifth-context-section").style.display = "none";
 		document.getElementById("first-context-section").style.display = "block";
 		if (documentationLocation === "c") {
@@ -239,7 +192,7 @@
 			document.getElementById("second-context-section").style.display = "none";
 			document.getElementById("third-context-section").style.display = "none";
 			document.getElementById("fourth-context-section").style.display = "none";
-		} else if (container !== null && container.includes("tbldecisionTable")) {
+		} else if (container !== undefined && container.includes("tbldecisionTable")) {
 			document.getElementById("condec-context-menu-create-item").style.display = "none";
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
@@ -257,7 +210,7 @@
 			document.getElementById("third-context-section").style.display = "block";
 			document.getElementById("fourth-context-section").style.display = "block";
 		}
-		if (container === null || container.includes("vis")) {
+		if (container === undefined || container.includes("vis")) {
 			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
 		} else if (documentationLocation !== "c" && container !== "tbldecisionTable") {
@@ -265,7 +218,7 @@
 			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
 		}
 
-		if (container !== null && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
+		if (container !== undefined && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			conDecAPI.isIssueStrategy(function(isEnabled) {
 				if (isEnabled) {
