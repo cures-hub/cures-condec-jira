@@ -1,5 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
@@ -7,14 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class TestSimpleRecommender extends TestSetUp {
 
@@ -24,7 +25,9 @@ public class TestSimpleRecommender extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); //search for solutions in the same project
+		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
+																									// in the same
+																									// project
 		rdfSource = new RDFSource(JiraProjects.getTestProject().getKey());
 	}
 
@@ -69,7 +72,6 @@ public class TestSimpleRecommender extends TestSetUp {
 		simpleRecommender.addKnowledgeSource(rdfSource);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
-
 
 	@Test
 	public void testRecommenderEvaluation() {

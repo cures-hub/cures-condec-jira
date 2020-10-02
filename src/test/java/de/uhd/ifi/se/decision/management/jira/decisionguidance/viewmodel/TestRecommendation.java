@@ -1,15 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 public class TestRecommendation extends TestSetUp {
-
 
 	@Before
 	public void setUp() {
