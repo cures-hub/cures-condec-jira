@@ -162,13 +162,14 @@
 			conDecAPI.openJiraIssue(id, documentationLocation);
 		};
 
-		// only for sentences
+		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
 			conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			});
 		};
 
+		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
 			conDecAPI.createIssueFromSentence(id, function() {
 				conDecObservable.notify();
@@ -180,6 +181,9 @@
 		};
 	}
 
+	/*
+	 * @issue Should it be possible to change code classes using the context menu?
+	 */
 	// TODO Simplify, this is too complicated!
 	function showOrHideContextMenuItems(documentationLocation, container) {
 		document.getElementById("fifth-context-section").style.display = "none";

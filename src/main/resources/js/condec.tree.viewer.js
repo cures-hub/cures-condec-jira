@@ -94,21 +94,21 @@
 			var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent, treeId);
 			var nodeId = node.data.id;
 
-			var sourceType = (node.li_attr['class'] === "sentence") ? "s" : "i";
-			var oldParentType = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
-			var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
+			var childLocation = node.data.documentationLocation;
+			var oldParentLocation = oldParentNode.data.documentationLocation;
+			var newParentLocation = parentNode.data.documentationLocation;
 
 			if (oldParentNode === "#" && parentNode !== "#") {
-				conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
+				conDecAPI.createLink(parentNode.data.id, nodeId, newParentLocation, childLocation, null, function() {
 					conDecObservable.notify();
 				});
 			} else if (parentNode === "#" && oldParentNode !== "#") {
-				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentLocation, childLocation, function() {
 					conDecObservable.notify();
 				});
 			} else if (parentNode !== '#' && oldParentNode !== '#') {
-				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-					conDecAPI.createLink(parentNode.data.id, nodeId, newParentType, sourceType, null, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentLocation, childLocation, function() {
+					conDecAPI.createLink(parentNode.data.id, nodeId, newParentLocation, childLocation, null, function() {
 						conDecObservable.notify();
 					});
 				});
@@ -117,25 +117,23 @@
 	}
 
 	function addContextMenuToTreeViewer (container, treeId) {
-		if (treeId === "#code-class-tree") {
-			/*
-			 * @issue Should it be possible to change code classes using the context menu?
-			 */
-			return;
-		}
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQuery(treeId).on("contextmenu.jstree", function(event) {
 			event.preventDefault();
 
 			var nodeId = event.target.parentNode.id;
 			var node = getTreeViewerNodeById(nodeId, treeId);
-			var id = node.data.id;
+			var element = node.data;
 
-			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenu(id, "s", event, container);
+			var parentNode = getTreeViewerNodeById(node.parent, treeId);	
+			var parentElement = parentNode.data;
+
+			if (parentElement === undefined) {
+				conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container);
 			} else {
-				conDecContextMenu.createContextMenu(id, "i", event, container);
-			}
+				conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container, 
+					parentElement.id, parentElement.documentationLocation);
+			}			
 		});
 	}
 
