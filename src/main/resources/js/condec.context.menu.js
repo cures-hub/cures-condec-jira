@@ -235,13 +235,6 @@
 				document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
 			}
 		}
-		/*
-		 * if (documentationLocation === "i"){
-		 * document.getElementById("condec-context-menu-assign-decision-group-item").style.display =
-		 * "none"; }else{
-		 * document.getElementById("condec-context-menu-assign-decision-group-item").style.display =
-		 * "initial"; }
-		 */
 		if (documentationLocation === "groups") {
 			document.getElementById("first-context-section").style.display = "none";
 			document.getElementById("second-context-section").style.display = "none";
