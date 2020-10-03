@@ -52,7 +52,8 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		String icon = getIconHTML(knowledgeType);
 		String newBody = body.replaceFirst("<p>", "");
 		long elementId = getElementId(renderContext, newBody, knowledgeType);
-		String eventCode = getOnContextMenuEventListener(elementId);
+		long jiraIssueId = getJiraIssueId(renderContext);
+		String eventCode = getOnContextMenuEventListener(elementId, jiraIssueId);
 		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " " + newBody;
 	}
 
@@ -90,12 +91,12 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		return id;
 	}
 
-	private String getOnContextMenuEventListener(long id) {
+	private String getOnContextMenuEventListener(long id, long jiraIssueId) {
 		if (id <= 0) {
 			return "";
 		}
 		return "id=\"commentnode-" + id + "\" oncontextmenu=\"conDecContextMenu.createContextMenu(" + id
-				+ ",'s',this); return false;\" ";
+				+ ",'s',this,null," + jiraIssueId + ",\"i\"); return false;\" ";
 	}
 
 	/**

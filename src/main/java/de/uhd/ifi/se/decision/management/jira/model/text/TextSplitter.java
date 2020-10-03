@@ -19,6 +19,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
+/**
+ * Splits a text into parts using Jira macro tags and sentences.
+ * 
+ * TODO Refactor and simplify this parser.
+ */
 public class TextSplitter {
 
 	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
@@ -54,14 +59,12 @@ public class TextSplitter {
 	 * @return parts of text (substrings) as a list.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
+		splitTextIntoSentences(text);
+
 		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
-
-		List<String> strings = getRawSentences(text);
-		runBreakIterator(strings, text);
-
-		for (int i = 0; i < this.startPositions.size(); i++) {
-			int startPosition = this.startPositions.get(i);
-			int endPosition = this.endPositions.get(i);
+		for (int i = 0; i < startPositions.size(); i++) {
+			int startPosition = startPositions.get(i);
+			int endPosition = endPositions.get(i);
 			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
 				continue;
 			}
@@ -83,7 +86,7 @@ public class TextSplitter {
 		return parts;
 	}
 
-	private List<String> getRawSentences(String body) {
+	private List<String> splitTextIntoSentences(String body) {
 		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
 
 		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
@@ -92,12 +95,32 @@ public class TextSplitter {
 		for (String tag : RATIONALE_TAGS) {
 			rawSentences = searchForTags(rawSentences, tag, tag);
 		}
-		if (ConfigPersistenceManager.isIconParsing(projectKey)) {
+		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
 			for (String icon : RATIONALE_ICONS) {
 				rawSentences = searchForTags(rawSentences, icon, System.getProperty("line.separator"));
 			}
 		}
+
+		runBreakIterator(rawSentences, body);
 		return rawSentences;
+	}
+
+	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
+		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
+		for (String slice : firstSplit) {
+			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
+					closeTag.toLowerCase(), new ArrayList<String>());
+			if (slicesOfSentence.size() > 1) {
+				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
+			}
+		}
+		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
+			int remove = (int) newSlices.keySet().toArray()[i];
+			firstSplit.remove(remove);
+			firstSplit.addAll(remove, newSlices.get(remove));
+		}
+
+		return firstSplit;
 	}
 
 	private static List<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
@@ -126,24 +149,6 @@ public class TextSplitter {
 			}
 		}
 		return slices;
-	}
-
-	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
-		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
-		for (String slice : firstSplit) {
-			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
-					closeTag.toLowerCase(), new ArrayList<String>());
-			if (slicesOfSentence.size() > 1) {
-				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
-			}
-		}
-		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
-			int remove = (int) newSlices.keySet().toArray()[i];
-			firstSplit.remove(remove);
-			firstSplit.addAll(remove, newSlices.get(remove));
-		}
-
-		return firstSplit;
 	}
 
 	/**
