@@ -90,11 +90,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
-
-	}
-
-	public PartOfJiraIssueText(long id, int endPosition, int startPosition, boolean isValidated, boolean isRelevant,
-			String projectKey, long commentId, long issueId, String type, String status) {
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -110,7 +105,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return true if the text is decision knowledge.
 	 */
 	public boolean isRelevant() {
-		return this.isRelevant;
+		return isRelevant;
 	}
 
 	/**
@@ -129,7 +124,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         human beeing.
 	 */
 	public boolean isValidated() {
-		return this.isValidated;
+		return isValidated;
 	}
 
 	/**
@@ -152,7 +147,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         knowledge type different than KnowledgeType.OTHER.
 	 */
 	public boolean isTagged() {
-		return this.getType() != KnowledgeType.OTHER;
+		return getType() != KnowledgeType.OTHER;
 	}
 
 	/**
@@ -160,7 +155,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         element or the irrelevant text within the entire text.
 	 */
 	public int getStartPosition() {
-		return this.startPosition;
+		return startPosition;
 	}
 
 	/**
@@ -180,7 +175,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         or the irrelevant text within the entire text.
 	 */
 	public int getEndPosition() {
-		return this.endPosition;
+		return endPosition;
 	}
 
 	/**
@@ -202,7 +197,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return end position - start position.
 	 */
 	public int getLength() {
-		return this.endPosition - this.startPosition;
+		return endPosition - startPosition;
 	}
 
 	/**
@@ -242,14 +237,14 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	@Override
 	public Issue getJiraIssue() {
-		return this.jiraIssue;
+		return jiraIssue;
 	}
 
 	@Override
 	public String getKey() {
-		Issue issue = this.getJiraIssue();
+		Issue issue = getJiraIssue();
 		if (issue != null) {
-			return issue.getKey() + ":" + this.getId();
+			return issue.getKey() + ":" + getId();
 		}
 		return super.getKey();
 	}
@@ -257,13 +252,12 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	@Override
 	public Date getCreationDate() {
 		Comment comment = getComment();
-		if (comment == null) {
-			Issue issue = getJiraIssue();
-			if (issue != null) {
-				return issue.getCreated();
-			}
-		} else {
+		if (comment != null) {
 			return comment.getCreated();
+		}
+		Issue issue = getJiraIssue();
+		if (issue != null) {
+			return issue.getCreated();
 		}
 		return super.getCreationDate();
 	}
@@ -271,13 +265,12 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	@Override
 	public Date getUpdatingDate() {
 		Comment comment = getComment();
-		if (comment == null) {
-			Issue issue = getJiraIssue();
-			if (issue != null) {
-				return issue.getUpdated();
-			}
-		} else {
+		if (comment != null) {
 			return comment.getUpdated();
+		}
+		Issue issue = getJiraIssue();
+		if (issue != null) {
+			return issue.getUpdated();
 		}
 		return super.getUpdatingDate();
 	}
@@ -351,7 +344,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         the description.
 	 */
 	public long getCommentId() {
-		return this.commentId;
+		return commentId;
 	}
 
 	/**
@@ -372,9 +365,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public void setComment(Comment comment) {
 		if (comment != null) {
-			this.setCommentId(comment.getId());
-			this.setJiraIssue(comment.getIssue().getId());
-			this.setCreationDate(comment.getCreated());
+			setCommentId(comment.getId());
+			setJiraIssue(comment.getIssue().getId());
+			setCreationDate(comment.getCreated());
 		}
 	}
 
@@ -392,11 +385,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 
 	@Override
 	public ApplicationUser getCreator() {
-		Comment comment = this.getComment();
+		Comment comment = getComment();
 		if (comment != null) {
 			return comment.getAuthorApplicationUser();
 		}
-		Issue issue = this.getJiraIssue();
+		Issue issue = getJiraIssue();
 		if (issue != null) {
 			return issue.getReporter();
 		}
@@ -408,13 +401,13 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         description is valid.
 	 */
 	public boolean isValid() {
-		if (this.getEndPosition() == 0 && this.getStartPosition() == 0) {
+		if (getEndPosition() == 0 && getStartPosition() == 0) {
 			return false;
 		}
-		if (this.getCommentId() <= 0) {
+		if (getCommentId() <= 0) {
 			// documented in Jira issue description
 			return true;
 		}
-		return this.getComment() != null;
+		return getComment() != null;
 	}
 }

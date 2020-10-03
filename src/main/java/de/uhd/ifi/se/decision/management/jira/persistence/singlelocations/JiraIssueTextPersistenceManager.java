@@ -360,7 +360,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
-		databaseEntry.setJiraIssueId(element.getJiraIssueId());
+		databaseEntry.setJiraIssueId(element.getJiraIssue().getId());
 		databaseEntry.setStatus(element.getStatusAsString());
 	}
 
@@ -458,7 +458,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			int lengthDifference) {
 		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(
 				PartOfJiraIssueTextInDatabase.class, "COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(),
-				sentence.getJiraIssueId())) {
+				sentence.getJiraIssue().getId())) {
 			if (otherSentenceInComment.getStartPosition() > sentence.getStartPosition()
 					&& otherSentenceInComment.getId() != sentence.getId()) {
 				otherSentenceInComment.setStartPosition(otherSentenceInComment.getStartPosition() + lengthDifference);
@@ -540,7 +540,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
 
 		try {
-			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
+			issueLinkManager.createIssueLink(element.getJiraIssue().getId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
 			LOGGER.error("Creating  issue from part of text failed. Message: " + e.getMessage());
 			return null;
@@ -554,7 +554,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// delete ao sentence entry
 		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(element, null);
 
-		createLinksForNonLinkedElements(element.getJiraIssueId());
+		createLinksForNonLinkedElements(element.getJiraIssue().getId());
 
 		return issue;
 	}
@@ -609,7 +609,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			PartOfJiraIssueText sentence = partsOfText.get(i);
 			sentence.setCommentId(0);
 			sentence.setDescription(sentence.getText());
-			sentence.setJiraIssueId(jiraIssue.getId());
+			sentence.setJiraIssue(jiraIssue.getId());
 			sentence.setCreationDate(jiraIssue.getCreated());
 			sentence.setUpdatingDate(jiraIssue.getUpdated());
 			if (i < numberOfTextParts) {

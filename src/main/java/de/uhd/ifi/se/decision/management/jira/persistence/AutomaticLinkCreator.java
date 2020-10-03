@@ -60,7 +60,7 @@ public class AutomaticLinkCreator {
 	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
 		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
-		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssueId();
+		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssue().getId();
 		for (KnowledgeType parentType : parentTypes) {
 			KnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
 					.getYoungestElementForJiraIssue(jiraIssueId, parentType);

@@ -467,7 +467,8 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());
+			persistenceManager.getJiraIssueTextManager()
+					.createLinksForNonLinkedElements(sentence.getJiraIssue().getId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
