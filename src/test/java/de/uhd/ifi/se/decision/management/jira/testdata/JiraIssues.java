@@ -146,7 +146,9 @@ public class JiraIssues {
 		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.createApplicationUser();
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.insertPartsOfComment(comment);
 		return sentences;
 	}
 }

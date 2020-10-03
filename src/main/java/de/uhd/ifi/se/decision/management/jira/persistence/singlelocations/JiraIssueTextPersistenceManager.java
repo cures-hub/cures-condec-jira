@@ -595,6 +595,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		if (numberOfElementsInDatabase > numberOfNewPartsOfComment) {
 			deleteElementsInComment(comment);
+			elementsInDatabase = new ArrayList<>();
 			numberOfElementsInDatabase = 0;
 		}
 
@@ -637,6 +638,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		if (numberOfElementsInDatabase > numberOfNewPartsInDescription) {
 			deleteElementsInDescription(jiraIssue);
+			elementsInDatabase = new ArrayList<>();
 			numberOfElementsInDatabase = 0;
 		}
 
@@ -740,21 +742,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of comment sentences with ids in database.
 	 * @see PartOfJiraIssueText
 	 */
-	public static List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-
+	public List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
 		// Convert comment String to a list of PartOfJiraIssueText
 		List<PartOfJiraIssueText> partsOfComment = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
 
 		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<>();
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-
 		// Create entries in the active objects (AO) database
 		for (PartOfJiraIssueText partOfComment : partsOfComment) {
 			partOfComment.setComment(comment);
-			partOfComment = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(partOfComment, null);
+			partOfComment = (PartOfJiraIssueText) insertKnowledgeElement(partOfComment, null);
 			if (partOfComment.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(partOfComment);
 			}

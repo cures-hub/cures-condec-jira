@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestEventDescriptionEdited extends TestSetUpEventListener {
 
 	private KnowledgeElement getFirstKnowledgeElementInDescription(String description) {
-		jiraIssue.setDescription("TODO: Write description for this JIRA issue");
+		jiraIssue.setDescription("TODO: Write description for this Jira issue");
 		IssueEvent issueEvent = createIssueEvent((Comment) null, EventType.ISSUE_UPDATED_ID);
 		listener.onIssueEvent(issueEvent);
 		jiraIssue.setDescription(description);
@@ -48,8 +47,8 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	@NonTransactional
 	public void testRationaleTag() {
 		KnowledgeElement element = getFirstKnowledgeElementInDescription("{issue}This is a very severe issue.{issue}");
-		assertTrue(element.getDescription().equals("This is a very severe issue."));
-		assertTrue(element.getType() == KnowledgeType.ISSUE);
+		assertEquals("This is a very severe issue.", element.getDescription());
+		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}
 
 	@Test
@@ -57,15 +56,15 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	public void testExcludedTag() {
 		KnowledgeElement element = getFirstKnowledgeElementInDescription("{code:java}public static class{code}");
 		assertEquals("{code:java}public static class{code}", element.getDescription());
-		assertTrue(element.getType() == KnowledgeType.OTHER);
+		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
 		KnowledgeElement element = getFirstKnowledgeElementInDescription("(!)This is a very severe issue.");
-		assertTrue(element.getDescription().equals("This is a very severe issue."));
-		assertTrue(element.getType() == KnowledgeType.ISSUE);
+		assertEquals("This is a very severe issue.", element.getDescription());
+		assertEquals(KnowledgeType.ISSUE, element.getType());
 		assertEquals("{issue}This is a very severe issue.{issue}",
 				TextSplitter.parseIconsToTags(jiraIssue.getDescription()));
 	}

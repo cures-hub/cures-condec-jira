@@ -59,6 +59,9 @@ public class TextSplitter {
 	 * @return parts of text (substrings) as a list.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
+		if (text.isBlank()) {
+			return new ArrayList<PartOfJiraIssueText>();
+		}
 		splitTextIntoSentences(text);
 
 		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
@@ -72,9 +75,13 @@ public class TextSplitter {
 			partOfText.setStartPosition(startPosition);
 			partOfText.setEndPosition(endPosition);
 			partOfText.setProject(projectKey);
-			String body = text.substring(startPosition, endPosition).toLowerCase();
+			String body = text.substring(startPosition, endPosition);
 			KnowledgeType type = getKnowledgeTypeFromTag(body);
 			partOfText.setType(type);
+			if (type != KnowledgeType.OTHER) {
+				// TODO: Why is this set here?
+				partOfText.setValidated(true);
+			}
 			partOfText.setDescription(stripTagsFromBody(body));
 			parts.add(partOfText);
 		}
@@ -88,6 +95,8 @@ public class TextSplitter {
 		if (isAnyKnowledgeTypeTwiceExisting(body)) {
 			int tagLength = 2 + getKnowledgeTypeFromTag(body).toString().length();
 			body = body.substring(tagLength, body.length() - tagLength);
+		} else {
+			body = body.replaceAll("\\(.*?\\)", "");
 		}
 		return body;
 	}

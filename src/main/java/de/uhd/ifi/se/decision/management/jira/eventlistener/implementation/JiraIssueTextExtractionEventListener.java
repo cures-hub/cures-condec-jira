@@ -110,14 +110,12 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		KnowledgeElement element = new KnowledgeElement(issueEvent.getIssue());
 		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
-		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
-		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleNewComment() {
@@ -126,9 +124,10 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+					.getJiraIssueTextManager();
+			persistenceManager.insertPartsOfComment(comment);
 		}
-		// JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 
 	}
 

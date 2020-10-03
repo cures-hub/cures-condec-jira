@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -26,7 +27,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		manager = new JiraIssueTextPersistenceManager("TEST");
+		manager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
@@ -38,8 +39,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType("ALTERNATIVE");
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
-		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getKnowledgeElement(id);
+		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}
 
@@ -51,8 +51,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
-		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getKnowledgeElement(id);
+		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}
 
@@ -61,18 +60,12 @@ public class TestUpdateInDatabase extends TestSetUp {
 	public void testSetSentenceIrrlevant() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
 		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();
-		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-				.getKnowledgeElement(id);
-		element.setRelevant(true);
-
-		JiraIssueTextPersistenceManager.updateInDatabase(element);
-		element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("").getKnowledgeElement(id);
-		assertTrue(element.isRelevant());
+		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
 
 		element.setRelevant(false);
 		element.setValidated(true);
 		JiraIssueTextPersistenceManager.updateInDatabase(element);
-		element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("").getKnowledgeElement(id);
+		element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
 		assertFalse(element.isRelevant());
 		assertTrue(element.isValidated());
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("Other"));
