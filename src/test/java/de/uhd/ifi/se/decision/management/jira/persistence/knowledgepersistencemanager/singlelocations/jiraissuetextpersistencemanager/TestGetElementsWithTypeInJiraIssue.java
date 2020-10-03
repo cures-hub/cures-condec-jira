@@ -102,7 +102,7 @@ public class TestGetElementsWithTypeInJiraIssue extends TestSetUp {
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertKnowledgeElement(comment.get(1), null);
 
-		assertEquals(1,
-				manager.getElementsWithTypeInJiraIssue(comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE).size());
+		assertEquals(1, manager
+				.getElementsWithTypeInJiraIssue(comment.get(0).getJiraIssue().getId(), KnowledgeType.ISSUE).size());
 	}
 }

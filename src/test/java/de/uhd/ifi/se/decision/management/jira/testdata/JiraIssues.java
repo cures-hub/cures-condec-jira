@@ -105,7 +105,7 @@ public class JiraIssues {
 	public static Issue addComment(Issue issue) {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		sentence.setJiraIssueId(issue.getId());
+		sentence.setJiraIssue(issue.getId());
 		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence),
@@ -130,7 +130,7 @@ public class JiraIssues {
 	public static PartOfJiraIssueText addElementToDataBase(long id, String type) {
 		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setProject("TEST");
-		element.setJiraIssueId(1);
+		element.setJiraIssue(1);
 		element.setId(id);
 		element.setKey("TEST-" + id);
 		element.setType(type);

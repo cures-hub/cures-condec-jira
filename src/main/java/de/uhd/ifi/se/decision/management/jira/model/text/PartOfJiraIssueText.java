@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -8,13 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -32,7 +31,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	private boolean isRelevant;
 	private boolean isValidated;
 	private boolean isPlainText;
-	private long jiraIssueId;
+	private Issue jiraIssue;
 	private long commentId;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(PartOfJiraIssueText.class);
@@ -57,48 +56,30 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	public PartOfJiraIssueText(PartOfJiraIssueTextInDatabase databaseEntry) {
-		this(databaseEntry.getId(), databaseEntry.getEndPosition(), databaseEntry.getStartPosition(),
-				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType(),
-				databaseEntry.getStatus());
-	}
-
-	public PartOfJiraIssueText(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-			boolean isRelevant, String projectKey, long commentId, long issueId, String type, String status) {
 		this();
-		this.setId(id);
-		this.setEndPosition(endSubstringCount);
-		this.setStartPosition(startSubstringCount);
-		this.setValidated(isValidated);
-		this.setRelevant(isRelevant);
-		this.setProject(projectKey);
-		this.setCommentId(commentId);
-		this.setJiraIssueId(issueId);
-		this.setProject(new DecisionKnowledgeProject(projectKey));
-		this.setType(type);
-		this.setStatus(status);
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		if (issue != null) {
-			this.setKey(issue.getKey() + ":" + this.getId());
-		}
+		this.setId(databaseEntry.getId());
+		this.setEndPosition(databaseEntry.getEndPosition());
+		this.setStartPosition(databaseEntry.getStartPosition());
+		this.setValidated(databaseEntry.isValidated());
+		this.setRelevant(databaseEntry.isRelevant());
+		this.setProject(databaseEntry.getProjectKey());
+		this.setCommentId(databaseEntry.getCommentId());
+		this.setJiraIssue(databaseEntry.getJiraIssueId());
+		this.setType(databaseEntry.getType());
+		this.setStatus(databaseEntry.getStatus());
+
 		String text = "";
 		Comment comment = this.getComment();
 		if (comment == null) {
 			text = getJiraIssueDescription();
-			if (issue != null) {
-				this.setCreationDate(issue.getCreated());
-				this.setUpdatingDate(issue.getUpdated());
-			}
 		} else {
 			text = comment.getBody();
-			this.setCreationDate(comment.getCreated());
-			this.setUpdatingDate(comment.getUpdated());
 		}
 		try {
-			if (endSubstringCount < text.length()) {
-				text = text.substring(startSubstringCount, endSubstringCount);
-			} else if (endSubstringCount == text.length()) {
-				text = text.substring(startSubstringCount);
+			if (endPosition < text.length()) {
+				text = text.substring(startPosition, endPosition);
+			} else if (endPosition == text.length()) {
+				text = text.substring(startPosition);
 			}
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
 			LOGGER.error("Constructor faild to create object of PartOfJiraIssueText. Message: " + e.getMessage());
@@ -109,6 +90,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
+
+	}
+
+	public PartOfJiraIssueText(long id, int endPosition, int startPosition, boolean isValidated, boolean isRelevant,
+			String projectKey, long commentId, long issueId, String type, String status) {
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -243,24 +229,57 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * Sets the id of the Jira issue that the decision knowledge element or
 	 * irrelevant text is part of.
 	 * 
-	 * @param issueId
+	 * @param jiraIssueId
 	 *            of the Jira issue.
 	 */
-	public void setJiraIssueId(long issueId) {
-		this.jiraIssueId = issueId;
+	public void setJiraIssue(long jiraIssueId) {
+		this.jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 	}
 
 	/**
-	 * @return id of the Jira issue that the decision knowledge element or
-	 *         irrelevant text is part of.
+	 * @return Jira issue that the decision knowledge element or irrelevant text is
+	 *         part of.
 	 */
-	public long getJiraIssueId() {
-		return this.jiraIssueId;
+	@Override
+	public Issue getJiraIssue() {
+		return this.jiraIssue;
 	}
 
 	@Override
-	public Issue getJiraIssue() {
-		return ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+	public String getKey() {
+		Issue issue = this.getJiraIssue();
+		if (issue != null) {
+			return issue.getKey() + ":" + this.getId();
+		}
+		return super.getKey();
+	}
+
+	@Override
+	public Date getCreationDate() {
+		Comment comment = getComment();
+		if (comment == null) {
+			Issue issue = getJiraIssue();
+			if (issue != null) {
+				return issue.getCreated();
+			}
+		} else {
+			return comment.getCreated();
+		}
+		return super.getCreationDate();
+	}
+
+	@Override
+	public Date getUpdatingDate() {
+		Comment comment = getComment();
+		if (comment == null) {
+			Issue issue = getJiraIssue();
+			if (issue != null) {
+				return issue.getUpdated();
+			}
+		} else {
+			return comment.getUpdated();
+		}
+		return super.getUpdatingDate();
 	}
 
 	private boolean containsExcludedTag(String body) {
@@ -317,7 +336,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		}
 		String projectKey = this.getProject().getProjectKey();
 		if (TextSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2 + TextSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
+			int tagLength = 2 + new TextSplitter(projectKey).getKnowledgeTypeFromTag(body).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
@@ -354,7 +373,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public void setComment(Comment comment) {
 		if (comment != null) {
 			this.setCommentId(comment.getId());
-			this.setJiraIssueId(comment.getIssue().getId());
+			this.setJiraIssue(comment.getIssue().getId());
 			this.setCreationDate(comment.getCreated());
 		}
 	}
@@ -364,8 +383,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         irrelevant text is part of.
 	 */
 	public String getJiraIssueDescription() {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue issue = issueManager.getIssueObject(this.getJiraIssueId());
+		Issue issue = getJiraIssue();
 		if (issue == null) {
 			return super.getSummary();
 		}

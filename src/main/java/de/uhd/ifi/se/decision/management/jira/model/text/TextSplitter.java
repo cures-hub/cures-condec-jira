@@ -73,7 +73,7 @@ public class TextSplitter {
 			partOfText.setEndPosition(endPosition);
 			partOfText.setProject(projectKey);
 			String body = text.substring(startPosition, endPosition).toLowerCase();
-			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
+			KnowledgeType type = getKnowledgeTypeFromTag(body);
 			partOfText.setDescription(body);
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
@@ -209,7 +209,7 @@ public class TextSplitter {
 	 *
 	 * @return tagged knowledge type of a given string
 	 */
-	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
+	public KnowledgeType getKnowledgeTypeFromTag(String body) {
 		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 		for (KnowledgeType type : KNOWLEDGE_TYPES) {
 			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))

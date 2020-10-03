@@ -211,7 +211,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetJiraIssue() {
 		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
-		partOfText.setJiraIssueId(1);
+		partOfText.setJiraIssue(1);
 		Issue jiraIssue = partOfText.getJiraIssue();
 		assertNotNull(jiraIssue);
 		assertEquals(1, (long) jiraIssue.getId());

@@ -39,7 +39,7 @@ public class TestGetElementsInDescription extends TestSetUp {
 		sentence.setCommentId(0);
 		manager.insertKnowledgeElement(sentence, user);
 
-		long jiraIssueId = comment.get(1).getJiraIssueId();
+		long jiraIssueId = comment.get(1).getJiraIssue().getId();
 		List<KnowledgeElement> listWithObjects = manager.getElementsInDescription(jiraIssueId);
 		assertEquals(1, listWithObjects.size());
 
