@@ -561,7 +561,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public static List<KnowledgeElement> updateComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter().getPartsOfText(comment.getBody(), projectKey);
+		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -597,8 +597,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public static List<KnowledgeElement> updateDescription(Issue jiraIssue) {
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter().getPartsOfText(jiraIssue.getDescription(),
-				projectKey);
+		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(jiraIssue.getDescription());
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -715,7 +714,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String projectKey = comment.getIssue().getProjectObject().getKey();
 
 		// Convert comment String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfComment = new TextSplitter().getPartsOfText(comment.getBody(), projectKey);
+		List<PartOfJiraIssueText> partsOfComment = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
 
 		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<>();
 
@@ -746,8 +745,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public static List<PartOfJiraIssueText> insertPartsOfDescription(MutableIssue issue) {
 		String projectKey = issue.getProjectObject().getKey();
 		// Convert description String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfDescription = new TextSplitter().getPartsOfText(issue.getDescription(),
-				projectKey);
+		List<PartOfJiraIssueText> partsOfDescription = new TextSplitter(projectKey)
+				.getPartsOfText(issue.getDescription());
 		partsOfDescription.forEach(part -> part.setCommentId(0));
 
 		// Create entries in the active objects (AO) database

@@ -33,7 +33,7 @@
 		 * once?
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
-		 * constructor (see above)!
+		 * constructor to avoid that the event listeners are added more than once!
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");

@@ -70,7 +70,7 @@ public class TreeViewerNode {
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link) {
 		this(knowledgeElement);
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
+		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 	}
 
 	public String getId() {

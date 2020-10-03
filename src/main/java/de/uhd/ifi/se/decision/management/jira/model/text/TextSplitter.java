@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 
 public class TextSplitter {
 
-	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
+	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
+			"{color}" };
 
 	/** List of all knowledge types as tags. Sequence matters! */
 	public static final String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}",
@@ -37,26 +39,24 @@ public class TextSplitter {
 
 	private List<Integer> startPositions;
 	private List<Integer> endPositions;
+	private String projectKey;
 
-	public TextSplitter() {
+	public TextSplitter(String projectKey) {
+		this.projectKey = projectKey;
 		this.startPositions = new ArrayList<Integer>();
 		this.endPositions = new ArrayList<Integer>();
 	}
 
 	/**
-	 * Split a text into parts (substrings).
-	 * 
 	 * @see PartOfJiraIssueText
 	 * @param text
 	 *            text to be split.
-	 * @param projectKey
-	 *            of the JIRA project.
 	 * @return parts of text (substrings) as a list.
 	 */
-	public List<PartOfJiraIssueText> getPartsOfText(String text, String projectKey) {
+	public List<PartOfJiraIssueText> getPartsOfText(String text) {
 		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
 
-		List<String> strings = TextSplitter.getRawSentences(text, projectKey);
+		List<String> strings = getRawSentences(text);
 		runBreakIterator(strings, text);
 
 		for (int i = 0; i < this.startPositions.size(); i++) {
@@ -83,24 +83,24 @@ public class TextSplitter {
 		return parts;
 	}
 
-	private static List<String> getRawSentences(String body, String projectKey) {
-		List<String> firstSplit = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
+	private List<String> getRawSentences(String body) {
+		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
 
-		firstSplit = searchForTags(firstSplit, "{noformat}", "{noformat}");
-		firstSplit = searchForTags(firstSplit, "{panel:", "{panel}");
-		firstSplit = searchForTags(firstSplit, "{code:", "{code}");
+		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
+		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
+		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
 		for (String tag : RATIONALE_TAGS) {
-			firstSplit = searchForTags(firstSplit, tag, tag);
+			rawSentences = searchForTags(rawSentences, tag, tag);
 		}
 		if (ConfigPersistenceManager.isIconParsing(projectKey)) {
 			for (String icon : RATIONALE_ICONS) {
-				firstSplit = searchForTags(firstSplit, icon, System.getProperty("line.separator"));
+				rawSentences = searchForTags(rawSentences, icon, System.getProperty("line.separator"));
 			}
 		}
-		return firstSplit;
+		return rawSentences;
 	}
 
-	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
+	private static List<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
 			ArrayList<String> slices) {
 		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
 			slices.add(partOfText);
@@ -129,9 +129,9 @@ public class TextSplitter {
 	}
 
 	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
-		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
+		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
 		for (String slice : firstSplit) {
-			ArrayList<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
+			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
 					closeTag.toLowerCase(), new ArrayList<String>());
 			if (slicesOfSentence.size() > 1) {
 				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
@@ -199,7 +199,6 @@ public class TextSplitter {
 	}
 
 	/**
-	 *
 	 * @param body
 	 * @param projectKey
 	 *
@@ -209,7 +208,7 @@ public class TextSplitter {
 		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 		for (KnowledgeType type : KNOWLEDGE_TYPES) {
 			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
-					|| (checkIcons && body.contains(type.getIconString()))) {
+					|| checkIcons && body.contains(type.getIconString())) {
 				return type;
 			}
 		}

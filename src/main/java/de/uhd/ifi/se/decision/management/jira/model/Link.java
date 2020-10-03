@@ -20,9 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
- * Models links (=edges) between knowledge elements. The links are directed,
- * i.e., they are arrows starting from a source element and ending in a
- * destination element.
+ * Models links (=edges/relationships) between knowledge elements. The links are
+ * directed, i.e., they are arrows starting from a source element and ending in
+ * a destination element.
  */
 public class Link extends DefaultWeightedEdge {
 
@@ -105,10 +105,10 @@ public class Link extends DefaultWeightedEdge {
 
 	/**
 	 * @see LinkType
-	 * @return type of the link.
+	 * @return type of the link as a String.
 	 */
 	@XmlElement(name = "type")
-	public String getType() {
+	public String getTypeAsString() {
 		if (type == null) {
 			type = LinkType.getDefaultLinkType();
 		}
@@ -127,7 +127,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see LinkType
 	 * @return type of the link.
 	 */
-	public LinkType getLinkType() {
+	public LinkType getType() {
 		return type;
 	}
 
@@ -156,7 +156,7 @@ public class Link extends DefaultWeightedEdge {
 
 	@XmlElement(name = "color")
 	public String getColor() {
-		return LinkType.getLinkTypeColor(this.getType());
+		return LinkType.getLinkTypeColor(this.getTypeAsString());
 	}
 
 	/**

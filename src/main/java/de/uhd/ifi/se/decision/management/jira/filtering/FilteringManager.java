@@ -129,7 +129,7 @@ public class FilteringManager {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
 			if (filterSettings.getLinkTypes().parallelStream()
-					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getType()))) {
+					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getTypeAsString()))) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}

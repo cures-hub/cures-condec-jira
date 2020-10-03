@@ -48,7 +48,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 
 	public static PartOfJiraIssueText getFirstPartOfTextInComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter().getPartsOfText(comment.getBody(), projectKey);
+		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
 		if (partsOfText.isEmpty()) {
 			return null;
 		}

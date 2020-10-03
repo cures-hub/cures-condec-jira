@@ -78,7 +78,7 @@ public class TestGenericLink extends TestSetUp {
 
 		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
 		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
-		assertTrue(link.getType().equals("contain"));
+		assertTrue(link.getTypeAsString().equals("contain"));
 	}
 
 	@Test
