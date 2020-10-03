@@ -34,7 +34,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @see ApplicationUser
 	 */
 	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		return this.deleteKnowledgeElement(element.getId(), user);
+		return deleteKnowledgeElement(element.getId(), user);
 	}
 
 	/**

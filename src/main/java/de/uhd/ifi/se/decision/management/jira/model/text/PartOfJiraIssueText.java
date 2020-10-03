@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,26 +39,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
-	public PartOfJiraIssueText(int startPosition, int endPosition) {
-		this.startPosition = startPosition;
-		this.endPosition = endPosition;
-	}
-
-	public static PartOfJiraIssueText getFirstPartOfTextInComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
-		if (partsOfText.isEmpty()) {
-			return null;
-		}
-		partsOfText.get(0).setComment(comment);
-		return partsOfText.get(0);
-	}
-
 	public PartOfJiraIssueText(PartOfJiraIssueTextInDatabase databaseEntry) {
 		this();
 		this.setId(databaseEntry.getId());
-		this.setEndPosition(databaseEntry.getEndPosition());
 		this.setStartPosition(databaseEntry.getStartPosition());
+		this.setEndPosition(databaseEntry.getEndPosition());
 		this.setValidated(databaseEntry.isValidated());
 		this.setRelevant(databaseEntry.isRelevant());
 		this.setProject(databaseEntry.getProjectKey());
@@ -69,7 +53,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setStatus(databaseEntry.getStatus());
 
 		String text = "";
-		Comment comment = this.getComment();
+		Comment comment = getComment();
 		if (comment == null) {
 			text = getJiraIssueDescription();
 		} else {
@@ -84,12 +68,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
 			LOGGER.error("Constructor faild to create object of PartOfJiraIssueText. Message: " + e.getMessage());
 		}
-		if (text == null) {
-			text = "";
-		}
+		text = new TextSplitter(databaseEntry.getProjectKey()).stripTagsFromBody(text);
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
-		stripTagsFromBody(text);
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -102,20 +83,28 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * @return true if the text is decision knowledge.
+	 * @return true if the text is decision knowledge. This attribute is necessary
+	 *         for binary text classification.
 	 */
 	public boolean isRelevant() {
 		return isRelevant;
 	}
 
 	/**
-	 * Sets whether the part of the text is decision knowledge, i.e., relevant.
+	 * Sets whether the part of the text is decision knowledge, i.e., relevant. This
+	 * attribute is necessary for binary text classification.
 	 * 
 	 * @param isRelevant
 	 *            true of the text is decision knowledge.
 	 */
 	public void setRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
+	}
+
+	@Override
+	public void setType(KnowledgeType type) {
+		super.setType(type);
+		setRelevant(type != KnowledgeType.OTHER);
 	}
 
 	/**
@@ -303,7 +292,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return part of the text.
 	 */
 	public String getText() {
-		Comment comment = this.getComment();
+		Comment comment = getComment();
 		if (comment == null) {
 			return super.getSummary();
 		}
@@ -321,21 +310,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public void setSummary(String body) {
 		super.setDescription(body);
 		super.setSummary(body);
-	}
-
-	private void stripTagsFromBody(String body) {
-		if (body == null) {
-			return;
-		}
-		String projectKey = this.getProject().getProjectKey();
-		if (TextSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2 + new TextSplitter(projectKey).getKnowledgeTypeFromTag(body).toString().length();
-			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
-			super.setSummary(super.getDescription());
-		} else {
-			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
-			super.setSummary(super.getDescription());
-		}
 	}
 
 	/**

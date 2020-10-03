@@ -195,12 +195,16 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @param jiraIssueId
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
-	 * @return list of all decision knowledge elements documented in the description
-	 *         of a Jira issue.
+	 * @return list of all decision knowledge elements and parts of irrelevant text
+	 *         documented in the description of a Jira issue.
 	 */
 	public List<KnowledgeElement> getElementsInDescription(long jiraIssueId) {
-		List<KnowledgeElement> elements = getElementsInJiraIssue(jiraIssueId);
-		elements.removeIf(e -> (((PartOfJiraIssueText) e).getCommentId() != 0));
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", projectKey,
+						jiraIssueId))) {
+			elements.add(new PartOfJiraIssueText(databaseEntry));
+		}
 		return elements;
 	}
 
@@ -274,7 +278,17 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return null;
 		}
 		Comment comment = createCommentInJiraIssue(element, jiraIssue, user);
-		return insertKnowledgeElement(PartOfJiraIssueText.getFirstPartOfTextInComment(comment), user);
+		return insertKnowledgeElement(getFirstPartOfTextInComment(comment), user);
+	}
+
+	public static PartOfJiraIssueText getFirstPartOfTextInComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+		if (partsOfText.isEmpty()) {
+			return null;
+		}
+		partsOfText.get(0).setComment(comment);
+		return partsOfText.get(0);
 	}
 
 	/**
@@ -352,8 +366,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setCommentId(element.getCommentId());
-		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
+		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
 			classificationTrainer.update(element);
@@ -478,8 +492,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentence.getCreator();
 	}
 
-	public boolean createLinksForNonLinkedElements(long jiraIssueId) {
-		return createLinksForNonLinkedElements(getElementsInJiraIssue(jiraIssueId));
+	public boolean createLinksForNonLinkedElements(Issue jiraIssue) {
+		return createLinksForNonLinkedElements(getElementsInJiraIssue(jiraIssue.getId()));
 	}
 
 	public boolean createLinksForNonLinkedElements() {
@@ -537,12 +551,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
+		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("relate");
 
 		try {
 			issueLinkManager.createIssueLink(element.getJiraIssue().getId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
-			LOGGER.error("Creating  issue from part of text failed. Message: " + e.getMessage());
+			LOGGER.error("Creating Jira issue from part of text failed. Message: " + e.getMessage());
 			return null;
 		}
 
@@ -554,81 +568,97 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		// delete ao sentence entry
 		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(element, null);
 
-		createLinksForNonLinkedElements(element.getJiraIssue().getId());
+		createLinksForNonLinkedElements(element.getJiraIssue());
 
 		return issue;
 	}
 
-	public static List<KnowledgeElement> updateComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+	/**
+	 * Updates the decision knowledge elements and parts of irrelevant text within a
+	 * comment of a Jira issue.
+	 * 
+	 * @param comment
+	 *            of a Jira issue with decision knowledge elements.
+	 * @return list of identified knowledge elements.
+	 * 
+	 * @issue Elements used to be deleted and new ones were created afterwards. How
+	 *        to enable a "real" update?
+	 * @decision Overwrite parts of Jira issue text in AO database if they exist!
+	 * @con If a new knowledge element is inserted at the beginning of the text, the
+	 *      links in the knowledge graph might be wrong.
+	 */
+	public List<KnowledgeElement> updateComment(Comment comment) {
+		List<PartOfJiraIssueText> partsOfComment = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+		List<KnowledgeElement> elementsInDatabase = getElementsInComment(comment.getId());
+		int numberOfNewPartsOfComment = partsOfComment.size();
+		int numberOfElementsInDatabase = elementsInDatabase.size();
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-
-		List<KnowledgeElement> knowledgeElementsInText = persistenceManager.getElementsInComment(comment.getId());
-
-		// @issue Elements used to be deleted and new ones were created afterwards.
-		// How to enable a "real" update?
-		// @decision Overwrite parts of Jira issue text in AO database if they exist!
-		// @con If a new knowledge element is inserted at the beginning of the text, the
-		// links in the knowledge graph might be wrong.
-		int numberOfTextPartsInComment = knowledgeElementsInText.size();
+		if (numberOfElementsInDatabase > numberOfNewPartsOfComment) {
+			deleteElementsInComment(comment);
+			numberOfElementsInDatabase = 0;
+		}
 
 		// Update AO entries
-		for (int i = 0; i < partsOfText.size(); i++) {
-			PartOfJiraIssueText sentence = partsOfText.get(i);
+		for (int i = 0; i < numberOfNewPartsOfComment; i++) {
+			PartOfJiraIssueText sentence = partsOfComment.get(i);
 			sentence.setComment(comment);
-			if (i < numberOfTextPartsInComment) {
-				sentence.setId(knowledgeElementsInText.get(i).getId());
+			if (i < numberOfElementsInDatabase) {
+				// Update existing AO entry
+				sentence.setId(elementsInDatabase.get(i).getId());
 				updateInDatabase(sentence);
-				knowledgeElementsInText.set(i, sentence);
-			} else {
-				sentence = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(sentence, null);
-				knowledgeElementsInText.add(sentence);
-			}
-			if (sentence.isRelevant()) {
-				AutomaticLinkCreator.createSmartLinkForElement(sentence);
-			}
-
-		}
-		return knowledgeElementsInText;
-	}
-
-	public static List<KnowledgeElement> updateDescription(Issue jiraIssue) {
-		String projectKey = jiraIssue.getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(jiraIssue.getDescription());
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-
-		List<KnowledgeElement> parts = persistenceManager.getElementsInDescription(jiraIssue.getId());
-		int numberOfTextParts = parts.size();
-
-		for (int i = 0; i < partsOfText.size(); i++) {
-			PartOfJiraIssueText sentence = partsOfText.get(i);
-			sentence.setCommentId(0);
-			sentence.setDescription(sentence.getText());
-			sentence.setJiraIssue(jiraIssue.getId());
-			sentence.setCreationDate(jiraIssue.getCreated());
-			sentence.setUpdatingDate(jiraIssue.getUpdated());
-			if (i < numberOfTextParts) {
-				// Update AO entry
-				sentence.setId(parts.get(i).getId());
-				updateInDatabase(sentence);
-				parts.set(i, sentence);
+				elementsInDatabase.set(i, sentence);
 			} else {
 				// Create new AO entry
-				sentence = (PartOfJiraIssueText) persistenceManager.insertKnowledgeElement(sentence, null);
-				parts.add(sentence);
+				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
+				elementsInDatabase.add(sentence);
 			}
-			sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(sentence);
 			if (sentence.isRelevant()) {
 				AutomaticLinkCreator.createSmartLinkForElement(sentence);
 			}
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 		}
-		return parts;
+		return elementsInDatabase;
+	}
+
+	/**
+	 * Updates the decision knowledge elements and parts of irrelevant text within
+	 * the description of a Jira issue.
+	 * 
+	 * @param jiraIssue
+	 *            Jira issue with decision knowledge elements in its description.
+	 * @return list of identified knowledge elements.
+	 */
+	public List<KnowledgeElement> updateDescription(Issue jiraIssue) {
+		List<PartOfJiraIssueText> partsOfDescription = new TextSplitter(projectKey)
+				.getPartsOfText(jiraIssue.getDescription());
+		List<KnowledgeElement> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
+		int numberOfNewPartsInDescription = partsOfDescription.size();
+		int numberOfElementsInDatabase = elementsInDatabase.size();
+
+		if (numberOfElementsInDatabase > numberOfNewPartsInDescription) {
+			deleteElementsInDescription(jiraIssue);
+			numberOfElementsInDatabase = 0;
+		}
+
+		for (int i = 0; i < numberOfNewPartsInDescription; i++) {
+			PartOfJiraIssueText sentence = partsOfDescription.get(i);
+			sentence.setJiraIssue(jiraIssue.getId());
+			if (i < numberOfElementsInDatabase) {
+				// Update existing AO entry
+				sentence.setId(elementsInDatabase.get(i).getId());
+				updateInDatabase(sentence);
+				elementsInDatabase.set(i, sentence);
+			} else {
+				// Create new AO entry
+				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
+				elementsInDatabase.add(sentence);
+			}
+			if (sentence.isRelevant()) {
+				AutomaticLinkCreator.createSmartLinkForElement(sentence);
+			}
+			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
+		}
+		return elementsInDatabase;
 	}
 
 	private static int removeSentenceFromComment(PartOfJiraIssueText element) {

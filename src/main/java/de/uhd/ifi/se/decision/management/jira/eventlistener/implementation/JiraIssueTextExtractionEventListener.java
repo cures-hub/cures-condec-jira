@@ -150,9 +150,9 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			this.classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.updateComment(comment);
+			persistenceManager.updateComment(comment);
 		}
-		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
 	private void handleUpdateDescription() {
@@ -172,10 +172,10 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 		} else {
-			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
+			persistenceManager.updateDescription(issueEvent.getIssue());
 		}
 
-		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue().getId());
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
 	public Map<String, String> getChangedString(IssueEvent issueEvent) {

@@ -74,16 +74,22 @@ public class TextSplitter {
 			partOfText.setProject(projectKey);
 			String body = text.substring(startPosition, endPosition).toLowerCase();
 			KnowledgeType type = getKnowledgeTypeFromTag(body);
-			partOfText.setDescription(body);
 			partOfText.setType(type);
-			if (type != KnowledgeType.OTHER) {
-				partOfText.setRelevant(true);
-				// TODO: Why is this set here?
-				partOfText.setValidated(true);
-			}
+			partOfText.setDescription(stripTagsFromBody(body));
 			parts.add(partOfText);
 		}
 		return parts;
+	}
+
+	public String stripTagsFromBody(String body) {
+		if (body == null) {
+			return "";
+		}
+		if (isAnyKnowledgeTypeTwiceExisting(body)) {
+			int tagLength = 2 + getKnowledgeTypeFromTag(body).toString().length();
+			body = body.substring(tagLength, body.length() - tagLength);
+		}
+		return body;
 	}
 
 	private List<String> splitTextIntoSentences(String body) {
@@ -220,8 +226,8 @@ public class TextSplitter {
 		return KnowledgeType.OTHER;
 	}
 
-	public static boolean isAnyKnowledgeTypeTwiceExisting(String body, String projectKey) {
-		Set<String> knowledgeTypeTags = getAllTagsUsedInProject(projectKey);
+	public boolean isAnyKnowledgeTypeTwiceExisting(String body) {
+		Set<String> knowledgeTypeTags = getAllTagsUsedInProject();
 		for (String tag : knowledgeTypeTags) {
 			if (knowledgeTypeTagExistsTwice(body, tag)) {
 				return true;
@@ -230,7 +236,7 @@ public class TextSplitter {
 		return false;
 	}
 
-	public static Set<String> getAllTagsUsedInProject(String projectKey) {
+	public Set<String> getAllTagsUsedInProject() {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getConDecKnowledgeTypes();
 		projectKnowledgeTypes.add(KnowledgeType.PRO);
 		projectKnowledgeTypes.add(KnowledgeType.CON);

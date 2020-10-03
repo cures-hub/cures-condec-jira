@@ -96,7 +96,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			return "";
 		}
 		return "id=\"commentnode-" + id + "\" oncontextmenu=\"conDecContextMenu.createContextMenu(" + id
-				+ ",'s',this,null," + jiraIssueId + ",\"i\"); return false;\" ";
+				+ ",'s',this,null," + jiraIssueId + ",'i'); return false;\" ";
 	}
 
 	/**
