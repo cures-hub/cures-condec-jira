@@ -114,7 +114,10 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	 * @return id of current Jira issue.
 	 */
 	private long getJiraIssueId(RenderContext renderContext) {
-		return ((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId();
+		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
+			return ((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId();
+		}
+		return 0;
 	}
 
 	protected String putTypeInBrackets(KnowledgeType type) {
