@@ -290,7 +290,7 @@
 	/*
 	 * external references: condec.context.menu
 	 */
-	ConDecAPI.prototype.createIssueFromSentence = function (id, callback) {
+	ConDecAPI.prototype.createJiraIssueFromSentence = function (id, callback) {
 		var jsondata = {
 			"id": id,
 			"projectKey": projectKey
@@ -298,7 +298,7 @@
 		generalApi.postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
 			function (error, id, type) {
 				if (error === null) {
-					showFlag("success", "JIRA Issue has been created.");
+					showFlag("success", "Jira Issue has been created.");
 					callback();
 				}
 			});

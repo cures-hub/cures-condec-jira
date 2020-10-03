@@ -9,12 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -536,29 +534,19 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return isAnyElementDeleted;
 	}
 
-	public Issue createJiraIssueFromSentenceObject(long aoId, ApplicationUser user) {
-		if (aoId <= 0 || user == null) {
+	public Issue createJiraIssueFromSentenceObject(long elementId, ApplicationUser user) {
+		if (elementId <= 0 || user == null) {
 			LOGGER.error("Parameter are Invalid");
 			return null;
 		}
 
-		PartOfJiraIssueText element = (PartOfJiraIssueText) this.getKnowledgeElement(aoId);
+		PartOfJiraIssueText element = (PartOfJiraIssueText) getKnowledgeElement(elementId);
 
-		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey)
+		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueManager();
-		KnowledgeElement decElement = persistenceManager.insertKnowledgeElement(element, user);
-
-		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
-
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("relate");
-
-		try {
-			issueLinkManager.createIssueLink(element.getJiraIssue().getId(), issue.getId(), linkTypeId, (long) 0, user);
-		} catch (CreateException e) {
-			LOGGER.error("Creating Jira issue from part of text failed. Message: " + e.getMessage());
-			return null;
-		}
+		KnowledgeElement newElement = persistenceManager.insertKnowledgeElement(element, user);
+		Link link = Link.instantiateDirectedLink(new KnowledgeElement(element.getJiraIssue()), newElement);
+		JiraIssuePersistenceManager.insertLink(link, user);
 
 		// delete sentence in comment
 		int length = JiraIssueTextPersistenceManager.removeSentenceFromComment(element) * -1; // -1 because we
@@ -570,6 +558,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		createLinksForNonLinkedElements(element.getJiraIssue());
 
+		Issue issue = ComponentAccessor.getIssueService().getIssue(user, newElement.getId()).getIssue();
 		return issue;
 	}
 

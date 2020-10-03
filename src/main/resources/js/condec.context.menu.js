@@ -172,7 +172,7 @@
 
 		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
-			conDecAPI.createIssueFromSentence(id, function() {
+			conDecAPI.createJiraIssueFromSentence(id, function() {
 				conDecObservable.notify();
 			});
 		};
