@@ -534,32 +534,41 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return isAnyElementDeleted;
 	}
 
+	/**
+	 * @param elementId
+	 *            of the sentence that should be converted into an entire Jira
+	 *            issue.
+	 * @param user
+	 *            Jira {@link ApplicationUser}.
+	 * @return newly created Jira issue with summary and type of the former
+	 *         sentence.
+	 * 
+	 * @issue Should the sentence be deleted in the description or comment after a
+	 *        Jira issue was created with the same type and summary?
+	 * @decision The sentence is not deleted in the description or comment after a
+	 *           Jira issue was created with the same type and summary!
+	 * @pro The origin of the Jira issue is kept.
+	 * @pro Easier to implement.
+	 */
 	public Issue createJiraIssueFromSentenceObject(long elementId, ApplicationUser user) {
 		if (elementId <= 0 || user == null) {
 			LOGGER.error("Parameter are Invalid");
 			return null;
 		}
 
-		PartOfJiraIssueText element = (PartOfJiraIssueText) getKnowledgeElement(elementId);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getKnowledgeElement(elementId);
 
+		// delete sentence in database and knowledge graph (not in description/comment)
+		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(sentence, user);
+
+		// create Jira issue and link it
 		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueManager();
-		KnowledgeElement newElement = persistenceManager.insertKnowledgeElement(element, user);
-		Link link = Link.instantiateDirectedLink(new KnowledgeElement(element.getJiraIssue()), newElement);
+		KnowledgeElement jiraIssue = persistenceManager.insertKnowledgeElement(sentence, user);
+		Link link = Link.instantiateDirectedLink(new KnowledgeElement(sentence.getJiraIssue()), jiraIssue);
 		JiraIssuePersistenceManager.insertLink(link, user);
 
-		// delete sentence in comment
-		int length = JiraIssueTextPersistenceManager.removeSentenceFromComment(element) * -1; // -1 because we
-		// decrease the total number of letters
-		updateSentenceLengthForOtherSentencesInSameComment(element, length);
-
-		// delete ao sentence entry
-		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(element, null);
-
-		createLinksForNonLinkedElements(element.getJiraIssue());
-
-		Issue issue = ComponentAccessor.getIssueService().getIssue(user, newElement.getId()).getIssue();
-		return issue;
+		return ComponentAccessor.getIssueService().getIssue(user, jiraIssue.getId()).getIssue();
 	}
 
 	/**
@@ -650,18 +659,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 		}
 		return elementsInDatabase;
-	}
-
-	private static int removeSentenceFromComment(PartOfJiraIssueText element) {
-		MutableComment mutableComment = element.getComment();
-		String newBody = mutableComment.getBody();
-		newBody = newBody.substring(0, element.getStartPosition()) + newBody.substring(element.getEndPosition());
-
-		JiraIssueTextExtractionEventListener.editCommentLock = true;
-		mutableComment.setBody(newBody);
-		ComponentAccessor.getCommentManager().update(mutableComment, true);
-		JiraIssueTextExtractionEventListener.editCommentLock = false;
-		return element.getEndPosition() - element.getStartPosition();
 	}
 
 	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {

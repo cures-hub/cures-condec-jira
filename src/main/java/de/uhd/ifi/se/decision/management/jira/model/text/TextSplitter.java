@@ -23,6 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  * Splits a text into parts using Jira macro tags and sentences.
  * 
  * TODO Refactor and simplify this parser.
+ * 
+ * @issue Is there a parser/scanner library we can use to indentify macros or
+ *        icons in text and to split the text into sentences?
  */
 public class TextSplitter {
 
@@ -94,11 +97,9 @@ public class TextSplitter {
 		}
 		if (isAnyKnowledgeTypeTwiceExisting(body)) {
 			int tagLength = 2 + getKnowledgeTypeFromTag(body).toString().length();
-			body = body.substring(tagLength, body.length() - tagLength);
-		} else {
-			body = body.replaceAll("\\(.*?\\)", "");
+			return body.substring(tagLength, body.length() - tagLength);
 		}
-		return body;
+		return body.replaceAll("\\(.*?\\)", "");
 	}
 
 	private List<String> splitTextIntoSentences(String body) {

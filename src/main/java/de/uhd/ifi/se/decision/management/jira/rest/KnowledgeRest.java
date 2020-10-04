@@ -229,16 +229,16 @@ public class KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
-			KnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null || request == null) {
+			KnowledgeElement knowledgeElement) {
+		if (knowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
-		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+		String projectKey = knowledgeElement.getProject().getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.deleteKnowledgeElement(decisionKnowledgeElement, user);
+				.deleteKnowledgeElement(knowledgeElement, user);
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
 		}
