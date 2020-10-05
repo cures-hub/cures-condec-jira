@@ -1013,6 +1013,18 @@
 		});
 	};
 
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.updateKnowledgeSource = function (projectKey, knowledgeSourceName,  knowledgeSource) {
+		generalApi.postJSON(this.restPrefix + "/config/updateKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, knowledgeSource, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource was successfully updated.");
+			}
+		});
+	};
+
 	function getIssueKey() {
 		var issueKey = null;
 		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {

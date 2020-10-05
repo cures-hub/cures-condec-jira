@@ -14,9 +14,9 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -377,6 +377,20 @@ public class ConfigPersistenceManager {
 		}
 	}
 
+	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		for (int i = 0; i < rdfSourceList.size(); ++i) {
+			if (rdfSourceList.get(i).getName().equals(knowledgeSourceName)) {
+				rdfSourceList.set(i, rdfSource);
+				break;
+			}
+		}
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
+
+
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
 		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
@@ -458,7 +472,7 @@ public class ConfigPersistenceManager {
 		KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
 		try {
 			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
 		}
 		return knowledgeSourceAlgorithmType;

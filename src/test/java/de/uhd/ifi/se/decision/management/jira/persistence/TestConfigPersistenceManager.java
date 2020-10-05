@@ -445,16 +445,23 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
+		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000");
+		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
+		assertEquals("service2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getService());
+		assertEquals("query2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getQueryString());
+		assertEquals("10000", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getTimeout());
+		assertEquals("RDF Name2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getName());
+
 		//Test invalid Source
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
 		//Test deactivation
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name", false);
+		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
 		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
 
 		//Delete KnowledgeSource
-		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name");
+		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
 		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 

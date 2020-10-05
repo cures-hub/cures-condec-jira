@@ -78,14 +78,14 @@
         <!--RDF SOURCE FORM -->
         <div class="field-group">
             <label>Name*</label>
-            <input class="name-knowledgesource text medium-field" name="name-knowledgesource"
+            <input class="name-knowledgesource text medium-field" id="$rdfSource.toString()-name" name="name-knowledgesource"
                    value="$rdfSource.getName()"></input>
             <div class="description">Name your knowledge source.
             </div>
         </div>
         <div class="field-group">
             <label>RDF-Service</label>
-            <input class="uri-knowledgesource text medium-field" name="uri-knowledgesource"
+            <input class="uri-knowledgesource text medium-field" name="uri-knowledgesource" id="$rdfSource.toString()-service"
                    placeholder="http://dbpedia.org/sparql" value="$rdfSource.getService()"></input>
             <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.
             </div>
@@ -94,15 +94,26 @@
             <label>SPARQL-Query</label>
             <textarea class="query-knowledgesource textarea
                       large-field"
+                      id="$rdfSource.toString()-query"
                       placeholder=$i18n.getText("condec.label.description")>$rdfSource.getQueryString()</textarea>
             <div class="description">Enter a SPARQL-Query.
             </div>
         </div>
         <div class="field-group">
             <label>Timeout</label>
-            <input class="param-knowledgesource text short-field" name="param-knowledgesource"
+            <input class="param-knowledgesource text short-field" name="param-knowledgesource" id="$rdfSource.toString()-timeout"
                    value="$rdfSource.getTimeout()"></input>
             <div class="description">Enter the timeout in milliseconds.
+            </div>
+        </div>
+        <div class="field-group">
+            <label for="update-rdf-source">Update</label>
+            <button id="update-rdf-source" class="aui-button update-knowledgesource" data-prefix="$rdfSource.toString()"
+                    name="$rdfSource.getName()">
+                <span class="aui-icon aui-icon-small aui-iconfont-refresh">Updates a RDF Knowledge Source</span>
+                Update
+            </button>
+            <div class="description">Updates the knowledge source.
             </div>
         </div>
         <div class="field-group">
@@ -115,6 +126,7 @@
             <div class="description">Deletes the knowledge source permanently from the system.
             </div>
         </div>
+
     </div>
     #end
 
@@ -226,6 +238,31 @@
            conDecAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
         });
 
+        var updateButtons = $(".update-knowledgesource");
+        updateButtons.each(function() {
+
+
+            $(this).click((event) => {
+                   event.preventDefault();
+                   let prefix = "#" + $(this).data("prefix");
+                   const knowledgeSourceName = $(this).attr("name");
+                   const name = $(prefix + "-name");
+                   const service = $(prefix + "-service");
+                   const queryString = $(prefix + "-query");
+                   const timeout = $(prefix + "-timeout");
+
+                   var rdfSourceJSON = {
+                        "projectKey": "$projectKey",
+                        "name": name.val(),
+                        "service": service.val(),
+                        "queryString": queryString.val(),
+                        "timeout": timeout.val()
+                   }
+                   console.log(rdfSourceJSON);
+                   conDecAPI.updateKnowledgeSource("$projectKey",knowledgeSourceName, rdfSourceJSON);
+            });
+
+        });
 
          const activations = $(".activation-knowledgesource");
 
@@ -302,6 +339,8 @@
 
 
     });
+
+
 
 
 
