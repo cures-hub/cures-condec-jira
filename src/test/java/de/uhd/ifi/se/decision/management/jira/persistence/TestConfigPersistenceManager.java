@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -444,16 +445,23 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
+		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000");
+		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
+		assertEquals("service2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getService());
+		assertEquals("query2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getQueryString());
+		assertEquals("10000", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getTimeout());
+		assertEquals("RDF Name2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getName());
+
 		//Test invalid Source
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
 		//Test deactivation
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name", false);
+		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
 		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
 
 		//Delete KnowledgeSource
-		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name");
+		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
 		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 
@@ -506,6 +514,23 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetAllKnowledgeSourcesNullProject() {
 		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources(null).size());
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmTypeDefault() {
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmTypeInvalidType() {
+		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", "INVALIDTYPE");
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSourceAlgorithmType() {
+		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", KnowledgeSourceAlgorithmType.SUBSTRING.toString());
+		assertEquals(KnowledgeSourceAlgorithmType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
 	}
 
 	@Test

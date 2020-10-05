@@ -1,12 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.Objects;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -17,17 +19,25 @@ public class TestRecommendation extends TestSetUp {
 	}
 
 	@Test
-	public void testsetAndGetScore() {
+	public void testSetAndGetScore() {
 		Recommendation recommendation = new Recommendation();
 		assertEquals(0, recommendation.getScore());
 	}
 
 	@Test
-	public void testSetAndGetKnowledgeSourceType() {
-		Recommendation recommendation = new Recommendation();
-		assertNull(recommendation.getKnowledgeSourceType());
-		recommendation.setKnowledgeSourceType(KnowledgeSourceType.PROJECT);
-		assertEquals(KnowledgeSourceType.PROJECT, recommendation.getKnowledgeSourceType());
+	public void testConstructor() {
+		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		assertEquals("TEST", recommendation.getKnowledgeSourceName());
+		assertEquals("TEST", recommendation.getRecommendations());
+		assertEquals("TESTURL", recommendation.getUrl());
+	}
+
+
+	@Test
+	public void testHashCode() {
+		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
+
 	}
 
 	@Test

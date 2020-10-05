@@ -932,6 +932,16 @@
 	};
 
 	/*
+	 * external references: condec.decision guidance
+	 */
+	ConDecAPI.prototype.setRecommendationAlgorithm = function (projectKey, recommendationAlgorithm) {
+		generalApi.postJSON(this.restPrefix + "/config/setRecommendationAlgorithm.json?projectKey=" + projectKey + "&recommendationAlgorithm=" + recommendationAlgorithm, null,
+			function (error, results) {
+				showFlag("success", "Algorithm successfully changed");
+			});
+	};
+
+	/*
 	 * external references: rationaleBacklogSettings.vm
 	 */
 	ConDecAPI.prototype.setDefinitionOfDone = function (projectKey, definitionOfDone) {
@@ -999,6 +1009,18 @@
 			error, response) {
 			if (error === null) {
 				showFlag("success", "The Knowledgesource " + knowledgeSourceName + " was successfully deleted.");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.updateKnowledgeSource = function (projectKey, knowledgeSourceName,  knowledgeSource) {
+		generalApi.postJSON(this.restPrefix + "/config/updateKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, knowledgeSource, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The Knowledgesource was successfully updated.");
 			}
 		});
 	};
