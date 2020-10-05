@@ -5,6 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Objects;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -22,6 +24,21 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals(0, recommendation.getScore());
 	}
 
+	@Test
+	public void testConstructor() {
+		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		assertEquals("TEST", recommendation.getKnowledgeSourceName());
+		assertEquals("TEST", recommendation.getRecommendations());
+		assertEquals("TESTURL", recommendation.getUrl());
+	}
+
+
+	@Test
+	public void testHashCode() {
+		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
+
+	}
 
 	@Test
 	public void testEquals() {
