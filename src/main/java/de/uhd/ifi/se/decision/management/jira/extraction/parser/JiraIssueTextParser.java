@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.text;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
@@ -27,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  * @issue Is there a parser/scanner library we can use to indentify macros or
  *        icons in text and to split the text into sentences?
  */
-public class TextSplitter {
+public class JiraIssueTextParser {
 
 	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
 			"{color}" };
@@ -49,7 +50,7 @@ public class TextSplitter {
 	private List<Integer> endPositions;
 	private String projectKey;
 
-	public TextSplitter(String projectKey) {
+	public JiraIssueTextParser(String projectKey) {
 		this.projectKey = projectKey;
 		this.startPositions = new ArrayList<Integer>();
 		this.endPositions = new ArrayList<Integer>();

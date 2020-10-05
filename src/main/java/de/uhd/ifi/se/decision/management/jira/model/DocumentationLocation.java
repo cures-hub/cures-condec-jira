@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-
 /**
  * Possible documentation locations of decision knowledge.
  */

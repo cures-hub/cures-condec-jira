@@ -18,9 +18,9 @@ import com.atlassian.jira.util.collect.MapBuilder;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -93,12 +93,12 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 		if (comment == null) {
 			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
 			String description = jiraIssue.getDescription();
-			description = TextSplitter.parseIconsToTags(description);
+			description = JiraIssueTextParser.parseIconsToTags(description);
 			jiraIssue.setDescription(description);
 			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
 		} else {
 			String commentBody = comment.getBody();
-			commentBody = TextSplitter.parseIconsToTags(commentBody);
+			commentBody = JiraIssueTextParser.parseIconsToTags(commentBody);
 			comment.setBody(commentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
 		}

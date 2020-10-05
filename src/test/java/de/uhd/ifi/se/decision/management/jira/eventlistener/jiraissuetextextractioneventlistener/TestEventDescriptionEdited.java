@@ -11,9 +11,9 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -66,6 +66,6 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 		assertEquals("This is a very severe issue.", element.getDescription());
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 		assertEquals("{issue}This is a very severe issue.{issue}",
-				TextSplitter.parseIconsToTags(jiraIssue.getDescription()));
+				JiraIssueTextParser.parseIconsToTags(jiraIssue.getDescription()));
 	}
 }

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.text;
+package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
 
@@ -13,9 +13,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 
 /**
@@ -68,7 +66,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
 			LOGGER.error("Constructor faild to create object of PartOfJiraIssueText. Message: " + e.getMessage());
 		}
-		text = new TextSplitter(databaseEntry.getProjectKey()).stripTagsFromBody(text);
+		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
 		this.setDescription(text);
 		this.setPlainText(!containsExcludedTag(text));
 	}
@@ -268,7 +266,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		if (body == null) {
 			return false;
 		}
-		return StringUtils.indexOfAny(body.toLowerCase(), TextSplitter.EXCLUDED_TAGS) >= 0;
+		return StringUtils.indexOfAny(body.toLowerCase(), JiraIssueTextParser.EXCLUDED_TAGS) >= 0;
 	}
 
 	/**

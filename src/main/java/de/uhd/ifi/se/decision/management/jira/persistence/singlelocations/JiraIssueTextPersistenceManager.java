@@ -18,14 +18,14 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -281,7 +281,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	public static PartOfJiraIssueText getFirstPartOfTextInComment(Comment comment) {
 		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+		List<PartOfJiraIssueText> partsOfText = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
 		if (partsOfText.isEmpty()) {
 			return null;
 		}
@@ -586,7 +586,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *      links in the knowledge graph might be wrong.
 	 */
 	public List<KnowledgeElement> updateComment(Comment comment) {
-		List<PartOfJiraIssueText> partsOfComment = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
 		List<KnowledgeElement> elementsInDatabase = getElementsInComment(comment.getId());
 		int numberOfNewPartsOfComment = partsOfComment.size();
 		int numberOfElementsInDatabase = elementsInDatabase.size();
@@ -628,7 +628,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of identified knowledge elements.
 	 */
 	public List<KnowledgeElement> updateDescription(Issue jiraIssue) {
-		List<PartOfJiraIssueText> partsOfDescription = new TextSplitter(projectKey)
+		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
 		List<KnowledgeElement> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
 		int numberOfNewPartsInDescription = partsOfDescription.size();
@@ -730,7 +730,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
 		// Convert comment String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfComment = new TextSplitter(projectKey).getPartsOfText(comment.getBody());
+		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
 
 		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<>();
 
@@ -758,7 +758,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public static List<PartOfJiraIssueText> insertPartsOfDescription(MutableIssue issue) {
 		String projectKey = issue.getProjectObject().getKey();
 		// Convert description String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfDescription = new TextSplitter(projectKey)
+		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(issue.getDescription());
 		partsOfDescription.forEach(part -> part.setCommentId(0));
 
