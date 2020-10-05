@@ -79,7 +79,6 @@
         // HTML elements
         var assignDialog = document.getElementById("assign-dialog");
         var selectLevelField = document.getElementById("assign-form-select-level");
-        var example = document.getElementById("example-tag");
         var inputExistingGroupsField = document.getElementById("assign-form-input-existing");
         var inputAddGroupField = document.getElementById("assign-form-input-add");
         var submitButton = document.getElementById("assign-dialog-submit-button");
@@ -189,7 +188,6 @@
 
         // HTML elements
         var deleteDialog = document.getElementById("delete-dialog");
-        var content = document.getElementById("delete-dialog-content");
         var submitButton = document.getElementById("delete-dialog-submit-button");
         var cancelIcon = document.getElementById("delete-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-dialog-cancel-button");
@@ -220,7 +218,6 @@
 
         // HTML elements
         var deleteLinkDialog = document.getElementById("delete-link-dialog");
-        var content = document.getElementById("delete-link-dialog-content");
         var submitButton = document.getElementById("delete-link-dialog-submit-button");
         var cancelIcon = document.getElementById("delete-link-dialog-cancel-icon");
         var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
@@ -261,7 +258,6 @@
 
         // HTML elements
         var linkDialog = document.getElementById("link-dialog");
-        var sourceElementField = document.getElementById("link-form-source-element");
         var selectElementField = document.getElementById("link-form-select-element");
         var selectLinkTypeField = document.getElementById("link-form-select-linktype");
         var submitButton = document.getElementById("link-dialog-submit-button");
@@ -288,9 +284,7 @@
         fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation, linkType);
 
         selectElementField.onchange = function () {
-            var idOfSelectedElement = this.value.split(":")[0];
-            var documentationLocationOfSelectedElement = this.value.split(":")[1];
-            conDecAPI.getDecisionKnowledgeElement(idOfSelectedElement, documentationLocationOfSelectedElement,
+            conDecAPI.getDecisionKnowledgeElement(id, documentationLocation,
                 function (element) {
                     selectLinkTypeField.value = suggestLinkType(element.type);
                     AJS.$(selectLinkTypeField).auiSelect2();
