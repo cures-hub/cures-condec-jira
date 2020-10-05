@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectKnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.DBPediaRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
@@ -13,15 +13,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class RDFSource implements KnowledgeSource {
+public class RDFSource extends KnowledgeSource<ProjectKnowledgeSourceAlgorithm> {
 
-	protected String projectKey;
-	protected List<Recommendation> recommendations;
-	protected String name;
 	protected String service;
 	protected String queryString;
 	protected String timeout;
-	protected boolean isActivated;
 	protected int limit;
 
 	public RDFSource() {
@@ -108,7 +104,9 @@ public class RDFSource implements KnowledgeSource {
 
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
-				Recommendation recommendation = new DBPediaRecommendation(this.name, row.get("?alternative").toString(), combinedKeyword, inputs, row.get("?url").toString());
+				int score = this.calculateScore(combinedKeyword, inputs);
+				Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), row.get("?url").toString());
+				recommendation.setScore(score);
 				this.recommendations.add(recommendation);
 
 			}
@@ -138,6 +136,24 @@ public class RDFSource implements KnowledgeSource {
 		}
 
 		return combinedKeywords;
+	}
+
+	private int calculateScore(String keywords, String inputs) {
+
+		List<String> keywordsList = Arrays.asList(keywords.split("_"));
+		List<String> inputsList = Arrays.asList(inputs.split(" "));
+
+		float inputLength = inputsList.size();
+		int match = 0;
+
+		for (String keyword : keywordsList) {
+			if (inputs.contains(keyword)) match += 1;
+		}
+
+		float score = (match / inputLength) * 100;
+
+		return Math.round(score);
+
 	}
 
 	public String getProjectKey() {

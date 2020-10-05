@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -79,7 +78,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		knowledgeSources.add(rdfSource);
 		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
 		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
-		assertEquals(1, simpleRecommender.evaluate().size());
+		assertEquals(2, simpleRecommender.evaluate().size());
 	}
 
 	@Test
@@ -87,8 +86,8 @@ public class TestSimpleRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
+		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
+		Recommendation recommendation2 = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -103,8 +102,8 @@ public class TestSimpleRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", KnowledgeSourceType.RDF, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE B", "SUMMARY 1", KnowledgeSourceType.RDF, "");
+		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
+		Recommendation recommendation2 = new Recommendation("SOURCE B", "SUMMARY 1", 0, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);

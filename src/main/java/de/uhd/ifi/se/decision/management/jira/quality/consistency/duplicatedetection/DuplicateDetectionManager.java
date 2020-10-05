@@ -96,7 +96,7 @@ public class DuplicateDetectionManager {
 		Set<KnowledgeElement> elements = Collections.synchronizedSet(new HashSet<>());
 		Set<Link> links = knowledgeElement.getLinks();
 		links.parallelStream().forEach(link -> {
-			if (link.getLinkType().equals(LinkType.DUPLICATE)) {
+			if (link.getType() != null && link.getType().equals(LinkType.DUPLICATE)) {
 				elements.add(link.getTarget());
 				elements.add(link.getSource());
 			}

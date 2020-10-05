@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculator.ScoreCalculator;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.scorecalculator.ScoreCalculatorFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
@@ -17,21 +13,26 @@ public class Recommendation {
 	@XmlElement
 	protected String recommendations;
 
-	protected KnowledgeSourceType knowledgeSourceType;
-
 	@XmlElement
 	protected String url;
 
+	@XmlElement
 	protected int score;
 
 	public Recommendation() {
 
 	}
 
-	public Recommendation(String knowledgeSourceName, String recommendations, KnowledgeSourceType knowledgeSourceType, String url) {
+	public Recommendation(String knowledgeSourceName, String recommendations, String url) {
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.recommendations = recommendations;
-		this.knowledgeSourceType = knowledgeSourceType;
+		this.url = url;
+	}
+
+	public Recommendation(String knowledgeSourceName, String recommendations, int score, String url) {
+		this.knowledgeSourceName = knowledgeSourceName;
+		this.recommendations = recommendations;
+		this.score = score;
 		this.url = url;
 	}
 
@@ -51,14 +52,6 @@ public class Recommendation {
 		this.recommendations = recommendations;
 	}
 
-	public KnowledgeSourceType getKnowledgeSourceType() {
-		return knowledgeSourceType;
-	}
-
-	public void setKnowledgeSourceType(KnowledgeSourceType knowledgeSourceType) {
-		this.knowledgeSourceType = knowledgeSourceType;
-	}
-
 	public String getUrl() {
 		return url;
 	}
@@ -67,13 +60,12 @@ public class Recommendation {
 		this.url = url;
 	}
 
-	@XmlElement(name = "score")
 	public int getScore() {
-		if(this.getKnowledgeSourceType() == null) return 0;
+		return this.score;
+	}
 
-		ScoreCalculatorFactory scoreCalculatorFactory = new ScoreCalculatorFactory(this.getKnowledgeSourceType());
-		ScoreCalculator scoreCalculator = scoreCalculatorFactory.createScoreCalculator();
-		return scoreCalculator.calculateScore(this);
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	@Override
