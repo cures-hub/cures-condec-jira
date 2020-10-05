@@ -1,40 +1,43 @@
 package de.uhd.ifi.se.decision.management.jira.model.link;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
+
 public class TestGenericLink extends TestSetUp {
-	
+
 	private Issue issue;
 
 	@Before
 	public void setUp() {
 		init();
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
-		addCommentsToIssue("this is a testSentence. This a second one. And a third one");		
+		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
 	}
 
 	private void addCommentsToIssue(String comment) {
@@ -50,7 +53,9 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testSecondConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element);
@@ -62,14 +67,16 @@ public class TestGenericLink extends TestSetUp {
 	}
 
 	/*
-	The constructor was removed!
+	 * The constructor was removed!
 	 */
 	@Test
 	@Ignore
 	@NonTransactional
 	public void testThirdConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element, LinkType.getDefaultLinkType());
@@ -78,7 +85,7 @@ public class TestGenericLink extends TestSetUp {
 
 		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
 		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
-		assertTrue(link.getType().equals("contain"));
+		assertTrue(link.getTypeAsString().equals("contain"));
 	}
 
 	@Test
@@ -86,7 +93,9 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLink() {
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element);
 		GenericLinkManager.insertLink(link, null);
@@ -100,7 +109,9 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLinkFlipped() {
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(element, sentence);
 
@@ -114,7 +125,9 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testLinkSentenceSentence() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		PartOfJiraIssueText s = sentences.get(0);
 		PartOfJiraIssueText s1 = sentences.get(1);
 		Link link = new Link(s1, s);
@@ -129,7 +142,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testLinkIssueIssue() {
 		KnowledgeElement element = new KnowledgeElement(issue);
-		Link link = new Link(element,element);
+		Link link = new Link(element, element);
 		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement(issue.getId()));
@@ -162,7 +175,9 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Link link = new Link(sentence, element);
@@ -182,7 +197,9 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.insertPartsOfComment(comment);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+				.getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
 		// JiraIssueComment comment = new JiraIssueCommentImpl();
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);

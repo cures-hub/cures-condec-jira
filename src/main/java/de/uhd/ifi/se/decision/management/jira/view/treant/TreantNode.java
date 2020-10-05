@@ -90,8 +90,8 @@ public class TreantNode {
 
 	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed, boolean isHyperlinked) {
 		this(knowledgeElement, isCollapsed, isHyperlinked);
-		this.image = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
-		switch (link.getType()) {
+		this.image = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
+		switch (link.getTypeAsString()) {
 		case "support":
 			if (knowledgeElement.getId() == link.getSource().getId()) {
 				this.htmlClass = "pro";

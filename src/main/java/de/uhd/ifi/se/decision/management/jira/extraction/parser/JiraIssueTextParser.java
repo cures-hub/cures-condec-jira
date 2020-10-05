@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.text;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,12 +16,22 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
-public class TextSplitter {
+/**
+ * Splits a text into parts using Jira macro tags and sentences.
+ * 
+ * TODO Refactor and simplify this parser.
+ * 
+ * @issue Is there a parser/scanner library we can use to indentify macros or
+ *        icons in text and to split the text into sentences?
+ */
+public class JiraIssueTextParser {
 
-	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
+	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
+			"{color}" };
 
 	/** List of all knowledge types as tags. Sequence matters! */
 	public static final String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}",
@@ -37,31 +48,30 @@ public class TextSplitter {
 
 	private List<Integer> startPositions;
 	private List<Integer> endPositions;
+	private String projectKey;
 
-	public TextSplitter() {
+	public JiraIssueTextParser(String projectKey) {
+		this.projectKey = projectKey;
 		this.startPositions = new ArrayList<Integer>();
 		this.endPositions = new ArrayList<Integer>();
 	}
 
 	/**
-	 * Split a text into parts (substrings).
-	 * 
 	 * @see PartOfJiraIssueText
 	 * @param text
 	 *            text to be split.
-	 * @param projectKey
-	 *            of the JIRA project.
 	 * @return parts of text (substrings) as a list.
 	 */
-	public List<PartOfJiraIssueText> getPartsOfText(String text, String projectKey) {
+	public List<PartOfJiraIssueText> getPartsOfText(String text) {
+		if (text.isBlank()) {
+			return new ArrayList<PartOfJiraIssueText>();
+		}
+		splitTextIntoSentences(text);
+
 		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
-
-		List<String> strings = TextSplitter.getRawSentences(text, projectKey);
-		runBreakIterator(strings, text);
-
-		for (int i = 0; i < this.startPositions.size(); i++) {
-			int startPosition = this.startPositions.get(i);
-			int endPosition = this.endPositions.get(i);
+		for (int i = 0; i < startPositions.size(); i++) {
+			int startPosition = startPositions.get(i);
+			int endPosition = endPositions.get(i);
 			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
 				continue;
 			}
@@ -69,38 +79,68 @@ public class TextSplitter {
 			partOfText.setStartPosition(startPosition);
 			partOfText.setEndPosition(endPosition);
 			partOfText.setProject(projectKey);
-			String body = text.substring(startPosition, endPosition).toLowerCase();
-			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
-			partOfText.setDescription(body);
+			String body = text.substring(startPosition, endPosition);
+			KnowledgeType type = getKnowledgeTypeFromTag(body);
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
-				partOfText.setRelevant(true);
 				// TODO: Why is this set here?
 				partOfText.setValidated(true);
 			}
+			partOfText.setDescription(stripTagsFromBody(body));
 			parts.add(partOfText);
 		}
 		return parts;
 	}
 
-	private static List<String> getRawSentences(String body, String projectKey) {
-		List<String> firstSplit = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
-
-		firstSplit = searchForTags(firstSplit, "{noformat}", "{noformat}");
-		firstSplit = searchForTags(firstSplit, "{panel:", "{panel}");
-		firstSplit = searchForTags(firstSplit, "{code:", "{code}");
-		for (String tag : RATIONALE_TAGS) {
-			firstSplit = searchForTags(firstSplit, tag, tag);
+	public String stripTagsFromBody(String body) {
+		if (body == null) {
+			return "";
 		}
-		if (ConfigPersistenceManager.isIconParsing(projectKey)) {
+		if (isAnyKnowledgeTypeTwiceExisting(body)) {
+			int tagLength = 2 + getKnowledgeTypeFromTag(body).toString().length();
+			return body.substring(tagLength, body.length() - tagLength);
+		}
+		return body.replaceAll("\\(.*?\\)", "");
+	}
+
+	private List<String> splitTextIntoSentences(String body) {
+		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
+
+		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
+		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
+		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
+		for (String tag : RATIONALE_TAGS) {
+			rawSentences = searchForTags(rawSentences, tag, tag);
+		}
+		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
 			for (String icon : RATIONALE_ICONS) {
-				firstSplit = searchForTags(firstSplit, icon, System.getProperty("line.separator"));
+				rawSentences = searchForTags(rawSentences, icon, System.getProperty("line.separator"));
 			}
 		}
+
+		runBreakIterator(rawSentences, body);
+		return rawSentences;
+	}
+
+	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
+		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
+		for (String slice : firstSplit) {
+			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
+					closeTag.toLowerCase(), new ArrayList<String>());
+			if (slicesOfSentence.size() > 1) {
+				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
+			}
+		}
+		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
+			int remove = (int) newSlices.keySet().toArray()[i];
+			firstSplit.remove(remove);
+			firstSplit.addAll(remove, newSlices.get(remove));
+		}
+
 		return firstSplit;
 	}
 
-	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
+	private static List<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
 			ArrayList<String> slices) {
 		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
 			slices.add(partOfText);
@@ -126,24 +166,6 @@ public class TextSplitter {
 			}
 		}
 		return slices;
-	}
-
-	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
-		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
-		for (String slice : firstSplit) {
-			ArrayList<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
-					closeTag.toLowerCase(), new ArrayList<String>());
-			if (slicesOfSentence.size() > 1) {
-				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
-			}
-		}
-		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
-			int remove = (int) newSlices.keySet().toArray()[i];
-			firstSplit.remove(remove);
-			firstSplit.addAll(remove, newSlices.get(remove));
-		}
-
-		return firstSplit;
 	}
 
 	/**
@@ -199,25 +221,24 @@ public class TextSplitter {
 	}
 
 	/**
-	 *
 	 * @param body
 	 * @param projectKey
 	 *
 	 * @return tagged knowledge type of a given string
 	 */
-	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
+	public KnowledgeType getKnowledgeTypeFromTag(String body) {
 		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 		for (KnowledgeType type : KNOWLEDGE_TYPES) {
 			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
-					|| (checkIcons && body.contains(type.getIconString()))) {
+					|| checkIcons && body.contains(type.getIconString())) {
 				return type;
 			}
 		}
 		return KnowledgeType.OTHER;
 	}
 
-	public static boolean isAnyKnowledgeTypeTwiceExisting(String body, String projectKey) {
-		Set<String> knowledgeTypeTags = getAllTagsUsedInProject(projectKey);
+	public boolean isAnyKnowledgeTypeTwiceExisting(String body) {
+		Set<String> knowledgeTypeTags = getAllTagsUsedInProject();
 		for (String tag : knowledgeTypeTags) {
 			if (knowledgeTypeTagExistsTwice(body, tag)) {
 				return true;
@@ -226,7 +247,7 @@ public class TextSplitter {
 		return false;
 	}
 
-	public static Set<String> getAllTagsUsedInProject(String projectKey) {
+	public Set<String> getAllTagsUsedInProject() {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getConDecKnowledgeTypes();
 		projectKnowledgeTypes.add(KnowledgeType.PRO);
 		projectKnowledgeTypes.add(KnowledgeType.CON);

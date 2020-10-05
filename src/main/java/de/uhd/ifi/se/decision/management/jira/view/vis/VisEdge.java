@@ -29,11 +29,11 @@ public class VisEdge {
 	private Map<String, String> color;
 
 	public VisEdge(Link link) {
-		this.setLabel(link.getType());
+		this.setLabel(link.getTypeAsString());
 		this.setFrom(link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
 		this.setTo(link.getTarget().getId() + "_" + link.getTarget().getDocumentationLocationAsString());
 		this.setId(link.getId());
-		this.setColor(LinkType.getLinkTypeColor(link.getType()));
+		this.setColor(LinkType.getLinkTypeColor(link.getTypeAsString()));
 	}
 
 	public String getFrom() {

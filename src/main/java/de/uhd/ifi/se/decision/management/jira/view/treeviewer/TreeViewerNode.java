@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 
 /**
  * Model class for Tree Viewer nodes
@@ -70,7 +70,7 @@ public class TreeViewerNode {
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link) {
 		this(knowledgeElement);
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getType());
+		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 	}
 
 	public String getId() {

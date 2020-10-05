@@ -11,7 +11,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 /**
  * Models the possible types of decision knowledge elements. The decision

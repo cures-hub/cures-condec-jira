@@ -231,7 +231,7 @@ public class GenericLinkManager {
 		linkInDatabase.setDestinationId(destinationElement.getId());
 
 		linkInDatabase.setDestDocumentationLocation(documentationLocationOfDestinationElement);
-		linkInDatabase.setType(link.getType());
+		linkInDatabase.setType(link.getTypeAsString());
 		linkInDatabase.save();
 		return linkInDatabase.getId();
 	}

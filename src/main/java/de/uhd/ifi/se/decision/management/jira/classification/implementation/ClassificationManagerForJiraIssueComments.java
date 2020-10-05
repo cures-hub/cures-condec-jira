@@ -11,7 +11,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
@@ -52,8 +53,9 @@ public class ClassificationManagerForJiraIssueComments {
 		List<PartOfJiraIssueText> sentences = new ArrayList<PartOfJiraIssueText>();
 
 		for (Comment comment : comments) {
-			List<PartOfJiraIssueText> sentencesOfComment = JiraIssueTextPersistenceManager
-					.insertPartsOfComment(comment);
+			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+					.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
+			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateComment(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);

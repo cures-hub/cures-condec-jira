@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -211,7 +210,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetJiraIssue() {
 		PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
-		partOfText.setJiraIssueId(1);
+		partOfText.setJiraIssue(1);
 		Issue jiraIssue = partOfText.getJiraIssue();
 		assertNotNull(jiraIssue);
 		assertEquals(1, (long) jiraIssue.getId());

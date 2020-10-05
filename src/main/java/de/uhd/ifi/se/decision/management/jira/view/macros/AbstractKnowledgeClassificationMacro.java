@@ -15,10 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Subclasses are macros to mark (i.e. annotate/classifiy) text in the
- * description or comments of a Jira issue as a decision knowledge element (=
- * rationale element). Each macro class needs to be added in the
- * atlassian-plugin.xml file.
+ * Macros to mark (i.e. annotate/classifiy) text in the description or comments
+ * of a Jira issue as a decision knowledge element (= rationale element). Each
+ * macro class needs to be added in the atlassian-plugin.xml file.
  * 
  * Currently, only five decision knowledge types can be used to classify text as
  * decision knowledge:
@@ -43,7 +42,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		}
 
 		String color = getKnowledgeType().getColor();
-		return this.getCommentBody(body, renderContext, knowledgeType, color);
+		return getCommentBody(body, renderContext, knowledgeType, color);
 	}
 
 	protected abstract KnowledgeType getKnowledgeType();
@@ -52,8 +51,10 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			String colorCode) {
 		String icon = getIconHTML(knowledgeType);
 		String newBody = body.replaceFirst("<p>", "");
-		String elementId = getElementId(renderContext, newBody, knowledgeType);
-		return "<p " + elementId + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " " + newBody;
+		long elementId = getElementId(renderContext, newBody, knowledgeType);
+		long jiraIssueId = getJiraIssueId(renderContext);
+		String eventCode = getOnContextMenuEventListener(elementId, jiraIssueId);
+		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " " + newBody;
 	}
 
 	private String getIconHTML(KnowledgeType knowledgeType) {
@@ -71,15 +72,13 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	/**
-	 * Static function for other Macro Classes
-	 * 
 	 * @param renderContext
 	 *            context in which the macro is rendered.
 	 * @param body
 	 * @param type
 	 * @return the js context menu call for comment tab panel
 	 */
-	protected String getElementId(RenderContext renderContext, String body, KnowledgeType type) {
+	protected long getElementId(RenderContext renderContext, String body, KnowledgeType type) {
 		long id = 0;
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
 			String projectKey = getProjectKey(renderContext);
@@ -89,16 +88,18 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			long jiraIssueId = getJiraIssueId(renderContext);
 			id = persistenceManager.getIdOfElement(summary, jiraIssueId, type);
 		}
-		if (id == 0) {
-			// LOGGER.debug("No sentence object found for: " + body);
+		return id;
+	}
+
+	private String getOnContextMenuEventListener(long id, long jiraIssueId) {
+		if (id <= 0) {
 			return "";
 		}
-		return "id=\"commentnode-" + id + "\"";
+		return "id=\"commentnode-" + id + "\" oncontextmenu=\"conDecContextMenu.createContextMenu(" + id
+				+ ",'s',this,null," + jiraIssueId + ",'i'); return false;\" ";
 	}
 
 	/**
-	 * Return key of current Jira project.
-	 * 
 	 * @param renderContext
 	 *            context in which the macro is rendered.
 	 * @return key of current Jira project.
@@ -108,14 +109,15 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	/**
-	 * Return id of current Jira issue.
-	 * 
 	 * @param renderContext
 	 *            context in which the macro is rendered.
 	 * @return id of current Jira issue.
 	 */
 	private long getJiraIssueId(RenderContext renderContext) {
-		return ((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId();
+		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
+			return ((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId();
+		}
+		return 0;
 	}
 
 	protected String putTypeInBrackets(KnowledgeType type) {

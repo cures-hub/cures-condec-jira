@@ -9,11 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestTextSplitter extends TestSetUp {
+public class TestJiraIssueTextParser extends TestSetUp {
 
 	@Before
 	public void setUp() {
@@ -23,23 +24,24 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoSentences() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("This is a test Sentence. With two sentences");
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("This is a test Sentence. With two sentences");
 		assertEquals(2, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuote() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
-				"{quote} this is a quote {quote} and this is a test Sentence.");
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertEquals(2, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuoteAtTheBack() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
-				"and this is a test Sentence. {quote} this is a quote {quote} ");
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("and this is a test Sentence. {quote} this is a quote {quote} ");
 		assertEquals(2, sentences.size());
 	}
 
@@ -54,8 +56,8 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotesAndSentenceAfterwards() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
-				"{quote} this is a quote {quote} and this is a test Sentence. "
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("{quote} this is a quote {quote} and this is a test Sentence. "
 						+ "{quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, sentences.size());
 	}
@@ -71,16 +73,17 @@ public class TestTextSplitter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText("{noformat} this is a noformat {noformat} "
-				+ "and this is a test Sentence. {noformat} this is a second noformat {noformat} ");
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("{noformat} this is a noformat {noformat} "
+						+ "and this is a test Sentence. {noformat} this is a second noformat {noformat} ");
 		assertEquals(3, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformatsAndQuotes() {
-		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
-				"{noformat} this is a noformat {noformat} and this is a test Sentence. "
+		List<PartOfJiraIssueText> sentences = JiraIssues
+				.getSentencesForCommentText("{noformat} this is a noformat {noformat} and this is a test Sentence. "
 						+ "{quote} this is a also a quote {quote}{quote} this is a also a quote {quote} "
 						+ "{noformat} this is a noformat {noformat} and this is a test Sentence.");
 		assertEquals(6, sentences.size());
@@ -120,5 +123,20 @@ public class TestTextSplitter extends TestSetUp {
 						+ "{quote} this is a also a fourth quote {quote} "
 						+ "{code:java} this is a fifth code {code} and this is a sixth test Sentence.");
 		assertEquals(6, sentences.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testSentenceSplitWithManyDecisionKnowledgeTags() {
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
+				"{issue} How to? {issue} {alternative} An alternative could be {alternative}"
+						+ "{pro} Great idea! {pro} {decision} We will do ...! {decision} {pro} Even better! {pro}");
+		assertEquals(5, sentences.size());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
+		assertTrue(sentences.get(0).isRelevant());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
+		assertTrue(sentences.get(1).isRelevant());
+		assertEquals(KnowledgeType.PRO, sentences.get(4).getType());
+		assertTrue(sentences.get(4).isRelevant());
 	}
 }

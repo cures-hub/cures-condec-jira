@@ -154,7 +154,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = getLinkTypeId(link.getLinkType().getName());
+		long linkTypeId = getLinkTypeId(link.getType().getName());
 		try {
 			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(), linkTypeId, (long) 0,
 					user);
@@ -180,7 +180,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	public static long getLinkId(Link link) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		try {
-			long linkTypeId = getLinkTypeId(link.getType());
+			long linkTypeId = getLinkTypeId(link.getTypeAsString());
 			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(), link.getTarget().getId(),
 					linkTypeId);
 			return issueLink.getId();

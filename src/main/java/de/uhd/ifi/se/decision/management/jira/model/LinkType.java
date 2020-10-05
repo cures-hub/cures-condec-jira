@@ -14,9 +14,8 @@ import java.util.Set;
  * inconsistency.
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00994C"), // for pro-arguments to solution
-																					// options
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#c0392b"), // for con-arguments to solution options
+	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00994C"), // pro-arguments to solution options
+	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#c0392b"), // con-arguments to solution options
 	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#c0392b"), // among decisions
 	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
 	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions

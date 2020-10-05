@@ -25,14 +25,14 @@ public class TestGetType extends TestSetUp {
 
 	@Test
 	public void testGetType() {
-		assertEquals(LinkType.RELATE.toString(), link.getType().toLowerCase());
+		assertEquals(LinkType.RELATE.toString(), link.getTypeAsString().toLowerCase());
 	}
 
 	@Test
 	public void testSetType() {
 		link.setType(LinkType.RELATE.toString() + "New");
 		assertEquals("The LinkType has to be in the Enum LinkType. Otherwise the default \"RELATE\" LinkType is used.",
-				LinkType.RELATE.toString(), link.getType());
+				LinkType.RELATE.toString(), link.getTypeAsString());
 		link.setType(LinkType.RELATE);
 	}
 

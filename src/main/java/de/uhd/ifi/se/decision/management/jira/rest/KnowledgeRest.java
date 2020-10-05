@@ -33,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -229,16 +229,16 @@ public class KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
-			KnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null || request == null) {
+			KnowledgeElement knowledgeElement) {
+		if (knowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
-		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+		String projectKey = knowledgeElement.getProject().getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.deleteKnowledgeElement(decisionKnowledgeElement, user);
+				.deleteKnowledgeElement(knowledgeElement, user);
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
 		}
@@ -467,7 +467,7 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssueId());
+			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

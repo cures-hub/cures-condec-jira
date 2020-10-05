@@ -12,7 +12,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -134,7 +134,7 @@ public class TestGetIdOfElement extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertKnowledgeElement(comment.get(1), null);
-		assertEquals(0, manager.getIdOfElement("Not the right Body", comment.get(0).getJiraIssueId(),
+		assertEquals(0, manager.getIdOfElement("Not the right Body", comment.get(0).getJiraIssue().getId(),
 				KnowledgeType.ISSUE));
 	}
 
@@ -145,6 +145,6 @@ public class TestGetIdOfElement extends TestSetUp {
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertKnowledgeElement(comment.get(1), null);
 		assertEquals(3,
-				manager.getIdOfElement("testobject", comment.get(0).getJiraIssueId(), KnowledgeType.ISSUE));
+				manager.getIdOfElement("testobject", comment.get(0).getJiraIssue().getId(), KnowledgeType.ISSUE));
 	}
 }

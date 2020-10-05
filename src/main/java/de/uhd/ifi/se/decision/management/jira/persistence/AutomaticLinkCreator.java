@@ -6,18 +6,26 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
- * Responsible for automatic link creation (=edges) between nodes in the
- * {@link KnowledgeGraph}. Is currently only working for decision knowledge
- * elements documented in the description or the comments of a Jira issue.
+ * Responsible for automatic link creation (=creation of edges/relations)
+ * between nodes in the {@link KnowledgeGraph}. Is currently only working for
+ * decision knowledge elements documented in the description or the comments of
+ * a Jira issue.
  * 
  * @see Link
  * @see JiraIssueTextPersistenceManager
  */
 public class AutomaticLinkCreator {
+
+	public static long createSmartLinkForSentenceIfRelevant(PartOfJiraIssueText sentence) {
+		if (sentence.isRelevant()) {
+			return createSmartLinkForElement(sentence);
+		}
+		return 0;
+	}
 
 	/**
 	 * Links arguments to the youngest parent alternative or decision. Links
@@ -51,7 +59,7 @@ public class AutomaticLinkCreator {
 			return new KnowledgeElement(element.getJiraIssue());
 		}
 		if (potentialParentElements.size() == 2) {
-			return getMostRecentElement(potentialParentElements.get(0), potentialParentElements.get(1));
+			return getRecentlyUpdatedElement(potentialParentElements.get(0), potentialParentElements.get(1));
 		}
 		return potentialParentElements.get(0);
 	}
@@ -59,7 +67,7 @@ public class AutomaticLinkCreator {
 	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
 		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
-		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssueId();
+		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssue().getId();
 		for (KnowledgeType parentType : parentTypes) {
 			KnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
 					.getYoungestElementForJiraIssue(jiraIssueId, parentType);
@@ -70,14 +78,14 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getMostRecentElement(KnowledgeElement first, KnowledgeElement second) {
+	public static KnowledgeElement getRecentlyUpdatedElement(KnowledgeElement first, KnowledgeElement second) {
 		if (first == null) {
 			return second;
 		}
 		if (second == null) {
 			return first;
 		}
-		if (first.getCreationDate().compareTo(second.getCreationDate()) > 0) {
+		if (first.getUpdatingDate().compareTo(second.getUpdatingDate()) > 0) {
 			return first;
 		}
 		return second;

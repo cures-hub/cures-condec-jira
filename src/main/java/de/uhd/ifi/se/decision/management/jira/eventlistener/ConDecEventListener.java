@@ -64,7 +64,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 
 	public void attach(IssueEventListener listener) {
 		this.issueEventListeners.add(listener);
-
 	}
 
 	public void attach(LinkEventListener listener) {
@@ -79,7 +78,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventPublisher.register(this);
-		LOGGER.info("ConDec event listener was registered in JIRA.");
+		LOGGER.info("ConDec event listener was registered in Jira.");
 	}
 
 	/**
@@ -90,7 +89,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void destroy() throws Exception {
 		eventPublisher.unregister(this);
-		LOGGER.info("ConDec event listener was removed from JIRA.");
+		LOGGER.info("ConDec event listener was removed from Jira.");
 	}
 
 	@EventListener
@@ -108,7 +107,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		KnowledgeGraph.getOrCreate(element.getProject()).removeEdge(link);
 		KnowledgeGraph.getOrCreate(element.getProject()).addEdge(link);
 		linkEventListeners.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
-		LOGGER.info("ConDec event listener on link create issue event was triggered.");
+		LOGGER.info("ConDec event listener on link created issue event was triggered.");
 	}
 
 	@EventListener

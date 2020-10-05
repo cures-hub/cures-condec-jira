@@ -19,7 +19,6 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -453,8 +452,12 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @issue Should code classes be assigned to all Jira issues that they were
+	 *        committed to?
+	 * 
 	 * @return Jira issue that the knowledge element or irrelevant text is part of.
 	 */
+	// TODO Improve this method. Code classes are not handled currently.
 	public Issue getJiraIssue() {
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			return ComponentAccessor.getIssueManager().getIssueObject(id);

@@ -1,17 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 public class TestRecommendation extends TestSetUp {
-
 
 	@Before
 	public void setUp() {
@@ -31,7 +31,6 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals("TEST", recommendation.getRecommendations());
 		assertEquals("TESTURL", recommendation.getUrl());
 	}
-
 
 	@Test
 	public void testHashCode() {

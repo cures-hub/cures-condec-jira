@@ -34,7 +34,7 @@ public class TestVisGraphEdge extends TestSetUp {
 
 	@Test
 	public void testLabel() {
-		assertEquals(link.getType(), edge.getLabel());
+		assertEquals(link.getTypeAsString(), edge.getLabel());
 	}
 
 	@Test

@@ -33,7 +33,7 @@
 		 * once?
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
-		 * constructor (see above)!
+		 * constructor to avoid that the event listeners are added more than once!
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
@@ -66,13 +66,12 @@
 			return;
 		}
 
-		showOrHideContextMenuItems(id, documentationLocation, container);
+		showOrHideContextMenuItems(documentationLocation, container);
 		setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 
-		var position = getPosition(event, container);
 		$(contextMenuNode).css({
-		    left : position["x"],
-		    top : position["y"]
+		    left : event.pageX,
+		    top : event.pageY
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
@@ -151,11 +150,12 @@
 			conDecDialog.showDeleteDialog(id, documentationLocation);
 		};
 
-		// only default documentation location
-		// TODO set as root for sentences
+		// set root only works in Treant currently
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
 			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(knowledgeElement) {
-				conDecTreant.buildTreant(knowledgeElement.key, true, "");
+				var filterSettings = conDecFiltering.getFilterSettings("treant");
+				filterSettings["selectedElement"] = knowledgeElement.key;
+				conDecTreant.buildTreant(filterSettings, true);
 			});
 		};
 
@@ -163,15 +163,16 @@
 			conDecAPI.openJiraIssue(id, documentationLocation);
 		};
 
-		// only for sentences
+		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
 			conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			});
 		};
 
+		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
-			conDecAPI.createIssueFromSentence(id, function() {
+			conDecAPI.createJiraIssueFromSentence(id, function() {
 				conDecObservable.notify();
 			});
 		};
@@ -181,91 +182,25 @@
 		};
 	}
 
-	// TODO Remove in Jira version 8.12
-	function getPosition(event, container) {
-		var element = event.target;
-		if (container === null && event !== null) {
-			return {
-			    x : event.pageX,
-			    y : event.pageY
-			};
-		}
-
-		if (container.includes("vis")) {
-			return {
-			    x : event.layerX + "px",
-			    y : event.screenY + "px"
-			};
-		}
-
-		var xPosition = 0;
-		var yPosition = 0;
-
-		while (element) {
-			if (element.tagName === "BODY") {
-				// deal with browser quirks with body/window/document and page
-				// scroll
-				var xScrollPos = element.scrollLeft || document.documentElement.scrollLeft;
-				var yScrollPos = element.scrollTop || document.documentElement.scrollTop;
-
-				xPosition += (element.offsetLeft - xScrollPos + element.clientLeft);
-				yPosition += (element.offsetTop - yScrollPos + element.clientTop);
-			} else {
-				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-			}
-
-			if (container !== null && (element.id === container || element.className === container)) {
-				break;
-			}
-
-			element = element.offsetParent;
-		}
-		return {
-		    x : xPosition,
-		    y : yPosition
-		};
-	}
-
-	// TODO Simplify, this is too complicated!
-	function showOrHideContextMenuItems(id, documentationLocation, container) {
-		document.getElementById("fifth-context-section").style.display = "none";
+	/*
+	 * @issue Should it be possible to change code classes using the context menu?
+	 */
+	function showOrHideContextMenuItems(documentationLocation, container) {
+		// initial layout
 		document.getElementById("first-context-section").style.display = "block";
-		if (documentationLocation === "c") {
-			document.getElementById("condec-context-menu-create-item").style.display = "none";
-			document.getElementById("condec-context-menu-edit-item").style.display = "none";
-			document.getElementById("condec-context-menu-link-item").style.display = "none";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
-			document.getElementById("second-context-section").style.display = "none";
-			document.getElementById("third-context-section").style.display = "none";
-			document.getElementById("fourth-context-section").style.display = "none";
-		} else if (container !== null && container.includes("tbldecisionTable")) {
-			document.getElementById("condec-context-menu-create-item").style.display = "none";
-			document.getElementById("condec-context-menu-link-item").style.display = "none";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
-			document.getElementById("third-context-section").style.display = "none";
-			document.getElementById("condec-context-menu-export").style.display = "none";
-			document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "none";
-			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
-			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
-		} else {
-			document.getElementById("condec-context-menu-create-item").style.display = "initial";
-			document.getElementById("condec-context-menu-edit-item").style.display = "initial";
-			document.getElementById("condec-context-menu-link-item").style.display = "initial";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
-			document.getElementById("second-context-section").style.display = "block";
-			document.getElementById("third-context-section").style.display = "block";
-			document.getElementById("fourth-context-section").style.display = "block";
-		}
-		if (container === null || container.includes("vis")) {
-			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
-		} else if (documentationLocation !== "c" && container !== "tbldecisionTable") {
-			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
-		}
+		document.getElementById("second-context-section").style.display = "block";
+		document.getElementById("third-context-section").style.display = "block";
+		document.getElementById("fourth-context-section").style.display = "block";
+		document.getElementById("fifth-context-section").style.display = "none";
 
-		if (container !== null && documentationLocation === "s" && !container.includes("tbldecisionTable")) {
+		document.getElementById("condec-context-menu-create-item").style.display = "initial";
+		document.getElementById("condec-context-menu-edit-item").style.display = "initial";
+		document.getElementById("condec-context-menu-link-item").style.display = "initial";
+		document.getElementById("condec-context-menu-delete-link-item").style.display = "initial";
+		document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+
+		// customize context menu for documentation locations
+		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			conDecAPI.isIssueStrategy(function(isEnabled) {
 				if (isEnabled) {
@@ -274,21 +209,10 @@
 					document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
 				}
 			});
-			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 		} else {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
-			if (container !== "tbldecisionTable") {
-				document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
-			}
 		}
-		/*
-		 * if (documentationLocation === "i"){
-		 * document.getElementById("condec-context-menu-assign-decision-group-item").style.display =
-		 * "none"; }else{
-		 * document.getElementById("condec-context-menu-assign-decision-group-item").style.display =
-		 * "initial"; }
-		 */
 		if (documentationLocation === "groups") {
 			document.getElementById("first-context-section").style.display = "none";
 			document.getElementById("second-context-section").style.display = "none";
@@ -296,7 +220,54 @@
 			document.getElementById("fourth-context-section").style.display = "none";
 			document.getElementById("fifth-context-section").style.display = "initial";
 		}
+		
+		if (documentationLocation === "c") {
+			document.getElementById("condec-context-menu-create-item").style.display = "none";
+			document.getElementById("condec-context-menu-edit-item").style.display = "none";
+			document.getElementById("condec-context-menu-link-item").style.display = "none";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+			document.getElementById("second-context-section").style.display = "none";
+			document.getElementById("third-context-section").style.display = "none";
+			document.getElementById("fourth-context-section").style.display = "none";
+			return;
+		}
+
+		// customize context menu for containers
+		if (container === undefined || container === null) {
+			return;
+		}
+		if (container.includes("tbldecisionTable")) {
+			document.getElementById("condec-context-menu-create-item").style.display = "none";
+			document.getElementById("condec-context-menu-link-item").style.display = "none";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+			document.getElementById("third-context-section").style.display = "none";
+			document.getElementById("condec-context-menu-export").style.display = "none";
+			document.getElementById("condec-context-menu-assign-decision-group-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+		}
+		if (container.includes("vis")) {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+		}
+		if (container.includes("treant-container")) {
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
+		}
 	}
+
+	ConDecContextMenu.prototype.addContextMenuToCommentTabPanel = function () {
+        console.log("conDecContextMenu addContextMenuToCommentTabPanel");
+        // ids are set in AbstractKnowledgeClassificationMacro Java class
+        var comments = document.querySelectorAll('[id^="commentnode-"]');
+        if (comments) {
+            for (i = 0; i < comments.length; i++) {
+                comments[i].addEventListener('contextmenu', function(event) {
+					event.preventDefault();
+                    conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event, null, JIRA.Issue.getIssueId(), "i");
+                });
+            }
+        }
+    };
 
 	global.conDecContextMenu = new ConDecContextMenu();
 })(window);

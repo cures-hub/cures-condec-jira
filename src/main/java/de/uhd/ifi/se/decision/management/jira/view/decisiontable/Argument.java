@@ -40,7 +40,7 @@ public class Argument extends DecisionTableElement {
 
 	public Argument(KnowledgeElement argument, Link link) {
 		this(argument);
-		this.image = KnowledgeType.getIconUrl(argument, link.getType());
+		this.image = KnowledgeType.getIconUrl(argument, link.getTypeAsString());
 	}
 
 	public long getId() {

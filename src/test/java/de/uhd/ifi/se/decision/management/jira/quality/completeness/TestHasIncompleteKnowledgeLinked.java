@@ -1,5 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.List;
+import java.util.Set;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -8,15 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	private KnowledgeElement issue;
@@ -45,7 +50,8 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	}
 
 	/**
-	 * Test with complete root element (workItem), that is not linked to other elements.
+	 * Test with complete root element (workItem), that is not linked to other
+	 * elements.
 	 */
 	@Test
 	@NonTransactional
@@ -60,8 +66,9 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	}
 
 	/**
-	 * Test with complete root element (workItem), that is linked to one other element (anotherWorkItem). The other element is
-	 * also complete and is not linked to any elements.
+	 * Test with complete root element (workItem), that is linked to one other
+	 * element (anotherWorkItem). The other element is also complete and is not
+	 * linked to any elements.
 	 */
 	@Test
 	@NonTransactional
@@ -83,8 +90,8 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	}
 
 	/**
-	 * Test with complete root element (workItem), that is linked to one other element (decision). The other element
-	 * is incomplete.
+	 * Test with complete root element (workItem), that is linked to one other
+	 * element (decision). The other element is incomplete.
 	 */
 	@Test
 	@NonTransactional
@@ -102,8 +109,9 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	}
 
 	/**
-	 * Test with complete root element (workItem), that is linked to one other element (decision). The other element
-	 * is complete, but is linked to another element (issue), which is incomplete.
+	 * Test with complete root element (workItem), that is linked to one other
+	 * element (decision). The other element is complete, but is linked to another
+	 * element (issue), which is incomplete.
 	 */
 	@Test
 	@NonTransactional
@@ -120,7 +128,6 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertTrue(issue.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
-
 
 	@After
 	public void tearDown() {

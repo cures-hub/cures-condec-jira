@@ -10,8 +10,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -39,8 +38,8 @@ public class TestGetElementsInDescription extends TestSetUp {
 		sentence.setCommentId(0);
 		manager.insertKnowledgeElement(sentence, user);
 
-		long jiraIssueId = comment.get(1).getJiraIssueId();
-		List<KnowledgeElement> listWithObjects = manager.getElementsInDescription(jiraIssueId);
+		long jiraIssueId = comment.get(1).getJiraIssue().getId();
+		List<PartOfJiraIssueText> listWithObjects = manager.getElementsInDescription(jiraIssueId);
 		assertEquals(1, listWithObjects.size());
 
 		manager.deleteElementsInDescription(sentence.getJiraIssue());
