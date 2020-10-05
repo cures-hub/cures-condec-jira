@@ -88,7 +88,7 @@
             spinner.show();
             conDecAPI.getRecommendationEvaluation("$projectKey", keywords, sourceName, function(results, error) {
                 if(results) {
-                    $("#evaluation-results-table tbody").append("<tr><td>Simple</td><td>" + sourceName + "</td><td>"+
+                    $("#evaluation-results-table tbody").append("<tr><td>$knowledgeSourceAlgorithm</td><td>" + sourceName + "</td><td>"+
                     results.length +"</td> </tr>");
                     spinner.hide();
                 }

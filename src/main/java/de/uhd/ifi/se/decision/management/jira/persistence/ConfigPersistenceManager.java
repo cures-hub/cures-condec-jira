@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -363,7 +364,7 @@ public class ConfigPersistenceManager {
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
-		if(projectKey == null) return rdfSourceList;
+		if (projectKey == null) return rdfSourceList;
 
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
@@ -375,6 +376,20 @@ public class ConfigPersistenceManager {
 			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
 		}
 	}
+
+	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		for (int i = 0; i < rdfSourceList.size(); ++i) {
+			if (rdfSourceList.get(i).getName().equals(knowledgeSourceName)) {
+				rdfSourceList.set(i, rdfSource);
+				break;
+			}
+		}
+		Type listType = new TypeToken<List<RDFSource>>() {
+		}.getType();
+		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+	}
+
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
@@ -416,7 +431,7 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
-		if(projectKey == null) return projectSources;
+		if (projectKey == null) return projectSources;
 
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		if (currentProject != null) {
@@ -439,7 +454,29 @@ public class ConfigPersistenceManager {
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		//New KnowledgeSources could be added here.
 
+		for (int i = 0; i < knowledgeSources.size(); i++) {
+			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
+			knowledgeSource.setKnowledgeSourceAlgorithmType(getKnowledgeSourceAlgorithmType(projectKey));
+			knowledgeSources.set(i, knowledgeSource);
+		}
+
+
 		return knowledgeSources;
+	}
+
+	public static void setKnowledgeSourceAlgorithmType(String projectKey, String knowledgeSourceAlgorithmType) {
+		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
+	}
+
+	public static KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType(String projectKey) {
+		KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
+		try {
+			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
+		} catch (IllegalArgumentException e) {
+			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+		}
+		return knowledgeSourceAlgorithmType;
+		//return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
 
 	/* **************************************/

@@ -77,11 +77,13 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 
 		velocityParameters.put("maxNumberRecommendations",
-				ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
+			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
 		velocityParameters.put("projectSources",
-				ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
+			ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
+
+		velocityParameters.put("knowledgeSourceAlgorithm", ConfigPersistenceManager.getKnowledgeSourceAlgorithmType(projectKey));
 
 		return velocityParameters;
 	}
