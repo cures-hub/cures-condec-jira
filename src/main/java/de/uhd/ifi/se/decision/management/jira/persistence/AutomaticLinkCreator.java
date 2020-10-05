@@ -22,7 +22,7 @@ public class AutomaticLinkCreator {
 
 	public static long createSmartLinkForSentenceIfRelevant(PartOfJiraIssueText sentence) {
 		if (sentence.isRelevant()) {
-			return createSmartLinkForSentenceIfRelevant(sentence);
+			return createSmartLinkForElement(sentence);
 		}
 		return 0;
 	}
@@ -85,7 +85,7 @@ public class AutomaticLinkCreator {
 		if (second == null) {
 			return first;
 		}
-		if (first.getUpdatingDate().compareTo(second.getCreationDate()) > 0) {
+		if (first.getUpdatingDate().compareTo(second.getUpdatingDate()) > 0) {
 			return first;
 		}
 		return second;

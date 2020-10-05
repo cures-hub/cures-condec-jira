@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -616,7 +617,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
 			}
-			// AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
+			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;
 	}
@@ -656,9 +657,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
 			}
-			// long id =
-			// AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
-			// System.out.println("id:" + id);
+			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;
 	}
