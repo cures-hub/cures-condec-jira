@@ -20,10 +20,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  */
 public class AutomaticLinkCreator {
 
-	public static void createSmartLinkForSentenceIfRelevant(PartOfJiraIssueText sentence) {
+	public static long createSmartLinkForSentenceIfRelevant(PartOfJiraIssueText sentence) {
 		if (sentence.isRelevant()) {
-			createSmartLinkForSentenceIfRelevant(sentence);
+			return createSmartLinkForSentenceIfRelevant(sentence);
 		}
+		return 0;
 	}
 
 	/**

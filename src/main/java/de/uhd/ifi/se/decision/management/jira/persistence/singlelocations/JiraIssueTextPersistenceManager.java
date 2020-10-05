@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
@@ -196,8 +195,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements and parts of irrelevant text
 	 *         documented in the description of a Jira issue.
 	 */
-	public List<KnowledgeElement> getElementsInDescription(long jiraIssueId) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<PartOfJiraIssueText> getElementsInDescription(long jiraIssueId) {
+		List<PartOfJiraIssueText> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", projectKey,
 						jiraIssueId))) {
@@ -536,6 +535,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
+	 * Updates the decision knowledge elements and parts of irrelevant text within
+	 * the description of a Jira issue.
+	 * 
 	 * @param elementId
 	 *            of the sentence that should be converted into an entire Jira
 	 *            issue.
@@ -613,8 +615,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				// Create new AO entry
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
-				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 			}
+			// AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;
 	}
@@ -627,10 +629,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira issue with decision knowledge elements in its description.
 	 * @return list of identified knowledge elements.
 	 */
-	public List<KnowledgeElement> updateDescription(Issue jiraIssue) {
+	public List<PartOfJiraIssueText> updateDescription(Issue jiraIssue) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
-		List<KnowledgeElement> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
+		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
 		int numberOfNewPartsInDescription = partsOfDescription.size();
 		int numberOfElementsInDatabase = elementsInDatabase.size();
 
@@ -653,8 +655,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				// Create new AO entry
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
-				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 			}
+			// long id =
+			// AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
+			// System.out.println("id:" + id);
 		}
 		return elementsInDatabase;
 	}
