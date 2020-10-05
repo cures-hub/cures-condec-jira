@@ -55,7 +55,7 @@ public class ClassificationManagerForJiraIssueComments {
 		for (Comment comment : comments) {
 			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 					.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
-			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.insertPartsOfComment(comment);
+			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateComment(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);

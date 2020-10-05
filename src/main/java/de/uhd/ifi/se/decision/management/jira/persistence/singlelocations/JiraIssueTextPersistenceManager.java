@@ -177,8 +177,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return list of all decision knowledge elements documented in the a certain
 	 *         comment of a Jira issue. Does also return irrelevant parts of text.
 	 */
-	public List<KnowledgeElement> getElementsInComment(long commentId) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<PartOfJiraIssueText> getElementsInComment(long commentId) {
+		List<PartOfJiraIssueText> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
@@ -403,11 +403,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			newElement.setSummary(formerElement.getSummary());
 			newElement.setDescription(formerElement.getDescription());
 		}
-		return updateElementInDatabase(newElement, formerElement, user);
+		return updateElementInTextAndDatabase(newElement, formerElement, user);
 	}
 
-	private static boolean updateElementInDatabase(PartOfJiraIssueText newElement, PartOfJiraIssueText formerElement,
-			ApplicationUser user) {
+	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
+			PartOfJiraIssueText formerElement, ApplicationUser user) {
 		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
@@ -510,7 +510,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		KnowledgeElement parentElement = new KnowledgeElement(((PartOfJiraIssueText) element).getJiraIssue());
+		KnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+				.getKnowledgeElement(element.getJiraIssue().getId());
 		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
 		return linkId > 0;
 	}
@@ -585,9 +586,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @con If a new knowledge element is inserted at the beginning of the text, the
 	 *      links in the knowledge graph might be wrong.
 	 */
-	public List<KnowledgeElement> updateComment(Comment comment) {
-		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
-		List<KnowledgeElement> elementsInDatabase = getElementsInComment(comment.getId());
+	public List<PartOfJiraIssueText> updateComment(Comment comment) {
+		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
+				.getPartsOfText(comment.getBody());
+		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
 		int numberOfNewPartsOfComment = partsOfComment.size();
 		int numberOfElementsInDatabase = elementsInDatabase.size();
 
@@ -606,15 +608,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence.setId(elementsInDatabase.get(i).getId());
 				updateInDatabase(sentence);
 				elementsInDatabase.set(i, sentence);
+				KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 			} else {
 				// Create new AO entry
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
+				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 			}
-			if (sentence.isRelevant()) {
-				AutomaticLinkCreator.createSmartLinkForElement(sentence);
-			}
-			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 		}
 		return elementsInDatabase;
 	}
@@ -648,15 +648,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				sentence.setId(elementsInDatabase.get(i).getId());
 				updateInDatabase(sentence);
 				elementsInDatabase.set(i, sentence);
+				KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 			} else {
 				// Create new AO entry
 				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
 				elementsInDatabase.add(sentence);
+				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 			}
-			if (sentence.isRelevant()) {
-				AutomaticLinkCreator.createSmartLinkForElement(sentence);
-			}
-			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 		}
 		return elementsInDatabase;
 	}
@@ -717,33 +715,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			}
 		}
 		return youngestElement;
-	}
-
-	/**
-	 * Splits a comment into parts (substrings) and inserts these parts into the
-	 * database table.
-	 *
-	 * @param comment
-	 *            Jira issue comment.
-	 * @return list of comment sentences with ids in database.
-	 * @see PartOfJiraIssueText
-	 */
-	public List<PartOfJiraIssueText> insertPartsOfComment(Comment comment) {
-		// Convert comment String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
-
-		List<PartOfJiraIssueText> partsOfCommentWithIdInDatabase = new ArrayList<>();
-
-		// Create entries in the active objects (AO) database
-		for (PartOfJiraIssueText partOfComment : partsOfComment) {
-			partOfComment.setComment(comment);
-			partOfComment = (PartOfJiraIssueText) insertKnowledgeElement(partOfComment, null);
-			if (partOfComment.isRelevant()) {
-				AutomaticLinkCreator.createSmartLinkForElement(partOfComment);
-			}
-			partsOfCommentWithIdInDatabase.add(partOfComment);
-		}
-		return partsOfCommentWithIdInDatabase;
 	}
 
 	/**

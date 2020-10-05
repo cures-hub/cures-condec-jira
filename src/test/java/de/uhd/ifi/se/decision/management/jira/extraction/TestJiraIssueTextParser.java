@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -122,5 +123,20 @@ public class TestJiraIssueTextParser extends TestSetUp {
 						+ "{quote} this is a also a fourth quote {quote} "
 						+ "{code:java} this is a fifth code {code} and this is a sixth test Sentence.");
 		assertEquals(6, sentences.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testSentenceSplitWithManyDecisionKnowledgeTags() {
+		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
+				"{issue} How to? {issue} {alternative} An alternative could be {alternative}"
+						+ "{pro} Great idea! {pro} {decision} We will do ...! {decision} {pro} Even better! {pro}");
+		assertEquals(5, sentences.size());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
+		assertTrue(sentences.get(0).isRelevant());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
+		assertTrue(sentences.get(1).isRelevant());
+		assertEquals(KnowledgeType.PRO, sentences.get(4).getType());
+		assertTrue(sentences.get(4).isRelevant());
 	}
 }

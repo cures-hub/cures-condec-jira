@@ -95,7 +95,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		sentences = persistenceManager.insertPartsOfComment(comment);
+		sentences = persistenceManager.updateComment(comment);
 	}
 
 	@Test

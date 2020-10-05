@@ -20,6 +20,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  */
 public class AutomaticLinkCreator {
 
+	public static void createSmartLinkForSentenceIfRelevant(PartOfJiraIssueText sentence) {
+		if (sentence.isRelevant()) {
+			createSmartLinkForSentenceIfRelevant(sentence);
+		}
+	}
+
 	/**
 	 * Links arguments to the youngest parent alternative or decision. Links
 	 * alternatives or decisions to the youngest parent issue.

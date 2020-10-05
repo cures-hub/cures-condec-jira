@@ -52,29 +52,29 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 	 */
 	public static boolean editCommentLock;
 
+	/**
+	 * @issue How to implement the handling of the concrete event?
+	 * @decision Use if-statements to handle the concrete event!
+	 * @alternative Use switch-case-statement to handle the concrete event!
+	 * @con Switch-case-statement is not trivial to implement, because the switch
+	 *      cannot be a long variable. Casting from long to int is dangerous.
+	 */
 	@Override
 	public void onIssueEvent(IssueEvent issueEvent) {
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
-		if (!ConfigPersistenceManager.isActivated(this.projectKey)) {
+		if (!ConfigPersistenceManager.isActivated(projectKey)) {
 			return;
 		}
 
 		long eventTypeId = issueEvent.getEventTypeId();
-		// @issue How to implement multiple checks of the event ID?
-		// @decision Use ifs only!
-		// @pro switch-case not trivial to implement,
-		// because the switch can not be a long variable.
-		// casting from long to int is dangerous.
-		if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
-			handleNewComment();
-		}
+
 		if (eventTypeId == EventType.ISSUE_COMMENT_DELETED_ID) {
 			handleDeleteComment();
 		}
-		if (eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
-			handleEditComment();
+		if (eventTypeId == EventType.ISSUE_COMMENTED_ID || eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
+			handleNewOrUpdatedComment();
 		}
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			handleDeleteIssue();
@@ -118,23 +118,10 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 	}
 
-	private void handleNewComment() {
-		parseIconsToTags();
-		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
-			this.classificationManagerForJiraIssueComments.classifyComment(this.issueEvent.getComment());
-		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-					.getJiraIssueTextManager();
-			persistenceManager.insertPartsOfComment(comment);
-		}
-
-	}
-
-	private void handleEditComment() {
+	private void handleNewOrUpdatedComment() {
 		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating the comment and should
-			// not be handled by this event listener.
+			// If locked, a REST service is currently manipulating a comment or the
+			// description and this event should not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
 			return;
 		}
@@ -146,7 +133,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 
 		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
-			this.classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
+			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
 			persistenceManager.updateComment(comment);
@@ -156,8 +143,8 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 
 	private void handleUpdateDescription() {
 		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating the comment and should
-			// not be handled by this event listener.
+			// If locked, a REST service is currently manipulating a comment or the
+			// description and this event should not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
 			return;
 		}
@@ -169,11 +156,11 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 
 		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
+			// TODO This seems not to work for manual classified sentences. Check and fix
 			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 		} else {
 			persistenceManager.updateDescription(issueEvent.getIssue());
 		}
-
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
@@ -195,7 +182,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 				changedString.put(oldValue, newValue);
 			}
 		} catch (NullPointerException | GenericEntityException e) {
-			LOGGER.error("Get changed string during a JIRA issue event failed. Message: " + e.getMessage());
+			LOGGER.error("Get changed string during a Jira issue event failed. Message: " + e.getMessage());
 		}
 
 		return changedString;
