@@ -349,12 +349,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return null;
 		}
-		KnowledgeElement existingElement = getKnowledgeElement(element);
-		if (existingElement != null) {
-			ensureThatElementIsLinked(existingElement);
-			return existingElement;
-		}
-		return null;
+		return getKnowledgeElement(element);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
