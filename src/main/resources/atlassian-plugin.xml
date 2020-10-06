@@ -407,7 +407,7 @@
 		</entity>
 	</ao>
 
-	<!-- Decision Knowledge Issue Module -->
+	<!-- Decision Knowledge Jira Issue Module -->
 	<web-panel key="condec-jira-issue-module" name="Decision Knowledge Jira Issue Module"
 		location="atl.jira.view.issue.left.context" weight="200">
 		<description>Decision Knowledge related to a Jira Issue</description>
@@ -423,6 +423,15 @@
 		<label key="condec.export.as.table.item.label" />
 		<description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
 		<link linkId="export-as-table-link" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	
+	<!-- Decision Knowledge Export Functions -->
+	<web-item key="reset-decision-knowledge-from-text-item"
+		name="Menu Item for Rereading the Decision Knowledge Documented in Jira Issue Description and Comments" section="operations-operations">
+		<label key="condec.reset.decision.knowledge.from.text.item.label" />
+		<description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
+		<link linkId="reset-decision-knowledge-from-text-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 

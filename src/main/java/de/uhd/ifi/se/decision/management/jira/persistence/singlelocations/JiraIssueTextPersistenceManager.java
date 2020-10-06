@@ -105,6 +105,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return deletePartsOfText(jiraIssue.getId(), 0);
 	}
 
+	/**
+	 * Deletes all decision knowledge elements and their links documented in the
+	 * description and all comments of a Jira issue. Does not delete the text or
+	 * change the description itself.
+	 *
+	 * @param jiraIssue
+	 *            that the decision knowledge elements are documented in.
+	 * @return true if deletion was successfull.
+	 */
+	public boolean deleteElementsInJiraIssue(Issue jiraIssue) {
+		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
+		comments.forEach(comment -> deleteElementsInComment(comment));
+		return deleteElementsInDescription(jiraIssue);
+	}
+
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
 		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,

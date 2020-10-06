@@ -290,15 +290,29 @@
 	/*
 	 * external references: condec.context.menu
 	 */
-	ConDecAPI.prototype.createJiraIssueFromSentence = function (id, callback) {
+	ConDecAPI.prototype.setSentenceIrrelevant = function (id, callback) {
 		var jsondata = {
 			"id": id,
+			"documentationLocation": "s",
 			"projectKey": projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/createIssueFromSentence.json", jsondata,
-			function (error, id, type) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function (
+			error) {
+			if (error === null) {
+				showFlag("success", "Decision knowledge element has been updated.");
+				callback();
+			}
+		});
+	};
+
+	/*
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function (jiraIssueId, callback) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText.json", jiraIssueId,
+			function (error, numberOfElements) {
 				if (error === null) {
-					showFlag("success", "Jira Issue has been created.");
+					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
 					callback();
 				}
 			});

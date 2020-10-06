@@ -73,5 +73,15 @@ $(document).ready(function () {
 	conDecAPI.checkIfProjectKeyIsValid();      
 	conDecExport.addOnClickEventToExportAsTable();
 	conDecContextMenu.addContextMenuToCommentTabPanel();
+
+	var resetDecisionKnowledgeFromTextMenuItem = document.getElementById("reset-decision-knowledge-from-text-link");
+
+	resetDecisionKnowledgeFromTextMenuItem.addEventListener("click", function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function() {
+			conDecObservable.notify();
+		});
+	});
 });
 </script>
