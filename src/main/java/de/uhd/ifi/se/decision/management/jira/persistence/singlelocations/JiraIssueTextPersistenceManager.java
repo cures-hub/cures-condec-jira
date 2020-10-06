@@ -639,7 +639,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within
-	 * the description of a Jira issue.
+	 * the description of a Jira issue. Splits a Jira issue description into parts
+	 * (substrings) and inserts these parts into the database table.
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description.
@@ -734,32 +735,4 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		return youngestElement;
 	}
-
-	/**
-	 * Splits a Jira issue description into parts (substrings) and inserts these
-	 * parts into the database table.
-	 *
-	 * @param issue
-	 *            Jira issue.
-	 * @return list of sentences with ids in database.
-	 * @see PartOfJiraIssueText
-	 */
-	public static List<PartOfJiraIssueText> insertPartsOfDescription(MutableIssue issue) {
-		String projectKey = issue.getProjectObject().getKey();
-		// Convert description String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
-				.getPartsOfText(issue.getDescription());
-		partsOfDescription.forEach(part -> part.setCommentId(0));
-
-		// Create entries in the active objects (AO) database
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<>();
-		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
-			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager
-					.insertKnowledgeElement(partOfDescription, issue.getReporter()));
-		}
-		return partsOfDescriptionWithIdInDatabase;
-	}
-
 }

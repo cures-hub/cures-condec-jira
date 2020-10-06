@@ -40,8 +40,9 @@ public class ClassificationManagerForJiraIssueComments {
 		if (issue == null) {
 			return;
 		}
-		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = JiraIssueTextPersistenceManager
-				.insertPartsOfDescription(issue);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(issue.getProjectObject().getKey()).getJiraIssueTextManager();
+		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager.updateDescription(issue);
 		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
 		classifySentencesFineGrained(partsOfDescriptionWithIdInDatabase);
 	}

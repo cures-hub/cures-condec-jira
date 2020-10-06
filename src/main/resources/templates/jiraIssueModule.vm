@@ -72,10 +72,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 $(document).ready(function () {
 	conDecAPI.checkIfProjectKeyIsValid();      
 	conDecExport.addOnClickEventToExportAsTable();
+
+	// Add event listener to menu items in "More" menu
 	conDecContextMenu.addContextMenuToCommentTabPanel();
 
 	var resetDecisionKnowledgeFromTextMenuItem = document.getElementById("reset-decision-knowledge-from-text-link");
-
 	resetDecisionKnowledgeFromTextMenuItem.addEventListener("click", function(event) {
 		event.preventDefault();
 		event.stopPropagation();
