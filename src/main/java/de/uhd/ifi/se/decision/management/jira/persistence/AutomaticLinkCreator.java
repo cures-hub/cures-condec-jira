@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -65,12 +67,15 @@ public class AutomaticLinkCreator {
 	}
 
 	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
+		Issue jiraIssue = ((PartOfJiraIssueText) element).getJiraIssue();
+		if (jiraIssue == null) {
+			return new ArrayList<KnowledgeElement>();
+		}
 		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
-		long jiraIssueId = ((PartOfJiraIssueText) element).getJiraIssue().getId();
 		for (KnowledgeType parentType : parentTypes) {
 			KnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
-					.getYoungestElementForJiraIssue(jiraIssueId, parentType);
+					.getYoungestElementForJiraIssue(jiraIssue.getId(), parentType);
 			if (potentialParentElement != null) {
 				potentialParentElements.add(potentialParentElement);
 			}

@@ -18,11 +18,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
 /**
- * Responsible for links (=edges) between all kinds of nodes in the
- * {@link KnowledgeGraph}, except of Jira issue links. Jira {@link IssueLink}s
- * are managed by the Jira {@link IssueLinkManager}. If you are not sure whether
- * your link is a Jira issue link or not, use the methods of the
- * {@link KnowledgePersistenceManager} interface.
+ * Responsible for links (=edges/relationships) between all kinds of nodes
+ * (=knowledge elements) in the {@link KnowledgeGraph}, except of Jira issue
+ * links. Jira {@link IssueLink}s are managed by the Jira
+ * {@link IssueLinkManager}. If you are not sure whether your link is a Jira
+ * issue link or not, use the methods of the {@link KnowledgePersistenceManager}
+ * class.
  *
  * @see KnowledgePersistenceManager
  * @see LinkInDatabase

@@ -656,7 +656,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		for (int i = 0; i < numberOfNewPartsInDescription; i++) {
 			PartOfJiraIssueText sentence = partsOfDescription.get(i);
-			sentence.setJiraIssue(jiraIssue.getId());
+			sentence.setJiraIssue(jiraIssue);
 			if (i < numberOfElementsInDatabase) {
 				// Update existing AO entry
 				sentence.setId(elementsInDatabase.get(i).getId());

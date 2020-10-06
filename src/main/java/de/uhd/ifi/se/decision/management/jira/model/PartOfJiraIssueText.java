@@ -208,14 +208,25 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Sets the id of the Jira issue that the decision knowledge element or
-	 * irrelevant text is part of.
+	 * Sets the the Jira issue that the decision knowledge element or irrelevant
+	 * text is part of by its id.
 	 * 
 	 * @param jiraIssueId
 	 *            of the Jira issue.
 	 */
 	public void setJiraIssue(long jiraIssueId) {
 		this.jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+	}
+
+	/**
+	 * Sets the the Jira issue that the decision knowledge element or irrelevant
+	 * text is part of by its id.
+	 * 
+	 * @param jiraIssue
+	 *            Jira issue.
+	 */
+	public void setJiraIssue(Issue jiraIssue) {
+		this.jiraIssue = jiraIssue;
 	}
 
 	/**
@@ -338,7 +349,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public void setComment(Comment comment) {
 		if (comment != null) {
 			setCommentId(comment.getId());
-			setJiraIssue(comment.getIssue().getId());
+			setJiraIssue(comment.getIssue());
 			setCreationDate(comment.getCreated());
 		}
 	}
