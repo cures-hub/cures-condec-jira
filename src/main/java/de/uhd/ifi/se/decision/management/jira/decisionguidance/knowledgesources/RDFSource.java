@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectKnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectKnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;

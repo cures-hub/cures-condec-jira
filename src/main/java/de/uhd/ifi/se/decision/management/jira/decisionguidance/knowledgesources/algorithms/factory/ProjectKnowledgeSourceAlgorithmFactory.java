@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceSubstringAlgorithm;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectSourceTokenizedAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectSourceSubstringAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectSourceTokenizedAlgorithm;
 
 public class ProjectKnowledgeSourceAlgorithmFactory extends KnowledgeSourceAlgorithmFactory {
 

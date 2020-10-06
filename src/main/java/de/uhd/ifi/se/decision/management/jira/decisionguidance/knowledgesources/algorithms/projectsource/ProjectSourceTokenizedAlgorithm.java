@@ -1,6 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectKnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;

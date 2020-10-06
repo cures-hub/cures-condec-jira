@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectKnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectKnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
