@@ -58,3 +58,14 @@ a:focus a:hover {
 	height: auto; 
 	overflow-x: auto;
 }
+
+.condec-filter {
+    border: 1px solid #dfe1e6;
+    padding: 16px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}

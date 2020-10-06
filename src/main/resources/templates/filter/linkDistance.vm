@@ -1,4 +1,7 @@
-<label for="link-distance-input-$viewIdentifier" id="link-distance-input-label-$viewIdentifier">
-	$i18n.getText("condec.link.distance.label")
-</label>
-<input type="number" id="link-distance-input-$viewIdentifier" value="3" min="0" class="text short-field" placeholder="Enter distance">
+<div>
+    <label for="link-distance-input-$viewIdentifier" id="link-distance-input-label-$viewIdentifier">
+        $i18n.getText("condec.link.distance.label")
+    </label>
+    <input type="number" id="link-distance-input-$viewIdentifier" value="3" min="0" class="text short-field"
+           placeholder="Enter distance">
+</div>

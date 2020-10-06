@@ -1,4 +1,7 @@
-<button aria-controls="link-type-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger" aria-haspopup="true">
-	$i18n.getText('condec.label.link.types')
-</button>
-<aui-dropdown-menu id="link-type-dropdown-$viewIdentifier"></aui-dropdown-menu>
+<div>
+    <button aria-controls="link-type-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
+            aria-haspopup="true">
+        $i18n.getText('condec.label.link.types')
+    </button>
+    <aui-dropdown-menu id="link-type-dropdown-$viewIdentifier"></aui-dropdown-menu>
+</div>
