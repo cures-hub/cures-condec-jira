@@ -29,9 +29,39 @@
             </div>
             <div class="field-group">
                 <label for="create-query-knowledgesource">SPARQL-Query</label>
+                <div style="display:flex;">
                 <textarea id="create-query-knowledgesource"
                           placeholder="SPARQL-Query" class="textarea
                           large-field"></textarea>
+
+                    <div style="padding: 5px; max-width:300px;text-align: left;">
+                        <a id="query-help-trigger"><span
+                            class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
+                        <div style="padding:6px; display:none; border: 1px solid #dfe1e6; line-height: 200%" id="query-help">
+                            "%variable%" is a placeholder for your search in the jira issue view.
+                            The variable will be replaced by a resource. Also provide the sparql-variables ?alternative and ?url. <br>
+                            E.g.
+                            &lt;http://dbpedia.org/resources/%variable%> <br>
+                            %variable% = MySQL <br>
+                            &lt;http://dbpedia.org/resources/MySQL><br>
+                            <div
+                                style="border: 1px solid; border-radius:3px; background:whitesmoke; padding:6px; margin: 6px; line-height: 100%">
+                                //Example Query <br>
+                                PREFIX dbo: &lt;http://dbpedia.org/ontology/> <br>
+                                PREFIX dct: &lt;http://purl.org/dc/terms/> <br>
+                                PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> <br>
+                                PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#> <br> <br>
+
+                                select distinct ?alternative ?url where { <br>
+                                %variable% dbo:genre ?genre. <br>
+                                ?url dbo:genre ?genre. <br>
+                                ?url rdfs:label ?alternative. <br>
+                                FILTER(LANG(?alternative) = "en"). <br>
+                                } <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="description">Enter a SPARQL-Query.</div>
                 <button class="aui-button" id="insert-prefix">Insert DBPedia Prefix.</button>
             </div>
@@ -78,14 +108,16 @@
         <!--RDF SOURCE FORM -->
         <div class="field-group">
             <label>Name*</label>
-            <input class="name-knowledgesource text medium-field" id="$rdfSource.toString()-name" name="name-knowledgesource"
+            <input class="name-knowledgesource text medium-field" id="$rdfSource.toString()-name"
+                   name="name-knowledgesource"
                    value="$rdfSource.getName()"></input>
             <div class="description">Name your knowledge source.
             </div>
         </div>
         <div class="field-group">
             <label>RDF-Service</label>
-            <input class="uri-knowledgesource text medium-field" name="uri-knowledgesource" id="$rdfSource.toString()-service"
+            <input class="uri-knowledgesource text medium-field" name="uri-knowledgesource"
+                   id="$rdfSource.toString()-service"
                    placeholder="http://dbpedia.org/sparql" value="$rdfSource.getService()"></input>
             <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.
             </div>
@@ -101,7 +133,8 @@
         </div>
         <div class="field-group">
             <label>Timeout</label>
-            <input class="param-knowledgesource text short-field" name="param-knowledgesource" id="$rdfSource.toString()-timeout"
+            <input class="param-knowledgesource text short-field" name="param-knowledgesource"
+                   id="$rdfSource.toString()-timeout"
                    value="$rdfSource.getTimeout()"></input>
             <div class="description">Enter the timeout in milliseconds.
             </div>
@@ -336,9 +369,17 @@
                }
          });
 
+         $("#query-help-trigger").click( event => {
+             $("#query-help").toggle();
+         });
+
 
 
     });
+
+
+
+
 
 
 
