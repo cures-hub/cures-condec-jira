@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,8 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issue comments
- * or the description to store decision knowledge.
+ * or the description to store decision knowledge. The sentences in a comment or
+ * the description of a Jira issue is called {@link PartOfJiraIssueText}.
  *
  * @see AbstractPersistenceManagerForSingleLocation
  */
@@ -202,14 +204,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns all decision knowledge elements documented in the description of a
-	 * Jira issue. The comment id of such elements is zero.
-	 *
 	 * @param jiraIssueId
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
 	 * @return list of all decision knowledge elements and parts of irrelevant text
-	 *         documented in the description of a Jira issue.
+	 *         documented in the description of a Jira issue. The comment id of such
+	 *         elements is zero.
 	 */
 	public List<PartOfJiraIssueText> getElementsInDescription(long jiraIssueId) {
 		List<PartOfJiraIssueText> elements = new ArrayList<>();
@@ -222,9 +222,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns the id of the decision knowledge element documented in the
-	 * description or comments of a Jira issue with the summary and type.
-	 *
 	 * @param summary
 	 *            of the decision knowledge element.
 	 * @param jiraIssueId
@@ -587,7 +584,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within a
-	 * comment of a Jira issue.
+	 * comment of a Jira issue. Splits the comment into parts (substrings) and
+	 * inserts these parts into the database table.
 	 * 
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
@@ -634,7 +632,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within
-	 * the description of a Jira issue. Splits a Jira issue description into parts
+	 * the description of a Jira issue. Splits the description into parts
 	 * (substrings) and inserts these parts into the database table.
 	 * 
 	 * @param jiraIssue
@@ -717,17 +715,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         that is documented in the description or the comments of a certain
 	 *         Jira issue.
 	 */
-	public static KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
-		PartOfJiraIssueText youngestElement = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equalsIgnoreCase(knowledgeType.toString())) {
-				youngestElement = new PartOfJiraIssueText(databaseEntry);
-				break;
-			}
-		}
+	public KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
+		List<KnowledgeElement> elementsOfType = getElementsWithTypeInJiraIssue(jiraIssueId, knowledgeType);
+		KnowledgeElement youngestElement = elementsOfType.stream()
+				.min(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(null);
 		return youngestElement;
 	}
 }
