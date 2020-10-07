@@ -84,12 +84,10 @@ public class AutomaticLinkCreator {
 	}
 
 	public static KnowledgeElement getRecentlyUpdatedElement(List<KnowledgeElement> elements) {
-		KnowledgeElement youngestElement = elements.stream()
-				.max(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(null);
-		if (youngestElement == null) {
-			youngestElement = elements.stream().max(Comparator.comparing(KnowledgeElement::getId))
-					.orElse(elements.get(0));
+		if (elements.stream()
+				.allMatch(element -> element.getUpdatingDate().equals(elements.get(0).getUpdatingDate()))) {
+			return elements.stream().max(Comparator.comparing(KnowledgeElement::getId)).orElse(elements.get(0));
 		}
-		return youngestElement;
+		return elements.stream().max(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(elements.get(0));
 	}
 }

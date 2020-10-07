@@ -1,8 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.automaticlinkcreator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,21 +32,9 @@ public class TestGetMostRecentElement extends TestSetUp {
 	public void testMostRecentElementEqualCreationDate() {
 		KnowledgeElement source = link.getSource();
 		KnowledgeElement target = link.getTarget();
-		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(source, target));
-	}
-
-	@Test
-	@NonTransactional
-	public void testMostRecentElementFirstNull() {
-		KnowledgeElement target = link.getTarget();
-		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(null, target));
-	}
-
-	@Test
-	@NonTransactional
-	public void testMostRecentElementSecondNull() {
-		KnowledgeElement source = link.getSource();
-		assertEquals(source, AutomaticLinkCreator.getRecentlyUpdatedElement(source, null));
+		assertEquals(0, source.getUpdatingDate().compareTo(target.getUpdatingDate()));
+		assertTrue(source.getId() < target.getId());
+		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(link.getBothElements()));
 	}
 
 	@Test
@@ -53,7 +44,10 @@ public class TestGetMostRecentElement extends TestSetUp {
 		KnowledgeElement target = link.getTarget();
 		Date oldCreationDate = target.getCreationDate();
 		target.setCreationDate(new Date());
-		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(source, target));
+		List<KnowledgeElement> elements = new ArrayList<>();
+		elements.add(source);
+		elements.add(target);
+		assertEquals(target, AutomaticLinkCreator.getRecentlyUpdatedElement(elements));
 		target.setCreationDate(oldCreationDate);
 	}
 }
