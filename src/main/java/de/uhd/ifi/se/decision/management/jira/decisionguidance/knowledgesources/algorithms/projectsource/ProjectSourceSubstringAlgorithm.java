@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectKnowledgeSourceAlgorithm;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -60,6 +59,8 @@ public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgor
 						.forEach(child -> {
 
 							Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+							recommendation.addArguments(this.getArguments(child.getSource()));
+							recommendation.addArguments(this.getArguments(child.getTarget()));
 
 							if (recommendation != null) {
 								int score = calculateScore(keywords, issue);
@@ -75,24 +76,6 @@ public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgor
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	private Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (source.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, source.getSummary(), source.getUrl());
-			if (target.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, target.getSummary(), target.getUrl());
-		}
-
-		return null;
-	}
-
-	private boolean matchingIssueTypes(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
-		int matchedType = 0;
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (knowledgeElement.getType() == knowledgeType) matchedType += 1;
-		}
-		return matchedType > 0;
-	}
 
 	private int calculateScore(List<String> keywords, KnowledgeElement parentIssue) {
 		float numberOfKeywords = keywords.size();

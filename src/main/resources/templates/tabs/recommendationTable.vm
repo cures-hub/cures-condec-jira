@@ -21,6 +21,7 @@
         <th>Source</th>
         <th class="aui-table-column-issue-key">Score</th>
         <th class="aui-table-column-unsortable">Options</th>
+        <th>Argument</th>
     </tr>
     </thead>
     <tbody>
