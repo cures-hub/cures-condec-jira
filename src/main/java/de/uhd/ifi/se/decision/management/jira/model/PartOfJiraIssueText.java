@@ -49,8 +49,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setType(databaseEntry.getType());
 		this.setStatus(databaseEntry.getStatus());
 		String text = getText();
-		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
-
 		this.setDescription(text);
 	}
 
