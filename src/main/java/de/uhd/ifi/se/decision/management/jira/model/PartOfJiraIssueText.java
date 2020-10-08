@@ -240,11 +240,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 
 	@Override
 	public String getKey() {
-		Issue issue = getJiraIssue();
-		if (issue != null) {
-			return issue.getKey() + ":" + getId();
+		Issue jiraIssue = getJiraIssue();
+		if (jiraIssue != null) {
+			return jiraIssue.getKey() + ":" + getId();
 		}
-		return super.getKey();
+		return "";
 	}
 
 	@Override
@@ -385,6 +385,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public boolean isValid() {
 		if (getEndPosition() == 0 && getStartPosition() == 0) {
+			return false;
+		}
+		if (getKey().isBlank()) {
 			return false;
 		}
 		if (getCommentId() <= 0) {

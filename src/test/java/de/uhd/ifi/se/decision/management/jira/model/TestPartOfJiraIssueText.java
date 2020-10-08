@@ -250,4 +250,24 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 		partOfText.setEndPosition(0);
 		assertFalse(partOfText.isValid());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetKeyValidJiraIssue() {
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		PartOfJiraIssueText partOfText = partsOfText.get(0);
+		assertEquals("TEST-30:1", partOfText.getKey());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetKeyInvalidJiraIssue() {
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		PartOfJiraIssueText partOfText = partsOfText.get(0);
+		partOfText.setJiraIssue(null);
+		assertEquals("", partOfText.getKey());
+		assertFalse(partOfText.isValid());
+	}
 }
