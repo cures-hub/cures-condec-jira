@@ -215,7 +215,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *            of the Jira issue.
 	 */
 	public void setJiraIssue(long jiraIssueId) {
-		this.jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+		setJiraIssue(ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId));
 	}
 
 	/**
@@ -291,9 +291,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			return null;
 		}
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		if (commentManager == null) {
-			return null;
-		}
 		return commentManager.getMutableComment(commentId);
 	}
 
@@ -384,10 +381,10 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         description is valid.
 	 */
 	public boolean isValid() {
-		if (getEndPosition() == 0 && getStartPosition() == 0) {
+		if (getEndPosition() == 0 || getLength() == 0) {
 			return false;
 		}
-		if (getKey().isBlank()) {
+		if (getJiraIssue() == null) {
 			return false;
 		}
 		if (getCommentId() <= 0) {

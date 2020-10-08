@@ -20,9 +20,24 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestPartOfJiraIssueText extends TestSetUp {
 
+	PartOfJiraIssueText irrelevantFirstSentence;
+	PartOfJiraIssueText issue;
+	PartOfJiraIssueText alternative;
+	PartOfJiraIssueText proMarkedWithIcon;
+	PartOfJiraIssueText code;
+
 	@Before
 	public void setUp() {
 		init();
+		List<PartOfJiraIssueText> partsOfText = JiraIssues
+				.getSentencesForCommentText("some sentence in front. {issue} How to do...? {issue}"
+						+ "{Alternative} This is an alternative. {Alternative} (y) this is a pro-argument. "
+						+ "{code:Java} int i = 0 {code} some sentence in the back.");
+		irrelevantFirstSentence = partsOfText.get(0);
+		issue = partsOfText.get(1);
+		alternative = partsOfText.get(2);
+		proMarkedWithIcon = partsOfText.get(3);
+		code = partsOfText.get(4);
 	}
 
 	@Test
@@ -68,7 +83,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetCreated() {
+	public void testGetCreationDate() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setCreationDate(new Date());
 		assertNotNull(sentence.getCreationDate());
@@ -77,11 +92,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText(
-				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-
-		PartOfJiraIssueText partOfText = partsOfText.get(0);
-		assertEquals(partOfText.getText(), "some sentence in front. ");
+		assertEquals(irrelevantFirstSentence.getText(), "some sentence in front. ");
 	}
 
 	@Test
@@ -104,106 +115,85 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("This is a text that is not classified.");
-		assertTrue(partsOfText.get(0).isPlainText());
+		assertTrue(irrelevantFirstSentence.isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertFalse(partsOfText.get(0).isPlainText());
+		assertFalse(code.isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextAlternative() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
-		assertTrue(partsOfText.get(0).isPlainText());
+		assertTrue(alternative.isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertTrue(partsOfText.get(0).isPlainText());
+		assertTrue(proMarkedWithIcon.isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("This is a text that is not classified.");
-		assertFalse(partsOfText.get(0).isRelevant());
+		assertFalse(irrelevantFirstSentence.isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertFalse(partsOfText.get(0).isRelevant());
+		assertFalse(code.isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantAlternative() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		assertTrue(partsOfText.get(0).isRelevant());
+		assertTrue(alternative.isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertTrue(partsOfText.get(0).isRelevant());
+		assertTrue(proMarkedWithIcon.isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("This is a text that is not classified.");
-		assertFalse(partsOfText.get(0).isValidated());
+		assertFalse(irrelevantFirstSentence.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertFalse(partsOfText.get(0).isValidated());
+		assertFalse(code.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
-		assertTrue(partsOfText.get(0).isValidated());
+		assertTrue(alternative.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedIssue() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
-		assertTrue(partsOfText.get(0).isValidated());
+		assertTrue(issue.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertTrue(partsOfText.get(0).isValidated());
+		assertTrue(proMarkedWithIcon.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetLength() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertEquals(28, partsOfText.get(0).getLength());
+		assertEquals(29, proMarkedWithIcon.getLength());
 	}
 
 	@Test
@@ -219,55 +209,41 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetCreatorOfComment() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), partsOfText.get(0).getCreator());
+		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), alternative.getCreator());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetCreatorOfDescription() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		// this means that the element is documented in the description
-		partsOfText.get(0).setCommentId(0);
-		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), partsOfText.get(0).getCreator());
+		// comment id 0 means that the element is documented in the description
+		alternative.setCommentId(0);
+		assertEquals(JiraUsers.SYS_ADMIN.getApplicationUser(), alternative.getCreator());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValid() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		PartOfJiraIssueText partOfText = partsOfText.get(0);
-
-		assertTrue(partOfText.isValid());
+		assertTrue(alternative.isValid());
 
 		// this means that the element is documented in the description
-		partOfText.setCommentId(0);
-		assertTrue(partOfText.isValid());
+		alternative.setCommentId(0);
+		assertTrue(alternative.isValid());
 
-		partOfText.setEndPosition(0);
-		assertFalse(partOfText.isValid());
+		alternative.setEndPosition(0);
+		assertFalse(alternative.isValid());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetKeyValidJiraIssue() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		PartOfJiraIssueText partOfText = partsOfText.get(0);
-		assertEquals("TEST-30:1", partOfText.getKey());
+		assertEquals("TEST-30:3", alternative.getKey());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetKeyInvalidJiraIssue() {
-		List<PartOfJiraIssueText> partsOfText = JiraIssues
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		PartOfJiraIssueText partOfText = partsOfText.get(0);
-		partOfText.setJiraIssue(null);
-		assertEquals("", partOfText.getKey());
-		assertFalse(partOfText.isValid());
+		alternative.setJiraIssue(null);
+		assertEquals("", alternative.getKey());
+		assertFalse(alternative.isValid());
 	}
 }
