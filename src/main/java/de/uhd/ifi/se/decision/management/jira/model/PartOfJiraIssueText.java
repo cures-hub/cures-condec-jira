@@ -48,17 +48,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setJiraIssue(databaseEntry.getJiraIssueId());
 		this.setType(databaseEntry.getType());
 		this.setStatus(databaseEntry.getStatus());
+		String text = getText();
+		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
 
-		String text = getTextOfEntireDescriptionOrComment();
-		try {
-			if (endPosition < text.length()) {
-				text = text.substring(startPosition, endPosition);
-			} else if (endPosition == text.length()) {
-				text = text.substring(startPosition);
-			}
-		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			LOGGER.error("Constructor failed to create object of PartOfJiraIssueText. Message: " + e.getMessage());
-		}
 		this.setDescription(text);
 	}
 
@@ -177,8 +169,26 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         is plain, e.g., does not contain any code or logger ouput.
 	 */
 	public boolean isPlainText() {
-		return !containsExcludedTag(
-				getTextOfEntireDescriptionOrComment().substring(this.getStartPosition(), this.getEndPosition()));
+		return !containsExcludedTag(getTextWithTags());
+	}
+
+	/**
+	 * @return sentence with macro tags, e.g. {issue} How to... {issue} for a
+	 *         decision knowledge element or {code:java} public static ... {code}
+	 *         for irrelevant text.
+	 */
+	public String getTextWithTags() {
+		String textWithTags = getTextOfEntireDescriptionOrComment();
+		try {
+			if (endPosition < textWithTags.length()) {
+				textWithTags = textWithTags.substring(startPosition, endPosition);
+			} else if (endPosition == textWithTags.length()) {
+				textWithTags = textWithTags.substring(startPosition);
+			}
+		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
+			LOGGER.error("Constructor failed to create object of PartOfJiraIssueText. Message: " + e.getMessage());
+		}
+		return textWithTags;
 	}
 
 	/**
@@ -268,12 +278,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return part of the text.
 	 */
 	public String getText() {
-		Comment comment = getComment();
-		if (comment == null) {
-			return super.getSummary();
-		}
-		String body = comment.getBody().substring(this.getStartPosition(), this.getEndPosition());
-		return body.replaceAll("\\{.*?\\}", "");
+		return getTextWithTags().replaceAll("\\{.*?\\}", "");
 	}
 
 	@Override
