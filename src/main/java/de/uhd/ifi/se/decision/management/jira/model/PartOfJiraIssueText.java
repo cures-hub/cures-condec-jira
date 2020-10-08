@@ -177,16 +177,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public String getTextWithTags() {
 		String textWithTags = getTextOfEntireDescriptionOrComment();
-		try {
-			if (endPosition < textWithTags.length()) {
-				textWithTags = textWithTags.substring(startPosition, endPosition);
-			} else if (endPosition == textWithTags.length()) {
-				textWithTags = textWithTags.substring(startPosition);
-			}
-		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			LOGGER.error("Constructor failed to create object of PartOfJiraIssueText. Message: " + e.getMessage());
+		if (endPosition < textWithTags.length()) {
+			return textWithTags.substring(startPosition, endPosition);
+		} else {
+			return textWithTags.substring(startPosition);
 		}
-		return textWithTags;
 	}
 
 	/**
@@ -341,7 +336,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public String getJiraIssueDescription() {
 		Issue issue = getJiraIssue();
 		if (issue == null) {
-			return super.getSummary();
+			return "";
 		}
 		return issue.getDescription();
 	}
