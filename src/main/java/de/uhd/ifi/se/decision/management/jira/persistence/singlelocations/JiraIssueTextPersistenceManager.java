@@ -418,20 +418,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
-		String text;
-		MutableComment mutableComment = formerElement.getComment();
-		if (mutableComment == null) {
-			text = formerElement.getJiraIssueDescription();
-		} else {
-			text = mutableComment.getBody();
-		}
-
+		String text = formerElement.getTextOfEntireDescriptionOrComment();
 		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
 		String lastPartOfText = text.substring(formerElement.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		JiraIssueTextExtractionEventListener.editCommentLock = true;
+		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
 			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
 			jiraIssue.setDescription(newBody);

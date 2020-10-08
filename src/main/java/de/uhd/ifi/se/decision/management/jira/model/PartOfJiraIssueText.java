@@ -50,13 +50,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setType(databaseEntry.getType());
 		this.setStatus(databaseEntry.getStatus());
 
-		String text = "";
-		Comment comment = getComment();
-		if (comment == null) {
-			text = getJiraIssueDescription();
-		} else {
-			text = comment.getBody();
-		}
+		String text = getTextOfEntireDescriptionOrComment();
 		try {
 			if (endPosition < text.length()) {
 				text = text.substring(startPosition, endPosition);
@@ -64,7 +58,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 				text = text.substring(startPosition);
 			}
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			LOGGER.error("Constructor faild to create object of PartOfJiraIssueText. Message: " + e.getMessage());
+			LOGGER.error("Constructor failed to create object of PartOfJiraIssueText. Message: " + e.getMessage());
 		}
 		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
 		this.setDescription(text);
@@ -349,6 +343,14 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			setJiraIssue(comment.getIssue());
 			setCreationDate(comment.getCreated());
 		}
+	}
+
+	public String getTextOfEntireDescriptionOrComment() {
+		Comment comment = getComment();
+		if (comment != null) {
+			return comment.getBody();
+		}
+		return getJiraIssueDescription();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -222,6 +223,16 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGetCreatorInValidJiraIssue() {
+		// comment id 0 means that the element is documented in the description
+		alternative.setCommentId(0);
+		alternative.setJiraIssue(null);
+		assertFalse(alternative.isValid());
+		assertNull(alternative.getCreator());
+	}
+
+	@Test
+	@NonTransactional
 	public void testIsValid() {
 		assertTrue(alternative.isValid());
 
@@ -243,7 +254,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetKeyInvalidJiraIssue() {
 		alternative.setJiraIssue(null);
-		assertEquals("", alternative.getKey());
 		assertFalse(alternative.isValid());
+		assertEquals("", alternative.getKey());
 	}
 }
