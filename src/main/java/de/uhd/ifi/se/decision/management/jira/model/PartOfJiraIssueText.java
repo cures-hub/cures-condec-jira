@@ -27,7 +27,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	private int endPosition;
 	private boolean isRelevant;
 	private boolean isValidated;
-	private boolean isPlainText;
 	private Issue jiraIssue;
 	private long commentId;
 
@@ -60,9 +59,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
 			LOGGER.error("Constructor failed to create object of PartOfJiraIssueText. Message: " + e.getMessage());
 		}
-		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
 		this.setDescription(text);
-		this.setPlainText(!containsExcludedTag(text));
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -140,12 +137,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Set the start position (number of characters) of the decision knowledge
-	 * element or the irrelevant text within the entire text.
-	 * 
 	 * @param startPosition
 	 *            number of characters after that the decision knowledge element or
-	 *            the irrelevant text starts.
+	 *            the irrelevant text starts within the entire text.
 	 */
 	public void setStartPosition(int startPosition) {
 		this.startPosition = startPosition;
@@ -160,12 +154,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Set the end position (number of characters) of the decision knowledge element
-	 * or the irrelevant text within the entire text.
-	 * 
 	 * @param endPosition
 	 *            number of characters after that the decision knowledge element or
-	 *            the irrelevant text ends.
+	 *            the irrelevant text ends within the entire text.
 	 */
 	public void setEndPosition(int endPosition) {
 		this.endPosition = endPosition;
@@ -186,38 +177,23 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         is plain, e.g., does not contain any code or logger ouput.
 	 */
 	public boolean isPlainText() {
-		return isPlainText;
+		return !containsExcludedTag(
+				getTextOfEntireDescriptionOrComment().substring(this.getStartPosition(), this.getEndPosition()));
 	}
 
 	/**
-	 * Sets whether the text of the decision knowledge element or irrelevant text is
-	 * plain, e.g., does not contain any code or logger ouput.
-	 * 
-	 * @param isPlainText
-	 *            true if the text of the decision knowledge element or irrelevant
-	 *            text is plain, e.g., does not contain any code or logger ouput.
-	 */
-	public void setPlainText(boolean isPlainText) {
-		this.isPlainText = isPlainText;
-	}
-
-	/**
-	 * Sets the the Jira issue that the decision knowledge element or irrelevant
-	 * text is part of by its id.
-	 * 
 	 * @param jiraIssueId
-	 *            of the Jira issue.
+	 *            of the Jira issue that the decision knowledge element or
+	 *            irrelevant text is part of.
 	 */
 	public void setJiraIssue(long jiraIssueId) {
 		setJiraIssue(ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId));
 	}
 
 	/**
-	 * Sets the the Jira issue that the decision knowledge element or irrelevant
-	 * text is part of by its id.
-	 * 
 	 * @param jiraIssue
-	 *            Jira issue.
+	 *            Jira issue that the decision knowledge element or irrelevant text
+	 *            is part of.
 	 */
 	public void setJiraIssue(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
@@ -322,11 +298,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Sets the id of the Jira issue comment that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
 	 * @param id
-	 *            of the Jira issue comment.
+	 *            of the Jira issue comment that the decision knowledge element or
+	 *            irrelevant text is part of.
 	 */
 	public void setCommentId(long id) {
 		this.commentId = id;
@@ -345,6 +319,10 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		}
 	}
 
+	/**
+	 * @return text of either the entire description or the entire comment that the
+	 *         decision knowledge element or the irrelevant sentence is part of.
+	 */
 	public String getTextOfEntireDescriptionOrComment() {
 		Comment comment = getComment();
 		if (comment != null) {

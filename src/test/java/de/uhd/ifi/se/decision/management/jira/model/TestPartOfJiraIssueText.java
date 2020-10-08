@@ -21,11 +21,11 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestPartOfJiraIssueText extends TestSetUp {
 
-	PartOfJiraIssueText irrelevantFirstSentence;
-	PartOfJiraIssueText issue;
-	PartOfJiraIssueText alternative;
-	PartOfJiraIssueText proMarkedWithIcon;
-	PartOfJiraIssueText code;
+	private PartOfJiraIssueText irrelevantFirstSentence;
+	private PartOfJiraIssueText issue;
+	private PartOfJiraIssueText alternative;
+	private PartOfJiraIssueText proMarkedWithIcon;
+	private PartOfJiraIssueText code;
 
 	@Before
 	public void setUp() {
