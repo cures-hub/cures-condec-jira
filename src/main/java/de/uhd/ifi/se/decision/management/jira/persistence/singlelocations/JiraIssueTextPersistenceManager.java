@@ -304,22 +304,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return partsOfText.get(0);
 	}
 
-	/**
-	 * Returns the Jira issue that decision knowledge element is documented in
-	 * (either in a comment or the description of this Jira issue).
-	 *
-	 * @param id
-	 *            of the decision knowledge element.
-	 * @return Jira issue as an {@link Issue} object.
-	 */
-	public Issue getJiraIssue(long id) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getKnowledgeElement(id);
-		if (sentence == null) {
-			return null;
-		}
-		return sentence.getJiraIssue();
-	}
-
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;

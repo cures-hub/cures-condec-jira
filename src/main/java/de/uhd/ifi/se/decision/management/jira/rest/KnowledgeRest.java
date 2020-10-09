@@ -475,6 +475,7 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 
+	// TODO Change to POST and pass FilterSettings object
 	@Path("/getSummarizedCode")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -486,19 +487,16 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue jiraIssue = issueManager.getIssueObject(id);
-
-		if (jiraIssue == null) {
-			jiraIssue = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager().getJiraIssue(id);
-		}
-
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error",
 							"Getting summarized code failed since git extraction is disabled for this project."))
 					.build();
 		}
+
+		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+				documentationLocation);
+		Issue jiraIssue = element.getJiraIssue();
 
 		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
 		if (summary == null || summary.isEmpty()) {

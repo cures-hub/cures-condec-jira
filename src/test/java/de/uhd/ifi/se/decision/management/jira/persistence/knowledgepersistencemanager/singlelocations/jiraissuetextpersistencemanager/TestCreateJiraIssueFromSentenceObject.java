@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCreateJIRAIssueFromSentenceObject extends TestSetUp {
+public class TestCreateJiraIssueFromSentenceObject extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
