@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -682,26 +681,5 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			unvalidatedPartsOfText.add(validatedPartOfText);
 		}
 		return unvalidatedPartsOfText;
-	}
-
-	/**
-	 * Returns the youngest decision knowledge element with a certain knowledge type
-	 * that is documented in the description or the comments of a certain Jira
-	 * issue.
-	 *
-	 * @param jiraIssueId
-	 *            id of the Jira issue that the decision knowledge elements are
-	 *            documented in.
-	 * @param knowledgeType
-	 *            {@link KnowledgeType} of the parent element.
-	 * @return youngest decision knowledge element with a certain knowledge type
-	 *         that is documented in the description or the comments of a certain
-	 *         Jira issue.
-	 */
-	public KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
-		List<KnowledgeElement> elementsOfType = getElementsWithTypeInJiraIssue(jiraIssueId, knowledgeType);
-		KnowledgeElement youngestElement = elementsOfType.stream()
-				.min(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(null);
-		return youngestElement;
 	}
 }
