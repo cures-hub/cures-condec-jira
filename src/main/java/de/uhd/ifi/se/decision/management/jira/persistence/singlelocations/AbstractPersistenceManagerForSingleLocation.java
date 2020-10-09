@@ -116,9 +116,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
 	 *         id and key. Returns null if insertion failed.
 	 */
-	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		return null;
-	}
+	public abstract KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * Updates an existing {@link KnowledgeElement} in database.
