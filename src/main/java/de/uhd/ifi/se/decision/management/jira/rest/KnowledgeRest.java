@@ -526,9 +526,9 @@ public class KnowledgeRest {
 				.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
-		persistenceManager.updateDescription(jiraIssue);
+		persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		comments.forEach(comment -> persistenceManager.updateComment(comment));
+		comments.forEach(comment -> persistenceManager.updateElementsOfCommentInDatabase(comment));
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.status(Status.OK).entity(elements.size()).build();

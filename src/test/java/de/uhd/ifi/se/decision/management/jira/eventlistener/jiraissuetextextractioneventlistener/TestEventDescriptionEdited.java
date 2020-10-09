@@ -30,7 +30,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
 
-		List<PartOfJiraIssueText> partsOfText = persistenceManager.updateDescription(jiraIssue);
+		List<PartOfJiraIssueText> partsOfText = persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
 		if (partsOfText.size() == 0) {
 			return null;
 		}

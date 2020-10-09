@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestSetUp {
+public class TestUpdateKnowledgeElement extends TestSetUp {
 
 	protected static JiraIssueTextPersistenceManager manager;
 	protected static ApplicationUser user;
@@ -36,7 +36,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeSentenceNull() {
-		assertFalse(new JiraIssueTextPersistenceManager("").updateKnowledgeElement(null, null));
+		assertFalse(manager.updateKnowledgeElement(null, null));
 	}
 
 	@Test

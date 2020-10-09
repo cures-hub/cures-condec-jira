@@ -566,7 +566,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within a
 	 * comment of a Jira issue. Splits the comment into parts (substrings) and
-	 * inserts these parts into the database table.
+	 * inserts these parts into the database table. Does not update the description
+	 * itself since that was already done by the user.
 	 * 
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
@@ -578,7 +579,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @con If a new knowledge element is inserted at the beginning of the text, the
 	 *      links in the knowledge graph might be wrong.
 	 */
-	public List<PartOfJiraIssueText> updateComment(Comment comment) {
+	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
@@ -614,13 +615,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within
 	 * the description of a Jira issue. Splits the description into parts
-	 * (substrings) and inserts these parts into the database table.
+	 * (substrings) and inserts these parts into the database table. Does not update
+	 * the description itself since that was already done by the user.
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description.
 	 * @return list of identified knowledge elements.
 	 */
-	public List<PartOfJiraIssueText> updateDescription(Issue jiraIssue) {
+	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
