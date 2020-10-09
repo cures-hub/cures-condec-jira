@@ -117,6 +117,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if deletion was successfull.
 	 */
 	public boolean deleteElementsInJiraIssue(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return false;
+		}
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
 		comments.forEach(comment -> deleteElementsInComment(comment));
 		return deleteElementsInDescription(jiraIssue);
