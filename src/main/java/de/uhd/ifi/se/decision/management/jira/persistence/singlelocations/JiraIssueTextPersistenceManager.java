@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,8 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issue comments
- * or the description to store decision knowledge.
+ * or the description to store decision knowledge. The sentences in a comment or
+ * the description of a Jira issue is called {@link PartOfJiraIssueText}.
  *
  * @see AbstractPersistenceManagerForSingleLocation
  */
@@ -103,6 +105,24 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return false;
 		}
 		return deletePartsOfText(jiraIssue.getId(), 0);
+	}
+
+	/**
+	 * Deletes all decision knowledge elements and their links documented in the
+	 * description and all comments of a Jira issue. Does not delete the text or
+	 * change the description itself.
+	 *
+	 * @param jiraIssue
+	 *            that the decision knowledge elements are documented in.
+	 * @return true if deletion was successfull.
+	 */
+	public boolean deleteElementsInJiraIssue(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return false;
+		}
+		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
+		comments.forEach(comment -> deleteElementsInComment(comment));
+		return deleteElementsInDescription(jiraIssue);
 	}
 
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
@@ -187,14 +207,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns all decision knowledge elements documented in the description of a
-	 * Jira issue. The comment id of such elements is zero.
-	 *
 	 * @param jiraIssueId
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
 	 * @return list of all decision knowledge elements and parts of irrelevant text
-	 *         documented in the description of a Jira issue.
+	 *         documented in the description of a Jira issue. The comment id of such
+	 *         elements is zero.
 	 */
 	public List<PartOfJiraIssueText> getElementsInDescription(long jiraIssueId) {
 		List<PartOfJiraIssueText> elements = new ArrayList<>();
@@ -207,9 +225,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns the id of the decision knowledge element documented in the
-	 * description or comments of a Jira issue with the summary and type.
-	 *
 	 * @param summary
 	 *            of the decision knowledge element.
 	 * @param jiraIssueId
@@ -289,22 +304,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return partsOfText.get(0);
 	}
 
-	/**
-	 * Returns the Jira issue that decision knowledge element is documented in
-	 * (either in a comment or the description of this Jira issue).
-	 *
-	 * @param id
-	 *            of the decision knowledge element.
-	 * @return Jira issue as an {@link Issue} object.
-	 */
-	public Issue getJiraIssue(long id) {
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getKnowledgeElement(id);
-		if (sentence == null) {
-			return null;
-		}
-		return sentence.getJiraIssue();
-	}
-
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
@@ -334,12 +333,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return null;
 		}
-		KnowledgeElement existingElement = getKnowledgeElement(element);
-		if (existingElement != null) {
-			ensureThatElementIsLinked(existingElement);
-			return existingElement;
-		}
-		return null;
+		return getKnowledgeElement(element);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
@@ -411,20 +405,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
-		String text;
-		MutableComment mutableComment = formerElement.getComment();
-		if (mutableComment == null) {
-			text = formerElement.getJiraIssueDescription();
-		} else {
-			text = mutableComment.getBody();
-		}
-
+		String text = formerElement.getTextOfEntireDescriptionOrComment();
 		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
 		String lastPartOfText = text.substring(formerElement.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		JiraIssueTextExtractionEventListener.editCommentLock = true;
+		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
 			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
 			jiraIssue.setDescription(newBody);
@@ -577,7 +565,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within a
-	 * comment of a Jira issue.
+	 * comment of a Jira issue. Splits the comment into parts (substrings) and
+	 * inserts these parts into the database table. Does not update the description
+	 * itself since that was already done by the user.
 	 * 
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
@@ -589,7 +579,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @con If a new knowledge element is inserted at the beginning of the text, the
 	 *      links in the knowledge graph might be wrong.
 	 */
-	public List<PartOfJiraIssueText> updateComment(Comment comment) {
+	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
@@ -624,13 +614,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within
-	 * the description of a Jira issue.
+	 * the description of a Jira issue. Splits the description into parts
+	 * (substrings) and inserts these parts into the database table. Does not update
+	 * the description itself since that was already done by the user.
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description.
 	 * @return list of identified knowledge elements.
 	 */
-	public List<PartOfJiraIssueText> updateDescription(Issue jiraIssue) {
+	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
@@ -645,7 +637,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		for (int i = 0; i < numberOfNewPartsInDescription; i++) {
 			PartOfJiraIssueText sentence = partsOfDescription.get(i);
-			sentence.setJiraIssue(jiraIssue.getId());
+			sentence.setJiraIssue(jiraIssue);
 			if (i < numberOfElementsInDatabase) {
 				// Update existing AO entry
 				sentence.setId(elementsInDatabase.get(i).getId());
@@ -706,45 +698,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *         that is documented in the description or the comments of a certain
 	 *         Jira issue.
 	 */
-	public static KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
-		PartOfJiraIssueText youngestElement = null;
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", jiraIssueId).order("ID DESC"));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			if (databaseEntry.getType().equalsIgnoreCase(knowledgeType.toString())) {
-				youngestElement = new PartOfJiraIssueText(databaseEntry);
-				break;
-			}
-		}
+	public KnowledgeElement getYoungestElementForJiraIssue(long jiraIssueId, KnowledgeType knowledgeType) {
+		List<KnowledgeElement> elementsOfType = getElementsWithTypeInJiraIssue(jiraIssueId, knowledgeType);
+		KnowledgeElement youngestElement = elementsOfType.stream()
+				.min(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(null);
 		return youngestElement;
 	}
-
-	/**
-	 * Splits a Jira issue description into parts (substrings) and inserts these
-	 * parts into the database table.
-	 *
-	 * @param issue
-	 *            Jira issue.
-	 * @return list of sentences with ids in database.
-	 * @see PartOfJiraIssueText
-	 */
-	public static List<PartOfJiraIssueText> insertPartsOfDescription(MutableIssue issue) {
-		String projectKey = issue.getProjectObject().getKey();
-		// Convert description String to a list of PartOfJiraIssueText
-		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
-				.getPartsOfText(issue.getDescription());
-		partsOfDescription.forEach(part -> part.setCommentId(0));
-
-		// Create entries in the active objects (AO) database
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = new ArrayList<>();
-		for (PartOfJiraIssueText partOfDescription : partsOfDescription) {
-			partsOfDescriptionWithIdInDatabase.add((PartOfJiraIssueText) persistenceManager
-					.insertKnowledgeElement(partOfDescription, issue.getReporter()));
-		}
-		return partsOfDescriptionWithIdInDatabase;
-	}
-
 }

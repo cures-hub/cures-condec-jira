@@ -55,7 +55,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element);
@@ -76,7 +76,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element, LinkType.getDefaultLinkType());
@@ -95,7 +95,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(sentence, element);
 		GenericLinkManager.insertLink(link, null);
@@ -111,7 +111,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		Link link = new Link(element, sentence);
 
@@ -127,7 +127,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText s = sentences.get(0);
 		PartOfJiraIssueText s1 = sentences.get(1);
 		Link link = new Link(s1, s);
@@ -177,7 +177,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Link link = new Link(sentence, element);
@@ -199,7 +199,7 @@ public class TestGenericLink extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateComment(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		// JiraIssueComment comment = new JiraIssueCommentImpl();
 		PartOfJiraIssueText sentence = sentences.get(0);
 		KnowledgeElement element = new KnowledgeElement(issue);

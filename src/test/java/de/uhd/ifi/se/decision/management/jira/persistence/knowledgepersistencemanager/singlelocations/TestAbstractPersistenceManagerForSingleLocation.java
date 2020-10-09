@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager.singlelocations;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -9,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -35,5 +37,11 @@ public class TestAbstractPersistenceManagerForSingleLocation extends TestSetUp {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(KnowledgePersistenceManager
 				.getManagerForSingleLocation(element) instanceof JiraIssueTextPersistenceManager);
+	}
+
+	@Test
+	public void testGetDocumentationLocation() {
+		AbstractPersistenceManagerForSingleLocation persistenceManager = new JiraIssueTextPersistenceManager("TEST");
+		assertEquals(DocumentationLocation.JIRAISSUETEXT, persistenceManager.getDocumentationLocation());
 	}
 }

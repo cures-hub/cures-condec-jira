@@ -169,10 +169,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private boolean replaceVertex(KnowledgeElement vertex, KnowledgeElement replace) {
 		Set<Link> newLinks = new HashSet<Link>();
 		for (Link edge : outgoingEdgesOf(vertex)) {
-			newLinks.add(new Link(replace, edge.getTarget()));
+			newLinks.add(new Link(replace, edge.getTarget(), edge.getType()));
 		}
 		for (Link edge : incomingEdgesOf(vertex)) {
-			newLinks.add(new Link(edge.getSource(), replace));
+			newLinks.add(new Link(edge.getSource(), replace, edge.getType()));
 		}
 		removeVertex(vertex);
 		for (Link link : newLinks) {

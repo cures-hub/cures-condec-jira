@@ -27,7 +27,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	private int endPosition;
 	private boolean isRelevant;
 	private boolean isValidated;
-	private boolean isPlainText;
 	private Issue jiraIssue;
 	private long commentId;
 
@@ -49,26 +48,8 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setJiraIssue(databaseEntry.getJiraIssueId());
 		this.setType(databaseEntry.getType());
 		this.setStatus(databaseEntry.getStatus());
-
-		String text = "";
-		Comment comment = getComment();
-		if (comment == null) {
-			text = getJiraIssueDescription();
-		} else {
-			text = comment.getBody();
-		}
-		try {
-			if (endPosition < text.length()) {
-				text = text.substring(startPosition, endPosition);
-			} else if (endPosition == text.length()) {
-				text = text.substring(startPosition);
-			}
-		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			LOGGER.error("Constructor faild to create object of PartOfJiraIssueText. Message: " + e.getMessage());
-		}
-		text = new JiraIssueTextParser(databaseEntry.getProjectKey()).stripTagsFromBody(text);
+		String text = getText();
 		this.setDescription(text);
-		this.setPlainText(!containsExcludedTag(text));
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -146,12 +127,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Set the start position (number of characters) of the decision knowledge
-	 * element or the irrelevant text within the entire text.
-	 * 
 	 * @param startPosition
 	 *            number of characters after that the decision knowledge element or
-	 *            the irrelevant text starts.
+	 *            the irrelevant text starts within the entire text.
 	 */
 	public void setStartPosition(int startPosition) {
 		this.startPosition = startPosition;
@@ -166,12 +144,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Set the end position (number of characters) of the decision knowledge element
-	 * or the irrelevant text within the entire text.
-	 * 
 	 * @param endPosition
 	 *            number of characters after that the decision knowledge element or
-	 *            the irrelevant text ends.
+	 *            the irrelevant text ends within the entire text.
 	 */
 	public void setEndPosition(int endPosition) {
 		this.endPosition = endPosition;
@@ -192,30 +167,42 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         is plain, e.g., does not contain any code or logger ouput.
 	 */
 	public boolean isPlainText() {
-		return isPlainText;
+		return !containsExcludedTag(getTextWithTags());
 	}
 
 	/**
-	 * Sets whether the text of the decision knowledge element or irrelevant text is
-	 * plain, e.g., does not contain any code or logger ouput.
-	 * 
-	 * @param isPlainText
-	 *            true if the text of the decision knowledge element or irrelevant
-	 *            text is plain, e.g., does not contain any code or logger ouput.
+	 * @return sentence with macro tags, e.g. {issue} How to... {issue} for a
+	 *         decision knowledge element or {code:java} public static ... {code}
+	 *         for irrelevant text.
 	 */
-	public void setPlainText(boolean isPlainText) {
-		this.isPlainText = isPlainText;
+	public String getTextWithTags() {
+		String textWithTags = getTextOfEntireDescriptionOrComment();
+		if (startPosition > textWithTags.length()) {
+			return "";
+		}
+		if (endPosition < textWithTags.length()) {
+			return textWithTags.substring(startPosition, endPosition);
+		} else {
+			return textWithTags.substring(startPosition);
+		}
 	}
 
 	/**
-	 * Sets the id of the Jira issue that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
 	 * @param jiraIssueId
-	 *            of the Jira issue.
+	 *            of the Jira issue that the decision knowledge element or
+	 *            irrelevant text is part of.
 	 */
 	public void setJiraIssue(long jiraIssueId) {
-		this.jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+		setJiraIssue(ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId));
+	}
+
+	/**
+	 * @param jiraIssue
+	 *            Jira issue that the decision knowledge element or irrelevant text
+	 *            is part of.
+	 */
+	public void setJiraIssue(Issue jiraIssue) {
+		this.jiraIssue = jiraIssue;
 	}
 
 	/**
@@ -229,11 +216,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 
 	@Override
 	public String getKey() {
-		Issue issue = getJiraIssue();
-		if (issue != null) {
-			return issue.getKey() + ":" + getId();
+		Issue jiraIssue = getJiraIssue();
+		if (jiraIssue != null) {
+			return jiraIssue.getKey() + ":" + getId();
 		}
-		return super.getKey();
+		return "";
 	}
 
 	@Override
@@ -280,9 +267,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			return null;
 		}
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		if (commentManager == null) {
-			return null;
-		}
 		return commentManager.getMutableComment(commentId);
 	}
 
@@ -290,12 +274,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return part of the text.
 	 */
 	public String getText() {
-		Comment comment = getComment();
-		if (comment == null) {
-			return super.getSummary();
-		}
-		String body = comment.getBody().substring(this.getStartPosition(), this.getEndPosition());
-		return body.replaceAll("\\{.*?\\}", "");
+		return getTextWithTags().replaceAll("\\{.*?\\}", "");
 	}
 
 	@Override
@@ -320,11 +299,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * Sets the id of the Jira issue comment that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
 	 * @param id
-	 *            of the Jira issue comment.
+	 *            of the Jira issue comment that the decision knowledge element or
+	 *            irrelevant text is part of.
 	 */
 	public void setCommentId(long id) {
 		this.commentId = id;
@@ -338,9 +315,21 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public void setComment(Comment comment) {
 		if (comment != null) {
 			setCommentId(comment.getId());
-			setJiraIssue(comment.getIssue().getId());
+			setJiraIssue(comment.getIssue());
 			setCreationDate(comment.getCreated());
 		}
+	}
+
+	/**
+	 * @return text of either the entire description or the entire comment that the
+	 *         decision knowledge element or the irrelevant sentence is part of.
+	 */
+	public String getTextOfEntireDescriptionOrComment() {
+		Comment comment = getComment();
+		if (comment != null) {
+			return comment.getBody();
+		}
+		return getJiraIssueDescription();
 	}
 
 	/**
@@ -350,7 +339,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	public String getJiraIssueDescription() {
 		Issue issue = getJiraIssue();
 		if (issue == null) {
-			return super.getSummary();
+			return "";
 		}
 		return issue.getDescription();
 	}
@@ -373,7 +362,10 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         description is valid.
 	 */
 	public boolean isValid() {
-		if (getEndPosition() == 0 && getStartPosition() == 0) {
+		if (getEndPosition() == 0 || getLength() == 0) {
+			return false;
+		}
+		if (getJiraIssue() == null) {
 			return false;
 		}
 		if (getCommentId() <= 0) {

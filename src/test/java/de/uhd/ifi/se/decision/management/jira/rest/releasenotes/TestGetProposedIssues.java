@@ -88,7 +88,7 @@ public class TestGetProposedIssues extends TestSetUp {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();
-		persistenceManager.updateComment(comment);
+		persistenceManager.updateElementsOfCommentInDatabase(comment);
 	}
 
 	@Test
