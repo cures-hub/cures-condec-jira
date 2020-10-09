@@ -169,7 +169,6 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		persistenceManager.updateIssueStatus(existingElement, newElementWithId, user);
 		long linkId = persistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -219,10 +218,6 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
-		KnowledgeElement parentElement = persistenceManager
-				.getManagerForSingleLocation(documentationLocationOfParentElement)
-				.getKnowledgeElement(idOfParentElement);
-		persistenceManager.updateIssueStatus(parentElement, updatedElement, user);
 		return Response.status(Status.OK).build();
 	}
 
@@ -352,8 +347,6 @@ public class KnowledgeRest {
 		if (existingLink != null) {
 			persistenceManager.deleteLink(existingLink, user);
 		}
-
-		persistenceManager.updateIssueStatus(parentElement, childElement, user);
 
 		Link link;
 		if (linkTypeName == null || linkTypeName.equals("null")) {
