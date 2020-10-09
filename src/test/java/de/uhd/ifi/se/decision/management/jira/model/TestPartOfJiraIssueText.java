@@ -28,6 +28,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	private PartOfJiraIssueText code;
 
 	@Before
+	@NonTransactional
 	public void setUp() {
 		init();
 		List<PartOfJiraIssueText> partsOfText = JiraIssues
