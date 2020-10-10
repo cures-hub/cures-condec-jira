@@ -10,13 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod {
+public class ProjectCalculationMethodSubstring2 extends ProjectCalculationMethod {
 
-	public ProjectCalculationMethodSubstring() {
+	public ProjectCalculationMethodSubstring2() {
 
 	}
 
-	public ProjectCalculationMethodSubstring(String projectKey, String projectSourceName) {
+	public ProjectCalculationMethodSubstring2(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		try {
@@ -30,50 +30,6 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
 	}
 
-
-	@Override
-	public List<Recommendation> getResults(String inputs) {
-
-		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-
-		List<Recommendation> recommendations = new ArrayList<>();
-
-		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
-		if (knowledgeElements == null) return recommendations;
-
-		//filter all knowledge elements by the type "issue"
-		List<KnowledgeElement> issues = knowledgeElements
-			.stream()
-			.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-			.collect(Collectors.toList());
-
-		for (String keyword : keywords) {
-			//get all alternatives, which parent contains the pattern"
-			issues.forEach(issue -> {
-				if (issue.getSummary().contains(keyword)) {
-					issue.getLinks()
-						.stream()
-						.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
-							this.matchingIssueTypes(link.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION)) //TODO workaround, checks both directions since the link direction is sometimes wrong.
-						.forEach(child -> {
-
-							Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
-							recommendation.addArguments(this.getArguments(child.getSource()));
-							recommendation.addArguments(this.getArguments(child.getTarget()));
-
-							if (recommendation != null) {
-								int score = calculateScore(keywords, issue);
-								recommendation.setScore(score);
-								recommendations.add(recommendation);
-							}
-
-						});
-				}
-			});
-		}
-
-		return recommendations.stream().distinct().collect(Collectors.toList());
-	}
 
 	@Override
 	public List<Recommendation> getResults(KnowledgeElement knowledgeElement2) {
@@ -103,7 +59,7 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 							this.matchingIssueTypes(link.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION)) //TODO workaround, checks both directions since the link direction is sometimes wrong.
 						.forEach(child -> {
 
-							//	Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+						//	Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
 							Recommendation recommendation = new Recommendation("TEST", knowledgeElement2.getSummary(), knowledgeElement2.getUrl());
 							recommendation.addArguments(this.getArguments(child.getSource()));
 							recommendation.addArguments(this.getArguments(child.getTarget()));

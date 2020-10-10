@@ -456,7 +456,7 @@ public class ConfigPersistenceManager {
 
 		for (int i = 0; i < knowledgeSources.size(); i++) {
 			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
-			knowledgeSource.setKnowledgeSourceAlgorithmType(getKnowledgeSourceAlgorithmType(projectKey));
+			knowledgeSource.setCalculationMethodTypeType(getCalculationMethod(projectKey));
 			knowledgeSources.set(i, knowledgeSource);
 		}
 
@@ -464,11 +464,11 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static void setKnowledgeSourceAlgorithmType(String projectKey, String knowledgeSourceAlgorithmType) {
+	public static void setCalculationMethod(String projectKey, String knowledgeSourceAlgorithmType) {
 		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
 	}
 
-	public static CalculationMethodType getKnowledgeSourceAlgorithmType(String projectKey) {
+	public static CalculationMethodType getCalculationMethod(String projectKey) {
 		CalculationMethodType calculationMethodType;
 		try {
 			calculationMethodType = CalculationMethodType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));

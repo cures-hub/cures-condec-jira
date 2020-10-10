@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public abstract class BaseRecommender {
 
-	List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+	List<KnowledgeSource> knowledgeSources;
 
 	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);

@@ -518,19 +518,19 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetKnowledgeSourceAlgorithmTypeDefault() {
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
 	}
 
 	@Test
 	public void testSetAndGetKnowledgeSourceAlgorithmTypeInvalidType() {
-		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", "INVALIDTYPE");
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+		ConfigPersistenceManager.setCalculationMethod("TEST", "INVALIDTYPE");
+		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
 	}
 
 	@Test
 	public void testSetAndGetKnowledgeSourceAlgorithmType() {
-		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType("TEST", CalculationMethodType.SUBSTRING.toString());
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getKnowledgeSourceAlgorithmType("TEST"));
+		ConfigPersistenceManager.setCalculationMethod("TEST", CalculationMethodType.SUBSTRING.toString());
+		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
 	}
 
 	@Test

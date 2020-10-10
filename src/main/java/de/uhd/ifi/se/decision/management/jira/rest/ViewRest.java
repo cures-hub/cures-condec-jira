@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.IssueBasedRecommender;
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.SimpleRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.KeywordBasedRecommender;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -369,18 +370,20 @@ public class ViewRest {
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("MYP-1");
+		KnowledgeElement knowledgeElement = new KnowledgeElement(issue);
 
-		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword, allKnowledgeSources);
+		BaseRecommender keywordBasedRecommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
 
 		// TODO move the text
-		if (checkIfKnowledgeSourceNotConfigured(simpleRecommender)) {
+		if (checkIfKnowledgeSourceNotConfigured(keywordBasedRecommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
 							+ projectKey + "&category=decisionGuidance'>Configure</a>"))
 					.build();
 		}
 
-		List<Recommendation> recommendationList = simpleRecommender.getRecommendation();
+		List<Recommendation> recommendationList = keywordBasedRecommender.getRecommendation();
 		return Response.ok(recommendationList).build();
 	}
 
@@ -405,8 +408,8 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		SimpleRecommender simpleRecommender = new SimpleRecommender(keyword);
-		List<Recommendation> recommendationList = simpleRecommender
+		KeywordBasedRecommender keywordBasedRecommender = new KeywordBasedRecommender(keyword);
+		List<Recommendation> recommendationList = keywordBasedRecommender
 				.addKnowledgeSourceForEvaluation(allKnowledgeSources, knowledgeSourceName).evaluate();
 
 		return Response.ok(recommendationList).build();

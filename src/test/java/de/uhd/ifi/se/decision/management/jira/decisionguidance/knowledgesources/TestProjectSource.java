@@ -35,7 +35,7 @@ public class TestProjectSource extends TestSetUp {
 	public void testDefaultAlgorithm() { //default is SUBSTRING
 		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey());
 		projectSource.setName("ProjectSource");
-		projectSource.setKnowledgeSourceAlgorithmType(null);
+		projectSource.setCalculationMethodTypeType(null);
 		List<Recommendation> recommendations = projectSource.getResults("feature");
 
 		assertEquals(2, recommendations.size());
@@ -68,14 +68,13 @@ public class TestProjectSource extends TestSetUp {
 	@Test
 	public void testTokenizedAlgorithmInvalidProject() {
 		ProjectCalculationMethodTokenize algorithm = new ProjectCalculationMethodTokenize("INVALIDPROJECT", "ProjectSource");
-		List<Recommendation> recommendations = algorithm.getResults("How can we implement the feature?");
+		List<Recommendation> recommendations = algorithm.getResults("\"How can we implement the feature?\"");
 		assertEquals(0, recommendations.size());
 	}
 
 	@Test
 	public void testScore() {
 		ProjectCalculationMethodSubstring algorithm = new ProjectCalculationMethodSubstring("TEST", "Test Source");
-
 		assertEquals(2, algorithm.getResults("feature").size());
 		assertEquals(100, algorithm.getResults("feature").get(0).getScore());
 	}

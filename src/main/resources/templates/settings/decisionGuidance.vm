@@ -2,6 +2,44 @@
 
 <h2>Configure Knowledge Sources</h2>
 <div class="settings-divider">
+    <div class="settings-divider">
+        <fieldset class="group">
+            <legend><span>Input for recommendations
+        </span></legend>
+            <div class="radio">
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="keyowords-radio" value="KEYWORD"
+                />
+                <label for="keyowords-radio">Keyword-based</label>
+            </div>
+            <div class="radio">
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="issue-radio" value="ISSUE"
+                />
+                <label for="issue-radio">Issues-based</label>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="settings-divider">
+        <fieldset class="group">
+            <legend><span>Calculation Method
+        </span></legend>
+            <div class="radio">
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="substring" value="SUBSTRING"
+                />
+                <label for="substring">Substring</label>
+            </div>
+            <div class="radio">
+                <input class="radio" type="radio"
+                       name="radiobuttons" id="tokenized" value="TOKENIZED"
+                />
+                <label for="tokenized">Tokenization</label>
+            </div>
+        </fieldset>
+    </div>
+
     <div>
         <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
         ><span
@@ -37,9 +75,11 @@
                     <div style="padding: 5px; max-width:300px;text-align: left;">
                         <a id="query-help-trigger"><span
                             class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
-                        <div style="padding:6px; display:none; border: 1px solid #dfe1e6; line-height: 200%" id="query-help">
+                        <div style="padding:6px; display:none; border: 1px solid #dfe1e6; line-height: 200%"
+                             id="query-help">
                             "%variable%" is a placeholder for your search in the jira issue view.
-                            The variable will be replaced by a resource. Also provide the sparql-variables ?alternative and ?url. <br>
+                            The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
+                            and ?url. <br>
                             E.g.
                             &lt;http://dbpedia.org/resources/%variable%> <br>
                             %variable% = MySQL <br>
@@ -190,26 +230,6 @@
         </table>
     </div>
 
-    <div class="settings-divider">
-        <fieldset class="group">
-            <legend><span>Algorithm
-        </span></legend>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="substring" value="SUBSTRING"
-                />
-                <label for="substring">Simple</label>
-            </div>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="tokenized" value="TOKENIZED"
-                />
-                <label for="tokenized">Advanced</label>
-            </div>
-        </fieldset>
-    </div>
-
-
     <div class="field-group">
         <label for="max-recommendation">Maximum number of results</label>
         <input class="text short-field"
@@ -237,13 +257,13 @@
 
     $(document).ready(function() {
 
-        if("$knowledgeSourceAlgorithm" == "SUBSTRING")
+        if("$calculationMethod" == "SUBSTRING")
             $("#substring").prop("checked", true);
         else
             $("#tokenized").prop("checked", true);
 
         $('input[type=radio][name=radiobuttons]').change(function() {
-            conDecAPI.setRecommendationAlgorithm("$projectKey", this.value);
+            conDecAPI.setCalculationMethod("$projectKey", this.value);
         });
 
 
@@ -376,6 +396,7 @@
 
 
     });
+
 
 
 

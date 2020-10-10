@@ -18,15 +18,17 @@ public abstract class ProjectCalculationMethod implements CalculationMethod {
 	protected String projectSourceName;
 	protected KnowledgePersistenceManager knowledgePersistenceManager;
 
-	public void setData(String projectKey, String knowledgeSourceName) {
-		this.projectKey = projectKey;
-		this.projectSourceName = knowledgeSourceName;
-		try {
-			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.projectKey);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
+
+	@Override
+	public List<Recommendation> getResults(String inputs) {
+		return new ArrayList<>();
 	}
+
+	@Override
+	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
+		return new ArrayList<>();
+	}
+
 
 	protected Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
 		for (KnowledgeType knowledgeType : knowledgeTypes) {

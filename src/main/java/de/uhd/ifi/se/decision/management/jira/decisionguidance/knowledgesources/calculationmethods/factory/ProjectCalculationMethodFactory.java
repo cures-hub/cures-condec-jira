@@ -5,28 +5,28 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethodSubstring;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethodTokenize;
 
-public class ProjectCaclulationMethodFactory extends CaclulationMethodFactory {
+public class ProjectCalculationMethodFactory extends CalculationMethodFactory {
 
 	private String projectKey;
 	private String knowledgeSourceName;
 
-	public ProjectCaclulationMethodFactory() {
+	public ProjectCalculationMethodFactory() {
 
 	}
 
-	public ProjectCaclulationMethodFactory(String projectKey, String knowledgeSourceName) {
+	public ProjectCalculationMethodFactory(String projectKey, String knowledgeSourceName) {
 		this.projectKey = projectKey;
 		this.knowledgeSourceName = knowledgeSourceName;
 	}
 
-	public CalculationMethod getAlgorithm(CalculationMethodType calculationMethodType) {
+	public CalculationMethod getCalculationMethod(CalculationMethodType calculationMethodType, String projectKey, String knowledgeSourceName) {
 		if (calculationMethodType == null)
-			return new ProjectCalculationMethodSubstring();
+			return new ProjectCalculationMethodSubstring(projectKey, knowledgeSourceName);
 		switch (calculationMethodType) {
 			case TOKENIZED:
-				return new ProjectCalculationMethodTokenize();
+				return new ProjectCalculationMethodTokenize(projectKey, knowledgeSourceName);
 			default:
-				return new ProjectCalculationMethodSubstring();
+				return new ProjectCalculationMethodSubstring(projectKey, knowledgeSourceName);
 		}
 	}
 }

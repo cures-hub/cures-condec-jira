@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethod;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
@@ -21,10 +22,4 @@ public class ProjectSource extends KnowledgeSource<ProjectCalculationMethod> {
 		this.isActivated = isActivated;
 	}
 
-	@Override
-	public List<Recommendation> getResults(String inputs) {
-		this.knowledgeSourceAlgorithm = this.getKnowledgeSourceAlgorithm();
-		this.knowledgeSourceAlgorithm.setData(this.projectKey, this.name);
-		return this.knowledgeSourceAlgorithm.getResults(inputs);
-	}
 }

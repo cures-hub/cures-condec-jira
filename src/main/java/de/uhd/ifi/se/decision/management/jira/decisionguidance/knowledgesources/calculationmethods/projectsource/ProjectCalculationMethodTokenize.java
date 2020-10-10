@@ -26,6 +26,7 @@ public class ProjectCalculationMethodTokenize extends ProjectCalculationMethod {
 		}
 	}
 
+
 	protected List<KnowledgeElement> queryDatabase() {
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
 	}

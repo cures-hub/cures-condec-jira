@@ -4,10 +4,10 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 
 public class CalculationMethodFactoryProvider {
 
-	public static CaclulationMethodFactory getFactory(KnowledgeSourceType knowledgeSourceType) {
+	public static CalculationMethodFactory getFactory(KnowledgeSourceType knowledgeSourceType) {
 		switch (knowledgeSourceType) {
 			default:
-				return new ProjectCaclulationMethodFactory();
+				return new ProjectCalculationMethodFactory();
 		}
 	}
 }
