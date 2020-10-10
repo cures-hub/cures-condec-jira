@@ -1,16 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactoryProvider;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CaclulationMethodFactory;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactoryProvider;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
+public abstract class KnowledgeSource<T extends CalculationMethod> {
 
-	protected KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
+	protected CalculationMethodType calculationMethodType;
 	protected T knowledgeSourceAlgorithm;
 	protected KnowledgeSourceType knowledgeSourceType;
 
@@ -39,12 +39,12 @@ public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
 	}
 
 	public T getKnowledgeSourceAlgorithm() {
-		KnowledgeSourceAlgorithmFactory<T> knowledgeSourceAlgorithmFactory = KnowledgeSourceAlgorithmFactoryProvider.getFactory(this.knowledgeSourceType);
-		this.knowledgeSourceAlgorithm = knowledgeSourceAlgorithmFactory.getAlgorithm(this.knowledgeSourceAlgorithmType);
+		CaclulationMethodFactory<T> caclulationMethodFactory = CalculationMethodFactoryProvider.getFactory(this.knowledgeSourceType);
+		this.knowledgeSourceAlgorithm = caclulationMethodFactory.getAlgorithm(this.calculationMethodType);
 		return this.knowledgeSourceAlgorithm;
 	}
 
-	public void setKnowledgeSourceAlgorithmType(KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType) {
-		this.knowledgeSourceAlgorithmType = knowledgeSourceAlgorithmType;
+	public void setKnowledgeSourceAlgorithmType(CalculationMethodType calculationMethodType) {
+		this.calculationMethodType = calculationMethodType;
 	}
 }

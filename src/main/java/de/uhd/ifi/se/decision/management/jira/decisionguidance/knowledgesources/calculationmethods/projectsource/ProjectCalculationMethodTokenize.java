@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgorithm {
+public class ProjectCalculationMethodTokenize extends ProjectCalculationMethod {
 
-	public ProjectSourceTokenizedAlgorithm() {
+	public ProjectCalculationMethodTokenize() {
 
 	}
 
-	public ProjectSourceTokenizedAlgorithm(String projectKey, String projectSourceName) {
+	public ProjectCalculationMethodTokenize(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		try {

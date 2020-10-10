@@ -1,16 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource.ProjectKnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethod;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public class ProjectSource extends KnowledgeSource<ProjectKnowledgeSourceAlgorithm> {
+public class ProjectSource extends KnowledgeSource<ProjectCalculationMethod> {
 
 	public ProjectSource(String projectKey) {
 		this.projectKey = projectKey;
-		this.knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+		this.calculationMethodType = CalculationMethodType.SUBSTRING;
 		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
 		this.isActivated = false;
 	}

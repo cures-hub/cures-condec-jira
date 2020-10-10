@@ -1,6 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ProjectKnowledgeSourceAlgorithm implements KnowledgeSourceAlgorithm {
+public abstract class ProjectCalculationMethod implements CalculationMethod {
 
 
 	protected String projectKey;

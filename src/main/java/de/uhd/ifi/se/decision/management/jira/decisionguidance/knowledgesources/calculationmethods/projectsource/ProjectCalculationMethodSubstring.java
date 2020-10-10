@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.projectsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgorithm {
+public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod {
 
 
-	public ProjectSourceSubstringAlgorithm() {
+	public ProjectCalculationMethodSubstring() {
 
 	}
 
-	public ProjectSourceSubstringAlgorithm(String projectKey, String projectSourceName) {
+	public ProjectCalculationMethodSubstring(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		try {
