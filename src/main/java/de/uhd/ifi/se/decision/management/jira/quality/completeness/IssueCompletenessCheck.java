@@ -18,7 +18,7 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return issue.hasNeighborOfType(KnowledgeType.DECISION);
+		return isDecisionProblemResolved(issue);
 	}
 
 	@Override
@@ -29,5 +29,9 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 		}
 		return true;
+	}
+
+	public static boolean isDecisionProblemResolved(KnowledgeElement issue) {
+		return issue.hasNeighborOfType(KnowledgeType.DECISION);
 	}
 }

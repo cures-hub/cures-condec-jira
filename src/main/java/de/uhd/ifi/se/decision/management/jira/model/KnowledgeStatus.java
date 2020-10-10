@@ -123,11 +123,6 @@ public enum KnowledgeStatus {
 		return formerType;
 	}
 
-	public static boolean isIssueResolved(KnowledgeElement parentElement, KnowledgeElement childElement) {
-		return parentElement.getType() == KnowledgeType.ISSUE && childElement.getType() == KnowledgeType.DECISION
-				&& childElement.getStatus() == KnowledgeStatus.DECIDED;
-	}
-
 	/**
 	 * @return list of all valid knowledge status.
 	 */

@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.IssueCompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -222,8 +223,6 @@ public class KnowledgePersistenceManager {
 			return 0;
 		}
 
-		updateIssueStatus(link.getTarget(), link.getSource(), user);
-
 		long databaseId;
 
 		if (link.isIssueLink()) {
@@ -244,15 +243,22 @@ public class KnowledgePersistenceManager {
 			link.setId(databaseId);
 			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 		}
+		updateIssueStatus(link, user);
 		return databaseId;
 	}
 
-	public boolean updateIssueStatus(KnowledgeElement parentElement, KnowledgeElement childElement,
-			ApplicationUser user) {
-		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
-			parentElement.setStatus(KnowledgeStatus.RESOLVED);
-			updateKnowledgeElement(parentElement, user);
-			return true;
+	public boolean updateIssueStatus(Link link, ApplicationUser user) {
+		return updateIssueStatus(link.getSource(), user) || updateIssueStatus(link.getTarget(), user);
+	}
+
+	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
+		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
+			if (IssueCompletenessCheck.isDecisionProblemResolved(element)) {
+				element.setStatus(KnowledgeStatus.RESOLVED);
+			} else {
+				element.setStatus(KnowledgeStatus.UNRESOLVED);
+			}
+			return updateKnowledgeElement(element, user);
 		}
 		return false;
 	}
@@ -312,7 +318,7 @@ public class KnowledgePersistenceManager {
 			KnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElement(sourceElement, "changed");
 		}
-
+		updateIssueStatus(link, user);
 		return isDeleted;
 	}
 
