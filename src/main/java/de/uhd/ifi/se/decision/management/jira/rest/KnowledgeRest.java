@@ -169,7 +169,6 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		persistenceManager.updateIssueStatus(existingElement, newElementWithId, user);
 		long linkId = persistenceManager.insertLink(link, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -219,10 +218,6 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
-		KnowledgeElement parentElement = persistenceManager
-				.getManagerForSingleLocation(documentationLocationOfParentElement)
-				.getKnowledgeElement(idOfParentElement);
-		persistenceManager.updateIssueStatus(parentElement, updatedElement, user);
 		return Response.status(Status.OK).build();
 	}
 
@@ -353,8 +348,6 @@ public class KnowledgeRest {
 			persistenceManager.deleteLink(existingLink, user);
 		}
 
-		persistenceManager.updateIssueStatus(parentElement, childElement, user);
-
 		Link link;
 		if (linkTypeName == null || linkTypeName.equals("null")) {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
@@ -475,6 +468,7 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 
+	// TODO Change to POST and pass FilterSettings object
 	@Path("/getSummarizedCode")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -486,19 +480,16 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue jiraIssue = issueManager.getIssueObject(id);
-
-		if (jiraIssue == null) {
-			jiraIssue = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager().getJiraIssue(id);
-		}
-
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error",
 							"Getting summarized code failed since git extraction is disabled for this project."))
 					.build();
 		}
+
+		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+				documentationLocation);
+		Issue jiraIssue = element.getJiraIssue();
 
 		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
 		if (summary == null || summary.isEmpty()) {
@@ -528,9 +519,9 @@ public class KnowledgeRest {
 				.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
-		persistenceManager.updateDescription(jiraIssue);
+		persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		comments.forEach(comment -> persistenceManager.updateComment(comment));
+		comments.forEach(comment -> persistenceManager.updateElementsOfCommentInDatabase(comment));
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.status(Status.OK).entity(elements.size()).build();

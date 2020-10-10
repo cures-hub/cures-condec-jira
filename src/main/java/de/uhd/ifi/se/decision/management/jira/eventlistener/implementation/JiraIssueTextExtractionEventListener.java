@@ -129,7 +129,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			persistenceManager.updateComment(comment);
+			persistenceManager.updateElementsOfCommentInDatabase(comment);
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
@@ -152,7 +152,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			// TODO This seems not to work for manual classified sentences. Check and fix
 			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
 		} else {
-			persistenceManager.updateDescription(issueEvent.getIssue());
+			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}

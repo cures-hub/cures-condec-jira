@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.atlassian.jira.issue.Issue;
@@ -60,10 +61,7 @@ public class AutomaticLinkCreator {
 		if (potentialParentElements.isEmpty()) {
 			return new KnowledgeElement(element.getJiraIssue());
 		}
-		if (potentialParentElements.size() == 2) {
-			return getRecentlyUpdatedElement(potentialParentElements.get(0), potentialParentElements.get(1));
-		}
-		return potentialParentElements.get(0);
+		return getRecentlyUpdatedElement(potentialParentElements);
 	}
 
 	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
@@ -73,8 +71,10 @@ public class AutomaticLinkCreator {
 		}
 		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject()).getJiraIssueTextManager();
 		for (KnowledgeType parentType : parentTypes) {
-			KnowledgeElement potentialParentElement = JiraIssueTextPersistenceManager
+			KnowledgeElement potentialParentElement = persistenceManager
 					.getYoungestElementForJiraIssue(jiraIssue.getId(), parentType);
 			if (potentialParentElement != null) {
 				potentialParentElements.add(potentialParentElement);
@@ -83,16 +83,11 @@ public class AutomaticLinkCreator {
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getRecentlyUpdatedElement(KnowledgeElement first, KnowledgeElement second) {
-		if (first == null) {
-			return second;
+	public static KnowledgeElement getRecentlyUpdatedElement(List<KnowledgeElement> elements) {
+		if (elements.stream()
+				.allMatch(element -> element.getUpdatingDate().equals(elements.get(0).getUpdatingDate()))) {
+			return elements.stream().max(Comparator.comparing(KnowledgeElement::getId)).orElse(elements.get(0));
 		}
-		if (second == null) {
-			return first;
-		}
-		if (first.getUpdatingDate().compareTo(second.getUpdatingDate()) > 0) {
-			return first;
-		}
-		return second;
+		return elements.stream().max(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(elements.get(0));
 	}
 }

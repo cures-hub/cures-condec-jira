@@ -222,6 +222,8 @@ public class KnowledgePersistenceManager {
 			return 0;
 		}
 
+		updateIssueStatus(link.getTarget(), link.getSource(), user);
+
 		long databaseId;
 
 		if (link.isIssueLink()) {
@@ -350,14 +352,14 @@ public class KnowledgePersistenceManager {
 		parentElement.setProject(projectKey);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!this.deleteLink(formerLink, user)) {
+		if (!deleteLink(formerLink, user)) {
 			return 0;
 		}
 		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 
-		return this.insertLink(link, user);
+		return insertLink(link, user);
 	}
 
 	/**

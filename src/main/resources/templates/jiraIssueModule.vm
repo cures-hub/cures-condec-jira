@@ -80,9 +80,12 @@ $(document).ready(function () {
 	resetDecisionKnowledgeFromTextMenuItem.addEventListener("click", function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function() {
-			conDecObservable.notify();
-		});
+		if (confirm("Are you sure you want to reset the decision knowledge elements extracted from the description and comments of this Jira issue? " 
+			+ "This will reset all links in the knowledge graph of these elements.")) {
+				conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function() {
+					conDecObservable.notify();
+				});
+			}
 	});
 });
 </script>

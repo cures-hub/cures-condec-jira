@@ -42,7 +42,7 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(issue.getProjectObject().getKey()).getJiraIssueTextManager();
-		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager.updateDescription(issue);
+		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager.updateElementsOfDescriptionInDatabase(issue);
 		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
 		classifySentencesFineGrained(partsOfDescriptionWithIdInDatabase);
 	}
@@ -56,7 +56,7 @@ public class ClassificationManagerForJiraIssueComments {
 		for (Comment comment : comments) {
 			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 					.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
-			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateComment(comment);
+			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);

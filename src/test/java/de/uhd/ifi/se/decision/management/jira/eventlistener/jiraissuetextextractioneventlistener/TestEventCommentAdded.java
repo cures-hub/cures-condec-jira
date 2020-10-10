@@ -14,6 +14,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -52,17 +53,19 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@NonTransactional
 	public void testExcludedTag() {
 		Comment comment = createCommentAndTestWhetherExistent("{code:java}public static class{code}");
-		KnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("{code:java}public static class{code}", element.getDescription());
+		PartOfJiraIssueText element = getFirstElementInComment(comment);
+		assertEquals("{code:java}public static class{code}", element.getTextWithTags());
+		assertEquals("public static class", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
 
 	@Test
 	@NonTransactional
 	public void testAnotherExcludedTag() {
-		Comment comment = createCommentAndTestWhetherExistent("{color}public static class{color}");
-		KnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("{color}public static class{color}", element.getDescription());
+		Comment comment = createCommentAndTestWhetherExistent("{color}green{color}");
+		PartOfJiraIssueText element = getFirstElementInComment(comment);
+		assertEquals("{color}green{color}", element.getTextWithTags());
+		assertEquals("green", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
 

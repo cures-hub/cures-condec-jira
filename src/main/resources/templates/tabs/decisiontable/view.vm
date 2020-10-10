@@ -13,7 +13,7 @@
             </div>
             <div>
                 <label for="decision-problem-dropdown">Issues: </label>
-                <select class="select medium-long-field" id="decision-problem-dropdown"></select>         
+                <select class="select long-field" id="decision-problem-dropdown"></select>         
             </div>   
         </form>
 	</div>

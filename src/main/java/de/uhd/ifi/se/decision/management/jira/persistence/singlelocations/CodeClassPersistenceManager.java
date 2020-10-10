@@ -104,7 +104,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (element == null || element.getId() <= 0) {
 			return null;
 		}
-		return this.getKnowledgeElement(element.getId());
+		return getKnowledgeElement(element.getId());
 	}
 
 	public KnowledgeElement getKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
