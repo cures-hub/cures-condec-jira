@@ -33,7 +33,6 @@ public class TestUpdateLink extends TestSetUp {
 	@NonTransactional
 	public void testChangeTypeFromWorkItemToConArgument() {
 		assertEquals(1, knowledgePersistenceManager.insertLink(link, user));
-		knowledgePersistenceManager.updateLink(link.getTarget(), KnowledgeType.CON, link.getSource().getId(),
-				link.getSource().getDocumentationLocationAsString(), user);
+		knowledgePersistenceManager.updateLink(link.getTarget(), KnowledgeType.CON, link.getSource(), user);
 	}
 }

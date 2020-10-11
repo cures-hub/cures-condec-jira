@@ -212,8 +212,9 @@ public class KnowledgeRest {
 		}
 		KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
-		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
-				documentationLocationOfParentElement, user);
+		KnowledgeElement parentElement = persistenceManager.getKnowledgeElement(idOfParentElement,
+				documentationLocationOfParentElement);
+		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), parentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
@@ -340,7 +341,8 @@ public class KnowledgeRest {
 		KnowledgeElement childElement = persistenceManager.getKnowledgeElement(idOfChild, documentationLocationOfChild);
 
 		if (parentElement == null || childElement == null) {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
+					"Link could not be created since the elements to be linked could not be found.")).build();
 		}
 
 		Link existingLink = parentElement.getLink(childElement);
