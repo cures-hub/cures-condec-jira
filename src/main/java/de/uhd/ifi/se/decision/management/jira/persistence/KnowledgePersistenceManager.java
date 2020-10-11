@@ -307,6 +307,7 @@ public class KnowledgePersistenceManager {
 			if (!isDeleted) {
 				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
 			}
+			updateIssueStatus(link, user);
 			return isDeleted;
 		}
 		isDeleted = GenericLinkManager.deleteLink(link);
@@ -346,16 +347,14 @@ public class KnowledgePersistenceManager {
 			String documentationLocationOfParentElement, ApplicationUser user) {
 
 		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+			// TODO Update issue status
 			return -1;
 		}
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
 
-		KnowledgeElement parentElement = new KnowledgeElement();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-		parentElement.setProject(projectKey);
+		KnowledgeElement parentElement = getKnowledgeElement(idOfParentElement, documentationLocationOfParentElement);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
 		if (!deleteLink(formerLink, user)) {

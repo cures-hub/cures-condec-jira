@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -31,7 +32,13 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 		return true;
 	}
 
+	/**
+	 * @param issue
+	 *            decision problem as a {@link KnowledgeElement} object.
+	 * @return true if a valid decision is linked to the issue.
+	 */
 	public static boolean isDecisionProblemResolved(KnowledgeElement issue) {
-		return issue.hasNeighborOfType(KnowledgeType.DECISION);
+		KnowledgeElement linkedDecision = issue.getNeighborOfType(KnowledgeType.DECISION);
+		return linkedDecision != null && linkedDecision.getStatus() == KnowledgeStatus.DECIDED;
 	}
 }

@@ -504,13 +504,24 @@ public class KnowledgeElement {
 	 *         of the given {@link KnowledgeType}.
 	 */
 	public boolean hasNeighborOfType(KnowledgeType knowledgeType) {
+		return getNeighborOfType(knowledgeType) != null;
+	}
+
+	/**
+	 * @param knowledgeType
+	 *            the {@link KnowledgeType} of the element.
+	 * @return another knowledge element that linked to this knowledge element of
+	 *         the given {@link KnowledgeType}. Null if there is no element of this
+	 *         type linked.
+	 */
+	public KnowledgeElement getNeighborOfType(KnowledgeType knowledgeType) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
 		for (KnowledgeElement knowledgeElement : neighbors) {
 			if (knowledgeElement.getType() == knowledgeType)
-				return true;
+				return knowledgeElement;
 		}
-		return false;
+		return null;
 	}
 
 	/**
