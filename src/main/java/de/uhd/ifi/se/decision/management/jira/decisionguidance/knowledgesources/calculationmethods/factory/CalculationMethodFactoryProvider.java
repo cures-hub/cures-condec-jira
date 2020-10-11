@@ -5,6 +5,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 public class CalculationMethodFactoryProvider {
 
 	public static CalculationMethodFactory getFactory(KnowledgeSourceType knowledgeSourceType) {
+		if (knowledgeSourceType == null) return null;
 		switch (knowledgeSourceType) {
 			default:
 				return new ProjectCalculationMethodFactory();

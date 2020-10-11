@@ -370,10 +370,10 @@ public class ViewRest {
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("MYP-1");
-		KnowledgeElement knowledgeElement = new KnowledgeElement(issue);
+		//Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("MYP-1");
+		//KnowledgeElement knowledgeElement = new KnowledgeElement(issue);
 
-		BaseRecommender keywordBasedRecommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
+		BaseRecommender keywordBasedRecommender = new KeywordBasedRecommender(keyword, allKnowledgeSources);
 
 		// TODO move the text
 		if (checkIfKnowledgeSourceNotConfigured(keywordBasedRecommender)) {

@@ -61,7 +61,7 @@ public class AutomaticLinkCreator {
 		if (potentialParentElements.isEmpty()) {
 			return new KnowledgeElement(element.getJiraIssue());
 		}
-		return getRecentlyUpdatedElement(potentialParentElements);
+		return getClosestParentElement(potentialParentElements, element);
 	}
 
 	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
@@ -74,20 +74,37 @@ public class AutomaticLinkCreator {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueTextManager();
 		for (KnowledgeType parentType : parentTypes) {
-			KnowledgeElement potentialParentElement = persistenceManager
-					.getYoungestElementForJiraIssue(jiraIssue.getId(), parentType);
-			if (potentialParentElement != null) {
-				potentialParentElements.add(potentialParentElement);
-			}
+			potentialParentElements
+					.addAll(persistenceManager.getElementsWithTypeInJiraIssue(jiraIssue.getId(), parentType));
 		}
 		return potentialParentElements;
 	}
 
-	public static KnowledgeElement getRecentlyUpdatedElement(List<KnowledgeElement> elements) {
-		if (elements.stream()
-				.allMatch(element -> element.getUpdatingDate().equals(elements.get(0).getUpdatingDate()))) {
-			return elements.stream().max(Comparator.comparing(KnowledgeElement::getId)).orElse(elements.get(0));
-		}
-		return elements.stream().max(Comparator.comparing(KnowledgeElement::getUpdatingDate)).orElse(elements.get(0));
+	/**
+	 * @issue How to identify the correct recently updated element for automatic
+	 *        link creation?
+	 * @decision Compare ids of the elements and return the element with smallest
+	 *           delta in ids.
+	 * @con Only works for knowledge elements with the same documentation location.
+	 * @alternative Compare dates of last update! Use element with highest id if all
+	 *              elements were updated on the same day!
+	 * @alternative Only compare update timestamps and return element with recent
+	 *              timestamp!
+	 * @con If a comment is changed, the entire Jira issues is marked as updated as
+	 *      well. Solution options (=alternatives and decisions) documented in the
+	 *      comment could be incorrectly linked to an issue in the description even
+	 *      if an issue in the comment exists.
+	 * 
+	 * @param potentialParents
+	 *            knowledge elements that might be the parent of the child element.
+	 * @param childElement
+	 *            unlinked element that should be linked.
+	 * @return parent element, e.g. closest alternative for an argument.
+	 */
+	public static KnowledgeElement getClosestParentElement(List<KnowledgeElement> potentialParents,
+			KnowledgeElement childElement) {
+		return potentialParents.stream()
+				.min(Comparator.comparing(potentialElement -> childElement.getId() - potentialElement.getId()))
+				.orElse(potentialParents.get(0));
 	}
 }

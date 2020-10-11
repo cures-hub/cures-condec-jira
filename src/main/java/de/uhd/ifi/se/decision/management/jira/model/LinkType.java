@@ -12,6 +12,9 @@ import java.util.Set;
  * 
  * The duplicate relationship was added to be able to model this type of
  * inconsistency.
+ * 
+ * Other Jira issue link types such as the "jira_subtask_link" type are not
+ * explicitly included in this enum (only as OTHER).
  */
 public enum LinkType {
 	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00994C"), // pro-arguments to solution options

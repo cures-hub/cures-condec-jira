@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.IssueCompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -222,8 +223,6 @@ public class KnowledgePersistenceManager {
 			return 0;
 		}
 
-		updateIssueStatus(link.getTarget(), link.getSource(), user);
-
 		long databaseId;
 
 		if (link.isIssueLink()) {
@@ -244,15 +243,41 @@ public class KnowledgePersistenceManager {
 			link.setId(databaseId);
 			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 		}
+		updateIssueStatus(link, user);
 		return databaseId;
 	}
 
-	public boolean updateIssueStatus(KnowledgeElement parentElement, KnowledgeElement childElement,
-			ApplicationUser user) {
-		if (KnowledgeStatus.isIssueResolved(parentElement, childElement)) {
-			parentElement.setStatus(KnowledgeStatus.RESOLVED);
-			updateKnowledgeElement(parentElement, user);
-			return true;
+	/**
+	 * If the source or target of the link is a decision problem (=issue), its
+	 * status is updated either to resolved or unresolved.
+	 * 
+	 * @param link
+	 *            link (=edge) between a source and a destination
+	 *            {@link KnowledgeElement} as a {@link Link} object.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the status of at least one side of the link was updated.
+	 */
+	public boolean updateIssueStatus(Link link, ApplicationUser user) {
+		return updateIssueStatus(link.getSource(), user) || updateIssueStatus(link.getTarget(), user);
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object. If it is a decision problem
+	 *            (=issue), its status is updated either to resolved or unresolved.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the status of the decision problem (=issue) was updated.
+	 */
+	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
+		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
+			if (IssueCompletenessCheck.isDecisionProblemResolved(element)) {
+				element.setStatus(KnowledgeStatus.RESOLVED);
+			} else {
+				element.setStatus(KnowledgeStatus.UNRESOLVED);
+			}
+			return updateKnowledgeElement(element, user);
 		}
 		return false;
 	}
@@ -301,6 +326,7 @@ public class KnowledgePersistenceManager {
 			if (!isDeleted) {
 				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
 			}
+			updateIssueStatus(link, user);
 			return isDeleted;
 		}
 		isDeleted = GenericLinkManager.deleteLink(link);
@@ -312,7 +338,7 @@ public class KnowledgePersistenceManager {
 			KnowledgeElement sourceElement = link.getSource();
 			new WebhookConnector(projectKey).sendElement(sourceElement, "changed");
 		}
-
+		updateIssueStatus(link, user);
 		return isDeleted;
 	}
 
@@ -324,10 +350,8 @@ public class KnowledgePersistenceManager {
 	 *            child element of the link with the new knowledge type.
 	 * @param formerKnowledgeType
 	 *            former knowledge type of the child element before it was updated.
-	 * @param idOfParentElement
-	 *            id of the parent element.
-	 * @param documentationLocationOfParentElement
-	 *            {@link DocumentationLocation} of the parent element.
+	 * @param parentElement
+	 *            parent element of the updated element.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of updated link, zero if updating failed.
@@ -336,20 +360,16 @@ public class KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 * @see Link
 	 */
-	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
-
-		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, KnowledgeElement parentElement,
+			ApplicationUser user) {
+		updateIssueStatus(element, user);
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || parentElement == null) {
 			return -1;
 		}
+		updateIssueStatus(parentElement, user);
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		KnowledgeElement parentElement = new KnowledgeElement();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-		parentElement.setProject(projectKey);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
 		if (!deleteLink(formerLink, user)) {

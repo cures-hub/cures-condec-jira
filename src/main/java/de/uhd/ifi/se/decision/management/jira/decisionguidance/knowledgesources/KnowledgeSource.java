@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class KnowledgeSource<T extends CalculationMethod> {
@@ -27,7 +28,8 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 
 	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
 		this.getCalculationMethod();
-		return this.calculationMethod.getResults(knowledgeElement);
+		if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
+		return new ArrayList<>();
 	}
 
 
@@ -49,7 +51,8 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 
 	public T getCalculationMethod() {
 		CalculationMethodFactory<T> calculationMethodFactory = CalculationMethodFactoryProvider.getFactory(this.knowledgeSourceType);
-		this.calculationMethod = calculationMethodFactory.getCalculationMethod(this.calculationMethodType, this.projectKey, this.name);
+		if (calculationMethodFactory != null)
+			this.calculationMethod = calculationMethodFactory.getCalculationMethod(this.calculationMethodType, this.projectKey, this.name);
 		return this.calculationMethod;
 	}
 
