@@ -212,8 +212,9 @@ public class KnowledgeRest {
 		}
 		KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
-		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), idOfParentElement,
-				documentationLocationOfParentElement, user);
+		KnowledgeElement parentElement = persistenceManager.getKnowledgeElement(idOfParentElement,
+				documentationLocationOfParentElement);
+		long linkId = persistenceManager.updateLink(updatedElement, formerElement.getType(), parentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();

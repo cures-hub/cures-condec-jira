@@ -247,10 +247,29 @@ public class KnowledgePersistenceManager {
 		return databaseId;
 	}
 
+	/**
+	 * If the source or target of the link is a decision problem (=issue), its
+	 * status is updated either to resolved or unresolved.
+	 * 
+	 * @param link
+	 *            link (=edge) between a source and a destination
+	 *            {@link KnowledgeElement} as a {@link Link} object.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the status of at least one side of the link was updated.
+	 */
 	public boolean updateIssueStatus(Link link, ApplicationUser user) {
 		return updateIssueStatus(link.getSource(), user) || updateIssueStatus(link.getTarget(), user);
 	}
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} object. If it is a decision problem
+	 *            (=issue), its status is updated either to resolved or unresolved.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the status of the decision problem (=issue) was updated.
+	 */
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
 		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
 			if (IssueCompletenessCheck.isDecisionProblemResolved(element)) {
@@ -331,10 +350,8 @@ public class KnowledgePersistenceManager {
 	 *            child element of the link with the new knowledge type.
 	 * @param formerKnowledgeType
 	 *            former knowledge type of the child element before it was updated.
-	 * @param idOfParentElement
-	 *            id of the parent element.
-	 * @param documentationLocationOfParentElement
-	 *            {@link DocumentationLocation} of the parent element.
+	 * @param parentElement
+	 *            parent element of the updated element.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of updated link, zero if updating failed.
@@ -343,18 +360,16 @@ public class KnowledgePersistenceManager {
 	 * @see DocumentationLocation
 	 * @see Link
 	 */
-	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
-
-		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
-			// TODO Update issue status
+	public long updateLink(KnowledgeElement element, KnowledgeType formerKnowledgeType, KnowledgeElement parentElement,
+			ApplicationUser user) {
+		updateIssueStatus(element, user);
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || parentElement == null) {
 			return -1;
 		}
+		updateIssueStatus(parentElement, user);
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		KnowledgeElement parentElement = getKnowledgeElement(idOfParentElement, documentationLocationOfParentElement);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
 		if (!deleteLink(formerLink, user)) {
