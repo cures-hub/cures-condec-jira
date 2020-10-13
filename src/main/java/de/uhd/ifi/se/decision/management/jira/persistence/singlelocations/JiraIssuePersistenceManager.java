@@ -319,6 +319,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
+		if (issueToBeUpdated == null) {
+			return false;
+		}
 		KnowledgeElement formerElement = new KnowledgeElement(issueToBeUpdated);
 		element.setStatus(KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, element));
 		return dataUpdateElement(element, issueToBeUpdated, user, issueService);

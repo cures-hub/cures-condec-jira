@@ -63,7 +63,7 @@ public class JiraIssueTextParser {
 	 * @return parts of text (substrings) as a list.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
-		if (text.isBlank()) {
+		if (text == null || text.isBlank()) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
 		splitTextIntoSentences(text);
