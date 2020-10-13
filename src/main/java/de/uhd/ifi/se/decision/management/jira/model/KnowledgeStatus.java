@@ -9,7 +9,7 @@ import java.util.Locale;
  * alternatives). Issues can have the state "resolved" or "unresolved".
  */
 public enum KnowledgeStatus {
-	IDEA, DISCARDED, DECIDED, CHALLENGED, REJECTED, RESOLVED, UNRESOLVED, UNDEFINED;
+	IDEA, DISCARDED, DECIDED, CHALLENGED, REJECTED, RESOLVED, RECOMMENDED, UNRESOLVED, UNDEFINED;
 
 	/**
 	 * Converts a string to a knowledge status.
