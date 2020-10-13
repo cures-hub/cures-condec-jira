@@ -177,7 +177,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public String getTextWithTags() {
 		String textWithTags = getTextOfEntireDescriptionOrComment();
-		if (startPosition > textWithTags.length()) {
+		if (textWithTags == null || startPosition > textWithTags.length()) {
 			return "";
 		}
 		if (endPosition < textWithTags.length()) {
