@@ -1,2 +1,4 @@
-<label for="show-test-elements-input">$i18n.getText('condec.label.is.test.code')</label>
-<input type="checkbox" id="show-test-elements-input" />
+<div>
+    <label for="show-test-elements-input">$i18n.getText('condec.label.is.test.code')</label>
+    <input type="checkbox" id="show-test-elements-input"/>
+</div>

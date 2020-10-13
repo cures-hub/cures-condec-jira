@@ -1,7 +1,7 @@
 <div class="aui-toolbar2" role="toolbar">
     <div class="aui-toolbar-2-inner">
         <form class="aui">
-            <div>
+            <div class="condec-filter">
                 #set ($viewIdentifier = "decision-table")
                 #parse("templates/filter/text.vm")	
                 #parse("templates/filter/status.vm")

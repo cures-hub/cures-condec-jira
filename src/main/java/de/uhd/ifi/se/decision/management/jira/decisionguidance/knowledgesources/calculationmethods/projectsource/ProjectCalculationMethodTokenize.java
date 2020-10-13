@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgorithm {
+public class ProjectCalculationMethodTokenize extends ProjectCalculationMethod {
 
-	public ProjectSourceTokenizedAlgorithm() {
+	public ProjectCalculationMethodTokenize() {
 
 	}
 
-	public ProjectSourceTokenizedAlgorithm(String projectKey, String projectSourceName) {
+	public ProjectCalculationMethodTokenize(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		try {
@@ -25,6 +25,7 @@ public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgor
 			e.printStackTrace();
 		}
 	}
+
 
 	protected List<KnowledgeElement> queryDatabase() {
 		return this.knowledgePersistenceManager != null ? this.knowledgePersistenceManager.getKnowledgeElements() : null;
@@ -90,6 +91,8 @@ public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgor
 								.forEach(child -> {
 
 									Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+									recommendation.addArguments(this.getArguments(child.getSource()));
+									recommendation.addArguments(this.getArguments(child.getTarget()));
 
 									if (recommendation != null) {
 										recommendation.setScore(score);
@@ -118,25 +121,6 @@ public class ProjectSourceTokenizedAlgorithm extends ProjectKnowledgeSourceAlgor
 			.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "URL")
 			.replaceAll("[|\\[\\]]+", " ").replaceAll("h[0-9]+", "").replaceAll("[;/:*?\"<>&.{},'#!+@-]+", " ")
 			.replaceAll("[\n\r]+", " ").replaceAll("[0-9]+", "NUMBER").replaceAll("(-){2,}", "");
-	}
-
-	private Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (source.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, source.getSummary(), source.getUrl());
-			if (target.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, target.getSummary(), target.getUrl());
-		}
-
-		return null;
-	}
-
-	private boolean matchingIssueTypes(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
-		int matchedType = 0;
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (knowledgeElement.getType() == knowledgeType) matchedType += 1;
-		}
-		return matchedType > 0;
 	}
 
 	private int calculateScore(List<CharSequence> sequenceToCheck, List<CharSequence> sequenceToCheckAgainst) {

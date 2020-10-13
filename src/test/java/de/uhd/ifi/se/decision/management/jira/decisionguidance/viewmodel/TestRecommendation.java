@@ -3,8 +3,13 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +35,24 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals("TEST", recommendation.getKnowledgeSourceName());
 		assertEquals("TEST", recommendation.getRecommendations());
 		assertEquals("TESTURL", recommendation.getUrl());
+	}
+
+	@Test
+	public void testAddArgument() {
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setDescription("Test");
+		knowledgeElement.setSummary("Test");
+		knowledgeElement.setDocumentationLocation("i");
+		knowledgeElement.setType(KnowledgeType.CON);
+		List<Argument> arguments = new ArrayList<>();
+		Argument argument = new Argument(knowledgeElement);
+		arguments.add(argument);
+		Recommendation recommendation =  new Recommendation();
+		recommendation.addArguments(arguments);
+		assertEquals(1, recommendation.getArguments().size());
+
+		recommendation.setArguments(arguments);
+		assertEquals(1, recommendation.getArguments().size());
 	}
 
 	@Test

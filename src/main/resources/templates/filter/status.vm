@@ -1,4 +1,7 @@
-<button aria-controls="status-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger short-field" aria-haspopup="true">
-	$i18n.getText("condec.label.knowledge.status")
-</button>
-<aui-dropdown-menu id="status-dropdown-$viewIdentifier"></aui-dropdown-menu>
+<div>
+    <button aria-controls="status-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger short-field"
+            aria-haspopup="true">
+        $i18n.getText("condec.label.knowledge.status")
+    </button>
+    <aui-dropdown-menu id="status-dropdown-$viewIdentifier"></aui-dropdown-menu>
+</div>

@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -456,7 +456,7 @@ public class ConfigPersistenceManager {
 
 		for (int i = 0; i < knowledgeSources.size(); i++) {
 			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
-			knowledgeSource.setKnowledgeSourceAlgorithmType(getKnowledgeSourceAlgorithmType(projectKey));
+			knowledgeSource.setCalculationMethodTypeType(getCalculationMethod(projectKey));
 			knowledgeSources.set(i, knowledgeSource);
 		}
 
@@ -464,18 +464,18 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static void setKnowledgeSourceAlgorithmType(String projectKey, String knowledgeSourceAlgorithmType) {
+	public static void setCalculationMethod(String projectKey, String knowledgeSourceAlgorithmType) {
 		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
 	}
 
-	public static KnowledgeSourceAlgorithmType getKnowledgeSourceAlgorithmType(String projectKey) {
-		KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
+	public static CalculationMethodType getCalculationMethod(String projectKey) {
+		CalculationMethodType calculationMethodType;
 		try {
-			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
+			calculationMethodType = CalculationMethodType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
 		} catch (IllegalArgumentException e) {
-			knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+			calculationMethodType = CalculationMethodType.SUBSTRING;
 		}
-		return knowledgeSourceAlgorithmType;
+		return calculationMethodType;
 		//return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
 

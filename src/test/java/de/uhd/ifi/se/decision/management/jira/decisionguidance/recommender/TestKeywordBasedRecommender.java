@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-public class TestSimpleRecommender extends TestSetUp {
+public class TestKeywordBasedRecommender extends TestSetUp {
 
 	private ProjectSource projectSource;
 	private RDFSource rdfSource;
@@ -36,7 +36,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
@@ -45,7 +45,7 @@ public class TestSimpleRecommender extends TestSetUp {
 
 	@Test
 	public void testSimpleRecommenderNoKnowledgeSources() {
-		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 
 		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
 
@@ -59,14 +59,14 @@ public class TestSimpleRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSimpleRecommenderAddKnowledgeSources() {
-		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 		simpleRecommender.addKnowledgeSource(projectSource);
 		simpleRecommender.addKnowledgeSource(rdfSource);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
@@ -74,7 +74,7 @@ public class TestSimpleRecommender extends TestSetUp {
 
 	@Test
 	public void testRecommenderEvaluation() {
-		BaseRecommender simpleRecommender = new SimpleRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
@@ -94,7 +94,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
-		BaseRecommender recommender = new SimpleRecommender("");
+		BaseRecommender recommender = new KeywordBasedRecommender("");
 
 		assertEquals(1, recommender.removeDuplicated(recommendations).size());
 	}
@@ -110,7 +110,7 @@ public class TestSimpleRecommender extends TestSetUp {
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
-		BaseRecommender recommender = new SimpleRecommender("");
+		BaseRecommender recommender = new KeywordBasedRecommender("");
 
 		assertEquals(2, recommender.removeDuplicated(recommendations).size());
 	}

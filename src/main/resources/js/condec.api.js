@@ -948,10 +948,10 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.setRecommendationAlgorithm = function (projectKey, recommendationAlgorithm) {
-		generalApi.postJSON(this.restPrefix + "/config/setRecommendationAlgorithm.json?projectKey=" + projectKey + "&recommendationAlgorithm=" + recommendationAlgorithm, null,
+	ConDecAPI.prototype.setCalculationMethod = function (projectKey, calculationMethod) {
+		generalApi.postJSON(this.restPrefix + "/config/setCalculationMethod.json?projectKey=" + projectKey + "&calculationMethod=" + calculationMethod, null,
 			function (error, results) {
-				showFlag("success", "Algorithm successfully changed");
+				showFlag("success", "Method successfully changed");
 			});
 	};
 

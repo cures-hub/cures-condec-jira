@@ -1,7 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @XmlRootElement(name = "Recommendation")
@@ -19,6 +24,9 @@ public class Recommendation {
 	@XmlElement
 	protected int score;
 
+	@XmlElement
+	protected List<Argument> arguments;
+
 	public Recommendation() {
 
 	}
@@ -27,6 +35,7 @@ public class Recommendation {
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.recommendations = recommendations;
 		this.url = url;
+		this.arguments = new ArrayList<>();
 	}
 
 	public Recommendation(String knowledgeSourceName, String recommendations, int score, String url) {
@@ -34,6 +43,7 @@ public class Recommendation {
 		this.recommendations = recommendations;
 		this.score = score;
 		this.url = url;
+		this.arguments = new ArrayList<>();
 	}
 
 	public String getKnowledgeSourceName() {
@@ -68,6 +78,19 @@ public class Recommendation {
 		this.score = score;
 	}
 
+	public List<Argument> getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List<Argument> arguments) {
+		this.arguments = arguments;
+	}
+
+	public void addArguments(List<Argument> arguments) {
+		if (this.arguments == null) this.arguments = new ArrayList<>();
+		this.arguments.addAll(arguments);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -81,4 +104,5 @@ public class Recommendation {
 	public int hashCode() {
 		return Objects.hash(knowledgeSourceName, recommendations);
 	}
+
 }

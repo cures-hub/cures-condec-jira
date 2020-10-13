@@ -1,4 +1,4 @@
-<form class="aui">
+<form class="aui condec-filter">
 	#set ($viewIdentifier = "rationale-backlog")
     #parse("templates/filter/text.vm")
     #parse("templates/filter/knowledgeType.vm")

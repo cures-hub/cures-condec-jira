@@ -57,12 +57,33 @@
 				tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
 				tableRow += "<td>"+ recommendation.score +"%</td>";
 				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
+				tableRow += "<td>";
+				recommendation.arguments.forEach((argument) => {
+					tableRow += "<img src='" + argument.image + "'/>";
+					tableRow += argument.summary;
+				});
+				tableRow += "</td>";
 				tableRow += "</tr>";
 				table.append(tableRow);
 
 				$(" #row_" + counter).click(function() {
 					const currentIssue = conDecDecisionTable.getCurrentIssue();
 					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendations, "");
+					/*recommendation.arguments.forEach((argument) => {
+
+						if(argument.type == "Con") {
+						  conDecAPI.createDecisionKnowledgeElement(argument.summary, "", "Con", currentIssue.documentationLocation,
+										currentIssue.id, currentIssue.documentationLocation, function (id) {
+											conDecObservable.notify();
+										});
+						}
+						if(argument.type == "Pro") {
+						  conDecAPI.createDecisionKnowledgeElement(argument.summary, "", "Pro", currentIssue.documentationLocation,
+                                         currentIssue.id, currentIssue.documentationLocation, function (id) {
+													conDecObservable.notify();
+												});
+						}
+					})*/
 				});
 		});
 		conDecAPI.showFlag("success", "Results: " +  counter);

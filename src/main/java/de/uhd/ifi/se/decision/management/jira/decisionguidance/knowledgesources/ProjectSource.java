@@ -1,16 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.ProjectKnowledgeSourceAlgorithm;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethod;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 
-public class ProjectSource extends KnowledgeSource<ProjectKnowledgeSourceAlgorithm> {
+public class ProjectSource extends KnowledgeSource<ProjectCalculationMethod> {
 
 	public ProjectSource(String projectKey) {
 		this.projectKey = projectKey;
-		this.knowledgeSourceAlgorithmType = KnowledgeSourceAlgorithmType.SUBSTRING;
+		this.calculationMethodType = CalculationMethodType.SUBSTRING;
 		this.knowledgeSourceType = KnowledgeSourceType.PROJECT;
 		this.isActivated = false;
 	}
@@ -21,10 +22,4 @@ public class ProjectSource extends KnowledgeSource<ProjectKnowledgeSourceAlgorit
 		this.isActivated = isActivated;
 	}
 
-	@Override
-	public List<Recommendation> getResults(String inputs) {
-		this.knowledgeSourceAlgorithm = this.getKnowledgeSourceAlgorithm();
-		this.knowledgeSourceAlgorithm.setData(this.projectKey, this.name);
-		return this.knowledgeSourceAlgorithm.getResults(inputs);
-	}
 }

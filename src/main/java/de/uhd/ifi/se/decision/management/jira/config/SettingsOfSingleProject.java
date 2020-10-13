@@ -83,7 +83,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("projectSources",
 			ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
 
-		velocityParameters.put("knowledgeSourceAlgorithm", ConfigPersistenceManager.getKnowledgeSourceAlgorithmType(projectKey));
+		velocityParameters.put("calculationMethod", ConfigPersistenceManager.getCalculationMethod(projectKey));
 
 		return velocityParameters;
 	}

@@ -1,6 +1,6 @@
 <div class="aui-toolbar2" role="toolbar">
 	<div class="aui-toolbar-2-inner">		
-		<form class="aui">
+		<form class="aui condec-filter">
 			#set ($viewIdentifier = "graph")	
 			#parse("templates/filter/text.vm")	
 			#parse("templates/filter/knowledgeType.vm")

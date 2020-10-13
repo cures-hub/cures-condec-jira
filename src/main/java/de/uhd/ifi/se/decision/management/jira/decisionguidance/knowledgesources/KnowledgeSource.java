@@ -1,17 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithm;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.KnowledgeSourceAlgorithmType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms.factory.KnowledgeSourceAlgorithmFactoryProvider;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactory;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactoryProvider;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
+public abstract class KnowledgeSource<T extends CalculationMethod> {
 
-	protected KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType;
-	protected T knowledgeSourceAlgorithm;
+	protected CalculationMethodType calculationMethodType;
+	protected T calculationMethod;
 	protected KnowledgeSourceType knowledgeSourceType;
 
 	protected List<Recommendation> recommendations;
@@ -19,7 +21,16 @@ public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
 	protected boolean isActivated;
 	protected String name;
 
-	public abstract List<Recommendation> getResults(String inputs);
+	public List<Recommendation> getResults(String inputs) {
+		this.getCalculationMethod();
+		return this.calculationMethod.getResults(inputs);
+	}
+
+	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
+		this.getCalculationMethod();
+		if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
+		return new ArrayList<>();
+	}
 
 
 	public String getName() {
@@ -38,13 +49,14 @@ public abstract class KnowledgeSource<T extends KnowledgeSourceAlgorithm> {
 		isActivated = activated;
 	}
 
-	public T getKnowledgeSourceAlgorithm() {
-		KnowledgeSourceAlgorithmFactory<T> knowledgeSourceAlgorithmFactory = KnowledgeSourceAlgorithmFactoryProvider.getFactory(this.knowledgeSourceType);
-		this.knowledgeSourceAlgorithm = knowledgeSourceAlgorithmFactory.getAlgorithm(this.knowledgeSourceAlgorithmType);
-		return this.knowledgeSourceAlgorithm;
+	public T getCalculationMethod() {
+		CalculationMethodFactory<T> calculationMethodFactory = CalculationMethodFactoryProvider.getFactory(this.knowledgeSourceType);
+		if (calculationMethodFactory != null)
+			this.calculationMethod = calculationMethodFactory.getCalculationMethod(this.calculationMethodType, this.projectKey, this.name);
+		return this.calculationMethod;
 	}
 
-	public void setKnowledgeSourceAlgorithmType(KnowledgeSourceAlgorithmType knowledgeSourceAlgorithmType) {
-		this.knowledgeSourceAlgorithmType = knowledgeSourceAlgorithmType;
+	public void setCalculationMethodTypeType(CalculationMethodType calculationMethodType) {
+		this.calculationMethodType = calculationMethodType;
 	}
 }

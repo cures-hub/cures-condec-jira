@@ -911,17 +911,17 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/setRecommendationAlgorithm")
+	@Path("/setCalculationMethod")
 	@POST
-	public Response setRecommendationAlgorithm(@Context HttpServletRequest request,
+	public Response setCalculationMethod(@Context HttpServletRequest request,
 											   @QueryParam("projectKey") String projectKey,
-											   @QueryParam("recommendationAlgorithm") String algorithm) {
+											   @QueryParam("calculationMethod") String method) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
 
-		ConfigPersistenceManager.setKnowledgeSourceAlgorithmType(projectKey, algorithm);
+		ConfigPersistenceManager.setCalculationMethod(projectKey, method);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

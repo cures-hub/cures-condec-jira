@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.algorithms;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -10,14 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgorithm {
+public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod {
 
-
-	public ProjectSourceSubstringAlgorithm() {
+	public ProjectCalculationMethodSubstring() {
 
 	}
 
-	public ProjectSourceSubstringAlgorithm(String projectKey, String projectSourceName) {
+	public ProjectCalculationMethodSubstring(String projectKey, String projectSourceName) {
 		this.projectKey = projectKey;
 		this.projectSourceName = projectSourceName;
 		try {
@@ -59,6 +58,8 @@ public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgor
 						.forEach(child -> {
 
 							Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+							recommendation.addArguments(this.getArguments(child.getSource()));
+							recommendation.addArguments(this.getArguments(child.getTarget()));
 
 							if (recommendation != null) {
 								int score = calculateScore(keywords, issue);
@@ -74,24 +75,53 @@ public class ProjectSourceSubstringAlgorithm extends ProjectKnowledgeSourceAlgor
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	private Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (source.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, source.getSummary(), source.getUrl());
-			if (target.getType() == knowledgeType)
-				return new Recommendation(this.projectSourceName, target.getSummary(), target.getUrl());
+	@Override
+	public List<Recommendation> getResults(KnowledgeElement knowledgeElement2) {
+
+		String inputs = "";
+
+		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
+
+		List<Recommendation> recommendations = new ArrayList<>();
+
+		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
+		if (knowledgeElements == null) return recommendations;
+
+		//filter all knowledge elements by the type "issue"
+		List<KnowledgeElement> issues = knowledgeElements
+			.stream()
+			.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
+			.collect(Collectors.toList());
+
+		for (String keyword : keywords) {
+			//get all alternatives, which parent contains the pattern"
+			issues.forEach(issue -> {
+				if (issue.getSummary().contains(keyword)) {
+					issue.getLinks()
+						.stream()
+						.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
+							this.matchingIssueTypes(link.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION)) //TODO workaround, checks both directions since the link direction is sometimes wrong.
+						.forEach(child -> {
+
+							//	Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+							Recommendation recommendation = new Recommendation("TEST", knowledgeElement2.getSummary(), knowledgeElement2.getUrl());
+							recommendation.addArguments(this.getArguments(child.getSource()));
+							recommendation.addArguments(this.getArguments(child.getTarget()));
+
+							if (recommendation != null) {
+								int score = calculateScore(keywords, issue);
+								recommendation.setScore(score);
+								recommendations.add(recommendation);
+							}
+
+						});
+				}
+			});
 		}
 
-		return null;
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	private boolean matchingIssueTypes(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
-		int matchedType = 0;
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (knowledgeElement.getType() == knowledgeType) matchedType += 1;
-		}
-		return matchedType > 0;
-	}
 
 	private int calculateScore(List<String> keywords, KnowledgeElement parentIssue) {
 		float numberOfKeywords = keywords.size();
