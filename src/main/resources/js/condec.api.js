@@ -35,7 +35,7 @@
 		this.extendedKnowledgeTypes = [];
 
 		this.decisionStatus = ["decided", "challenged", "rejected"];
-		this.alternativeStatus = ["idea", "discarded"];
+		this.alternativeStatus = ["idea", "discarded", "recommended"];
 		this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
@@ -654,8 +654,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword,
+	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, issueID,  callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID,
 			function (error, results) {
 				callback(results, error);
 			});
@@ -955,6 +955,16 @@
 			});
 	};
 
+		/*
+    	 * external references: condec.decision guidance
+    	 */
+    	ConDecAPI.prototype.setAddRecommendationDirectly = function (projectKey, addRecommendationDirectly) {
+    		generalApi.postJSON(this.restPrefix + "/config/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
+    			function (error, results) {
+    				showFlag("success", "Recommendation settings successfully changed");
+    			});
+    	};
+
 	/*
 	 * external references: rationaleBacklogSettings.vm
 	 */
@@ -995,6 +1005,7 @@
 			}
 		});
 	};
+
 
 
 	/*

@@ -34,38 +34,38 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendation() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword).getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEmptyKeyword() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "TEST", invalidKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "TEST", invalidKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEmptyProject() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "", validKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "", validKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, null, validKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, null, validKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationRequestNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(null, projectKey, validKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(null, projectKey, validKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceConfigured() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "Project does not exist", validKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "Project does not exist", validKeyword, 1).getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, projectKey, validKeyword).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, projectKey, validKeyword, 1).getStatus());
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
 	}
 

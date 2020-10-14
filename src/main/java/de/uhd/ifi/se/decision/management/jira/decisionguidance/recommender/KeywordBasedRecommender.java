@@ -8,7 +8,7 @@ import java.util.List;
 
 public class KeywordBasedRecommender extends BaseRecommender {
 
-	private List<Recommendation> recommendations;
+
 	private String keywords;
 
 	public KeywordBasedRecommender(String keywordsString) {
