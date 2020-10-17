@@ -5,9 +5,11 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,13 +73,18 @@ public abstract class BaseRecommender {
 			alternative.setDescription("");
 			alternative.setProject(projectKey);
 			alternative.setDocumentationLocation("s");
+			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
 
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
 			insertedElement.setStatus(KnowledgeStatus.RECOMMENDED);
 			manager.updateIssueStatus(insertedElement, user);
 			manager.insertLink(rootElement, insertedElement, user);
+
+//			KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+//			graph.addVertex(alternative);
+//			Link link = new Link(rootElement, alternative);
+//			graph.addEdge(link);
 		}
-
 	}
-
+	
 }

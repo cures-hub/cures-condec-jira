@@ -319,6 +319,19 @@
 	};
 
 	/*
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecAPI.prototype.resetRecommendationForKnowledgeElement = function (jiraIssueId, callback) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/resetRecommendationsForKnowledgeElement.json", jiraIssueId,
+			function (error, numberOfElements) {
+				if (error === null) {
+					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					callback();
+				}
+			});
+	};
+
+	/*
 	 * external references: condec.tree.viewer
 	 */
 	ConDecAPI.prototype.getTreeViewer = function (filterSettings, callback) {
