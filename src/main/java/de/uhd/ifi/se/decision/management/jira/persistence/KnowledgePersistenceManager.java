@@ -271,13 +271,22 @@ public class KnowledgePersistenceManager {
 	 * @return true if the status of the decision problem (=issue) was updated.
 	 */
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
+		boolean isIssueResolved = false;
+		boolean isUpdateNeeded = false;
 		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
 			if (IssueCompletenessCheck.isDecisionProblemResolved(element)) {
-				element.setStatus(KnowledgeStatus.RESOLVED);
-			} else {
-				element.setStatus(KnowledgeStatus.UNRESOLVED);
+				isIssueResolved = true;
 			}
-			return updateKnowledgeElement(element, user);
+
+			if (isIssueResolved && element.getStatus() == KnowledgeStatus.UNRESOLVED) {
+				element.setStatus(KnowledgeStatus.RESOLVED);
+				return updateKnowledgeElement(element, user);
+			}
+
+			if (!isIssueResolved && element.getStatus() == KnowledgeStatus.RESOLVED) {
+				element.setStatus(KnowledgeStatus.UNRESOLVED);
+				return updateKnowledgeElement(element, user);
+			}
 		}
 		return false;
 	}
