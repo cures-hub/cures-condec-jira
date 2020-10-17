@@ -929,13 +929,13 @@ public class ConfigRest {
 	@POST
 	public Response setAddRecommendationDirectly(@Context HttpServletRequest request,
 												 @QueryParam("projectKey") String projectKey,
-												 @QueryParam("addRecommendationDirectly") String setAddRecommendationDirectly) {
+												 @QueryParam("addRecommendationDirectly") String addRecommendationDirectly) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
 
-		ConfigPersistenceManager.setAddRecommendationDirectly(projectKey, Boolean.valueOf(setAddRecommendationDirectly));
+		ConfigPersistenceManager.setAddRecommendationDirectly(projectKey, Boolean.valueOf(addRecommendationDirectly));
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

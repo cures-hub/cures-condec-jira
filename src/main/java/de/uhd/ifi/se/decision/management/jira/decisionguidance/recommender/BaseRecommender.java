@@ -2,10 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
@@ -77,7 +74,7 @@ public abstract class BaseRecommender {
 
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
 			insertedElement.setStatus(KnowledgeStatus.RECOMMENDED);
-			manager.updateIssueStatus(insertedElement, user);
+			manager.updateKnowledgeElement(insertedElement, user);
 			manager.insertLink(rootElement, insertedElement, user);
 
 //			KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
@@ -86,5 +83,5 @@ public abstract class BaseRecommender {
 //			graph.addEdge(link);
 		}
 	}
-	
+
 }
