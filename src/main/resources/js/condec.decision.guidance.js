@@ -17,6 +17,7 @@
 	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function () {
 		$("#recommendation-button").click(function(event) {
 			event.preventDefault();
+			const currentIssue = conDecDecisionTable.getCurrentIssue();
 			$(this).prop("disabled",true);
 			$("#recommendation-container tbody tr").remove() //TODO the rows are kept in the cache, but they should be removed completly
 			const keyword = $("#recommendation-keyword");
@@ -24,7 +25,7 @@
 
 			spinner.show();
 			$("#recommendation-error").hide();
-			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), function(results, error) {
+			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,  function(results, error) {
 
 				if (error === null) {
 					buildRecommendationTable(results);

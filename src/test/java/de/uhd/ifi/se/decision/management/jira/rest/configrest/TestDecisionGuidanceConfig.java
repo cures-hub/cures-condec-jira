@@ -202,4 +202,23 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 		assertEquals(400, configRest.setMaxNumberRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
 	}
 
+	@Test
+	@DisplayName("Tests the method addRecommendationdirectly valid project")
+	public void testSetAddRecommendationDirectlyValidProject() {
+		assertEquals(200, configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "true").getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method addRecommendationdirectly invalid project")
+	public void testSetAddRecommendationDirectlyInValidProject() {
+		assertEquals(400, configRest.setAddRecommendationDirectly(request, INVALID_PROJECT_KEY, "true").getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method addRecommendationdirectly invalid project")
+	public void testSetAddRecommendationDirectlyInvalidValue() {
+		assertEquals(200, configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
+	}
+
+
 }

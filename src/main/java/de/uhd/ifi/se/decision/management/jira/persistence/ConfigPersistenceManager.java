@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import org.apache.xpath.operations.Bool;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -478,6 +479,19 @@ public class ConfigPersistenceManager {
 		return calculationMethodType;
 		//return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
+
+	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
+		setValue(projectKey, "addRecommendationDirectly", addRecommendationDirectly.toString());
+	}
+
+	public static boolean getAddRecommendationDirectly(String projectKey) {
+		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
+	}
+
+
+
+
+
 
 	/* **************************************/
 	/*										*/

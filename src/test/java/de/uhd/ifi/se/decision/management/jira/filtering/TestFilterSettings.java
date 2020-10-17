@@ -137,13 +137,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetStatus() {
-		assertEquals(8, filterSettings.getStatus().size());
+		assertEquals(9, filterSettings.getStatus().size());
 	}
 
 	@Test
 	public void testSetStatus() {
 		filterSettings.setStatus(null);
-		assertEquals(8, filterSettings.getStatus().size());
+		assertEquals(9, filterSettings.getStatus().size());
 
 		List<String> status = new ArrayList<String>();
 		status.add(KnowledgeStatus.UNRESOLVED.toString());

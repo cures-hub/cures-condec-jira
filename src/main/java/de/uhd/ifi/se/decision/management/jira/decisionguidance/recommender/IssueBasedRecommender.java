@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IssueBasedRecommender extends BaseRecommender {
-
-	private List<Recommendation> recommendations;
+	
 	private KnowledgeElement knowledgeElement;
 
 	public IssueBasedRecommender(KnowledgeElement knowledgeElement) {

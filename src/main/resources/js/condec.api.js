@@ -35,7 +35,7 @@
 		this.extendedKnowledgeTypes = [];
 
 		this.decisionStatus = ["decided", "challenged", "rejected"];
-		this.alternativeStatus = ["idea", "discarded"];
+		this.alternativeStatus = ["idea", "discarded", "recommended"];
 		this.issueStatus = ["resolved", "unresolved"];
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
@@ -310,6 +310,19 @@
 	 */
 	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function (jiraIssueId, callback) {
 		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText.json", jiraIssueId,
+			function (error, numberOfElements) {
+				if (error === null) {
+					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					callback();
+				}
+			});
+	};
+
+	/*
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecAPI.prototype.resetRecommendationForKnowledgeElement = function (jiraIssueId, callback) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/resetRecommendationsForKnowledgeElement.json", jiraIssueId,
 			function (error, numberOfElements) {
 				if (error === null) {
 					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
@@ -654,8 +667,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword,
+	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, issueID,  callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID,
 			function (error, results) {
 				callback(results, error);
 			});
@@ -955,6 +968,16 @@
 			});
 	};
 
+		/*
+    	 * external references: condec.decision guidance
+    	 */
+    	ConDecAPI.prototype.setAddRecommendationDirectly = function (projectKey, addRecommendationDirectly) {
+    		generalApi.postJSON(this.restPrefix + "/config/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
+    			function (error, results) {
+    				showFlag("success", "Recommendation settings successfully changed");
+    			});
+    	};
+
 	/*
 	 * external references: rationaleBacklogSettings.vm
 	 */
@@ -995,6 +1018,7 @@
 			}
 		});
 	};
+
 
 
 	/*
