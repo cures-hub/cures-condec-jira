@@ -1,15 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class BaseRecommender {
 
 	List<KnowledgeSource> knowledgeSources;
+	List<Recommendation> recommendations;
 
 	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);
@@ -50,6 +54,34 @@ public abstract class BaseRecommender {
 
 	public List<Recommendation> evaluate() {
 		return this.getRecommendation();
+	}
+
+	public void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey) {
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		int id = 0;
+		for (Recommendation recommendation : this.recommendations) {
+			KnowledgeElement alternative = new KnowledgeElement();
+
+			//Set information
+			alternative.setId(id);
+			id += 1;
+			alternative.setSummary(recommendation.getRecommendations());
+			alternative.setType(KnowledgeType.ALTERNATIVE);
+			alternative.setDescription("");
+			alternative.setProject(projectKey);
+			alternative.setDocumentationLocation("s");
+			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
+
+			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
+			insertedElement.setStatus(KnowledgeStatus.RECOMMENDED);
+			manager.updateKnowledgeElement(insertedElement, user);
+			manager.insertLink(rootElement, insertedElement, user);
+
+//			KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+//			graph.addVertex(alternative);
+//			Link link = new Link(rootElement, alternative);
+//			graph.addEdge(link);
+		}
 	}
 
 }

@@ -1,7 +1,22 @@
 <h2>Decision Guidance</h2>
 
+<h2>General</h2>
+<div class="settings-divider">
+    <div class="field-group">
+        <label>Add Recommendations directly?</label>
+        <aui-toggle id="add-recommendation-directly" name=""
+                    #if($addRecommendationDirectly)
+                    checked
+                    #end
+                    label="$rdfSource.getName() activated?"></aui-toggle>
+        <div class="description">If enabled, all recommendations for an issue are directly added to the graph.
+        </div>
+    </div>
+</div>
+
 <h2>Configure Knowledge Sources</h2>
 <div class="settings-divider">
+    <h4>General</h4>
     <div class="settings-divider">
         <fieldset class="group">
             <legend><span>Input for recommendations
@@ -39,6 +54,8 @@
             </div>
         </fieldset>
     </div>
+
+    <h4>Configure RDF Knowledge Sources</h4>
 
     <div>
         <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
@@ -119,8 +136,6 @@
             </div>
         </div>
     </div>
-
-    <h4>Configure RDF Knowledge Sources</h4>
 
     #foreach ($rdfSource in $rdfSources)
 
@@ -329,6 +344,11 @@
 
          });
 
+          $("#add-recommendation-directly").change(function() {
+            const isActivated = $(this).prop("checked");
+            conDecAPI.setAddRecommendationDirectly("$projectKey", isActivated);
+          })
+
          const deletions = $(".delete-knowledgesource");
 
          deletions.each(function() {
@@ -396,36 +416,6 @@
 
 
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </script>

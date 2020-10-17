@@ -534,6 +534,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testSetAndGetAddRecommendationDirectly() {
+		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", true);
+		assertTrue(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
+		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
+		assertFalse(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
+	}
+
+	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
