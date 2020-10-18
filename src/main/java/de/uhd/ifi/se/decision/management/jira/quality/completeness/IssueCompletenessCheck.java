@@ -19,7 +19,7 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return issue.getStatus() != KnowledgeStatus.UNRESOLVED && isDecisionLinkedToDecisionProblem(issue);
+		return isDecisionLinkedToDecisionProblem(issue) && issue.getStatus() != KnowledgeStatus.UNRESOLVED;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -40,6 +41,8 @@ public class TestIsIncomplete extends TestSetUp {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElements().get(3);
 
 		assertEquals(KnowledgeType.ISSUE, element.getType());
+		element.setStatus(KnowledgeStatus.RESOLVED);
+		assertEquals(KnowledgeStatus.RESOLVED, element.getStatus());
 		assertFalse(element.isIncomplete());
 	}
 }

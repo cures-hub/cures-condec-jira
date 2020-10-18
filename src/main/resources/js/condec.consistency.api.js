@@ -8,9 +8,6 @@
 			global.addEventListener("DOMContentLoaded", () => {
 				that.displayConsistencyCheck();
 			});
-
-
-
 		};
 
 		ConsistencyAPI.prototype.getRelatedKnowledgeElements = function (projectKey, elementId, elementLocation) {
@@ -20,7 +17,6 @@
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}`);
 		};
-
 
 		ConsistencyAPI.prototype.discardLinkSuggestion = function
 			(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
@@ -146,11 +142,8 @@
 						if (response.needsCompletenessApproval) {
 							Promise.all([]).then(
 								() => {
-										that.consistencyCheckFlag = AJS.flag({
-											type: 'warning',
-											title: 'Imcomplete decision knowledge!',
-											close: 'manual',
-											body: 'Issue <strong>'
+										that.consistencyCheckFlag = showWarning("Imcomplete decision knowledge!",
+											'Issue <strong>'
 												+ this.issueKey
 												+ '</strong> contains some incomplete documented decision knowledge. <br/>'
 												+ '<ul class="aui-nav-actions-list">'
@@ -160,13 +153,21 @@
 												+ 'Confirm'
 												+ '</button>'
 												+ '</li>'
-												+ '</ul>'
-										});
+												+ '</ul>');
 								});
 						}
 					});
 			}
 		}
+
+		var showWarning = function (title, message) {
+			return AJS.flag({
+				type: "warning",
+				close: "manual",
+				title: title,
+				body: message
+			});
+		};
 
 		ConsistencyAPI.prototype.confirmIncompleteMessage = function () {
 			this.consistencyCheckFlag.close();
