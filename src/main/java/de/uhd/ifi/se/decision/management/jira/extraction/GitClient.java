@@ -110,12 +110,6 @@ public class GitClient {
 		ConfigPersistenceManager.getTokens(projectKey), projectKey);
 	}
 
-	private GitClient(List<String> uris, String projectKey) {
-		this(uris, ConfigPersistenceManager.getDefaultBranches(projectKey),
-		ConfigPersistenceManager.getAuthMethods(projectKey), ConfigPersistenceManager.getUsernames(projectKey),
-		ConfigPersistenceManager.getTokens(projectKey), projectKey);
-	}
-
 	private GitClient(List<String> uris, Map<String, String> defaultBranches, Map<String, String> authMethods,
 			Map<String, String> usernames, Map<String, String> tokens, String projectKey) {
 		this();
