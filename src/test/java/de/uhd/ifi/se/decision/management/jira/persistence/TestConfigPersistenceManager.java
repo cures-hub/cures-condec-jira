@@ -376,9 +376,24 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testGetGitUri() {
+	public void testGetGitRepo() {
 		ConfigPersistenceManager.setGitUris("TEST", TestSetUpGit.GIT_URI);
+		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
+		ConfigPersistenceManager.setAuthMethods("TEST", "HTTP");
+		ConfigPersistenceManager.setUsernames("TEST", "user");
+		ConfigPersistenceManager.setTokens("TEST", "secret👀");
+		
 		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
+		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("HTTP", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("user", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("secret👀", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI));
+	}
+
+	@Test
+	public void testGetEmptyGitUris() {
+		ConfigPersistenceManager.setGitUris("TEST", "");
+		assertEquals(new ArrayList<String>(), ConfigPersistenceManager.getGitUris("TEST"));
 	}
 
 	@Test
