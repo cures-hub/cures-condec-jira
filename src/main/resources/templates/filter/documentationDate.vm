@@ -1,4 +1,4 @@
-<div style="display:inline" title="A knowledge element matches this filter criterion if its creation and/or updating date is in the specified time frame.">
+<div class="condec-filter-criterion" title="A knowledge element matches this filter criterion if its creation and/or updating date is in the specified time frame.">
 	<label for="start-date-picker-$viewIdentifier">$i18n.getText("condec.creation.date.start")</label> 
 	<input id="start-date-picker-$viewIdentifier" type="date" class="aui-date-picker"/>
 	<label for="end-date-picker-$viewIdentifier">$i18n.getText("condec.creation.date.end")</label> 

@@ -1,4 +1,4 @@
-<div>
+<div class="condec-filter-criterion">
     <label for="show-test-elements-input">$i18n.getText('condec.label.is.test.code')</label>
     <input type="checkbox" id="show-test-elements-input"/>
 </div>

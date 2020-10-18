@@ -1,4 +1,4 @@
-<div>
+<div class="condec-filter-criterion">
     <label for="link-distance-input-$viewIdentifier" id="link-distance-input-label-$viewIdentifier">
         $i18n.getText("condec.link.distance.label")
     </label>
