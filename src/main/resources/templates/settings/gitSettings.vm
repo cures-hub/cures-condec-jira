@@ -12,12 +12,64 @@
 <div class="field-group">
 	<label for="git-uri-input-field">Git Repositories</label>
 	<div id="repo-wrapper">
-		#foreach($gitUri in $project.getGitUris())
-		<div class="aui-group">
-			<input type="text" class="text long-field" value="$gitUri" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>
-			Default Branch: <input type="text" class="text long-field2"	value="$project.getDefaultBranches().get($gitUri)" placeholder="master" />
-		</div>
-		#end
+    #set( $repoNumber = 1 )
+    #foreach($gitUri in $project.getGitUris())
+        
+        <div class="aui-group" id="repodiv$repoNumber">
+            URI: 
+            <input type="text" class="text long-field repo$repoNumber" value="$gitUri" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;
+            <input type="button" id="delete-entry$repoNumber" class="aui-button aui-button-primary" value="Delete entry"/>
+            <br />
+            Default Branch: 
+            <input type="text" class="text long-field2 repo$repoNumber"	value="$project.getDefaultBranches().get($gitUri)" placeholder="master" /><br />
+            Authentication Method: 
+            <select name="authMethod" class="select medium-field repo$repoNumber">
+                <option #if ($project.getAuthMethods().get($gitUri) == "NONE") selected="selected" #end value="NONE">None</option>
+                <option #if ($project.getAuthMethods().get($gitUri) == "HTTP") selected="selected" #end value="HTTP">HTTPS with credentials</option>
+                <option #if ($project.getAuthMethods().get($gitUri) == "GITHUB") selected="selected" #end value="GITHUB">GitHub OAuth Token</option>
+                <option #if ($project.getAuthMethods().get($gitUri) == "GITLAB") selected="selected" #end value="GITLAB">GitLab Personal Access Token</option>
+            </select>
+            <div id="username$repoNumber" style="display: #if ($project.getAuthMethods().get($gitUri) == 'NONE' || $project.getAuthMethods().get($gitUri) == 'GITHUB') none #else block #end ;">User Name:
+            <input type="text" class="text long-field3 repo$repoNumber" value="$project.getUsernames().get($gitUri)"/></div>
+            <div id="token$repoNumber" style="display: #if ($project.getAuthMethods().get($gitUri) == 'NONE') none #else block #end ;">Password or Token:
+            <input type="password" class="text long-field4 repo$repoNumber" value="$project.getTokens().get($gitUri)"/></div>
+        </div>
+        <script>
+            var authMethod${repoNumber} = document.getElementsByClassName("select medium-field repo$repoNumber");
+            var username${repoNumber} = document.getElementById("username$repoNumber");
+            var token${repoNumber} = document.getElementById("token$repoNumber");
+
+            authMethod${repoNumber}[0].addEventListener("change", function () {
+                switch (authMethod${repoNumber}[0].options[authMethod${repoNumber}[0].selectedIndex].value) {
+                    case "HTTP":
+                        username${repoNumber}.style.display = "block";
+                        token${repoNumber}.style.display = "block";
+                        break;
+                    case "GITHUB":
+                        username${repoNumber}.style.display = "none";
+                        token${repoNumber}.style.display = "block";
+                        break;
+                    case "GITLAB":
+                        username${repoNumber}.style.display = "block";
+                        token${repoNumber}.style.display = "block";
+                        break;
+                    default:
+                        username${repoNumber}.style.display = "none";
+                        token${repoNumber}.style.display = "none";
+                        break;
+                }
+            });
+
+            var deleteEntry${repoNumber} = document.getElementById("delete-entry$repoNumber");
+            deleteEntry${repoNumber}.addEventListener("click", function () {
+                if (confirm("Are you sure you want to delete this entry?")) {
+                    var div = document.getElementById("repodiv$repoNumber");
+                    div.parentNode.removeChild(div);
+                }
+            });
+        </script>
+        #set( $repoNumber = $repoNumber + 1 )
+        #end
 	</div>
     <div class="aui-group">
 		<button class="aui-button" id="add-repo-button">
@@ -27,9 +79,12 @@
 		<input type="button" id="git-uris-button" class="aui-button aui-button-primary" value="Save Addresses"/>
 	</div>
 	<div class="description">
-		First: Uniform resource identifier of the git repository that will be cloned (Example:
+		URI: Uniform resource identifier of the git repository that will be cloned (Example:
 			https://github.com/cures-hub/cures-condec-jira.git). <br/>
-		Second: Name of default branch for the Repository (Example: develop). <br/>
+		Default Branch: Name of default branch for the Repository (Example: develop). <br/>
+        Authentication Method: Method of Authentication for accessing non-public repositories.<br />
+        User Name: The git service user name for authentication.<br />
+        Password or Token: The git service password or token for authentication.<br />
 		The git repository/repositories are cloned to JiraHome/data/condec-plugin/git/<em>project-key</em>.
 	</div>
 </div>
@@ -69,16 +124,63 @@
 	var wrapper = AJS.$("#repo-wrapper");
 	var add_button = AJS.$("#add-repo-button");
 
-	var x = 1;
+	var x = $repoNumber;
 	$(add_button).click(function (e) {
 		e.preventDefault();
 		if (x < max_fields) {
+			$(wrapper).append('<div class="aui-group" id="repodiv' + String(x) + '">' +
+                'URI: ' +
+                '<input type="text" class="text long-field repo' + String(x) + '" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;' +
+                '<input type="button" id="delete-entry' + String(x) + '" class="aui-button aui-button-primary" value="Delete entry"/>' +
+                '<br />' + 
+                'Default Branch: ' + 
+                '<input type="text" class="text long-field2 repo' + String(x) + '" placeholder="master" /><br />' +
+                'Authentication Method: ' +
+                '<select name="authMethod" class="select medium-field repo' + String(x) + '">' +
+                    '<option selected="selected" value="NONE">None</option>' +
+                    '<option value="HTTP">HTTPS with credentials</option>' +
+                    '<option value="GITHUB">GitHub OAuth Token</option>' +
+                    '<option value="GITLAB">GitLab Personal Access Token</option>' +
+                '</select>' +
+                '<div id="username' + String(x) + '" style="display:none">User Name: ' +
+                '<input type="text" class="text long-field3 repo' + String(x) + '" /></div>' +
+                '<div id="token' + String(x) + '" style="display:none">Password or Token: ' +
+                '<input type="password" class="text long-field4 repo' + String(x) + '" /></div>' +
+            '</div>' +
+            '<script>\n' + 
+                'var authMethod' + String(x) + ' = document.getElementsByClassName("select medium-field repo' + String(x) + '");\n' + 
+                'var username' + String(x) + ' = document.getElementById("username' + String(x) + '");\n' + 
+                'var token' + String(x) + ' = document.getElementById("token' + String(x) + '");\n' + 
+                '\n' + 
+                'authMethod' + String(x) + '[0].addEventListener("change", function () {\n' + 
+                    'switch (authMethod' + String(x) + '[0].options[authMethod' + String(x) + '[0].selectedIndex].value) {\n' + 
+                        'case "HTTP":\n' +
+                            'username' + String(x) + '.style.display = "block";\n' + 
+                            'token' + String(x) + '.style.display = "block";\n' + 
+                            'break;\n' + 
+                        'case "GITHUB":\n' +
+                            'username' + String(x) + '.style.display = "none";\n' + 
+                            'token' + String(x) + '.style.display = "block";\n' + 
+                            'break;\n' + 
+                        'case "GITLAB":\n' +
+                            'username' + String(x) + '.style.display = "block";\n' + 
+                            'token' + String(x) + '.style.display = "block";\n' + 
+                            'break;\n' + 
+                        'default:\n' +
+                            'username' + String(x) + '.style.display = "none";\n' + 
+                            'token' + String(x) + '.style.display = "none";\n' + 
+                            'break;\n' + 
+                    '}\n' +
+                '});\n' + 
+                'var deleteEntry' + String(x) + ' = document.getElementById("delete-entry' + String(x) + '");' +
+                'deleteEntry' + String(x) + '.addEventListener("click", function () {' +
+                    'if (confirm("Are you sure you want to delete this entry?")) {' +
+                        'var div = document.getElementById("repodiv' + String(x) + '");' +
+                        'div.parentNode.removeChild(div);' +
+                    '}' +
+                '});' +
+            '<\/script>\n');
 			x++;
-			$(wrapper).append('<div class="aui-group">'+
-					'<input type="text" name="mytext[]" class="text long-field" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>'+
-					' Default Branch: <input type="text" name="mytext[]" class="text long-field2" placeholder="master"/> '+
-					'<a href="#" class="delete-repo-button">Delete</a>'+
-					'</div>');
 		} else {
 			alert('You reached the maximal number of repositories.')
 		}
@@ -95,20 +197,37 @@
     gitsSubmitButton.addEventListener("click", function () {
         var gitUris = document.getElementsByClassName("text long-field");
         var defaultBranches = document.getElementsByClassName("text long-field2");
-        var uristring = "";
+        var authMethods = document.getElementsByClassName("select medium-field");
+        var usernames = document.getElementsByClassName("text long-field3");
+        var tokens = document.getElementsByClassName("text long-field4");
+        var uriString = "";
         var defaultBranchesString = "";
+        var authMethodsString = "";
+        var usernamesString = "";
+        var tokensString = "";
         for (i = 0; i < gitUris.length; i++) {
-            if (gitUris[i].value.length != 0 || defaultBranches[i].value.length != 0) {
+            if (gitUris[i].value.length != 0) {
                 if (i == 0) {
-                    uristring = gitUris[i].value;
+                    uriString = gitUris[i].value;
                     defaultBranchesString = defaultBranches[i].value;
+                    authMethodsString = authMethods[i].value;
+                    usernamesString = usernames[i].value;
+                    tokensString = tokens[i].value;
                 } else {
-                    uristring = uristring + ";;" + gitUris[i].value;
+                    uriString = uriString + ";;" + gitUris[i].value;
                     defaultBranchesString = defaultBranchesString + ";;" + defaultBranches[i].value;
+                    authMethodsString = authMethodsString + ";;" + authMethods[i].value;
+                    usernamesString = usernamesString + ";;" + usernames[i].value;
+                    tokensString = tokensString + ";;" + tokens[i].value;
                 }
             }
         }
-        conDecAPI.setGitUris("$projectKey", uristring, defaultBranchesString);
+        var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
+        console.log(uriString, defaultBranchesString, authMethodsString, usernamesString, tokensString);
+        conDecAPI.setGitUris("$projectKey", uriString, defaultBranchesString, authMethodsString, usernamesString, tokensString);
+        if (gitToggle.checked) {
+            conDecAPI.setKnowledgeExtractedFromGit(gitToggle.checked, gitToggle.value);
+        }
         window.onbeforeunload = null;
     });
 

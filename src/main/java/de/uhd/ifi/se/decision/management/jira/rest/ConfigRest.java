@@ -537,18 +537,23 @@ public class ConfigRest {
 	@Path("/setGitUris")
 	@POST
 	public Response setGitUris(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-							   @QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches) {
+							   @QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches,
+							   @QueryParam("authMethods") String authMethods, @QueryParam("usernames") String usernames,
+							   @QueryParam("tokens") String tokens) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (gitUris == null || defaultBranches == null) {
+		if (gitUris == null || defaultBranches == null || authMethods == null || usernames == null || tokens == null) {
 			return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
 		// List<String> gitUriList = Arrays.asList(gitUris.split(";;"));
 		ConfigPersistenceManager.setGitUris(projectKey, gitUris);
 		ConfigPersistenceManager.setDefaultBranches(projectKey, defaultBranches);
+		ConfigPersistenceManager.setAuthMethods(projectKey, authMethods);
+		ConfigPersistenceManager.setUsernames(projectKey, usernames);
+		ConfigPersistenceManager.setTokens(projectKey, tokens);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

@@ -170,6 +170,33 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
+	 * @return authentification methods as Map<String,String> with the uniform resource
+	 *         identifiers of the git repositories for this project as key and the
+	 *         identifier of the authentification method as value.
+	 */
+	public Map<String, String> getAuthMethods() {
+		return ConfigPersistenceManager.getAuthMethods(getProjectKey());
+	}
+
+	/**
+	 * @return user names as Map<String,String> with the uniform resource
+	 *         identifiers of the git repositories for this project as key and the
+	 *         user names as value.
+	 */
+	public Map<String, String> getUsernames() {
+		return ConfigPersistenceManager.getUsernames(getProjectKey());
+	}
+
+	/**
+	 * @return tokens or passwords as Map<String,String> with the uniform resource
+	 *         identifiers of the git repositories for this project as key and the
+	 *         tokens or passwords as value.
+	 */
+	public Map<String, String> getTokens() {
+		return ConfigPersistenceManager.getTokens(getProjectKey());
+	}
+
+	/**
 	 * @return true if the webhook is enabled for this project.
 	 */
 	public boolean isWebhookEnabled() {
