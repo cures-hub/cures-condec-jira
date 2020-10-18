@@ -17,6 +17,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -35,6 +36,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		init();
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = elements.get(3);
+		issue.setStatus(KnowledgeStatus.RESOLVED);
 		decision = elements.get(6);
 		alternative = elements.get(5);
 		workItem = elements.get(2);

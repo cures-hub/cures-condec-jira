@@ -88,12 +88,11 @@ $(document).ready(function () {
 			}
 	});
 
-	var resetRecommendationFromKnowledgeElement = document.getElementById("reset-recommendation-from-knowledge-element-link");
+	var resetRecommendationFromKnowledgeElement = document.getElementById("remove-recommendations-from-knowledge-graph-link");
 	resetRecommendationFromKnowledgeElement.addEventListener("click", function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (confirm("Are you sure you want to reset the recommendation for this Jira issue? "
-			+ "This will reset recommendations links in the knowledge graph of these elements.")) {
+		if (confirm("Are you sure you want to remove the recommended knowledge elements for this Jira issue?")) {
 				conDecAPI.resetRecommendationForKnowledgeElement(JIRA.Issue.getIssueId(), function() {
 					conDecObservable.notify();
 				});

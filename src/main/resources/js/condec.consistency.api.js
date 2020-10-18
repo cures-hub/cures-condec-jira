@@ -8,9 +8,6 @@
 			global.addEventListener("DOMContentLoaded", () => {
 				that.displayConsistencyCheck();
 			});
-
-
-
 		};
 
 		ConsistencyAPI.prototype.getRelatedKnowledgeElements = function (projectKey, elementId, elementLocation) {
@@ -20,7 +17,6 @@
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}`);
 		};
-
 
 		ConsistencyAPI.prototype.discardLinkSuggestion = function
 			(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
@@ -64,12 +60,9 @@
 			);
 		};
 
-		ConsistencyAPI.prototype.doesElementNeedCompletenessApproval = function (projectKey, elementId, elementLocation) {
-			return generalApi.getJSONReturnPromise(
-				`${this.restPrefix}/doesElementNeedCompletenessApproval.json
-				?projectKey=${projectKey}
-				&elementId=${elementId}
-				&elementLocation=${elementLocation}`
+		ConsistencyAPI.prototype.doesElementNeedCompletenessApproval = function (filterSettings) {
+			return generalApi.postJSONReturnPromise(
+				`${this.restPrefix}/doesElementNeedCompletenessApproval.json`, filterSettings
 			);
 		};
 
@@ -135,22 +128,23 @@
 
 		ConsistencyAPI.prototype.displayCompletenessCheck = function () {
 			let that = this;
-			this.issueId = JIRA.Issue.getIssueId();
+			this.issueKey = conDecAPI.getIssueKey();
 
-			console.log("displayCompletenessCheck: " + this.issueId);
+			console.log("displayCompletenessCheck: " + this.issueKey);
 
-			if (that.issueId !== null && that.issueId !== undefined) {
-				this.doesElementNeedCompletenessApproval(that.projectKey, that.issueId, "i")
+			if (that.issueKey !== null && that.issueKey !== undefined) {
+				var filterSettings = {
+					"projectKey" : this.projectKey,
+					"selectedElement" : this.issueKey
+				}
+				this.doesElementNeedCompletenessApproval(filterSettings)
 					.then((response) => {
 						if (response.needsCompletenessApproval) {
 							Promise.all([]).then(
 								() => {
-										that.consistencyCheckFlag = AJS.flag({
-											type: 'warning',
-											title: 'Imcomplete decision knowledge!',
-											close: 'manual',
-											body: 'Issue <strong>'
-												+ conDecAPI.getIssueKey()
+										that.consistencyCheckFlag = showWarning("Imcomplete decision knowledge!",
+											'Issue <strong>'
+												+ this.issueKey
 												+ '</strong> contains some incomplete documented decision knowledge. <br/>'
 												+ '<ul class="aui-nav-actions-list">'
 												+ '<li>'
@@ -159,13 +153,21 @@
 												+ 'Confirm'
 												+ '</button>'
 												+ '</li>'
-												+ '</ul>'
-										});
+												+ '</ul>');
 								});
 						}
 					});
 			}
 		}
+
+		var showWarning = function (title, message) {
+			return AJS.flag({
+				type: "warning",
+				close: "manual",
+				title: title,
+				body: message
+			});
+		};
 
 		ConsistencyAPI.prototype.confirmIncompleteMessage = function () {
 			this.consistencyCheckFlag.close();
