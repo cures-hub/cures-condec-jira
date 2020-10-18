@@ -168,13 +168,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	/**
-	 * Returns the database id of a link object if it is a Jira issue link. Returns
-	 * a value <= 0 if the link is not existing in the database.
-	 * 
 	 * @param link
 	 *            {@link Link} object.
-	 * @return database id of a link object. Returns a value <= 0 if the link is not
-	 *         existing in the database.
+	 * @return database id of a link object if it is a Jira issue link. Returns a
+	 *         value <= 0 if the link is not existing in the database.
 	 * @see IssueLink
 	 */
 	public static long getLinkId(Link link) {
