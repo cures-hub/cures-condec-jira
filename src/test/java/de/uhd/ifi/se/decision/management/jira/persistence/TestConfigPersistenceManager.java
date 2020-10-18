@@ -404,6 +404,28 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI));
 	}
+	
+	@Test
+	public void testGetGitReposWithMissingInformation() {
+		ConfigPersistenceManager.setGitUris("TEST", TestSetUpGit.GIT_URI + ";;" + TestSetUpGit.GIT_URI + "/");
+		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
+		ConfigPersistenceManager.setAuthMethods("TEST", "HTTP");
+		ConfigPersistenceManager.setUsernames("TEST", "user");
+		ConfigPersistenceManager.setTokens("TEST", "secret👀");
+		
+		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
+		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("HTTP", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("user", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI));
+		assertEquals("secret👀", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI));
+
+		assertEquals(TestSetUpGit.GIT_URI + "/", ConfigPersistenceManager.getGitUris("TEST").get(1));
+		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI + "/"));
+		assertEquals("NONE", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI + "/"));
+		assertEquals("", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI + "/"));
+		assertEquals("", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI + "/"));
+	}
+	
 	@Test
 	public void testGetEmptyGitUris() {
 		ConfigPersistenceManager.setGitUris("TEST", "");
