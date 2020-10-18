@@ -64,12 +64,9 @@
 			);
 		};
 
-		ConsistencyAPI.prototype.doesElementNeedCompletenessApproval = function (projectKey, elementId, elementLocation) {
-			return generalApi.getJSONReturnPromise(
-				`${this.restPrefix}/doesElementNeedCompletenessApproval.json
-				?projectKey=${projectKey}
-				&elementId=${elementId}
-				&elementLocation=${elementLocation}`
+		ConsistencyAPI.prototype.doesElementNeedCompletenessApproval = function (filterSettings) {
+			return generalApi.postJSONReturnPromise(
+				`${this.restPrefix}/doesElementNeedCompletenessApproval.json`, filterSettings
 			);
 		};
 
@@ -135,12 +132,16 @@
 
 		ConsistencyAPI.prototype.displayCompletenessCheck = function () {
 			let that = this;
-			this.issueId = JIRA.Issue.getIssueId();
+			this.issueKey = conDecAPI.getIssueKey();
 
-			console.log("displayCompletenessCheck: " + this.issueId);
+			console.log("displayCompletenessCheck: " + this.issueKey);
 
-			if (that.issueId !== null && that.issueId !== undefined) {
-				this.doesElementNeedCompletenessApproval(that.projectKey, that.issueId, "i")
+			if (that.issueKey !== null && that.issueKey !== undefined) {
+				var filterSettings = {
+					"projectKey" : this.projectKey,
+					"selectedElement" : this.issueKey
+				}
+				this.doesElementNeedCompletenessApproval(filterSettings)
 					.then((response) => {
 						if (response.needsCompletenessApproval) {
 							Promise.all([]).then(
@@ -150,7 +151,7 @@
 											title: 'Imcomplete decision knowledge!',
 											close: 'manual',
 											body: 'Issue <strong>'
-												+ conDecAPI.getIssueKey()
+												+ this.issueKey
 												+ '</strong> contains some incomplete documented decision knowledge. <br/>'
 												+ '<ul class="aui-nav-actions-list">'
 												+ '<li>'
