@@ -1,5 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -12,6 +20,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
@@ -22,11 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.apache.xpath.operations.Bool;
-
-import java.lang.reflect.Type;
-import java.util.*;
-
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -34,9 +38,9 @@ import java.util.*;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -231,7 +235,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -294,7 +298,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -328,7 +332,7 @@ public class ConfigPersistenceManager {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Decision Guidance  */
+	/* Configuration for Decision Guidance */
 	/*										*/
 	/* **************************************/
 
@@ -347,7 +351,8 @@ public class ConfigPersistenceManager {
 		if (rdfSource != null) {
 			try {
 				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
-				if (rdfSourceList == null) rdfSourceList = new ArrayList<>();
+				if (rdfSourceList == null)
+					rdfSourceList = new ArrayList<>();
 			} catch (JsonSyntaxException e) {
 				rdfSourceList = new ArrayList<>();
 				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
@@ -362,10 +367,10 @@ public class ConfigPersistenceManager {
 
 	}
 
-
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
-		if (projectKey == null) return rdfSourceList;
+		if (projectKey == null)
+			return rdfSourceList;
 
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
@@ -390,7 +395,6 @@ public class ConfigPersistenceManager {
 		}.getType();
 		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
-
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
 		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
@@ -432,15 +436,18 @@ public class ConfigPersistenceManager {
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
 		List<ProjectSource> projectSources = new ArrayList<>();
-		if (projectKey == null) return projectSources;
+		if (projectKey == null)
+			return projectSources;
 
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		if (currentProject != null) {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey, jiraProject.getProjectKey());
+				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
+						jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
-					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(), projectSourceActivation);
+					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
+							projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -453,14 +460,13 @@ public class ConfigPersistenceManager {
 
 		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
-		//New KnowledgeSources could be added here.
+		// New KnowledgeSources could be added here.
 
 		for (int i = 0; i < knowledgeSources.size(); i++) {
 			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
 			knowledgeSource.setCalculationMethodTypeType(getCalculationMethod(projectKey));
 			knowledgeSources.set(i, knowledgeSource);
 		}
-
 
 		return knowledgeSources;
 	}
@@ -477,7 +483,7 @@ public class ConfigPersistenceManager {
 			calculationMethodType = CalculationMethodType.SUBSTRING;
 		}
 		return calculationMethodType;
-		//return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
+		// return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
 
 	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
@@ -488,14 +494,9 @@ public class ConfigPersistenceManager {
 		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
 	}
 
-
-
-
-
-
 	/* **************************************/
 	/*										*/
-	/* Configuration for Rationale Backlog  */
+	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
 
@@ -522,7 +523,7 @@ public class ConfigPersistenceManager {
 
 	/* **********************************************************/
 	/*										 					*/
-	/* Configuration for quality = completeness + consistency   */
+	/* Configuration for quality = completeness + consistency */
 	/*															*/
 	/* **********************************************************/
 

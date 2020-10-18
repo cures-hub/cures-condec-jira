@@ -272,9 +272,8 @@ public class KnowledgePersistenceManager {
 	 */
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
 		boolean isIssueResolved = false;
-		boolean isUpdateNeeded = false;
 		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
-			if (IssueCompletenessCheck.isDecisionProblemResolved(element)) {
+			if (IssueCompletenessCheck.isDecisionLinkedToDecisionProblem(element)) {
 				isIssueResolved = true;
 			}
 

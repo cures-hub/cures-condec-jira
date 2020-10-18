@@ -263,8 +263,8 @@ public class ConsistencyRest {
 				response = Response.ok().entity(ImmutableMap.of("needsCompletenessApproval", doesIssueNeedApproval))
 						.build();
 			} else {
-				response = Response.status(400).entity(ImmutableMap.of("error", "No issue with the given key exists!"))
-						.build();
+				response = Response.status(400)
+						.entity(ImmutableMap.of("error", "No Jira issue with the given key exists!")).build();
 			}
 		} catch (Exception e) {
 			// LOGGER.error(e.getMessage());

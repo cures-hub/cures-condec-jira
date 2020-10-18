@@ -19,7 +19,7 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return isDecisionProblemResolved(issue);
+		return issue.getStatus() != KnowledgeStatus.UNRESOLVED && isDecisionLinkedToDecisionProblem(issue);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 	 *            decision problem as a {@link KnowledgeElement} object.
 	 * @return true if a valid decision is linked to the issue.
 	 */
-	public static boolean isDecisionProblemResolved(KnowledgeElement issue) {
+	public static boolean isDecisionLinkedToDecisionProblem(KnowledgeElement issue) {
 		KnowledgeElement linkedDecision = issue.getNeighborOfType(KnowledgeType.DECISION);
 		return linkedDecision != null && linkedDecision.getStatus() != KnowledgeStatus.CHALLENGED
 				&& linkedDecision.getStatus() != KnowledgeStatus.REJECTED;
