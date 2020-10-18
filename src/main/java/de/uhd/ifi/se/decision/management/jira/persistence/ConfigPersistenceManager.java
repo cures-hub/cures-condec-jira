@@ -320,10 +320,6 @@ public class ConfigPersistenceManager {
 		return tokens;
 	}
 
-	public static String hello() {
-		return "Hello!";
-	}
-	
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));

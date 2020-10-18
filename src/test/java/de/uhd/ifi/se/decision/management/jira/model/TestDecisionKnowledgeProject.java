@@ -2,6 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +82,19 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testIsPostFeatureBranchCommitsActivated() {
 		assertEquals(true, project.isPostFeatureBranchCommitsActivated());
+	}
+
+	@Test
+	public void testGetGitRepo() {
+		List<String> uris = project.getGitUris();
+		Map<String,String> defaultBranches = project.getDefaultBranches();
+		Map<String,String> authMethods = project.getAuthMethods();
+		Map<String,String> usernames = project.getUsernames();
+		Map<String,String> tokens = project.getTokens();
+		assertEquals("master", defaultBranches.get(uris.get(0)));
+		assertEquals("true", authMethods.get(uris.get(0)));
+		assertEquals("true", usernames.get(uris.get(0)));
+		assertEquals("true", tokens.get(uris.get(0)));
 	}
 
 	@Test
