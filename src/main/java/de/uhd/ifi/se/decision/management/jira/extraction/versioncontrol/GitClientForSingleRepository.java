@@ -72,10 +72,6 @@ public class GitClientForSingleRepository {
 		defaultBranchCommits = getCommitsFromDefaultBranch();
 	}
 
-	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey) {
-		this(uri, defaultBranchName, projectKey, "NONE", "", "");
-	}
-
 	public boolean pullOrClone() {
 		File directory = new File(fsManager.getDefaultBranchPath());
 		File gitDirectory = new File(directory, ".git/");
