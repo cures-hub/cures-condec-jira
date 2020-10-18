@@ -30,49 +30,49 @@ public class TestSetGitUris extends TestSetUp {
 
 	@Test
 	public void testRequestNullProjectKeyNullGitUriNullDefaultBranchesNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setGitUris(null, null, null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.setGitUris(null, null, null, null, null, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(null, null, TestSetUpGit.GIT_URI, "master").getStatus());
+				configRest.setGitUris(null, null, TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExistsGitUriNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(null, "TEST", null, "default").getStatus());
+				configRest.setGitUris(null, "TEST", null, "default", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(null, "TEST", TestSetUpGit.GIT_URI, "master").getStatus());
+				configRest.setGitUris(null, "TEST", TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNullGitUriNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(request, null, null, "default").getStatus());
+				configRest.setGitUris(request, null, null, "default", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNullGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(request, null, TestSetUpGit.GIT_URI, "master").getStatus());
+				configRest.setGitUris(request, null, TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(request, "TEST", null, "master").getStatus());
+				configRest.setGitUris(request, "TEST", null, "master", "", "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setGitUris(request, "TEST", TestSetUpGit.GIT_URI, "master").getStatus());
+				configRest.setGitUris(request, "TEST", TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
 	}
 
 }

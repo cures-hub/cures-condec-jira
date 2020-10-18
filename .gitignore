@@ -22,6 +22,6 @@ tikz-uml.sty
 /defaultTrainingData.arff
 
 src/test/resources/classifier/defaultTrainingData.arff
-.vscode/settings.json
 
 .DS_Store
+.vscode/

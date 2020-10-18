@@ -201,12 +201,27 @@ public class ConfigPersistenceManager {
 
 	public static List<String> getGitUris(String projectKey) {
 		String value = getValue(projectKey, "gitUris");
+		if (value == "") {
+			return new ArrayList<String>();
+		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		return uris;
 	}
 
 	public static void setDefaultBranches(String projectKey, String defaultBranches) {
 		setValue(projectKey, "defaultBranches", defaultBranches);
+	}
+
+	public static void setAuthMethods(String projectKey, String authMethods) {
+		setValue(projectKey, "authMethods", authMethods);
+	}
+
+	public static void setUsernames(String projectKey, String usernames) {
+		setValue(projectKey, "usernames", usernames);
+	}
+
+	public static void setTokens(String projectKey, String tokens) {
+		setValue(projectKey, "tokens", tokens);
 	}
 
 	public static Map<String, String> getDefaultBranches(String projectKey) {
@@ -232,6 +247,81 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return defaultBranches;
+	}
+
+	public static Map<String, String> getAuthMethods(String projectKey) {
+		Map<String, String> authMethods = new HashMap<String, String>();
+		String value = getValue(projectKey, "gitUris");
+		if (value == null || value.isBlank()) {
+			return null;
+		}
+		List<String> uris = Arrays.asList(value.split(";;"));
+		value = getValue(projectKey, "authMethods");
+		if (value == null || value.isBlank()) {
+			for (String uri : uris) {
+				authMethods.put(uri, "NONE");
+			}
+			return authMethods;
+		}
+		List<String> branches = Arrays.asList(value.split(";;"));
+		for (int i = 0; i < uris.size(); i++) {
+			if (branches.size() <= i) {
+				authMethods.put(uris.get(i), "NONE");
+			} else {
+				authMethods.put(uris.get(i), branches.get(i));
+			}
+		}
+		return authMethods;
+	}
+
+	public static Map<String, String> getUsernames(String projectKey) {
+		Map<String, String> usernames = new HashMap<String, String>();
+		String value = getValue(projectKey, "gitUris");
+		if (value == null || value.isBlank()) {
+			return null;
+		}
+		List<String> uris = Arrays.asList(value.split(";;"));
+		value = getValue(projectKey, "usernames");
+		if (value == null || value.isBlank()) {
+			for (String uri : uris) {
+				usernames.put(uri, "");
+			}
+			return usernames;
+		}
+		List<String> branches = Arrays.asList(value.split(";;"));
+		for (int i = 0; i < uris.size(); i++) {
+			if (branches.size() <= i) {
+				usernames.put(uris.get(i), "");
+			} else {
+				usernames.put(uris.get(i), branches.get(i));
+			}
+		}
+		return usernames;
+	}
+	
+	public static Map<String, String> getTokens(String projectKey) {
+		Map<String, String> tokens = new HashMap<String, String>();
+		String value = getValue(projectKey, "gitUris");
+		if (value == null || value.isBlank()) {
+			return null;
+		}
+		List<String> uris = Arrays.asList(value.split(";;"));
+		value = getValue(projectKey, "tokens");
+		if (value == null || value.isBlank()) {
+			for (String uri : uris) {
+				tokens.put(uri, "");
+			}
+			return tokens;
+		}
+		List<String> branches = Arrays.asList(value.split(";;"));
+		for (int i = 0; i < uris.size(); i++) {
+			if (branches.size() <= i) {
+				tokens.put(uris.get(i), "");
+			} else {
+				tokens.put(uris.get(i), branches.get(i));
+			}
+		}
+		return tokens;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

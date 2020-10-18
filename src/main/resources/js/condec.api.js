@@ -489,8 +489,11 @@
 			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
 				response) {
 			if (error === null) {
-				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
-					+ ".");
+				if (isKnowledgeExtractedFromGit) {
+					showFlag("success", "Git connection for this project is acticated.");
+				} else {
+					showFlag("success", "Git connection for this project is deactivated.");
+				}
 			}
 		});
 	};
@@ -532,13 +535,14 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches) {
+	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches, authMethods, usernames, tokens) {
 		// TODO Pass gitUris and branches as the JSON payload. Do not pass
 		// concatenated strings separated with ;;
-		generalApi.postJSON(this.restPrefix + "/config/setGitUris.json?projectKey=" + projectKey
-			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches, null, function (error, response) {
+		generalApi.postJSON(AJS.contextPath() + "/rest/condec/latest" + "/config/setGitUris.json?projectKey=" + projectKey
+			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches + "&authMethods=" + 
+			authMethods + "&usernames=" + usernames + "&tokens=" + tokens, null, function (error, response) {
 				if (error === null) {
-					showFlag("success", "The git URIs for this project have been set.");
+					showFlag("success", "The git URIs and credentials for this project have been set.");
 				}
 			});
 	};
@@ -731,21 +735,6 @@
 				showFlag("success",
 					"Usage of the consistency module of the ConDec plugin has been set to "
 					+ isConsistencyActivated + ".");
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.setKnowledgeExtractedFromGit = function (isKnowledgeExtractedFromGit, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeExtractedFromGit.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function (error,
-				response) {
-			if (error === null) {
-				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
-					+ ".");
 			}
 		});
 	};

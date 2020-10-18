@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
@@ -52,14 +53,20 @@ public class GitClientForSingleRepository {
 	private String defaultBranchName;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
+	private String authMethod;
+	private String username;
+	private String token;
 	private GitRepositoryFSManager fsManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
-	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey) {
+	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey, String authMethod, String username, String token) {
 		this.projectKey = projectKey;
 		this.repoUri = uri;
 		this.defaultBranchName = defaultBranchName;
+		this.authMethod = authMethod;
+		this.username = username;
+		this.token = token;
 		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri, defaultBranchName);
 		pullOrClone();
 		defaultBranchCommits = getCommitsFromDefaultBranch();
@@ -177,7 +184,25 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		try {
-			git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
+			switch(authMethod) {
+				case "HTTP":
+					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
+					break;
+
+				case "GITHUB":
+					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).setDirectory(directory).setCloneAllBranches(true).call();
+					break;
+
+				case "GITLAB":
+					String gitlabUri = repoUri.replaceAll("https://","https://gitlab-ci-token:" + token + "@");
+					git = Git.cloneRepository().setURI(gitlabUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
+					break;
+			
+				default:
+					git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
+					break;
+			}
+
 			setConfig();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
