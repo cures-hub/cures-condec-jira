@@ -33,6 +33,9 @@
                 />
                 <label for="issue-radio">Issues-based</label>
             </div>
+            <div class="description">Chose the input on which to base a recommendation. A Keyword-based only uses the keywords from the input field in the jira issue view.
+                The Issue-based input also uses linked alternatives and other context information provided.
+            </div>
         </fieldset>
     </div>
 
@@ -51,6 +54,8 @@
                        name="radiobuttons" id="tokenized" value="TOKENIZED"
                 />
                 <label for="tokenized">Tokenization</label>
+            </div>
+            <div class="description">Chose a calculation method for the recommendation. The results and the score will be differently calculated.
             </div>
         </fieldset>
     </div>
