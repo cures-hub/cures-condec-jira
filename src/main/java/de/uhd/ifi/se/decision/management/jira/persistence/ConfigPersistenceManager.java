@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -582,6 +583,16 @@ public class ConfigPersistenceManager {
 
 	public static boolean getAddRecommendationDirectly(String projectKey) {
 		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
+	}
+
+	public static void setRecommendationInput(String projectKey, String recommendationInput) {
+		setValue(projectKey, "recommendationInput", recommendationInput);
+	}
+
+	public static String getRecommendationInput(String projectKey) {
+		String value = getValue(projectKey, "recommendationInput");
+		if(!value.isBlank()) return value;
+		return RecommenderType.getDefault();
 	}
 
 	/* **************************************/

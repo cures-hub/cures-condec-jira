@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -218,6 +219,13 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@DisplayName("Tests the method addRecommendationdirectly invalid project")
 	public void testSetAddRecommendationDirectlyInvalidValue() {
 		assertEquals(200, configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
+	}
+
+	@Test
+	public void testSetRecommendationInput() {
+		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD").getStatus());
+		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD").getStatus());
+		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD").getStatus());
 	}
 
 

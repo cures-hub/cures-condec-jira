@@ -36,9 +36,9 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
 
-		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-
 		List<Recommendation> recommendations = new ArrayList<>();
+
+		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 
 		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
 		if (knowledgeElements == null) return recommendations;
@@ -80,8 +80,11 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 	//Todo user other attributes to get a recommendation
 	@Override
 	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-		String inputs = knowledgeElement.getSummary();
-		return this.getResults(inputs);
+		if (knowledgeElement != null) {
+			String inputs = knowledgeElement.getSummary();
+			return this.getResults(inputs);
+		}
+		return new ArrayList<>();
 	}
 
 

@@ -21,7 +21,7 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSource() {
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey());
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST Source", true);
 		projectSource.setName("ProjectSource");
 
 		List<Recommendation> recommendations = projectSource.getResults("How can we implement the feature");
@@ -31,8 +31,15 @@ public class TestProjectSource extends TestSetUp {
 	}
 
 	@Test
+	public void testActivation() {
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST Source", false);
+		List<Recommendation> recommendations = projectSource.getResults("How can we implement the feature");
+		assertEquals(0, recommendations.size());
+	}
+
+	@Test
 	public void testDefaultAlgorithm() { //default is SUBSTRING
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey());
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST Source", true);
 		projectSource.setName("ProjectSource");
 		projectSource.setCalculationMethodTypeType(null);
 		List<Recommendation> recommendations = projectSource.getResults("How can we implement the feature");

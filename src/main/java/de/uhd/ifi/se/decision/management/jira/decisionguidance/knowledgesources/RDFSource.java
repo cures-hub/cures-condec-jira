@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.projectsource.ProjectCalculationMethod;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.apache.jena.atlas.lib.Pair;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class RDFSource extends KnowledgeSource<ProjectCalculationMethod> {
+public class RDFSource extends KnowledgeSource {
 
 	protected String service;
 	protected String queryString;
@@ -84,13 +84,17 @@ public class RDFSource extends KnowledgeSource<ProjectCalculationMethod> {
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
+
+		this.recommendations = new ArrayList<>();
+		if (!this.isActivated) return this.recommendations;
+
+
 		if (inputs == null) inputs = "";
 
 
 		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		List<String> combinedKeywords = this.combineKeywords(keywords);
 
-		this.recommendations = new ArrayList<>();
 
 		for (String combinedKeyword : combinedKeywords) {
 
@@ -113,6 +117,11 @@ public class RDFSource extends KnowledgeSource<ProjectCalculationMethod> {
 
 		}
 		return this.recommendations;
+	}
+
+	@Override
+	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
+		return this.getResults(knowledgeElement.getSummary());
 	}
 
 	private List<String> combineKeywords(List<String> keywords) {

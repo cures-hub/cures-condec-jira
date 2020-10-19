@@ -957,15 +957,25 @@
 			});
 	};
 
-		/*
-    	 * external references: condec.decision guidance
-    	 */
-    	ConDecAPI.prototype.setAddRecommendationDirectly = function (projectKey, addRecommendationDirectly) {
-    		generalApi.postJSON(this.restPrefix + "/config/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
-    			function (error, results) {
-    				showFlag("success", "Recommendation settings successfully changed");
-    			});
-    	};
+	/*
+	 * external references: condec.decision guidance
+	 */
+	ConDecAPI.prototype.setAddRecommendationDirectly = function (projectKey, addRecommendationDirectly) {
+		generalApi.postJSON(this.restPrefix + "/config/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
+			function (error, results) {
+				showFlag("success", "Recommendation settings successfully changed");
+			});
+	};
+
+	/*
+	 * external references: condec.decision guidance
+	 */
+	ConDecAPI.prototype.setRecommendationInput = function (projectKey, recommendationInput) {
+		generalApi.postJSON(this.restPrefix + "/config/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput, null,
+			function (error, results) {
+				showFlag("success", "Recommendation Input successfully changed");
+			});
+	};
 
 	/*
 	 * external references: rationaleBacklogSettings.vm

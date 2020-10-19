@@ -944,6 +944,21 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
+	@Path("/setRecommendationInput")
+	@POST
+	public Response setRecommendationInput(@Context HttpServletRequest request,
+												 @QueryParam("projectKey") String projectKey,
+												 @QueryParam("recommendationInput") String recommendationInput) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+
+		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+
 
 
 

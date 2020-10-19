@@ -22,13 +22,18 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 	protected String name;
 
 	public List<Recommendation> getResults(String inputs) {
-		this.getCalculationMethod();
-		return this.calculationMethod.getResults(inputs);
+		if (this.isActivated) {
+			this.getCalculationMethod();
+			return this.calculationMethod.getResults(inputs);
+		}
+		return new ArrayList<>();
 	}
 
 	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-		this.getCalculationMethod();
-		if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
+		if (this.isActivated) {
+			this.getCalculationMethod();
+			if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
+		}
 		return new ArrayList<>();
 	}
 

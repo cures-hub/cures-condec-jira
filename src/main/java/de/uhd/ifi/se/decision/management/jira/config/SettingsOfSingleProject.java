@@ -85,6 +85,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		velocityParameters.put("calculationMethod", ConfigPersistenceManager.getCalculationMethod(projectKey));
 		velocityParameters.put("addRecommendationDirectly", ConfigPersistenceManager.getAddRecommendationDirectly(projectKey));
+		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInput(projectKey));
 
 		return velocityParameters;
 	}
