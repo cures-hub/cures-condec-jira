@@ -4,6 +4,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
+import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +52,7 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 		for (String keyword : keywords) {
 			//get all alternatives, which parent contains the pattern"
 			issues.forEach(issue -> {
-				if (issue.getSummary().contains(keyword)) {
+				if (this.calculateSimilarity(issue.getSummary(), inputs.trim()) > 0.5) {
 					issue.getLinks()
 						.stream()
 						.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
@@ -62,7 +64,7 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 							recommendation.addArguments(this.getArguments(child.getTarget()));
 
 							if (recommendation != null) {
-								int score = calculateScore(keywords, issue);
+								int score = calculateScore(inputs, issue, recommendation.getArguments());
 								recommendation.setScore(score);
 								recommendations.add(recommendation);
 							}
@@ -75,81 +77,36 @@ public class ProjectCalculationMethodSubstring extends ProjectCalculationMethod 
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
+	//Todo user other attributes to get a recommendation
 	@Override
-	public List<Recommendation> getResults(KnowledgeElement knowledgeElement2) {
-
-		String inputs = "";
-
-		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-
-		List<Recommendation> recommendations = new ArrayList<>();
-
-		List<KnowledgeElement> knowledgeElements = this.queryDatabase();
-		if (knowledgeElements == null) return recommendations;
-
-		//filter all knowledge elements by the type "issue"
-		List<KnowledgeElement> issues = knowledgeElements
-			.stream()
-			.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-			.collect(Collectors.toList());
-
-		for (String keyword : keywords) {
-			//get all alternatives, which parent contains the pattern"
-			issues.forEach(issue -> {
-				if (issue.getSummary().contains(keyword)) {
-					issue.getLinks()
-						.stream()
-						.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
-							this.matchingIssueTypes(link.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION)) //TODO workaround, checks both directions since the link direction is sometimes wrong.
-						.forEach(child -> {
-
-							//	Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
-							Recommendation recommendation = new Recommendation("TEST", knowledgeElement2.getSummary(), knowledgeElement2.getUrl());
-							recommendation.addArguments(this.getArguments(child.getSource()));
-							recommendation.addArguments(this.getArguments(child.getTarget()));
-
-							if (recommendation != null) {
-								int score = calculateScore(keywords, issue);
-								recommendation.setScore(score);
-								recommendations.add(recommendation);
-							}
-
-						});
-				}
-			});
-		}
-
-		return recommendations.stream().distinct().collect(Collectors.toList());
+	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
+		String inputs = knowledgeElement.getSummary();
+		return this.getResults(inputs);
 	}
 
 
-	private int calculateScore(List<String> keywords, KnowledgeElement parentIssue) {
-		float numberOfKeywords = keywords.size();
-		int matchedKeyWord = 0;
-		int numberOfIssues = 1;
+	private int calculateScore(String keywords, KnowledgeElement parentIssue, List<Argument> arguments) {
 
-		for (String keyword : keywords) {
-			if (parentIssue.getSummary().contains(keyword)) {
-				matchedKeyWord += 1;
-			}
+		int numberProArguments = 0;
+		int numberConArguments = 0;
+
+		for (Argument argument : arguments) {
+			if (argument.getType().equals(KnowledgeType.PRO.toString())) numberProArguments += 1;
+			if (argument.getType().equals(KnowledgeType.CON.toString())) numberConArguments += 1;
 		}
 
+		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
+		double jc = jaccardSimilarity.apply(keywords, parentIssue.getSummary());
 
-//		for (Link link : parentIssue.getLinks()) {
-//			if (link.getTarget().getType() == KnowledgeType.ISSUE) {
-//				numberOfIssues += 1;
-//				for (String keyword : keywords) {
-//					if (link.getTarget().getSummary().contains(keyword)) {
-//						matchedKeyWord += 1;
-//					}
-//				}
-//			}
-//		}
+		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments))) / (1 + arguments.size()) * 100f;
 
-		float score = 0;
-		if (numberOfKeywords != 0)
-			score = (matchedKeyWord / (numberOfKeywords * numberOfIssues)) * 100;
-
-		return Math.round(score);
+		return Math.round(scoreJC);
 	}
+
+	private double calculateSimilarity(String left, String right) {
+		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
+		double jc = jaccardSimilarity.apply(left.toLowerCase(), right.toLowerCase());
+		return jc;
+	}
+
 }
