@@ -121,7 +121,9 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-		return this.getResults(knowledgeElement.getSummary());
+		if (knowledgeElement != null)
+			return this.getResults(knowledgeElement.getSummary());
+		else return new ArrayList<>();
 	}
 
 	private List<String> combineKeywords(List<String> keywords) {
