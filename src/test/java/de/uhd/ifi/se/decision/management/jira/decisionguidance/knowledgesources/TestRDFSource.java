@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,15 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	public void testActivation() {
+		KnowledgeSource source = new RDFSource("Test");
+		source.setName("RDFSource");
+		source.setActivated(false);
+		List<Recommendation> recommendations = source.getResults("");
+		assertEquals(0, recommendations.size());
+	}
+
+	@Test
 	public void testRDFSourceWithInput() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
@@ -34,6 +44,23 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(138, recommendations.size()); // 3*46 since there are 3 combinations possible with the input
 		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
 		assertEquals(true, source.isActivated());
+		source.setActivated(false);
+		recommendations = source.getResults("Test 123");
+		assertEquals(0, recommendations.size());
+	}
+
+	@Test
+	public void testRDFSourceWithKnowledgeElement() {
+		KnowledgeSource source = new RDFSource("Test");
+		source.setName("RDFSource");
+		List<Recommendation> recommendations = source.getResults(new KnowledgeElement());
+		assertEquals(46, recommendations.size());
+		KnowledgeElement knowledgeElement = null;
+		recommendations = source.getResults(knowledgeElement);
+		assertEquals(0, recommendations.size());
+		source.setActivated(false);
+		recommendations = source.getResults(new KnowledgeElement());
+		assertEquals(0, recommendations.size());
 	}
 
 	@Test

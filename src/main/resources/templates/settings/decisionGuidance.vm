@@ -23,15 +23,19 @@
         </span></legend>
             <div class="radio">
                 <input class="radio" type="radio"
-                       name="radiobuttons" id="keyowords-radio" value="KEYWORD"
+                       name="radiobuttons-input" id="keyword-based" value="KEYWORD"
                 />
-                <label for="keyowords-radio">Keyword-based</label>
+                <label for="keyword-based">Keyword-based</label>
             </div>
             <div class="radio">
                 <input class="radio" type="radio"
-                       name="radiobuttons" id="issue-radio" value="ISSUE"
+                       name="radiobuttons-input" id="issue-based" value="ISSUE"
                 />
-                <label for="issue-radio">Issues-based</label>
+                <label for="issue-based">Issues-based</label>
+            </div>
+            <div class="description">Chose the input on which to base a recommendation. A Keyword-based only uses the
+                keywords from the input field in the jira issue view.
+                The Issue-based input also uses linked alternatives and other context information provided.
             </div>
         </fieldset>
     </div>
@@ -51,6 +55,9 @@
                        name="radiobuttons" id="tokenized" value="TOKENIZED"
                 />
                 <label for="tokenized">Tokenization</label>
+            </div>
+            <div class="description">Chose a calculation method for the recommendation. The results and the score will
+                be differently calculated.
             </div>
         </fieldset>
     </div>
@@ -281,6 +288,16 @@
             conDecAPI.setCalculationMethod("$projectKey", this.value);
         });
 
+        if("$recommendationInput" == "KEYWORD")
+            $("#keyword-based").prop("checked", true);
+        else
+            $("#issue-based").prop("checked", true);
+
+
+         $('input[type=radio][name=radiobuttons-input]').change(function() {
+            conDecAPI.setRecommendationInput("$projectKey", this.value);
+        });
+
 
         $("#save-max-recommendation-btn").click((event) => {
            event.preventDefault();
@@ -416,6 +433,7 @@
 
 
     });
+
 
 
 </script>

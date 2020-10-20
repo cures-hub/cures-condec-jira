@@ -59,14 +59,14 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSimpleRecommenderAddKnowledgeSources() {
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
 		simpleRecommender.addKnowledgeSource(projectSource);
 		simpleRecommender.addKnowledgeSource(rdfSource);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
@@ -74,7 +74,7 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 	@Test
 	public void testRecommenderEvaluation() {
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
+		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);

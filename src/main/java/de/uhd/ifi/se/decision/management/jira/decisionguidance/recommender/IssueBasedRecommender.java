@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IssueBasedRecommender extends BaseRecommender {
-	
+
 	private KnowledgeElement knowledgeElement;
 
 	public IssueBasedRecommender(KnowledgeElement knowledgeElement) {
@@ -25,9 +25,7 @@ public class IssueBasedRecommender extends BaseRecommender {
 	@Override
 	public List<Recommendation> getRecommendation() {
 		for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
-			if (knowledgeSource.isActivated()) {
-				this.recommendations.addAll(knowledgeSource.getResults(this.knowledgeElement));
-			}
+			this.recommendations.addAll(knowledgeSource.getResults(this.knowledgeElement));
 		}
 		return this.recommendations;
 	}

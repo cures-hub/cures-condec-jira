@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -382,7 +383,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setAuthMethods("TEST", "HTTP");
 		ConfigPersistenceManager.setUsernames("TEST", "user");
 		ConfigPersistenceManager.setTokens("TEST", "secret👀");
-		
+
 		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
 		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("HTTP", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI));
@@ -397,14 +398,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setAuthMethods("TEST", "");
 		ConfigPersistenceManager.setUsernames("TEST", "");
 		ConfigPersistenceManager.setTokens("TEST", "");
-		
+
 		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
 		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("NONE", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI));
 	}
-	
+
 	@Test
 	public void testGetGitReposWithMissingInformation() {
 		ConfigPersistenceManager.setGitUris("TEST", TestSetUpGit.GIT_URI + ";;" + TestSetUpGit.GIT_URI + "/");
@@ -412,7 +413,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setAuthMethods("TEST", "HTTP");
 		ConfigPersistenceManager.setUsernames("TEST", "user");
 		ConfigPersistenceManager.setTokens("TEST", "secret👀");
-		
+
 		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitUris("TEST").get(0));
 		assertEquals("master", ConfigPersistenceManager.getDefaultBranches("TEST").get(TestSetUpGit.GIT_URI));
 		assertEquals("HTTP", ConfigPersistenceManager.getAuthMethods("TEST").get(TestSetUpGit.GIT_URI));
@@ -425,7 +426,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("", ConfigPersistenceManager.getUsernames("TEST").get(TestSetUpGit.GIT_URI + "/"));
 		assertEquals("", ConfigPersistenceManager.getTokens("TEST").get(TestSetUpGit.GIT_URI + "/"));
 	}
-	
+
 	@Test
 	public void testGetEmptyGitUris() {
 		ConfigPersistenceManager.setGitUris("TEST", "");
@@ -590,6 +591,15 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
 		assertFalse(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
+	}
+
+	@Test
+	public void testSetAndGetRecommendationInput() {
+		//assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput("TEST"));
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
+		assertEquals(RecommenderType.KEYWORD.toString(), ConfigPersistenceManager.getRecommendationInput("TEST"));
+		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD");
+		assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput(null));
 	}
 
 	@Test

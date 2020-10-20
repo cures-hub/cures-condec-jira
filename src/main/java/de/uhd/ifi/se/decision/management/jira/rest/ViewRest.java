@@ -8,7 +8,9 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.IssueBasedRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.KeywordBasedRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -369,19 +371,23 @@ public class ViewRest {
 		KnowledgeElement knowledgeElement = persistenceManager.getKnowledgeElement(issueID, "s");
 
 
-		BaseRecommender keywordBasedRecommender = new KeywordBasedRecommender(keyword, allKnowledgeSources);
+		BaseRecommender recommender;
+			if(ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD.toString()))
+				recommender =  new KeywordBasedRecommender(keyword, allKnowledgeSources);
+			else
+				recommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
 
-		if (checkIfKnowledgeSourceNotConfigured(keywordBasedRecommender)) {
+		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 				"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
 					+ projectKey + "&category=decisionGuidance'>Configure</a>"))
 				.build();
 		}
 
-		List<Recommendation> recommendationList = keywordBasedRecommender.getRecommendation();
+		List<Recommendation> recommendationList = recommender.getRecommendation();
 
 		if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
-			keywordBasedRecommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
+			recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
 
 		return Response.ok(recommendationList).build();
 	}
