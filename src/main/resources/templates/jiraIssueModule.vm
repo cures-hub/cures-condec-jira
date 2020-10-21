@@ -65,6 +65,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/chronology.vm")
     </div>
 </div>
+
+<a id="open-fullscreen"><span style="padding-right:6px;" class="aui-icon aui-icon-small aui-iconfont-vid-full-screen-on">Fullscreen</span>Fullscreen</a>
+<a id="close-fullscreen" class="aui-close-button"></a>
+
 #parse("templates/contextMenu.vm")
 #parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
@@ -99,5 +103,19 @@ $(document).ready(function () {
 			}
 	});
 
+
+	//handles the fullscreen mode
+    $("#close-fullscreen").click(function() {
+        $(this).hide();
+        $(".active-pane").each(function() {
+            $(this).removeClass("jira-module-fullscreen");
+        });
+    });
+    $("#open-fullscreen").click(function() {
+        $("#close-fullscreen").show();
+        $(".active-pane").first().addClass("jira-module-fullscreen");
+    });
+
 });
+
 </script>
