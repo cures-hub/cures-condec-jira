@@ -2,18 +2,20 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class BaseRecommender {
+public abstract class BaseRecommender<T> {
 
-	List<KnowledgeSource> knowledgeSources;
-	List<Recommendation> recommendations;
+	protected List<Recommendation> recommendations;
+	protected List<KnowledgeSource> knowledgeSources;
+
 
 	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);
@@ -29,33 +31,20 @@ public abstract class BaseRecommender {
 		return this.knowledgeSources;
 	}
 
-	abstract public List<Recommendation> getRecommendation();
-
-	/**
-	 * Checks if the knowledge source exists and activates it
-	 *
-	 * @param knowledgeSources
-	 * @param knowledgeSourceName
-	 * @return
-	 */
-	public BaseRecommender addKnowledgeSourceForEvaluation(List<? extends KnowledgeSource> knowledgeSources, String knowledgeSourceName) {
-		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			if (knowledgeSource.getName().equals(knowledgeSourceName)) {
-				knowledgeSource.setActivated(true);
-				this.addKnowledgeSource(knowledgeSource);
-			}
-		}
-		return this;
-	}
+	public abstract List<Recommendation> getRecommendation();
 
 	protected List<Recommendation> removeDuplicated(List<? extends Recommendation> recommendations) {
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	public List<Recommendation> evaluate() {
-		return this.getRecommendation();
-	}
-
+	/**
+	 * Adds all recommendation to the knowledge graph with the status "recommended".
+	 * The recommendations will be appended to the root element
+	 *
+	 * @param rootElement
+	 * @param user
+	 * @param projectKey
+	 */
 	public void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey) {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		int id = 0;
@@ -76,12 +65,36 @@ public abstract class BaseRecommender {
 			insertedElement.setStatus(KnowledgeStatus.RECOMMENDED);
 			manager.updateKnowledgeElement(insertedElement, user);
 			manager.insertLink(rootElement, insertedElement, user);
-
-//			KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-//			graph.addVertex(alternative);
-//			Link link = new Link(rootElement, alternative);
-//			graph.addEdge(link);
 		}
+	}
+
+	/**
+	 * Checks if the knowledge source exists and activates it
+	 *
+	 * @param knowledgeSources
+	 * @param knowledgeSourceName
+	 * @return
+	 */
+	public BaseRecommender withKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources, String knowledgeSourceName) {
+		for (KnowledgeSource knowledgeSource : knowledgeSources) {
+			if (knowledgeSource.getName().equals(knowledgeSourceName)) {
+				knowledgeSource.setActivated(true);
+				this.addKnowledgeSource(knowledgeSource);
+			}
+		}
+		return this;
+	}
+
+	public abstract BaseRecommender evaluate(T object);
+
+	public abstract List<Recommendation> execute();
+
+	public double calculateFScore(int truePositive, int falseNegative, int falsePositive) {
+		return truePositive / (truePositive + .5 * (falsePositive + falseNegative));
+	}
+
+	public double calculateFScore(double precision, double recall) {
+		return 2 * ((precision * recall) / (precision + recall));
 	}
 
 }

@@ -1,20 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestKeywordBasedRecommender extends TestSetUp {
 
@@ -25,8 +24,8 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 	public void setUp() {
 		init();
 		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
-																									// in the same
-																									// project
+		// in the same
+		// project
 		rdfSource = new RDFSource(JiraProjects.getTestProject().getKey());
 	}
 
@@ -78,9 +77,9 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
-		simpleRecommender.addKnowledgeSourceForEvaluation(knowledgeSources, "TEST");
+		simpleRecommender.withKnowledgeSource(knowledgeSources, "TEST");
 		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
-		assertEquals(2, simpleRecommender.evaluate().size());
+		assertEquals(2, simpleRecommender.execute().size());
 	}
 
 	@Test

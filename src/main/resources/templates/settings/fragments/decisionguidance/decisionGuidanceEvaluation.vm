@@ -1,22 +1,31 @@
-<h2>Evaluation of Knowledge sources</h2>
+<div id="evaluation-container">
+    <h2>Evaluation of Knowledge sources</h2>
 
-<div class="settings-divider">
-    <div class="field-group">
-        <label for="evaluation-keywords">Keywords</label>
-        <input id="evaluation-keywords" class="text medium-field" placeholder="e.g. Databases"/>
-        <div class="description">Enter some keywords.
+    <div class="settings-divider">
+        <div class="field-group">
+            <label for="evaluation-keywords">Keywords</label>
+            <input id="evaluation-keywords" class="text medium-field" placeholder="e.g. Databases"/>
+            <div class="description">Enter some keywords.
+            </div>
         </div>
-    </div>
-    <div class="field-group">
-        <!-- Trigger -->
 
+        <div class="field-group">
+            <form class="aui">
+                <label for="select2-issues">Issue</label>
+                <select id="select2-issues" placeholder="Select an issue..."
+                        class="select medium-field">
+                </select>
+                <div class="description">Select an issue for evaluation.
+                </div>
+            </form>
+        </div>
 
-        <label for="knowledgesource-evaluation-dropdown">Type of Source</label>
-        <!-- Dropdown -->
-        <div style="display:flex; align-items:center; gap:12px">
+        <div class="field-group">
+            <!-- Dropdown -->
             <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
                aria-haspopup="true"
                class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
+            <label for="knowledgesource-evaluation-dropdown">Knowledge Sources</label>
 
             <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
                 <div class="aui-dropdown2-section">
@@ -38,12 +47,19 @@
                     #end
                 </div>
             </aui-dropdown-menu>
-            <input type="button" class="aui-button" id="evaluation-knowledgesource-button" value="Evaluate"/>
-            <aui-spinner size="small" id="loading-spinner-recommendation"
-                         style="margin:0 auto; display:none; "></aui-spinner>
+            <div class="description">Select knowledge sources that you want to evaluate.
+            </div>
         </div>
-        <div class="description">
-            Evaluates the selected knowledge source. <br/>
+        <div class="field-group">
+            <div style="display:flex; align-items:center; gap:12px">
+                <input type="button" class="aui-button-primary aui-button" id="evaluation-knowledgesource-button"
+                       value="Evaluate"/>
+                <aui-spinner size="small" id="loading-spinner-recommendation"
+                             style="margin:0 auto; display:none; "></aui-spinner>
+            </div>
+            <div class="description">
+                Evaluates the selected knowledge source. <br/>
+            </div>
         </div>
 
     </div>
@@ -60,8 +76,22 @@
         <tbody></tbody>
     </table>
 </div>
-
 <script>
+
+    var init = false;
+    $("#evaluation-container").mouseenter(function() {
+        if(!init) {
+        conDecAPI.getAllIssues("$projectKey", function(error, results) {
+            if (results !== null && results.length > 0) {
+                results.forEach(issue => {
+                     $("#select2-issues").append("<option value='" + issue.id + "'>" + issue.summary + "</option>");
+                });
+		    }
+        });
+        init = true
+        AJS.$("#select2-issues").auiSelect2();
+        }
+    });
 
     let activeSources = []
     var sources = $("#knowledgesource-evaluation-dropdown")
@@ -73,20 +103,19 @@
         } else {
             activeSources.splice (activeSources.indexOf(e.target.textContent), 1);
         }
-
-        console.log(activeSources)
     });
 
     $("#evaluation-knowledgesource-button").click(function(event) {
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
+        const issueID = $("#select2-issues").val();
         const table =  $("#evaluation-results-table tbody");
         $("#evaluation-results-table tbody tr").remove();
         const spinner = $("#loading-spinner-recommendation");
 
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, sourceName, function(results, error) {
+            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, function(results, error) {
                 if(results) {
                     $("#evaluation-results-table tbody").append("<tr><td>$knowledgeSourceAlgorithm</td><td>" + sourceName + "</td><td>"+
                     results.length +"</td> </tr>");
@@ -97,13 +126,6 @@
 
 
     });
-
-
-
-
-
-
-
 
 
 

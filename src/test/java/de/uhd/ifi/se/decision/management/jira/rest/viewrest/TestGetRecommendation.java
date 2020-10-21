@@ -75,27 +75,23 @@ public class TestGetRecommendation extends TestSetUp {
 	@Test
 	public void testGetRecommendationEvaluationActiveSource() {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 1, "TEST").getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationInactiveSource() {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 1, "TEST").getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationInvalidProject() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(request, "", validKeyword, "TEST").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(request, "", validKeyword, 1, "TEST").getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationRequestNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(null, projectKey, validKeyword, "TEST").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(null, projectKey, validKeyword, 1, "TEST").getStatus());
 	}
 
-	@Test
-	public void testGetRecommendationEvaluationBlankKeyword() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, "", "TEST").getStatus());
-	}
 }

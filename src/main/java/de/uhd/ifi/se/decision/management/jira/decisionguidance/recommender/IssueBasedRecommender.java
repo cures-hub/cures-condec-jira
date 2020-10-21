@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import java.util.ArrayList;
 import java.util.List;
 
-public class IssueBasedRecommender extends BaseRecommender {
+public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 
 	private KnowledgeElement knowledgeElement;
 
@@ -30,5 +30,14 @@ public class IssueBasedRecommender extends BaseRecommender {
 		return this.recommendations;
 	}
 
+	@Override
+	public BaseRecommender evaluate(KnowledgeElement issue) {
+		this.knowledgeElement = issue;
+		return this;
+	}
 
+	@Override
+	public List<Recommendation> execute() {
+		return this.knowledgeSources.get(0).getResults(this.knowledgeElement);
+	}
 }
