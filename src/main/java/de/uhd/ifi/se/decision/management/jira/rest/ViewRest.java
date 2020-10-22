@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -412,7 +413,7 @@ public class ViewRest {
 		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "s");
 
 		BaseRecommender keywordBasedRecommender = new IssueBasedRecommender(issue);
-		List<Recommendation> recommendationList = keywordBasedRecommender.evaluate(issue)
+		RecommendationEvaluation recommendationEvaluation = keywordBasedRecommender.evaluate(issue)
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 
 
@@ -421,7 +422,7 @@ public class ViewRest {
 		keywordBasedRecommender.calculateFScore(1,2,3);
 
 
-		return Response.ok(recommendationList).build();
+		return Response.ok(recommendationEvaluation).build();
 	}
 
 	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender<?> recommender) {

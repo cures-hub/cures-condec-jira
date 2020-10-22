@@ -7,6 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,7 +88,8 @@ public abstract class BaseRecommender<T> {
 
 	public abstract BaseRecommender evaluate(T object);
 
-	public abstract List<Recommendation> execute();
+	public abstract RecommendationEvaluation execute();
+
 
 	public double calculateFScore(int truePositive, int falseNegative, int falsePositive) {
 		return truePositive / (truePositive + .5 * (falsePositive + falseNegative));

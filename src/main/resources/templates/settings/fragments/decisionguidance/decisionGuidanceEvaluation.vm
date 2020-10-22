@@ -4,7 +4,7 @@
     <div class="settings-divider">
         <div class="field-group">
             <label for="evaluation-keywords">Keywords</label>
-            <input id="evaluation-keywords" class="text medium-field" placeholder="e.g. Databases"/>
+            <input id="evaluation-keywords" class="text large-field" placeholder="e.g. Databases"/>
             <div class="description">Enter some keywords.
             </div>
         </div>
@@ -13,7 +13,7 @@
             <form class="aui">
                 <label for="select2-issues">Issue</label>
                 <select id="select2-issues" placeholder="Select an issue..."
-                        class="select medium-field">
+                        class="select large-field">
                 </select>
                 <div class="description">Select an issue for evaluation.
                 </div>
@@ -70,7 +70,7 @@
             <th>Algorithm</th>
             <th>Knowledge Source</th>
             <th>Results</th>
-            <th>Used Words</th>
+            <th>F-Score</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -115,16 +115,18 @@
 
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, function(results, error) {
-                if(results) {
-                    $("#evaluation-results-table tbody").append("<tr><td>$knowledgeSourceAlgorithm</td><td>" + sourceName + "</td><td>"+
-                    results.length +"</td> </tr>");
+            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, function(eval, error) {
+                if(eval) {
+                    $("#evaluation-results-table tbody").append(
+                    "<tr><td>" + eval.recommenderType + "</td>" +
+                    "<td>" + eval.knowledgeSourceName + "</td>" +
+                    "<td>" +  eval.numberOfResults +"</td>" +
+                    "<td>" +  eval.fScore +"</td>" +
+                    "</tr>");
                     spinner.hide();
                 }
             });
         });
-
-
     });
 
 

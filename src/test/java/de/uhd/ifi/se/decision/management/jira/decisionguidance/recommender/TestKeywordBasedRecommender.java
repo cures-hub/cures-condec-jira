@@ -79,7 +79,7 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		knowledgeSources.add(rdfSource);
 		simpleRecommender.withKnowledgeSource(knowledgeSources, "TEST");
 		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
-		assertEquals(2, simpleRecommender.execute().size());
+		assertEquals(2, simpleRecommender.execute().getNumberOfResults());
 	}
 
 	@Test
