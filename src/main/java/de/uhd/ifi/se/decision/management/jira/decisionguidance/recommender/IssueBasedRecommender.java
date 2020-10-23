@@ -51,31 +51,35 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 			.map(link -> link.getSource())
 			.collect(Collectors.toList());
 
+		List<KnowledgeElement> decisions = this.knowledgeElement.getLinks().stream()
+			.filter(link -> link.getSource().getType().equals(KnowledgeType.DECISION)).collect(Collectors.toList()).stream()
+			.map(link -> link.getSource())
+			.collect(Collectors.toList());
 
-		List<KnowledgeElement> ideas = alternatives.stream().filter(alternative -> alternative.getStatus().equals(KnowledgeStatus.IDEA)).collect(Collectors.toList());
-		List<KnowledgeElement> discarded = alternatives.stream().filter(alternative -> alternative.getStatus().equals(KnowledgeStatus.DISCARDED)).collect(Collectors.toList());
+
+		List<KnowledgeElement> ideas = this.getElementsWithStatus(alternatives, KnowledgeStatus.IDEA);
+		List<KnowledgeElement> discarded = this.getElementsWithStatus(alternatives, KnowledgeStatus.DISCARDED);
+
+		List<KnowledgeElement> decided = this.getElementsWithStatus(decisions, KnowledgeStatus.DECIDED);
+		List<KnowledgeElement> rejected = this.getElementsWithStatus(decisions, KnowledgeStatus.REJECTED);
 
 
 		int intersectingIdeas = 0;
 		int intersectingDiscarded = 0;
+		int intersectedDecided = 0;
+		int intersectedRejected = 0;
 
 		for (Recommendation recommendation : recommendationsFromKnowledgeSource) {
-
-			for (KnowledgeElement idea : ideas) {
-				if (idea.getSummary().trim().equals(recommendation.getRecommendations().trim()))
-					intersectingIdeas += 1;
-			}
-
-			for (KnowledgeElement discard : discarded) {
-				if (discard.getSummary().trim().equals(recommendation.getRecommendations().trim()))
-					intersectingDiscarded += 1;
-			}
+			intersectingIdeas += this.countIntersections(ideas, recommendation.getRecommendations());
+			intersectingDiscarded += this.countIntersections(discarded, recommendation.getRecommendations());
+			intersectedDecided += this.countIntersections(decided, recommendation.getRecommendations());
+			intersectedRejected += this.countIntersections(rejected, recommendation.getRecommendations());
 		}
 
-		int falseNegative = (ideas.size() + discarded.size()) - intersectingIdeas - intersectingDiscarded;
+		int falseNegative = (ideas.size() + discarded.size() + decided.size() + rejected.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided - intersectedRejected;
 
 
-		double fScore = this.calculateFScore(intersectingIdeas, falseNegative, intersectingDiscarded);
+		double fScore = this.calculateFScore(intersectingIdeas + intersectedDecided, falseNegative, intersectingDiscarded + intersectedRejected);
 
 		if (Double.isNaN(fScore)) fScore = 0.0;
 
@@ -83,5 +87,18 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 
 
 		return recommendationEvaluation;
+	}
+
+	private List<KnowledgeElement> getElementsWithStatus(List<KnowledgeElement> knowledgeElements, KnowledgeStatus status) {
+		return knowledgeElements.stream().filter(element -> element.getStatus().equals(status)).collect(Collectors.toList());
+	}
+
+	private int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString) {
+		int counter = 0;
+		for (KnowledgeElement knowledgeElement : knowledgeElements) {
+			if (knowledgeElement.getSummary().trim().equals(matchingString.trim()))
+				counter += 1;
+		}
+		return counter;
 	}
 }
