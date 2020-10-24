@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
@@ -88,11 +86,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	@Test
 	public void testPostComment() {
-		try {
-			transcriber.postComments(branch);
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		transcriber.postComments(branch);
 		String additionalMessage = "";
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(issue);
 		for (int i = 0, j = 1; i < comments.size(); i++, j++) {
