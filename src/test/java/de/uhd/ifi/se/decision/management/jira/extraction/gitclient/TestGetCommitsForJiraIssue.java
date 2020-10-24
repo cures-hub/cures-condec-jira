@@ -23,6 +23,10 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 		// TODO Pass branch to getCommits method or iterate over all branches if no
 		// branch is given
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		System.out.println(commits);
+		for (RevCommit commit : commits) {
+			System.out.println(commit.getFullMessage());
+		}
 		assertEquals(2, commits.size()); // should be 3: two commits are on the default branch, one commit is on the
 											// feature branch
 		assertTrue(commits.get(0).getShortMessage().startsWith("TEST-12: Develop great software"));

@@ -272,7 +272,6 @@ public class GitClient {
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
 		}
 		return commits;
