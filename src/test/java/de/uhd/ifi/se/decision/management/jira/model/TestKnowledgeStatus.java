@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class TestKnowledgeStatus {
 
@@ -68,9 +68,9 @@ public class TestKnowledgeStatus {
 
 	@Test
 	public void testGetColor() {
-		assertEquals("red", KnowledgeStatus.UNRESOLVED.getColor());
+		assertEquals("crimson", KnowledgeStatus.UNRESOLVED.getColor());
 		assertEquals("gray", KnowledgeStatus.DISCARDED.getColor());
 		assertEquals("gray", KnowledgeStatus.REJECTED.getColor());
-		assertEquals("blue", KnowledgeStatus.CHALLENGED.getColor());
+		assertEquals("crimson", KnowledgeStatus.CHALLENGED.getColor());
 	}
 }

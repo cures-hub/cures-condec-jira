@@ -48,10 +48,13 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	/**
-	 * @Issue Should we make a user for commenting commit messages under an issue?
-	 * @Alternative Yes.
-	 * @Pro Its clear what comments were originally commit messages.
-	 * @Alternative No.
+	 * @Issue Who should be the author of the new Jira issue comment that a commit
+	 *        messages was posted into?
+	 * @Alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
+	 *              that a commit messages was posted into!
+	 * @Pro It is clear that the comment origined from a commit messages.
+	 * @Alternative The user that opens the Jira issue could be the creator of the
+	 *              Jira issue comment that a commit messages was posted into.
 	 * @Con It would be confusing to users if they see that they posted something
 	 *      that they did no write.
 	 */
