@@ -1,10 +1,32 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -29,21 +51,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
-import org.eclipse.jgit.lib.Ref;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * REST resource for view
@@ -86,8 +93,7 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
-		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
-				+ normalizedIssueKey.toUpperCase() + "\\-";
+		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 
 		// get feature branches of an issue
 		return getDiffViewerResponse(projectKey, regexFilter,
@@ -95,8 +101,9 @@ public class ViewRest {
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
+		System.out.println("getDiffViewerResponse: " + projectKey);
 
-		Response resp = this.getDiffViewerResponse(projectKey, filter);
+		Response resp = getDiffViewerResponse(projectKey, filter);
 
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 
@@ -107,9 +114,15 @@ public class ViewRest {
 		gitClient = GitClient.getOrCreate(projectKey);
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		for (Ref branch : branches) {
+			System.out.println(branch.getName());
 			Matcher branchMatcher = filterPattern.matcher(branch.getName());
 			if (branchMatcher.find()) {
 				transcriber.postComments(branch);
+			}
+			for (String defaultBranchName : ConfigPersistenceManager.getDefaultBranches(projectKey).values()) {
+				if (branch.getName().contains(defaultBranchName)) {
+					transcriber.postComments(branch);
+				}
 			}
 		}
 
@@ -348,9 +361,9 @@ public class ViewRest {
 
 	@Path("/getRecommendation")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									  @QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID) {
+			@QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -361,27 +374,25 @@ public class ViewRest {
 
 		if (keyword.isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
+					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement knowledgeElement = persistenceManager.getKnowledgeElement(issueID, "s");
 
-
 		BaseRecommender recommender;
-			if(ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD.toString()))
-				recommender =  new KeywordBasedRecommender(keyword, allKnowledgeSources);
-			else
-				recommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
+		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD.toString()))
+			recommender = new KeywordBasedRecommender(keyword, allKnowledgeSources);
+		else
+			recommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
 
 		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
-					+ projectKey + "&category=decisionGuidance'>Configure</a>"))
-				.build();
+					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
+							+ projectKey + "&category=decisionGuidance'>Configure</a>"))
+					.build();
 		}
 
 		List<Recommendation> recommendationList = recommender.getRecommendation();
@@ -392,13 +403,12 @@ public class ViewRest {
 		return Response.ok(recommendationList).build();
 	}
 
-
 	@Path("/getRecommendationEvaluation")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
-												@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-												@QueryParam("knowledgeSource") String knowledgeSourceName) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
+			@QueryParam("knowledgeSource") String knowledgeSourceName) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}

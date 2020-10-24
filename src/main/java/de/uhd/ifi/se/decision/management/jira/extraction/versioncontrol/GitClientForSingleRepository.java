@@ -60,7 +60,8 @@ public class GitClientForSingleRepository {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
-	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey, String authMethod, String username, String token) {
+	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey, String authMethod,
+			String username, String token) {
 		this.projectKey = projectKey;
 		this.repoUri = uri;
 		this.defaultBranchName = defaultBranchName;
@@ -184,23 +185,29 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		try {
-			switch(authMethod) {
-				case "HTTP":
-					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			switch (authMethod) {
+			case "HTTP":
+				git = Git.cloneRepository().setURI(repoUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 
-				case "GITHUB":
-					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			case "GITHUB":
+				git = Git.cloneRepository().setURI(repoUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 
-				case "GITLAB":
-					String gitlabUri = repoUri.replaceAll("https://","https://gitlab-ci-token:" + token + "@");
-					git = Git.cloneRepository().setURI(gitlabUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
-			
-				default:
-					git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			case "GITLAB":
+				String gitlabUri = repoUri.replaceAll("https://", "https://gitlab-ci-token:" + token + "@");
+				git = Git.cloneRepository().setURI(gitlabUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
+
+			default:
+				git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 			}
 
 			setConfig();
@@ -264,7 +271,7 @@ public class GitClientForSingleRepository {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
-		List<RevCommit> squashCommits = getCommits(jiraIssue);
+		List<RevCommit> squashCommits = getCommits(jiraIssue, false);
 		Ref branch = getRef(jiraIssue.getKey());
 		List<RevCommit> commits = getCommits(branch);
 		if (commits == null) {
@@ -592,7 +599,7 @@ public class GitClientForSingleRepository {
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
 	 */
-	public List<RevCommit> getCommits(Issue jiraIssue) {
+	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
 		if (jiraIssue == null) {
 			return new LinkedList<RevCommit>();
 		}
@@ -616,7 +623,7 @@ public class GitClientForSingleRepository {
 		 *      CONDEC-1000) will not be confused.
 		 */
 		Ref branch = getRef(jiraIssueKey);
-		List<RevCommit> commits = getCommits(branch, false);
+		List<RevCommit> commits = getCommits(branch, isDefaultBranch);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
 			String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());

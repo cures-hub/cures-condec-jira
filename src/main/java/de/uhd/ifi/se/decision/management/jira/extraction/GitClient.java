@@ -96,7 +96,7 @@ public class GitClient {
 		if (instances.containsKey(projectKey)) {
 			instances.remove(projectKey);
 		}
-		
+
 		gitClient = new GitClient(projectKey);
 		instances.put(projectKey, gitClient);
 
@@ -106,16 +106,15 @@ public class GitClient {
 
 	private GitClient(String projectKey) {
 		this(ConfigPersistenceManager.getGitUris(projectKey), ConfigPersistenceManager.getDefaultBranches(projectKey),
-		ConfigPersistenceManager.getAuthMethods(projectKey), ConfigPersistenceManager.getUsernames(projectKey),
-		ConfigPersistenceManager.getTokens(projectKey), projectKey);
+				ConfigPersistenceManager.getAuthMethods(projectKey), ConfigPersistenceManager.getUsernames(projectKey),
+				ConfigPersistenceManager.getTokens(projectKey), projectKey);
 	}
 
 	private GitClient(List<String> uris, Map<String, String> defaultBranches, Map<String, String> authMethods,
 			Map<String, String> usernames, Map<String, String> tokens, String projectKey) {
 		this();
 		this.projectKey = projectKey;
-		uris.forEach(uri -> gitClientsForSingleRepos
-				.add(new GitClientForSingleRepository(uri, defaultBranches.get(uri),
+		uris.forEach(uri -> gitClientsForSingleRepos.add(new GitClientForSingleRepository(uri, defaultBranches.get(uri),
 				projectKey, authMethods.get(uri), usernames.get(uri), tokens.get(uri))));
 	}
 
@@ -273,7 +272,8 @@ public class GitClient {
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue));
+			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
+			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
 		}
 		return commits;
 	}
@@ -352,6 +352,14 @@ public class GitClient {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommitsFromDefaultBranch());
+		}
+		return commits;
+	}
+
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
+		List<RevCommit> commits = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 		}
 		return commits;
 	}

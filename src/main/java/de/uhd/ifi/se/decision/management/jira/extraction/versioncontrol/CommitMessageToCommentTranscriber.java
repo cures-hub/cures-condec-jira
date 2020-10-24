@@ -25,6 +25,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * is mentioned in the commit message. Consequently, the decision knowledge in
  * the commit message is added to the {@link KnowledgeGraph} and can be changed
  * in Jira.
+ * 
+ * You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
+ * role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is
+ * created automatically but needs to be manually associated with the project.
  */
 public class CommitMessageToCommentTranscriber {
 	private GitClient gitClient;
@@ -33,8 +37,6 @@ public class CommitMessageToCommentTranscriber {
 	private List<RevCommit> defaultBranchCommits;
 
 	private static String DEFAULT_COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
-	private static UserDetails DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS = new UserDetails(
-			DEFAULT_COMMIT_COMMENTATOR_USER_NAME, DEFAULT_COMMIT_COMMENTATOR_USER_NAME);
 
 	public CommitMessageToCommentTranscriber(Issue issue) {
 		this(issue, GitClient.getOrCreate(issue.getProjectObject().getKey()));
@@ -80,11 +82,10 @@ public class CommitMessageToCommentTranscriber {
 		comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(comment);
 		StringBuilder builder = new StringBuilder(comment);
 		builder.append("\r\n");
-		builder.append("> Commit meta data\r\n");
-		builder.append("> Author: " + commit.getAuthorIdent().getName() + "\r\n");
-		builder.append("> Branch: " + featureBranch.getName() + "\r\n");
-		builder.append("> Repository: " + gitClient.getRepoUriFromBranch(featureBranch) + "\r\n");
-		builder.append("> Hash: " + commit.getName());
+		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
+		builder.append("Repository and Branch: " + gitClient.getRepoUriFromBranch(featureBranch) + " "
+				+ featureBranch.getName() + "\r\n");
+		builder.append("Commit Hash: " + commit.getName());
 		return builder.toString();
 	}
 
@@ -102,20 +103,20 @@ public class CommitMessageToCommentTranscriber {
 		if (gitClient == null) {
 			return;
 		}
-		String repoUri = gitClient.getRepoUriFromBranch(branch);
-		if (branch.getName().contains("/" + gitClient.getGitClientsForSingleRepo(repoUri).getDefaultBranchName())) {
-			if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
-				Optional.ofNullable(gitClient.getCommits(issue)).ifPresent(defaultBranchCommits::addAll);
-				for (RevCommit commit : defaultBranchCommits) {
-					this.postComment(defaultUser, commit, branch);
-				}
+		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
+			Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
+			for (RevCommit commit : featureBranchCommits) {
+				postComment(defaultUser, commit, branch);
 			}
-		} else {
-			if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
-				Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
-				for (RevCommit commit : this.featureBranchCommits) {
-					this.postComment(defaultUser, commit, branch);
-				}
+		}
+		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
+			String repoUri = gitClient.getRepoUriFromBranch(branch);
+			if (!branch.getName().contains(gitClient.getGitClientsForSingleRepo(repoUri).getDefaultBranchName())) {
+				return;
+			}
+			Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
+			for (RevCommit commit : defaultBranchCommits) {
+				postComment(defaultUser, commit, branch);
 			}
 		}
 	}
@@ -123,7 +124,9 @@ public class CommitMessageToCommentTranscriber {
 	private ApplicationUser getUser() {
 		ApplicationUser defaultUser;
 		try {
-			defaultUser = ComponentAccessor.getUserManager().createUser(DEFAULT_COMMIT_COMMENTATOR_USR_DETAILS);
+			UserDetails userDetails = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USER_NAME,
+					DEFAULT_COMMIT_COMMENTATOR_USER_NAME);
+			defaultUser = ComponentAccessor.getUserManager().createUser(userDetails);
 		} catch (CreateException | PermissionException e) {
 			defaultUser = ComponentAccessor.getUserManager().getUserByName(DEFAULT_COMMIT_COMMENTATOR_USER_NAME);
 		}
