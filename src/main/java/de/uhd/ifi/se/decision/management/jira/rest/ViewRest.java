@@ -7,10 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.IssueBasedRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.KeywordBasedRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.*;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -412,14 +409,10 @@ public class ViewRest {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "s");
 
-		BaseRecommender keywordBasedRecommender = new IssueBasedRecommender(issue);
-		RecommendationEvaluation recommendationEvaluation = keywordBasedRecommender.evaluate(issue)
+
+		BaseRecommender recommender = new EvaluationRecommender(issue, keyword);
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
-
-
-
-
-		keywordBasedRecommender.calculateFScore(1,2,3);
 
 
 		return Response.ok(recommendationEvaluation).build();

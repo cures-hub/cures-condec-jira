@@ -67,10 +67,11 @@
     <table id="evaluation-results-table" class="aui">
         <thead>
         <tr>
-            <th>Algorithm</th>
+            <th>Input</th>
             <th>Knowledge Source</th>
             <th>Results</th>
             <th>F-Score</th>
+            <th>Mean Reciprocal Rank</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -122,6 +123,7 @@
                     "<td>" + eval.knowledgeSourceName + "</td>" +
                     "<td>" +  eval.numberOfResults +"</td>" +
                     "<td>" +  eval.fScore +"</td>" +
+                    "<td>" +  eval.mrr +"</td>" +
                     "</tr>");
                     spinner.hide();
                 }

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
@@ -40,7 +39,7 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 
 	@Override
 	public RecommendationEvaluation execute() {
-		return null;
+		return new RecommendationEvaluation("KEYWORDS", this.knowledgeSources.get(0).getName(), 0, 0.0, 0.0);
 	}
 
 

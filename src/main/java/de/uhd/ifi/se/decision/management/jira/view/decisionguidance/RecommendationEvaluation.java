@@ -18,16 +18,15 @@ public class RecommendationEvaluation {
 	@XmlElement
 	protected double fScore;
 
+	@XmlElement
+	protected double mrr;
 
-	public RecommendationEvaluation() {
-
-	}
-
-	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, double fScore) {
+	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, double fScore, double mrr) {
 		this.recommenderType = recommenderType;
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.numberOfResults = numberOfResults;
 		this.fScore = fScore;
+		this.mrr = mrr;
 	}
 
 	public String getKnowledgeSourceName() {
@@ -60,5 +59,13 @@ public class RecommendationEvaluation {
 
 	public void setRecommenderType(String recommenderType) {
 		this.recommenderType = recommenderType;
+	}
+
+	public double getMrr() {
+		return mrr;
+	}
+
+	public void setMrr(double mrr) {
+		this.mrr = mrr;
 	}
 }

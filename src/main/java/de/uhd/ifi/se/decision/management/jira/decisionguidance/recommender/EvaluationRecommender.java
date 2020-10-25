@@ -11,18 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
+public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	private KnowledgeElement knowledgeElement;
+	private String keywords;
 
-	public IssueBasedRecommender(KnowledgeElement knowledgeElement) {
+	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords) {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
 		this.knowledgeElement = knowledgeElement;
+		this.keywords = keywords;
 	}
 
-	public IssueBasedRecommender(KnowledgeElement knowledgeElement, List<KnowledgeSource> knowledgeSources) {
-		this(knowledgeElement);
+	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, List<KnowledgeSource> knowledgeSources) {
+		this(knowledgeElement, keywords);
 		this.addKnowledgeSource(knowledgeSources);
 	}
 
@@ -43,7 +45,25 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 	@Override
 	public RecommendationEvaluation execute() {
 
-		List<Recommendation> recommendationsFromKnowledgeSource = this.knowledgeSources.get(0).getResults(this.knowledgeElement);
+		List<Recommendation> recommendationsFromKnowledgeSource;
+		RecommenderType recommenderType = RecommenderType.ISSUE;
+		if (!keywords.isBlank()) {
+			recommendationsFromKnowledgeSource = this.knowledgeSources.get(0).getResults(this.keywords);
+			recommenderType = RecommenderType.KEYWORD;
+		} else {
+			recommendationsFromKnowledgeSource = this.knowledgeSources.get(0).getResults(this.knowledgeElement);
+		}
+
+
+		recommendationsFromKnowledgeSource.sort((o1, o2) -> {
+			if (o1.getScore() > o2.getScore()) {
+				return -1;
+			}
+			if (o1.getScore() < o2.getScore()) {
+				return 1;
+			}
+			return 0;
+		});
 
 
 		List<KnowledgeElement> alternatives = this.knowledgeElement.getLinks().stream()
@@ -92,7 +112,7 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 
 		if (Double.isNaN(fScore)) fScore = 0.0;
 
-		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(RecommenderType.ISSUE.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), fScore, mrr);
+		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), fScore, mrr);
 
 
 		return recommendationEvaluation;
@@ -102,7 +122,7 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 	 * @param recommendations
 	 * @return
 	 */
-	public double calculateMRRForRecommendations(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+	private double calculateMRRForRecommendations(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
 		double MRR = 0.0;
 
 		for (int i = 0; i < recommendations.size(); i++) {
