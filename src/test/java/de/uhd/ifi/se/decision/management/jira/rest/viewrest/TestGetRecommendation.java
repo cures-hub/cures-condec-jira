@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -66,22 +67,40 @@ public class TestGetRecommendation extends TestSetUp {
 	}
 
 	@Test
+	public void testGetRecommendationGetRecommender() {
+		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
+		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
+	}
+
+	@Test
+	public void testGetRecommendationAddDirectly() {
+		ConfigPersistenceManager.setAddRecommendationDirectly("TEST",true);
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
+	}
+
+	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, projectKey, validKeyword, 1).getStatus());
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
 	}
 
+
+
+	/*
+	 * Test Evaluation
+	 * */
+
 	@Test
 	public void testGetRecommendationEvaluationActiveSource() {
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 1, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 2, "TEST").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationEvaluationInactiveSource() {
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 1, "TEST").getStatus());
+	public void testGetRecommendationEvaluationINVALIDISSUE() {
+		assertEquals(Status.NOT_FOUND.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, -12354, "TEST").getStatus());
 	}
 
 	@Test

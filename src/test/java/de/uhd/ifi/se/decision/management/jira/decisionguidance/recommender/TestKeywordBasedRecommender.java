@@ -71,16 +71,6 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
 
-	@Test
-	public void testRecommenderEvaluation() {
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-		knowledgeSources.add(projectSource);
-		knowledgeSources.add(rdfSource);
-		simpleRecommender.withKnowledgeSource(knowledgeSources, "TEST");
-		assertEquals(1, simpleRecommender.getKnowledgeSources().size());
-		assertEquals(2, simpleRecommender.execute().getNumberOfResults());
-	}
 
 	@Test
 	public void testRemoveDuplicates() {

@@ -407,10 +407,14 @@ public class ViewRest {
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "s");
+		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "i"); //TODO which documentation location should we use?
+
+		if (issue == null) {
+			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found.")).build();
+		}
 
 
-		BaseRecommender recommender = new EvaluationRecommender(issue, keyword);
+		EvaluationRecommender recommender = new EvaluationRecommender(issue, keyword);
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 

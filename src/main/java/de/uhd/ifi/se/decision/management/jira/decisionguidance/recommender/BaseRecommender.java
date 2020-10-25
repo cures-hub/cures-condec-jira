@@ -7,7 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,35 +67,4 @@ public abstract class BaseRecommender<T> {
 			manager.insertLink(rootElement, insertedElement, user);
 		}
 	}
-
-	/**
-	 * Checks if the knowledge source exists and activates it
-	 *
-	 * @param knowledgeSources
-	 * @param knowledgeSourceName
-	 * @return
-	 */
-	public BaseRecommender withKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources, String knowledgeSourceName) {
-		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			if (knowledgeSource.getName().equals(knowledgeSourceName)) {
-				knowledgeSource.setActivated(true);
-				this.addKnowledgeSource(knowledgeSource);
-			}
-		}
-		return this;
-	}
-
-	public abstract BaseRecommender evaluate(T object);
-
-	public abstract RecommendationEvaluation execute();
-
-
-	public double calculateFScore(int truePositive, int falseNegative, int falsePositive) {
-		return truePositive / (truePositive + .5 * (falsePositive + falseNegative));
-	}
-
-	public double calculateFScore(double precision, double recall) {
-		return 2 * ((precision * recall) / (precision + recall));
-	}
-
 }
