@@ -36,65 +36,17 @@ public class CommitMessageToCommentTranscriber {
 	private List<RevCommit> featureBranchCommits;
 	private List<RevCommit> defaultBranchCommits;
 
-	private static String DEFAULT_COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
+	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
 
-	public CommitMessageToCommentTranscriber(Issue issue) {
-		this(issue, GitClient.getOrCreate(issue.getProjectObject().getKey()));
+	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
+		this(jiraIssue, GitClient.getOrCreate(jiraIssue.getProjectObject().getKey()));
 	}
 
-	public CommitMessageToCommentTranscriber(Issue issue, GitClient gitClient) {
-		this.issue = issue;
+	public CommitMessageToCommentTranscriber(Issue jiraIssue, GitClient gitClient) {
+		this.issue = jiraIssue;
 		this.gitClient = gitClient;
 		this.featureBranchCommits = new ArrayList<>();
 		this.defaultBranchCommits = new ArrayList<>();
-	}
-
-	/**
-	 * @Issue Who should be the author of the new Jira issue comment that a commit
-	 *        messages was posted into?
-	 * @Alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
-	 *              that a commit messages was posted into!
-	 * @Pro It is clear that the comment origined from a commit messages.
-	 * @Alternative The user that opens the Jira issue could be the creator of the
-	 *              Jira issue comment that a commit messages was posted into.
-	 * @Con It would be confusing to users if they see that they posted something
-	 *      that they did no write.
-	 */
-	public void postComment(ApplicationUser user, RevCommit commit, Ref featureBranch) {
-		String commentText = generateCommentString(commit, featureBranch);
-		if (commentText == null || commentText.isBlank()) {
-			return;
-		}
-		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(issue)) {
-			// if the hash of a commit is present in a comment, do not post it again
-			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
-				return;
-			}
-		}
-		ComponentAccessor.getCommentManager().create(issue, user, commentText, true);
-	}
-
-	public String generateCommentString(RevCommit commit, Ref featureBranch) {
-		String comment = commit.getFullMessage();
-		if (comment == null || comment.isBlank()) {
-			return "";
-		}
-		comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(comment);
-		StringBuilder builder = new StringBuilder(comment);
-		builder.append("\r\n");
-		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
-		builder.append("Repository and Branch: " + gitClient.getRepoUriFromBranch(featureBranch) + " "
-				+ featureBranch.getName() + "\r\n");
-		builder.append("Commit Hash: " + commit.getName());
-		return builder.toString();
-	}
-
-	private String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
-		for (String tag : KnowledgeType.toStringList()) {
-			String replaceString = "{" + tag.toLowerCase() + "}";
-			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
-		}
-		return comment;
 	}
 
 	public void postComments(Ref branch) {
@@ -104,6 +56,7 @@ public class CommitMessageToCommentTranscriber {
 			return;
 		}
 		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
+			// TODO Why not gitClient.getFeatureBranchCommits(branch, issue)?
 			Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
 			for (RevCommit commit : featureBranchCommits) {
 				postComment(defaultUser, commit, branch);
@@ -124,13 +77,60 @@ public class CommitMessageToCommentTranscriber {
 	private ApplicationUser getUser() {
 		ApplicationUser defaultUser;
 		try {
-			UserDetails userDetails = new UserDetails(DEFAULT_COMMIT_COMMENTATOR_USER_NAME,
-					DEFAULT_COMMIT_COMMENTATOR_USER_NAME);
+			UserDetails userDetails = new UserDetails(COMMIT_COMMENTATOR_USER_NAME, COMMIT_COMMENTATOR_USER_NAME);
 			defaultUser = ComponentAccessor.getUserManager().createUser(userDetails);
 		} catch (CreateException | PermissionException e) {
-			defaultUser = ComponentAccessor.getUserManager().getUserByName(DEFAULT_COMMIT_COMMENTATOR_USER_NAME);
+			defaultUser = ComponentAccessor.getUserManager().getUserByName(COMMIT_COMMENTATOR_USER_NAME);
 		}
 		return defaultUser;
 	}
 
+	/**
+	 * @return
+	 * @Issue Who should be the author of the new Jira issue comment that a commit
+	 *        messages was posted into?
+	 * @Alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
+	 *              that a commit messages was posted into!
+	 * @Pro It is clear that the comment origined from a commit messages.
+	 * @Alternative The user that opens the Jira issue could be the creator of the
+	 *              Jira issue comment that a commit messages was posted into.
+	 * @Con It would be confusing to users if they see that they posted something
+	 *      that they did no write.
+	 */
+	public Comment postComment(ApplicationUser user, RevCommit commit, Ref featureBranch) {
+		String commentText = generateCommentString(commit, featureBranch);
+		if (commentText == null || commentText.isBlank()) {
+			return null;
+		}
+		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(issue)) {
+			// if the hash of a commit is present in a comment, do not post it again
+			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
+				return null;
+			}
+		}
+		return ComponentAccessor.getCommentManager().create(issue, user, commentText, true);
+	}
+
+	public String generateCommentString(RevCommit commit, Ref branch) {
+		String comment = commit.getFullMessage();
+		if (comment == null || comment.isBlank()) {
+			return "";
+		}
+		comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(comment);
+		StringBuilder builder = new StringBuilder(comment);
+		builder.append("\r\n\r\n");
+		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
+		builder.append(
+				"Repository and Branch: " + gitClient.getRepoUriFromBranch(branch) + " " + branch.getName() + "\r\n");
+		builder.append("Commit Hash: " + commit.getName());
+		return builder.toString();
+	}
+
+	private String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
+		for (String tag : KnowledgeType.toStringList()) {
+			String replaceString = "{" + tag.toLowerCase() + "}";
+			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
+		}
+		return comment;
+	}
 }

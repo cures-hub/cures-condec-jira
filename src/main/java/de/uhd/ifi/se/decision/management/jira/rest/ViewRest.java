@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
@@ -62,7 +61,7 @@ public class ViewRest {
 
 	@Path("/elementsFromBranchesOfProject")
 	@GET
-	public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
+	public Response getElementsFromAllBranchesOfProject(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -77,13 +76,13 @@ public class ViewRest {
 
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
-	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
-			throws PermissionException {
+	public Response getElementsOfFeatureBranchForJiraIssue(@Context HttpServletRequest request,
+			@QueryParam("issueKey") String issueKey) {
 		if (request == null || issueKey == null || issueKey.isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
+		String normalizedIssueKey = issueKey.toUpperCase(); // ex: issueKey=ConDec-498
 		String projectKey = getProjectKey(normalizedIssueKey);
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(normalizedIssueKey);
 		if (issue == null) {
@@ -93,6 +92,7 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
+		// TODO This is too complicated
 		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 
 		// get feature branches of an issue
@@ -100,13 +100,10 @@ public class ViewRest {
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
 	}
 
-	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
+	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) {
 		System.out.println("getDiffViewerResponse: " + projectKey);
 
-		Response resp = getDiffViewerResponse(projectKey, filter);
-
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
 		CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
 		// get current branch name
 		// iterate over commits to get all messages and post each one as a comment
@@ -127,12 +124,11 @@ public class ViewRest {
 		}
 
 		gitClient.closeAll();
-		return resp;
+		return getDiffViewerResponse(projectKey, filter);
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
 		gitClient = GitClient.getOrCreate(projectKey);
-		Response resp = null;
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 		if (branches.isEmpty()) {
@@ -150,17 +146,7 @@ public class ViewRest {
 		}
 		gitClient.closeAll();
 		DiffViewer diffView = new DiffViewer(ratBranchList);
-		try {
-			Response.ResponseBuilder respBuilder = Response.ok(diffView);
-			resp = respBuilder.build();
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
-		return resp;
-	}
-
-	private String normalizeIssueKey(String issueKey) {
-		return issueKey.toUpperCase();
+		return Response.ok(diffView).build();
 	}
 
 	/**

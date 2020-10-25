@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -9,7 +8,6 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -36,64 +34,43 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Test
 	public void testRequestNull() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
-		try {
-			assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getFeatureBranchTree(null, null).getStatus());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(null, null).getStatus());
 	}
 
 	@Test
 	public void testIssueKeyNull() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
-		try {
-			assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getFeatureBranchTree(request, null).getStatus());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(request, null).getStatus());
 	}
 
 	@Test
 	public void testEmptyIssueKey() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("", true);
-		try {
-			assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getFeatureBranchTree(request, "").getStatus());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "").getStatus());
 	}
 
 	@Test
 	public void testUnknownIssueKey() {
-		try {
-			assertEquals(Status.BAD_REQUEST.getStatusCode(),
-					viewRest.getFeatureBranchTree(request, "HOUDINI-1").getStatus());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "HOUDINI-1").getStatus());
 	}
 
 	@Test
 	public void testGitExtractionDisabled() {
-		try {
-			ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-			assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-					viewRest.getFeatureBranchTree(request, "TEST-2").getStatus());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
+		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 	}
 
 	@Test
 	public void testExistingIssueKey() {
-		try {
-			assertEquals(200, viewRest.getFeatureBranchTree(request, "TEST-2").getStatus());
-			Object receivedEntity = viewRest.getFeatureBranchTree(request, "TEST-2").getEntity();
-			Object expectedEntity = new DiffViewer(null);
-			assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
-		} catch (PermissionException e) {
-			assertNull(e);
-		}
+		assertEquals(200, viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
+		Object receivedEntity = viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getEntity();
+		Object expectedEntity = new DiffViewer(null);
+		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
 	}
 }

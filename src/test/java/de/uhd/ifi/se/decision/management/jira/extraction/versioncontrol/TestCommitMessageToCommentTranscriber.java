@@ -25,7 +25,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	private static String DEFAULT_EXPECTED_COMMENT_MESSAGE = "{issue}This is an issue!{issue}";
 
-	private static String META_DATA_STRING = "\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
+	private static String META_DATA_STRING = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
 			+ "refs/remotes/origin/TEST-4.transcriberBranch\r\n" + "Commit Hash: ";
 
 	@Override
