@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeywordBasedRecommender extends BaseRecommender {
+public class KeywordBasedRecommender extends BaseRecommender<String> {
 
 
 	private String keywords;
@@ -29,6 +29,5 @@ public class KeywordBasedRecommender extends BaseRecommender {
 		}
 		return this.recommendations;
 	}
-
 
 }

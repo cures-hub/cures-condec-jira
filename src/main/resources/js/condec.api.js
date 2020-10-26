@@ -681,8 +681,8 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, knowledgeSources, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&knowledgeSource=" + knowledgeSources,
+	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueID, knowledgeSources, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID +  "&knowledgeSource=" + knowledgeSources,
 			function (error, results) {
 				callback(results, error);
 			});
@@ -1097,6 +1097,19 @@
 		this.getDecisionKnowledgeElement(elementId, documentationLocation, function (decisionKnowledgeElement) {
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
+	};
+
+	/*
+	 * external references: decisionGuidanceEvaluation.vm
+	 */
+	ConDecAPI.prototype.getAllIssues = function (projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + "/knowledge/getAllIssues.json?projectKey="
+        			+ projectKey, function (error,
+        				result) {
+        			if (error === null) {
+        				callback(error, result);
+        			}
+        		});
 	};
 
 	ConDecAPI.prototype.showFlag = function (type, message, status) {
