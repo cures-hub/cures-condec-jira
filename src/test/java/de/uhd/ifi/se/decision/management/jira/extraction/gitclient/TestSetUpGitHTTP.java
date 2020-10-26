@@ -70,7 +70,7 @@ public abstract class TestSetUpGitHTTP extends TestSetUp {
 		ConfigPersistenceManager.setUsernames("TEST", "user");
 		ConfigPersistenceManager.setTokens("TEST", "secret👀");
 		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getCommits().isEmpty()) {
+		if (!gitClient.getAllCommits().isEmpty()) {
 			return;
 		}
 		// above line will log errors for pulling from still empty remote repositry.

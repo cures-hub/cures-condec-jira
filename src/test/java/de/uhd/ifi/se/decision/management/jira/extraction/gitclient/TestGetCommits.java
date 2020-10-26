@@ -11,7 +11,7 @@ public class TestGetCommits extends TestSetUpGit {
 
 	@Test
 	public void testRepositoryExisting() {
-		List<RevCommit> allCommits = gitClient.getCommits();
+		List<RevCommit> allCommits = gitClient.getAllCommits();
 		int expectedOnDefaultBranch = 8;
 		int expectedOnFeatureBranch = 22; /* all = unique to the branch + parent branch's commits */
 		int expectedAllCommitsNumber = expectedOnDefaultBranch + expectedOnFeatureBranch;

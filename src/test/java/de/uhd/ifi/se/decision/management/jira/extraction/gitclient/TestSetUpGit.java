@@ -67,7 +67,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getCommits().isEmpty()) {
+		if (!gitClient.getAllCommits().isEmpty()) {
 			return;
 		}
 		// above line will log errors for pulling from still empty remote repositry.

@@ -261,32 +261,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @param jiraIssue
-	 *            a Jira issue object.
-	 * @return {@link Diff} object for a Jira issue containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new Diff();
-		}
-		List<RevCommit> squashCommits = getCommits(jiraIssue, false);
-		Ref branch = getRef(jiraIssue.getKey());
-		List<RevCommit> commits = getCommits(branch);
-		if (commits == null) {
-			return new Diff();
-		}
-		commits.removeAll(getCommitsFromDefaultBranch());
-		for (RevCommit com : squashCommits) {
-			if (!commits.contains(com)) {
-				commits.add(com);
-			}
-		}
-		return getDiff(commits);
-	}
-
-	/**
 	 * @param firstCommit
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
@@ -331,17 +305,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return diff;
-	}
-
-	/**
-	 * @param revCommit
-	 *            commit as a {@link RevCommit} object.
-	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
-	 *         {@link ChangedFile} is created from a diff entry and contains the
-	 *         respective edit list.
-	 */
-	public Diff getDiff(RevCommit revCommit) {
-		return getDiff(revCommit, revCommit);
 	}
 
 	/**
@@ -432,6 +395,14 @@ public class GitClientForSingleRepository {
 			return Collections.emptyList();
 		}
 		return getFeatureBranchCommits(featureBranch);
+	}
+
+	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new ArrayList<>();
+		}
+		Ref branch = getRef(jiraIssue.getKey());
+		return getFeatureBranchCommits(branch);
 	}
 
 	public Ref getBranch(String featureBranchName) {

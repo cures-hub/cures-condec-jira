@@ -159,11 +159,15 @@ public class GitClient {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(jiraIssue).getChangedFiles());
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits(jiraIssue);
+		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(jiraIssue);
+		List<RevCommit> allCommits = defaultBranchCommits;
+		for (RevCommit featureBranchCommit : featureBranchCommits) {
+			if (!allCommits.contains(featureBranchCommit)) {
+				allCommits.add(featureBranchCommit);
+			}
 		}
-		return diff;
+		return getDiff(allCommits);
 	}
 
 	/**
@@ -251,6 +255,14 @@ public class GitClient {
 		return commits;
 	}
 
+	private List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(jiraIssue));
+		}
+		return commits;
+	}
+
 	/**
 	 * Closes all repositories.
 	 */
@@ -318,7 +330,7 @@ public class GitClient {
 	/**
 	 * @return all commits of the git repository as a list of {@link RevCommits}.
 	 */
-	public List<RevCommit> getCommits() {
+	public List<RevCommit> getAllCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits());
