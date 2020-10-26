@@ -1,4 +1,4 @@
-<select id="select2-decision-group-$viewIdentifier" multiple placeholder="Select a Group..." class="select medium-field condec-filter-criterion" style="vertical-align: bottom;">
+<select id="select2-decision-group-$viewIdentifier" multiple placeholder="Select a Group..." class="select large-field condec-filter-criterion" style="vertical-align: bottom;">
 	<option value="High_Level">High_Level</option>
 	<option value="Medium_Level">Medium_Level</option>
 	<option value="Realization_Level">Realization_Level</option>	

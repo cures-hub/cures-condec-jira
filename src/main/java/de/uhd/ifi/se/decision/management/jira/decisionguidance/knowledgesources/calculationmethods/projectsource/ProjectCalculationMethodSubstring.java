@@ -9,7 +9,6 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

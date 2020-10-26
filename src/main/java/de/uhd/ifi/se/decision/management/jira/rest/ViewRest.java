@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.EvaluationRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.IssueBasedRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.KeywordBasedRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
@@ -43,6 +44,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -394,7 +396,7 @@ public class ViewRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-			@QueryParam("knowledgeSource") String knowledgeSourceName) {
+			@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -403,21 +405,25 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		if (keyword.isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
-		}
-
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KeywordBasedRecommender keywordBasedRecommender = new KeywordBasedRecommender(keyword);
-		List<Recommendation> recommendationList = keywordBasedRecommender
-				.addKnowledgeSourceForEvaluation(allKnowledgeSources, knowledgeSourceName).evaluate();
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "i"); // TODO which documentation location should
+																			// we use?
 
-		return Response.ok(recommendationList).build();
+		if (issue == null) {
+			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))
+					.build();
+		}
+
+		EvaluationRecommender recommender = new EvaluationRecommender(issue, keyword);
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
+				.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
+
+		return Response.ok(recommendationEvaluation).build();
 	}
 
-	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender recommender) {
+	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender<?> recommender) {
 		for (KnowledgeSource knowledgeSource : recommender.getKnowledgeSources()) {
 			if (knowledgeSource.isActivated())
 				return false;
