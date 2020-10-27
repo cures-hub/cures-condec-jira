@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -287,44 +284,6 @@ public class GitClient {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
 		}
 		return commits;
-	}
-
-	/**
-	 * Retrieves the Jira issue key from a commit message.
-	 *
-	 * @param commitMessage
-	 *            a commit message that should contain a Jira issue key.
-	 * @return extracted Jira issue key or empty String if no Jira issue key could
-	 *         be found.
-	 *
-	 * @issue How to identify the Jira issue key(s) in a commit message?
-	 * @alternative This is a very simple method to detect the Jira issue key as the
-	 *              first word in the message and should be improved!
-	 */
-	public static String getJiraIssueKey(String commitMessage) {
-		if (commitMessage.isEmpty()) {
-			return "";
-		}
-		String[] split = commitMessage.split("[\\s,:]+");
-		return split[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	public Set<String> getJiraIssueKeys(String message) {
-		Set<String> keys = new LinkedHashSet<String>();
-		if (projectKey == null) {
-			return keys;
-		}
-		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
-		String pattern = "(" + baseKey + "-)\\d+";
-
-		String[] words = message.split("[\\s,:]+");
-		for (String word : words) {
-			word = word.toUpperCase(Locale.ENGLISH);
-			if (word.matches(pattern)) {
-				keys.add(word);
-			}
-		}
-		return keys;
 	}
 
 	/**

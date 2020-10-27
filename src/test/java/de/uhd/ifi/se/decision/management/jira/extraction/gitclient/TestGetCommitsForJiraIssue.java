@@ -33,18 +33,6 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGetJiraIssueKeyFromEmptyMessage() {
-		String jiraIssueKey = GitClient.getJiraIssueKey("");
-		assertEquals("", jiraIssueKey);
-	}
-
-	@Test
-	public void testGetJiraIssueKeyFromValidMessage() {
-		String jiraIssueKey = GitClient.getJiraIssueKey("Test-12: This is a very advanced commit.");
-		assertEquals("TEST-12", jiraIssueKey);
-	}
-
-	@Test
 	public void testGitNull() {
 		GitClient gitClient = new GitClient();
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);

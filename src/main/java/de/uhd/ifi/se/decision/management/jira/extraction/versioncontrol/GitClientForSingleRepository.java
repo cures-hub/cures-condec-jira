@@ -39,6 +39,7 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -597,7 +598,7 @@ public class GitClientForSingleRepository {
 		List<RevCommit> commits = getCommits(branch, isDefaultBranch);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
-			String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
+			String jiraIssueKeyInCommitMessage = CommitMessageParser.getJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 				commitsForJiraIssue.add(commit);
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
