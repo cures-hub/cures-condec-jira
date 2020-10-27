@@ -7,10 +7,10 @@ import java.util.Set;
 /**
  * Identifies Jira issue keys within commit messages.
  */
-public class CommitMessageParser {
+public interface CommitMessageParser {
 
 	/**
-	 * @param message
+	 * @param commitMessage
 	 *            commit message that is parsed for Jira issue keys.
 	 * @param projectKey
 	 *            key of the Jira project that every Jira issue key starts with.
@@ -18,12 +18,12 @@ public class CommitMessageParser {
 	 *         contain duplicates and is ordered by their appearance in the
 	 *         message).
 	 */
-	public static Set<String> getJiraIssueKeys(String message, String projectKey) {
+	public static Set<String> getJiraIssueKeys(String commitMessage, String projectKey) {
 		Set<String> keys = new LinkedHashSet<String>();
 		if (projectKey == null) {
 			return keys;
 		}
-		String[] words = message.split("[\\s,:]+");
+		String[] words = commitMessage.split("[\\s,:]+");
 		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
 		for (String word : words) {
 			word = word.toUpperCase(Locale.ENGLISH);
@@ -35,12 +35,10 @@ public class CommitMessageParser {
 	}
 
 	/**
-	 * Retrieves the Jira issue key from a commit message.
-	 *
 	 * @param commitMessage
 	 *            a commit message that should contain a Jira issue key.
-	 * @return extracted Jira issue key or empty String if no Jira issue key could
-	 *         be found.
+	 * @return extracted Jira issue key from the commit message. Empty String if no
+	 *         Jira issue key could be found.
 	 *
 	 * @issue How to identify the Jira issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the Jira issue key as the

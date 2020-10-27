@@ -67,9 +67,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getAllCommits().isEmpty()) {
-			return;
-		}
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");

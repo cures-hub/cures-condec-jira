@@ -607,37 +607,6 @@ public class GitClientForSingleRepository {
 		return commitsForJiraIssue;
 	}
 
-	/**
-	 * @return all commits of the git repository as a list of {@link RevCommits}.
-	 */
-	public List<RevCommit> getCommits() {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (Ref branch : getRemoteBranches()) {
-			/**
-			 * @issue All branches will be created in separate file system folders for this
-			 *        method's loop. How can this be prevented?
-			 * @alternative remove this method completely!
-			 * @pro Fetching commits from all branches is not sensible.
-			 * @con Fetching commits from all branches may still be needed in some use
-			 *      cases.
-			 * @pro this method seems to be used only for code testing (TestGetCommits)
-			 * @con scraping it would require coding improvement in test code
-			 *      (TestGetCommits), but who wants to spend time on that ;-)
-			 * @alternative We could check whether the JIRA issue key is part of the branch
-			 *              name and - if so - only use the commits from this branch!
-			 * @con it is not clear what is meant with this alternative.
-			 * @decision release branch folders if possible, so that in best case only one
-			 *           folder will be used!
-			 * @pro implementation does not seem to be complex at all.
-			 * @pro until discussion are not finished, seems like a good trade-off.
-			 * @con still some more code will be written. Scraping it, would require coding
-			 *      improvement in test code (TestGetCommits).
-			 */
-			commits.addAll(getCommits(branch, false));
-		}
-		return commits;
-	}
-
 	/*
 	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
 	 * discussions!

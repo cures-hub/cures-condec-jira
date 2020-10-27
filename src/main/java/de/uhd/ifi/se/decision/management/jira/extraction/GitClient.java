@@ -24,7 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Retrieves commits and code changes (diffs) from one or more git repositories.
+ * Retrieves commits and code changes ({@link Diff}s) from one or more git
+ * repositories.
  *
  * Multiple instances of this class are "thread-safe" in the limited way that
  * the checked-out branch files are stored in dedicated branch folders and can
@@ -282,17 +283,6 @@ public class GitClient {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
-		}
-		return commits;
-	}
-
-	/**
-	 * @return all commits of the git repository as a list of {@link RevCommits}.
-	 */
-	public List<RevCommit> getAllCommits() {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits());
 		}
 		return commits;
 	}

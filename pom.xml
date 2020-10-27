@@ -382,7 +382,7 @@
  </profiles>
 
 	<properties>
-		<jira.version>8.12.0</jira.version>
+		<jira.version>8.13.0</jira.version>
 		<amps.version>8.0.2</amps.version>
 		<ao.version>3.2.10</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
