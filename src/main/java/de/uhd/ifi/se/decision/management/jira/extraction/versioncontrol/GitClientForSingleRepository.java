@@ -77,7 +77,7 @@ public class GitClientForSingleRepository {
 	public boolean pullOrClone() {
 		File directory = new File(fsManager.getDefaultBranchPath());
 		File gitDirectory = new File(directory, ".git/");
-		if (isGitDirectory(gitDirectory)) {
+		if (directory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
 					LOGGER.error("Failed Git pull " + directory);
@@ -94,10 +94,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return true;
-	}
-
-	private boolean isGitDirectory(File directory) {
-		return directory.exists();
 	}
 
 	private boolean openRepository(File directory) {
@@ -245,23 +241,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @param commits
-	 *            commits as a list of RevCommit objects.
-	 * @return {@link Diff} object for a list of commits containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.isEmpty()) {
-			return new Diff();
-		}
-		// TODO Check if this is always correct
-		RevCommit firstCommit = commits.get(commits.size() - 1);
-		RevCommit lastCommit = commits.get(0);
-		return getDiff(firstCommit, lastCommit);
-	}
-
-	/**
 	 * @param firstCommit
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
@@ -371,57 +350,12 @@ public class GitClientForSingleRepository {
 		return branchUniqueCommits;
 	}
 
-	/**
-	 * @param featureBranchName
-	 *            name of the feature branch.
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
-		Ref featureBranch = getBranch(featureBranchName);
-		if (null == featureBranch) {
-			/**
-			 * @issue What is the return value of methods that would normally return a
-			 *        collection (e.g. list) with an invalid input parameter?
-			 * @alternative Methods with an invalid input parameter return an empty list!
-			 * @pro Would prevent a null pointer exception.
-			 * @con Is misleading since it is not clear whether the list is empty but has a
-			 *      valid input parameter or because of an invalid parameter.
-			 * @alternative Methods with an invalid input parameter return null!
-			 * @con null values might be intended as result.
-			 * @decision Return an emtpy list to compensate for branch being in another
-			 *           repository!
-			 */
-			return Collections.emptyList();
-		}
-		return getFeatureBranchCommits(featureBranch);
-	}
-
 	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new ArrayList<>();
 		}
 		Ref branch = getRef(jiraIssue.getKey());
 		return getFeatureBranchCommits(branch);
-	}
-
-	public Ref getBranch(String featureBranchName) {
-		if (featureBranchName == null || featureBranchName.isBlank()) {
-			LOGGER.info("Null or empty branch name was passed.");
-			return null;
-		}
-		List<Ref> remoteBranches = getRemoteBranches();
-		if (remoteBranches != null) {
-			for (Ref branch : remoteBranches) {
-				String branchName = branch.getName();
-				if (branchName.endsWith("/" + featureBranchName)) {
-					return branch;
-				}
-			}
-		}
-		LOGGER.info("Could not find branch " + featureBranchName);
-		return null;
 	}
 
 	private DiffFormatter getDiffFormater() {
@@ -510,24 +444,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Switches git client's directory to feature branch directory, i.e., DOES NOT
-	 * go back to the default branch directory. DOES NOT go back to default branch
-	 * directory.
-	 *
-	 * @param featureBranchShortName
-	 *            name of the feature branch
-	 * @return success or failure boolean
-	 */
-	public boolean checkoutFeatureBranch(String featureBranchShortName) {
-		Ref featureBranch = getBranch(featureBranchShortName);
-		if (null == featureBranch) {
-			return false;
-		}
-		return checkoutFeatureBranch(featureBranch);
-
-	}
-
-	/**
 	 * Switches git client's directory to commit directory, checks out files in
 	 * working dir for the commit. DOES NOT go back to default branch directory.
 	 *
@@ -613,15 +529,24 @@ public class GitClientForSingleRepository {
 	 */
 	private Ref getRef(String jiraIssueKey) {
 		List<Ref> refs = getAllBranches();
-		Ref branch = null;
 		for (Ref ref : refs) {
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
 			} else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
-				branch = ref;
+				return ref;
 			}
 		}
-		return branch;
+		return null;
+	}
+
+	private Ref getDefaultBranch() {
+		List<Ref> refs = getAllBranches();
+		for (Ref ref : refs) {
+			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+				return ref;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -646,7 +571,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommitsFromDefaultBranch() {
-		Ref defaultBranch = getBranch(defaultBranchName);
+		Ref defaultBranch = getDefaultBranch();
 		return getCommits(defaultBranch, true);
 	}
 

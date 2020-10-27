@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -136,14 +137,13 @@ public class GitClient {
 	 *         entry and contains the respective edit list.
 	 */
 	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.size() == 0) {
+		if (commits == null || commits.isEmpty()) {
 			return new Diff();
 		}
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(commits).getChangedFiles());
-		}
-		return diff;
+		// TODO Check if this is always correct
+		RevCommit firstCommit = commits.get(commits.size() - 1);
+		RevCommit lastCommit = commits.get(0);
+		return getDiff(firstCommit, lastCommit);
 	}
 
 	/**
@@ -246,11 +246,23 @@ public class GitClient {
 	 *         with the oldest.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(featureBranchName));
+		Ref featureBranch = getBranch(featureBranchName);
+		if (null == featureBranch) {
+			/**
+			 * @issue What is the return value of methods that would normally return a
+			 *        collection (e.g. list) with an invalid input parameter?
+			 * @alternative Methods with an invalid input parameter return an empty list!
+			 * @pro Would prevent a null pointer exception.
+			 * @con Is misleading since it is not clear whether the list is empty but has a
+			 *      valid input parameter or because of an invalid parameter.
+			 * @alternative Methods with an invalid input parameter return null!
+			 * @con null values might be intended as result.
+			 * @decision Return an emtpy list to compensate for branch being in another
+			 *           repository!
+			 */
+			return Collections.emptyList();
 		}
-		return commits;
+		return getFeatureBranchCommits(featureBranch);
 	}
 
 	private List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
@@ -353,6 +365,23 @@ public class GitClient {
 				return gitClientForSingleRepo;
 			}
 		}
+		return null;
+	}
+
+	public Ref getBranch(String branchName) {
+		if (branchName == null || branchName.isBlank()) {
+			LOGGER.info("Null or empty branch name was passed.");
+			return null;
+		}
+		List<Ref> remoteBranches = getAllRemoteBranches();
+		if (remoteBranches != null) {
+			for (Ref remoteBranch : remoteBranches) {
+				if (remoteBranch.getName().endsWith("/" + branchName)) {
+					return remoteBranch;
+				}
+			}
+		}
+		LOGGER.info("Could not find branch " + branchName);
 		return null;
 	}
 

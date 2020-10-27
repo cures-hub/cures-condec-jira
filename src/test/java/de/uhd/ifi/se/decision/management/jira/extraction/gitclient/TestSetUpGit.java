@@ -61,6 +61,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
 				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
 		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+		if (classLoader == null) {
+			return;
+		}
 		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
