@@ -65,8 +65,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeTypes() {
-		assertEquals(18, project.getConDecKnowledgeTypes().size());
-		assertEquals(18, project.getNamesOfConDecKnowledgeTypes().size());
+		assertEquals(19, project.getConDecKnowledgeTypes().size());
+		assertEquals(19, project.getNamesOfConDecKnowledgeTypes().size());
 	}
 
 	@Test
@@ -85,14 +85,15 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
+	// TODO Add GitConfig class
 	public void testGetGitRepo() {
 		List<String> uris = project.getGitUris();
-		Map<String,String> defaultBranches = project.getDefaultBranches();
-		Map<String,String> authMethods = project.getAuthMethods();
-		Map<String,String> usernames = project.getUsernames();
-		Map<String,String> tokens = project.getTokens();
+		Map<String, String> defaultBranches = project.getDefaultBranches();
+		Map<String, String> authMethods = project.getAuthMethods();
+		Map<String, String> usernames = project.getUsernames();
+		Map<String, String> tokens = project.getTokens();
 		assertEquals("master", defaultBranches.get(uris.get(0)));
-		assertEquals("true", authMethods.get(uris.get(0)));
+		assertEquals("HTTP", authMethods.get(uris.get(0)));
 		assertEquals("true", usernames.get(uris.get(0)));
 		assertEquals("true", tokens.get(uris.get(0)));
 	}
@@ -125,7 +126,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetKnowledgeTypesStorageInJiraIssuesActivated() {
-		assertEquals(20, project.getNamesOfKnowledgeTypes().size());
+		assertEquals(21, project.getNamesOfKnowledgeTypes().size());
 	}
 
 	@Test

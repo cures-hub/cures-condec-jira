@@ -32,7 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public class CommitMessageToCommentTranscriber {
 	private GitClient gitClient;
-	private Issue issue;
+	private Issue jiraissue;
 
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
 
@@ -41,12 +41,12 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue, GitClient gitClient) {
-		this.issue = jiraIssue;
+		this.jiraissue = jiraIssue;
 		this.gitClient = gitClient;
 	}
 
 	public void postCommitsIntoJiraIssueComments() {
-		String projectKey = issue.getProjectObject().getKey();
+		String projectKey = jiraissue.getProjectObject().getKey();
 		if (gitClient == null) {
 			return;
 		}
@@ -60,7 +60,7 @@ public class CommitMessageToCommentTranscriber {
 
 	public List<Comment> postFeatureBranchCommits() {
 		List<RevCommit> featureBranchCommits = new ArrayList<>();
-		Ref branch = gitClient.getBranches(issue.getKey()).get(0);
+		Ref branch = gitClient.getBranches(jiraissue.getKey()).get(0);
 		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
 		return postCommitsIntoJiraIssueComments(featureBranchCommits, branch);
 	}
@@ -68,7 +68,7 @@ public class CommitMessageToCommentTranscriber {
 	public List<Comment> postDefaultBranchCommits() {
 		List<RevCommit> defaultBranchCommits = new ArrayList<>();
 		Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
-		Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
+		Optional.ofNullable(gitClient.getDefaultBranchCommits(jiraissue)).ifPresent(defaultBranchCommits::addAll);
 		return postCommitsIntoJiraIssueComments(defaultBranchCommits, branch);
 	}
 
@@ -92,14 +92,14 @@ public class CommitMessageToCommentTranscriber {
 		if (commentText == null || commentText.isBlank()) {
 			return null;
 		}
-		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(issue)) {
+		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraissue)) {
 			// if the hash of a commit is present in a comment, do not post it again
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
 				return null;
 			}
 		}
 		ApplicationUser user = getUser();
-		return ComponentAccessor.getCommentManager().create(issue, user, commentText, true);
+		return ComponentAccessor.getCommentManager().create(jiraissue, user, commentText, true);
 	}
 
 	/**

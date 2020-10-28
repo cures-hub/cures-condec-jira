@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -40,6 +41,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testEmptyMessage() {
 		RevCommit commit = gitClient.getFeatureBranchCommits(issue).get(0);
 		assertEquals("", transcriber.generateCommentString(commit, branch));

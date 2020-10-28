@@ -24,6 +24,8 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -260,5 +262,6 @@ public abstract class TestSetUpGitHTTP extends TestSetUp {
 	public static void tidyUp() {
 		// gitClient.closeAll();
 		// gitClient.deleteRepositories();
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

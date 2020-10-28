@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -30,6 +31,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testGetFeatureBranchCommitsByJiraIssue() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());
