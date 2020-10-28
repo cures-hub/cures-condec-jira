@@ -24,12 +24,9 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 		this.addKnowledgeSource(knowledgeSources);
 	}
 
-	@Override
-	public List<Recommendation> getRecommendation() {
-		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
-			this.recommendations.addAll(knowledgeSource.getResults(this.input));
-		}
-		return this.recommendations;
-	}
 
+	@Override
+	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+		return knowledgeSource.getResults(input);
+	}
 }

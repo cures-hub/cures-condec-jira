@@ -40,7 +40,14 @@ public abstract class BaseRecommender<T> {
 		return this.knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
 	}
 
-	public abstract List<Recommendation> getRecommendation();
+	public List<Recommendation> getRecommendation() {
+		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
+			this.recommendations.addAll(getResultFromKnowledgeSource(knowledgeSource));
+		}
+		return this.recommendations;
+	}
+
+	public abstract List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource);
 
 	protected List<Recommendation> removeDuplicated(List<? extends Recommendation> recommendations) {
 		return recommendations.stream().distinct().collect(Collectors.toList());

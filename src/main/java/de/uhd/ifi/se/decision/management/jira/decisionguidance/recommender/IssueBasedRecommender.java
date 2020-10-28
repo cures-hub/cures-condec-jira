@@ -25,11 +25,8 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendation() {
-		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
-			this.recommendations.addAll(knowledgeSource.getResults(this.input));
-		}
-		return this.recommendations;
+	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+		return knowledgeSource.getResults(input);
 	}
 
 }

@@ -32,11 +32,8 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendation() {
-		for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
-			this.recommendations.addAll(knowledgeSource.getResults(this.knowledgeElement));
-		}
-		return this.recommendations;
+	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+		return knowledgeSource.getResults(this.knowledgeElement);
 	}
 
 	public EvaluationRecommender evaluate(@Nonnull KnowledgeElement issue) {
