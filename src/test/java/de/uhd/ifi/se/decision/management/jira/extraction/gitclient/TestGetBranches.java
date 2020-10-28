@@ -28,5 +28,4 @@ public class TestGetBranches extends TestSetUpGit {
 	public void testJiraIssueKey() {
 		assertEquals("refs/remotes/origin/TEST-4.transcriberBranch", gitClient.getBranches("TEST-4").get(0).getName());
 	}
-
 }

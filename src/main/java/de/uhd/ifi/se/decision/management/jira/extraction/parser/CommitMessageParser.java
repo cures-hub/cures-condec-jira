@@ -48,7 +48,42 @@ public interface CommitMessageParser {
 		if (commitMessage.isEmpty()) {
 			return "";
 		}
-		String[] split = commitMessage.split("[\\s,:]+");
-		return split[0].toUpperCase(Locale.ENGLISH);
+		Set<String> keys = getJiraIssueKeys(commitMessage);
+		return keys.isEmpty() ? "" : keys.iterator().next();
+	}
+
+	/**
+	 * @param commitMessage
+	 *            that might contain a Jira issue key, e.g., a commit message,
+	 *            branch name, or pull request title.
+	 * @return set of all mentioned Jira issue keys in upper case letters (is
+	 *         ordered by their appearance in the message).
+	 */
+	public static Set<String> getJiraIssueKeys(String commitMessage) {
+		Set<String> keys = new LinkedHashSet<String>();
+		String[] words = commitMessage.split("[\\s,:]+");
+		String projectKey = null;
+		String number = "";
+		for (String word : words) {
+			try {
+				word = word.toUpperCase(Locale.ENGLISH);
+				if (word.contains("-")) {
+					if (projectKey == null) {
+						projectKey = word.split("-")[0];
+						number = word.split("-")[1];
+						word = projectKey + "-" + number;
+					}
+					if (word.startsWith(projectKey)) {
+						if (word.contains("/")) {
+							word = word.split("/")[1];
+						}
+						keys.add(word);
+					}
+				}
+			} catch (Exception e) {
+
+			}
+		}
+		return keys;
 	}
 }

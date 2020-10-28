@@ -46,53 +46,42 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public void postComments() {
-		ApplicationUser defaultUser = getUser();
 		String projectKey = issue.getProjectObject().getKey();
 		if (gitClient == null) {
 			return;
 		}
 		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
-			List<RevCommit> featureBranchCommits = new ArrayList<>();
-			Ref branch = gitClient.getBranches(issue.getKey()).get(0);
-			Optional.ofNullable(gitClient.getFeatureBranchCommits(issue)).ifPresent(featureBranchCommits::addAll);
-			for (RevCommit commit : featureBranchCommits) {
-				postComment(defaultUser, commit, branch);
-			}
+			postFeatureBranchCommits();
 		}
 		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
-			List<RevCommit> defaultBranchCommits = new ArrayList<>();
-			Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
-			Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
-			for (RevCommit commit : defaultBranchCommits) {
-				postComment(defaultUser, commit, branch);
-			}
+			postDefaultBranchCommits();
 		}
 	}
 
-	private ApplicationUser getUser() {
-		ApplicationUser defaultUser;
-		try {
-			UserDetails userDetails = new UserDetails(COMMIT_COMMENTATOR_USER_NAME, COMMIT_COMMENTATOR_USER_NAME);
-			defaultUser = ComponentAccessor.getUserManager().createUser(userDetails);
-		} catch (CreateException | PermissionException e) {
-			defaultUser = ComponentAccessor.getUserManager().getUserByName(COMMIT_COMMENTATOR_USER_NAME);
+	public List<Comment> postFeatureBranchCommits() {
+		List<RevCommit> featureBranchCommits = new ArrayList<>();
+		Ref branch = gitClient.getBranches(issue.getKey()).get(0);
+		Optional.ofNullable(gitClient.getFeatureBranchCommits(issue)).ifPresent(featureBranchCommits::addAll);
+		for (RevCommit commit : featureBranchCommits) {
+			postComment(commit, branch);
 		}
-		return defaultUser;
+		return null;
+	}
+
+	public List<Comment> postDefaultBranchCommits() {
+		List<RevCommit> defaultBranchCommits = new ArrayList<>();
+		Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
+		Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
+		for (RevCommit commit : defaultBranchCommits) {
+			postComment(commit, branch);
+		}
+		return null;
 	}
 
 	/**
-	 * @return
-	 * @Issue Who should be the author of the new Jira issue comment that a commit
-	 *        messages was posted into?
-	 * @Alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
-	 *              that a commit messages was posted into!
-	 * @Pro It is clear that the comment origined from a commit messages.
-	 * @Alternative The user that opens the Jira issue could be the creator of the
-	 *              Jira issue comment that a commit messages was posted into.
-	 * @Con It would be confusing to users if they see that they posted something
-	 *      that they did no write.
+	 * @return new comment or null if no comment was created.
 	 */
-	public Comment postComment(ApplicationUser user, RevCommit commit, Ref featureBranch) {
+	public Comment postComment(RevCommit commit, Ref featureBranch) {
 		String commentText = generateCommentString(commit, featureBranch);
 		if (commentText == null || commentText.isBlank()) {
 			return null;
@@ -103,7 +92,30 @@ public class CommitMessageToCommentTranscriber {
 				return null;
 			}
 		}
+		ApplicationUser user = getUser();
 		return ComponentAccessor.getCommentManager().create(issue, user, commentText, true);
+	}
+
+	/**
+	 * @issue Who should be the author of the new Jira issue comment that a commit
+	 *        messages was posted into?
+	 * @alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
+	 *              that a commit messages was posted into!
+	 * @pro It is clear that the comment origined from a commit messages.
+	 * @alternative The user that opens the Jira issue could be the creator of the
+	 *              Jira issue comment that a commit messages was posted into.
+	 * @con It would be confusing to users if they see that they posted something
+	 *      that they did no write.
+	 */
+	private ApplicationUser getUser() {
+		ApplicationUser defaultUser;
+		try {
+			UserDetails userDetails = new UserDetails(COMMIT_COMMENTATOR_USER_NAME, COMMIT_COMMENTATOR_USER_NAME);
+			defaultUser = ComponentAccessor.getUserManager().createUser(userDetails);
+		} catch (CreateException | PermissionException e) {
+			defaultUser = ComponentAccessor.getUserManager().getUserByName(COMMIT_COMMENTATOR_USER_NAME);
+		}
+		return defaultUser;
 	}
 
 	public String generateCommentString(RevCommit commit, Ref branch) {
