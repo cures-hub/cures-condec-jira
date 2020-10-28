@@ -59,9 +59,12 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
+		System.out.println("post FeatureBranchCommits");
 		List<RevCommit> featureBranchCommits = new ArrayList<>();
 		Ref branch = gitClient.getBranches(issue.getKey()).get(0);
-		Optional.ofNullable(gitClient.getFeatureBranchCommits(issue)).ifPresent(featureBranchCommits::addAll);
+		System.out.println(branch.getName());
+		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
+		System.out.println(featureBranchCommits.size());
 		for (RevCommit commit : featureBranchCommits) {
 			postComment(commit, branch);
 		}
