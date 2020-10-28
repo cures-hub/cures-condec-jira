@@ -61,15 +61,15 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
 				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
 		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		if (classLoader == null) {
-			return;
-		}
 		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
+		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
+			return;
+		}
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
