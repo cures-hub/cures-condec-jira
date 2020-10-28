@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -237,7 +238,7 @@ public class GitClient {
 		return commits;
 	}
 
-	private List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(jiraIssue));
@@ -349,21 +350,20 @@ public class GitClient {
 		return null;
 	}
 
-	public Ref getBranch(String branchName) {
+	/**
+	 * @param branchName,
+	 *            e.g. "master"
+	 * @return all branches matching the name as a list of {@link Ref} objects.
+	 */
+	public List<Ref> getBranches(String branchName) {
 		if (branchName == null || branchName.isBlank()) {
 			LOGGER.info("Null or empty branch name was passed.");
 			return null;
 		}
 		List<Ref> remoteBranches = getAllRemoteBranches();
-		if (remoteBranches != null) {
-			for (Ref remoteBranch : remoteBranches) {
-				if (remoteBranch.getName().endsWith("/" + branchName)) {
-					return remoteBranch;
-				}
-			}
-		}
-		LOGGER.info("Could not find branch " + branchName);
-		return null;
+		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
+				.collect(Collectors.toList());
+		return branchCandidates;
 	}
 
 	public List<Ref> getAllRemoteBranches() {

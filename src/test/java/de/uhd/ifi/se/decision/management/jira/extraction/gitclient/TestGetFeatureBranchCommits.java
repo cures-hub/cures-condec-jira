@@ -24,7 +24,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 	@Test
 	public void testGetMasterBranch() {
-		Ref remoteBranch = gitClient.getBranch("master");
+		Ref remoteBranch = gitClient.getBranches("master").get(0);
 		assertEquals("refs/remotes/origin/master", remoteBranch.getName());
 	}
 

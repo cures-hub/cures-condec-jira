@@ -33,8 +33,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class CommitMessageToCommentTranscriber {
 	private GitClient gitClient;
 	private Issue issue;
-	private List<RevCommit> featureBranchCommits;
-	private List<RevCommit> defaultBranchCommits;
 
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
 
@@ -45,28 +43,25 @@ public class CommitMessageToCommentTranscriber {
 	public CommitMessageToCommentTranscriber(Issue jiraIssue, GitClient gitClient) {
 		this.issue = jiraIssue;
 		this.gitClient = gitClient;
-		this.featureBranchCommits = new ArrayList<>();
-		this.defaultBranchCommits = new ArrayList<>();
 	}
 
-	public void postComments(Ref branch) {
+	public void postComments() {
 		ApplicationUser defaultUser = getUser();
 		String projectKey = issue.getProjectObject().getKey();
 		if (gitClient == null) {
 			return;
 		}
 		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
-			// TODO Why not gitClient.getFeatureBranchCommits(branch, issue)?
-			Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
+			List<RevCommit> featureBranchCommits = new ArrayList<>();
+			Ref branch = gitClient.getBranches(issue.getKey()).get(0);
+			Optional.ofNullable(gitClient.getFeatureBranchCommits(issue)).ifPresent(featureBranchCommits::addAll);
 			for (RevCommit commit : featureBranchCommits) {
 				postComment(defaultUser, commit, branch);
 			}
 		}
 		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
-			String repoUri = gitClient.getRepoUriFromBranch(branch);
-			if (!branch.getName().contains(gitClient.getGitClientsForSingleRepo(repoUri).getDefaultBranchName())) {
-				return;
-			}
+			List<RevCommit> defaultBranchCommits = new ArrayList<>();
+			Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
 			Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
 			for (RevCommit commit : defaultBranchCommits) {
 				postComment(defaultUser, commit, branch);

@@ -94,39 +94,12 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
+		new CommitMessageToCommentTranscriber(issue).postComments();
 		// TODO This is too complicated
 		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 
 		// get feature branches of an issue
-		return getDiffViewerResponse(projectKey, regexFilter,
-				ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
-	}
-
-	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) {
-		System.out.println("getDiffViewerResponse: " + projectKey);
-
-		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-		CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
-		// get current branch name
-		// iterate over commits to get all messages and post each one as a comment
-		// make sure to not post duplicates
-		gitClient = GitClient.getOrCreate(projectKey);
-		List<Ref> branches = gitClient.getAllRemoteBranches();
-		for (Ref branch : branches) {
-			System.out.println(branch.getName());
-			Matcher branchMatcher = filterPattern.matcher(branch.getName());
-			if (branchMatcher.find()) {
-				transcriber.postComments(branch);
-			}
-			for (String defaultBranchName : ConfigPersistenceManager.getDefaultBranches(projectKey).values()) {
-				if (branch.getName().contains(defaultBranchName)) {
-					transcriber.postComments(branch);
-				}
-			}
-		}
-
-		gitClient.closeAll();
-		return getDiffViewerResponse(projectKey, filter);
+		return getDiffViewerResponse(projectKey, regexFilter);
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {

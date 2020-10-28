@@ -539,7 +539,7 @@ public class GitClientForSingleRepository {
 		return null;
 	}
 
-	private Ref getDefaultBranch() {
+	public Ref getDefaultBranch() {
 		List<Ref> refs = getAllBranches();
 		for (Ref ref : refs) {
 			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {

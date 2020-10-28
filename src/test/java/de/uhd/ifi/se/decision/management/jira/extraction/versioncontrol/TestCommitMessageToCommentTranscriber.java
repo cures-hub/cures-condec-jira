@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
@@ -36,22 +35,13 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 		this.issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey(testIssueKey);
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
-		this.branch = null;
-		Iterator<Ref> it = gitClient.getAllRemoteBranches().iterator();
-		while (it.hasNext()) {
-			Ref value = it.next();
-			if (value.getName().endsWith("transcriberBranch")) {
-				this.branch = value;
-				break;
-			}
-		}
-
+		branch = gitClient.getBranches("TEST-4.transcriberBranch").get(0);
 		this.transcriber = new CommitMessageToCommentTranscriber(issue, gitClient);
 	}
 
 	@Test
 	public void testEmptyMessage() {
-		RevCommit commit = gitClient.getFeatureBranchCommits(this.branch).get(0);
+		RevCommit commit = gitClient.getFeatureBranchCommits(issue).get(0);
 		assertEquals("", transcriber.generateCommentString(commit, branch));
 	}
 
@@ -85,7 +75,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	@Test
 	public void testPostComment() {
-		transcriber.postComments(branch);
+		transcriber.postComments();
 		String additionalMessage = "";
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(issue);
 		for (int i = 0, j = 1; i < comments.size(); i++, j++) {

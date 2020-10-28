@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -21,10 +20,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	@After
 	public void after() {
 		restoreFeatureBranchOnRemote();
-		List<Ref> remoteBranches = gitClient.getAllRemoteBranches();
-		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().endsWith("featureBranch"))
-				.collect(Collectors.toList());
-		featureBranch = branchCandidates.get(0);
+		featureBranch = gitClient.getBranches("featureBranch").get(0);
 	}
 
 	@Test
