@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -225,7 +224,7 @@ public class GitClient {
 	 * fetch commits, afterwards returns to default branch directory after.
 	 *
 	 * @param featureBranch
-	 *            ref of the feature branch, Uri of Git Repository
+	 *            ref of the feature branch
 	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
 	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
 	 *         with the oldest.
@@ -236,33 +235,6 @@ public class GitClient {
 			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(featureBranch));
 		}
 		return commits;
-	}
-
-	/**
-	 * @param featureBranchName
-	 *            name of the feature branch.
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
-		Ref featureBranch = getBranch(featureBranchName);
-		if (null == featureBranch) {
-			/**
-			 * @issue What is the return value of methods that would normally return a
-			 *        collection (e.g. list) with an invalid input parameter?
-			 * @alternative Methods with an invalid input parameter return an empty list!
-			 * @pro Would prevent a null pointer exception.
-			 * @con Is misleading since it is not clear whether the list is empty but has a
-			 *      valid input parameter or because of an invalid parameter.
-			 * @alternative Methods with an invalid input parameter return null!
-			 * @con null values might be intended as result.
-			 * @decision Return an emtpy list to compensate for branch being in another
-			 *           repository!
-			 */
-			return Collections.emptyList();
-		}
-		return getFeatureBranchCommits(featureBranch);
 	}
 
 	private List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
@@ -287,6 +259,15 @@ public class GitClient {
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
+	 * 
+	 * @issue What is the return value of methods that would normally return a
+	 *        collection (e.g. list) with an invalid input parameter?
+	 * @decision Methods with an invalid input parameter return an empty list!
+	 * @pro Would prevent a null pointer exception.
+	 * @con Is misleading since it is not clear whether the list is empty but has a
+	 *      valid input parameter or because of an invalid parameter.
+	 * @alternative Methods with an invalid input parameter return null!
+	 * @con null values might cause a null pointer exception.
 	 */
 	public List<RevCommit> getCommits(Issue jiraIssue) {
 		if (jiraIssue == null) {

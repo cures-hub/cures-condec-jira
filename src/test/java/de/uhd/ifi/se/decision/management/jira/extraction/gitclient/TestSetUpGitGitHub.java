@@ -39,6 +39,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @alternative We could have more than one mock git repositories for testing!
  * @con we do not have time for it at the moment..
  */
+// TODO This class mostly duplicates TestSetUpGit. We should avoid duplicated
+// code. This needs refactoring.
 public abstract class TestSetUpGitGitHub extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);

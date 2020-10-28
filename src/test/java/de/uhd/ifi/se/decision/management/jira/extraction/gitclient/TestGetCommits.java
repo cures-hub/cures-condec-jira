@@ -13,10 +13,6 @@ public class TestGetCommits extends TestSetUpGit {
 	public void testGetCommitsFromDefaultBranch() {
 		List<RevCommit> allCommits = gitClient.getGitClientsForSingleRepos().get(0).getCommitsFromDefaultBranch();
 		int expectedOnDefaultBranch = 7;
-		// TODO Commits are doubled: why?
-		for (RevCommit commit : allCommits) {
-			System.out.println(commit.getShortMessage());
-		}
 		assertEquals(expectedOnDefaultBranch, allCommits.size());
 	}
 }

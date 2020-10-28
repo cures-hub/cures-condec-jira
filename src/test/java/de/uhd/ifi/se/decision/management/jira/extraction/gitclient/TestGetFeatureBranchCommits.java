@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,13 +26,6 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	public void testGetMasterBranch() {
 		Ref remoteBranch = gitClient.getBranch("master");
 		assertEquals("refs/remotes/origin/master", remoteBranch.getName());
-	}
-
-	@Test
-	public void testGetFeatureBranchCommitsByString() {
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
-		assertNotNull(commits);
-		assertEquals(4, commits.size());
 	}
 
 	@Test
