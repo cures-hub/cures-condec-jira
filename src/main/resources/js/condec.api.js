@@ -950,16 +950,6 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.setCalculationMethod = function (projectKey, calculationMethod) {
-		generalApi.postJSON(this.restPrefix + "/config/setCalculationMethod.json?projectKey=" + projectKey + "&calculationMethod=" + calculationMethod, null,
-			function (error, results) {
-				showFlag("success", "Method successfully changed");
-			});
-	};
-
-	/*
-	 * external references: condec.decision guidance
-	 */
 	ConDecAPI.prototype.setAddRecommendationDirectly = function (projectKey, addRecommendationDirectly) {
 		generalApi.postJSON(this.restPrefix + "/config/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
 			function (error, results) {

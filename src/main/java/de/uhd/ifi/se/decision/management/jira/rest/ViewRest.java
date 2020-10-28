@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.*;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -367,11 +368,13 @@ public class ViewRest {
 		KnowledgeElement knowledgeElement = persistenceManager.getKnowledgeElement(issueID, "s");
 
 
-		BaseRecommender recommender;
-		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD.toString()))
-			recommender = new KeywordBasedRecommender(keyword, allKnowledgeSources);
-		else
-			recommender = new IssueBasedRecommender(knowledgeElement, allKnowledgeSources);
+		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
+
+		BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
+		recommender.addKnowledgeSource(allKnowledgeSources);
+
+		if (RecommenderType.KEYWORD.equals(recommenderType)) recommender.setInput(keyword);
+		else recommender.setInput(knowledgeElement);
 
 		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",

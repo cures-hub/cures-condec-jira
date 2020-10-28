@@ -916,19 +916,6 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/setCalculationMethod")
-	@POST
-	public Response setCalculationMethod(@Context HttpServletRequest request,
-										 @QueryParam("projectKey") String projectKey,
-										 @QueryParam("calculationMethod") String method) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		ConfigPersistenceManager.setCalculationMethod(projectKey, method);
-		return Response.ok(Status.ACCEPTED).build();
-	}
 
 	@Path("/setAddRecommendationDirectly")
 	@POST

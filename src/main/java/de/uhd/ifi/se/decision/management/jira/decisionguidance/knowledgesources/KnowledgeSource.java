@@ -1,19 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactoryProvider;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public abstract class KnowledgeSource<T extends CalculationMethod> {
+public abstract class KnowledgeSource {
 
-	protected CalculationMethodType calculationMethodType;
-	protected T calculationMethod;
 	protected KnowledgeSourceType knowledgeSourceType;
 
 	protected List<Recommendation> recommendations;
@@ -21,21 +14,9 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 	protected boolean isActivated;
 	protected String name;
 
-	public List<Recommendation> getResults(String inputs) {
-		if (this.isActivated) {
-			this.getCalculationMethod();
-			return this.calculationMethod.getResults(inputs);
-		}
-		return new ArrayList<>();
-	}
+	public abstract List<Recommendation> getResults(String inputs);
 
-	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-		if (this.isActivated) {
-			this.getCalculationMethod();
-			if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
-		}
-		return new ArrayList<>();
-	}
+	public abstract List<Recommendation> getResults(KnowledgeElement knowledgeElement);
 
 
 	public String getName() {
@@ -54,14 +35,4 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 		isActivated = activated;
 	}
 
-	public T getCalculationMethod() {
-		CalculationMethodFactory<T> calculationMethodFactory = CalculationMethodFactoryProvider.getFactory(this.knowledgeSourceType);
-		if (calculationMethodFactory != null)
-			this.calculationMethod = calculationMethodFactory.getCalculationMethod(this.calculationMethodType, this.projectKey, this.name);
-		return this.calculationMethod;
-	}
-
-	public void setCalculationMethodTypeType(CalculationMethodType calculationMethodType) {
-		this.calculationMethodType = calculationMethodType;
-	}
 }

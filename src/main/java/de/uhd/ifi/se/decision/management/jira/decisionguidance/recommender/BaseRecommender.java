@@ -13,9 +13,14 @@ import java.util.stream.Collectors;
 
 public abstract class BaseRecommender<T> {
 
+	protected T input;
 	protected List<Recommendation> recommendations;
 	protected List<KnowledgeSource> knowledgeSources;
 
+
+	public void setInput(T input) {
+		this.input = input;
+	}
 
 	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);
@@ -29,6 +34,10 @@ public abstract class BaseRecommender<T> {
 
 	public List<KnowledgeSource> getKnowledgeSources() {
 		return this.knowledgeSources;
+	}
+
+	public List<KnowledgeSource> getActivatedKnowledgeSources() {
+		return this.knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
 	}
 
 	public abstract List<Recommendation> getRecommendation();
@@ -67,4 +76,6 @@ public abstract class BaseRecommender<T> {
 			manager.insertLink(rootElement, insertedElement, user);
 		}
 	}
+
+
 }
