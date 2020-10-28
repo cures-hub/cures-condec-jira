@@ -75,7 +75,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	@Test
 	public void testPostComment() {
-		transcriber.postComments();
+		transcriber.postCommitsIntoJiraIssueComments();
 		String additionalMessage = "";
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(issue);
 		for (int i = 0, j = 1; i < comments.size(); i++, j++) {

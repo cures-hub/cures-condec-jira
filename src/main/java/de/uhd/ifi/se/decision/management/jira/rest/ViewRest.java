@@ -94,7 +94,7 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
-		new CommitMessageToCommentTranscriber(issue).postComments();
+		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
 		// TODO This is too complicated
 		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 

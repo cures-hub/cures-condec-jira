@@ -45,7 +45,7 @@ public class CommitMessageToCommentTranscriber {
 		this.gitClient = gitClient;
 	}
 
-	public void postComments() {
+	public void postCommitsIntoJiraIssueComments() {
 		String projectKey = issue.getProjectObject().getKey();
 		if (gitClient == null) {
 			return;
@@ -59,33 +59,36 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		System.out.println("post FeatureBranchCommits");
 		List<RevCommit> featureBranchCommits = new ArrayList<>();
 		Ref branch = gitClient.getBranches(issue.getKey()).get(0);
-		System.out.println(branch.getName());
 		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
-		System.out.println(featureBranchCommits.size());
-		for (RevCommit commit : featureBranchCommits) {
-			postComment(commit, branch);
-		}
-		return null;
+		return postCommitsIntoJiraIssueComments(featureBranchCommits, branch);
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
 		List<RevCommit> defaultBranchCommits = new ArrayList<>();
 		Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
 		Optional.ofNullable(gitClient.getDefaultBranchCommits(issue)).ifPresent(defaultBranchCommits::addAll);
-		for (RevCommit commit : defaultBranchCommits) {
-			postComment(commit, branch);
+		return postCommitsIntoJiraIssueComments(defaultBranchCommits, branch);
+	}
+
+	private List<Comment> postCommitsIntoJiraIssueComments(List<RevCommit> commits, Ref branch) {
+		List<Comment> newComments = new ArrayList<>();
+		for (RevCommit commit : commits) {
+			Comment comment = postCommitIntoJiraIssueComment(commit, branch);
+			if (comment != null) {
+				newComments.add(comment);
+			}
 		}
-		return null;
+		return newComments;
 	}
 
 	/**
-	 * @return new comment or null if no comment was created.
+	 * @return new comment or null if no comment was created because the commit was
+	 *         already posted.
 	 */
-	public Comment postComment(RevCommit commit, Ref featureBranch) {
-		String commentText = generateCommentString(commit, featureBranch);
+	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch) {
+		String commentText = generateCommentString(commit, branch);
 		if (commentText == null || commentText.isBlank()) {
 			return null;
 		}
