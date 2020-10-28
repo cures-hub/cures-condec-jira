@@ -43,6 +43,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
 		File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory();
 
