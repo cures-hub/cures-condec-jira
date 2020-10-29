@@ -326,12 +326,6 @@
 						<Export-Package />
 						<Spring-Context>*</Spring-Context>
 					</instructions>
-                    <applications>
-                        <application>
-                            <applicationKey>jira-software</applicationKey>
-                            <version>${jira.version}</version>
-                        </application>
-                    </applications>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -2,7 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.systemtests;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
+
 import org.junit.jupiter.api.Disabled;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,13 +23,12 @@ public class TestCreateDecisionKnowledge {
 	static FirefoxOptions options;
 
 	/**
-	 *
 	 * Preconditions:
 	 * To set up Selenium, you will need to have firefox installed and create a profile named SeleniumTester.
 	 * To make this test work, you will need to use that profile to log into your locally running Jira instance.
 	 * Make sure you select "Remember me". This will be saved in the profile, so that the tests can run without
 	 * another login.
-	 *
+	 * <p>
 	 * You will also need to verify that the ConDec plugin is enabled and the ConDec issue types are available
 	 */
 	@BeforeClass
@@ -54,7 +55,7 @@ public class TestCreateDecisionKnowledge {
 		WebDriver driver = new FirefoxDriver(options);
 		try {
 			driver.get(baseUrl + "/secure/CreateIssue!default.jspa");
-			new WebDriverWait(driver, (long) 10).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
+			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
 
 			// driver.findElement(By.id("issuetype-single-select")).click(); // this is only necessary if Issue isn't already selected
 			// driver.findElement(By.linkText("Issue")).click();
@@ -62,7 +63,7 @@ public class TestCreateDecisionKnowledge {
 			driver.findElement(By.id("issue-create-submit")).click(); // this clicks the next button
 
 			// wait until the page loads and the summary box is present
-			new WebDriverWait(driver, (long) 10).until(ExpectedConditions.presenceOfElementLocated(By.id("summary")));
+			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("summary")));
 
 			// Write the name of the decision knowledge element
 			driver.findElement(By.id("summary")).sendKeys("Decision knowledge element 1");
@@ -71,11 +72,10 @@ public class TestCreateDecisionKnowledge {
 			driver.findElement(By.id("issue-create-submit")).click();
 
 			// Wait until the issue page loads
-			new WebDriverWait(driver, (long) 10).until(ExpectedConditions.presenceOfElementLocated(By.id("type-val")));
+			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("type-val")));
 			assertEquals(driver.findElement(By.id("type-val")).getText(), "Issue");
 			assertEquals(driver.findElement(By.id("summary-val")).getText(), "Decision knowledge element 1");
-		}
-		finally {
+		} finally {
 			// always clean up!
 			driver.quit();
 		}
@@ -90,7 +90,7 @@ public class TestCreateDecisionKnowledge {
 		String geckoDriverPath = System.getenv("WEBDRIVER_GECKO_DRIVER");
 		if (geckoDriverPath == null) {
 			// this is the recommended installation path according to selenium docs
-			geckoDriverPath  = "/opt/WebDriver/bin/geckodriver";
+			geckoDriverPath = "/opt/WebDriver/bin/geckodriver";
 		}
 		System.setProperty("webdriver.gecko.driver", geckoDriverPath);
 	}
