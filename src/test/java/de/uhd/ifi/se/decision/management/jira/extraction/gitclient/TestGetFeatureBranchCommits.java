@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -19,7 +19,9 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		Ref featureBranch = gitClient.getBranches("featureBranch").get(0);
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertEquals(4, commits.size());
-		assertFalse(commits.get(0).getCommitTime() < commits.get(1).getCommitTime());
+
+		// oldest commits come first
+		assertTrue(commits.get(0).getCommitTime() < commits.get(1).getCommitTime());
 	}
 
 	@Test
@@ -29,11 +31,12 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	}
 
 	@Test
+	// TODO Only use one feature branch for unit testing
 	public void testGetFeatureBranchCommitsByJiraIssue() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(issue);
-		assertEquals(5, commits.size());
+		assertEquals(2, commits.size());
 	}
 
 	@Test
