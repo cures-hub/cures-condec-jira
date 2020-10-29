@@ -443,42 +443,8 @@ public class GitClientForSingleRepository {
 		return isDeleted && directory.delete();
 	}
 
-	/**
-	 * Switches git client's directory to commit directory, checks out files in
-	 * working dir for the commit. DOES NOT go back to default branch directory.
-	 *
-	 * @param commit
-	 *            name of the feature branch
-	 * @return success or failure boolean
-	 */
-	public boolean checkoutCommit(RevCommit commit) {
-		String commitName = commit.getName();
-
-		// will copy default branch folder
-		File directory = new File(fsManager.prepareBranchDirectory(commitName));
-
-		return (switchGitDirectory(directory) && checkout(commitName, true));
-	}
-
 	private boolean checkout(String branchShortName) {
 		return checkout(branchShortName, false);
-	}
-
-	/**
-	 * Switch git client's directory to feature branch directory. DOES NOT go back
-	 * to default branch directory.
-	 *
-	 * @param featureBranch
-	 *            ref of the feature branch
-	 * @return success or failure boolean
-	 */
-	public boolean checkoutFeatureBranch(Ref featureBranch) {
-		String[] branchNameComponents = featureBranch.getName().split("/");
-		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
-		String branchShortNameWithPrefix = featureBranch.getName().replaceFirst("refs/remotes/origin/", "");
-		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
-
-		return switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix);
 	}
 
 	/**

@@ -299,8 +299,7 @@ public class GitClient {
 	}
 
 	/**
-	 * @param repoUri
-	 * @return default branch commits.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s.
 	 */
 	public List<RevCommit> getDefaultBranchCommits() {
 		List<RevCommit> commits = new ArrayList<>();
@@ -310,6 +309,12 @@ public class GitClient {
 		return commits;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s.
+	 */
 	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {

@@ -95,7 +95,10 @@
     <aui-toggle id="isPostFeatureBranchCommitsActivated-toggle"
                 value="$projectKey" label="Post feature branch commits?"></aui-toggle>
     <div class="description">Enables or disables whether every feature branch commit message is posted
-        as a comment under the corresponding Jira issue for this project.
+        as a comment under the corresponding Jira issue for this project.<br/>
+		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
+		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
     </div>
 </div>
 
@@ -104,7 +107,10 @@
     <aui-toggle id="isPostSquashedCommitsActivated-toggle"
                 value="$projectKey" label="Post squashed commits?"></aui-toggle>
     <div class="description">Enables or disables whether commit messages on the default branch are posted
-        as a comment under the corresponding Jira issue for this project.
+        as a comment under the corresponding Jira issue for this project.<br/>
+		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
+		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
     </div>
 </div>
 
