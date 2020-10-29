@@ -1,12 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInput;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import mst.In;
 
 import java.util.List;
 
@@ -34,14 +36,22 @@ public class ProjectSource extends KnowledgeSource {
 
 	@Override
 	public void setData() {
-		((ProjectSourceInput) this.inputMethod).setData(this.projectKey, this.name, this.knowledgeElements);
+		if (this.inputMethod != null)
+			((ProjectSourceInput) this.inputMethod).setData(this.projectKey, this.name, this.knowledgeElements);
 	}
 
 	@Override
-	public void getInputMethod() {
+	public InputMethod getInputMethod() {
 		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD))
 			this.inputMethod = new ProjectSourceInputString();
 		else
 			this.inputMethod = new ProjectSourceInputKnowledgeElement();
+
+		return this.inputMethod;
 	}
+
+	public KnowledgePersistenceManager getKnowledgePersistenceManager() {
+		return knowledgePersistenceManager;
+	}
+	
 }

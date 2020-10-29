@@ -43,6 +43,16 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 	}
 
 	@Test
+	public void testKeywordbasedRecommenderConstrutor() {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+		knowledgeSources.add(projectSource);
+		knowledgeSources.add(rdfSource);
+
+		BaseRecommender recommender = new KeywordBasedRecommender("feature", knowledgeSources);
+		assertNotEquals(null, recommender);
+	}
+
+	@Test
 	public void testSimpleRecommenderNoKnowledgeSources() {
 		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
 

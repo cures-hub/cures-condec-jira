@@ -1,10 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInput;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +16,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestProjectSource extends TestSetUp {
 
@@ -35,6 +40,12 @@ public class TestProjectSource extends TestSetUp {
 
 		recommendations = projectSource.getResults(nullString);
 		assertEquals(0, recommendations.size());
+	}
+
+	@Test
+	public void testInvalidProject() {
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), null, true);
+		assertEquals(null, projectSource.getKnowledgePersistenceManager());
 	}
 
 
@@ -61,9 +72,35 @@ public class TestProjectSource extends TestSetUp {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setId(123);
 		knowledgeElement.setSummary("How can we implement the feature");
-		List<Recommendation> recommendations = input.getResults(knowledgeElement);
+		List<Recommendation> recommendations = input.getResults(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(2, recommendations.size());
 	}
 
+	@Test
+	public void testSetData() {
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		projectSource.setData();
+		ProjectSourceInput inputMethod = new ProjectSourceInputString();
+		projectSource.setInputMethod(inputMethod);
+		projectSource.setData();
+		assertNotNull(inputMethod.getResults("TEST"));
+	}
 
+	@Test
+	public void testGetInputMethod() {
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		assertEquals(ProjectSourceInputString.class, projectSource.getInputMethod().getClass());
+		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString());
+		assertEquals(ProjectSourceInputKnowledgeElement.class, projectSource.getInputMethod().getClass());
+	}
+
+	@Test
+	public void testKnowledgeSource() {
+		KnowledgeSource knowledgeSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		assertEquals("TEST", knowledgeSource.getName());
+		assertEquals("TEST", knowledgeSource.getProjectKey());
+		assertEquals(true, knowledgeSource.isActivated());
+		knowledgeSource.setActivated(false);
+		assertEquals(false, knowledgeSource.isActivated());
+	}
 }

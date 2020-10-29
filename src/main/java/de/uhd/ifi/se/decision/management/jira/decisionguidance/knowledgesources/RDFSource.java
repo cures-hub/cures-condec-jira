@@ -31,9 +31,11 @@ public class RDFSource extends KnowledgeSource {
 		this.projectKey = projectKey;
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country.	?url dbo:capital ?alternative }";
+			"PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?alternative ?url WHERE { ?alternative a dbo:Country." +
+			"?url dbo:capital ?alternative }";
 		this.name = "DBPedia";
 		this.timeout = "30000";
+		this.limit = 10;
 		this.isActivated = true;
 	}
 
@@ -51,6 +53,7 @@ public class RDFSource extends KnowledgeSource {
 		this.name = name;
 		this.timeout = timeout;
 		this.isActivated = true;
+		this.limit = 10;
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class RDFSource extends KnowledgeSource {
 
 
 	@Override
-	public void getInputMethod() {
+	public InputMethod getInputMethod() {
 		this.inputMethod = new InputMethod<String>() {
 
 			protected String name;
@@ -152,7 +155,7 @@ public class RDFSource extends KnowledgeSource {
 			public List<Recommendation> getResults(String inputs) {
 				List<Recommendation> recommendations = new ArrayList<>();
 
-				if (inputs == null) inputs = "";
+				if (inputs == null) return recommendations;
 
 
 				List<String> keywords = Arrays.asList(inputs.trim().split(" "));
@@ -182,16 +185,8 @@ public class RDFSource extends KnowledgeSource {
 				return recommendations;
 			}
 		}.setData(this.name, this.service, this.queryString, this.timeout, this.limit);
-		;
-	}
 
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+		return this.inputMethod;
 	}
 
 	public String getService() {
@@ -220,6 +215,10 @@ public class RDFSource extends KnowledgeSource {
 
 	public int getLimit() {
 		return ConfigPersistenceManager.getMaxNumberRecommendations(this.projectKey);
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 	@Override
