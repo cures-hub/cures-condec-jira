@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.systemtests;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Disabled;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -12,8 +13,9 @@ import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-
-
+// Since these tests are designed to be run locally
+// we explicitly disable them so they aren't run on the CI
+@Disabled
 public class TestCreateDecisionKnowledge {
 	static String baseUrl;
 	static FirefoxOptions options;
