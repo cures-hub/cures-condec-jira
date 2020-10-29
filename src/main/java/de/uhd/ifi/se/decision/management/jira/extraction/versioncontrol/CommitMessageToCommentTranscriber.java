@@ -138,7 +138,7 @@ public class CommitMessageToCommentTranscriber {
 		return builder.toString();
 	}
 
-	private static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
+	public static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
 		for (String tag : KnowledgeType.toStringList()) {
 			String replaceString = "{" + tag.toLowerCase() + "}";
 			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);

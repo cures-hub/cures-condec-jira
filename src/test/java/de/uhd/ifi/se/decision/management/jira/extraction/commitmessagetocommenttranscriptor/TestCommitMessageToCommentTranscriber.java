@@ -36,7 +36,7 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 
 	@Test
 	public void testEmptyCommitMessage() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(4);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(1);
 		assertEquals("", transcriber.generateCommentString(commit, branch));
 	}
 

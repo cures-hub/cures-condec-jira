@@ -232,9 +232,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 			ex.printStackTrace();
 		}
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/issue]");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[Issue]This is an issue![/Issue]");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue]");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 
 		returnToPreviousBranch(currentBranch, git);
