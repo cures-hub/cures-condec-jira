@@ -221,25 +221,11 @@ public class GitClient {
 	}
 
 	/**
-	 * @param featureBranch
-	 *            as a {@link Ref} object.
-	 * @return list of unique commits of a feature branch, which do not exist in the
-	 *         default branch. Commits are sorted by age, beginning with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(featureBranch));
-		}
-		return commits;
-	}
-
-	/**
 	 * @param jiraIssue
 	 *            such as work item/development task/requirements that key was
 	 *            mentioned in the commit messages.
 	 * @return list of unique commits of a feature branch, which do not exist in the
-	 *         default branch. Commits are sorted by age, beginning with the oldest.
+	 *         default branch. Commits are not sorted.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
 		if (jiraIssue == null) {
@@ -249,6 +235,39 @@ public class GitClient {
 		List<Ref> branches = getBranches(jiraIssue.getKey());
 		for (Ref featureBranch : branches) {
 			commits.addAll(getFeatureBranchCommits(featureBranch));
+		}
+		return commits;
+	}
+
+	/**
+	 * @param featureBranch
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are not sorted.
+	 */
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchCommits = getCommits(featureBranch);
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+
+		for (RevCommit commit : branchCommits) {
+			if (!defaultBranchCommits.contains(commit)) {
+				branchUniqueCommits.add(commit);
+			}
+		}
+		return branchUniqueCommits;
+	}
+
+	/**
+	 * @param branch
+	 *            as a {@link Ref} object.
+	 * @return list of commits of a branch, which might also exist in the default
+	 *         branch.
+	 */
+	public List<RevCommit> getCommits(Ref branch) {
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			commits.addAll(gitClientForSingleRepo.getCommits(branch));
 		}
 		return commits;
 	}
@@ -306,7 +325,8 @@ public class GitClient {
 	}
 
 	/**
-	 * @return all commits on the branch(es) as a list of {@link RevCommit}s.
+	 * @return all commits on the default branch(es) as a list of
+	 *         {@link RevCommit}s.
 	 */
 	public List<RevCommit> getDefaultBranchCommits() {
 		List<RevCommit> commits = new ArrayList<>();

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		Ref featureBranch = gitClient.getBranches("featureBranch").get(0);
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertEquals(4, commits.size());
+		assertFalse(commits.get(0).getCommitTime() < commits.get(1).getCommitTime());
 	}
 
 	@Test

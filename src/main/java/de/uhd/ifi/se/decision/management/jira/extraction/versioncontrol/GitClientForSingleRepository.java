@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
-import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
@@ -313,25 +312,6 @@ public class GitClientForSingleRepository {
 		return getDiffWithChangedFiles(diffEntries, diffFormatter);
 	}
 
-	/**
-	 * @param featureBranch
-	 *            as a {@link Ref} object.
-	 * @return list of unique commits of a feature branch, which do not exist in the
-	 *         default branch. Commits are sorted by age, beginning with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
-		List<RevCommit> branchCommits = getCommits(featureBranch);
-		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
-		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
-
-		for (RevCommit commit : branchCommits) {
-			if (!defaultBranchCommits.contains(commit)) {
-				branchUniqueCommits.add(commit);
-			}
-		}
-		return Lists.reverse(branchUniqueCommits);
-	}
-
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		Repository repository = this.getRepository();
@@ -518,15 +498,15 @@ public class GitClientForSingleRepository {
 		return defaultBranchCommits;
 	}
 
-	private List<RevCommit> getCommits(Ref branch) {
+	public List<RevCommit> getCommits(Ref branch) {
 		return getCommits(branch, false);
 	}
 
 	private List<RevCommit> getCommits(Ref branch, boolean isDefaultBranch) {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
 		if (branch == null || fsManager == null) {
-			return commits;
+			return new ArrayList<RevCommit>();
 		}
+		List<RevCommit> commits = new ArrayList<RevCommit>();
 		File directory;
 
 		String[] branchNameComponents = branch.getName().split("/");
