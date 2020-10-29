@@ -1,13 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -20,12 +12,10 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -33,15 +23,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
+import java.lang.reflect.Type;
+import java.util.*;
+
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
  * activated for a specific project.
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -331,7 +324,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -394,7 +387,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -540,10 +533,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-						jiraProject.getProjectKey());
+					jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-							projectSourceActivation);
+						projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -558,28 +551,7 @@ public class ConfigPersistenceManager {
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		// New KnowledgeSources could be added here.
 
-		for (int i = 0; i < knowledgeSources.size(); i++) {
-			KnowledgeSource knowledgeSource = knowledgeSources.get(i);
-			knowledgeSource.setCalculationMethodTypeType(getCalculationMethod(projectKey));
-			knowledgeSources.set(i, knowledgeSource);
-		}
-
 		return knowledgeSources;
-	}
-
-	public static void setCalculationMethod(String projectKey, String knowledgeSourceAlgorithmType) {
-		setValue(projectKey, "knowledgesourcealgorithm", knowledgeSourceAlgorithmType);
-	}
-
-	public static CalculationMethodType getCalculationMethod(String projectKey) {
-		CalculationMethodType calculationMethodType;
-		try {
-			calculationMethodType = CalculationMethodType.valueOf(getValue(projectKey, "knowledgesourcealgorithm"));
-		} catch (IllegalArgumentException e) {
-			calculationMethodType = CalculationMethodType.SUBSTRING;
-		}
-		return calculationMethodType;
-		// return KnowledgeSourceAlgorithmType.valueOf("TOKENIZED");
 	}
 
 	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
@@ -594,10 +566,9 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "recommendationInput", recommendationInput);
 	}
 
-	public static String getRecommendationInput(String projectKey) {
+	public static RecommenderType getRecommendationInput(String projectKey) {
 		String value = getValue(projectKey, "recommendationInput");
-		if (!value.isBlank())
-			return value;
+		if (!value.isBlank()) return RecommenderType.getTypeByString(value);
 		return RecommenderType.getDefault();
 	}
 

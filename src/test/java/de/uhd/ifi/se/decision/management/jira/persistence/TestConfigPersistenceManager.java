@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
@@ -569,23 +568,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetKnowledgeSourceAlgorithmTypeDefault() {
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
-	}
-
-	@Test
-	public void testSetAndGetKnowledgeSourceAlgorithmTypeInvalidType() {
-		ConfigPersistenceManager.setCalculationMethod("TEST", "INVALIDTYPE");
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
-	}
-
-	@Test
-	public void testSetAndGetKnowledgeSourceAlgorithmType() {
-		ConfigPersistenceManager.setCalculationMethod("TEST", CalculationMethodType.SUBSTRING.toString());
-		assertEquals(CalculationMethodType.SUBSTRING, ConfigPersistenceManager.getCalculationMethod("TEST"));
-	}
-
-	@Test
 	public void testSetAndGetAddRecommendationDirectly() {
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", true);
 		assertTrue(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
@@ -597,7 +579,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetAndGetRecommendationInput() {
 		//assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput("TEST"));
 		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
-		assertEquals(RecommenderType.KEYWORD.toString(), ConfigPersistenceManager.getRecommendationInput("TEST"));
+		assertEquals(RecommenderType.KEYWORD, ConfigPersistenceManager.getRecommendationInput("TEST"));
 		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD");
 		assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput(null));
 	}
