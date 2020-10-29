@@ -120,17 +120,18 @@ public class ConfigPersistenceManager {
 		return "true".equals(isIssueStrategy);
 	}
 
+	// TODO Add GitConfig class with isKnowledgeExtractedFromGit attribute
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
 		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
 		return "true".equals(isKnowledgeExtractedFromGit);
 	}
 
-	// TODO Testing
+	// TODO Add GitConfig class with isPostDefaultBranchCommitsActivated attribute
 	public static boolean isPostSquashedCommitsActivated(String projectKey) {
 		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
 	}
 
-	// TODO Testing
+	// TODO Add GitConfig class with isPostFeatureBranchCommitsActivated attribute
 	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
 		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
 	}
@@ -209,18 +210,22 @@ public class ConfigPersistenceManager {
 		return uris;
 	}
 
+	// TODO Add GitConfig
 	public static void setDefaultBranches(String projectKey, String defaultBranches) {
 		setValue(projectKey, "defaultBranches", defaultBranches);
 	}
 
+	// TODO Add GitConfig
 	public static void setAuthMethods(String projectKey, String authMethods) {
 		setValue(projectKey, "authMethods", authMethods);
 	}
 
+	// TODO Add GitConfig
 	public static void setUsernames(String projectKey, String usernames) {
 		setValue(projectKey, "usernames", usernames);
 	}
 
+	// TODO Add GitConfig
 	public static void setTokens(String projectKey, String tokens) {
 		setValue(projectKey, "tokens", tokens);
 	}
@@ -299,7 +304,7 @@ public class ConfigPersistenceManager {
 		}
 		return usernames;
 	}
-	
+
 	public static Map<String, String> getTokens(String projectKey) {
 		Map<String, String> tokens = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
@@ -591,7 +596,8 @@ public class ConfigPersistenceManager {
 
 	public static String getRecommendationInput(String projectKey) {
 		String value = getValue(projectKey, "recommendationInput");
-		if(!value.isBlank()) return value;
+		if (!value.isBlank())
+			return value;
 		return RecommenderType.getDefault();
 	}
 

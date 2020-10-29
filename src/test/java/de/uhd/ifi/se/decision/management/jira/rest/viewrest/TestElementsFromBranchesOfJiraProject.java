@@ -33,18 +33,18 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testEmptyIssueKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getAllFeatureBranchesTree("").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("").getStatus());
 	}
 
 	@Test
 	public void testUnknownProjectKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getAllFeatureBranchesTree("HOUDINI").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
 	}
 
 	@Test
 	public void testExistingProjectKey() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getAllFeatureBranchesTree("TEST").getStatus());
-		Object receivedEntity = viewRest.getAllFeatureBranchesTree("TEST").getEntity();
+		assertEquals(Status.OK.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
+		Object receivedEntity = viewRest.getElementsFromAllBranchesOfProject("TEST").getEntity();
 
 		Object expectedEntity = new DiffViewer(null);
 		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
@@ -54,7 +54,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 	public void testGitExtractionDisabled() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				viewRest.getAllFeatureBranchesTree("TEST").getStatus());
+				viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 	}
 }

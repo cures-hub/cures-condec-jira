@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -27,7 +25,8 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Retrieves commits and code changes (diffs) from one or more git repositories.
+ * Retrieves commits and code changes ({@link Diff}s) from one or more git
+ * repositories.
  *
  * Multiple instances of this class are "thread-safe" in the limited way that
  * the checked-out branch files are stored in dedicated branch folders and can
@@ -96,7 +95,7 @@ public class GitClient {
 		if (instances.containsKey(projectKey)) {
 			instances.remove(projectKey);
 		}
-		
+
 		gitClient = new GitClient(projectKey);
 		instances.put(projectKey, gitClient);
 
@@ -106,16 +105,15 @@ public class GitClient {
 
 	private GitClient(String projectKey) {
 		this(ConfigPersistenceManager.getGitUris(projectKey), ConfigPersistenceManager.getDefaultBranches(projectKey),
-		ConfigPersistenceManager.getAuthMethods(projectKey), ConfigPersistenceManager.getUsernames(projectKey),
-		ConfigPersistenceManager.getTokens(projectKey), projectKey);
+				ConfigPersistenceManager.getAuthMethods(projectKey), ConfigPersistenceManager.getUsernames(projectKey),
+				ConfigPersistenceManager.getTokens(projectKey), projectKey);
 	}
 
 	private GitClient(List<String> uris, Map<String, String> defaultBranches, Map<String, String> authMethods,
 			Map<String, String> usernames, Map<String, String> tokens, String projectKey) {
 		this();
 		this.projectKey = projectKey;
-		uris.forEach(uri -> gitClientsForSingleRepos
-				.add(new GitClientForSingleRepository(uri, defaultBranches.get(uri),
+		uris.forEach(uri -> gitClientsForSingleRepos.add(new GitClientForSingleRepository(uri, defaultBranches.get(uri),
 				projectKey, authMethods.get(uri), usernames.get(uri), tokens.get(uri))));
 	}
 
@@ -139,14 +137,13 @@ public class GitClient {
 	 *         entry and contains the respective edit list.
 	 */
 	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.size() == 0) {
+		if (commits == null || commits.isEmpty()) {
 			return new Diff();
 		}
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(commits).getChangedFiles());
-		}
-		return diff;
+		// TODO Check if this is always correct
+		RevCommit firstCommit = commits.get(commits.size() - 1);
+		RevCommit lastCommit = commits.get(0);
+		return getDiff(firstCommit, lastCommit);
 	}
 
 	/**
@@ -160,11 +157,15 @@ public class GitClient {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(jiraIssue).getChangedFiles());
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits(jiraIssue);
+		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(jiraIssue);
+		List<RevCommit> allCommits = defaultBranchCommits;
+		for (RevCommit featureBranchCommit : featureBranchCommits) {
+			if (!allCommits.contains(featureBranchCommit)) {
+				allCommits.add(featureBranchCommit);
+			}
 		}
-		return diff;
+		return getDiff(allCommits);
 	}
 
 	/**
@@ -224,7 +225,7 @@ public class GitClient {
 	 * fetch commits, afterwards returns to default branch directory after.
 	 *
 	 * @param featureBranch
-	 *            ref of the feature branch, Uri of Git Repository
+	 *            ref of the feature branch
 	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
 	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
 	 *         with the oldest.
@@ -237,17 +238,10 @@ public class GitClient {
 		return commits;
 	}
 
-	/**
-	 * @param featureBranchName
-	 *            name of the feature branch.
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
+	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(featureBranchName));
+			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(jiraIssue));
 		}
 		return commits;
 	}
@@ -266,6 +260,15 @@ public class GitClient {
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
+	 * 
+	 * @issue What is the return value of methods that would normally return a
+	 *        collection (e.g. list) with an invalid input parameter?
+	 * @decision Methods with an invalid input parameter return an empty list!
+	 * @pro Would prevent a null pointer exception.
+	 * @con Is misleading since it is not clear whether the list is empty but has a
+	 *      valid input parameter or because of an invalid parameter.
+	 * @alternative Methods with an invalid input parameter return null!
+	 * @con null values might cause a null pointer exception.
 	 */
 	public List<RevCommit> getCommits(Issue jiraIssue) {
 		if (jiraIssue == null) {
@@ -273,56 +276,7 @@ public class GitClient {
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue));
-		}
-		return commits;
-	}
-
-	/**
-	 * Retrieves the Jira issue key from a commit message.
-	 *
-	 * @param commitMessage
-	 *            a commit message that should contain a Jira issue key.
-	 * @return extracted Jira issue key or empty String if no Jira issue key could
-	 *         be found.
-	 *
-	 * @issue How to identify the Jira issue key(s) in a commit message?
-	 * @alternative This is a very simple method to detect the Jira issue key as the
-	 *              first word in the message and should be improved!
-	 */
-	public static String getJiraIssueKey(String commitMessage) {
-		if (commitMessage.isEmpty()) {
-			return "";
-		}
-		String[] split = commitMessage.split("[\\s,:]+");
-		return split[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	public Set<String> getJiraIssueKeys(String message) {
-		Set<String> keys = new LinkedHashSet<String>();
-		if (projectKey == null) {
-			return keys;
-		}
-		String baseKey = projectKey.toUpperCase(Locale.ENGLISH);
-		String pattern = "(" + baseKey + "-)\\d+";
-
-		String[] words = message.split("[\\s,:]+");
-		for (String word : words) {
-			word = word.toUpperCase(Locale.ENGLISH);
-			if (word.matches(pattern)) {
-				keys.add(word);
-			}
-		}
-		return keys;
-	}
-
-	/**
-	 * @return all commits of the git repository as a list of {@link RevCommits}.
-	 */
-	public List<RevCommit> getCommits() {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits());
+			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
 		}
 		return commits;
 	}
@@ -352,6 +306,14 @@ public class GitClient {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommitsFromDefaultBranch());
+		}
+		return commits;
+	}
+
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
+		List<RevCommit> commits = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 		}
 		return commits;
 	}
@@ -386,6 +348,22 @@ public class GitClient {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param branchName,
+	 *            e.g. "master"
+	 * @return all branches matching the name as a list of {@link Ref} objects.
+	 */
+	public List<Ref> getBranches(String branchName) {
+		if (branchName == null || branchName.isBlank()) {
+			LOGGER.info("Null or empty branch name was passed.");
+			return null;
+		}
+		List<Ref> remoteBranches = getAllRemoteBranches();
+		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
+				.collect(Collectors.toList());
+		return branchCandidates;
 	}
 
 	public List<Ref> getAllRemoteBranches() {

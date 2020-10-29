@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -110,7 +109,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void tesUpdateRDFKNowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "VALID SOURCE", "30000");
 		Gson gson = new Gson();
-		assertEquals(200, configRest.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
+		assertEquals(200, configRest
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test
@@ -118,7 +118,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void testUpdateRDFKNowledgeSourceInValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000");
 		Gson gson = new Gson();
-		assertEquals(400, configRest.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+		assertEquals(400, configRest
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test
@@ -126,7 +127,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void testUpdateRDFKNowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000");
 		Gson gson = new Gson();
-		assertEquals(400, configRest.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+		assertEquals(400, configRest
+				.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
 	}
 
 	/**
@@ -218,7 +220,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method addRecommendationdirectly invalid project")
 	public void testSetAddRecommendationDirectlyInvalidValue() {
-		assertEquals(200, configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
+		assertEquals(200,
+				configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
 	}
 
 	@Test
@@ -227,6 +230,5 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD").getStatus());
 		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD").getStatus());
 	}
-
 
 }

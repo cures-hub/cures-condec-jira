@@ -137,9 +137,8 @@ public enum KnowledgeStatus {
 	public String getColor() {
 		switch (this) {
 		case UNRESOLVED:
-			return "red";
 		case CHALLENGED:
-			return "blue";
+			return "crimson";
 		case DISCARDED:
 		case REJECTED:
 			return "gray";
