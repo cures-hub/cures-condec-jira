@@ -563,7 +563,7 @@ public class ConfigPersistenceManager {
 
 	public static RecommenderType getRecommendationInput(String projectKey) {
 		String value = getValue(projectKey, "recommendationInput");
-		if (!value.isBlank()) return RecommenderType.valueOf(value);
+		if (!value.isBlank()) return RecommenderType.getTypeByString(value);
 		return RecommenderType.getDefault();
 	}
 

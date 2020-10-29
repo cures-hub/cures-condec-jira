@@ -109,16 +109,17 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	 * @return
 	 */
 	public double calculateMRRForRecommendations(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
-		double MRR = 0.0;
+		double sum_RR = 0.0;
 
 		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {
 				if (solutionOption.getSummary().trim().equals(recommendations.get(i).getRecommendations().trim())) {
-					MRR += (1.0 / (i + 1));
+					sum_RR += (1.0 / (i + 1));
 				}
 			}
 		}
-		return MRR / recommendations.size();
+		double MRR = sum_RR / recommendations.size();
+		return !Double.isNaN(MRR) ? MRR : 0.0;
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -33,14 +35,8 @@ public class TestProjectSource extends TestSetUp {
 
 		recommendations = projectSource.getResults(nullString);
 		assertEquals(0, recommendations.size());
-
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setId(123);
-		knowledgeElement.setSummary("How can we implement the feature");
-		recommendations = projectSource.getResults(knowledgeElement);
-		assertEquals(2, recommendations.size());
-
 	}
+
 
 	@Test
 	public void testActivation() {
@@ -48,5 +44,26 @@ public class TestProjectSource extends TestSetUp {
 		List<Recommendation> recommendations = projectSource.getResults("How can we implement the feature");
 		assertEquals(0, recommendations.size());
 	}
+
+
+	@Test
+	public void testStringInput() {
+		ProjectSourceInputString input = new ProjectSourceInputString();
+		input.setData("TEST", "TEST", null);
+		List<Recommendation> recommendations = input.getResults("How can we implement the feature");
+		assertEquals(2, recommendations.size());
+	}
+
+	@Test
+	public void testStringKnowledgeElement() {
+		ProjectSourceInputKnowledgeElement input = new ProjectSourceInputKnowledgeElement();
+		input.setData("TEST", "TEST", null);
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setId(123);
+		knowledgeElement.setSummary("How can we implement the feature");
+		List<Recommendation> recommendations = input.getResults(knowledgeElement);
+		assertEquals(2, recommendations.size());
+	}
+
 
 }

@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class KnowledgeSource {
@@ -14,10 +15,23 @@ public abstract class KnowledgeSource {
 	protected boolean isActivated;
 	protected String name;
 
-	public abstract List<Recommendation> getResults(String inputs);
+	InputMethod inputMethod;
 
-	public abstract List<Recommendation> getResults(KnowledgeElement knowledgeElement);
 
+	public List<Recommendation> getResults(Object object) {
+		getInputMethod();
+		setData();
+		try {
+			return inputMethod.getResults(object);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+	public abstract void setData();
+
+	public abstract void getInputMethod();
 
 	public String getName() {
 		return name;
