@@ -104,7 +104,7 @@ public class ViewRest {
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
 		gitClient = GitClient.getOrCreate(projectKey);
-		List<Ref> branches = gitClient.getAllRemoteBranches();
+		List<Ref> branches = gitClient.getBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

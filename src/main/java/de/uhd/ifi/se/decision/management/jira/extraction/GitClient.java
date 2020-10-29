@@ -221,14 +221,10 @@ public class GitClient {
 	}
 
 	/**
-	 * Temporally switches git client's directory to feature branch directory to
-	 * fetch commits, afterwards returns to default branch directory after.
-	 *
 	 * @param featureBranch
-	 *            ref of the feature branch
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are sorted by age, beginning with the oldest.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
@@ -238,6 +234,13 @@ public class GitClient {
 		return commits;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are sorted by age, beginning with the oldest.
+	 */
 	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
@@ -365,13 +368,16 @@ public class GitClient {
 			LOGGER.info("Null or empty branch name was passed.");
 			return null;
 		}
-		List<Ref> remoteBranches = getAllRemoteBranches();
+		List<Ref> remoteBranches = getBranches();
 		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
 				.collect(Collectors.toList());
 		return branchCandidates;
 	}
 
-	public List<Ref> getAllRemoteBranches() {
+	/**
+	 * @return all branches as a list of {@link Ref} objects.
+	 */
+	public List<Ref> getBranches() {
 		List<Ref> allRemoteBranches = new ArrayList<>();
 		getGitClientsForSingleRepos().forEach(
 				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));

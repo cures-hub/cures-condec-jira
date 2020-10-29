@@ -516,7 +516,7 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return list of remote branches in repository as {@link Ref}s.
+	 * @return remote branches in repository as a list of {@link Ref}s.
 	 */
 	public List<Ref> getRemoteBranches() {
 		return getRefs(ListBranchCommand.ListMode.REMOTE);

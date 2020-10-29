@@ -10,7 +10,7 @@ import org.junit.Test;
 public class TestGetDefaultBranchCommits extends TestSetUpGit {
 
 	@Test
-	public void testDefaultBranchCommits() {
+	public void testAllDefaultBranchCommits() {
 		List<RevCommit> allCommits = gitClient.getDefaultBranchCommits();
 		assertEquals(7, allCommits.size());
 	}
