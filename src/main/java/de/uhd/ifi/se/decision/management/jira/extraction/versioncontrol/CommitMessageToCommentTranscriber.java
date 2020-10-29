@@ -125,11 +125,10 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public String generateCommentString(RevCommit commit, Ref branch) {
-		String comment = commit.getFullMessage();
-		if (comment == null || comment.isBlank()) {
+		if (commit == null || commit.getFullMessage().isBlank() || branch == null) {
 			return "";
 		}
-		comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(comment);
+		String comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(commit.getFullMessage());
 		StringBuilder builder = new StringBuilder(comment);
 		builder.append("\r\n\r\n");
 		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
@@ -139,7 +138,7 @@ public class CommitMessageToCommentTranscriber {
 		return builder.toString();
 	}
 
-	private String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
+	private static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
 		for (String tag : KnowledgeType.toStringList()) {
 			String replaceString = "{" + tag.toLowerCase() + "}";
 			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.commitmessagetocommenttranscriptor;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,23 +8,21 @@ import java.util.List;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 
-public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
+public class TestGenerateCommentString extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
 	private Issue issue;
 	private Ref branch;
 
 	private static String DEFAULT_EXPECTED_COMMENT_MESSAGE = "{issue}This is an issue!{issue}";
-
 	private static String META_DATA_STRING = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
 			+ "refs/remotes/origin/TEST-4.transcriberBranch\r\n" + "Commit Hash: ";
 
@@ -41,57 +39,47 @@ public class TestCommitMessageToCommentTranscriber extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
-	public void testEmptyMessage() {
-		RevCommit commit = gitClient.getFeatureBranchCommits(issue).get(0);
+	public void testCommitNull() {
+		assertEquals("", transcriber.generateCommentString(null, branch));
+	}
+
+	@Test
+	public void testBranchNull() {
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(0);
+		assertEquals("", transcriber.generateCommentString(commit, null));
+	}
+
+	@Test
+	public void testEmptyCommitMessage() {
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(4);
 		assertEquals("", transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
 	public void testLowercaseIssueMessage() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(1);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(3);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 				transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
 	public void testUppercaseIssueMessage() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(2);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(2);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 				transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
 	public void testMixedcaseIssueMessage() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(3);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(1);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + META_DATA_STRING + commit.getName(),
 				transcriber.generateCommentString(commit, branch));
 	}
 
 	@Test
 	public void testIssueMessageWithAdditionalText() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(4);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(0);
 		assertEquals(DEFAULT_EXPECTED_COMMENT_MESSAGE + " But I love pizza!" + META_DATA_STRING + commit.getName(),
 				transcriber.generateCommentString(commit, branch));
 	}
-
-	@Test
-	public void testPostComment() {
-		transcriber.postCommitsIntoJiraIssueComments();
-		String additionalMessage = "";
-		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(issue);
-		for (int i = 0, j = 1; i < comments.size(); i++, j++) {
-			RevCommit currentCommit = TestSetUpGit.gitClient.getFeatureBranchCommits(this.branch).get(j);
-			if (j == comments.size()) {
-				additionalMessage = " But I love pizza!";
-			}
-			assertEquals(
-					DEFAULT_EXPECTED_COMMENT_MESSAGE + additionalMessage + META_DATA_STRING + currentCommit.getName(),
-					comments.get(i).getBody());
-		}
-
-	}
-
-	// TODO: Test if duplicates are NOT postet.
-
 }

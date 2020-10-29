@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -269,6 +270,7 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits(branch));
 		}
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
 	}
 
@@ -340,13 +342,15 @@ public class GitClient {
 	 * @param jiraIssue
 	 *            such as work item/development task/requirements that key was
 	 *            mentioned in the commit messages.
-	 * @return all commits on the branch(es) as a list of {@link RevCommit}s.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
+	 *         list is sorted by committing time: oldest commits come first.
 	 */
 	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 		}
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
 	}
 
