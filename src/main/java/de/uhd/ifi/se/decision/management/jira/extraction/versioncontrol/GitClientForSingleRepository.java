@@ -39,6 +39,7 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -60,7 +61,8 @@ public class GitClientForSingleRepository {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
-	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey, String authMethod, String username, String token) {
+	public GitClientForSingleRepository(String uri, String defaultBranchName, String projectKey, String authMethod,
+			String username, String token) {
 		this.projectKey = projectKey;
 		this.repoUri = uri;
 		this.defaultBranchName = defaultBranchName;
@@ -75,7 +77,7 @@ public class GitClientForSingleRepository {
 	public boolean pullOrClone() {
 		File directory = new File(fsManager.getDefaultBranchPath());
 		File gitDirectory = new File(directory, ".git/");
-		if (isGitDirectory(gitDirectory)) {
+		if (directory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
 					LOGGER.error("Failed Git pull " + directory);
@@ -92,10 +94,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return true;
-	}
-
-	private boolean isGitDirectory(File directory) {
-		return directory.exists();
 	}
 
 	private boolean openRepository(File directory) {
@@ -184,23 +182,29 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		try {
-			switch(authMethod) {
-				case "HTTP":
-					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			switch (authMethod) {
+			case "HTTP":
+				git = Git.cloneRepository().setURI(repoUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 
-				case "GITHUB":
-					git = Git.cloneRepository().setURI(repoUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, "")).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			case "GITHUB":
+				git = Git.cloneRepository().setURI(repoUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 
-				case "GITLAB":
-					String gitlabUri = repoUri.replaceAll("https://","https://gitlab-ci-token:" + token + "@");
-					git = Git.cloneRepository().setURI(gitlabUri).setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token)).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
-			
-				default:
-					git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
-					break;
+			case "GITLAB":
+				String gitlabUri = repoUri.replaceAll("https://", "https://gitlab-ci-token:" + token + "@");
+				git = Git.cloneRepository().setURI(gitlabUri)
+						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
+						.setDirectory(directory).setCloneAllBranches(true).call();
+				break;
+
+			default:
+				git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
+				break;
 			}
 
 			setConfig();
@@ -234,49 +238,6 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @param commits
-	 *            commits as a list of RevCommit objects.
-	 * @return {@link Diff} object for a list of commits containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.isEmpty()) {
-			return new Diff();
-		}
-		// TODO Check if this is always correct
-		RevCommit firstCommit = commits.get(commits.size() - 1);
-		RevCommit lastCommit = commits.get(0);
-		return getDiff(firstCommit, lastCommit);
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            a Jira issue object.
-	 * @return {@link Diff} object for a Jira issue containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new Diff();
-		}
-		List<RevCommit> squashCommits = getCommits(jiraIssue);
-		Ref branch = getRef(jiraIssue.getKey());
-		List<RevCommit> commits = getCommits(branch);
-		if (commits == null) {
-			return new Diff();
-		}
-		commits.removeAll(getCommitsFromDefaultBranch());
-		for (RevCommit com : squashCommits) {
-			if (!commits.contains(com)) {
-				commits.add(com);
-			}
-		}
-		return getDiff(commits);
 	}
 
 	/**
@@ -324,17 +285,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return diff;
-	}
-
-	/**
-	 * @param revCommit
-	 *            commit as a {@link RevCommit} object.
-	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
-	 *         {@link ChangedFile} is created from a diff entry and contains the
-	 *         respective edit list.
-	 */
-	public Diff getDiff(RevCommit revCommit) {
-		return getDiff(revCommit, revCommit);
 	}
 
 	/**
@@ -400,49 +350,12 @@ public class GitClientForSingleRepository {
 		return branchUniqueCommits;
 	}
 
-	/**
-	 * @param featureBranchName
-	 *            name of the feature branch.
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
-		Ref featureBranch = getBranch(featureBranchName);
-		if (null == featureBranch) {
-			/**
-			 * @issue What is the return value of methods that would normally return a
-			 *        collection (e.g. list) with an invalid input parameter?
-			 * @alternative Methods with an invalid input parameter return an empty list!
-			 * @pro Would prevent a null pointer exception.
-			 * @con Is misleading since it is not clear whether the list is empty but has a
-			 *      valid input parameter or because of an invalid parameter.
-			 * @alternative Methods with an invalid input parameter return null!
-			 * @con null values might be intended as result.
-			 * @decision Return an emtpy list to compensate for branch being in another
-			 *           repository!
-			 */
-			return Collections.emptyList();
+	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new ArrayList<>();
 		}
-		return getFeatureBranchCommits(featureBranch);
-	}
-
-	public Ref getBranch(String featureBranchName) {
-		if (featureBranchName == null || featureBranchName.isBlank()) {
-			LOGGER.info("Null or empty branch name was passed.");
-			return null;
-		}
-		List<Ref> remoteBranches = getRemoteBranches();
-		if (remoteBranches != null) {
-			for (Ref branch : remoteBranches) {
-				String branchName = branch.getName();
-				if (branchName.endsWith("/" + featureBranchName)) {
-					return branch;
-				}
-			}
-		}
-		LOGGER.info("Could not find branch " + featureBranchName);
-		return null;
+		Ref branch = getRef(jiraIssue.getKey());
+		return getFeatureBranchCommits(branch);
 	}
 
 	private DiffFormatter getDiffFormater() {
@@ -531,24 +444,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Switches git client's directory to feature branch directory, i.e., DOES NOT
-	 * go back to the default branch directory. DOES NOT go back to default branch
-	 * directory.
-	 *
-	 * @param featureBranchShortName
-	 *            name of the feature branch
-	 * @return success or failure boolean
-	 */
-	public boolean checkoutFeatureBranch(String featureBranchShortName) {
-		Ref featureBranch = getBranch(featureBranchShortName);
-		if (null == featureBranch) {
-			return false;
-		}
-		return checkoutFeatureBranch(featureBranch);
-
-	}
-
-	/**
 	 * Switches git client's directory to commit directory, checks out files in
 	 * working dir for the commit. DOES NOT go back to default branch directory.
 	 *
@@ -592,7 +487,7 @@ public class GitClientForSingleRepository {
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
 	 */
-	public List<RevCommit> getCommits(Issue jiraIssue) {
+	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
 		if (jiraIssue == null) {
 			return new LinkedList<RevCommit>();
 		}
@@ -616,10 +511,10 @@ public class GitClientForSingleRepository {
 		 *      CONDEC-1000) will not be confused.
 		 */
 		Ref branch = getRef(jiraIssueKey);
-		List<RevCommit> commits = getCommits(branch, false);
+		List<RevCommit> commits = getCommits(branch, isDefaultBranch);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
-			String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
+			String jiraIssueKeyInCommitMessage = CommitMessageParser.getJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 				commitsForJiraIssue.add(commit);
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
@@ -628,52 +523,30 @@ public class GitClientForSingleRepository {
 		return commitsForJiraIssue;
 	}
 
-	/**
-	 * @return all commits of the git repository as a list of {@link RevCommits}.
-	 */
-	public List<RevCommit> getCommits() {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (Ref branch : getRemoteBranches()) {
-			/**
-			 * @issue All branches will be created in separate file system folders for this
-			 *        method's loop. How can this be prevented?
-			 * @alternative remove this method completely!
-			 * @pro Fetching commits from all branches is not sensible.
-			 * @con Fetching commits from all branches may still be needed in some use
-			 *      cases.
-			 * @pro this method seems to be used only for code testing (TestGetCommits)
-			 * @con scraping it would require coding improvement in test code
-			 *      (TestGetCommits), but who wants to spend time on that ;-)
-			 * @alternative We could check whether the JIRA issue key is part of the branch
-			 *              name and - if so - only use the commits from this branch!
-			 * @con it is not clear what is meant with this alternative.
-			 * @decision release branch folders if possible, so that in best case only one
-			 *           folder will be used!
-			 * @pro implementation does not seem to be complex at all.
-			 * @pro until discussion are not finished, seems like a good trade-off.
-			 * @con still some more code will be written. Scraping it, would require coding
-			 *      improvement in test code (TestGetCommits).
-			 */
-			commits.addAll(getCommits(branch, false));
-		}
-		return commits;
-	}
-
 	/*
 	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
 	 * discussions!
 	 */
 	private Ref getRef(String jiraIssueKey) {
 		List<Ref> refs = getAllBranches();
-		Ref branch = null;
 		for (Ref ref : refs) {
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
 			} else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
-				branch = ref;
+				return ref;
 			}
 		}
-		return branch;
+		return null;
+	}
+
+	public Ref getDefaultBranch() {
+		List<Ref> refs = getAllBranches();
+		for (Ref ref : refs) {
+			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+				return ref;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -698,7 +571,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommitsFromDefaultBranch() {
-		Ref defaultBranch = getBranch(defaultBranchName);
+		Ref defaultBranch = getDefaultBranch();
 		return getCommits(defaultBranch, true);
 	}
 

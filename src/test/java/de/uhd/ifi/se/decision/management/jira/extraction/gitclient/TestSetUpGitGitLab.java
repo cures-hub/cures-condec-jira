@@ -24,6 +24,8 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -39,6 +41,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @alternative We could have more than one mock git repositories for testing!
  * @con we do not have time for it at the moment..
  */
+// TODO This class mostly duplicates TestSetUpGit. We should avoid duplicated
+// code. This needs refactoring.
 public abstract class TestSetUpGitGitLab extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
@@ -70,7 +74,7 @@ public abstract class TestSetUpGitGitLab extends TestSetUp {
 		ConfigPersistenceManager.setUsernames("TEST", "");
 		ConfigPersistenceManager.setTokens("TEST", "secret👀");
 		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getCommits().isEmpty()) {
+		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
 		// above line will log errors for pulling from still empty remote repositry.
@@ -258,5 +262,6 @@ public abstract class TestSetUpGitGitLab extends TestSetUp {
 	public static void tidyUp() {
 		// gitClient.closeAll();
 		// gitClient.deleteRepositories();
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

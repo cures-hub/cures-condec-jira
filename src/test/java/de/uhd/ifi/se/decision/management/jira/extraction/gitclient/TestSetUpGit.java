@@ -24,6 +24,8 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -67,7 +69,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getCommits().isEmpty()) {
+		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
 		// above line will log errors for pulling from still empty remote repositry.
@@ -255,5 +257,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 	public static void tidyUp() {
 		// gitClient.closeAll();
 		// gitClient.deleteRepositories();
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

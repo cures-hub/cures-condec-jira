@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
 import org.junit.Ignore;
@@ -13,12 +14,13 @@ import org.junit.Test;
 
 public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 
-	private String featureBranch = "featureBranch";
 	private String expectedFirstCommitMessage = "First message";
+	private Ref featureBranch;
 
 	@After
 	public void after() {
 		restoreFeatureBranchOnRemote();
+		featureBranch = gitClient.getBranches("featureBranch").get(0);
 	}
 
 	@Test
@@ -37,6 +39,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
 		File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory();
 

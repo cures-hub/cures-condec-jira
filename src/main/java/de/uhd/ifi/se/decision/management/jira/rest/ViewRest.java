@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.*;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.EvaluationRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
@@ -54,7 +55,7 @@ public class ViewRest {
 
 	@Path("/elementsFromBranchesOfProject")
 	@GET
-	public Response getAllFeatureBranchesTree(@QueryParam("projectKey") String projectKey) {
+	public Response getElementsFromAllBranchesOfProject(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -69,13 +70,13 @@ public class ViewRest {
 
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
-	public Response getFeatureBranchTree(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey)
-		throws PermissionException {
+	public Response getElementsOfFeatureBranchForJiraIssue(@Context HttpServletRequest request,
+														   @QueryParam("issueKey") String issueKey) {
 		if (request == null || issueKey == null || issueKey.isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 				"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String normalizedIssueKey = normalizeIssueKey(issueKey); // ex: issueKey=ConDec-498
+		String normalizedIssueKey = issueKey.toUpperCase(); // ex: issueKey=ConDec-498
 		String projectKey = getProjectKey(normalizedIssueKey);
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(normalizedIssueKey);
 		if (issue == null) {
@@ -85,40 +86,16 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 				.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
-		String regexFilter = normalizedIssueKey.toUpperCase() + "\\.|" + normalizedIssueKey.toUpperCase() + "$|"
-			+ normalizedIssueKey.toUpperCase() + "\\-";
+		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
+		// TODO This is too complicated
+		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 
 		// get feature branches of an issue
-		return getDiffViewerResponse(projectKey, regexFilter,
-			ComponentAccessor.getIssueManager().getIssueByCurrentKey(normalizedIssueKey));
-	}
-
-	private Response getDiffViewerResponse(String projectKey, String filter, Issue issue) throws PermissionException {
-
-		Response resp = this.getDiffViewerResponse(projectKey, filter);
-
-		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
-		CommitMessageToCommentTranscriber transcriber = new CommitMessageToCommentTranscriber(issue);
-		// get current branch name
-		// iterate over commits to get all messages and post each one as a comment
-		// make sure to not post duplicates
-		gitClient = GitClient.getOrCreate(projectKey);
-		List<Ref> branches = gitClient.getAllRemoteBranches();
-		for (Ref branch : branches) {
-			Matcher branchMatcher = filterPattern.matcher(branch.getName());
-			if (branchMatcher.find()) {
-				transcriber.postComments(branch);
-			}
-		}
-
-		gitClient.closeAll();
-		return resp;
+		return getDiffViewerResponse(projectKey, regexFilter);
 	}
 
 	private Response getDiffViewerResponse(String projectKey, String filter) {
 		gitClient = GitClient.getOrCreate(projectKey);
-		Response resp = null;
 		List<Ref> branches = gitClient.getAllRemoteBranches();
 		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
 		if (branches.isEmpty()) {
@@ -136,17 +113,7 @@ public class ViewRest {
 		}
 		gitClient.closeAll();
 		DiffViewer diffView = new DiffViewer(ratBranchList);
-		try {
-			Response.ResponseBuilder respBuilder = Response.ok(diffView);
-			resp = respBuilder.build();
-		} catch (Exception ex) {
-			LOGGER.error(ex.getMessage());
-		}
-		return resp;
-	}
-
-	private String normalizeIssueKey(String issueKey) {
-		return issueKey.toUpperCase();
+		return Response.ok(diffView).build();
 	}
 
 	/**
@@ -363,10 +330,8 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement knowledgeElement = persistenceManager.getKnowledgeElement(issueID, "s");
-
 
 		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
 
@@ -375,6 +340,7 @@ public class ViewRest {
 
 		if (RecommenderType.KEYWORD.equals(recommenderType)) recommender.setInput(keyword);
 		else recommender.setInput(knowledgeElement);
+
 
 		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -391,14 +357,12 @@ public class ViewRest {
 		return Response.ok(recommendationList).build();
 	}
 
-
 	@Path("/getRecommendationEvaluation")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 												@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-												@QueryParam("issueID") int issueID,
-												@QueryParam("knowledgeSource") String knowledgeSourceName) {
+												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -410,17 +374,17 @@ public class ViewRest {
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "i"); //TODO which documentation location should we use?
+		KnowledgeElement issue = manager.getKnowledgeElement(issueID, "i"); // TODO which documentation location should
+		// we use?
 
 		if (issue == null) {
-			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found.")).build();
+			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))
+				.build();
 		}
-
 
 		EvaluationRecommender recommender = new EvaluationRecommender(issue, keyword);
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
-
 
 		return Response.ok(recommendationEvaluation).build();
 	}
