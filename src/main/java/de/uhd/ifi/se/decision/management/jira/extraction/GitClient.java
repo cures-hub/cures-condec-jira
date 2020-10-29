@@ -166,6 +166,7 @@ public class GitClient {
 				allCommits.add(featureBranchCommit);
 			}
 		}
+		allCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return getDiff(allCommits);
 	}
 
@@ -256,6 +257,7 @@ public class GitClient {
 				branchUniqueCommits.add(commit);
 			}
 		}
+		branchUniqueCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return branchUniqueCommits;
 	}
 

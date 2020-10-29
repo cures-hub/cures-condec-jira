@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
@@ -49,6 +51,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
+	private static int commitTime = 0;
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -174,7 +177,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 			writer.println(content);
 			writer.close();
 			git.add().addFilepattern(inputFile.getName()).call();
-			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
+			PersonIdent defaultCommitter = new PersonIdent("gitTest", "gitTest@test.de");
+			PersonIdent committer = new PersonIdent(defaultCommitter, new Date(commitTime));
+			commitTime = commitTime + 3600;
+			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
