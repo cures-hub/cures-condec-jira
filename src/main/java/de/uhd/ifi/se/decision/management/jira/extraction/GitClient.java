@@ -242,9 +242,13 @@ public class GitClient {
 	 *         default branch. Commits are sorted by age, beginning with the oldest.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new ArrayList<RevCommit>();
+		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(jiraIssue));
+		List<Ref> branches = getBranches(jiraIssue.getKey());
+		for (Ref featureBranch : branches) {
+			commits.addAll(getFeatureBranchCommits(featureBranch));
 		}
 		return commits;
 	}
@@ -307,7 +311,7 @@ public class GitClient {
 	public List<RevCommit> getDefaultBranchCommits() {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommitsFromDefaultBranch());
+			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
 		}
 		return commits;
 	}

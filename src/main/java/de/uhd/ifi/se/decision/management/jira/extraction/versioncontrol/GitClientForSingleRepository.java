@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +70,7 @@ public class GitClientForSingleRepository {
 		this.token = token;
 		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri, defaultBranchName);
 		pullOrClone();
-		defaultBranchCommits = getCommitsFromDefaultBranch();
+		defaultBranchCommits = getDefaultBranchCommits();
 	}
 
 	public boolean pullOrClone() {
@@ -315,47 +314,22 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Temporally switches git client's directory to feature branch directory to
-	 * fetch commits, afterwards returns to default branch directory after.
-	 *
 	 * @param featureBranch
-	 *            ref of the feature branch, Uri of Git Repository
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are sorted by age, beginning with the oldest.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
-		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 		List<RevCommit> branchCommits = getCommits(featureBranch);
-		RevCommit lastCommonAncestor = null;
-		if (defaultBranchCommits == null || defaultBranchCommits.isEmpty()) {
-			defaultBranchCommits = getCommitsFromDefaultBranch();
-		}
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+
 		for (RevCommit commit : branchCommits) {
-			if (defaultBranchCommits != null && commit != null && defaultBranchCommits.contains(commit)) {
-				LOGGER.info("Found last common commit " + commit.toString());
-				lastCommonAncestor = commit;
-				break;
+			if (!defaultBranchCommits.contains(commit)) {
+				branchUniqueCommits.add(commit);
 			}
-			branchUniqueCommits.add(commit);
 		}
-		if (lastCommonAncestor == null) {
-			return Collections.emptyList();
-		} else if (branchUniqueCommits.size() > 0) {
-			branchUniqueCommits = Lists.reverse(branchUniqueCommits);
-		} else {
-			branchUniqueCommits = Collections.emptyList();
-		}
-
-		return branchUniqueCommits;
-	}
-
-	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new ArrayList<>();
-		}
-		Ref branch = getRef(jiraIssue.getKey());
-		return getFeatureBranchCommits(branch);
+		return Lists.reverse(branchUniqueCommits);
 	}
 
 	private DiffFormatter getDiffFormater() {
@@ -536,9 +510,12 @@ public class GitClientForSingleRepository {
 		return refs;
 	}
 
-	public List<RevCommit> getCommitsFromDefaultBranch() {
-		Ref defaultBranch = getDefaultBranch();
-		return getCommits(defaultBranch, true);
+	public List<RevCommit> getDefaultBranchCommits() {
+		if (defaultBranchCommits == null || defaultBranchCommits.isEmpty()) {
+			Ref defaultBranch = getDefaultBranch();
+			defaultBranchCommits = getCommits(defaultBranch, true);
+		}
+		return defaultBranchCommits;
 	}
 
 	private List<RevCommit> getCommits(Ref branch) {

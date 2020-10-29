@@ -11,7 +11,7 @@ public class TestGetCommits extends TestSetUpGit {
 
 	@Test
 	public void testGetCommitsFromDefaultBranch() {
-		List<RevCommit> allCommits = gitClient.getGitClientsForSingleRepos().get(0).getCommitsFromDefaultBranch();
+		List<RevCommit> allCommits = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranchCommits();
 		int expectedOnDefaultBranch = 7;
 		assertEquals(expectedOnDefaultBranch, allCommits.size());
 	}

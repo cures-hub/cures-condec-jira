@@ -62,12 +62,12 @@ public class GitCodeClassExtractor {
 		if (repository == null) {
 			return codeClasses;
 		}
-		if (gitClient.getCommitsFromDefaultBranch().isEmpty()) {
+		if (gitClient.getDefaultBranchCommits().isEmpty()) {
 			return codeClasses;
 		}
 		TreeWalk treeWalk = new TreeWalk(repository);
 		try {
-			treeWalk.addTree(gitClient.getCommitsFromDefaultBranch().get(0).getTree());
+			treeWalk.addTree(gitClient.getDefaultBranchCommits().get(0).getTree());
 			treeWalk.setRecursive(false);
 			while (treeWalk.next()) {
 				if (treeWalk.isSubtree()) {
