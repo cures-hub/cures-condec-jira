@@ -1,19 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.CalculationMethodType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactory;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.calculationmethods.factory.CalculationMethodFactoryProvider;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+import javax.wsdl.Input;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class KnowledgeSource<T extends CalculationMethod> {
+public abstract class KnowledgeSource {
 
-	protected CalculationMethodType calculationMethodType;
-	protected T calculationMethod;
 	protected KnowledgeSourceType knowledgeSourceType;
 
 	protected List<Recommendation> recommendations;
@@ -21,22 +16,32 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 	protected boolean isActivated;
 	protected String name;
 
-	public List<Recommendation> getResults(String inputs) {
-		if (this.isActivated) {
-			this.getCalculationMethod();
-			return this.calculationMethod.getResults(inputs);
+	InputMethod inputMethod;
+
+
+	public List<Recommendation> getResults(Object object) {
+		getInputMethod();
+		setData();
+		try {
+			return inputMethod.getResults(object);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return new ArrayList<>();
 	}
 
-	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-		if (this.isActivated) {
-			this.getCalculationMethod();
-			if (this.calculationMethod != null) return this.calculationMethod.getResults(knowledgeElement);
-		}
-		return new ArrayList<>();
+	public abstract void setData();
+
+	public abstract InputMethod getInputMethod();
+
+
+	public String getProjectKey() {
+		return projectKey;
 	}
 
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
 
 	public String getName() {
 		return name;
@@ -54,14 +59,7 @@ public abstract class KnowledgeSource<T extends CalculationMethod> {
 		isActivated = activated;
 	}
 
-	public T getCalculationMethod() {
-		CalculationMethodFactory<T> calculationMethodFactory = CalculationMethodFactoryProvider.getFactory(this.knowledgeSourceType);
-		if (calculationMethodFactory != null)
-			this.calculationMethod = calculationMethodFactory.getCalculationMethod(this.calculationMethodType, this.projectKey, this.name);
-		return this.calculationMethod;
-	}
-
-	public void setCalculationMethodTypeType(CalculationMethodType calculationMethodType) {
-		this.calculationMethodType = calculationMethodType;
+	public void setInputMethod(InputMethod inputMethod) {
+		this.inputMethod = inputMethod;
 	}
 }

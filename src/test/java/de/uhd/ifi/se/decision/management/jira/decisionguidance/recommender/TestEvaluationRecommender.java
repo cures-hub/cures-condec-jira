@@ -88,7 +88,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSourceName());
 		assertEquals(RecommenderType.ISSUE.toString(), recommendationEvaluation.getRecommenderType());
-		assertEquals(2, recommendationEvaluation.getNumberOfResults());
+		assertEquals(0, recommendationEvaluation.getNumberOfResults());
 		assertEquals(0.0, recommendationEvaluation.getFScore(), 0.0); //status not set
 		assertEquals(0.0, recommendationEvaluation.getMrr(), 0.0); //status not set
 

@@ -7,8 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class TestRDFSource extends TestSetUp {
 
@@ -21,19 +22,10 @@ public class TestRDFSource extends TestSetUp {
 	public void testRDFSource() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
+		((RDFSource) source).setLimit(10);
 		List<Recommendation> recommendations = source.getResults("");
-		assertEquals(46, recommendations.size());
-		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
+		assertEquals(10, recommendations.size());
 		assertEquals(true, source.isActivated());
-	}
-
-	@Test
-	public void testActivation() {
-		KnowledgeSource source = new RDFSource("Test");
-		source.setName("RDFSource");
-		source.setActivated(false);
-		List<Recommendation> recommendations = source.getResults("");
-		assertEquals(0, recommendations.size());
 	}
 
 	@Test
@@ -41,20 +33,16 @@ public class TestRDFSource extends TestSetUp {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
 		List<Recommendation> recommendations = source.getResults("Test 123");
-		assertEquals(138, recommendations.size()); // 3*46 since there are 3 combinations possible with the input
-		assertEquals("RDFSource", recommendations.get(0).getKnowledgeSourceName());
-		assertEquals(true, source.isActivated());
-		source.setActivated(false);
-		recommendations = source.getResults("Test 123");
-		assertEquals(0, recommendations.size());
+		assertEquals(30, recommendations.size());
 	}
 
+	//The method to handle knowledge elements is not implemented yet, therefore should return zero as default
 	@Test
 	public void testRDFSourceWithKnowledgeElement() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
 		List<Recommendation> recommendations = source.getResults(new KnowledgeElement());
-		assertEquals(46, recommendations.size());
+		assertEquals(0, recommendations.size());
 		KnowledgeElement knowledgeElement = null;
 		recommendations = source.getResults(knowledgeElement);
 		assertEquals(0, recommendations.size());
@@ -78,13 +66,46 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(false, source.isActivated());
 	}
 
+	/*
 	@Test
 	public void testRDFqueryDataBaseExecption() {
 		RDFSource source = new RDFSource("Test");
 		source.setName("RDFSource");
 		source.setActivated(true);
 		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**", "TEST")); //expcet QueryParseException to be catched
+	} */
+
+	@Test
+	public void testConstructor() {
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		assertEquals("TEST", rdfSource.getProjectKey());
+		assertEquals("TEST", rdfSource.getService());
+		assertEquals("TEST", rdfSource.getQueryString());
+		assertEquals("TEST", rdfSource.getName());
+		assertEquals("10000", rdfSource.getTimeout());
 	}
+
+	@Test
+	public void testgetInputMethod() {
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		assertNotNull(rdfSource.getInputMethod());
+	}
+
+	@Test
+	public void testHashCode() {
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		assertEquals(Objects.hash("TEST"), rdfSource.hashCode());
+	}
+
+	@Test
+	public void testEquals() {
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		RDFSource rdfSourceother = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		assertTrue(rdfSourceother.equals(rdfSource));
+		assertTrue(rdfSourceother.equals(rdfSourceother));
+		assertFalse(rdfSourceother.equals(null));
+	}
+
 
 	@Test
 	public void testToString() {

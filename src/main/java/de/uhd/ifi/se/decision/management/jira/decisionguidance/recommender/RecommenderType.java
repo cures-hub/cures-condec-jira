@@ -1,13 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import java.security.Key;
+
 public enum RecommenderType {
-	KEYWORD, ISSUE;
+	KEYWORD, ISSUE, EVALUATION;
 
 	/**
 	 * Change the default value here
+	 *
 	 * @return
 	 */
-	public static String getDefault() {
-		return KEYWORD.toString();
+	public static RecommenderType getDefault() {
+		return KEYWORD;
 	}
+
+	public static RecommenderType getTypeByString(String value) {
+		try {
+			return valueOf(value);
+		} catch (IllegalArgumentException e) {
+			return KEYWORD;
+		}
+	}
+
+
 }
