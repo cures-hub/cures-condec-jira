@@ -33,14 +33,12 @@ import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 public class GitCodeClassExtractor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCodeClassExtractor.class);
-	private String projectKey;
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
 		if (projectKey == null) {
 			return;
 		}
-		this.projectKey = projectKey;
 		gitClient = GitClient.getOrCreate(projectKey);
 	}
 
@@ -108,8 +106,7 @@ public class GitCodeClassExtractor {
 			RevCommit revCommit = blameResult.getSourceCommit(line);
 			if (revCommit != null) {
 				String commitMessageForLine = revCommit.getFullMessage();
-				Set<String> jiraIssueKeysForLine = CommitMessageParser.getJiraIssueKeys(commitMessageForLine,
-						projectKey);
+				Set<String> jiraIssueKeysForLine = CommitMessageParser.getJiraIssueKeys(commitMessageForLine);
 				jiraIssueKeysForFile.addAll(jiraIssueKeysForLine);
 			}
 		}
