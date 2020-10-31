@@ -7,9 +7,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.eclipse.jgit.lib.Ref;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 
 public class TestGitClient extends TestSetUpGit {
 
@@ -39,5 +41,12 @@ public class TestGitClient extends TestSetUpGit {
 	public void testGetOrCreateProjectKeyInvalid() {
 		assertNull(GitClient.getOrCreate(""));
 		assertNull(GitClient.getOrCreate(null));
+	}
+
+	@Test
+	public void testSimplifyBranchName() {
+		Ref branch = gitClient.getBranches("TEST-4").get(0);
+		assertEquals("refs/remotes/origin/TEST-4.transcriberBranch", branch.getName());
+		assertEquals("TEST-4.transcriberBranch", GitClientForSingleRepository.simplifyBranchName(branch));
 	}
 }

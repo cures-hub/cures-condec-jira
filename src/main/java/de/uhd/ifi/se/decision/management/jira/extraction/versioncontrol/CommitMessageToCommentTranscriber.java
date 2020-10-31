@@ -32,43 +32,49 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public class CommitMessageToCommentTranscriber {
 	private GitClient gitClient;
-	private Issue jiraissue;
+	private Issue jiraIssue;
 
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
-		this(jiraIssue, GitClient.getOrCreate(jiraIssue.getProjectObject().getKey()));
-	}
-
-	public CommitMessageToCommentTranscriber(Issue jiraIssue, GitClient gitClient) {
-		this.jiraissue = jiraIssue;
-		this.gitClient = gitClient;
-	}
-
-	public void postCommitsIntoJiraIssueComments() {
-		String projectKey = jiraissue.getProjectObject().getKey();
-		if (gitClient == null) {
-			return;
+		this.jiraIssue = jiraIssue;
+		if (jiraIssue != null) {
+			this.gitClient = GitClient.getOrCreate(jiraIssue.getProjectObject().getKey());
 		}
+	}
+
+	/**
+	 * @return list of newly created comments. If all commits of the Jira issue were
+	 *         already posted, an empty list is returned.
+	 */
+	public List<Comment> postCommitsIntoJiraIssueComments() {
+		if (jiraIssue == null || gitClient == null) {
+			return new ArrayList<>();
+		}
+		List<Comment> newComments = new ArrayList<>();
+		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
-			postFeatureBranchCommits();
+			newComments.addAll(postFeatureBranchCommits());
 		}
 		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
-			postDefaultBranchCommits();
+			newComments.addAll(postDefaultBranchCommits());
 		}
+		return newComments;
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		List<RevCommit> featureBranchCommits = new ArrayList<>();
-		Ref branch = gitClient.getBranches(jiraissue.getKey()).get(0);
-		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
-		return postCommitsIntoJiraIssueComments(featureBranchCommits, branch);
+		List<Comment> newComments = new ArrayList<>();
+		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
+			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch));
+		}
+		return newComments;
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
 		List<RevCommit> defaultBranchCommits = new ArrayList<>();
 		Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
-		Optional.ofNullable(gitClient.getDefaultBranchCommits(jiraissue)).ifPresent(defaultBranchCommits::addAll);
+		Optional.ofNullable(gitClient.getDefaultBranchCommits(jiraIssue)).ifPresent(defaultBranchCommits::addAll);
 		return postCommitsIntoJiraIssueComments(defaultBranchCommits, branch);
 	}
 
@@ -92,14 +98,14 @@ public class CommitMessageToCommentTranscriber {
 		if (commentText == null || commentText.isBlank()) {
 			return null;
 		}
-		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraissue)) {
+		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraIssue)) {
 			// if the hash of a commit is present in a comment, do not post it again
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
 				return null;
 			}
 		}
 		ApplicationUser user = getUser();
-		return ComponentAccessor.getCommentManager().create(jiraissue, user, commentText, true);
+		return ComponentAccessor.getCommentManager().create(jiraIssue, user, commentText, true);
 	}
 
 	/**
@@ -111,7 +117,7 @@ public class CommitMessageToCommentTranscriber {
 	 * @alternative The user that opens the Jira issue could be the creator of the
 	 *              Jira issue comment that a commit messages was posted into.
 	 * @con It would be confusing to users if they see that they posted something
-	 *      that they did no write.
+	 *      that they did not write.
 	 */
 	private ApplicationUser getUser() {
 		ApplicationUser defaultUser;
@@ -125,11 +131,10 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public String generateCommentString(RevCommit commit, Ref branch) {
-		String comment = commit.getFullMessage();
-		if (comment == null || comment.isBlank()) {
+		if (commit == null || commit.getFullMessage().isBlank() || branch == null) {
 			return "";
 		}
-		comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(comment);
+		String comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(commit.getFullMessage());
 		StringBuilder builder = new StringBuilder(comment);
 		builder.append("\r\n\r\n");
 		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
@@ -139,7 +144,7 @@ public class CommitMessageToCommentTranscriber {
 		return builder.toString();
 	}
 
-	private String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
+	public static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
 		for (String tag : KnowledgeType.toStringList()) {
 			String replaceString = "{" + tag.toLowerCase() + "}";
 			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);

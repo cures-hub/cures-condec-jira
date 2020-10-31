@@ -33,14 +33,12 @@ import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 public class GitCodeClassExtractor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCodeClassExtractor.class);
-	private String projectKey;
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
 		if (projectKey == null) {
 			return;
 		}
-		this.projectKey = projectKey;
 		gitClient = GitClient.getOrCreate(projectKey);
 	}
 
@@ -62,12 +60,12 @@ public class GitCodeClassExtractor {
 		if (repository == null) {
 			return codeClasses;
 		}
-		if (gitClient.getCommitsFromDefaultBranch().isEmpty()) {
+		if (gitClient.getDefaultBranchCommits().isEmpty()) {
 			return codeClasses;
 		}
 		TreeWalk treeWalk = new TreeWalk(repository);
 		try {
-			treeWalk.addTree(gitClient.getCommitsFromDefaultBranch().get(0).getTree());
+			treeWalk.addTree(gitClient.getDefaultBranchCommits().get(0).getTree());
 			treeWalk.setRecursive(false);
 			while (treeWalk.next()) {
 				if (treeWalk.isSubtree()) {
@@ -108,8 +106,7 @@ public class GitCodeClassExtractor {
 			RevCommit revCommit = blameResult.getSourceCommit(line);
 			if (revCommit != null) {
 				String commitMessageForLine = revCommit.getFullMessage();
-				Set<String> jiraIssueKeysForLine = CommitMessageParser.getJiraIssueKeys(commitMessageForLine,
-						projectKey);
+				Set<String> jiraIssueKeysForLine = CommitMessageParser.getJiraIssueKeys(commitMessageForLine);
 				jiraIssueKeysForFile.addAll(jiraIssueKeysForLine);
 			}
 		}

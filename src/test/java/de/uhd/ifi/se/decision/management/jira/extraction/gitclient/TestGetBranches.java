@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
+import org.eclipse.jgit.lib.Ref;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +14,15 @@ public class TestGetBranches extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
+	}
+
+	@Test
+	public void testGetAllBranches() {
+		List<Ref> remoteBranches = gitClient.getBranches();
+		assertEquals(3, remoteBranches.size());
+
+		remoteBranches = gitClient.getGitClientsForSingleRepos().get(0).getRemoteBranches();
+		assertEquals(3, remoteBranches.size());
 	}
 
 	@Test
