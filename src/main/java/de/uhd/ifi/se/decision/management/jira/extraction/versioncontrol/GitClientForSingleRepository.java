@@ -10,14 +10,11 @@ import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.ObjectId;
@@ -35,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
@@ -141,7 +139,7 @@ public class GitClientForSingleRepository {
 	 */
 	private boolean isPullNeeded() {
 		String trackerFilename = "condec.pullstamp.";
-		Repository repository = this.getRepository();
+		Repository repository = getRepository();
 		File file = new File(repository.getDirectory(), trackerFilename);
 
 		if (!file.isFile()) {
@@ -397,10 +395,6 @@ public class GitClientForSingleRepository {
 		return isDeleted && directory.delete();
 	}
 
-	private boolean checkout(String branchShortName) {
-		return checkout(branchShortName, false);
-	}
-
 	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
@@ -431,7 +425,7 @@ public class GitClientForSingleRepository {
 		 *      CONDEC-1000) will not be confused.
 		 */
 		Ref branch = getRef(jiraIssueKey);
-		List<RevCommit> commits = getCommits(branch, isDefaultBranch);
+		List<RevCommit> commits = getCommits(branch);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
 			String jiraIssueKeyInCommitMessage = CommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
@@ -493,52 +487,28 @@ public class GitClientForSingleRepository {
 	public List<RevCommit> getDefaultBranchCommits() {
 		if (defaultBranchCommits == null || defaultBranchCommits.isEmpty()) {
 			Ref defaultBranch = getDefaultBranch();
-			defaultBranchCommits = getCommits(defaultBranch, true);
+			defaultBranchCommits = getCommits(defaultBranch);
 		}
 		return defaultBranchCommits;
 	}
 
 	public List<RevCommit> getCommits(Ref branch) {
-		return getCommits(branch, false);
-	}
-
-	private List<RevCommit> getCommits(Ref branch, boolean isDefaultBranch) {
 		if (branch == null || fsManager == null) {
 			return new ArrayList<RevCommit>();
 		}
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		String branchShortName = simplifyBranchName(branch);
-		boolean canReleaseRepoDirectory = false;
 
-		File directory;
-		if (isDefaultBranch) {
-			String defaultBranchPath = fsManager.getDefaultBranchPath();
-			directory = new File(defaultBranchPath);
-		} else {
-			canReleaseRepoDirectory = !fsManager.isBranchDirectoryInUse(branchShortName);
-			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
-		}
+		List<RevCommit> commits = new ArrayList<>();
+		String defaultBranchPath = fsManager.getDefaultBranchPath();
+		File directory = new File(defaultBranchPath + File.separator + ".git");
 
-		if (switchGitDirectory(directory) && pull() && checkout(branchShortName)) {
-			Iterable<RevCommit> iterable = null;
-			try {
-				iterable = git.log().call();
-			} catch (GitAPIException e) {
-				LOGGER.error("Git could not get commits for the branch: " + branch.getName() + " Message: "
-						+ e.getMessage());
-			}
-			if (iterable != null) {
-				for (RevCommit commit : iterable) {
-					if (!commits.contains(commit)) {
-						commits.add(commit);
-					}
-				}
-			}
+		try {
+			git = Git.open(directory);
+			ObjectId commitId = getRepository().resolve(branch.getName());
+			Iterable<RevCommit> iterable = git.log().add(commitId).call();
+			commits = Lists.newArrayList(iterable.iterator());
+		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
+
 		}
-		if (canReleaseRepoDirectory) {
-			fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
-		}
-		switchGitClientBackToDefaultDirectory();
 		return commits;
 	}
 
@@ -551,74 +521,6 @@ public class GitClientForSingleRepository {
 	public static String simplifyBranchName(Ref branch) {
 		String[] branchNameComponents = branch.getName().split("/");
 		return branchNameComponents[branchNameComponents.length - 1];
-	}
-
-	private boolean checkout(String checkoutObjectName, boolean isCommitWithinBranch) {
-		// checkout only remote branch
-		String shortCheckoutObjectName = checkoutObjectName.replaceFirst("refs/heads/", "");
-		if (!isCommitWithinBranch) {
-			String checkoutName = "origin/" + shortCheckoutObjectName;
-			try {
-				git.checkout().setName(checkoutName).call();
-			} catch (GitAPIException | JGitInternalException e) {
-				LOGGER.error("Could not checkout " + checkoutName + ". " + e.getMessage());
-				return false;
-			}
-			// create local branch
-			if (!createLocalBranchIfNotExists(shortCheckoutObjectName)) {
-				LOGGER.error("Could delete and create local branch");
-				return false;
-
-			}
-		}
-
-		// checkout local branch/commit
-		try {
-			git.checkout().setName(shortCheckoutObjectName).call();
-		} catch (GitAPIException | JGitInternalException e) {
-
-			LOGGER.error("Could not checkout " + shortCheckoutObjectName + ". " + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-
-	private boolean createLocalBranchIfNotExists(String branchShortName) {
-		try {
-			git.branchCreate().setName(branchShortName).call();
-		} catch (RefAlreadyExistsException e) {
-			return true;
-		} catch (InvalidRefNameException | RefNotFoundException e) {
-			LOGGER.error("Could not create local branch. " + e.getMessage());
-			return false;
-		} catch (GitAPIException e) {
-			LOGGER.error("Could not create local branch. " + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-
-	private boolean switchGitDirectory(File gitDirectory) {
-		git.close();
-		try {
-			git = Git.open(gitDirectory);
-		} catch (IOException e) {
-			LOGGER.error(
-					"Could not switch into git directory " + gitDirectory.getAbsolutePath() + "\r\n" + e.getMessage());
-			return false;
-		}
-		return true;
-	}
-
-	private void switchGitClientBackToDefaultDirectory() {
-		String defaultBranchPath = fsManager.getDefaultBranchPath();
-		File directory = new File(defaultBranchPath);
-		try {
-			git.close();
-			git = Git.open(directory);
-		} catch (IOException e) {
-			LOGGER.error("Git could not get back to default branch. Message: " + e.getMessage());
-		}
 	}
 
 	/**
