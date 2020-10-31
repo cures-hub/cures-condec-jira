@@ -507,14 +507,10 @@ public class GitClientForSingleRepository {
 			return new ArrayList<RevCommit>();
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		File directory;
-
-		String[] branchNameComponents = branch.getName().split("/");
-		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
-		String branchShortNameWithPrefix = branch.getName().replaceFirst("refs/remotes/origin/", "");
-		branchShortNameWithPrefix = branchShortNameWithPrefix.replaceFirst("refs/heads/", "");
+		String branchShortName = simplifyBranchName(branch);
 		boolean canReleaseRepoDirectory = false;
 
+		File directory;
 		if (isDefaultBranch) {
 			String defaultBranchPath = fsManager.getDefaultBranchPath();
 			directory = new File(defaultBranchPath);
@@ -523,7 +519,7 @@ public class GitClientForSingleRepository {
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 
-		if (switchGitDirectory(directory) && pull() && checkout(branchShortNameWithPrefix)) {
+		if (switchGitDirectory(directory) && pull() && checkout(branchShortName)) {
 			Iterable<RevCommit> iterable = null;
 			try {
 				iterable = git.log().call();
@@ -544,6 +540,17 @@ public class GitClientForSingleRepository {
 		}
 		switchGitClientBackToDefaultDirectory();
 		return commits;
+	}
+
+	/**
+	 * @param branch
+	 *            as a {@link Ref} object.
+	 * @return e.g. "TEST-4.transcriberBranch" instead of
+	 *         "refs/remotes/origin/TEST-4.transcriberBranch"
+	 */
+	public static String simplifyBranchName(Ref branch) {
+		String[] branchNameComponents = branch.getName().split("/");
+		return branchNameComponents[branchNameComponents.length - 1];
 	}
 
 	private boolean checkout(String checkoutObjectName, boolean isCommitWithinBranch) {

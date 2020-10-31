@@ -43,6 +43,10 @@ public class CommitMessageToCommentTranscriber {
 		}
 	}
 
+	/**
+	 * @return list of newly created comments. If all commits of the Jira issue were
+	 *         already posted, an empty list is returned.
+	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
 		if (jiraIssue == null || gitClient == null) {
 			return new ArrayList<>();
@@ -59,10 +63,14 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		List<RevCommit> featureBranchCommits = new ArrayList<>();
-		Ref branch = gitClient.getBranches(jiraIssue.getKey()).get(0);
-		Optional.ofNullable(gitClient.getFeatureBranchCommits(branch)).ifPresent(featureBranchCommits::addAll);
-		return postCommitsIntoJiraIssueComments(featureBranchCommits, branch);
+		List<Comment> newComments = new ArrayList<>();
+		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
+			System.out.println(featureBranch);
+			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
+			System.out.println(featureBranchCommits.size());
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch));
+		}
+		return newComments;
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
@@ -111,7 +119,7 @@ public class CommitMessageToCommentTranscriber {
 	 * @alternative The user that opens the Jira issue could be the creator of the
 	 *              Jira issue comment that a commit messages was posted into.
 	 * @con It would be confusing to users if they see that they posted something
-	 *      that they did no write.
+	 *      that they did not write.
 	 */
 	private ApplicationUser getUser() {
 		ApplicationUser defaultUser;
