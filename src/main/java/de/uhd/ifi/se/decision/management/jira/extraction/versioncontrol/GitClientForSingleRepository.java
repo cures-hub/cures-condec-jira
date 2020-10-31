@@ -71,7 +71,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public boolean pullOrClone() {
-		File directory = new File(fsManager.getDefaultBranchPath());
+		File directory = new File(fsManager.getPath());
 		File gitDirectory = new File(directory, ".git/");
 		if (directory.exists()) {
 			if (openRepository(gitDirectory)) {
@@ -376,7 +376,7 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		close();
-		File directory = this.getDirectory().getParentFile().getParentFile().getParentFile();
+		File directory = this.getDirectory().getParentFile().getParentFile();
 		return deleteFolder(directory);
 	}
 
@@ -498,7 +498,7 @@ public class GitClientForSingleRepository {
 		}
 
 		List<RevCommit> commits = new ArrayList<>();
-		String defaultBranchPath = fsManager.getDefaultBranchPath();
+		String defaultBranchPath = fsManager.getPath();
 		File directory = new File(defaultBranchPath + File.separator + ".git");
 
 		try {
