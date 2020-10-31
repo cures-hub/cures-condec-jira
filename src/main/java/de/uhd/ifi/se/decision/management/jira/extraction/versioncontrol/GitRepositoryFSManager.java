@@ -51,7 +51,7 @@ public class GitRepositoryFSManager {
 			byte[] digest = messageDigest.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5);
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error("MD5 does not exist??");
+			LOGGER.error("MD5 does not exist?");
 			return "";
 		}
 	}

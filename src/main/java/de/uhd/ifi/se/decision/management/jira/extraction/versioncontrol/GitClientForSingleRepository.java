@@ -99,8 +99,6 @@ public class GitClientForSingleRepository {
 			LOGGER.error(
 					"Git repository could not be opened: " + directory.getAbsolutePath() + "\n\t" + e.getMessage());
 			return false;
-		} finally {
-			close();
 		}
 		return true;
 	}
@@ -364,7 +362,6 @@ public class GitClientForSingleRepository {
 		if (git == null) {
 			return;
 		}
-		git.getRepository().close();
 		git.close();
 	}
 

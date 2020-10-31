@@ -249,9 +249,7 @@ public class GitClient {
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
 		List<RevCommit> branchCommits = getCommits(featureBranch);
-		System.out.println(branchCommits.size());
 		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
-		System.out.println(defaultBranchCommits.size());
 		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 
 		for (RevCommit commit : branchCommits) {
