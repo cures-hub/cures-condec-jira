@@ -38,7 +38,9 @@ public class CommitMessageToCommentTranscriber {
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
-		this.gitClient = GitClient.getOrCreate(jiraIssue.getProjectObject().getKey());
+		if (jiraIssue != null) {
+			this.gitClient = GitClient.getOrCreate(jiraIssue.getProjectObject().getKey());
+		}
 	}
 
 	public List<Comment> postCommitsIntoJiraIssueComments() {
