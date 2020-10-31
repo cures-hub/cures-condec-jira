@@ -14,13 +14,13 @@ public class TestCommitMessageParser {
 
 	@Test
 	public void testGetJiraIssueKeyFromEmptyMessage() {
-		String jiraIssueKey = CommitMessageParser.getJiraIssueKey("");
+		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("");
 		assertEquals("", jiraIssueKey);
 	}
 
 	@Test
 	public void testGetJiraIssueKeyFromValidMessage() {
-		String jiraIssueKey = CommitMessageParser.getJiraIssueKey("Test-12: This is a very advanced commit.");
+		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("Test-12: This is a very advanced commit.");
 		assertEquals("TEST-12", jiraIssueKey);
 	}
 

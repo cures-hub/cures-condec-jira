@@ -7,6 +7,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.component.ComponentAccessor;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 
@@ -20,7 +22,8 @@ public class TestGenerateCommentString extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		branch = gitClient.getBranches("TEST-4.transcriberBranch").get(0);
-		this.transcriber = new CommitMessageToCommentTranscriber(null, gitClient);
+		this.transcriber = new CommitMessageToCommentTranscriber(
+				ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4"));
 	}
 
 	@Test

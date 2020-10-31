@@ -37,25 +37,23 @@ public class CommitMessageToCommentTranscriber {
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
-		this(jiraIssue, GitClient.getOrCreate(jiraIssue.getProjectObject().getKey()));
-	}
-
-	public CommitMessageToCommentTranscriber(Issue jiraIssue, GitClient gitClient) {
 		this.jiraIssue = jiraIssue;
-		this.gitClient = gitClient;
+		this.gitClient = GitClient.getOrCreate(jiraIssue.getProjectObject().getKey());
 	}
 
-	public void postCommitsIntoJiraIssueComments() {
-		String projectKey = jiraIssue.getProjectObject().getKey();
-		if (gitClient == null) {
-			return;
+	public List<Comment> postCommitsIntoJiraIssueComments() {
+		if (jiraIssue == null || gitClient == null) {
+			return new ArrayList<>();
 		}
+		List<Comment> newComments = new ArrayList<>();
+		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
-			postFeatureBranchCommits();
+			newComments.addAll(postFeatureBranchCommits());
 		}
 		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
-			postDefaultBranchCommits();
+			newComments.addAll(postDefaultBranchCommits());
 		}
+		return newComments;
 	}
 
 	public List<Comment> postFeatureBranchCommits() {

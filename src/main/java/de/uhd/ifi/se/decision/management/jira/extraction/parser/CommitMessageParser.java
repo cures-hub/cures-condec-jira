@@ -16,12 +16,8 @@ public interface CommitMessageParser {
 	 *            a commit message that should contain a Jira issue key.
 	 * @return extracted Jira issue key from the commit message. Empty String if no
 	 *         Jira issue key could be found.
-	 *
-	 * @issue How to identify the Jira issue key(s) in a commit message?
-	 * @alternative This is a very simple method to detect the Jira issue key as the
-	 *              first word in the message and should be improved!
 	 */
-	public static String getJiraIssueKey(String commitMessage) {
+	public static String getFirstJiraIssueKey(String commitMessage) {
 		if (commitMessage.isEmpty()) {
 			return "";
 		}
@@ -33,8 +29,18 @@ public interface CommitMessageParser {
 	 * @param commitMessage
 	 *            that might contain a Jira issue key, e.g., a commit message,
 	 *            branch name, or pull request title.
-	 * @return set of all mentioned Jira issue keys in upper case letters (is
-	 *         ordered by their appearance in the message).
+	 * @return set of all mentioned Jira issue keys in upper case letters ordered by
+	 *         their appearance in the message.
+	 * 
+	 * @issue How to identify the Jira issue key(s) in a commit message?
+	 * @decision Use the well known regex ((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+) to
+	 *           identify all Jira issue keys in a commit message!
+	 * @pro Works for all known cases.
+	 * @alternative Assume that the Jira issue key is the first word in the commit
+	 *              message and split the message using
+	 *              commitMessage.split("[\\s,:]+").
+	 * @con This assumption could be wrong for other projects than the ConDec
+	 *      development projects.
 	 */
 	public static Set<String> getJiraIssueKeys(String commitMessage) {
 		Set<String> keys = new LinkedHashSet<String>();
