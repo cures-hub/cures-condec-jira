@@ -252,13 +252,13 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.8.0.202006091008-r</version>
+			<version>5.9.0.202009080501-r</version>
 		</dependency>
 		<!-- Summarization of code changes and extraction of decision knowledge from code comments -->
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.15.18</version>
+			<version>3.16.2</version>
 		</dependency>
 		<!-- Webhook -->
 		<dependency>

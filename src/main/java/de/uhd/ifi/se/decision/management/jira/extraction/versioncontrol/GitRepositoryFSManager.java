@@ -16,17 +16,14 @@ import org.slf4j.LoggerFactory;
  * JiraHome/data/condec-plugin/git/<project-key>/<MD5 hash of URI>.
  */
 public class GitRepositoryFSManager {
-	private static final String TEMP_DIR_PREFIX = "TEMP";
-	private static final long BRANCH_OUTDATED_AFTER = 60 * 60 * 1000; // ex. 1 day = 24 hours * 60 minutes * 60 seconds
-	// * 1000 miliseconds
-	private String projectPath;
-	private String projectUriPath;
+	private String repositoryPath;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
 
-	public GitRepositoryFSManager(String home, String projectKey, String repoUri, String defaultBranchName) {
-		projectPath = home + File.separator + projectKey;
-		projectUriPath = projectPath + File.separator + getShortHash(repoUri);
+	public GitRepositoryFSManager(String home, String projectKey, String repoUri) {
+		String projectPath = home + File.separator + projectKey;
+		repositoryPath = projectPath + File.separator + getShortHash(repoUri);
+		new File(repositoryPath).mkdirs();
 	}
 
 	/**
@@ -57,10 +54,10 @@ public class GitRepositoryFSManager {
 	}
 
 	/**
-	 * @return absolute path to the directory of the default branch of a git
-	 *         repository.
+	 * @return absolute path to the directory of the git repository (parent
+	 *         directory of .git directory).
 	 */
-	public String getPath() {
-		return projectUriPath;
+	public String getPathToRepositoryInFileSystem() {
+		return repositoryPath;
 	}
 }

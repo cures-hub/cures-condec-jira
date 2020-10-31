@@ -399,6 +399,7 @@ public class GitClient {
 			return null;
 		}
 		List<Ref> remoteBranches = getBranches();
+		System.out.println(remoteBranches.size());
 		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
 				.collect(Collectors.toList());
 		return branchCandidates;
@@ -413,5 +414,4 @@ public class GitClient {
 				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));
 		return allRemoteBranches;
 	}
-
 }
