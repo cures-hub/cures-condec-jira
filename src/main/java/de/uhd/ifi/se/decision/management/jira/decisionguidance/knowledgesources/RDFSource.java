@@ -144,9 +144,9 @@ public class RDFSource extends KnowledgeSource {
 
 					return resultSet;
 				} catch (QueryBuildException e) {
-					e.printStackTrace();
+
 				} catch (QueryParseException e) {
-					e.printStackTrace();
+
 				}
 				return null;
 			}

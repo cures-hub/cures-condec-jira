@@ -25,7 +25,7 @@ public abstract class KnowledgeSource {
 		try {
 			return inputMethod.getResults(object);
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		return new ArrayList<>();
 	}
