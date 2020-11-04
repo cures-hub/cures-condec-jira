@@ -359,44 +359,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Closes the repository.
-	 */
-	public void close() {
-		if (git == null) {
-			return;
-		}
-		getRepository().close();
-		git.close();
-	}
-
-	/**
-	 * Closes the repository and deletes its local files.
-	 */
-	public boolean deleteRepository() {
-		if (git == null || getDirectory() == null) {
-			return false;
-		}
-		close();
-		File directory = getDirectory().getParentFile().getParentFile();
-		return deleteFolder(directory);
-	}
-
-	private static boolean deleteFolder(File directory) {
-		if (directory.listFiles() == null) {
-			return false;
-		}
-		boolean isDeleted = true;
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				deleteFolder(file);
-			} else {
-				isDeleted = isDeleted && file.delete();
-			}
-		}
-		return isDeleted && directory.delete();
-	}
-
-	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
@@ -441,22 +403,20 @@ public class GitClientForSingleRepository {
 	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
 	 * discussions!
 	 */
-	private Ref getBranch(String jiraIssueKey) {
+	private Ref getBranch(String branchName) {
 		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(jiraIssueKey)) {
-				return ref;
-			} else if (ref.getName().equalsIgnoreCase("refs/remotes/origin/" + defaultBranchName)) {
+			if (ref.getName().contains(branchName)) {
 				return ref;
 			}
 		}
-		return null;
+		return getDefaultBranch();
 	}
 
 	public Ref getDefaultBranch() {
 		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().equalsIgnoreCase("refs/remotes/origin/" + defaultBranchName)) {
+			if (ref.getName().contains(defaultBranchName)) {
 				return ref;
 			}
 		}
@@ -505,17 +465,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @param branch
-	 *            as a {@link Ref} object.
-	 * @return e.g. "TEST-4.transcriberBranch" instead of
-	 *         "refs/remotes/origin/TEST-4.transcriberBranch"
-	 */
-	public static String simplifyBranchName(Ref branch) {
-		String[] branchNameComponents = branch.getName().split("/");
-		return branchNameComponents[branchNameComponents.length - 1];
-	}
-
-	/**
 	 * @return git object.
 	 */
 	public Git getGit() {
@@ -535,5 +484,42 @@ public class GitClientForSingleRepository {
 	 */
 	public String getDefaultBranchName() {
 		return defaultBranchName;
+	}
+
+	/**
+	 * Closes the repository.
+	 */
+	public void close() {
+		if (git == null) {
+			return;
+		}
+		git.close();
+	}
+
+	/**
+	 * Closes the repository and deletes its local files.
+	 */
+	public boolean deleteRepository() {
+		if (git == null || getDirectory() == null) {
+			return false;
+		}
+		close();
+		File directory = getDirectory().getParentFile().getParentFile();
+		return deleteFolder(directory);
+	}
+
+	private static boolean deleteFolder(File directory) {
+		if (directory.listFiles() == null) {
+			return false;
+		}
+		boolean isDeleted = true;
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory()) {
+				deleteFolder(file);
+			} else {
+				isDeleted = isDeleted && file.delete();
+			}
+		}
+		return isDeleted && directory.delete();
 	}
 }
