@@ -446,7 +446,7 @@ public class GitClientForSingleRepository {
 		for (Ref ref : refs) {
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
-			} else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+			} else if (ref.getName().equalsIgnoreCase("refs/remotes/origin/" + defaultBranchName)) {
 				return ref;
 			}
 		}
@@ -456,7 +456,7 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultBranch() {
 		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+			if (ref.getName().equalsIgnoreCase("refs/remotes/origin/" + defaultBranchName)) {
 				return ref;
 			}
 		}
@@ -464,7 +464,7 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return remote branches in repository as a list of {@link Ref}s.
+	 * @return remote branches in repository as a list of {@link Ref} objects.
 	 */
 	public List<Ref> getBranches() {
 		List<Ref> refs = new ArrayList<Ref>();
@@ -472,9 +472,9 @@ public class GitClientForSingleRepository {
 		try {
 			refs = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
 		} catch (GitAPIException | NullPointerException e) {
-			System.out.println(e.getMessage());
 			LOGGER.error("Git could not get references. Message: " + e.getMessage());
 		}
+		refs.removeIf(ref -> !ref.getName().contains("remote"));
 		return refs;
 	}
 

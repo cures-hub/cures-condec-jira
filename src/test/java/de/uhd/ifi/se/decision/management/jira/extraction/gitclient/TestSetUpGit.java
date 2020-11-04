@@ -75,6 +75,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
+		// createBranch("master");
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
@@ -188,10 +189,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void setupBranchWithDecKnowledge() {
-		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
+		String currentBranch = getCurrentBranch();
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
 		String pathToTestFilesDir = "extraction/versioncontrol/";
@@ -199,14 +199,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		// TODO: Check how can we create a mock feature branch?
-		try {
-			currentBranch = git.getRepository().getBranch();
-			git.branchCreate().setName(featureBranch).call();
-			git.checkout().setName(featureBranch).call();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		createBranch("featureBranch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
 		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
@@ -226,21 +219,35 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void setupBranchForTranscriber() {
-		String featureBranch = "TEST-4.transcriberBranch";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
+		String currentBranch = getCurrentBranch();
+		createBranch("TEST-4.transcriberBranch");
 
-		try {
-			currentBranch = git.getRepository().getBranch();
-			git.branchCreate().setName(featureBranch).call();
-			git.checkout().setName(featureBranch).call();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 
 		returnToPreviousBranch(currentBranch, git);
+	}
+
+	private static void createBranch(String branchName) {
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		try {
+			git.branchCreate().setName(branchName).call();
+			git.checkout().setName(branchName).call();
+			// git.push().setRemote("origin").setRefSpecs(new RefSpec(branchName)).call();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static String getCurrentBranch() {
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		String currentBranch = null;
+		try {
+			currentBranch = git.getRepository().getBranch();
+		} catch (Exception e) {
+		}
+		return currentBranch;
 	}
 
 	private static void returnToPreviousBranch(String branch, Git git) {
