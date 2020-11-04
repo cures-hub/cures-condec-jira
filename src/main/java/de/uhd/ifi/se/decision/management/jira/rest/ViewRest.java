@@ -2,9 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -58,7 +57,6 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 @Path("/view")
 public class ViewRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
-	private GitClient gitClient;
 
 	@Path("/elementsFromBranchesOfProject")
 	@GET
@@ -71,8 +69,10 @@ public class ViewRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
+
 		// get all project branches
-		return getDiffViewerResponse(projectKey, projectKey);
+		List<Ref> branches = GitClient.getOrCreate(projectKey).getBranches(projectKey);
+		return getDiffViewerResponse(projectKey, branches);
 	}
 
 	@Path("/elementsFromBranchesOfJiraIssue")
@@ -83,9 +83,8 @@ public class ViewRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String normalizedIssueKey = issueKey.toUpperCase(); // ex: issueKey=ConDec-498
-		String projectKey = getProjectKey(normalizedIssueKey);
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(normalizedIssueKey);
+		String projectKey = getProjectKey(issueKey);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
 		if (issue == null) {
 			return jiraIssueKeyIsInvalid();
 		}
@@ -94,29 +93,22 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
 		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
-		// TODO This is too complicated, improve branch recognition
-		String regexFilter = normalizedIssueKey + "\\.|" + normalizedIssueKey + "$|" + normalizedIssueKey + "\\-";
 
-		// get feature branches of an issue
-		return getDiffViewerResponse(projectKey, regexFilter);
+		// get feature branches of a Jira issue
+		List<Ref> branches = GitClient.getOrCreate(projectKey).getBranches(issueKey.toUpperCase());
+		return getDiffViewerResponse(projectKey, branches);
 	}
 
-	private Response getDiffViewerResponse(String projectKey, String filter) {
-		gitClient = GitClient.getOrCreate(projectKey);
-		List<Ref> branches = gitClient.getBranches();
-		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
+	private Response getDiffViewerResponse(String projectKey, List<Ref> branches) {
 		if (branches.isEmpty()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "No branches were found.")).build();
 		}
+
 		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(projectKey);
 		for (Ref branch : branches) {
-			String branchName = branch.getName();
-			Matcher branchMatcher = filterPattern.matcher(branchName);
-			if (branchMatcher.find()) {
-				ratBranchList.put(branch, extractor.getElements(branch));
-			}
+			ratBranchList.put(branch, extractor.getElements(branch));
 		}
 		DiffViewer diffView = new DiffViewer(ratBranchList);
 		return Response.ok(diffView).build();
@@ -297,7 +289,7 @@ public class ViewRest {
 	}
 
 	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0];
+		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
 	}
 
 	private Response checkIfElementIsValid(String elementKey) {

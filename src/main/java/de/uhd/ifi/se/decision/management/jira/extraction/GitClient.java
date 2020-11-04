@@ -389,14 +389,13 @@ public class GitClient {
 	}
 
 	/**
-	 * @param branchName,
-	 *            e.g. "master"
+	 * @param branchName
+	 *            e.g. "master" or Jira issue key
 	 * @return all branches matching the name as a list of {@link Ref} objects.
 	 */
 	public List<Ref> getBranches(String branchName) {
 		if (branchName == null || branchName.isBlank()) {
-			LOGGER.info("Null or empty branch name was passed.");
-			return null;
+			return new ArrayList<>();
 		}
 		List<Ref> remoteBranches = getBranches();
 		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
@@ -409,9 +408,8 @@ public class GitClient {
 	 */
 	public List<Ref> getBranches() {
 		List<Ref> allRemoteBranches = new ArrayList<>();
-		getGitClientsForSingleRepos().forEach(
-				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));
+		getGitClientsForSingleRepos()
+				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
 		return allRemoteBranches;
 	}
-
 }

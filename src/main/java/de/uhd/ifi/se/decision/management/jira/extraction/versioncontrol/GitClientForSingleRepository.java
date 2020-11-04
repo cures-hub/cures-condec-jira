@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -65,15 +65,15 @@ public class GitClientForSingleRepository {
 		this.authMethod = authMethod;
 		this.username = username;
 		this.token = token;
-		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri, defaultBranchName);
+		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri);
 		pullOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
 
 	public boolean pullOrClone() {
-		File directory = new File(fsManager.getPath());
+		File directory = new File(fsManager.getPathToRepositoryInFileSystem());
 		File gitDirectory = new File(directory, ".git/");
-		if (directory.exists()) {
+		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
 					LOGGER.error("Failed Git pull " + directory);
@@ -89,7 +89,13 @@ public class GitClientForSingleRepository {
 				return false;
 			}
 		}
+		close();
 		return true;
+	}
+
+	private boolean openRepository() {
+		File directory = getDirectory();
+		return openRepository(directory);
 	}
 
 	private boolean openRepository(File directory) {
@@ -176,43 +182,39 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		try {
-			switch (authMethod) {
-			case "HTTP":
-				git = Git.cloneRepository().setURI(repoUri)
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
-						.setDirectory(directory).setCloneAllBranches(true).call();
-				break;
-
-			case "GITHUB":
-				git = Git.cloneRepository().setURI(repoUri)
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(token, ""))
-						.setDirectory(directory).setCloneAllBranches(true).call();
-				break;
-
-			case "GITLAB":
-				String gitlabUri = repoUri.replaceAll("https://", "https://gitlab-ci-token:" + token + "@");
-				git = Git.cloneRepository().setURI(gitlabUri)
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, token))
-						.setDirectory(directory).setCloneAllBranches(true).call();
-				break;
-
-			default:
-				git = Git.cloneRepository().setURI(repoUri).setDirectory(directory).setCloneAllBranches(true).call();
-				break;
+			CloneCommand cloneCommand = Git.cloneRepository().setURI(repoUri).setDirectory(directory)
+					.setCloneAllBranches(true);
+			UsernamePasswordCredentialsProvider credentialsProvider = getCredentialsProvider();
+			if (credentialsProvider != null) {
+				cloneCommand.setCredentialsProvider(credentialsProvider);
 			}
-
+			git = cloneCommand.call();
 			setConfig();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
 			return false;
+		} finally {
+			close();
 		}
-		// TODO checkoutDefault branch
 		return true;
 	}
 
+	private UsernamePasswordCredentialsProvider getCredentialsProvider() {
+		switch (authMethod) {
+		case "HTTP":
+			return new UsernamePasswordCredentialsProvider(username, token);
+		case "GITHUB":
+			return new UsernamePasswordCredentialsProvider(token, "");
+		case "GITLAB":
+			return new UsernamePasswordCredentialsProvider(username, token);
+		default:
+			return null;
+		}
+	}
+
 	private boolean setConfig() {
-		Repository repository = this.getRepository();
+		Repository repository = getRepository();
 		StoredConfig config = repository.getConfig();
 		/**
 		 * @issue The internal representation of a file might add system dependent new
@@ -335,7 +337,7 @@ public class GitClientForSingleRepository {
 	 * @return path to the .git folder as a File object.
 	 */
 	public File getDirectory() {
-		Repository repository = this.getRepository();
+		Repository repository = getRepository();
 		if (repository == null) {
 			return null;
 		}
@@ -345,7 +347,7 @@ public class GitClientForSingleRepository {
 	private RevCommit getParent(RevCommit revCommit) {
 		RevCommit parentCommit = null;
 		try {
-			Repository repository = this.getRepository();
+			Repository repository = getRepository();
 			RevWalk revWalk = new RevWalk(repository);
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
@@ -356,81 +358,45 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Closes the repository.
-	 */
-	public void close() {
-		if (git == null) {
-			return;
-		}
-		git.close();
-	}
-
-	/**
-	 * Closes the repository and deletes its local files.
-	 */
-	public boolean deleteRepository() {
-		if (git == null || this.getDirectory() == null) {
-			return false;
-		}
-		close();
-		File directory = this.getDirectory().getParentFile().getParentFile();
-		return deleteFolder(directory);
-	}
-
-	private static boolean deleteFolder(File directory) {
-		if (directory.listFiles() == null) {
-			return false;
-		}
-		boolean isDeleted = true;
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				deleteFolder(file);
-			} else {
-				isDeleted = isDeleted && file.delete();
-			}
-		}
-		return isDeleted && directory.delete();
-	}
-
-	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
 	 */
 	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
-		if (jiraIssue == null) {
-			return new LinkedList<RevCommit>();
+		if (git == null || jiraIssue == null || jiraIssue.getKey() == null) {
+			return new ArrayList<RevCommit>();
 		}
 		String jiraIssueKey = jiraIssue.getKey();
-		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-		if (git == null || jiraIssueKey == null) {
-			LOGGER.error("Commits cannot be retrieved since git object is null.");
-			return commitsForJiraIssue;
-		}
+		List<RevCommit> commitsForJiraIssue = new ArrayList<RevCommit>();
 		/**
 		 * @issue How to get the commits for branches that are not on the master branch?
-		 * @alternative Assume that the branch name begins with the JIRA issue key!
+		 * @alternative Assume that the branch name begins with the Jira issue key!
 		 * @pro This simple rule will work just fine.
 		 * @con The rule is too simple. Issues with low key numbers could collect
 		 *      branches of much higher issues also. ex. search for "CONDEC-1" would
 		 *      find branches beginning with CONDEC-1 BUT as well the ones for issues
 		 *      with keys "CONDEC-10", "CONDEC-11" , "CONDEC-100" etc.
-		 * @decision Assume the branch name begins with the JIRA issue key and a dot
+		 * @decision Assume the branch name begins with the Jira issue key and a dot
 		 *           character follows directly afterwards!
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-		Ref branch = getRef(jiraIssueKey);
-		List<RevCommit> commits = getCommits(branch);
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		if (isDefaultBranch) {
+			commits = getDefaultBranchCommits();
+		} else {
+			Ref branch = getBranch(jiraIssueKey);
+			commits = getCommits(branch);
+		}
 		for (RevCommit commit : commits) {
-			// TODO Improve identification of jira issue key in commit message
 			String jiraIssueKeyInCommitMessage = CommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 				commitsForJiraIssue.add(commit);
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
 			}
 		}
+
 		return commitsForJiraIssue;
 	}
 
@@ -438,22 +404,20 @@ public class GitClientForSingleRepository {
 	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
 	 * discussions!
 	 */
-	private Ref getRef(String jiraIssueKey) {
-		List<Ref> refs = getAllBranches();
+	private Ref getBranch(String branchName) {
+		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(jiraIssueKey)) {
-				return ref;
-			} else if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+			if (ref.getName().contains(branchName)) {
 				return ref;
 			}
 		}
-		return null;
+		return getDefaultBranch();
 	}
 
 	public Ref getDefaultBranch() {
-		List<Ref> refs = getAllBranches();
+		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
+			if (ref.getName().contains(defaultBranchName)) {
 				return ref;
 			}
 		}
@@ -461,23 +425,17 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return remote branches in repository as a list of {@link Ref}s.
+	 * @return remote branches in repository as a list of {@link Ref} objects.
 	 */
-	public List<Ref> getRemoteBranches() {
-		return getRefs(ListBranchCommand.ListMode.REMOTE);
-	}
-
-	private List<Ref> getAllBranches() {
-		return getRefs(ListBranchCommand.ListMode.ALL);
-	}
-
-	private List<Ref> getRefs(ListBranchCommand.ListMode listMode) {
+	public List<Ref> getBranches() {
 		List<Ref> refs = new ArrayList<Ref>();
+		openRepository();
 		try {
-			refs = git.branchList().setListMode(listMode).call();
+			refs = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
 		} catch (GitAPIException | NullPointerException e) {
 			LOGGER.error("Git could not get references. Message: " + e.getMessage());
 		}
+		refs.removeIf(ref -> !ref.getName().contains("remote"));
 		return refs;
 	}
 
@@ -495,11 +453,9 @@ public class GitClientForSingleRepository {
 		}
 
 		List<RevCommit> commits = new ArrayList<>();
-		String defaultBranchPath = fsManager.getPath();
-		File directory = new File(defaultBranchPath + File.separator + ".git");
 
 		try {
-			git = Git.open(directory);
+			openRepository();
 			ObjectId commitId = getRepository().resolve(branch.getName());
 			Iterable<RevCommit> iterable = git.log().add(commitId).call();
 			commits = Lists.newArrayList(iterable.iterator());
@@ -507,17 +463,6 @@ public class GitClientForSingleRepository {
 
 		}
 		return commits;
-	}
-
-	/**
-	 * @param branch
-	 *            as a {@link Ref} object.
-	 * @return e.g. "TEST-4.transcriberBranch" instead of
-	 *         "refs/remotes/origin/TEST-4.transcriberBranch"
-	 */
-	public static String simplifyBranchName(Ref branch) {
-		String[] branchNameComponents = branch.getName().split("/");
-		return branchNameComponents[branchNameComponents.length - 1];
 	}
 
 	/**
@@ -540,5 +485,42 @@ public class GitClientForSingleRepository {
 	 */
 	public String getDefaultBranchName() {
 		return defaultBranchName;
+	}
+
+	/**
+	 * Closes the repository.
+	 */
+	public void close() {
+		if (git == null) {
+			return;
+		}
+		git.close();
+	}
+
+	/**
+	 * Closes the repository and deletes its local files.
+	 */
+	public boolean deleteRepository() {
+		if (git == null || getDirectory() == null) {
+			return false;
+		}
+		close();
+		File directory = getDirectory().getParentFile().getParentFile();
+		return deleteFolder(directory);
+	}
+
+	private static boolean deleteFolder(File directory) {
+		if (directory.listFiles() == null) {
+			return false;
+		}
+		boolean isDeleted = true;
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory()) {
+				deleteFolder(file);
+			} else {
+				isDeleted = isDeleted && file.delete();
+			}
+		}
+		return isDeleted && directory.delete();
 	}
 }
