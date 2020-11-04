@@ -28,7 +28,6 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.util.FileUtils;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -426,7 +425,7 @@ public class GitClientForSingleRepository {
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-		Ref branch = getRef(jiraIssueKey);
+		Ref branch = getBranch(jiraIssueKey);
 		List<RevCommit> commits = getCommits(branch);
 		for (RevCommit commit : commits) {
 			String jiraIssueKeyInCommitMessage = CommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
@@ -442,8 +441,8 @@ public class GitClientForSingleRepository {
 	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
 	 * discussions!
 	 */
-	private Ref getRef(String jiraIssueKey) {
-		List<Ref> refs = getAllBranches();
+	private Ref getBranch(String jiraIssueKey) {
+		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
@@ -455,7 +454,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public Ref getDefaultBranch() {
-		List<Ref> refs = getAllBranches();
+		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
 			if (ref.getName().equalsIgnoreCase("refs/heads/" + defaultBranchName)) {
 				return ref;
@@ -467,19 +466,11 @@ public class GitClientForSingleRepository {
 	/**
 	 * @return remote branches in repository as a list of {@link Ref}s.
 	 */
-	public List<Ref> getRemoteBranches() {
-		return getRefs(ListBranchCommand.ListMode.REMOTE);
-	}
-
-	private List<Ref> getAllBranches() {
-		return getRefs(ListBranchCommand.ListMode.ALL);
-	}
-
-	private List<Ref> getRefs(ListBranchCommand.ListMode listMode) {
+	public List<Ref> getBranches() {
 		List<Ref> refs = new ArrayList<Ref>();
 		openRepository();
 		try {
-			refs = git.branchList().setListMode(listMode).call();
+			refs = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
 		} catch (GitAPIException | NullPointerException e) {
 			System.out.println(e.getMessage());
 			LOGGER.error("Git could not get references. Message: " + e.getMessage());

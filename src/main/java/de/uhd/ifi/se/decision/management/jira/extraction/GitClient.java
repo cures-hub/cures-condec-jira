@@ -410,8 +410,8 @@ public class GitClient {
 	 */
 	public List<Ref> getBranches() {
 		List<Ref> allRemoteBranches = new ArrayList<>();
-		getGitClientsForSingleRepos().forEach(
-				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));
+		getGitClientsForSingleRepos()
+				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
 		return allRemoteBranches;
 	}
 }
