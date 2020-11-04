@@ -384,32 +384,17 @@ public class GitClientForSingleRepository {
 
 	private static boolean deleteFolder(File directory) {
 		if (directory.listFiles() == null) {
-			return true;
+			return false;
 		}
 		boolean isDeleted = true;
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory()) {
 				deleteFolder(file);
 			} else {
-				try {
-					file.delete();
-					FileUtils.delete(file,
-							FileUtils.RECURSIVE | FileUtils.RETRY | FileUtils.SKIP_MISSING | FileUtils.IGNORE_ERRORS);
-				} catch (IOException e) {
-					System.out.print(file.getAbsolutePath() + " " + e);
-					isDeleted = false;
-				}
+				isDeleted = isDeleted && file.delete();
 			}
 		}
-		try {
-			directory.delete();
-			FileUtils.delete(directory,
-					FileUtils.RECURSIVE | FileUtils.RETRY | FileUtils.SKIP_MISSING | FileUtils.IGNORE_ERRORS);
-		} catch (IOException e) {
-			System.out.print(directory.getAbsolutePath() + " " + e);
-			isDeleted = false;
-		}
-		return isDeleted;
+		return isDeleted && directory.delete();
 	}
 
 	/**
