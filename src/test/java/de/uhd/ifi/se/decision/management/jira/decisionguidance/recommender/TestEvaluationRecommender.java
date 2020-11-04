@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -83,6 +84,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 	@Test
 	public void testEvaluationExecute() {
 
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).withKnowledgeSource(knowledgeSources, "TEST").execute();
 
 		assertNotNull(recommendationEvaluation);

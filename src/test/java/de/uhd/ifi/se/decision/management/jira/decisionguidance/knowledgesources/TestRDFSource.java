@@ -1,7 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,43 +23,88 @@ import static org.junit.Assert.*;
 
 public class TestRDFSource extends TestSetUp {
 
+	private final static String PROJECTKEY = "TEST";
+	private final static String NAME = "TESTSOURCE";
+	private final static String SERVICE = "http://dbpedia.org/sparql";
+	private final static String QUERY = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
+		"PREFIX dct: <http://purl.org/dc/terms/> " +
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+
+		"select distinct ?alternative ?url ?link where { " +
+		"%variable% dbo:genre ?genre. " +
+		"?url dbo:genre ?genre. " +
+		" ?url rdfs:label ?alternative. " +
+		"FILTER(LANG(?alternative) = 'en'). " +
+		"?url dbo:wikiPageExternalLink ?link. " +
+		"} ";
+	private final static String TIMEOUT = "50000";
+	private final static int LIMIT = 10;
+
 	@Before
 	public void setUp() {
 		init();
 	}
 
 	@Test
-	public void testRDFSource() {
-		KnowledgeSource source = new RDFSource("Test");
-		source.setName("RDFSource");
-		((RDFSource) source).setLimit(10);
-		List<Recommendation> recommendations = source.getResults("");
-		assertEquals(10, recommendations.size());
-		assertEquals(true, source.isActivated());
+	public void testRDFSourceConstructor() {
+		RDFSource rdfSource = new RDFSource();
+		assertNotNull(rdfSource);
+		rdfSource.setService(SERVICE);
+		rdfSource.setProjectKey(PROJECTKEY);
+		rdfSource.setQueryString(QUERY);
+		rdfSource.setTimeout(TIMEOUT);
+		rdfSource.setLimit(LIMIT);
+
+		assertEquals(SERVICE, rdfSource.getService());
+		assertEquals(PROJECTKEY, rdfSource.getProjectKey());
+		assertEquals(QUERY, rdfSource.getQueryString());
+		assertEquals(TIMEOUT, rdfSource.getTimeout());
+
+		ConfigPersistenceManager.setMaxNumberRecommendations(PROJECTKEY, 10);
+
+		assertEquals(LIMIT, rdfSource.getLimit());
+
 	}
 
 	@Test
-	public void testRDFSourceWithInput() {
-		KnowledgeSource source = new RDFSource("Test");
-		source.setName("RDFSource");
-		List<Recommendation> recommendations = source.getResults("Test 123");
-		assertEquals(30, recommendations.size());
+	public void testGetInputMethodAndSetData() {
+		KnowledgeSource rdfSource = new RDFSource();
+		ConfigPersistenceManager.setRecommendationInput(PROJECTKEY, RecommenderType.KEYWORD.toString());
+		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass() );
+		rdfSource.setData();
 	}
 
-	//The method to handle knowledge elements is not implemented yet, therefore should return zero as default
+	@Test
+	public void testRDFSourceWithStringInput() {
+		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
+		rdfSourceInputString.setData(PROJECTKEY, NAME, SERVICE, QUERY, TIMEOUT, LIMIT);
+		assertEquals(2, rdfSourceInputString.getResults("MySQL").size());
+		assertEquals(0, rdfSourceInputString.getResults("").size());
+		assertEquals(0, rdfSourceInputString.getResults(null).size());
+
+		rdfSourceInputString.setData(PROJECTKEY, NAME, "WRONG SERVICE", "INVALID QUERY", TIMEOUT, LIMIT);
+		assertEquals(0, rdfSourceInputString.getResults("MySQL").size());
+
+
+	}
+
 	@Test
 	public void testRDFSourceWithKnowledgeElement() {
-		KnowledgeSource source = new RDFSource("Test");
-		source.setName("RDFSource");
-		List<Recommendation> recommendations = source.getResults(new KnowledgeElement());
-		assertEquals(0, recommendations.size());
-		KnowledgeElement knowledgeElement = null;
-		recommendations = source.getResults(knowledgeElement);
-		assertEquals(0, recommendations.size());
-		source.setActivated(false);
-		recommendations = source.getResults(new KnowledgeElement());
-		assertEquals(0, recommendations.size());
+		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
+		rdfSourceInputKnowledgeElement.setData(PROJECTKEY, NAME, SERVICE, QUERY, TIMEOUT, LIMIT);
+		KnowledgeElement alternative = new KnowledgeElement();
+		alternative.setType(KnowledgeType.ALTERNATIVE);
+		alternative.setSummary("MySQL");
+		alternative.setId(123);
+		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(PROJECTKEY);
+		graph.addEdge(link);
+		assertEquals(17, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
+		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
+		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
 	}
+
 
 	@Test
 	public void testRDFSourceActivated() {
