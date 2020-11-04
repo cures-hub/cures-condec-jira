@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -365,15 +364,11 @@ public class GitClientForSingleRepository {
 	 *         {@link RevCommits}.
 	 */
 	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
-		if (jiraIssue == null) {
-			return new LinkedList<RevCommit>();
+		if (git == null || jiraIssue == null || jiraIssue.getKey() == null) {
+			return new ArrayList<RevCommit>();
 		}
 		String jiraIssueKey = jiraIssue.getKey();
-		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-		if (git == null || jiraIssueKey == null) {
-			LOGGER.error("Commits cannot be retrieved since git object is null.");
-			return commitsForJiraIssue;
-		}
+		List<RevCommit> commitsForJiraIssue = new ArrayList<RevCommit>();
 		/**
 		 * @issue How to get the commits for branches that are not on the master branch?
 		 * @alternative Assume that the branch name begins with the Jira issue key!
@@ -387,8 +382,13 @@ public class GitClientForSingleRepository {
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-		Ref branch = getBranch(jiraIssueKey);
-		List<RevCommit> commits = getCommits(branch);
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		if (isDefaultBranch) {
+			commits = getDefaultBranchCommits();
+		} else {
+			Ref branch = getBranch(jiraIssueKey);
+			commits = getCommits(branch);
+		}
 		for (RevCommit commit : commits) {
 			String jiraIssueKeyInCommitMessage = CommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
@@ -396,6 +396,7 @@ public class GitClientForSingleRepository {
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
 			}
 		}
+
 		return commitsForJiraIssue;
 	}
 
