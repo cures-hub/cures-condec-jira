@@ -30,7 +30,7 @@ public class ProjectSource extends KnowledgeSource {
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.name);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+
 		}
 	}
 
