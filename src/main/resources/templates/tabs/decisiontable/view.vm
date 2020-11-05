@@ -11,8 +11,8 @@
                 #parse("templates/filter/linkDistance.vm")                
                 #parse("templates/filter/degree.vm")
             </div>
-            <div>
-                <label for="decision-problem-dropdown">Issues: </label>
+            <div class="decision-table-dropdown">
+                <label for="decision-problem-dropdown">Select Issues: </label>
                 <select class="select long-field" id="decision-problem-dropdown"></select>         
             </div>   
         </form>
@@ -38,3 +38,15 @@ $(document).ready(function () {
 	});
 });
 </script>
+
+<style>
+
+    .decision-table-dropdown {
+        padding-top 16px;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #e3e3e3;
+    }
+
+
+</style>

@@ -60,9 +60,13 @@ a:focus a:hover {
 }
 
 .condec-filter {
-    display: inline-block;
+    display: flex;
     flex-wrap: wrap;
+    gap: 8px;
     align-items: flex-end;
+    border: 1px solid #e3e3e3;
+    padding:16px;
+    margin-bottom: 16px;
 }
 
 .condec-filter-criterion {

@@ -306,8 +306,7 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement knowledgeElement = persistenceManager.getKnowledgeElement(issueID, "s");
+		KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
 
 		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
 
