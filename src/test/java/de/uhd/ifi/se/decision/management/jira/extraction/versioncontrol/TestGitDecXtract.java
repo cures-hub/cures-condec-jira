@@ -31,7 +31,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		int numberExpectedElements = 14;
 
 		// by Ref, find Ref first
-		List<Ref> featureBranches = gitClient.getAllRemoteBranches();
+		List<Ref> featureBranches = gitClient.getBranches();
 		Ref featureBranch = null;
 		Iterator<Ref> it = featureBranches.iterator();
 		while (it.hasNext()) {

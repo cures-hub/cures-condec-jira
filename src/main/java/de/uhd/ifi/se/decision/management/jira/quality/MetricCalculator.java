@@ -141,7 +141,7 @@ public class MetricCalculator {
 			RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
 			// TODO default branch
 			List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
-					lastFeatureBranchCommit, gitClient.getAllRemoteBranches().get(0));
+					lastFeatureBranchCommit, gitClient.getBranches().get(0));
 			for (KnowledgeElement element : extractedCodeElements) {
 				if (knowledgeTypes.contains(element.getTypeAsString())
 						&& knowledgeStatus.contains(element.getStatusAsString()) && groupsMatch(element)) {

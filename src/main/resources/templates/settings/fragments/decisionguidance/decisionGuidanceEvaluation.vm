@@ -122,8 +122,8 @@
                     "<tr><td>" + eval.recommenderType + "</td>" +
                     "<td>" + eval.knowledgeSourceName + "</td>" +
                     "<td>" +  eval.numberOfResults +"</td>" +
-                    "<td>" +  eval.fScore +"</td>" +
-                    "<td>" +  eval.mrr +"</td>" +
+                    "<td>" +  eval.fScore.toFixed(2) +"</td>" +
+                    "<td>" +  eval.mrr.toFixed(2) +"</td>" +
                     "</tr>");
                     spinner.hide();
                 }

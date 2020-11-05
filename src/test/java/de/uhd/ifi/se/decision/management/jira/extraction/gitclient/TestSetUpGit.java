@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
@@ -49,6 +51,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
+	private static int commitTime = 0;
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -72,6 +75,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
+		// createBranch("master");
 		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
@@ -174,7 +178,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 			writer.println(content);
 			writer.close();
 			git.add().addFilepattern(inputFile.getName()).call();
-			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
+			PersonIdent defaultCommitter = new PersonIdent("gitTest", "gitTest@test.de");
+			PersonIdent committer = new PersonIdent(defaultCommitter, new Date(commitTime));
+			commitTime = commitTime + 3600;
+			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
@@ -182,10 +189,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void setupBranchWithDecKnowledge() {
-		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
+		String currentBranch = getCurrentBranch();
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
 		String pathToTestFilesDir = "extraction/versioncontrol/";
@@ -193,14 +199,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		// TODO: Check how can we create a mock feature branch?
-		try {
-			currentBranch = git.getRepository().getBranch();
-			git.branchCreate().setName(featureBranch).call();
-			git.checkout().setName(featureBranch).call();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		createBranch("featureBranch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
 		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
@@ -220,24 +219,35 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void setupBranchForTranscriber() {
-		String featureBranch = "TEST-4.transcriberBranch";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
+		String currentBranch = getCurrentBranch();
+		createBranch("TEST-4.transcriberBranch");
 
-		try {
-			currentBranch = git.getRepository().getBranch();
-			git.branchCreate().setName(featureBranch).call();
-			git.checkout().setName(featureBranch).call();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/issue]");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[Issue]This is an issue![/Issue]");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue]");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 
 		returnToPreviousBranch(currentBranch, git);
+	}
+
+	private static void createBranch(String branchName) {
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		try {
+			git.branchCreate().setName(branchName).call();
+			git.checkout().setName(branchName).call();
+			// git.push().setRemote("origin").setRefSpecs(new RefSpec(branchName)).call();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static String getCurrentBranch() {
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		String currentBranch = null;
+		try {
+			currentBranch = git.getRepository().getBranch();
+		} catch (Exception e) {
+		}
+		return currentBranch;
 	}
 
 	private static void returnToPreviousBranch(String branch, Git git) {

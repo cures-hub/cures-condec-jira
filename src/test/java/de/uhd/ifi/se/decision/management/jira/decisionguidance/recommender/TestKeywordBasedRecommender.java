@@ -30,16 +30,26 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 	}
 
 	@Test
-	public void testSimpleRecommender() {
+	public void testKeywordbasedRecommender() {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
-		simpleRecommender.addKnowledgeSource(knowledgeSources);
-		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
+		BaseRecommender rcommender = new KeywordBasedRecommender("feature");
+		rcommender.addKnowledgeSource(knowledgeSources);
+		List<Recommendation> recommendations = rcommender.getRecommendation();
 
 		assertNotEquals(null, recommendations);
+	}
+
+	@Test
+	public void testKeywordbasedRecommenderConstrutor() {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+		knowledgeSources.add(projectSource);
+		knowledgeSources.add(rdfSource);
+
+		BaseRecommender recommender = new KeywordBasedRecommender("feature", knowledgeSources);
+		assertNotEquals(null, recommender);
 	}
 
 	@Test

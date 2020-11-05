@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -165,6 +166,7 @@ public class GitClient {
 				allCommits.add(featureBranchCommit);
 			}
 		}
+		allCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return getDiff(allCommits);
 	}
 
@@ -221,28 +223,56 @@ public class GitClient {
 	}
 
 	/**
-	 * Temporally switches git client's directory to feature branch directory to
-	 * fetch commits, afterwards returns to default branch directory after.
-	 *
-	 * @param featureBranch
-	 *            ref of the feature branch
-	 * @return list of unique commits of a <b>feature</b> branch, which do not exist
-	 *         in the <b>default</b> branch. Commits are sorted by age, beginning
-	 *         with the oldest.
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are not sorted.
 	 */
-	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new ArrayList<RevCommit>();
+		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(featureBranch));
+		List<Ref> branches = getBranches(jiraIssue.getKey());
+		for (Ref featureBranch : branches) {
+			commits.addAll(getFeatureBranchCommits(featureBranch));
 		}
 		return commits;
 	}
 
-	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
+	/**
+	 * @param featureBranch
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are not sorted.
+	 */
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchCommits = getCommits(featureBranch);
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+
+		for (RevCommit commit : branchCommits) {
+			if (!defaultBranchCommits.contains(commit)) {
+				branchUniqueCommits.add(commit);
+			}
+		}
+		branchUniqueCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		return branchUniqueCommits;
+	}
+
+	/**
+	 * @param branch
+	 *            as a {@link Ref} object.
+	 * @return list of commits of a branch, which might also exist in the default
+	 *         branch.
+	 */
+	public List<RevCommit> getCommits(Ref branch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getFeatureBranchCommits(jiraIssue));
+			commits.addAll(gitClientForSingleRepo.getCommits(branch));
 		}
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
 	}
 
@@ -299,22 +329,30 @@ public class GitClient {
 	}
 
 	/**
-	 * @param repoUri
-	 * @return default branch commits.
+	 * @return all commits on the default branch(es) as a list of
+	 *         {@link RevCommit}s.
 	 */
 	public List<RevCommit> getDefaultBranchCommits() {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommitsFromDefaultBranch());
+			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
 		}
 		return commits;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
+	 *         list is sorted by committing time: oldest commits come first.
+	 */
 	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 		}
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
 	}
 
@@ -351,26 +389,27 @@ public class GitClient {
 	}
 
 	/**
-	 * @param branchName,
-	 *            e.g. "master"
+	 * @param branchName
+	 *            e.g. "master" or Jira issue key
 	 * @return all branches matching the name as a list of {@link Ref} objects.
 	 */
 	public List<Ref> getBranches(String branchName) {
 		if (branchName == null || branchName.isBlank()) {
-			LOGGER.info("Null or empty branch name was passed.");
-			return null;
+			return new ArrayList<>();
 		}
-		List<Ref> remoteBranches = getAllRemoteBranches();
+		List<Ref> remoteBranches = getBranches();
 		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
 				.collect(Collectors.toList());
 		return branchCandidates;
 	}
 
-	public List<Ref> getAllRemoteBranches() {
+	/**
+	 * @return all branches as a list of {@link Ref} objects.
+	 */
+	public List<Ref> getBranches() {
 		List<Ref> allRemoteBranches = new ArrayList<>();
-		getGitClientsForSingleRepos().forEach(
-				gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getRemoteBranches()));
+		getGitClientsForSingleRepos()
+				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
 		return allRemoteBranches;
 	}
-
 }

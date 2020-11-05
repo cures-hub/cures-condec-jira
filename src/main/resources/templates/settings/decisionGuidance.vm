@@ -40,28 +40,6 @@
         </fieldset>
     </div>
 
-    <div class="settings-divider">
-        <fieldset class="group">
-            <legend><span>Calculation Method
-        </span></legend>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="substring" value="SUBSTRING"
-                />
-                <label for="substring">Substring</label>
-            </div>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="tokenized" value="TOKENIZED"
-                />
-                <label for="tokenized">Tokenization</label>
-            </div>
-            <div class="description">Chose a calculation method for the recommendation. The results and the score will
-                be differently calculated.
-            </div>
-        </fieldset>
-    </div>
-
     <h4>Configure RDF Knowledge Sources</h4>
 
     <div>

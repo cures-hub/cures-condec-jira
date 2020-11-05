@@ -58,7 +58,7 @@ public class TestIBaseRecommender extends TestSetUp {
 
 	@Test
 	public void testRecommenderDefaultType() {
-		assertEquals(RecommenderType.KEYWORD.toString(), RecommenderType.getDefault());
+		assertEquals(RecommenderType.KEYWORD, RecommenderType.getDefault());
 	}
 
 }

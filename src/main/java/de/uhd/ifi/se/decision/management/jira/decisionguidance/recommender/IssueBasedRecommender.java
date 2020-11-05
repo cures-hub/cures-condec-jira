@@ -9,12 +9,14 @@ import java.util.List;
 
 public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 
-	private KnowledgeElement knowledgeElement;
-
-	public IssueBasedRecommender(KnowledgeElement knowledgeElement) {
+	public IssueBasedRecommender() {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
-		this.knowledgeElement = knowledgeElement;
+	}
+
+	public IssueBasedRecommender(KnowledgeElement knowledgeElement) {
+		this();
+		this.input = knowledgeElement;
 	}
 
 	public IssueBasedRecommender(KnowledgeElement knowledgeElement, List<KnowledgeSource> knowledgeSources) {
@@ -23,11 +25,8 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendation() {
-		for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
-			this.recommendations.addAll(knowledgeSource.getResults(this.knowledgeElement));
-		}
-		return this.recommendations;
+	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+		return knowledgeSource.getResults(input);
 	}
 
 }

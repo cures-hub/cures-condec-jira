@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
@@ -20,16 +19,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
- * Models the knowledge graph for the entire project or a sub-graph from a given
- * start element with a certain distance (set in the constructor). The knowledge
- * covers decision knowledge, Jira issues such as requirements and work items,
- * commits, files (e.g., Java classes), and methods. Extends the JGraphT graph
- * interface. The knowledge graph can be disconnected.
+ * Creates the knowledge graph for the entire project. Nodes of the knowledge
+ * graph are decision knowledge elements, Jira issues such as requirements and
+ * work items, and code files. Extends the JGraphT graph interface. The
+ * knowledge graph can be disconnected.
  * 
  * @see GitClient
  * @see Graph
  */
-@JsonDeserialize(as = KnowledgeGraph.class)
 public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement, Link> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);

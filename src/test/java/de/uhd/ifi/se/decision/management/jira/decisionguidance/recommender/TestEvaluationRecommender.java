@@ -6,6 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -83,12 +84,13 @@ public class TestEvaluationRecommender extends TestSetUp {
 	@Test
 	public void testEvaluationExecute() {
 
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).withKnowledgeSource(knowledgeSources, "TEST").execute();
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSourceName());
 		assertEquals(RecommenderType.ISSUE.toString(), recommendationEvaluation.getRecommenderType());
-		assertEquals(2, recommendationEvaluation.getNumberOfResults());
+		assertEquals(0, recommendationEvaluation.getNumberOfResults());
 		assertEquals(0.0, recommendationEvaluation.getFScore(), 0.0); //status not set
 		assertEquals(0.0, recommendationEvaluation.getMrr(), 0.0); //status not set
 

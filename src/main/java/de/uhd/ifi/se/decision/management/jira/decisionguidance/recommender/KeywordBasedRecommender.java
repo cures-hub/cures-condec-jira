@@ -9,12 +9,14 @@ import java.util.List;
 public class KeywordBasedRecommender extends BaseRecommender<String> {
 
 
-	private String keywords;
-
-	public KeywordBasedRecommender(String keywordsString) {
+	public KeywordBasedRecommender() {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
-		this.keywords = keywordsString;
+	}
+
+	public KeywordBasedRecommender(String keywordsString) {
+		this();
+		this.input = keywordsString;
 	}
 
 	public KeywordBasedRecommender(String keywordsString, List<KnowledgeSource> knowledgeSources) {
@@ -22,12 +24,9 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 		this.addKnowledgeSource(knowledgeSources);
 	}
 
-	@Override
-	public List<Recommendation> getRecommendation() {
-		for (KnowledgeSource knowledgeSource : this.knowledgeSources) {
-			this.recommendations.addAll(knowledgeSource.getResults(this.keywords));
-		}
-		return this.recommendations;
-	}
 
+	@Override
+	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+		return knowledgeSource.getResults(input);
+	}
 }
