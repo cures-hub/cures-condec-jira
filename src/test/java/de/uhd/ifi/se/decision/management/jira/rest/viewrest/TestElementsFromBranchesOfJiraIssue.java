@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 
 public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	private ViewRest viewRest;
@@ -70,9 +69,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Test
 	@Ignore
 	public void testExistingIssueKey() {
-		assertEquals(200, viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
-		Object receivedEntity = viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getEntity();
-		Object expectedEntity = new DiffViewer(null);
-		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
+		assertEquals(Status.OK.getStatusCode(),
+				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
 	}
 }

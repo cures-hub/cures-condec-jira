@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 
 public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 	private ViewRest viewRest;
@@ -38,16 +37,13 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testUnknownProjectKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				viewRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
 	}
 
 	@Test
 	public void testExistingProjectKey() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
-		Object receivedEntity = viewRest.getElementsFromAllBranchesOfProject("TEST").getEntity();
-
-		Object expectedEntity = new DiffViewer(null);
-		assertEquals(expectedEntity.getClass(), receivedEntity.getClass());
 	}
 
 	@Test
