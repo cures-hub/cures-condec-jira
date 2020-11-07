@@ -28,47 +28,21 @@ public class DiffViewer {
 	private List<BranchDiff> branches;
 
 	public DiffViewer(String projectKey) {
-		branches = new ArrayList<>();
-		// get all project branches
-		List<Ref> branchesrefs = GitClient.getOrCreate(projectKey).getBranches(projectKey);
-		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
-		GitDecXtract extractor = new GitDecXtract(projectKey);
-		for (Ref branch : branchesrefs) {
-			ratBranchList.put(branch, extractor.getElements(branch));
-		}
-
-		Iterator<Map.Entry<Ref, List<KnowledgeElement>>> it = ratBranchList.entrySet().iterator();
-
-		while (it.hasNext()) {
-			Map.Entry<Ref, List<KnowledgeElement>> entry = it.next();
-			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
-		}
+		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(projectKey));
 	}
 
 	public DiffViewer(String projectKey, String issueKey) {
+		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(issueKey.toUpperCase()));
+	}
+
+	public DiffViewer(String projectKey, List<Ref> branchesrefs) {
 		branches = new ArrayList<>();
-		// get feature branches of a Jira issue
-		List<Ref> branchesrefs = GitClient.getOrCreate(projectKey).getBranches(issueKey.toUpperCase());
 
 		Map<Ref, List<KnowledgeElement>> ratBranchList = new HashMap<>();
 		GitDecXtract extractor = new GitDecXtract(projectKey);
 		for (Ref branch : branchesrefs) {
 			ratBranchList.put(branch, extractor.getElements(branch));
 		}
-		Iterator<Map.Entry<Ref, List<KnowledgeElement>>> it = ratBranchList.entrySet().iterator();
-
-		while (it.hasNext()) {
-			Map.Entry<Ref, List<KnowledgeElement>> entry = it.next();
-			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
-		}
-	}
-
-	public DiffViewer(Map<Ref, List<KnowledgeElement>> ratBranchList) {
-		branches = new ArrayList<>();
-		if (ratBranchList == null) {
-			return;
-		}
-
 		Iterator<Map.Entry<Ref, List<KnowledgeElement>>> it = ratBranchList.entrySet().iterator();
 
 		while (it.hasNext()) {
