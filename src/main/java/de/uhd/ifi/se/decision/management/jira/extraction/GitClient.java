@@ -398,7 +398,8 @@ public class GitClient {
 			return new ArrayList<>();
 		}
 		List<Ref> remoteBranches = getBranches();
-		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
+		List<Ref> branchCandidates = remoteBranches.stream()
+				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		return branchCandidates;
 	}
