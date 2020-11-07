@@ -38,16 +38,16 @@ public class GitDecXtract {
 	// TODO: below method signature will further improve
 	public List<KnowledgeElement> getElements(Ref branch) {
 		List<KnowledgeElement> elements = new ArrayList<>();
-		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(branch);
-		if (featureCommits == null || featureCommits.isEmpty()) {
+		List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(branch);
+		if (featureBranchCommits == null || featureBranchCommits.isEmpty()) {
 			return elements;
 		}
-		for (RevCommit commit : featureCommits) {
+		for (RevCommit commit : featureBranchCommits) {
 			elements.addAll(getElementsFromMessage(commit));
 		}
 
-		RevCommit baseCommit = featureCommits.get(0);
-		RevCommit lastFeatureBranchCommit = featureCommits.get(featureCommits.size() - 1);
+		RevCommit baseCommit = featureBranchCommits.get(0);
+		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
 		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, branch));
 		return elements;
 	}
