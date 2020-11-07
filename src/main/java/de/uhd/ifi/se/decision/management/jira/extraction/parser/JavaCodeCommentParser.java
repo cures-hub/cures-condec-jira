@@ -42,7 +42,7 @@ public class JavaCodeCommentParser implements CodeCommentParser {
 			JavaParser javaParser = new JavaParser();
 			parseResult = javaParser.parse(fileInputStream);
 			fileInputStream.close();
-		} catch (ParseProblemException | IOException e) {
+		} catch (ParseProblemException | IOException | NullPointerException e) {
 			LOGGER.error(e.getMessage());
 		}
 		return parseResult;

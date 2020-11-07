@@ -141,8 +141,10 @@ public class GitClient {
 		if (commits == null || commits.isEmpty()) {
 			return new Diff();
 		}
-		RevCommit firstCommit = commits.get(0);
-		RevCommit lastCommit = commits.get(commits.size() - 1);
+		RevCommit firstCommit = commits.stream().min(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(0));
+		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(commits.size() - 1));
 		return getDiff(firstCommit, lastCommit);
 	}
 

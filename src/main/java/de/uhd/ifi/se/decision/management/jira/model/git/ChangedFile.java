@@ -13,6 +13,7 @@ import java.util.Set;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,8 @@ public class ChangedFile extends File {
 	private EditList editList;
 	@JsonIgnore
 	private String treeWalkPath;
+	@JsonIgnore
+	private String name;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -76,6 +79,7 @@ public class ChangedFile extends File {
 		this.setCorrect(true);
 		this.methodDeclarations = parseMethods();
 		this.repoUri = uri;
+		this.name = file.getName();
 	}
 
 	public ChangedFile(File file) {
@@ -108,7 +112,10 @@ public class ChangedFile extends File {
 	@Override
 	@JsonProperty("className")
 	public String getName() {
-		return super.getName();
+		if (name == null) {
+			name = super.getName();
+		}
+		return name;
 	}
 
 	/**
@@ -160,8 +167,8 @@ public class ChangedFile extends File {
 			return methodsInClass;
 		}
 
-		MethodVisitor methodVistor = getMethodVisitor();
-		for (MethodDeclaration methodDeclaration : methodVistor.getMethodDeclarations()) {
+		MethodVisitor methodVisitor = getMethodVisitor();
+		for (MethodDeclaration methodDeclaration : methodVisitor.getMethodDeclarations()) {
 			methodsInClass.add(methodDeclaration.getNameAsString());
 		}
 
@@ -169,8 +176,10 @@ public class ChangedFile extends File {
 	}
 
 	private MethodVisitor getMethodVisitor() {
-		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
-		this.compilationUnit = parseResult.getResult().get();
+		if (compilationUnit == null) {
+			ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
+			compilationUnit = parseResult.getResult().get();
+		}
 		MethodVisitor methodVistor = new MethodVisitor();
 		compilationUnit.accept(methodVistor, null);
 		return methodVistor;
@@ -191,7 +200,11 @@ public class ChangedFile extends File {
 	 *         been deleted or that its name has been changed or it has been moved.
 	 */
 	public boolean isExistingJavaClass() {
-		return exists() && isJavaClass();
+		boolean isExistingJavaClass = true;
+		if (diffEntry != null) {
+			isExistingJavaClass = isExistingJavaClass && diffEntry.getChangeType() != ChangeType.DELETE;
+		}
+		return isExistingJavaClass && isJavaClass();
 	}
 
 	/**
@@ -213,7 +226,7 @@ public class ChangedFile extends File {
 	 * @return compilation unit if the changed file is a Java class.
 	 */
 	public CompilationUnit getCompilationUnit() {
-		return this.compilationUnit;
+		return compilationUnit;
 	}
 
 	/**

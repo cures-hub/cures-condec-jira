@@ -257,9 +257,24 @@ public class GitClientForSingleRepository {
 		} catch (IOException e) {
 			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
+		checkout(lastCommit);
 		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter);
 		diffFormatter.close();
+		// checkout(defaultBranchName);
 		return diff;
+	}
+
+	private Ref checkout(ObjectId object) {
+		return checkout(object.getName());
+	}
+
+	private Ref checkout(String name) {
+		Ref ref = null;
+		try {
+			ref = git.checkout().setName(name).call();
+		} catch (GitAPIException e) {
+		}
+		return ref;
 	}
 
 	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter) {
@@ -300,9 +315,9 @@ public class GitClientForSingleRepository {
 			oldTreeIter.reset(reader, oldHead);
 			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, newHead);
-			gitPath = this.getDirectory().getAbsolutePath();
+			gitPath = getDirectory().getAbsolutePath();
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
-			diffEntries = this.getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
+			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}

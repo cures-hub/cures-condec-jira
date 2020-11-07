@@ -552,8 +552,7 @@
         conDecAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness, function (text) {
         	document.getElementById("id").value = id;
         	document.getElementById("documentationLocation").value = documentationLocation;
-            var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-            content.innerHTML = insertString;
+            content.innerHTML = text;
         });
 
         cancelButton.onclick = function () {
