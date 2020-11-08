@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.systemtests;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,9 +13,6 @@ import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-// Since these tests are designed to be run locally
-// we explicitly disable them so they aren't run on the CI
-@Ignore
 public class TestCreateDecisionKnowledge {
 	static String baseUrl;
 	static FirefoxOptions options;
@@ -31,8 +26,13 @@ public class TestCreateDecisionKnowledge {
 	 * <p>
 	 * You will also need to verify that the ConDec plugin is enabled and the ConDec issue types are available
 	 */
+
 	@BeforeClass
 	public static void setUpClass() {
+		// Since these tests are designed to be run locally
+		// we explicitly disable them so they aren't run on the CI
+		// To enable these tests, set the environment variable RUN_SYS_TESTS to true
+		Assume.assumeTrue("The variable RUN_SYS_TESTS is not set!", System.getenv("RUN_SYS_TESTS") != null);
 		setUpGeckoDriverExecutable();
 
 		// TODO: maybe the base URL should be read from a config file
@@ -72,7 +72,8 @@ public class TestCreateDecisionKnowledge {
 
 			driver.get(baseUrl + "/secure/CreateIssue!default.jspa");
 			new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
-			// this will only work if Issue is already selected
+			// TODO: this will only work if Issue is already selected. It should be replaced with a less volatile method
+			// like an HTTP request to create a decision knowledge issue.
 			driver.findElement(By.id("issue-create-submit")).click(); // this clicks the next button
 
 			// wait until the page loads and the summary box is present
