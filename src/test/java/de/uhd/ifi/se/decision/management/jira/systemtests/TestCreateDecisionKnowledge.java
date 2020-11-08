@@ -21,7 +21,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class TestCreateDecisionKnowledge {
 	static String baseUrl;
 	static FirefoxOptions options;
-
+	static long DEFAULT_TIME_OUT = 10;
 	/**
 	 * Preconditions:
 	 * To set up Selenium, you will need to have firefox installed and create a profile named SeleniumTester.
@@ -41,29 +41,42 @@ public class TestCreateDecisionKnowledge {
 		/*
 		 * @issue how to make selenium automatically log in to local Jira instance?
 		 * @alternative use a firefox profile to save login data
-		 * @decision save the login data in a firefox profile named SeleniumTester!
+		 * @con it takes a long time to load the firefox profile, and it must be done for every new WebDriver
+		 *
+		 * @alternative send an HTTP request and get an authentication cookie
+		 * @con just using a cookie is not enough to log in to Jira, as selenium does not allow to set headers
+		 *
+		 * @decision use firefox profiles to save login data
+		 *
+		 * @issue how can we ensure that our Firefox profiles don't grow too large?
+		 * @alternative set Firefox up to delete history every time it is closed
+		 * @pro this is easy to set up
+		 * @con this can not be automated
+		 * @decision Set up the SeleniumTester Firefox profile to delete history every time it is closed!
+		 *
 		 */
 
 		ProfilesIni profile = new ProfilesIni();
 		FirefoxProfile testerProfile = profile.getProfile("SeleniumTester");
 		options = new FirefoxOptions();
 		options.setProfile(testerProfile);
+
 	}
+
 
 	@Test
 	public void TestCreateDecisionKnowledgeAsJiraIssue() {
 		WebDriver driver = new FirefoxDriver(options);
+
 		try {
+
 			driver.get(baseUrl + "/secure/CreateIssue!default.jspa");
-			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
-
-			// driver.findElement(By.id("issuetype-single-select")).click(); // this is only necessary if Issue isn't already selected
-			// driver.findElement(By.linkText("Issue")).click();
-
+			new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
+			// this will only work if Issue is already selected
 			driver.findElement(By.id("issue-create-submit")).click(); // this clicks the next button
 
 			// wait until the page loads and the summary box is present
-			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("summary")));
+			new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("summary")));
 
 			// Write the name of the decision knowledge element
 			driver.findElement(By.id("summary")).sendKeys("Decision knowledge element 1");
@@ -72,7 +85,7 @@ public class TestCreateDecisionKnowledge {
 			driver.findElement(By.id("issue-create-submit")).click();
 
 			// Wait until the issue page loads
-			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("type-val")));
+			new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("type-val")));
 			assertEquals(driver.findElement(By.id("type-val")).getText(), "Issue");
 			assertEquals(driver.findElement(By.id("summary-val")).getText(), "Decision knowledge element 1");
 		} finally {
@@ -80,6 +93,7 @@ public class TestCreateDecisionKnowledge {
 			driver.quit();
 		}
 	}
+
 
 	/**
 	 * Set up the path to the GeckoDriver executable
