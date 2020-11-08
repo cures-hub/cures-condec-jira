@@ -64,8 +64,6 @@ public class ChangedFile {
 	private EditList editList;
 	@JsonIgnore
 	private String treeWalkPath;
-	@JsonIgnore
-	private String name;
 
 	private Set<String> methodDeclarations;
 	private float probabilityOfCorrectness;
@@ -165,9 +163,7 @@ public class ChangedFile {
 	 */
 	@JsonProperty("className")
 	public String getName() {
-		if (name == null) {
-			name = getNewFileNameFromDiffEntry();
-		}
+		String name = getNewFileNameFromDiffEntry();
 		if (name.isEmpty()) {
 			name = getNewFileNameFromTreeWalkPath();
 		}
@@ -178,15 +174,18 @@ public class ChangedFile {
 		if (diffEntry == null) {
 			return "";
 		}
-		String[] segments = diffEntry.getNewPath().split("/");
-		return segments[segments.length - 1];
+		return getFileNameFromPath(diffEntry.getNewPath());
 	}
 
 	private String getNewFileNameFromTreeWalkPath() {
 		if (treeWalkPath == null) {
 			return "";
 		}
-		String[] segments = treeWalkPath.split("/");
+		return getFileNameFromPath(treeWalkPath);
+	}
+
+	private String getFileNameFromPath(String path) {
+		String[] segments = path.split("/");
 		return segments[segments.length - 1];
 	}
 
