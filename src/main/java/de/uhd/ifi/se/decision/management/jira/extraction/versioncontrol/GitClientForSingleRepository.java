@@ -270,15 +270,10 @@ public class GitClientForSingleRepository {
 
 	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
 		Diff diff = new Diff();
-		File directory = getDirectory();
-		String baseDirectory = "";
-		if (directory != null) {
-			baseDirectory = getDirectory().toString().replace(".git", "");
-		}
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				ChangedFile changedFile = new ChangedFile(diffEntry, editList, baseDirectory, treeId, getRepository());
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
 				changedFile.setRepoUri(repoUri);
 				diff.addChangedFile(changedFile);
 			} catch (IOException e) {

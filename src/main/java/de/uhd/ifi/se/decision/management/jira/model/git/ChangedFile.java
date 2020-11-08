@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -39,6 +38,15 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
  * @issue How can we get the creation time and the updating time of the file?
  * @alternative Pass RevCommit::getCommitTime() to this class to store the
  *              updating time of the file.
+ * 
+ * @issue How to access the file content of a git file?
+ * @decision Retrieve the file content from the git blob object and store it as
+ *           a class attribute.
+ * @pro Branch/commit must not be checked out to access the file content.
+ * @alternative Checkout branch/commit to access the file content. Make
+ *              ChangedFile class extend the File class.
+ * @con Checking out feature branches is not applicable for multiple users or
+ *      analyzing multiple branches at once.
  */
 public class ChangedFile {
 
@@ -97,8 +105,7 @@ public class ChangedFile {
 		this.repoUri = uri;
 	}
 
-	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory, ObjectId treeId,
-			Repository repository) {
+	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
 		this.diffEntry = diffEntry;
@@ -110,8 +117,6 @@ public class ChangedFile {
 		String fileContent = "";
 		try {
 			TreeWalk treeWalk = TreeWalk.forPath(repository, diffEntry.getNewPath(), treeId);
-			File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-			System.out.println(file.getAbsolutePath());
 			fileContent = readFileContentFromGitObject(treeWalk, repository);
 			setTreeWalkPath(treeWalk.getPathString());
 			treeWalk.close();
@@ -130,7 +135,6 @@ public class ChangedFile {
 		String fileContent = "";
 		try {
 			ObjectId blobId = treeWalk.getObjectId(0);
-			System.out.println(blobId);
 			ObjectReader objectReader = repository.newObjectReader();
 			ObjectLoader objectLoader = objectReader.open(blobId);
 			byte[] bytes = objectLoader.getBytes();
@@ -365,6 +369,9 @@ public class ChangedFile {
 
 	public void setTreeWalkPath(String treeWalkPath) {
 		this.treeWalkPath = treeWalkPath;
+
+		// absolute path:
+		// new File(repository.getWorkTree(), treeWalk.getPathString());
 	}
 
 	public String getFileContent() {
