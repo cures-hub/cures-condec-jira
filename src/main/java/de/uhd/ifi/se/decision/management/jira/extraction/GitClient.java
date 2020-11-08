@@ -141,9 +141,10 @@ public class GitClient {
 		if (commits == null || commits.isEmpty()) {
 			return new Diff();
 		}
-		// TODO Check if this is always correct
-		RevCommit firstCommit = commits.get(commits.size() - 1);
-		RevCommit lastCommit = commits.get(0);
+		RevCommit firstCommit = commits.stream().min(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(0));
+		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(commits.size() - 1));
 		return getDiff(firstCommit, lastCommit);
 	}
 
@@ -181,6 +182,9 @@ public class GitClient {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+		if (firstCommit == null || lastCommit == null) {
+			return new Diff();
+		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(firstCommit, lastCommit).getChangedFiles());
@@ -398,7 +402,8 @@ public class GitClient {
 			return new ArrayList<>();
 		}
 		List<Ref> remoteBranches = getBranches();
-		List<Ref> branchCandidates = remoteBranches.stream().filter(ref -> ref.getName().contains(branchName))
+		List<Ref> branchCandidates = remoteBranches.stream()
+				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		return branchCandidates;
 	}

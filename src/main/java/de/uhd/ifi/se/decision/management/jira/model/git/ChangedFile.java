@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -13,7 +14,13 @@ import java.util.Set;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +38,19 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
  * @issue How can we get the creation time and the updating time of the file?
  * @alternative Pass RevCommit::getCommitTime() to this class to store the
  *              updating time of the file.
+ * 
+ * @issue How to access the file content of a git file?
+ * @decision Retrieve the file content from the git blob object and store it as
+ *           a class attribute.
+ * @pro Branch/commit must not be checked out to access the file content.
+ * @alternative Checkout branch/commit to access the file content. Make
+ *              ChangedFile class extend the File class.
+ * @con Checking out feature branches is not applicable for multiple users or
+ *      analyzing multiple branches at once.
  */
-public class ChangedFile extends File {
+public class ChangedFile {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @issue Can we use the repository object instead of a simple String to codify
@@ -69,23 +84,64 @@ public class ChangedFile extends File {
 	private int packageDistance;
 	@JsonIgnore
 	private CompilationUnit compilationUnit;
+	@JsonIgnore
+	private String fileContent;
 
-	public ChangedFile(File file, String uri) {
-		super(file.getPath());
+	public ChangedFile() {
 		this.packageDistance = 0;
 		this.setCorrect(true);
+	}
+
+	public ChangedFile(String fileContent) {
+		this();
+		this.fileContent = fileContent;
 		this.methodDeclarations = parseMethods();
+	}
+
+	public ChangedFile(String fileContent, String uri) {
+		this(fileContent);
 		this.repoUri = uri;
 	}
 
-	public ChangedFile(File file) {
-		this(file, "");
-	}
-
-	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory) {
-		this(new File(baseDirectory + diffEntry.getNewPath()));
+	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
+		this();
+		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
 		this.diffEntry = diffEntry;
 		this.editList = editList;
+		this.methodDeclarations = parseMethods();
+	}
+
+	private String readFileContentFromDiffEntry(DiffEntry diffEntry, ObjectId treeId, Repository repository) {
+		String fileContent = "";
+		try {
+			TreeWalk treeWalk = TreeWalk.forPath(repository, diffEntry.getNewPath(), treeId);
+			fileContent = readFileContentFromGitObject(treeWalk, repository);
+			setTreeWalkPath(treeWalk.getPathString());
+			treeWalk.close();
+		} catch (IOException | NullPointerException e) {
+			LOGGER.error("Changed file could not be created. " + e.getMessage());
+		}
+		return fileContent;
+	}
+
+	public ChangedFile(Repository repository, TreeWalk treeWalk, String remoteUri) {
+		this(readFileContentFromGitObject(treeWalk, repository), remoteUri);
+		setTreeWalkPath(treeWalk.getPathString());
+	}
+
+	public static String readFileContentFromGitObject(TreeWalk treeWalk, Repository repository) {
+		String fileContent = "";
+		try {
+			ObjectId blobId = treeWalk.getObjectId(0);
+			ObjectReader objectReader = repository.newObjectReader();
+			ObjectLoader objectLoader = objectReader.open(blobId);
+			byte[] bytes = objectLoader.getBytes();
+			fileContent = new String(bytes, StandardCharsets.UTF_8);
+			objectReader.close();
+		} catch (IOException | NullPointerException e) {
+			LOGGER.error("Changed file could not be created. " + e.getMessage());
+		}
+		return fileContent;
 	}
 
 	/**
@@ -105,10 +161,32 @@ public class ChangedFile extends File {
 	/**
 	 * @return name of the file as a String.
 	 */
-	@Override
 	@JsonProperty("className")
 	public String getName() {
-		return super.getName();
+		String name = getNewFileNameFromDiffEntry();
+		if (name.isEmpty()) {
+			name = getNewFileNameFromTreeWalkPath();
+		}
+		return name;
+	}
+
+	private String getNewFileNameFromDiffEntry() {
+		if (diffEntry == null) {
+			return "";
+		}
+		return getFileNameFromPath(diffEntry.getNewPath());
+	}
+
+	private String getNewFileNameFromTreeWalkPath() {
+		if (treeWalkPath == null) {
+			return "";
+		}
+		return getFileNameFromPath(treeWalkPath);
+	}
+
+	private String getFileNameFromPath(String path) {
+		String[] segments = path.split("/");
+		return segments[segments.length - 1];
 	}
 
 	/**
@@ -160,8 +238,8 @@ public class ChangedFile extends File {
 			return methodsInClass;
 		}
 
-		MethodVisitor methodVistor = getMethodVisitor();
-		for (MethodDeclaration methodDeclaration : methodVistor.getMethodDeclarations()) {
+		MethodVisitor methodVisitor = getMethodVisitor();
+		for (MethodDeclaration methodDeclaration : methodVisitor.getMethodDeclarations()) {
 			methodsInClass.add(methodDeclaration.getNameAsString());
 		}
 
@@ -169,8 +247,11 @@ public class ChangedFile extends File {
 	}
 
 	private MethodVisitor getMethodVisitor() {
-		ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
-		this.compilationUnit = parseResult.getResult().get();
+		if (compilationUnit == null) {
+			ParseResult<CompilationUnit> parseResult = null;
+			parseResult = JavaCodeCommentParser.parseJavaFile(fileContent);
+			compilationUnit = parseResult.getResult().get();
+		}
 		MethodVisitor methodVistor = new MethodVisitor();
 		compilationUnit.accept(methodVistor, null);
 		return methodVistor;
@@ -194,6 +275,17 @@ public class ChangedFile extends File {
 		return exists() && isJavaClass();
 	}
 
+	public boolean exists() {
+		if (diffEntry == null) {
+			return true;
+		}
+		return diffEntry.getChangeType() != ChangeType.DELETE;
+	}
+
+	public int getNumberOfLines() {
+		return fileContent.split("\n").length;
+	}
+
 	/**
 	 * @return true if the file is a Java class.
 	 */
@@ -213,7 +305,7 @@ public class ChangedFile extends File {
 	 * @return compilation unit if the changed file is a Java class.
 	 */
 	public CompilationUnit getCompilationUnit() {
-		return this.compilationUnit;
+		return compilationUnit;
 	}
 
 	/**
@@ -271,13 +363,17 @@ public class ChangedFile extends File {
 	 *         call.
 	 */
 	public String getTreeWalkPath() {
-		if (treeWalkPath == null) {
-			return this.getAbsolutePath();
-		}
 		return treeWalkPath;
 	}
 
 	public void setTreeWalkPath(String treeWalkPath) {
 		this.treeWalkPath = treeWalkPath;
+
+		// absolute path:
+		// new File(repository.getWorkTree(), treeWalk.getPathString());
+	}
+
+	public String getFileContent() {
+		return fileContent;
 	}
 }

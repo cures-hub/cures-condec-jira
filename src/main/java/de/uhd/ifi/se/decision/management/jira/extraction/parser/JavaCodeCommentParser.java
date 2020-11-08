@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +13,7 @@ import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
@@ -25,8 +23,8 @@ public class JavaCodeCommentParser implements CodeCommentParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CodeCommentParser.class);
 
 	@Override
-	public List<CodeComment> getComments(File inspectedFile) {
-		ParseResult<CompilationUnit> parseResult = parseJavaFile(inspectedFile);
+	public List<CodeComment> getComments(ChangedFile inspectedFile) {
+		ParseResult<CompilationUnit> parseResult = parseJavaFile(inspectedFile.getFileContent());
 		CompilationUnit compilationUnit = parseResult.getResult().get();
 		if (compilationUnit == null) {
 			return null;
@@ -35,14 +33,12 @@ public class JavaCodeCommentParser implements CodeCommentParser {
 		}
 	}
 
-	public static ParseResult<CompilationUnit> parseJavaFile(File inspectedFile) {
+	public static ParseResult<CompilationUnit> parseJavaFile(String inspectedFileContent) {
 		ParseResult<CompilationUnit> parseResult = null;
 		try {
-			FileInputStream fileInputStream = new FileInputStream(inspectedFile.toString());
 			JavaParser javaParser = new JavaParser();
-			parseResult = javaParser.parse(fileInputStream);
-			fileInputStream.close();
-		} catch (ParseProblemException | IOException e) {
+			parseResult = javaParser.parse(inspectedFileContent);
+		} catch (ParseProblemException | NullPointerException e) {
 			LOGGER.error(e.getMessage());
 		}
 		return parseResult;

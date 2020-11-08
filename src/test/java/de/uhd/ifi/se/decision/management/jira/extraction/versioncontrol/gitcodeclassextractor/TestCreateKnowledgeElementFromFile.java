@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,7 +55,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 	@NonTransactional
 	public void testCreateKnowledgeElementFromFileProjectKeyNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor(null);
-		File file = new File("somePath");
+		ChangedFile file = new ChangedFile("somePath");
 		Set<String> list = new HashSet<>();
 		list.add("Test");
 		assertNull(extract.createKnowledgeElementFromFile(file, list));

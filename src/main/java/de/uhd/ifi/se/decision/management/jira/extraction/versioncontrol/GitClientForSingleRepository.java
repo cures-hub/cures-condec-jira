@@ -257,22 +257,23 @@ public class GitClientForSingleRepository {
 		} catch (IOException e) {
 			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
-		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter);
+		ObjectId treeId = null;
+		try {
+			treeId = getRepository().resolve(lastCommit.getName() + "^{tree}");
+		} catch (RevisionSyntaxException | IOException e) {
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
+		}
+		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 		diffFormatter.close();
 		return diff;
 	}
 
-	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter) {
+	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
 		Diff diff = new Diff();
-		File directory = getDirectory();
-		String baseDirectory = "";
-		if (directory != null) {
-			baseDirectory = getDirectory().toString().replace(".git", "");
-		}
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				ChangedFile changedFile = new ChangedFile(diffEntry, editList, baseDirectory);
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
 				changedFile.setRepoUri(repoUri);
 				diff.addChangedFile(changedFile);
 			} catch (IOException e) {
@@ -300,14 +301,20 @@ public class GitClientForSingleRepository {
 			oldTreeIter.reset(reader, oldHead);
 			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, newHead);
-			gitPath = this.getDirectory().getAbsolutePath();
+			gitPath = getDirectory().getAbsolutePath();
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
-			diffEntries = this.getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
+			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 		DiffFormatter diffFormatter = getDiffFormater();
-		return getDiffWithChangedFiles(diffEntries, diffFormatter);
+		ObjectId treeId = null;
+		try {
+			treeId = getRepository().resolve(newHead.getName() + "^{tree}");
+		} catch (RevisionSyntaxException | IOException e) {
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
+		}
+		return getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 	}
 
 	private DiffFormatter getDiffFormater() {

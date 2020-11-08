@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,7 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.jgit.lib.Ref;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 
 /**
  * Creates diff viewer content for a list of git repository branches
@@ -21,25 +20,27 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DiffViewer {
 
-	@XmlElement
-	private List<BranchDiff> branches;
+	@XmlElement(name = "branches")
+	private List<BranchDiff> branchDiffs;
 
+	public DiffViewer(String projectKey) {
+		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(projectKey));
+	}
 
-	public DiffViewer(Map<Ref, List<KnowledgeElement>> ratBranchList) {
-		branches = new ArrayList<>();
-		if (ratBranchList == null) {
-			return;
-		}
+	public DiffViewer(String projectKey, String jiraIssueKey) {
+		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(jiraIssueKey));
+	}
 
-		Iterator<Map.Entry<Ref, List<KnowledgeElement>>> it = ratBranchList.entrySet().iterator();
+	public DiffViewer(String projectKey, List<Ref> branches) {
+		branchDiffs = new ArrayList<>();
 
-		while (it.hasNext()) {
-			Map.Entry<Ref, List<KnowledgeElement>> entry = it.next();
-			branches.add(new BranchDiff(entry.getKey().getName(), entry.getValue()));
+		GitDecXtract extractor = new GitDecXtract(projectKey);
+		for (Ref branch : branches) {
+			branchDiffs.add(new BranchDiff(branch.getName(), extractor.getElements(branch)));
 		}
 	}
 
 	public List<BranchDiff> getBranches() {
-		return branches;
+		return branchDiffs;
 	}
 }

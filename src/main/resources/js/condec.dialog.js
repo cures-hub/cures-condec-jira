@@ -541,20 +541,18 @@
         AJS.$(selectField).auiSelect2();
     }
 
-    ConDecDialog.prototype.showSummarizedDialog = function (id, documentationLocation) {
+    ConDecDialog.prototype.showSummarizedDialog = function (id = document.getElementById("id").value, 
+    		documentationLocation = document.getElementById("documentationLocation").value) {
         // HTML elements
         var summarizedDialog = document.getElementById("summarization-dialog");
         var cancelButton = document.getElementById("summarization-dialog-cancel-button");
         var content = document.getElementById("summarization-dialog-content");
         var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
-        var summarizationId = document.getElementById("summarization-id").value;
-        if (summarizationId === undefined || summarizationId.length === 0 || summarizationId === "") {
-            document.getElementById("summarization-id").value = id;
-            summarizationId = id;
-        }
-        conDecAPI.getSummarizedCode(summarizationId, documentationLocation, probabilityOfCorrectness, function (text) {
-            var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-            content.innerHTML = insertString;
+
+        conDecAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness, function (text) {
+        	document.getElementById("id").value = id;
+        	document.getElementById("documentationLocation").value = documentationLocation;
+            content.innerHTML = text;
         });
 
         cancelButton.onclick = function () {
