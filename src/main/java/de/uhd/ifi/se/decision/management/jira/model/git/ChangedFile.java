@@ -164,6 +164,9 @@ public class ChangedFile {
 		if (name == null) {
 			name = getNewFileNameFromDiffEntry();
 		}
+		if (name.isEmpty()) {
+			name = getNewFileNameFromTreeWalkPath();
+		}
 		return name;
 	}
 
@@ -172,6 +175,14 @@ public class ChangedFile {
 			return "";
 		}
 		String[] segments = diffEntry.getNewPath().split("/");
+		return segments[segments.length - 1];
+	}
+
+	private String getNewFileNameFromTreeWalkPath() {
+		if (treeWalkPath == null) {
+			return "";
+		}
+		String[] segments = treeWalkPath.split("/");
 		return segments[segments.length - 1];
 	}
 

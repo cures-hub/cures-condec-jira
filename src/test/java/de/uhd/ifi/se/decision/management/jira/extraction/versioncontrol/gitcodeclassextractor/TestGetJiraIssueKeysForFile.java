@@ -30,7 +30,7 @@ public class TestGetJiraIssueKeysForFile extends TestSetUpGit {
 		Set<String> list = new LinkedHashSet<>();
 		list.add("TEST-12");
 		assertFalse(extract.getGitClient().getGitClientsForSingleRepos().isEmpty());
-		assertEquals(2, extract.getCodeClasses().size());
+		assertEquals(6, extract.getCodeClasses().size());
 		assertEquals(list, extract.getJiraIssueKeysForFile(extract.getCodeClasses().get(0)));
 	}
 }
