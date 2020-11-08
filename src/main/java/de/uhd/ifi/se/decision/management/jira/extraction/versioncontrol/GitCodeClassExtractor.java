@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -71,9 +68,7 @@ public class GitCodeClassExtractor {
 				if (treeWalk.isSubtree()) {
 					treeWalk.enterSubtree();
 				} else {
-					File file = new File(repository.getWorkTree(), treeWalk.getPathString());
-					ChangedFile changedFile = new ChangedFile(file, gitClient.getRemoteUri());
-					changedFile.setTreeWalkPath(treeWalk.getPathString());
+					ChangedFile changedFile = new ChangedFile(repository, treeWalk, gitClient.getRemoteUri());
 					if (changedFile.isExistingJavaClass()) {
 						codeClasses.add(changedFile);
 					}
@@ -101,7 +96,7 @@ public class GitCodeClassExtractor {
 			return jiraIssueKeysForFile;
 		}
 
-		int lines = countLines(changedFile);
+		int lines = changedFile.getNumberOfLines();
 		for (int line = 0; line < lines; line++) {
 			RevCommit revCommit = blameResult.getSourceCommit(line);
 			if (revCommit != null) {
@@ -111,21 +106,6 @@ public class GitCodeClassExtractor {
 			}
 		}
 		return jiraIssueKeysForFile;
-	}
-
-	private static int countLines(File file) {
-		LineNumberReader reader = null;
-		int lineNumber = -1;
-		try {
-			reader = new LineNumberReader(new FileReader(file));
-			while ((reader.readLine()) != null)
-				;
-			lineNumber = reader.getLineNumber();
-			reader.close();
-		} catch (Exception e) {
-			LOGGER.error("Lines of file could not be counted. " + e.getMessage());
-		}
-		return lineNumber;
 	}
 
 	/**
@@ -157,7 +137,7 @@ public class GitCodeClassExtractor {
 		return blameResult;
 	}
 
-	public KnowledgeElement createKnowledgeElementFromFile(File file, Set<String> issueKeys) {
+	public KnowledgeElement createKnowledgeElementFromFile(ChangedFile file, Set<String> issueKeys) {
 		if (file == null || issueKeys == null || gitClient == null) {
 			return null;
 		}

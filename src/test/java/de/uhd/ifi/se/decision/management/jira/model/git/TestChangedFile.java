@@ -2,8 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.Before;
@@ -30,9 +29,15 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGetFile() {
+	public void testGetName() {
 		assertNotNull(changedFile);
 		assertEquals("Tangled2.java", changedFile.getName());
+	}
+
+	@Test
+	public void testGetFileContent() {
+		assertNotNull(changedFile);
+		assertTrue(changedFile.getFileContent().startsWith("package de.uhd.ifi.se.decision.management.jira"));
 	}
 
 	@Test
@@ -47,13 +52,13 @@ public class TestChangedFile extends TestSetUpGit {
 		changedFile.addMethodDeclaration(methodDeclaration.getDeclarationAsString());
 		assertEquals(3, changedFile.getMethodDeclarations().size());
 
-		ChangedFile changedFile = new ChangedFile(new File("readme"));
+		ChangedFile changedFile = new ChangedFile("File content");
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 
 	@Test
 	public void testParsingMethodsOfNonJavaFile() {
-		ChangedFile changedFile = new ChangedFile(new File("readme"));
+		ChangedFile changedFile = new ChangedFile("File content");
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 
