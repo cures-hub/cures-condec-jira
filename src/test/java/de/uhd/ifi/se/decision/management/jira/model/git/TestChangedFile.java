@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
-
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,13 +45,13 @@ public class TestChangedFile extends TestSetUpGit {
 		changedFile.addMethodDeclaration(methodDeclaration.getDeclarationAsString());
 		assertEquals(3, changedFile.getMethodDeclarations().size());
 
-		ChangedFile changedFile = new ChangedFile(new File("readme"));
+		ChangedFile changedFile = new ChangedFile("File content");
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 
 	@Test
 	public void testParsingMethodsOfNonJavaFile() {
-		ChangedFile changedFile = new ChangedFile(new File("readme"));
+		ChangedFile changedFile = new ChangedFile("File content");
 		assertEquals(0, changedFile.getMethodDeclarations().size());
 	}
 

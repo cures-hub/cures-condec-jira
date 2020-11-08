@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,6 +17,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +40,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
  * @alternative Pass RevCommit::getCommitTime() to this class to store the
  *              updating time of the file.
  */
-public class ChangedFile extends File {
+public class ChangedFile {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @issue Can we use the repository object instead of a simple String to codify
@@ -72,24 +78,68 @@ public class ChangedFile extends File {
 	private int packageDistance;
 	@JsonIgnore
 	private CompilationUnit compilationUnit;
+	@JsonIgnore
+	private String fileContent;
 
-	public ChangedFile(File file, String uri) {
-		super(file.getPath());
+	public ChangedFile() {
 		this.packageDistance = 0;
 		this.setCorrect(true);
+	}
+
+	public ChangedFile(String fileContent) {
+		this();
+		this.fileContent = fileContent;
 		this.methodDeclarations = parseMethods();
+	}
+
+	public ChangedFile(String fileContent, String uri) {
+		this(fileContent);
 		this.repoUri = uri;
-		this.name = file.getName();
 	}
 
-	public ChangedFile(File file) {
-		this(file, "");
-	}
-
-	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory) {
-		this(new File(baseDirectory + diffEntry.getNewPath()));
+	public ChangedFile(DiffEntry diffEntry, EditList editList, String baseDirectory, ObjectId treeId,
+			Repository repository) {
+		this();
+		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
 		this.diffEntry = diffEntry;
 		this.editList = editList;
+		this.methodDeclarations = parseMethods();
+	}
+
+	private String readFileContentFromDiffEntry(DiffEntry diffEntry, ObjectId treeId, Repository repository) {
+		String fileContent = "";
+		try {
+			TreeWalk treeWalk = TreeWalk.forPath(repository, diffEntry.getNewPath(), treeId);
+			File file = new File(repository.getWorkTree(), treeWalk.getPathString());
+			System.out.println(file.getAbsolutePath());
+			fileContent = readFileContentFromGitObject(treeWalk, repository);
+			setTreeWalkPath(treeWalk.getPathString());
+			treeWalk.close();
+		} catch (IOException | NullPointerException e) {
+			LOGGER.error("Changed file could not be created. " + e.getMessage());
+		}
+		return fileContent;
+	}
+
+	public ChangedFile(Repository repository, TreeWalk treeWalk, String remoteUri) {
+		this(readFileContentFromGitObject(treeWalk, repository), remoteUri);
+		setTreeWalkPath(treeWalk.getPathString());
+	}
+
+	public static String readFileContentFromGitObject(TreeWalk treeWalk, Repository repository) {
+		String fileContent = "";
+		try {
+			ObjectId blobId = treeWalk.getObjectId(0);
+			System.out.println(blobId);
+			ObjectReader objectReader = repository.newObjectReader();
+			ObjectLoader objectLoader = objectReader.open(blobId);
+			byte[] bytes = objectLoader.getBytes();
+			fileContent = new String(bytes, StandardCharsets.UTF_8);
+			objectReader.close();
+		} catch (IOException | NullPointerException e) {
+			LOGGER.error("Changed file could not be created. " + e.getMessage());
+		}
+		return fileContent;
 	}
 
 	/**
@@ -109,13 +159,20 @@ public class ChangedFile extends File {
 	/**
 	 * @return name of the file as a String.
 	 */
-	@Override
 	@JsonProperty("className")
 	public String getName() {
 		if (name == null) {
-			name = super.getName();
+			name = getNewFileNameFromDiffEntry();
 		}
 		return name;
+	}
+
+	private String getNewFileNameFromDiffEntry() {
+		if (diffEntry == null) {
+			return "";
+		}
+		String[] segments = diffEntry.getNewPath().split("/");
+		return segments[segments.length - 1];
 	}
 
 	/**
@@ -177,7 +234,8 @@ public class ChangedFile extends File {
 
 	private MethodVisitor getMethodVisitor() {
 		if (compilationUnit == null) {
-			ParseResult<CompilationUnit> parseResult = JavaCodeCommentParser.parseJavaFile(this);
+			ParseResult<CompilationUnit> parseResult = null;
+			parseResult = JavaCodeCommentParser.parseJavaFile(fileContent);
 			compilationUnit = parseResult.getResult().get();
 		}
 		MethodVisitor methodVistor = new MethodVisitor();
@@ -200,11 +258,18 @@ public class ChangedFile extends File {
 	 *         been deleted or that its name has been changed or it has been moved.
 	 */
 	public boolean isExistingJavaClass() {
-		boolean isExistingJavaClass = true;
-		if (diffEntry != null) {
-			isExistingJavaClass = isExistingJavaClass && diffEntry.getChangeType() != ChangeType.DELETE;
+		return exists() && isJavaClass();
+	}
+
+	public boolean exists() {
+		if (diffEntry == null) {
+			return true;
 		}
-		return isExistingJavaClass && isJavaClass();
+		return diffEntry.getChangeType() != ChangeType.DELETE;
+	}
+
+	public int getNumberOfLines() {
+		return fileContent.split("\n").length;
 	}
 
 	/**
@@ -284,13 +349,14 @@ public class ChangedFile extends File {
 	 *         call.
 	 */
 	public String getTreeWalkPath() {
-		if (treeWalkPath == null) {
-			return this.getAbsolutePath();
-		}
 		return treeWalkPath;
 	}
 
 	public void setTreeWalkPath(String treeWalkPath) {
 		this.treeWalkPath = treeWalkPath;
+	}
+
+	public String getFileContent() {
+		return fileContent;
 	}
 }

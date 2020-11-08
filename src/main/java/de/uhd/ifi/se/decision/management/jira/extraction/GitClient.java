@@ -182,6 +182,9 @@ public class GitClient {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+		if (firstCommit == null || lastCommit == null) {
+			return new Diff();
+		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(firstCommit, lastCommit).getChangedFiles());

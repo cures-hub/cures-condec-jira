@@ -228,8 +228,8 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private List<CodeComment> getCommentsFromFile(ChangedFile changedFile, boolean fromNewerFile) {
-		if (changedFile.isFile() && changedFile.exists()) {
-			CodeCommentParser commentParser = getCodeCommentParser(changedFile.getPath());
+		if (changedFile.exists()) {
+			CodeCommentParser commentParser = getCodeCommentParser(changedFile.getTreeWalkPath());
 			if (commentParser != null) {
 				return commentParser.getComments(changedFile);
 			}

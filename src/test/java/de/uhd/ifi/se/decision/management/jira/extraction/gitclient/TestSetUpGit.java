@@ -162,7 +162,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 		try {
 			FileUtils.copyFile(inputFile, gitFile);
 			git.add().addFilepattern(gitFile.getName()).call();
-			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
+			PersonIdent defaultCommitter = new PersonIdent("gitTest", "gitTest@test.de");
+			PersonIdent committer = new PersonIdent(defaultCommitter, new Date(commitTime));
+			commitTime = commitTime + 86400;
+			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (Exception e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
