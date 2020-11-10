@@ -1,10 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 import java.util.Objects;
 
 public class RDFSource extends KnowledgeSource {

@@ -1,10 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSourceType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInput;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.ProjectSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -52,5 +51,5 @@ public class ProjectSource extends KnowledgeSource {
 	public KnowledgePersistenceManager getKnowledgePersistenceManager() {
 		return knowledgePersistenceManager;
 	}
-	
+
 }

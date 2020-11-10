@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 

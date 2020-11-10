@@ -1,5 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -9,10 +10,10 @@ import java.util.List;
 
 public abstract class ProjectSourceInput<T> implements InputMethod<T> {
 
-	String projectKey;
-	String name;
-	KnowledgePersistenceManager knowledgePersistenceManager;
-	List<KnowledgeElement> knowledgeElements;
+	protected String projectKey;
+	protected String name;
+	protected KnowledgePersistenceManager knowledgePersistenceManager;
+	protected List<KnowledgeElement> knowledgeElements;
 
 
 	public abstract List<Recommendation> getResults(T input);

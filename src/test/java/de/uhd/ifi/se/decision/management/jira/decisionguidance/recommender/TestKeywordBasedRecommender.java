@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;

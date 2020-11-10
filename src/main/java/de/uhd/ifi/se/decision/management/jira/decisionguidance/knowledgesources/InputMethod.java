@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 

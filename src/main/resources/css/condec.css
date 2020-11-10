@@ -83,6 +83,7 @@ a:focus a:hover {
     background: white;
     z-index: 4;
     padding:64px !important;
+    overflow: scroll;
 }
 
 #close-fullscreen {
