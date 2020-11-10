@@ -27,6 +27,14 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
+	public void testRevLastCommitNull() {
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		assertFalse(commits.isEmpty());
+		Diff diff = gitClient.getDiff(commits.get(0), (RevCommit) null);
+		assertEquals(0, diff.getChangedFiles().size());
+	}
+
+	@Test
 	public void testRevCommitExisting() {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertFalse(commits.isEmpty());

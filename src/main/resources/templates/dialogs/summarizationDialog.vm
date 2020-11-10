@@ -6,7 +6,8 @@
 	        <label for="summarization-probabilityOfCorrectness">Probability of correctness:</label>
 	        <input type="range" id="summarization-probabilityOfCorrectness" min="0" max="100" value="0" 
 	        	onchange="conDecDialog.showSummarizedDialog()">
-	        <input hidden type="text" id="summarization-id" name="projectId" value="">
+	        <input hidden type="text" id="id" value="">
+			<input hidden type="text" id="documentationLocation" value="">
 	    </div>
 	    <button class="aui-close-button" type="button" id="summarization-dialog-cancel-icon" aria-label="close"></button>
 	</header>
