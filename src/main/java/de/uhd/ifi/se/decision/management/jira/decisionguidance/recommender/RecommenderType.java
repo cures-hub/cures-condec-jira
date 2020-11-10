@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
-import java.security.Key;
-
 public enum RecommenderType {
 	KEYWORD, ISSUE, EVALUATION;
 
