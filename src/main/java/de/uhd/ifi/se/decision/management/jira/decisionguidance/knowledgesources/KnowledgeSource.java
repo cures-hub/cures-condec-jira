@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import javax.wsdl.Input;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +14,15 @@ public abstract class KnowledgeSource {
 	protected boolean isActivated;
 	protected String name;
 
-	InputMethod inputMethod;
+	protected InputMethod inputMethod;
 
 
+	/**
+	 * calculates the concrete result for a knowledgesource
+	 * getInputMethod() and setData() must be implemented by the concrete knowledge source
+	 * @param object
+	 * @return
+	 */
 	public List<Recommendation> getResults(Object object) {
 		getInputMethod();
 		setData();
