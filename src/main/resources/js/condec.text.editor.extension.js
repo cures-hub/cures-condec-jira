@@ -67,7 +67,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry"], function($, 
 			if (tinyMCE && !tinyMCE.isHidden()) {
 				var content = tinyMCE.selection.getContent() || DEFAULT_PLACEHOLDER;
 				tinyMCE.selection.setContent("<p style='background-color:" + getBackgroundColorForKnowledgeType(knowledgeType) + "'>" 
-						+ wrapContentWithMacro(content, knowledgeType) + "</p>", {format: 'raw'});
+						+ wrapContentWithMacro(content, knowledgeType) + "</p>");
 			}
 		});
 	}

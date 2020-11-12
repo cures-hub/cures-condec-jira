@@ -1,12 +1,3 @@
-.condec-dashboard-select .condecNoGit {
-    background: yellow;
-}
-
-.condec-dashboard-selection-section {
-    margin: 0 1em;
-    text-align: center;
-}
-
 .condec-dashboard-contents {
     border: 2px dashed blue;
     border-radius: 1em;
@@ -101,7 +92,6 @@
     border-radius: 1em;
     margin: 1em;
     padding: 1em;
-    text-align: center;
 }
 
 .configissuetype {
@@ -109,5 +99,4 @@
     border-radius: 1em;
     margin: 1em;
     padding: 1em;
-    text-align: center;
 }
