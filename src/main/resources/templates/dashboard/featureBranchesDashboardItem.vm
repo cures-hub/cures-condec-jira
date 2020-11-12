@@ -24,7 +24,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 </div>
 
 <div id="condec-branches-dashboard-contents-data-error${dashboardUID}" class="condec-dashboard-contents error hidden">
-$i18n.getText("condec.dashboard.featurebranch.project.data.error")
+	$i18n.getText("condec.dashboard.featurebranch.project.data.error")
 </div>
 
 <div id="condec-branches-dashboard-no-project${dashboardUID}" class="condec-dashboard-contents init">
@@ -38,7 +38,6 @@ $i18n.getText("condec.dashboard.featurebranch.project.data.error")
 <div id="condec-branches-dashboard-fatal-error${dashboardUID}" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.featurebranch.setup.error")
 </div>
-
 
 <div id="condec-branches-dashboard-nogit-error${dashboardUID}" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.nogit")
