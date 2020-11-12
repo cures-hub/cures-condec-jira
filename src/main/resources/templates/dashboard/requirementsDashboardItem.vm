@@ -1,15 +1,10 @@
-<script type="text/javascript">
-    // initialize
-        $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
-        $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
-        $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-    ConDecReqDash.init("$showDiv")
-</script>
-
-<div class="configproject hidden" id="configproject">
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
+<div class="configproject" id="configproject">
     <form class="aui" id="configFormProject">
         <div class="field-group">
-            <p>Select Project:</p>
+            <label for="project-input">Project:</label>
             <select name="project" id="project-input" class="select">
                 #foreach($string in $projectNamesMap.keySet())
                     <option value=$projectNamesMap.get($string)>$string</option>
@@ -21,9 +16,9 @@
 </div>
 <div class="configissuetype hidden" id="configissuetype">
     <form class="aui" id="configFormIssue">
-        <div class="field-group">
-            <p>Select Issue Type:</p>
+        <div class="field-group">            
             <input type="hidden" name="project" value=$projectKey>
+			<label for="issuetype-input">Jira Issue Type:</label>
             <select name="issuetype" id="issuetype-input" class="select">
                 #foreach($string in $issueTypeNamesMap.keySet())
                     <option value=$issueTypeNamesMap.get($string)>$string</option>
@@ -83,7 +78,7 @@
             #end
         </select>
 
-        <label for="ignore-git">Ignore Knowledge From Git:</label>
+        <label for="ignore-git">Ignore Knowledge From Git</label>
         #if($ignoreGit=="on")
             <input class="checked" type="checkbox" checked id="ignore-git" name="ignoreGit"/>
         #else
@@ -164,7 +159,8 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+	ConDecReqDash.init("$showDiv");
+    $(document).ready(function () {		
         if (!window.ConDecReqDash) {
             console.error('Could not find required resources!');
             errorNode = document.getElementById("condec-req-dashboard-fatal-error");
@@ -183,7 +179,4 @@
         }
 
     });
-
-
 </script>
-
