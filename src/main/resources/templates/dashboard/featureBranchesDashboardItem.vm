@@ -1,6 +1,6 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-<div>
+<div class="configproject">
 	<form class="aui">
 		<div class="field-group">
 			<label for="${selectID}">Project:</label>
