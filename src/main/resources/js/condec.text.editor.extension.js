@@ -8,7 +8,7 @@
  * jira/editor/registry
  * jira/util/formatter (currently not used)
  */
-require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($, formatter, editorRegistry) {
+require([ "jquery", "jira/util/formatter", "jira/editor/registry"], function($, formatter, editorRegistry) {
 
 	var DEFAULT_PLACEHOLDER = "knowledge element";
 	var KNOWLEDGE_TYPES = [ "Issue", "Alternative", "Decision", "Pro", "Con" ];
@@ -35,7 +35,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 						entry.applyIfTextMode(function() {
 							addWikiMarkup(entry, event.data.type);
 						});
-						entry.applyIfTextMode(function() {
+						entry.applyIfVisualMode(function() {
 							addRenderedContent(entry, event.data.type);
 						});
 					});
@@ -58,8 +58,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 	function addWikiMarkup(entry, knowledgeType) {
 		var wikiEditor = $(entry.textArea).data("wikiEditor");
 		var content = wikiEditor.manipulationEngine.getSelection().text || DEFAULT_PLACEHOLDER;
-		wikiEditor.manipulationEngine.replaceSelectionWith("{" + knowledgeType + "}" + content + "{" + knowledgeType
-		        + "}");
+		wikiEditor.manipulationEngine.replaceSelectionWith("{" + knowledgeType + "}" + content + "{" + knowledgeType + "}");
 	}
 
 	function addRenderedContent(entry, knowledgeType) {
@@ -67,9 +66,35 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 			var tinyMCE = rteInstance.editor;
 			if (tinyMCE && !tinyMCE.isHidden()) {
 				var content = tinyMCE.selection.getContent() || DEFAULT_PLACEHOLDER;
-				tinyMCE.selection.setContent("{" + knowledgeType + "}" + content + "{" + knowledgeType + "}");
+				tinyMCE.selection.setContent("<p style='background-color:" + getBackgroundColorForKnowledgeType(knowledgeType) + "'>" 
+						+ wrapContentWithMacro(content, knowledgeType) + "</p>", {format: 'raw'});
 			}
 		});
+	}
+	
+	/**
+	 * @issue How can we avoid that the parenthesis is escaped in text mode?
+	 * @decision Add a line break in front of the parenthesis!
+	 */
+	function wrapContentWithMacro(content, knowledgeType) {
+		return "{" + knowledgeType + "}" + content + "<br/>" + "{" + knowledgeType + "}";		
+	}
+	
+	function getBackgroundColorForKnowledgeType(knowledgeType) {
+		switch (knowledgeType) {
+			case "decision":
+				return "rgb(252, 227, 190)";
+			case "alternative":
+				return "rgb(255, 246, 232)";
+			case "issue":
+				return "rgb(255, 255, 204)";
+			case "pro":
+				return "rgb(222, 250, 222)";
+			case "con":
+				return "rgb(255, 231, 231)";
+			default:
+				return "";
+		}
 	}
 
 	function getDropDownContent(dropdownClickEvent) {
