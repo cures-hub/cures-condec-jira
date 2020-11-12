@@ -3,7 +3,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 <div>
 	<form class="aui">
 		<div class="field-group">
-			<label for"${selectID}">Project:</label>
+			<label for="${selectID}">Project:</label>
 			<select id="${selectID}" class="select"
 				data-uid="${dashboardUID}"
 			>
