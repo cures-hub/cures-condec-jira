@@ -10,12 +10,12 @@
     <form class="aui" id="configFormProject">
         <div class="field-group">
             <p>Select Project:</p>
-            <select name="project" id="project-input">
+            <select name="project" id="project-input" class="select">
                 #foreach($string in $projectNamesMap.keySet())
                     <option value=$projectNamesMap.get($string)>$string</option>
                 #end
             </select>
-            <input class="button submit" type="submit" value="Select" id="select-button">
+            <input class="aui-button" type="submit" value="Select" id="select-button">
         </div>
     </form>
 </div>
@@ -24,7 +24,7 @@
         <div class="field-group">
             <p>Select Issue Type:</p>
             <input type="hidden" name="project" value=$projectKey>
-            <select name="issuetype" id="issuetype-input">
+            <select name="issuetype" id="issuetype-input" class="select">
                 #foreach($string in $issueTypeNamesMap.keySet())
                     <option value=$issueTypeNamesMap.get($string)>$string</option>
                 #end

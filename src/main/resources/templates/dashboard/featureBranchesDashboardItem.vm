@@ -2,7 +2,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 <div class="condec-dashboard-selection-section">
   $i18n.getText("condec.dashboard.featurebranch.project.selection.description")
-  <select id="${selectID}" class="condec-dashboard-select"
+  <select id="${selectID}" class="condec-dashboard-select select"
     data-uid="${dashboardUID}"
   >
     <option value="">
