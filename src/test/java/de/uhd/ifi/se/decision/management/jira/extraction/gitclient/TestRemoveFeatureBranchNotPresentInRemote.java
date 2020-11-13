@@ -26,44 +26,48 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	@Test
 	@Ignore
 	public void testGetFeatureBranchNotOnRemoteWithLocalPull() {
-		// "delete" branch on remote
-		assertTrue(moveFeatureBranchOnRemote());
+		for (String GIT_URI : GIT_URIS) {
+			// "delete" branch on remote
+			assertTrue(moveFeatureBranchOnRemote());
 
-		// do not prevent pull
-		assertTrue(resetPullControl(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory()));
+			// do not prevent pull
+			assertTrue(resetPullControl(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory()));
 
-		// getting branch with performing pull
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
-		// branch should not exist at local repo anymore
-		assertTrue(commits.size() == 0);
+			// getting branch with performing pull
+			List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
+			// branch should not exist at local repo anymore
+			assertTrue(commits.size() == 0);
+		}
 	}
 
 	@Test
 	@Ignore
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
-		File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory();
+		for (String GIT_URI : GIT_URIS) {
+			File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory();
 
-		// fetch the branch, it will be cached for a while and not automatically
-		// released to TEMP.. folder
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
+			// fetch the branch, it will be cached for a while and not automatically
+			// released to TEMP.. folder
+			List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 
-		// "delete" branch on remote
-		assertTrue(moveFeatureBranchOnRemote());
+			// "delete" branch on remote
+			assertTrue(moveFeatureBranchOnRemote());
 
-		// Fetch the branch again, pull should not be performed due to cache
-		List<RevCommit> commitsAgain = gitClient.getFeatureBranchCommits(featureBranch);
-		// branch expected to be still at local repo
-		assertEquals(4, commitsAgain.size());
-		assertEquals(commits, commitsAgain);
-		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
+			// Fetch the branch again, pull should not be performed due to cache
+			List<RevCommit> commitsAgain = gitClient.getFeatureBranchCommits(featureBranch);
+			// branch expected to be still at local repo
+			assertEquals(4, commitsAgain.size());
+			assertEquals(commits, commitsAgain);
+			assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
 
-		// Once more fetch the branch, but with pullig from remote
+			// Once more fetch the branch, but with pullig from remote
 
-		// do not prevent pull
-		assertTrue(resetPullControl(developDir));
+			// do not prevent pull
+			assertTrue(resetPullControl(developDir));
 
-		// branch should not exist at local repo anymore
-		assertTrue(gitClient.getFeatureBranchCommits(featureBranch).isEmpty());
+			// branch should not exist at local repo anymore
+			assertTrue(gitClient.getFeatureBranchCommits(featureBranch).isEmpty());
+		}
 	}
 
 	private boolean moveFeatureBranchOnRemote() {
@@ -101,11 +105,11 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	}
 
 	private String getTempBranchRefPathOnRemote() {
-		return GIT_URI + File.separator + "refs" + File.separator + "heads" + File.separator + featureBranch
+		return GIT_URIS.get(0) + File.separator + "refs" + File.separator + "heads" + File.separator + featureBranch
 				+ ".someOtherName";
 	}
 
 	private String getBranchRefPathOnRemote() {
-		return GIT_URI + File.separator + "refs" + File.separator + "heads" + File.separator + featureBranch;
+		return GIT_URIS.get(0) + File.separator + "refs" + File.separator + "heads" + File.separator + featureBranch;
 	}
 }

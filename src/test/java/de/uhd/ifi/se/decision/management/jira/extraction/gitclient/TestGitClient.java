@@ -15,18 +15,24 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testGitObjectExisting() {
-		assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
+		for (String GIT_URI : GIT_URIS) {
+			assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
+		}
 	}
 
 	@Test
 	public void testClonedRepoExisting() {
-		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists());
+		for (String GIT_URI : GIT_URIS) {
+			assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists());
+		}
 	}
 
 	@Test
 	public void testGetGitNull() {
-		GitClient gitClient = new GitClient();
-		assertNull(gitClient.getGitClientsForSingleRepo(GIT_URI));
+		for (String GIT_URI : GIT_URIS) {
+			GitClient gitClient = new GitClient();
+			assertNull(gitClient.getGitClientsForSingleRepo(GIT_URI));
+		}
 	}
 
 	@Test

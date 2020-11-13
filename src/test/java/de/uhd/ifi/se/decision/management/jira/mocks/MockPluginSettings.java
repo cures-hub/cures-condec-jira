@@ -32,7 +32,7 @@ public class MockPluginSettings implements PluginSettings {
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "gitUris", TestSetUpGit.GIT_URI);
+		settings.put(subfix + "gitUris", TestSetUpGit.GIT_URIS.get(0));
 		settings.put(subfix + "defaultBranches", "master");
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "webhookSecret", "myhoneybee");

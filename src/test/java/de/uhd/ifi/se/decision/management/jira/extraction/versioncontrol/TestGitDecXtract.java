@@ -26,7 +26,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommits() {
 		// git repository is setup already
 		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
+		uris.add(GIT_URIS.get(0));
 		gitDecX = new GitDecXtract("TEST");
 		int numberExpectedElements = 14;
 

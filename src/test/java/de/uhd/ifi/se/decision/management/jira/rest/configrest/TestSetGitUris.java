@@ -40,7 +40,7 @@ public class TestSetGitUris extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNullGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(null, null, TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
+				configRest.setGitUris(null, null, TestSetUpGit.GIT_URIS.get(0), "master", "", "", "").getStatus());
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class TestSetGitUris extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(null, "TEST", TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
+				configRest.setGitUris(null, "TEST", TestSetUpGit.GIT_URIS.get(0), "master", "", "", "").getStatus());
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class TestSetGitUris extends TestSetUp {
 	@Test
 	public void testRequestValidProjectKeyNullGitUriProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitUris(request, null, TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
+				configRest.setGitUris(request, null, TestSetUpGit.GIT_URIS.get(0), "master", "", "", "").getStatus());
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class TestSetGitUris extends TestSetUp {
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setGitUris(request, "TEST", TestSetUpGit.GIT_URI, "master", "", "", "").getStatus());
+				configRest.setGitUris(request, "TEST", TestSetUpGit.GIT_URIS.get(0), "master", "", "", "").getStatus());
 	}
 
 	@AfterClass

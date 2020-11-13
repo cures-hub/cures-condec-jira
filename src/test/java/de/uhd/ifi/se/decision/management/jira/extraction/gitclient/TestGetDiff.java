@@ -80,13 +80,15 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testMasterBranchExists() {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
-		try {
-			currentBranch = git.getRepository().getBranch();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		for (String GIT_URI : GIT_URIS) {
+			Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+			String currentBranch = null;
+			try {
+				currentBranch = git.getRepository().getBranch();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			assertEquals("master", currentBranch);
 		}
-		assertEquals("master", currentBranch);
 	}
 }

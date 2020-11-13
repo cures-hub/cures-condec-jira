@@ -46,7 +46,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public abstract class TestSetUpGit extends TestSetUp {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
-	public static String GIT_URI = getExampleUri();
+	public static List<String> GIT_URIS = getExampleUris();
 	protected static GitClient gitClient;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
@@ -56,73 +56,82 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
-		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
-				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
-			// git client already exists
-			return;
+		String uris_with_semicolon = "";
+		for (String GIT_URI : GIT_URIS) {
+			uris_with_semicolon += GIT_URI + ";;";
 		}
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
-		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
-				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
-		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
-		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
-		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
-		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
-		gitClient = GitClient.getOrCreate("TEST");
-		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
-			return;
+		ConfigPersistenceManager.setGitUris("TEST", uris_with_semicolon.substring(0, uris_with_semicolon.length() - 2));
+		ConfigPersistenceManager.setDefaultBranches("TEST", "master;;master;;master;;master");
+		ConfigPersistenceManager.setAuthMethods("TEST", "NONE;;HTTP;;GITHUB;;GITLAB");
+		ConfigPersistenceManager.setUsernames("TEST", ";;httpuser;;githubuser;;gitlabuser");
+		ConfigPersistenceManager.setTokens("TEST", ";;httppassword;;githubtoken;;gitlabtoken");
+		for (String GIT_URI : GIT_URIS) {
+			if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
+					&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
+				// git client already exists
+				return;
+			}
+			ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+			String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
+			String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
+					+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
+			String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+			File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
+			List<String> uris = new ArrayList<String>();
+			uris.add(GIT_URI);
+			gitClient = GitClient.getOrCreate("TEST");
+			if (!gitClient.getDefaultBranchCommits().isEmpty()) {
+				return;
+			}
+			// createBranch("master");
+			// above line will log errors for pulling from still empty remote repositry.
+			makeExampleCommit(GIT_URI, "readMe.txt", "TODO Write ReadMe", "Init Commit");
+			makeExampleCommit(GIT_URI, fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+			makeExampleCommit(GIT_URI, "GodClass.java",
+					"public class GodClass {"
+							+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
+					"TEST-12: Develop great software");
+			makeExampleCommit(GIT_URI, "Untangled.java",
+					"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
+							+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
+							+ "    }\n" + "}\n",
+					"TEST-26 add main");
+			makeExampleCommit(GIT_URI, "Untangled2.java",
+					"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
+							+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
+							+ "    public d(){\n" + "        this.a = 18;\n" + "        this.b = 64;\n"
+							+ "        this.c = \"world\";\n" + "    };\n" + "    public void printSomeThing(){\n"
+							+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
+							+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n" + "\n"
+							+ "\n" + "}\n",
+					"TEST-26 add class d");
+
+			makeExampleCommit(GIT_URI, "Tangled1.java",
+					"package de.uhd.ifi.se.decision.management.jira;\n" + "public class E {\n" + "\n"
+							+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
+							+ "    public c(){\n" + "        this.a = 22;\n" + "        this.b = 33;\n"
+							+ "        this.c = \"mouse\";\n" + "    };\n" + "    public int sum(){\n"
+							+ "        return a + b +c.length();\n" + "    };\n" + "\n"
+							+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
+							+ "            for(int j =0; j < a; j++){\n" + "                LOGGER.info((c);\n"
+							+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
+					"TEST-26 add class e");
+
+			makeExampleCommit(GIT_URI, "Tangled2.java",
+					"package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" + "public class A {\n" + "\n"
+							+ "    public int x;\n" + "    public int y ;\n" + "    public String z;\n" + "\n"
+							+ "    public A(int x, int y, String z){\n" + "        this.x = x;\n" + "        this.y = y;\n"
+							+ "        this.z = z;\n" + "    };\n" + "    public void doSomething(){\n"
+							+ "        for(int i =0; i < 10; i ++){\n" + "            for(int j =0; j < 20; j++){\n"
+							+ "                LOGGER.info((i+j);\n" + "            }\n" + "        }\n" + "    };\n"
+							+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
+							+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
+							+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
+					"TEST-62 add class A");
+			setupBranchWithDecKnowledge(GIT_URI);
+			// TODO Remove this method and only use one branch
+			setupBranchForTranscriber(GIT_URI);
 		}
-		// createBranch("master");
-		// above line will log errors for pulling from still empty remote repositry.
-		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
-		makeExampleCommit("GodClass.java",
-				"public class GodClass {"
-						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
-				"TEST-12: Develop great software");
-		makeExampleCommit("Untangled.java",
-				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
-						+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
-						+ "    }\n" + "}\n",
-				"TEST-26 add main");
-		makeExampleCommit("Untangled2.java",
-				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
-						+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
-						+ "    public d(){\n" + "        this.a = 18;\n" + "        this.b = 64;\n"
-						+ "        this.c = \"world\";\n" + "    };\n" + "    public void printSomeThing(){\n"
-						+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
-						+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n" + "\n"
-						+ "\n" + "}\n",
-				"TEST-26 add class d");
-
-		makeExampleCommit("Tangled1.java",
-				"package de.uhd.ifi.se.decision.management.jira;\n" + "public class E {\n" + "\n"
-						+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
-						+ "    public c(){\n" + "        this.a = 22;\n" + "        this.b = 33;\n"
-						+ "        this.c = \"mouse\";\n" + "    };\n" + "    public int sum(){\n"
-						+ "        return a + b +c.length();\n" + "    };\n" + "\n"
-						+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
-						+ "            for(int j =0; j < a; j++){\n" + "                LOGGER.info((c);\n"
-						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
-				"TEST-26 add class e");
-
-		makeExampleCommit("Tangled2.java",
-				"package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" + "public class A {\n" + "\n"
-						+ "    public int x;\n" + "    public int y ;\n" + "    public String z;\n" + "\n"
-						+ "    public A(int x, int y, String z){\n" + "        this.x = x;\n" + "        this.y = y;\n"
-						+ "        this.z = z;\n" + "    };\n" + "    public void doSomething(){\n"
-						+ "        for(int i =0; i < 10; i ++){\n" + "            for(int j =0; j < 20; j++){\n"
-						+ "                LOGGER.info((i+j);\n" + "            }\n" + "        }\n" + "    };\n"
-						+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
-						+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
-						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
-				"TEST-62 add class A");
-		setupBranchWithDecKnowledge();
-		// TODO Remove this method and only use one branch
-		setupBranchForTranscriber();
 	}
 
 	@Before
@@ -136,27 +145,31 @@ public abstract class TestSetUpGit extends TestSetUp {
 		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
 	}
 
-	private static String getExampleUri() {
-		if (GIT_URI != null) {
-			return GIT_URI;
+	private static List<String> getExampleUris() {
+		if (GIT_URIS != null) {
+			return GIT_URIS;
 		}
-		String uri = "";
-		try {
-			File remoteDir = File.createTempFile("remote", "");
-			remoteDir.delete();
-			remoteDir.mkdirs();
-			RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
-			Repository remoteRepo = fileKey.open(false);
-			remoteRepo.create(true);
-			uri = remoteRepo.getDirectory().getAbsolutePath();
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
+		List<String> uris = new ArrayList<String>();
+		for (int i = 0; i <3; i++) {
+			String uri = "";
+			try {
+				File remoteDir = File.createTempFile("remote", "");
+				remoteDir.delete();
+				remoteDir.mkdirs();
+				RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
+				Repository remoteRepo = fileKey.open(false);
+				remoteRepo.create(true);
+				uri = remoteRepo.getDirectory().getAbsolutePath();
+			} catch (IOException e) {
+				LOGGER.error(e.getMessage());
+			}
+			uris.add(uri);
 		}
-		GIT_URI = uri;
-		return uri;
+		GIT_URIS = uris;
+		return uris;
 	}
 
-	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
+	protected static void makeExampleCommit(String GIT_URI, File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(), targetName);
 		try {
@@ -172,7 +185,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
+	protected static void makeExampleCommit(String GIT_URI, String filename, String content, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(),
@@ -191,10 +204,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	private static void setupBranchWithDecKnowledge() {
+	private static void setupBranchWithDecKnowledge(String GIT_URI) {
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = getCurrentBranch();
+		String currentBranch = getCurrentBranch(GIT_URI);
 
 		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
 		String pathToTestFilesDir = "extraction/versioncontrol/";
@@ -202,13 +215,13 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		createBranch("featureBranch");
-		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
+		createBranch(GIT_URI, "featureBranch");
+		makeExampleCommit(GIT_URI, "readMe.featureBranch.txt", "First content", firstCommitMessage);
 
-		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
+		makeExampleCommit(GIT_URI, "GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
 				"Second message");
 
-		makeExampleCommit("HermesGodClass.java",
+		makeExampleCommit(GIT_URI, "HermesGodClass.java",
 				"public class HermesGodClass {" + "//@issue:1st code issue in one-line comment in HermesGodClass"
 						+ "\r\n/*\r\n@issue:2nd issue in comment block*/" + "\r\n/**\r\n* @issue:3rd issue in javadoc"
 						+ "\r\n*\r\n* @alternative:1st alt in javadoc*/" + "\r\n}",
@@ -216,23 +229,23 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
 						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
-		makeExampleCommit(fileB, testFileTargetName,
+		makeExampleCommit(GIT_URI, fileB, testFileTargetName,
 				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
 		returnToPreviousBranch(currentBranch, git);
 	}
 
-	private static void setupBranchForTranscriber() {
+	private static void setupBranchForTranscriber(String GIT_URI) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = getCurrentBranch();
-		createBranch("TEST-4.transcriberBranch");
+		String currentBranch = getCurrentBranch(GIT_URI);
+		createBranch(GIT_URI, "TEST-4.transcriberBranch");
 
-		makeExampleCommit("readMe.featureBranch.txt", "", "");
-		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
+		makeExampleCommit(GIT_URI, "readMe.featureBranch.txt", "", "");
+		makeExampleCommit(GIT_URI, "readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 
 		returnToPreviousBranch(currentBranch, git);
 	}
 
-	private static void createBranch(String branchName) {
+	private static void createBranch(String GIT_URI, String branchName) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
 			git.branchCreate().setName(branchName).call();
@@ -243,7 +256,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	private static String getCurrentBranch() {
+	private static String getCurrentBranch(String GIT_URI) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = null;
 		try {
