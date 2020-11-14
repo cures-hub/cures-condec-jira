@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 public class TestOnlineFileTrainerImpl extends TestSetUp {

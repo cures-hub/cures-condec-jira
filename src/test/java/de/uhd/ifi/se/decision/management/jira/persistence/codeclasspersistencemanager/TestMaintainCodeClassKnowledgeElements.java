@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;

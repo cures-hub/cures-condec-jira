@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
@@ -53,7 +51,7 @@ public class GitClientForSingleRepository {
 	private String authMethod;
 	private String username;
 	private String token;
-	private GitRepositoryFSManager fsManager;
+	private GitRepositoryFileSystemManager fileSystemManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
@@ -65,36 +63,35 @@ public class GitClientForSingleRepository {
 		this.authMethod = authMethod;
 		this.username = username;
 		this.token = token;
-		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri);
+		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, uri);
 		pullOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
 
 	public boolean pullOrClone() {
-		File directory = new File(fsManager.getPathToRepositoryInFileSystem());
-		File gitDirectory = new File(directory, ".git/");
+		File workingDirectory = fileSystemManager.getPathToWorkingDirectory();
+		File gitDirectory = new File(workingDirectory, ".git/");
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
-					LOGGER.error("Failed Git pull " + directory);
+					LOGGER.error("Failed Git pull " + workingDirectory);
 					return false;
 				}
 			} else {
-				LOGGER.error("Could not open repository: " + directory.getAbsolutePath());
+				LOGGER.error("Could not open repository: " + workingDirectory.getAbsolutePath());
 				return false;
 			}
 		} else {
-			if (!cloneRepository(directory)) {
-				LOGGER.error("Could not clone repository " + repoUri + " to " + directory.getAbsolutePath());
+			if (!cloneRepository(workingDirectory)) {
+				LOGGER.error("Could not clone repository " + repoUri + " to " + workingDirectory.getAbsolutePath());
 				return false;
 			}
 		}
-		close();
 		return true;
 	}
 
 	private boolean openRepository() {
-		File directory = getDirectory();
+		File directory = getGitDirectory();
 		return openRepository(directory);
 	}
 
@@ -109,12 +106,8 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
-	private boolean pull() {
+	public boolean pull() {
 		LOGGER.info("Pulling Repository: " + repoUri);
-		if (!isPullNeeded()) {
-			// LOGGER.info("Repository is up to date: " + repoUri);
-			return true;
-		}
 		try {
 			ObjectId oldHead = getRepository().resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = git.remoteList().call();
@@ -126,54 +119,15 @@ public class GitClientForSingleRepository {
 			git.pull().call();
 			ObjectId newHead = getRepository().resolve("HEAD^{tree}");
 			Diff diffSinceLastPull = getDiff(oldHead, newHead);
-			CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-			persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+			if (!diffSinceLastPull.getChangedFiles().isEmpty()) {
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+			}
 		} catch (GitAPIException | IOException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + git.getRepository().getDirectory());
-		return true;
-	}
-
-	/**
-	 * Based on file timestamp, the method decides if pull is necessary.
-	 *
-	 * @return decision whether to make or not make the git pull call.
-	 */
-	private boolean isPullNeeded() {
-		String trackerFilename = "condec.pullstamp.";
-		Repository repository = getRepository();
-		File file = new File(repository.getDirectory(), trackerFilename);
-
-		if (!file.isFile()) {
-			file.setWritable(true);
-			try {
-				file.createNewFile();
-			} catch (IOException ex) {
-				LOGGER.error("Could not create a file, repositories will be fetched on each request.");
-			}
-			return true;
-		}
-		if (isRepoOutdated(file.lastModified())) {
-			updateFileModifyTime(file);
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isRepoOutdated(long lastModified) {
-		Date date = new Date();
-		long fileLifespan = date.getTime() - lastModified;
-		return fileLifespan > GitClient.REPO_OUTDATED_AFTER;
-	}
-
-	private boolean updateFileModifyTime(File file) {
-		Date date = new Date();
-		if (!file.setLastModified(date.getTime())) {
-			LOGGER.error("Could not modify a file modify time, repositories will be fetched on each request.");
-			return false;
-		}
 		return true;
 	}
 
@@ -194,8 +148,6 @@ public class GitClientForSingleRepository {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
 			return false;
-		} finally {
-			close();
 		}
 		return true;
 	}
@@ -301,11 +253,11 @@ public class GitClientForSingleRepository {
 			oldTreeIter.reset(reader, oldHead);
 			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, newHead);
-			gitPath = getDirectory().getAbsolutePath();
+			gitPath = getGitDirectory().getAbsolutePath();
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
 			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 		DiffFormatter diffFormatter = getDiffFormater();
 		ObjectId treeId = null;
@@ -343,7 +295,7 @@ public class GitClientForSingleRepository {
 	/**
 	 * @return path to the .git folder as a File object.
 	 */
-	public File getDirectory() {
+	public File getGitDirectory() {
 		Repository repository = getRepository();
 		if (repository == null) {
 			return null;
@@ -455,7 +407,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommits(Ref branch) {
-		if (branch == null || fsManager == null) {
+		if (branch == null || fileSystemManager == null) {
 			return new ArrayList<RevCommit>();
 		}
 
@@ -466,7 +418,7 @@ public class GitClientForSingleRepository {
 			ObjectId commitId = getRepository().resolve(branch.getName());
 			Iterable<RevCommit> iterable = git.log().add(commitId).call();
 			commits = Lists.newArrayList(iterable.iterator());
-		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
+		} catch (RevisionSyntaxException | IOException | GitAPIException | NullPointerException e) {
 
 		}
 		return commits;
@@ -495,39 +447,10 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Closes the repository.
+	 * @return file system manager responsible to create and delete the directory
+	 *         that the repository is cloned to.
 	 */
-	public void close() {
-		if (git == null) {
-			return;
-		}
-		git.close();
-	}
-
-	/**
-	 * Closes the repository and deletes its local files.
-	 */
-	public boolean deleteRepository() {
-		if (git == null || getDirectory() == null) {
-			return false;
-		}
-		close();
-		File directory = getDirectory().getParentFile().getParentFile();
-		return deleteFolder(directory);
-	}
-
-	private static boolean deleteFolder(File directory) {
-		if (directory.listFiles() == null) {
-			return false;
-		}
-		boolean isDeleted = true;
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				deleteFolder(file);
-			} else {
-				isDeleted = isDeleted && file.delete();
-			}
-		}
-		return isDeleted && directory.delete();
+	public GitRepositoryFileSystemManager getFileSystemManager() {
+		return fileSystemManager;
 	}
 }
