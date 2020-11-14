@@ -52,7 +52,7 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public void setData() {
-		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD))
+		if (recommenderType.equals(RecommenderType.KEYWORD))
 			((RDFSourceInputString) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
 		else {
 			((RDFSourceInputKnowledgeElement) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
@@ -62,11 +62,7 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public InputMethod getInputMethod() {
-		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD)) {
-			this.inputMethod = new RDFSourceInputString();
-		} else {
-			this.inputMethod = new RDFSourceInputKnowledgeElement();
-		}
+		this.inputMethod = RDFSourceInputFactory.getInputMethod(recommenderType);
 		return this.inputMethod;
 	}
 

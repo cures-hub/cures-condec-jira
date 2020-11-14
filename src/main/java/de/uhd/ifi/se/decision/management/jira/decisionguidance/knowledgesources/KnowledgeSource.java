@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.ArrayList;
@@ -7,19 +8,19 @@ import java.util.List;
 
 public abstract class KnowledgeSource {
 
-	protected KnowledgeSourceType knowledgeSourceType;
-
 	protected List<Recommendation> recommendations;
 	protected String projectKey;
 	protected boolean isActivated;
 	protected String name;
 
 	protected InputMethod inputMethod;
+	protected RecommenderType recommenderType;
 
 
 	/**
 	 * calculates the concrete result for a knowledgesource
 	 * getInputMethod() and setData() must be implemented by the concrete knowledge source
+	 *
 	 * @param object
 	 * @return
 	 */
@@ -65,5 +66,13 @@ public abstract class KnowledgeSource {
 
 	public void setInputMethod(InputMethod inputMethod) {
 		this.inputMethod = inputMethod;
+	}
+
+	public RecommenderType getRecommenderType() {
+		return recommenderType;
+	}
+
+	public void setRecommenderType(RecommenderType recommenderType) {
+		this.recommenderType = recommenderType;
 	}
 }
