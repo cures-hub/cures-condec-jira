@@ -123,6 +123,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@BeforeClass
 	public static void setUpBeforeClassSecure() {
+		init();
 		if (secureGitClients != null) {
 			// secure git clients already exist
 			return;
@@ -323,7 +324,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@AfterClass
 	public static void tidyUp() {
-		// gitClient.closeAll();
 		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
