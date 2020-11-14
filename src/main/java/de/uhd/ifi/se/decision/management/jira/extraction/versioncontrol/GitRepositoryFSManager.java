@@ -41,7 +41,7 @@ public class GitRepositoryFSManager {
 	 * @pro it is common practice to shorten hashes.
 	 * @con entropy might suffer too much from using only 5 chars.
 	 */
-	private String getShortHash(String text) {
+	public static String getShortHash(String text) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			messageDigest.update(text.getBytes());
