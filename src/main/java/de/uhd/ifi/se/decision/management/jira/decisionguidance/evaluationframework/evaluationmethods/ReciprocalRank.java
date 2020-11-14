@@ -11,7 +11,6 @@ public class ReciprocalRank implements EvaluationMethod {
 	public double calculateMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
 		double sum_RR = 0.0;
 
-		//TODO make threshold configurable
 		int maxResults = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < maxResults; i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {
@@ -22,8 +21,7 @@ public class ReciprocalRank implements EvaluationMethod {
 				}
 			}
 		}
-		double MRR = sum_RR / recommendations.size();
-		return !Double.isNaN(MRR) ? MRR : 0.0;
+		return  0.0;
 	}
 
 	@Override

@@ -27,7 +27,6 @@ public class TestEvaluationRecommender extends TestSetUp {
 	private RDFSource rdfSource;
 	private List<KnowledgeSource> knowledgeSources;
 	private List<KnowledgeElement> solutionOptions;
-	private List<Recommendation> recommendations;
 	private EvaluationRecommender recommender;
 
 	@Before
@@ -57,7 +56,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		solutionOptions.add(alternative);
 		solutionOptions.add(decision);
 
-		recommendations = new ArrayList<>();
+		List<Recommendation> recommendations = new ArrayList<>();
 		Recommendation recommendation = new Recommendation();
 		recommendation.setRecommendations("Test Alternative");
 		Recommendation recommendation2 = new Recommendation();

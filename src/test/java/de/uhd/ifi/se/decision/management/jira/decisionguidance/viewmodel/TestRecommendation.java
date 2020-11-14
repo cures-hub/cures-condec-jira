@@ -29,11 +29,15 @@ public class TestRecommendation extends TestSetUp {
 	}
 
 	@Test
-	public void testConstructor() {
+	public void testRecommendation() {
 		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		recommendation.setUrl("TEST URL");
+		recommendation.setScore(123);
 		assertEquals("TEST", recommendation.getKnowledgeSourceName());
 		assertEquals("TEST", recommendation.getRecommendations());
-		assertEquals("TESTURL", recommendation.getUrl());
+		assertEquals("TEST URL", recommendation.getUrl());
+		assertEquals(123, recommendation.getScore());
+		assertEquals(0, recommendation.getArguments().size());
 	}
 
 	@Test
@@ -46,12 +50,18 @@ public class TestRecommendation extends TestSetUp {
 		List<Argument> arguments = new ArrayList<>();
 		Argument argument = new Argument(knowledgeElement);
 		arguments.add(argument);
+
 		Recommendation recommendation = new Recommendation();
 		recommendation.addArguments(arguments);
 		assertEquals(1, recommendation.getArguments().size());
 
 		recommendation.setArguments(arguments);
 		assertEquals(1, recommendation.getArguments().size());
+
+
+		Recommendation emptyArguments = new Recommendation();
+		emptyArguments.addArgument(argument);
+		assertEquals(1, emptyArguments.getArguments().size());
 	}
 
 	@Test

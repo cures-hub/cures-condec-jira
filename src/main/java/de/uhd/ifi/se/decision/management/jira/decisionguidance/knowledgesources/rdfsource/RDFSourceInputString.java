@@ -39,19 +39,18 @@ public class RDFSourceInputString implements InputMethod<String> {
 		combinedKeywords.addAll(keywords);
 
 		StringBuilder stringBuilder = new StringBuilder();
+		String first = keywords.get(0);
 
-		for (String first : keywords) {
-			stringBuilder.append(first);
-			for (String second : keywords) {
-				if (!first.equals(second)) {
-					stringBuilder.append("_").append(second);
-					combinedKeywords.add(stringBuilder.toString());
-				}
+		stringBuilder.append(first);
+		for (String second : keywords) {
+			if (!first.equals(second)) {
+				stringBuilder.append("_").append(second);
+				combinedKeywords.add(stringBuilder.toString());
 			}
-
-			stringBuilder.setLength(0);
-			break;
 		}
+
+		stringBuilder.setLength(0);
+
 
 		return combinedKeywords;
 	}
@@ -108,7 +107,6 @@ public class RDFSourceInputString implements InputMethod<String> {
 	public List<Recommendation> getResults(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		Map<Recommendation, Integer> scoreMap = new HashMap<>();
-		List<Recommendation> recommendationWithScore = new ArrayList<>();
 
 		if (inputs == null) return recommendations;
 
@@ -138,30 +136,13 @@ public class RDFSourceInputString implements InputMethod<String> {
 				//TODO keep arguments variable
 				List<Argument> arguments = new ArrayList<>();
 
+				Argument license = this.getArgument(queryStringWithInput, "?license_l", row);
+				Argument os = this.getArgument(queryStringWithInput, "?os_l", row);
+				Argument language = this.getArgument(queryStringWithInput, "?language_l", row);
 
-				if (queryStringWithInput.contains("?license_l")) {
-					String licenseString = row.get("?license_l").toString();
-					KnowledgeElement license = new KnowledgeElement();
-					license.setType(KnowledgeType.ARGUMENT);
-					license.setSummary("License: " + licenseString + "\n");
-					arguments.add(new Argument(license));
-				}
-
-				if (queryStringWithInput.contains("?os_l")) {
-					String OSString = row.get("?os_l").toString();
-					KnowledgeElement os = new KnowledgeElement();
-					os.setType(KnowledgeType.ARGUMENT);
-					os.setSummary("Operating System: " + OSString + "\n");
-					arguments.add(new Argument(os));
-				}
-
-				if (queryStringWithInput.contains("?language_l")) {
-					String programmingLanguageString = row.get("?language_l").toString();
-					KnowledgeElement language = new KnowledgeElement();
-					language.setType(KnowledgeType.ARGUMENT);
-					language.setSummary("Programming Language: " + programmingLanguageString + "\n");
-					arguments.add(new Argument(language));
-				}
+				arguments.add(license);
+				arguments.add(os);
+				arguments.add(language);
 
 
 				try {
@@ -183,22 +164,37 @@ public class RDFSourceInputString implements InputMethod<String> {
 				scoreMap.put(recommendation, Collections.frequency(recommendations, recommendation));
 
 			}
+		}
 
-			if (scoreMap.size() != 0) {
-				Comparator<? super Map.Entry<Recommendation, Integer>> maxValueComparator = Comparator.comparing(Map.Entry::getValue);
+		return this.getRecommendationWithScore(scoreMap);
+	}
 
-				int maxValue = scoreMap.entrySet().stream().max(maxValueComparator).get().getValue();
+	private List<Recommendation> getRecommendationWithScore(Map<Recommendation, Integer> scoreMap) {
+		List<Recommendation> recommendationWithScore = new ArrayList<>();
+		if (scoreMap.size() != 0) {
+			Comparator<? super Map.Entry<Recommendation, Integer>> maxValueComparator = Comparator.comparing(Map.Entry::getValue);
 
-
-				scoreMap.forEach((recommendation, value) -> {
-					recommendation.setScore(this.getScore(maxValue, value));
-					recommendationWithScore.add(recommendation);
-				});
-			}
+			int maxValue = scoreMap.entrySet().stream().max(maxValueComparator).get().getValue();
 
 
+			scoreMap.forEach((recommendation, value) -> {
+				recommendation.setScore(this.getScore(maxValue, value));
+				recommendationWithScore.add(recommendation);
+			});
 		}
 		return recommendationWithScore;
+	}
+
+	private Argument getArgument(String query, String constraint, QuerySolution row) {
+
+		if (query.contains(constraint)) {
+			String argumentSummary = row.get(constraint).toString();
+			KnowledgeElement knowledgeElement = new KnowledgeElement();
+			knowledgeElement.setType(KnowledgeType.ARGUMENT);
+			knowledgeElement.setSummary(argumentSummary);
+			return new Argument(knowledgeElement);
+		}
+		return null;
 	}
 
 	private int getScore(int maxValue, int actualValue) {

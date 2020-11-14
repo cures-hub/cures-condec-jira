@@ -12,8 +12,6 @@ public class AveragePrecision implements EvaluationMethod {
 		double precisionK = 0.0;
 		double relevantItems = 0.0;
 
-
-		//TODO make threshold configurable
 		int k = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < k; i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {

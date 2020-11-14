@@ -62,7 +62,7 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public InputMethod getInputMethod() {
-		this.inputMethod = RDFSourceInputFactory.getInputMethod(recommenderType);
+		this.inputMethod = SourceInputFactoryUtils.getInputMethod(recommenderType);
 		return this.inputMethod;
 	}
 

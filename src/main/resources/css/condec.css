@@ -1,72 +1,72 @@
 li>a.jstree-search {
-	color: #3b73af;
+  color: #3b73af;
 }
 
 a:focus a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 #depth-of-tree-warning {
-	visibility: hidden;
-	color: rgba(255, 85, 85, 1);
+  visibility: hidden;
+  color: rgba(255, 85, 85, 1);
 }
 
 .left {
-	width: 33%;
-	float: left;
-	overflow: auto;
-	resize: both;
+  width: 33%;
+  float: left;
+  overflow: auto;
+  resize: both;
 }
 
 .right {
-	width: 67%;
-	float: left;
-	overflow: auto;
-	resize: both;
+  width: 67%;
+  float: left;
+  overflow: auto;
+  resize: both;
 }
 
 .graph {
-	width: 100%;
-	height: auto;
-	overflow: auto;
-	resize: both;	
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  resize: both;
 }
 
 .treant {
-	height: auto;
+  height: auto;
 }
 
 .boxplot {
-	width: 190px;
-	height: 340px;
-	display: inline-block;
+  width: 190px;
+  height: 340px;
+  display: inline-block;
 }
 
 .piechart {
-	width: 410px;
-	height: 260px;
-	display: inline-block;
-	margin-bottom: 20px;
+  width: 410px;
+  height: 260px;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
 .noDots {
-	list-style: none;
-	padding-left: 0;
+  list-style: none;
+  padding-left: 0;
 }
 
 .decision-table {
-	height: auto; 
-	overflow-x: auto;
+  height: auto;
+  overflow-x: auto;
 }
 
 .condec-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: flex-end;
-    border: 1px solid #e3e3e3;
-    padding:16px;
-    margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+  border: 1px solid #e3e3e3;
+  padding:16px;
+  margin-bottom: 16px;
 }
 
 .condec-filter-criterion {
@@ -75,28 +75,28 @@ a:focus a:hover {
 }
 
 .jira-module-fullscreen {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background: white;
-    z-index: 4;
-    padding:64px !important;
-    overflow: scroll;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: white;
+  z-index: 4;
+  padding:64px !important;
+  overflow: scroll;
 }
 
 #close-fullscreen {
-    z-index: 999;
-    display:none;
-    position: fixed;
-    right: 48px;
-    top:48px;
-    cursor: pointer;
+  z-index: 999;
+  display:none;
+  position: fixed;
+  right: 48px;
+  top:48px;
+  cursor: pointer;
 }
 
 #open-fullscreen {
-    cursor: pointer;
-    padding:16px;
-    display:block;
+  cursor: pointer;
+  padding:16px;
+  display:block;
 }
