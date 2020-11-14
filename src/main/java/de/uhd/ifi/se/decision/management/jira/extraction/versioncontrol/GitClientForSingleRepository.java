@@ -460,13 +460,10 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * Closes the repository and deletes its local files.
+	 * @return file system manager responsible to create and delete the directory
+	 *         that the repository is cloned to.
 	 */
-	public boolean deleteRepository() {
-		if (git == null || getGitDirectory() == null) {
-			return false;
-		}
-		close();
-		return fileSystemManager.deleteWorkingDirectory();
+	public GitRepositoryFileSystemManager getFileSystemManager() {
+		return fileSystemManager;
 	}
 }

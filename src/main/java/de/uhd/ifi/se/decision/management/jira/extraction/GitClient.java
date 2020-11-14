@@ -352,7 +352,7 @@ public class GitClient {
 	public boolean deleteRepositories() {
 		boolean isDeleted = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			isDeleted = isDeleted && gitClientForSingleRepo.deleteRepository();
+			isDeleted = isDeleted && gitClientForSingleRepo.getFileSystemManager().deleteWorkingDirectory();
 		}
 		return isDeleted && GitRepositoryFileSystemManager.deleteProjectDirectory(projectKey);
 	}

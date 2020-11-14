@@ -18,4 +18,5 @@ public class TestCloseAndDeleteRepositories extends TestSetUpGit {
 		assertTrue(gitClient.deleteRepositories());
 		assertNotNull(gitClient);
 	}
+
 }
