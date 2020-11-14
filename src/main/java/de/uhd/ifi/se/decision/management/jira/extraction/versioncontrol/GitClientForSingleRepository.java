@@ -87,7 +87,6 @@ public class GitClientForSingleRepository {
 				return false;
 			}
 		}
-		close();
 		return true;
 	}
 
@@ -149,8 +148,6 @@ public class GitClientForSingleRepository {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
 			return false;
-		} finally {
-			close();
 		}
 		return true;
 	}
@@ -447,16 +444,6 @@ public class GitClientForSingleRepository {
 	 */
 	public String getDefaultBranchName() {
 		return defaultBranchName;
-	}
-
-	/**
-	 * Closes the repository.
-	 */
-	public void close() {
-		if (git == null) {
-			return;
-		}
-		git.close();
 	}
 
 	/**

@@ -267,15 +267,6 @@ public class GitClient {
 	}
 
 	/**
-	 * Closes all repositories.
-	 */
-	public void closeAll() {
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			gitClientForSingleRepo.close();
-		}
-	}
-
-	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
