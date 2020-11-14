@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,9 +28,14 @@ public class TestGitRepositoryFileSystemManager extends TestSetUp {
 	}
 
 	@Test
-	public void testDeleteDirectory() {
+	public void testDeleteWorkingDirectory() {
 		assertTrue(fileSystemManager.deleteWorkingDirectory());
 		assertFalse(fileSystemManager.deleteWorkingDirectory());
+	}
+
+	@Test
+	public void testDeleteDirectoryNotExisting() {
+		assertFalse(GitRepositoryFileSystemManager.deleteDirectory(new File("123-not-existing-file")));
 	}
 
 	@AfterClass

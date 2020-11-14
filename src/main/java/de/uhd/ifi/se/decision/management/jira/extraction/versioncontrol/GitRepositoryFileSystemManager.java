@@ -99,7 +99,7 @@ public class GitRepositoryFileSystemManager {
 		return GitRepositoryFileSystemManager.deleteDirectory(pathToWorkingDirectory);
 	}
 
-	private static boolean deleteDirectory(File directory) {
+	public static boolean deleteDirectory(File directory) {
 		if (directory.listFiles() == null) {
 			return false;
 		}
