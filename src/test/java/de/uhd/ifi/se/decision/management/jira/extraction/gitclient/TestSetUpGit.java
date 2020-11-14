@@ -59,7 +59,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	public static void setUpBeforeClass() {
 		init();
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
-				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
+				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
 			// git client already exists
 			return;
 		}
@@ -214,7 +214,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(), targetName);
+		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(), targetName);
 		try {
 			FileUtils.copyFile(inputFile, gitFile);
 			git.add().addFilepattern(gitFile.getName()).call();
@@ -231,7 +231,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
-			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(),
+			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
 					filename);
 			PrintWriter writer = new PrintWriter(inputFile, "UTF-8");
 			writer.println(content);

@@ -30,7 +30,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 		assertTrue(moveFeatureBranchOnRemote());
 
 		// do not prevent pull
-		assertTrue(resetPullControl(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory()));
+		assertTrue(resetPullControl(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory()));
 
 		// getting branch with performing pull
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
@@ -41,7 +41,7 @@ public class TestRemoveFeatureBranchNotPresentInRemote extends TestSetUpGit {
 	@Test
 	@Ignore
 	public void testGetFeatureBranchNotOnRemoteLocalPullCache() {
-		File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory();
+		File developDir = gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory();
 
 		// fetch the branch, it will be cached for a while and not automatically
 		// released to TEMP.. folder

@@ -71,21 +71,21 @@ public class GitClientForSingleRepository {
 	}
 
 	public boolean pullOrClone() {
-		File directory = new File(fileSystemManager.getPathToRepositoryInFileSystem());
-		File gitDirectory = new File(directory, ".git/");
+		File workingDirectory = fileSystemManager.getPathToWorkingDirectory();
+		File gitDirectory = new File(workingDirectory, ".git/");
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!pull()) {
-					LOGGER.error("Failed Git pull " + directory);
+					LOGGER.error("Failed Git pull " + workingDirectory);
 					return false;
 				}
 			} else {
-				LOGGER.error("Could not open repository: " + directory.getAbsolutePath());
+				LOGGER.error("Could not open repository: " + workingDirectory.getAbsolutePath());
 				return false;
 			}
 		} else {
-			if (!cloneRepository(directory)) {
-				LOGGER.error("Could not clone repository " + repoUri + " to " + directory.getAbsolutePath());
+			if (!cloneRepository(workingDirectory)) {
+				LOGGER.error("Could not clone repository " + repoUri + " to " + workingDirectory.getAbsolutePath());
 				return false;
 			}
 		}
@@ -94,7 +94,7 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean openRepository() {
-		File directory = getDirectory();
+		File directory = getGitDirectory();
 		return openRepository(directory);
 	}
 
@@ -301,7 +301,7 @@ public class GitClientForSingleRepository {
 			oldTreeIter.reset(reader, oldHead);
 			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, newHead);
-			gitPath = getDirectory().getAbsolutePath();
+			gitPath = getGitDirectory().getAbsolutePath();
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
 			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
@@ -343,7 +343,7 @@ public class GitClientForSingleRepository {
 	/**
 	 * @return path to the .git folder as a File object.
 	 */
-	public File getDirectory() {
+	public File getGitDirectory() {
 		Repository repository = getRepository();
 		if (repository == null) {
 			return null;
@@ -508,21 +508,12 @@ public class GitClientForSingleRepository {
 	 * Closes the repository and deletes its local files.
 	 */
 	public boolean deleteRepository() {
-		if (git == null || getDirectory() == null) {
+		if (git == null || getGitDirectory() == null) {
 			return false;
 		}
 		close();
-		File directory = getDirectory();
-		/**
-		 * While directory points at a folder inside the repository folder, go to the
-		 * parent directory
-		 */
-		while (!GitRepositoryFileSystemManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(
-				directory.getAbsolutePath().lastIndexOf(GitRepositoryFileSystemManager.getShortHash(this.getRemoteUri()))))) {
-			directory = directory.getParentFile();
-		}
-		// now it is assured that directory points to the repository folder
-		return deleteFolder(directory);
+		File workingDirectory = fileSystemManager.getPathToWorkingDirectory();
+		return deleteFolder(workingDirectory);
 	}
 
 	private static boolean deleteFolder(File directory) {

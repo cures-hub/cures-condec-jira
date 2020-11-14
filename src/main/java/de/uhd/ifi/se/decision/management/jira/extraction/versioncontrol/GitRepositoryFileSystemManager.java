@@ -32,12 +32,12 @@ public class GitRepositoryFileSystemManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFileSystemManager.class);
 
-	private String repositoryPath;
+	private File pathToWorkingDirectory;
 
 	public GitRepositoryFileSystemManager(String projectKey, String repoUri) {
 		String projectPath = GIT_DIRECTORY + File.separator + projectKey;
-		repositoryPath = projectPath + File.separator + getShortHash(repoUri);
-		new File(repositoryPath).mkdirs();
+		pathToWorkingDirectory = new File(projectPath + File.separator + getShortHash(repoUri));
+		pathToWorkingDirectory.mkdirs();
 	}
 
 	/**
@@ -68,10 +68,10 @@ public class GitRepositoryFileSystemManager {
 	}
 
 	/**
-	 * @return absolute path to the directory of the git repository (parent
+	 * @return absolute path to the working directory of the repository (parent
 	 *         directory of .git directory).
 	 */
-	public String getPathToRepositoryInFileSystem() {
-		return repositoryPath;
+	public File getPathToWorkingDirectory() {
+		return pathToWorkingDirectory;
 	}
 }
