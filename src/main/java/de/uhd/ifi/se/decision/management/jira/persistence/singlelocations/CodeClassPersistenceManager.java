@@ -299,7 +299,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public void maintainCodeClassKnowledgeElements(Diff diff) {
-		System.out.println("maintainCodeClassKnowledgeElements");
 		List<KnowledgeElement> existingElements = getKnowledgeElements();
 		if (existingElements == null || existingElements.isEmpty()) {
 			extractAllCodeClasses(null);
@@ -360,10 +359,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void extractAllCodeClasses(ApplicationUser user) {
-		System.out.println("extractAllCodeClasses");
 		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
 		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
-		System.out.println(String.valueOf(codeClasses.size()));
 		for (ChangedFile codeClass : codeClasses) {
 			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
 			if (issueKeys != null && !issueKeys.isEmpty()) {
