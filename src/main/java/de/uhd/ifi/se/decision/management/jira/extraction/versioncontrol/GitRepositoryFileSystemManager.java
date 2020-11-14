@@ -22,8 +22,8 @@ import com.atlassian.jira.config.util.JiraHome;
 public class GitRepositoryFileSystemManager {
 
 	/**
-	 * @issue What is the best place to clone the git repo to?
-	 * @decision Clone git repo to JiraHome/data/condec-plugin/git!
+	 * @issue What is the best place to clone the git repos to?
+	 * @decision Clone git repos to JiraHome/data/condec-plugin/git!
 	 * @pro The Git integration for Jira plug-in clones its repos to a similar
 	 *      folder: JiraHome/data/git-plugin.
 	 */
@@ -34,6 +34,22 @@ public class GitRepositoryFileSystemManager {
 
 	private File pathToWorkingDirectory;
 
+	/**
+	 * @issue How to distinguish different git repositories for a Jira project in
+	 *        file system?
+	 * @decision Use the MD5 hash of the repo URI as the folder name for a git
+	 *           repository!
+	 * @alternative Use the repo URI as the folder name!
+	 * @con The repo URI might contain charaters not allowed in file system.
+	 * @alternative Use numbers as folder names: 0, 1, 2, ...!
+	 * @con This requires to store a mapping between number and repo URI.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project that the git repository is associated with.
+	 * @param repoUri
+	 *            remote Uniform Resource Identifier (URI) of the git repository as
+	 *            a String.
+	 */
 	public GitRepositoryFileSystemManager(String projectKey, String repoUri) {
 		String projectPath = GIT_DIRECTORY + File.separator + projectKey;
 		pathToWorkingDirectory = new File(projectPath + File.separator + getShortHash(repoUri));
@@ -45,17 +61,12 @@ public class GitRepositoryFileSystemManager {
 	 *        therefore md5 can be used to get unique strings for inputs like uris
 	 *        etc. But md5 hashes can produce too long paths and corrupt the
 	 *        filesystem, especially for java projects. How can this be overcome?
-	 *
-	 * @alternative use full length of the hash! the project structure should never
-	 *              be that big.
-	 * @con this would cause unnecessary refactoring activities for the project in
-	 *      git repository.
-	 *
+	 * @alternative Use full length of the hash!
 	 * @decision Use the first 5 characters from the generated hash!
-	 * @pro it is common practice to shorten hashes.
-	 * @con entropy might suffer too much from using only 5 chars.
+	 * @pro It is common practice to shorten hashes.
+	 * @con Entropy might suffer too much from using only 5 chars.
 	 */
-	public static String getShortHash(String text) {
+	private static String getShortHash(String text) {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			messageDigest.update(text.getBytes());
@@ -73,5 +84,31 @@ public class GitRepositoryFileSystemManager {
 	 */
 	public File getPathToWorkingDirectory() {
 		return pathToWorkingDirectory;
+	}
+
+	/**
+	 * Deletes the working directory of the repository including all of its files
+	 * and sub-directories.
+	 */
+	public boolean deleteWorkingDirectory() {
+		if (pathToWorkingDirectory == null || !pathToWorkingDirectory.exists()) {
+			return false;
+		}
+		return GitRepositoryFileSystemManager.deleteFolder(pathToWorkingDirectory);
+	}
+
+	private static boolean deleteFolder(File directory) {
+		if (directory.listFiles() == null) {
+			return false;
+		}
+		boolean isDeleted = true;
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory()) {
+				deleteFolder(file);
+			} else {
+				isDeleted = isDeleted && file.delete();
+			}
+		}
+		return isDeleted && directory.delete();
 	}
 }

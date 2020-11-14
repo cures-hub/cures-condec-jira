@@ -46,7 +46,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 public class GitClientForSingleRepository {
 
 	private String repoUri;
-	private Git git;
+	Git git;
 	private String defaultBranchName;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
@@ -512,22 +512,6 @@ public class GitClientForSingleRepository {
 			return false;
 		}
 		close();
-		File workingDirectory = fileSystemManager.getPathToWorkingDirectory();
-		return deleteFolder(workingDirectory);
-	}
-
-	private static boolean deleteFolder(File directory) {
-		if (directory.listFiles() == null) {
-			return false;
-		}
-		boolean isDeleted = true;
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				deleteFolder(file);
-			} else {
-				isDeleted = isDeleted && file.delete();
-			}
-		}
-		return isDeleted && directory.delete();
+		return fileSystemManager.deleteWorkingDirectory();
 	}
 }
