@@ -20,7 +20,7 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		this.transcriber = new CommitMessageToCommentTranscriber(issue);
+		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}
 
 	@Test

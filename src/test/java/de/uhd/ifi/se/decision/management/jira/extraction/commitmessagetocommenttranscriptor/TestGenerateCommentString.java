@@ -22,7 +22,7 @@ public class TestGenerateCommentString extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		branch = gitClient.getBranches("TEST-4.feature.branch").get(0);
-		this.transcriber = new CommitMessageToCommentTranscriber(
+		transcriber = new CommitMessageToCommentTranscriber(
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4"));
 	}
 
@@ -47,7 +47,7 @@ public class TestGenerateCommentString extends TestSetUpGit {
 	public void testIssueMessageWithAdditionalText() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(5);
 		String commitMetaData = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
-				+ "refs/remotes/origin/TEST-4.transcriberBranch\r\n" + "Commit Hash: ";
+				+ "refs/remotes/origin/TEST-4.feature.branch\r\n" + "Commit Hash: ";
 
 		assertEquals("{issue}This is an issue!{issue} But I love pizza!" + commitMetaData + commit.getName(),
 				transcriber.generateCommentString(commit, branch));

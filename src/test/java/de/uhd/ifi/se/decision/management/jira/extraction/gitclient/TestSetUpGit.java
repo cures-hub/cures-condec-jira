@@ -119,11 +119,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
 		setupFeatureBranch();
+		setUpBeforeClassSecure();
 	}
 
 	@BeforeClass
 	public static void setUpBeforeClassSecure() {
-		init();
 		if (secureGitClients != null) {
 			// secure git clients already exist
 			return;
