@@ -421,7 +421,7 @@ public class GitClientForSingleRepository {
 			ObjectId commitId = getRepository().resolve(branch.getName());
 			Iterable<RevCommit> iterable = git.log().add(commitId).call();
 			commits = Lists.newArrayList(iterable.iterator());
-		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
+		} catch (RevisionSyntaxException | IOException | GitAPIException | NullPointerException e) {
 
 		}
 		return commits;
