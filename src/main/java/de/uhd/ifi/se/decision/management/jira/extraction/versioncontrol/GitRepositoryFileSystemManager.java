@@ -60,7 +60,7 @@ public class GitRepositoryFileSystemManager {
 	 * @issue File system does not allow all characters for folder and file name,
 	 *        therefore md5 can be used to get unique strings for inputs like uris
 	 *        etc. But md5 hashes can produce too long paths and corrupt the
-	 *        filesystem, especially for java projects. How can this be overcome?
+	 *        filesystem, especially for Java projects. How can this be overcome?
 	 * @alternative Use full length of the hash!
 	 * @decision Use the first 5 characters from the generated hash!
 	 * @pro It is common practice to shorten hashes.
