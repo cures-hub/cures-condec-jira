@@ -517,12 +517,6 @@ public class GitClientForSingleRepository {
 		 * While directory points at a folder inside the repository folder, go to the parent directory
 		 */
 		while (!GitRepositoryFSManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(directory.getAbsolutePath().lastIndexOf(GitRepositoryFSManager.getShortHash(this.getRemoteUri()))))) {
-			if (directory.getParentFile() == null) {
-				/** If for some reason a folder named like the repository folder was not found
-				 *  within the absolute path of getDirectory(), we cannot delete the repository.
-				 */ 
-				return false;
-			}
 			directory = directory.getParentFile();
 		}
 		// now it is assured that directory points to the repository folder 
