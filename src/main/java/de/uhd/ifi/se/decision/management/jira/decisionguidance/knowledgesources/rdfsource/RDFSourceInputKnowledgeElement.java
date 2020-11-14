@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElement> {
 
@@ -47,6 +48,7 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 		}
 
 
-		return recommendations;
+
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 }

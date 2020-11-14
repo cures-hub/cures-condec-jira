@@ -4,7 +4,7 @@
     <div class="settings-divider">
         <div class="field-group">
             <label for="evaluation-keywords">Keywords</label>
-            <input id="evaluation-keywords" class="text large-field" placeholder="e.g. Databases"/>
+            <input id="evaluation-keywords" class="text long-field" placeholder="e.g. Databases"/>
             <div class="description">Enter some keywords.
             </div>
         </div>
@@ -13,7 +13,7 @@
             <form class="aui">
                 <label for="select2-issues">Issue</label>
                 <select id="select2-issues" placeholder="Select an issue..."
-                        class="select large-field">
+                        class="select long-field">
                 </select>
                 <div class="description">Select an issue for evaluation.
                 </div>
@@ -51,6 +51,18 @@
             </div>
         </div>
         <div class="field-group">
+            <label for="k-results">Top-k Results</label>
+            <input class="text short-field"
+                   type="number"
+                   data-aui-validation-field
+                   value="5"
+                   id="k-results"
+                   name="k-results"/>
+            <div class="description">Set the top-k results that should be used for the metric calculation
+            </div>
+
+        </div>
+        <div class="field-group">
             <div style="display:flex; align-items:center; gap:12px">
                 <input type="button" class="aui-button-primary aui-button" id="evaluation-knowledgesource-button"
                        value="Evaluate"/>
@@ -70,8 +82,6 @@
             <th>Input</th>
             <th>Knowledge Source</th>
             <th>Results</th>
-            <th>F-Score</th>
-            <th>Mean Reciprocal Rank</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -106,24 +116,38 @@
         }
     });
 
+
+    let buildTableHeader = false;
     $("#evaluation-knowledgesource-button").click(function(event) {
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
         const issueID = $("#select2-issues").val();
+        const kResults = $("#k-results").val();
         const table =  $("#evaluation-results-table tbody");
         $("#evaluation-results-table tbody tr").remove();
         const spinner = $("#loading-spinner-recommendation");
-
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, function(eval, error) {
+            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults,  function(eval, error) {
                 if(eval) {
+                    var metrics = ""
+                    const keys = Object.keys(eval.metrics);
+                    console.log(Object.keys(eval.metrics));
+                    keys.forEach(key => {
+                        metrics += "<td>" + eval.metrics[key].toFixed(2) + "</td>";
+
+                        if(!buildTableHeader) {
+                            $("#evaluation-results-table thead tr").append("<th>" + key + "</th>");
+                        }
+                    })
+                    buildTableHeader = true;
+
+
                     $("#evaluation-results-table tbody").append(
                     "<tr><td>" + eval.recommenderType + "</td>" +
                     "<td>" + eval.knowledgeSourceName + "</td>" +
                     "<td>" +  eval.numberOfResults +"</td>" +
-                    "<td>" +  eval.fScore.toFixed(2) +"</td>" +
-                    "<td>" +  eval.mrr.toFixed(2) +"</td>" +
+                    metrics +
                     "</tr>");
                     spinner.hide();
                 }

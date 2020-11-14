@@ -681,8 +681,8 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueID, knowledgeSources, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID +  "&knowledgeSource=" + knowledgeSources,
+	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueID, knowledgeSources, kResults, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID +  "&knowledgeSource=" + knowledgeSources +  "&kResults=" + kResults,
 			function (error, results) {
 				callback(results, error);
 			});

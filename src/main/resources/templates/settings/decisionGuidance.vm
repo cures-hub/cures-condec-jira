@@ -93,13 +93,17 @@
                                 PREFIX dct: &lt;http://purl.org/dc/terms/> <br>
                                 PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> <br>
                                 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#> <br> <br>
+                                PREFIX foaf:&lt;//xmlns.com/foaf/0.1/>
 
-                                select distinct ?alternative ?url where { <br>
+
+                                select distinct ?alternative ?url  ?link where { <br>
                                 %variable% dbo:genre ?genre. <br>
-                                ?url dbo:genre ?genre. <br>
-                                ?url rdfs:label ?alternative. <br>
+                                ?sameGenre dbo:genre ?genre. <br>
+                                ?sameGenre rdfs:label ?alternative. <br>
+                                ?sameGenre foaf:isPrimaryTopicOf ?url. <br>
                                 FILTER(LANG(?alternative) = "en"). <br>
-                                } <br>
+                                ?sameGenre dbo:wikiPageExternalLink ?link. <br>
+                                }
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -9,21 +13,29 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	private KnowledgeElement knowledgeElement;
 	private final String keywords;
+	private int topKResults;
 
 	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords) {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
 		this.knowledgeElement = knowledgeElement;
 		this.keywords = keywords;
+		this.topKResults = 5;
+	}
+
+	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, int topKResults) {
+		this.recommendations = new ArrayList<>();
+		this.knowledgeSources = new ArrayList<>();
+		this.knowledgeElement = knowledgeElement;
+		this.keywords = keywords;
+		this.topKResults = topKResults;
 	}
 
 	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, List<KnowledgeSource> knowledgeSources) {
@@ -46,15 +58,17 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		List<Recommendation> recommendationsFromKnowledgeSource;
 		RecommenderType recommenderType = RecommenderType.ISSUE;
 		if (!keywords.isBlank()) {
+			this.knowledgeSources.get(0).setRecommenderType(RecommenderType.KEYWORD);
 			recommendationsFromKnowledgeSource = this.knowledgeSources.get(0).getResults(this.keywords);
 			recommenderType = RecommenderType.KEYWORD;
 		} else {
+			this.knowledgeSources.get(0).setRecommenderType(RecommenderType.ISSUE);
 			recommendationsFromKnowledgeSource = this.knowledgeSources.get(0).getResults(this.knowledgeElement);
 		}
 
 
 		recommendationsFromKnowledgeSource.sort(Comparator.comparingInt(Recommendation::getScore));
-
+		Collections.reverse(recommendationsFromKnowledgeSource);
 
 		List<KnowledgeElement> alternatives = this.knowledgeElement.getLinks().stream()
 			.filter(link -> link.getSource().getType().equals(KnowledgeType.ALTERNATIVE)).collect(Collectors.toList()).stream()
@@ -80,47 +94,21 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		double mrr = this.calculateMRRForRecommendations(recommendationsFromKnowledgeSource, solutionOptions);
+		Map<String, Double> metrics = new HashMap<>();
 
+		List<EvaluationMethod> evaluationMethods = new ArrayList<>();
+		evaluationMethods.add(new FScore());
+		evaluationMethods.add(new ReciprocalRank());
+		evaluationMethods.add(new AveragePrecision());
 
-		int intersectingIdeas = 0;
-		int intersectingDiscarded = 0;
-		int intersectedDecided = 0;
-		int intersectedRejected = 0;
-
-		for (Recommendation recommendation : recommendationsFromKnowledgeSource) {
-			intersectingIdeas += this.countIntersections(ideas, recommendation.getRecommendations());
-			intersectingDiscarded += this.countIntersections(discarded, recommendation.getRecommendations());
-			intersectedDecided += this.countIntersections(decided, recommendation.getRecommendations());
-			intersectedRejected += this.countIntersections(rejected, recommendation.getRecommendations());
+		for (EvaluationMethod evaluationMethod : evaluationMethods) {
+			metrics.put(evaluationMethod.toString(), evaluationMethod.calculateMetric(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		}
 
-		int falseNegative = (ideas.size() + discarded.size() + decided.size() + rejected.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided - intersectedRejected;
 
-
-		double fScore = this.calculateFScore(intersectingIdeas + intersectedDecided, falseNegative, intersectingDiscarded + intersectedRejected);
-
-
-		return new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), fScore, mrr);
+		return new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), metrics);
 	}
 
-	/**
-	 * @param recommendations
-	 * @return
-	 */
-	public double calculateMRRForRecommendations(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
-		double sum_RR = 0.0;
-
-		for (int i = 0; i < recommendations.size(); i++) {
-			for (KnowledgeElement solutionOption : solutionOptions) {
-				if (solutionOption.getSummary().trim().equals(recommendations.get(i).getRecommendations().trim())) {
-					sum_RR += (1.0 / (i + 1));
-				}
-			}
-		}
-		double MRR = sum_RR / recommendations.size();
-		return !Double.isNaN(MRR) ? MRR : 0.0;
-	}
 
 	/**
 	 * @param knowledgeElements
@@ -132,21 +120,6 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		return knowledgeElements.stream().filter(element -> element.getStatus().equals(status)).collect(Collectors.toList());
 	}
 
-	/**
-	 * count intersections between the summary of a knowledge elements and a given string
-	 *
-	 * @param knowledgeElements
-	 * @param matchingString
-	 * @return
-	 */
-	public int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString) {
-		int counter = 0;
-		for (KnowledgeElement knowledgeElement : knowledgeElements) {
-			if (knowledgeElement.getSummary().trim().equalsIgnoreCase(matchingString.trim()))
-				counter += 1;
-		}
-		return counter;
-	}
 
 	/**
 	 * Checks if the knowledge source exists and activates it
@@ -157,22 +130,12 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	 */
 	public EvaluationRecommender withKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources, String knowledgeSourceName) {
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			if (knowledgeSource.getName().equals(knowledgeSourceName)) {
+			if (knowledgeSource.getName().equalsIgnoreCase(knowledgeSourceName.trim())) {
 				knowledgeSource.setActivated(true);
 				this.addKnowledgeSource(knowledgeSource);
 			}
 		}
 		return this;
-	}
-
-	public double calculateFScore(int truePositive, int falseNegative, int falsePositive) {
-		double fScore = truePositive / (truePositive + .5 * (falsePositive + falseNegative));
-		if (Double.isNaN(fScore)) fScore = 0.0;
-		return fScore;
-	}
-
-	public double calculateFScore(double precision, double recall) {
-		return 2 * ((precision * recall) / (precision + recall));
 	}
 
 	public KnowledgeElement getKnowledgeElement() {

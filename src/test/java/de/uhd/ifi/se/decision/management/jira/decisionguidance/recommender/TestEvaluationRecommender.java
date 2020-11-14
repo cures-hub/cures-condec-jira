@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -110,29 +111,10 @@ public class TestEvaluationRecommender extends TestSetUp {
 		assertEquals(0, recommender.getElementsWithStatus(null, KnowledgeStatus.IDEA).size());
 	}
 
-	@Test
-	public void testFScore() {
-		assertEquals(0.77, recommender.calculateFScore(5, 2, 1), 0.1);
-		assertEquals(0.77, recommender.calculateFScore(0.83, 0.71), 0.1);
-
-		assertEquals(0.0, recommender.calculateFScore(0, 1, -1), 0.0);
-
-	}
-
-	@Test
-	public void testMRR() {
-		assertEquals(0.75, recommender.calculateMRRForRecommendations(recommendations, solutionOptions), 0.0);
-	}
-
-	@Test
-	public void testCountIntersections() {
-		assertEquals(1, recommender.countIntersections(solutionOptions, "Test Alternative"));
-		assertEquals(1, recommender.countIntersections(solutionOptions, "test alternative"));
-	}
 
 	@Test
 	public void testRecommendatioEvaluation() {
-		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(RecommenderType.ISSUE.toString(), "TEST", 6, 0.1, 0.2);
+		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(RecommenderType.ISSUE.toString(), "TEST", 6, null);
 
 		recommendationEvaluation.setFScore(0.3);
 		recommendationEvaluation.setKnowledgeSourceName("TESTTEST");
