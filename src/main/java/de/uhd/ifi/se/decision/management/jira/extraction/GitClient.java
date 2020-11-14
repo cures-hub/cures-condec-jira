@@ -190,8 +190,9 @@ public class GitClient {
 
 	/**
 	 * @param featureBranch
-	 * @return String of Remote Repository Uri containing the given Branch or null
-	 *         if branch not contained in any Repo.
+	 *            as a {@link Ref} object.
+	 * @return String of remote repository URI containing the given branch. Returns
+	 *         null if branch is not contained in any repo.
 	 */
 	public String getRepoUriFromBranch(Ref featureBranch) {
 		if (featureBranch == null) {

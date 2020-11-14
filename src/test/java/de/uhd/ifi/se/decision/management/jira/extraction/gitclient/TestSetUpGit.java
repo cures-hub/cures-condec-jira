@@ -20,8 +20,6 @@ import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
@@ -46,7 +44,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public abstract class TestSetUpGit extends TestSetUp {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI = getExampleUri();
 	protected static GitClient gitClient;
 	public static List<String> SECURE_GIT_URIS = getExampleUris();
@@ -196,7 +193,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			remoteRepo.create(true);
 			uri = remoteRepo.getDirectory().getAbsolutePath();
 		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
+			e.printStackTrace();
 		}
 		return uri;
 	}
@@ -225,7 +222,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (Exception e) {
-			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -244,7 +241,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
-			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -308,8 +305,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 			try {
 				git.checkout().setName(branch).call();
 				git.pull();
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
