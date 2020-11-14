@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class TestCloseAndDeleteRepositories extends TestSetUpGit {
+public class TestDeleteRepositories extends TestSetUpGit {
 
 	@Test
 	public void testDeleteRepositoryNotNull() {

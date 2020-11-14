@@ -13,7 +13,7 @@ public class Diff {
 	private List<ChangedFile> changedFiles;
 
 	public Diff() {
-		this.changedFiles = new ArrayList<ChangedFile>();
+		changedFiles = new ArrayList<ChangedFile>();
 	}
 
 	/**

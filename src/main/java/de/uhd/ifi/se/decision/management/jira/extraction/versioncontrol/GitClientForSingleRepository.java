@@ -106,7 +106,7 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
-	private boolean pull() {
+	public boolean pull() {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		try {
 			ObjectId oldHead = getRepository().resolve("HEAD^{tree}");
@@ -257,7 +257,7 @@ public class GitClientForSingleRepository {
 			gitPath = gitPath.substring(0, gitPath.length() - 5);
 			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 		DiffFormatter diffFormatter = getDiffFormater();
 		ObjectId treeId = null;
