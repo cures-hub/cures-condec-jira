@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -352,7 +353,7 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isDeleted = isDeleted && gitClientForSingleRepo.deleteRepository();
 		}
-		return isDeleted;
+		return isDeleted && GitRepositoryFileSystemManager.deleteProjectDirectory(projectKey);
 	}
 
 	/**

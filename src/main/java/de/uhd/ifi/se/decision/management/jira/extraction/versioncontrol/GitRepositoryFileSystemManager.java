@@ -89,26 +89,40 @@ public class GitRepositoryFileSystemManager {
 	/**
 	 * Deletes the working directory of the repository including all of its files
 	 * and sub-directories.
+	 * 
+	 * @return true if deletion was successful.
 	 */
 	public boolean deleteWorkingDirectory() {
 		if (pathToWorkingDirectory == null || !pathToWorkingDirectory.exists()) {
 			return false;
 		}
-		return GitRepositoryFileSystemManager.deleteFolder(pathToWorkingDirectory);
+		return GitRepositoryFileSystemManager.deleteDirectory(pathToWorkingDirectory);
 	}
 
-	private static boolean deleteFolder(File directory) {
+	private static boolean deleteDirectory(File directory) {
 		if (directory.listFiles() == null) {
 			return false;
 		}
 		boolean isDeleted = true;
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory()) {
-				deleteFolder(file);
+				deleteDirectory(file);
 			} else {
 				isDeleted = isDeleted && file.delete();
 			}
 		}
 		return isDeleted && directory.delete();
+	}
+
+	/**
+	 * Deletes all repositories for a Jira project including all of their files and
+	 * sub-directories.
+	 * 
+	 * @param projectKey
+	 *            Jira project
+	 * @return true if deletion was successful.
+	 */
+	public static boolean deleteProjectDirectory(String projectKey) {
+		return deleteDirectory(new File(GIT_DIRECTORY + File.separator + projectKey));
 	}
 }

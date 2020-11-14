@@ -46,7 +46,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 public class GitClientForSingleRepository {
 
 	private String repoUri;
-	Git git;
+	private Git git;
 	private String defaultBranchName;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
