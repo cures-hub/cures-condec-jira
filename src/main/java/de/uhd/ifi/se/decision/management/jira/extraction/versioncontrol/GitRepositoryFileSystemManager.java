@@ -15,10 +15,11 @@ import com.atlassian.jira.config.util.JiraHome;
 /**
  * File system manager for git repositories.
  * 
- * Each git repository is stored in
- * JiraHome/data/condec-plugin/git/<project-key>/<MD5 hash of URI>.
+ * @issue Where to store repos associated to a Jira project?
+ * @decision Each git repository is stored in
+ *           JiraHome/data/condec-plugin/git/<project-key>/<MD5 hash of URI>!
  */
-public class GitRepositoryFSManager {
+public class GitRepositoryFileSystemManager {
 
 	/**
 	 * @issue What is the best place to clone the git repo to?
@@ -29,11 +30,11 @@ public class GitRepositoryFSManager {
 	public static String GIT_DIRECTORY = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFileSystemManager.class);
 
 	private String repositoryPath;
 
-	public GitRepositoryFSManager(String projectKey, String repoUri) {
+	public GitRepositoryFileSystemManager(String projectKey, String repoUri) {
 		String projectPath = GIT_DIRECTORY + File.separator + projectKey;
 		repositoryPath = projectPath + File.separator + getShortHash(repoUri);
 		new File(repositoryPath).mkdirs();
@@ -50,7 +51,7 @@ public class GitRepositoryFSManager {
 	 * @con this would cause unnecessary refactoring activities for the project in
 	 *      git repository.
 	 *
-	 * @decision use the first 5 characters from the generated hash!
+	 * @decision Use the first 5 characters from the generated hash!
 	 * @pro it is common practice to shorten hashes.
 	 * @con entropy might suffer too much from using only 5 chars.
 	 */

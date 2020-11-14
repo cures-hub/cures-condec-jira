@@ -10,7 +10,7 @@ import java.io.File;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 
 public class TestGitClient extends TestSetUpGit {
 
@@ -39,7 +39,7 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testMockingOfGitDirectoryWorks() {
-		assertEquals(GitRepositoryFSManager.GIT_DIRECTORY, System.getProperty("user.home") + File.separator + "data"
+		assertEquals(GitRepositoryFileSystemManager.GIT_DIRECTORY, System.getProperty("user.home") + File.separator + "data"
 				+ File.separator + "condec-plugin" + File.separator + "git" + File.separator);
 	}
 

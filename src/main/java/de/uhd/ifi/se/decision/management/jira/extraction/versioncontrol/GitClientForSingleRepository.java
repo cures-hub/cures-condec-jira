@@ -53,7 +53,7 @@ public class GitClientForSingleRepository {
 	private String authMethod;
 	private String username;
 	private String token;
-	private GitRepositoryFSManager fsManager;
+	private GitRepositoryFileSystemManager fileSystemManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
@@ -65,13 +65,13 @@ public class GitClientForSingleRepository {
 		this.authMethod = authMethod;
 		this.username = username;
 		this.token = token;
-		fsManager = new GitRepositoryFSManager(projectKey, uri);
+		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, uri);
 		pullOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
 
 	public boolean pullOrClone() {
-		File directory = new File(fsManager.getPathToRepositoryInFileSystem());
+		File directory = new File(fileSystemManager.getPathToRepositoryInFileSystem());
 		File gitDirectory = new File(directory, ".git/");
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
@@ -455,7 +455,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommits(Ref branch) {
-		if (branch == null || fsManager == null) {
+		if (branch == null || fileSystemManager == null) {
 			return new ArrayList<RevCommit>();
 		}
 
@@ -517,8 +517,8 @@ public class GitClientForSingleRepository {
 		 * While directory points at a folder inside the repository folder, go to the
 		 * parent directory
 		 */
-		while (!GitRepositoryFSManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(
-				directory.getAbsolutePath().lastIndexOf(GitRepositoryFSManager.getShortHash(this.getRemoteUri()))))) {
+		while (!GitRepositoryFileSystemManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(
+				directory.getAbsolutePath().lastIndexOf(GitRepositoryFileSystemManager.getShortHash(this.getRemoteUri()))))) {
 			directory = directory.getParentFile();
 		}
 		// now it is assured that directory points to the repository folder
