@@ -10,13 +10,14 @@ import java.io.File;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 
 public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testGitObjectExisting() {
 		assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
-		for (int i = 0; i <3; i++) {
+		for (int i = 0; i < 3; i++) {
 			assertNotNull(secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getGit());
 		}
 	}
@@ -24,8 +25,9 @@ public class TestGitClient extends TestSetUpGit {
 	@Test
 	public void testClonedRepoExisting() {
 		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists());
-		for (int i = 0; i <3; i++) {
-			assertTrue(secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getDirectory().exists());
+		for (int i = 0; i < 3; i++) {
+			assertTrue(
+					secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getDirectory().exists());
 		}
 	}
 
@@ -37,8 +39,8 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testMockingOfGitDirectoryWorks() {
-		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator + "git" + File.separator);
+		assertEquals(GitRepositoryFSManager.GIT_DIRECTORY, System.getProperty("user.home") + File.separator + "data"
+				+ File.separator + "condec-plugin" + File.separator + "git" + File.separator);
 	}
 
 	@Test

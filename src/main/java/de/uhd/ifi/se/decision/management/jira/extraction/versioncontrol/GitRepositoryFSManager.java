@@ -9,6 +9,9 @@ import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+
 /**
  * File system manager for git repositories.
  * 
@@ -16,12 +19,22 @@ import org.slf4j.LoggerFactory;
  * JiraHome/data/condec-plugin/git/<project-key>/<MD5 hash of URI>.
  */
 public class GitRepositoryFSManager {
-	private String repositoryPath;
+
+	/**
+	 * @issue What is the best place to clone the git repo to?
+	 * @decision Clone git repo to JiraHome/data/condec-plugin/git!
+	 * @pro The Git integration for Jira plug-in clones its repos to a similar
+	 *      folder: JiraHome/data/git-plugin.
+	 */
+	public static String GIT_DIRECTORY = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
 
-	public GitRepositoryFSManager(String home, String projectKey, String repoUri) {
-		String projectPath = home + File.separator + projectKey;
+	private String repositoryPath;
+
+	public GitRepositoryFSManager(String projectKey, String repoUri) {
+		String projectPath = GIT_DIRECTORY + File.separator + projectKey;
 		repositoryPath = projectPath + File.separator + getShortHash(repoUri);
 		new File(repositoryPath).mkdirs();
 	}

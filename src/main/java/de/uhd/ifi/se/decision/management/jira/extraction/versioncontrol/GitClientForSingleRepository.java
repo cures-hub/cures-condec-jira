@@ -65,7 +65,7 @@ public class GitClientForSingleRepository {
 		this.authMethod = authMethod;
 		this.username = username;
 		this.token = token;
-		fsManager = new GitRepositoryFSManager(GitClient.DEFAULT_DIR, projectKey, uri);
+		fsManager = new GitRepositoryFSManager(projectKey, uri);
 		pullOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
@@ -514,12 +514,14 @@ public class GitClientForSingleRepository {
 		close();
 		File directory = getDirectory();
 		/**
-		 * While directory points at a folder inside the repository folder, go to the parent directory
+		 * While directory points at a folder inside the repository folder, go to the
+		 * parent directory
 		 */
-		while (!GitRepositoryFSManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(directory.getAbsolutePath().lastIndexOf(GitRepositoryFSManager.getShortHash(this.getRemoteUri()))))) {
+		while (!GitRepositoryFSManager.getShortHash(this.getRemoteUri()).equals(directory.getAbsolutePath().substring(
+				directory.getAbsolutePath().lastIndexOf(GitRepositoryFSManager.getShortHash(this.getRemoteUri()))))) {
 			directory = directory.getParentFile();
 		}
-		// now it is assured that directory points to the repository folder 
+		// now it is assured that directory points to the repository folder
 		return deleteFolder(directory);
 	}
 

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,8 +15,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
@@ -44,15 +41,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  *      plugin.
  */
 public class GitClient {
-
-	/**
-	 * @issue What is the best place to clone the git repo to?
-	 * @decision Clone git repo to JiraHome/data/condec-plugin/git!
-	 * @pro The Git integration for Jira plug-in clones its repos to a similar
-	 *      folder: JiraHome/data/git-plugin.
-	 */
-	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	public static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
