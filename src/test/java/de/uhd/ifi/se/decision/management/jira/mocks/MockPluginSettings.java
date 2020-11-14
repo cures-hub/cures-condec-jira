@@ -39,6 +39,8 @@ public class MockPluginSettings implements PluginSettings {
 		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "setClassiferForIssueComments", "false");
 		settings.put(subfix + "authMethods", "HTTP");
+		settings.put(subfix + "usernames", "heinz.guenther");
+		settings.put(subfix + "tokens", "P@ssw0rd!");
 		settings.put(subfix + "users", "user");
 		return settings;
 	}
