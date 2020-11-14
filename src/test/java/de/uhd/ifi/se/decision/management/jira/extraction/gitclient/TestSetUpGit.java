@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,12 +64,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 			// git client already exists
 			return;
 		}
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
-		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
-				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
-		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
@@ -76,7 +71,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			return;
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+		makeExampleCommit();
 		makeExampleCommit("GodClass.java",
 				"public class GodClass {"
 						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
@@ -122,7 +117,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		setUpBeforeClassSecure();
 	}
 
-	@BeforeClass
 	public static void setUpBeforeClassSecure() {
 		if (secureGitClients != null) {
 			// secure git clients already exist
@@ -172,31 +166,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (GIT_URI != null) {
 			return GIT_URI;
 		}
-		String uri = getUriString();
-		try {
-			File remoteDir = File.createTempFile("remote", "");
-			remoteDir.delete();
-			remoteDir.mkdirs();
-			RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
-			Repository remoteRepo = fileKey.open(false);
-			remoteRepo.create(true);
-			uri = remoteRepo.getDirectory().getAbsolutePath();
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
-		}
-		GIT_URI = uri;
-		return uri;
+		return getUriString();
 	}
 
 	private static List<String> getExampleUris() {
 		if (SECURE_GIT_URIS != null) {
 			return SECURE_GIT_URIS;
 		}
-		SECURE_GIT_URIS = new ArrayList<String>();
+		List<String> secureUris = new ArrayList<String>();
 		for (int i = 0; i < 3; i++) {
-			SECURE_GIT_URIS.add(getUriString());
+			secureUris.add(getUriString());
 		}
-		return SECURE_GIT_URIS;
+		return secureUris;
 	}
 
 	/**
@@ -220,7 +201,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 		return uri;
 	}
 
-	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
+	private static void makeExampleCommit() {
+		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
+		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
+				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
+		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+		URL pathUrl = classLoader.getResource(pathToExtractionVCSTestFile);
+		File fileA = new File(pathUrl.getFile());
+		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+	}
+
+	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
 				targetName);
@@ -237,7 +229,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
+	private static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
