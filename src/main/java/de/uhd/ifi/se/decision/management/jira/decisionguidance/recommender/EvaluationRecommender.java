@@ -22,25 +22,12 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	private final String keywords;
 	private int topKResults;
 
-	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords) {
-		this.recommendations = new ArrayList<>();
-		this.knowledgeSources = new ArrayList<>();
-		this.knowledgeElement = knowledgeElement;
-		this.keywords = keywords;
-		this.topKResults = 5;
-	}
-
 	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, int topKResults) {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
 		this.knowledgeElement = knowledgeElement;
 		this.keywords = keywords;
 		this.topKResults = topKResults;
-	}
-
-	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, List<KnowledgeSource> knowledgeSources) {
-		this(knowledgeElement, keywords);
-		this.addKnowledgeSource(knowledgeSources);
 	}
 
 	@Override
@@ -144,9 +131,5 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	public void setKnowledgeElement(KnowledgeElement knowledgeElement) {
 		this.knowledgeElement = knowledgeElement;
-	}
-
-	public String getKeywords() {
-		return keywords;
 	}
 }

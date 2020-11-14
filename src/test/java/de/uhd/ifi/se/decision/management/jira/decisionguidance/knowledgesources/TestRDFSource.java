@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputString;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -67,8 +67,8 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testGetInputMethodAndSetData() {
 		KnowledgeSource rdfSource = new RDFSource();
-		ConfigPersistenceManager.setRecommendationInput(PROJECTKEY, RecommenderType.KEYWORD.toString());
-		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass() );
+		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
+		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
 		rdfSource.setData();
 	}
 
@@ -140,7 +140,10 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testgetInputMethod() {
 		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
-		assertNotNull(rdfSource.getInputMethod());
+		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
+		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
+		rdfSource.setRecommenderType(RecommenderType.ISSUE);
+		assertEquals(RDFSourceInputKnowledgeElement.class, rdfSource.getInputMethod().getClass());
 	}
 
 	@Test

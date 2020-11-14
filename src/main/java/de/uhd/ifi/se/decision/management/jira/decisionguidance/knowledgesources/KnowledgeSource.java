@@ -68,10 +68,6 @@ public abstract class KnowledgeSource {
 		this.inputMethod = inputMethod;
 	}
 
-	public RecommenderType getRecommenderType() {
-		return recommenderType;
-	}
-
 	public void setRecommenderType(RecommenderType recommenderType) {
 		this.recommenderType = recommenderType;
 	}

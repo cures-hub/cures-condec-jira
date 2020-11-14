@@ -75,11 +75,11 @@ public class TestGetRecommendation extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
 	}
 
-	@Test
-	public void testGetRecommendationAddDirectly() {
-		ConfigPersistenceManager.setAddRecommendationDirectly("TEST",true);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
-	}
+//	@Test
+//	public void testGetRecommendationAddDirectly() {
+//		ConfigPersistenceManager.setAddRecommendationDirectly("TEST",true);
+//		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1).getStatus());
+//	}
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {

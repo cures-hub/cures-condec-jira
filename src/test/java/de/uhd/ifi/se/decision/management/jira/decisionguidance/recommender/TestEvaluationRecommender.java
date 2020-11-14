@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -36,8 +35,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		init();
 
 
-		recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "");
-
+		recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "", 5);
 
 		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
 		// in the same
@@ -91,12 +89,11 @@ public class TestEvaluationRecommender extends TestSetUp {
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSourceName());
 		assertEquals(RecommenderType.ISSUE.toString(), recommendationEvaluation.getRecommenderType());
-		assertEquals(0, recommendationEvaluation.getNumberOfResults());
-		assertEquals(0.0, recommendationEvaluation.getFScore(), 0.0); //status not set
-		assertEquals(0.0, recommendationEvaluation.getMrr(), 0.0); //status not set
+		assertEquals(2, recommendationEvaluation.getNumberOfResults());
+		assertNotNull(recommendationEvaluation.getMetrics());
 
 
-		EvaluationRecommender recommender2 = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "Not blank");
+		EvaluationRecommender recommender2 = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
 		recommendationEvaluation = recommender2.evaluate(KnowledgeElements.getTestKnowledgeElement()).withKnowledgeSource(knowledgeSources, "TEST").execute();
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSourceName());
 		assertEquals(RecommenderType.KEYWORD.toString(), recommendationEvaluation.getRecommenderType());
@@ -113,20 +110,24 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 
 	@Test
-	public void testRecommendatioEvaluation() {
+	public void testRecommendationEvaluation() {
 		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(RecommenderType.ISSUE.toString(), "TEST", 6, null);
 
-		recommendationEvaluation.setFScore(0.3);
 		recommendationEvaluation.setKnowledgeSourceName("TESTTEST");
-		recommendationEvaluation.setMrr(0.2);
 		recommendationEvaluation.setNumberOfResults(2);
 		recommendationEvaluation.setRecommenderType("KEYWORD");
 
 		assertEquals(RecommenderType.KEYWORD.toString(), recommendationEvaluation.getRecommenderType());
 		assertEquals("TESTTEST", recommendationEvaluation.getKnowledgeSourceName());
-		assertEquals(0.3, recommendationEvaluation.getFScore(), 0.0);
 		assertEquals(2, recommendationEvaluation.getNumberOfResults());
-		assertEquals(0.2, recommendationEvaluation.getMrr(), 0.0);
+	}
+
+	@Test
+	public void testgetResultsFromKnowledgeSource() {
+		BaseRecommender recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
+		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
+		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
+		assertNotNull(recommender.getResultFromKnowledgeSource(knowledgeSource));
 	}
 
 }
