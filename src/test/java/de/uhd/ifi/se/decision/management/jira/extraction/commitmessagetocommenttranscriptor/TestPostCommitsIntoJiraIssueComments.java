@@ -20,12 +20,12 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		this.transcriber = new CommitMessageToCommentTranscriber(issue);
+		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}
 
 	@Test
 	public void testPostCommits() {
-		assertEquals(1, transcriber.postCommitsIntoJiraIssueComments().size());
+		assertEquals(5, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 
 	@Test
@@ -41,12 +41,12 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	@Test
 	public void testPostFeatureBranchCommits() {
-		assertEquals(1, transcriber.postFeatureBranchCommits().size());
+		assertEquals(5, transcriber.postFeatureBranchCommits().size());
 	}
 
 	@Test
 	public void testPostCommitsAlreadyPosted() {
-		assertEquals(1, transcriber.postCommitsIntoJiraIssueComments().size());
+		assertEquals(5, transcriber.postCommitsIntoJiraIssueComments().size());
 		assertEquals(0, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 }

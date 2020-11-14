@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +20,6 @@ import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
@@ -37,7 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  *      (see ConfigPersistenceManager class).
  * @pro This is more efficient than recreating the test git repository all the
  *      time.
- * @con Changes to the git repository (e.g. new commits) during testing has an
+ * @con Changes to the git repository (e.g. new commits) during testing have an
  *      effect on the test cases that follow. The order of test cases is
  *      arbitrary.
  * @alternative We could have more than one mock git repositories for testing!
@@ -45,9 +44,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public abstract class TestSetUpGit extends TestSetUp {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI = getExampleUri();
 	protected static GitClient gitClient;
+	public static List<String> SECURE_GIT_URIS = getExampleUris();
+	protected static List<GitClient> secureGitClients;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
@@ -57,28 +57,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 	public static void setUpBeforeClass() {
 		init();
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
-				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
+				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
 			// git client already exists
 			return;
 		}
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
-		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
-				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
-		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
-		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
-		// createBranch("master");
-		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+		makeExampleCommit();
 		makeExampleCommit("GodClass.java",
 				"public class GodClass {"
 						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
@@ -120,9 +110,42 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
-		setupBranchWithDecKnowledge();
-		// TODO Remove this method and only use one branch
-		setupBranchForTranscriber();
+		setupFeatureBranch();
+		setUpBeforeClassSecure();
+	}
+
+	public static void setUpBeforeClassSecure() {
+		if (secureGitClients != null) {
+			// secure git clients already exist
+			return;
+		}
+
+		secureGitClients = new ArrayList<GitClient>();
+		GitClient secureGitClient;
+
+		ConfigPersistenceManager.setGitUris("HTTP", SECURE_GIT_URIS.get(0));
+		ConfigPersistenceManager.setDefaultBranches("HTTP", "master");
+		ConfigPersistenceManager.setAuthMethods("HTTP", "HTTP");
+		ConfigPersistenceManager.setUsernames("HTTP", "httpuser");
+		ConfigPersistenceManager.setTokens("HTTP", "httpP@ssw0rd");
+		secureGitClient = GitClient.getOrCreate("HTTP");
+		secureGitClients.add(secureGitClient);
+
+		ConfigPersistenceManager.setGitUris("GITHUB", SECURE_GIT_URIS.get(1));
+		ConfigPersistenceManager.setDefaultBranches("GITHUB", "master");
+		ConfigPersistenceManager.setAuthMethods("GITHUB", "GITHUB");
+		ConfigPersistenceManager.setUsernames("GITHUB", "githubuser");
+		ConfigPersistenceManager.setTokens("GITHUB", "g1thubT0ken");
+		secureGitClient = GitClient.getOrCreate("GITHUB");
+		secureGitClients.add(secureGitClient);
+
+		ConfigPersistenceManager.setGitUris("GITLAB", SECURE_GIT_URIS.get(2));
+		ConfigPersistenceManager.setDefaultBranches("GITLAB", "master");
+		ConfigPersistenceManager.setAuthMethods("GITLAB", "GITLAB");
+		ConfigPersistenceManager.setUsernames("GITLAB", "gitlabuser");
+		ConfigPersistenceManager.setTokens("GITLAB", "g1tl@bT0ken");
+		secureGitClient = GitClient.getOrCreate("GITLAB");
+		secureGitClients.add(secureGitClient);
 	}
 
 	@Before
@@ -140,6 +163,26 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (GIT_URI != null) {
 			return GIT_URI;
 		}
+		return getUriString();
+	}
+
+	private static List<String> getExampleUris() {
+		if (SECURE_GIT_URIS != null) {
+			return SECURE_GIT_URIS;
+		}
+		List<String> secureUris = new ArrayList<String>();
+		for (int i = 0; i < 3; i++) {
+			secureUris.add(getUriString());
+		}
+		return secureUris;
+	}
+
+	/**
+	 * Creates a temp directory that is used to mock a remote repository URI.
+	 * 
+	 * @return URI as a String.
+	 */
+	private static String getUriString() {
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");
@@ -150,15 +193,26 @@ public abstract class TestSetUpGit extends TestSetUp {
 			remoteRepo.create(true);
 			uri = remoteRepo.getDirectory().getAbsolutePath();
 		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
+			e.printStackTrace();
 		}
-		GIT_URI = uri;
 		return uri;
 	}
 
-	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
+	private static void makeExampleCommit() {
+		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
+		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
+				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
+		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
+		URL pathUrl = classLoader.getResource(pathToExtractionVCSTestFile);
+		File fileA = new File(pathUrl.getFile());
+		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+	}
+
+	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(), targetName);
+		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
+				targetName);
 		try {
 			FileUtils.copyFile(inputFile, gitFile);
 			git.add().addFilepattern(gitFile.getName()).call();
@@ -168,14 +222,14 @@ public abstract class TestSetUpGit extends TestSetUp {
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (Exception e) {
-			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
-	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
+	private static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
-			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(),
+			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
 					filename);
 			PrintWriter writer = new PrintWriter(inputFile, "UTF-8");
 			writer.println(content);
@@ -187,11 +241,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
-			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
-	private static void setupBranchWithDecKnowledge() {
+	private static void setupFeatureBranch() {
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = getCurrentBranch();
@@ -202,7 +256,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		createBranch("featureBranch");
+		createBranch("TEST-4.feature.branch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
 		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
@@ -218,17 +272,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
 		makeExampleCommit(fileB, testFileTargetName,
 				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
-		returnToPreviousBranch(currentBranch, git);
-	}
-
-	private static void setupBranchForTranscriber() {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = getCurrentBranch();
-		createBranch("TEST-4.transcriberBranch");
-
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
-
 		returnToPreviousBranch(currentBranch, git);
 	}
 
@@ -260,15 +305,14 @@ public abstract class TestSetUpGit extends TestSetUp {
 			try {
 				git.checkout().setName(branch).call();
 				git.pull();
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	@AfterClass
 	public static void tidyUp() {
-		// gitClient.closeAll();
 		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}

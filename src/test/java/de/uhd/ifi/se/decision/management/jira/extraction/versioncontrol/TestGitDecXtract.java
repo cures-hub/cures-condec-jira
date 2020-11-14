@@ -36,7 +36,7 @@ public class TestGitDecXtract extends TestSetUpGit {
 		Iterator<Ref> it = featureBranches.iterator();
 		while (it.hasNext()) {
 			Ref value = it.next();
-			if (value.getName().endsWith("featureBranch")) {
+			if (value.getName().endsWith("TEST-4.feature.branch")) {
 				featureBranch = value;
 				return;
 			}
