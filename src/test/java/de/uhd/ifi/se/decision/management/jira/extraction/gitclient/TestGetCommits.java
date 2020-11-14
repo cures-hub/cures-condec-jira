@@ -17,9 +17,9 @@ public class TestGetCommits extends TestSetUpGit {
 
 	@Test
 	public void testBranch() {
-		Ref featureBranch = gitClient.getBranches("featureBranch").get(0);
+		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
 		List<RevCommit> commits = gitClient.getCommits(featureBranch);
-		assertEquals(11, commits.size());
+		assertEquals(13, commits.size());
 	}
 
 	@Test

@@ -37,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  *      (see ConfigPersistenceManager class).
  * @pro This is more efficient than recreating the test git repository all the
  *      time.
- * @con Changes to the git repository (e.g. new commits) during testing has an
+ * @con Changes to the git repository (e.g. new commits) during testing have an
  *      effect on the test cases that follow. The order of test cases is
  *      arbitrary.
  * @alternative We could have more than one mock git repositories for testing!
@@ -75,8 +75,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
-		// createBranch("master");
-		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
 		makeExampleCommit("GodClass.java",
@@ -120,9 +118,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-62 add class A");
-		setupBranchWithDecKnowledge();
-		// TODO Remove this method and only use one branch
-		setupBranchForTranscriber();
+		setupFeatureBranch();
 	}
 
 	@BeforeClass
@@ -142,7 +138,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		ConfigPersistenceManager.setTokens("HTTP", "httpP@ssw0rd");
 		secureGitClient = GitClient.getOrCreate("HTTP");
 		secureGitClients.add(secureGitClient);
-		
+
 		ConfigPersistenceManager.setGitUris("GITHUB", SECURE_GIT_URIS.get(1));
 		ConfigPersistenceManager.setDefaultBranches("GITHUB", "master");
 		ConfigPersistenceManager.setAuthMethods("GITHUB", "GITHUB");
@@ -150,7 +146,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		ConfigPersistenceManager.setTokens("GITHUB", "g1thubT0ken");
 		secureGitClient = GitClient.getOrCreate("GITHUB");
 		secureGitClients.add(secureGitClient);
-		
+
 		ConfigPersistenceManager.setGitUris("GITLAB", SECURE_GIT_URIS.get(2));
 		ConfigPersistenceManager.setDefaultBranches("GITLAB", "master");
 		ConfigPersistenceManager.setAuthMethods("GITLAB", "GITLAB");
@@ -175,7 +171,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (GIT_URI != null) {
 			return GIT_URI;
 		}
-		String uri = "";
+		String uri = getUriString();
 		try {
 			File remoteDir = File.createTempFile("remote", "");
 			remoteDir.delete();
@@ -195,26 +191,38 @@ public abstract class TestSetUpGit extends TestSetUp {
 		if (SECURE_GIT_URIS != null) {
 			return SECURE_GIT_URIS;
 		}
-		List<String> uris = new ArrayList<String>();
-		for (int i = 0; i <3; i++) {
-			try {
-				File remoteDir = File.createTempFile("remote", "");
-				remoteDir.delete();
-				remoteDir.mkdirs();
-				RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
-				Repository remoteRepo = fileKey.open(false);
-				remoteRepo.create(true);
-				uris.add(remoteRepo.getDirectory().getAbsolutePath());
-			} catch (IOException e) {
-				LOGGER.error(e.getMessage());
-			}
+		SECURE_GIT_URIS = new ArrayList<String>();
+		for (int i = 0; i < 3; i++) {
+			SECURE_GIT_URIS.add(getUriString());
 		}
-		SECURE_GIT_URIS = uris;
-		return uris;
+		return SECURE_GIT_URIS;
 	}
+
+	/**
+	 * Creates a temp directory that is used to mock a remote repository URI.
+	 * 
+	 * @return URI as a String.
+	 */
+	private static String getUriString() {
+		String uri = "";
+		try {
+			File remoteDir = File.createTempFile("remote", "");
+			remoteDir.delete();
+			remoteDir.mkdirs();
+			RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
+			Repository remoteRepo = fileKey.open(false);
+			remoteRepo.create(true);
+			uri = remoteRepo.getDirectory().getAbsolutePath();
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return uri;
+	}
+
 	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(), targetName);
+		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
+				targetName);
 		try {
 			FileUtils.copyFile(inputFile, gitFile);
 			git.add().addFilepattern(gitFile.getName()).call();
@@ -247,7 +255,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	private static void setupBranchWithDecKnowledge() {
+	private static void setupFeatureBranch() {
 		String firstCommitMessage = "First message";
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = getCurrentBranch();
@@ -258,7 +266,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
-		createBranch("featureBranch");
+		createBranch("TEST-4.feature.branch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
 		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
@@ -274,17 +282,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
 		makeExampleCommit(fileB, testFileTargetName,
 				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
-		returnToPreviousBranch(currentBranch, git);
-	}
-
-	private static void setupBranchForTranscriber() {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = getCurrentBranch();
-		createBranch("TEST-4.transcriberBranch");
-
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
-
 		returnToPreviousBranch(currentBranch, git);
 	}
 
