@@ -45,13 +45,11 @@ public class TestGenerateCommentString extends TestSetUpGit {
 
 	@Test
 	public void testIssueMessageWithAdditionalText() {
-		for (String GIT_URI : GIT_URIS) {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(1);
-		String commitMetaData = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
+		String commitMetaData = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URIS.get(0) + " "
 				+ "refs/remotes/origin/TEST-4.transcriberBranch\r\n" + "Commit Hash: ";
-
 		assertEquals("{issue}This is an issue!{issue} But I love pizza!" + commitMetaData + commit.getName(),
 				transcriber.generateCommentString(commit, branch));
-		}
+	
 	}
 }

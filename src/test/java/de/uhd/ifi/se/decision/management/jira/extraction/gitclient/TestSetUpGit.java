@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
@@ -56,15 +57,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
-		String uris_with_semicolon = "";
-		for (String GIT_URI : GIT_URIS) {
-			uris_with_semicolon += GIT_URI + ";;";
-		}
-		ConfigPersistenceManager.setGitUris("TEST", uris_with_semicolon.substring(0, uris_with_semicolon.length() - 2));
-		ConfigPersistenceManager.setDefaultBranches("TEST", "master;;master;;master;;master");
-		ConfigPersistenceManager.setAuthMethods("TEST", "NONE;;HTTP;;GITHUB;;GITLAB");
-		ConfigPersistenceManager.setUsernames("TEST", ";;httpuser;;githubuser;;gitlabuser");
-		ConfigPersistenceManager.setTokens("TEST", ";;httppassword;;githubtoken;;gitlabtoken");
+		int iter = 0;
+		String git_uri_strings = "";
+		boolean pleaseContinue = false;
 		for (String GIT_URI : GIT_URIS) {
 			if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
 					&& gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().exists()) {
@@ -72,30 +67,84 @@ public abstract class TestSetUpGit extends TestSetUp {
 				return;
 			}
 			ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
+			switch (iter) {
+				case 0:
+					ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
+					git_uri_strings = GIT_URI;
+					ConfigPersistenceManager.setDefaultBranches("TEST", "master");
+					ConfigPersistenceManager.setAuthMethods("TEST", "NONE");
+					ConfigPersistenceManager.setUsernames("TEST", "");
+					ConfigPersistenceManager.setTokens("TEST", "");	
+					break;
+					
+				case 1:
+					ConfigPersistenceManager.setGitUris("TEST", git_uri_strings + ";;" + GIT_URI);
+					git_uri_strings += ";;" + GIT_URI;
+					ConfigPersistenceManager.setDefaultBranches("TEST", "master;;master");
+					ConfigPersistenceManager.setAuthMethods("TEST", "NONE;;HTTP");
+					ConfigPersistenceManager.setUsernames("TEST", ";;httpuser");
+					ConfigPersistenceManager.setTokens("TEST", ";;httppassword");	
+					break;
+				
+				case 2:
+					ConfigPersistenceManager.setGitUris("TEST", git_uri_strings + ";;" + GIT_URI);
+					git_uri_strings += ";;" + GIT_URI;
+					ConfigPersistenceManager.setDefaultBranches("TEST", "master;;master;;master");
+					ConfigPersistenceManager.setAuthMethods("TEST", "NONE;;HTTP;;GITHUB");
+					ConfigPersistenceManager.setUsernames("TEST", ";;httpuser;;githubuser");
+					ConfigPersistenceManager.setTokens("TEST", ";;httppassword;;githubtoken");	
+					break;
+					
+				case 3:
+					ConfigPersistenceManager.setGitUris("TEST", git_uri_strings + ";;" + GIT_URI);
+					git_uri_strings += ";;" + GIT_URI;
+					ConfigPersistenceManager.setDefaultBranches("TEST", "master;;master;;master;;master");
+					ConfigPersistenceManager.setAuthMethods("TEST", "NONE;;HTTP;;GITHUB;;GITLAB");
+					ConfigPersistenceManager.setUsernames("TEST", ";;httpuser;;githubuser;;gitlabuser");
+					ConfigPersistenceManager.setTokens("TEST", ";;httppassword;;githubtoken;;gitlabtoken");	
+					break;
+
+				default:
+					return;
+			}
 			String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
 			String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
 					+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
 			String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 			File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
-			List<String> uris = new ArrayList<String>();
-			uris.add(GIT_URI);
 			gitClient = GitClient.getOrCreate("TEST");
 			if (!gitClient.getDefaultBranchCommits().isEmpty()) {
-				return;
+				for (Ref featureBranch : gitClient.getBranches()) {
+					if (pleaseContinue || gitClient.getRepoUriFromBranch(featureBranch) == GIT_URI) {
+						pleaseContinue = true;
+						break;
+					}
+				}
+				if (pleaseContinue) {
+					continue;
+				}
 			}
+			System.out.println();
 			// createBranch("master");
 			// above line will log errors for pulling from still empty remote repositry.
 			makeExampleCommit(GIT_URI, "readMe.txt", "TODO Write ReadMe", "Init Commit");
+			System.out.println("FILE WITH DECISION KNOWLEDGE");
 			makeExampleCommit(GIT_URI, fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+			System.out.println("DEVELOP GREAT SOFTWARE");
+			String issueKeyPrefix = "";
+			if (iter > 0) {
+				issueKeyPrefix = Integer.toString(iter);
+			}
+			System.out.println("Issue Key Prefix: " + issueKeyPrefix);
 			makeExampleCommit(GIT_URI, "GodClass.java",
 					"public class GodClass {"
 							+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}",
-					"TEST-12: Develop great software");
+					"TEST-" + issueKeyPrefix + "12: Develop great software");
 			makeExampleCommit(GIT_URI, "Untangled.java",
 					"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
 							+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
 							+ "    }\n" + "}\n",
-					"TEST-26 add main");
+					"TEST-" + issueKeyPrefix + "26 add main");
 			makeExampleCommit(GIT_URI, "Untangled2.java",
 					"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
 							+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
@@ -104,7 +153,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 							+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
 							+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n" + "\n"
 							+ "\n" + "}\n",
-					"TEST-26 add class d");
+					"TEST-" + issueKeyPrefix + "26 add class d");
 
 			makeExampleCommit(GIT_URI, "Tangled1.java",
 					"package de.uhd.ifi.se.decision.management.jira;\n" + "public class E {\n" + "\n"
@@ -115,7 +164,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 							+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
 							+ "            for(int j =0; j < a; j++){\n" + "                LOGGER.info((c);\n"
 							+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
-					"TEST-26 add class e");
+					"TEST-" + issueKeyPrefix + "26 add class e");
 
 			makeExampleCommit(GIT_URI, "Tangled2.java",
 					"package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" + "public class A {\n" + "\n"
@@ -127,10 +176,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 							+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
 							+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
 							+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
-					"TEST-62 add class A");
+					"TEST-" + issueKeyPrefix + "62 add class A");
 			setupBranchWithDecKnowledge(GIT_URI);
 			// TODO Remove this method and only use one branch
 			setupBranchForTranscriber(GIT_URI);
+			iter++;
 		}
 	}
 
@@ -150,7 +200,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			return GIT_URIS;
 		}
 		List<String> uris = new ArrayList<String>();
-		for (int i = 0; i <3; i++) {
+		for (int i = 0; i < 4; i++) {
 			String uri = "";
 			try {
 				File remoteDir = File.createTempFile("remote", "");
@@ -180,6 +230,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			commitTime = commitTime + 86400;
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
+			System.out.println("Created commit: " + commitMessage);
 		} catch (Exception e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
 		}
@@ -199,6 +250,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			commitTime = commitTime + 86400;
 			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
 			git.push().setRemote("origin").call();
+			System.out.println("Created commit: " + commitMessage);
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
 		}
@@ -221,14 +273,15 @@ public abstract class TestSetUpGit extends TestSetUp {
 		makeExampleCommit(GIT_URI, "GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
 				"Second message");
 
+		System.out.println("HOUSTON WE HAVE A PROBLEM");
 		makeExampleCommit(GIT_URI, "HermesGodClass.java",
 				"public class HermesGodClass {" + "//@issue:1st code issue in one-line comment in HermesGodClass"
 						+ "\r\n/*\r\n@issue:2nd issue in comment block*/" + "\r\n/**\r\n* @issue:3rd issue in javadoc"
 						+ "\r\n*\r\n* @alternative:1st alt in javadoc*/" + "\r\n}",
-				"TEST-12: Develop great software" + "//[issue]Huston we have a small problem..[/issue]" + "\r\n"
-						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
-						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
-						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
+				"TEST-12: Develop great software" + "\r\n" + "// [issue]Houston, we have a small problem...[/issue]" + "\r\n"
+						+ "// [alternative]ignore it![/alternative]" + "\r\n" + "// [pro]ignorance is bliss[/pro]"
+						+ "\r\n" + "// [decision]solve it ASAP![/decision]" + "\r\n"
+						+ "// [pro]life is valuable, prevent even smallest risks[/pro]");
 		makeExampleCommit(GIT_URI, fileB, testFileTargetName,
 				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
 		returnToPreviousBranch(currentBranch, git);

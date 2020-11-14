@@ -42,6 +42,7 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 		expectedMatrix[0][2] = 2;
 		expectedMatrix[1][0] = 2;
 		expectedMatrix[2][0] = 2;
+		System.out.println(matrix);
 		Assert.assertArrayEquals(expectedMatrix, matrix);
 
 		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();

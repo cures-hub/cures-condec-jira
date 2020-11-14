@@ -18,7 +18,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	public void testGetFeatureBranchCommitsByRef() {
 		Ref featureBranch = gitClient.getBranches("featureBranch").get(0);
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
-		assertEquals(4, commits.size());
+		assertEquals(16, commits.size());
 
 		// oldest commits come first
 		assertTrue(commits.get(0).getCommitTime() < commits.get(1).getCommitTime());
@@ -36,7 +36,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(issue);
-		assertEquals(2, commits.size());
+		assertEquals(32, commits.size());
 	}
 
 	@Test

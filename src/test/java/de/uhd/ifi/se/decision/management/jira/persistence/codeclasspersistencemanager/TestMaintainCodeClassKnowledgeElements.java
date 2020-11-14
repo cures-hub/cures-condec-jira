@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 		KnowledgeElement classElement = TestInsertKnowledgeElement.createTestCodeClass();
 		codeClassPersistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(diff);
-		assertEquals(4, codeClassPersistenceManager.getKnowledgeElements().size());
+		assertEquals(1, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test

@@ -19,11 +19,7 @@ public class TestGetBranches extends TestSetUpGit {
 	@Test
 	public void testGetAllBranches() {
 		List<Ref> remoteBranches = gitClient.getBranches();
-		assertEquals(3, remoteBranches.size());
-		for (Ref branch : remoteBranches) {
-			System.out.println(branch.getName());
-		}
-
+		assertEquals(12, remoteBranches.size());
 		remoteBranches = gitClient.getGitClientsForSingleRepos().get(0).getBranches();
 		assertEquals(3, remoteBranches.size());
 	}

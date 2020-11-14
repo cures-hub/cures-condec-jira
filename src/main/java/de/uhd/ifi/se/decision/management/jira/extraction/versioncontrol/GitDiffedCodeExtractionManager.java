@@ -242,7 +242,7 @@ public class GitDiffedCodeExtractionManager {
 
 	/* Currently only Java parser is available. */
 	private CodeCommentParser getCodeCommentParser(String resultingFileName) {
-		if (resultingFileName.toLowerCase().endsWith(".java")) {
+		if (resultingFileName != null && resultingFileName.toLowerCase().endsWith(".java")) {
 			return new JavaCodeCommentParser();
 		}
 		// TODO Replace returning null with Optional<> everywhere to avoid
