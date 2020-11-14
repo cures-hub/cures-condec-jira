@@ -48,6 +48,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	public static String GIT_URI = getExampleUri();
 	protected static GitClient gitClient;
+	public static List<String> SECURE_GIT_URIS = getExampleUris();
+	protected static List<GitClient> secureGitClients;
 	protected MockIssue mockJiraIssueForGitTests;
 	protected MockIssue mockJiraIssueForGitTestsTangled;
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
@@ -67,8 +69,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
 		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		File fileA = new File(classLoader.getResource(pathToExtractionVCSTestFile).getFile());
-		List<String> uris = new ArrayList<String>();
-		uris.add(GIT_URI);
 		ConfigPersistenceManager.setGitUris("TEST", GIT_URI);
 		ConfigPersistenceManager.setDefaultBranches("TEST", "master");
 		gitClient = GitClient.getOrCreate("TEST");
@@ -125,6 +125,41 @@ public abstract class TestSetUpGit extends TestSetUp {
 		setupBranchForTranscriber();
 	}
 
+	@BeforeClass
+	public static void setUpBeforeClassSecure() {
+		if (secureGitClients != null) {
+			// secure git clients already exist
+			return;
+		}
+
+		secureGitClients = new ArrayList<GitClient>();
+		GitClient secureGitClient;
+
+		ConfigPersistenceManager.setGitUris("HTTP", SECURE_GIT_URIS.get(0));
+		ConfigPersistenceManager.setDefaultBranches("HTTP", "master");
+		ConfigPersistenceManager.setAuthMethods("HTTP", "HTTP");
+		ConfigPersistenceManager.setUsernames("HTTP", "httpuser");
+		ConfigPersistenceManager.setTokens("HTTP", "httpP@ssw0rd");
+		secureGitClient = GitClient.getOrCreate("HTTP");
+		secureGitClients.add(secureGitClient);
+		
+		ConfigPersistenceManager.setGitUris("GITHUB", SECURE_GIT_URIS.get(1));
+		ConfigPersistenceManager.setDefaultBranches("GITHUB", "master");
+		ConfigPersistenceManager.setAuthMethods("GITHUB", "GITHUB");
+		ConfigPersistenceManager.setUsernames("GITHUB", "githubuser");
+		ConfigPersistenceManager.setTokens("GITHUB", "g1thubT0ken");
+		secureGitClient = GitClient.getOrCreate("GITHUB");
+		secureGitClients.add(secureGitClient);
+		
+		ConfigPersistenceManager.setGitUris("GITLAB", SECURE_GIT_URIS.get(2));
+		ConfigPersistenceManager.setDefaultBranches("GITLAB", "master");
+		ConfigPersistenceManager.setAuthMethods("GITLAB", "GITLAB");
+		ConfigPersistenceManager.setUsernames("GITLAB", "gitlabuser");
+		ConfigPersistenceManager.setTokens("GITLAB", "g1tl@bT0ken");
+		secureGitClient = GitClient.getOrCreate("GITLAB");
+		secureGitClients.add(secureGitClient);
+	}
+
 	@Before
 	public void setUp() {
 		init();
@@ -156,6 +191,27 @@ public abstract class TestSetUpGit extends TestSetUp {
 		return uri;
 	}
 
+	private static List<String> getExampleUris() {
+		if (SECURE_GIT_URIS != null) {
+			return SECURE_GIT_URIS;
+		}
+		List<String> uris = new ArrayList<String>();
+		for (int i = 0; i <3; i++) {
+			try {
+				File remoteDir = File.createTempFile("remote", "");
+				remoteDir.delete();
+				remoteDir.mkdirs();
+				RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
+				Repository remoteRepo = fileKey.open(false);
+				remoteRepo.create(true);
+				uris.add(remoteRepo.getDirectory().getAbsolutePath());
+			} catch (IOException e) {
+				LOGGER.error(e.getMessage());
+			}
+		}
+		SECURE_GIT_URIS = uris;
+		return uris;
+	}
 	protected static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getDirectory().getParent(), targetName);
