@@ -108,14 +108,10 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return getKnowledgeElement(element.getId());
 	}
 
-	public KnowledgeElement getKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
+	public KnowledgeElement getKnowledgeElementByName(String name) {
 		KnowledgeElement element = null;
-		String issueKeysWithRemove = issueKeys;
-		if (issueKeys.contains("-")) {
-			issueKeysWithRemove = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
-		}
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeysWithRemove))) {
+				Query.select().where("FILE_NAME = ?", name))) {
 			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
@@ -230,22 +226,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return newElement;
 	}
 
-	private String removeProjectKey(String oldString, String projectKey) {
-		String newString = "";
-		for (String key : oldString.split(";")) {
-			String keyWithRemove = key.replace(projectKey + "-", "");
-			newString = newString + keyWithRemove + ";";
-		}
-		return newString;
-	}
-
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
 		KnowledgeElement existingElement = new KnowledgeElement();
 		if (element.getId() > 0) {
 			existingElement = getKnowledgeElement(element);
 		} else {
-			existingElement = getKnowledgeElementByNameAndIssueKeys(element.getSummary(),
-					removeProjectKey(element.getDescription(), element.getProject().getProjectKey()));
+			existingElement = getKnowledgeElementByName(element.getSummary());
 		}
 		if (existingElement != null) {
 			return existingElement;
@@ -267,7 +253,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				issueKeys = issueKeys.substring(0, issueKeys.length() - 2);
 			}
 		}
-		databaseEntry.setJiraIssueKeys(issueKeys);
 		databaseEntry.setFileName(element.getSummary());
 	}
 
@@ -337,7 +322,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(changedFile.getName(), "");
+		KnowledgeElement element = getKnowledgeElementByName(changedFile.getName());
 		deleteKnowledgeElement(element, user);
 		diffAdd(user, ccExtractor, changedFile);
 	}

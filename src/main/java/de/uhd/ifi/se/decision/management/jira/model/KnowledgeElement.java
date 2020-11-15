@@ -112,11 +112,7 @@ public class KnowledgeElement {
 		}
 		this.id = entry.getId();
 		this.summary = entry.getFileName();
-		StringBuilder issueKeys = new StringBuilder();
-		for (String key : entry.getJiraIssueKeys().split(";")) {
-			issueKeys.append(entry.getProjectKey()).append("-").append(key).append(";");
-		}
-		this.description = issueKeys.toString();
+		this.description = entry.getFileName();
 		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
 		this.key = entry.getProjectKey() + "-" + entry.getId();
 		this.documentationLocation = DocumentationLocation.COMMIT;
