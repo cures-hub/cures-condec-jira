@@ -414,4 +414,19 @@ public class ChangedFile extends KnowledgeElement {
 		this.jiraIssueKeys = jiraIssueKeys;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof ChangedFile)) {
+			return false;
+		}
+		ChangedFile changedFile = (ChangedFile) object;
+		return getName().equals(changedFile.getName());
+	}
+
 }
