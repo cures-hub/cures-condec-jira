@@ -1,6 +1,6 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-<div class="configproject">
+<div class="dynamic-content">
 	<form class="aui">
 		<div class="field-group">
 			<label for="${selectID}">Project:</label>
@@ -60,13 +60,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     using jquery instead, which manages gadgets.
  */
 $(document).ready(function() {
-  if (!window.conDecBranchesDashboard) {
-      console.error('Could not find required resources!');
-      errorNode = document.getElementById("condec-branches-dashboard-fatal-error${dashboardUID}");
-      errorNode.classList.remove("hidden");
-      return;
-  }
-  else {
     function projectSelectorOnchange(event) {
         projectName = event.target.value
         selectedOptionIndex = event.target.options.selectedIndex
@@ -75,7 +68,6 @@ $(document).ready(function() {
     }
     selectNode = document.getElementById("${selectID}");
     selectNode.addEventListener('change', projectSelectorOnchange);
-  }
 });
 </script>
 <!-- TODO refactor ids, classes here and in report page for the overlay -->

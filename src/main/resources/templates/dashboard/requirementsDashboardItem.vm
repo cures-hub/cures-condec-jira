@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-<div class="configproject" id="configproject">
+<div class="dynamic-content" id="configproject">
     <form class="aui" id="configFormProject">
         <div class="field-group">
             <label for="project-input">Project:</label>
@@ -14,7 +14,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         </div>
     </form>
 </div>
-<div class="configissuetype hidden" id="configissuetype">
+<div class="dynamic-content hidden" id="configissuetype">
     <form class="aui" id="configFormIssue">
         <div class="field-group">            
             <input type="hidden" name="project" value=$projectKey>
@@ -161,12 +161,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 <script>
 	ConDecReqDash.init("$showDiv");
     $(document).ready(function () {		
-        if (!window.ConDecReqDash) {
-            console.error('Could not find required resources!');
-            errorNode = document.getElementById("condec-req-dashboard-fatal-error");
-            errorNode.classList.remove("hidden");
-            return;
-        } else {
             function projectSelectorOnchange(event) {
                 projectName = event.target.value
                 selectedOptionIndex = event.target.options.selectedIndex
@@ -176,7 +170,5 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
             //selectNode = document.getElementById("${selectID}");
             //selectNode.addEventListener('change', projectSelectorOnchange);
-        }
-
     });
 </script>
