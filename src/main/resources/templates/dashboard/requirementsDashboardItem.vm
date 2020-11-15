@@ -29,7 +29,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </form>
 
 </div>
-<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents hidden">
+<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 </div>
 <div class="condec-dashboard-contents filtering hidden" id="dynamic-content-filter">
@@ -94,32 +94,32 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 <div class="condec-dashboard-contents results hidden" id="dynamic-content-general">
     <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
     <h3>General Metrics:</h3>
-    <div id="boxplot-CommentsPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="boxplot-DecisionsPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="boxplot-IssuesPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="piechartInteger-ReqCodeSummary" class="notsetyet piechart"></div>
-    <div id="piechartInteger-DecSources" class="notsetyet piechart"></div>
+    <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+    <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
+    <div id="piechartInteger-DecSources" class="piechart"></div>
 </div>
 
 
 <div class="condec-dashboard-contents results hidden" id="dynamic-content-completeness">
     <h3>Rationale Completeness Metrics</h3>
     <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
-    <div id="piechartRich-IssuesSolvedByDecision" class="notsetyet piechart"></div>
-    <div id="piechartRich-DecisionsSolvingIssues" class="notsetyet piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="notsetyet piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForDecision" class="notsetyet piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="notsetyet piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForDecision" class="notsetyet piechart"></div>
+    <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
+    <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
 </div>
 
 <div class="condec-dashboard-contents results hidden" id="dynamic-content-basics">
     <h3>$issueType Completeness Metrics</h3>
     <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
-    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
-    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
-    <div id="piechartInteger-RelevantSentences" class="notsetyet piechart"></div>
-    <div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
+    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
+    <div id="piechartInteger-RelevantSentences" class="piechart"></div>
+    <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
 </div>
 
 

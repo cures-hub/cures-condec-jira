@@ -9,20 +9,17 @@
     border: 1px solid grey;
 }
 
+.condec-dashboard-contents.init {
+    height: 400px;
+    min-height: 400px;
+}
+
 .condec-dashboard-contents.waiting {
     border-color: orange;
 }
 
-.condec-dashboard-contents.processing {
-    border: 1px solid grey;
-}
-
 .condec-dashboard-contents.results {
     border: 1px solid grey;
-}
-
-.notsetyet {
-    border: 2px solid red;
 }
 
 .overlay {
