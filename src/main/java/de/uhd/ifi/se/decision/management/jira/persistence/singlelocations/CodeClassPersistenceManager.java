@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -299,15 +300,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public void maintainCodeClassKnowledgeElements(Diff diff) {
-		List<KnowledgeElement> existingElements = getKnowledgeElements();
-		if (existingElements == null || existingElements.isEmpty()) {
-			extractAllCodeClasses(null);
-			return;
-		}
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
 		}
-		// LOGGER.info(("maintainCodeClassKnowledgeElements");
 
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
@@ -338,13 +333,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		Set<String> jiraIssueKeys = ccExtractor.getJiraIssueKeysForFile(changedFile);
-		insertKnowledgeElement(changedFile, jiraIssueKeys, user);
+		insertKnowledgeElement(changedFile, new HashSet<>(), user);
 	}
 
 	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(changedFile.getName(),
-				getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile)));
+		KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(changedFile.getName(), "");
 		deleteKnowledgeElement(element, user);
 		diffAdd(user, ccExtractor, changedFile);
 	}
@@ -352,21 +345,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
 		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
 		for (KnowledgeElement element : elements) {
-			if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
-				deleteKnowledgeElement(element, user);
-			}
+			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
+			// deleteKnowledgeElement(element, user);
+			// }
 		}
 	}
-
-	private void extractAllCodeClasses(ApplicationUser user) {
-		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
-		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
-		for (ChangedFile codeClass : codeClasses) {
-			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
-			if (issueKeys != null && !issueKeys.isEmpty()) {
-				insertKnowledgeElement(codeClass, issueKeys, user);
-			}
-		}
-	}
-
 }

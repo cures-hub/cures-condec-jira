@@ -125,16 +125,17 @@ public class GitClientForSingleRepository {
 	public boolean fetch() {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		try {
-			// ObjectId oldHead = getRepository().resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
-
-				TrackingRefUpdate update = fetchResult.getTrackingRefUpdate(defaultBranchName);
-				if (update != null && !update.getNewObjectId().equals(update.getOldObjectId())) {
-					Diff diffSinceLastPull = getDiff(update.getOldObjectId(), update.getNewObjectId());
+				for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
+					String refName = updateRes.getLocalName();
+					if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
+						continue;
+					}
+					Diff diffSinceLastPull = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
 					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
 					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
 				}
@@ -160,6 +161,12 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
+			List<RevCommit> commits = getDefaultBranchCommits();
+			if (!commits.isEmpty()) {
+				Diff diffSinceLastPull = getDiff(commits.get(0), commits.get(commits.size() - 1));
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+			}
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
