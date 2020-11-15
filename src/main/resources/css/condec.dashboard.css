@@ -5,9 +5,8 @@
     padding: 1em;
 }
 
-.condec-dashboard-contents.init {
-    height: 400px;
-    min-height: 400px;
+.condec-dashboard-contents.filtering {
+    border: 1px solid grey;
 }
 
 .condec-dashboard-contents.waiting {
@@ -26,7 +25,7 @@
     border: 2px solid red;
 }
 
-#decKnowElementsOverlay {
+.overlay {
     position: fixed;
     z-index: 1;
     top: 0;
@@ -69,20 +68,4 @@
     cursor: pointer;
     display: inline-block;
     border: 1px solid #2f4554;
-}
-
-.condec-req-dashboard-no-project {
-    border: 2px dashed blue;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
-    height: 400px;
-    min-height: 400px;
-}
-
-.dynamic-content {
-    border: 1px solid grey;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
 }

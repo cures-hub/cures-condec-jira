@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-<div class="dynamic-content" id="configproject">
+<div class="condec-dashboard-contents filtering" id="configproject">
     <form class="aui" id="configFormProject">
         <div class="field-group">
             <label for="project-input">Project:</label>
@@ -14,7 +14,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         </div>
     </form>
 </div>
-<div class="dynamic-content hidden" id="configissuetype">
+<div class="condec-dashboard-contents filtering hidden" id="configissuetype">
     <form class="aui" id="configFormIssue">
         <div class="field-group">            
             <input type="hidden" name="project" value=$projectKey>
@@ -29,10 +29,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </form>
 
 </div>
-<div id="condec-req-dashboard-no-project" class="condec-req-dashboard-no-project hidden">
+<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 </div>
-<div class="dynamic-content hidden" id="dynamic-content-filter">
+<div class="condec-dashboard-contents filtering hidden" id="dynamic-content-filter">
     <h3>Filter:</h3>
     <form class="aui" id="configFormIssue">
         <input type="hidden" name="project" value=$project>
@@ -91,7 +91,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     Group Filter
     //-->
 </div>
-<div class="dynamic-content hidden" id="dynamic-content-general">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-general">
     <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
     <h3>General Metrics:</h3>
     <div id="boxplot-CommentsPerJiraIssue" class="notsetyet boxplot"></div>
@@ -102,7 +102,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 </div>
 
 
-<div class="dynamic-content hidden" id="dynamic-content-completeness">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-completeness">
     <h3>Rationale Completeness Metrics</h3>
     <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
     <div id="piechartRich-IssuesSolvedByDecision" class="notsetyet piechart"></div>
@@ -113,7 +113,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartRich-ProArgumentDocumentedForDecision" class="notsetyet piechart"></div>
 </div>
 
-<div class="dynamic-content hidden" id="dynamic-content-basics">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-basics">
     <h3>$issueType Completeness Metrics</h3>
     <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
     <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
@@ -146,17 +146,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
 </script>
 
-
-<!-- TODO: replace with AUI-styled or other with plugin consistent overlay implementations -->
-<div id="decKnowElementsOverlay" class="hidden overlay">
-    <div class="box">
-        <h1>
-            Involved decision knowledge elements:
-        </h1>
-        <div id="extractedDecKnowElements" class="contents">
-        </div>
-    </div>
-</div>
+#parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
 	ConDecReqDash.init("$showDiv");
