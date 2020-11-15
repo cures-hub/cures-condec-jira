@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Responsible for getting the commits that changed a certain file.
@@ -23,21 +22,15 @@ public class GitCodeClassExtractor {
 	private GitClient gitClient;
 
 	public GitCodeClassExtractor(String projectKey) {
-		if (projectKey == null) {
-			return;
-		}
 		gitClient = GitClient.getOrCreate(projectKey);
 	}
 
 	public List<ChangedFile> getCodeClasses() {
-		List<ChangedFile> codeClasses = new ArrayList<>();
 		if (gitClient == null) {
 			LOGGER.error("GitClient null");
-			return codeClasses;
+			return new ArrayList<>();
 		}
-
-		Diff diff = gitClient.getDiff(gitClient.getDefaultBranchCommits());
-		return diff.getChangedFiles();
+		return gitClient.getDiffOfEntireDefaultBranch().getChangedFiles();
 	}
 
 	// TODO Add constructor to KnowledgeElement

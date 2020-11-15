@@ -134,6 +134,19 @@ public class GitClient {
 	}
 
 	/**
+	 * @return {@link Diff} object for all commits on the default branch(es)
+	 *         containing the {@link ChangedFile}s. Each {@link ChangedFile} is
+	 *         created from a diff entry and contains the respective edit list.
+	 */
+	public Diff getDiffOfEntireDefaultBranch() {
+		List<RevCommit> allCommits = getDefaultBranchCommits();
+
+		// because first commit does not have a parent commit
+		allCommits.remove(0);
+		return getDiff(allCommits);
+	}
+
+	/**
 	 * @param jiraIssue
 	 *            a Jira issue object.
 	 * @return {@link Diff} object for a Jira issue containing the
@@ -318,6 +331,7 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
 		}
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
 	}
 

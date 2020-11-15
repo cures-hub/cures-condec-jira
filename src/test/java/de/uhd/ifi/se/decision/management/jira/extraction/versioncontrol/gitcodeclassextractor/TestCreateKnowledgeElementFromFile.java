@@ -40,7 +40,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testCreateKnowledgeElementFromFileProjectKeyNull() {
-		GitCodeClassExtractor extract = new GitCodeClassExtractor(null);
+		GitCodeClassExtractor extract = new GitCodeClassExtractor((String) null);
 		ChangedFile file = new ChangedFile("somePath");
 		assertNull(extract.createKnowledgeElementFromFile(file));
 	}

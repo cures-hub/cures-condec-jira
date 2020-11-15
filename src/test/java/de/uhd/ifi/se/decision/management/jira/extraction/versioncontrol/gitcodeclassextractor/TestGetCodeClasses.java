@@ -14,7 +14,7 @@ public class TestGetCodeClasses extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGetCodeClassesProjectKeyNull() {
-		GitCodeClassExtractor extractor = new GitCodeClassExtractor(null);
+		GitCodeClassExtractor extractor = new GitCodeClassExtractor((String) null);
 		assertTrue(extractor.getCodeClasses().isEmpty());
 	}
 
