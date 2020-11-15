@@ -20,9 +20,11 @@
 
 .condec-dashboard-contents.results {
     border: 1px solid grey;
+    margin: 1em;
+    padding: 1em;
 }
 
-.overlay {
+#decKnowElementsOverlay {
     position: fixed;
     z-index: 1;
     top: 0;

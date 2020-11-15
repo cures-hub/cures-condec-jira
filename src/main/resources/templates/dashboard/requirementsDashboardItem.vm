@@ -86,9 +86,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
         <input class="button submit" type="submit" value="Filter" id="select-button">
     </form>
-    <!--
-    Group Filter
-    //-->
 </div>
 <div class="condec-dashboard-contents results hidden" id="dynamic-content-general">
     <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
@@ -120,6 +117,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
 </div>
 
+#parse("templates/dashboard/navigationOverlay.vm")
+
 <script type="text/javascript">
     // initialize charts
     AJS.$("#knowledgeType-select").auiSelect2();
@@ -136,11 +135,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         ConDecReqDash.initializeChart("$name", "$title", "$purpose", dataMap);
         #end
     ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
-</script>
 
-#parse("templates/dashboard/navigationOverlay.vm")
-
-<script>
 	ConDecReqDash.init("$showDiv");
     $(document).ready(function () {		
             function projectSelectorOnchange(event) {
