@@ -94,8 +94,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		Map<String, String> tokens = project.getTokens();
 		assertEquals("master", defaultBranches.get(uris.get(0)));
 		assertEquals("HTTP", authMethods.get(uris.get(0)));
-		assertEquals("true", usernames.get(uris.get(0)));
-		assertEquals("true", tokens.get(uris.get(0)));
+		assertEquals("heinz.guenther", usernames.get(uris.get(0)));
+		assertEquals("P@ssw0rd!", tokens.get(uris.get(0)));
 	}
 
 	@Test

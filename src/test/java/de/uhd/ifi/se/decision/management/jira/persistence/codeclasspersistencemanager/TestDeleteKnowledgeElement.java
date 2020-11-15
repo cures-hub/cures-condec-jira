@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;

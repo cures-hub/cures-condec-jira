@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,22 +15,17 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Retrieves commits and code changes ({@link Diff}s) from one or more git
- * repositories.
- *
- * Multiple instances of this class are "thread-safe" in the limited way that
- * the checked-out branch files are stored in dedicated branch folders and can
- * be read. Modifying files is not supported.
+ * repositories. Modifying files is not supported.
  *
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
@@ -44,15 +38,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  *      plugin.
  */
 public class GitClient {
-
-	/**
-	 * @issue What is the best place to clone the git repo to?
-	 * @decision Clone git repo to JiraHome/data/condec-plugin/git!
-	 * @pro The Git integration for Jira plug-in clones its repos to a similar
-	 *      folder: JiraHome/data/git-plugin.
-	 */
-	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	public static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
 	// miliseconds
@@ -205,8 +190,9 @@ public class GitClient {
 
 	/**
 	 * @param featureBranch
-	 * @return String of Remote Repository Uri containing the given Branch or null
-	 *         if branch not contained in any Repo.
+	 *            as a {@link Ref} object.
+	 * @return String of remote repository URI containing the given branch. Returns
+	 *         null if branch is not contained in any repo.
 	 */
 	public String getRepoUriFromBranch(Ref featureBranch) {
 		if (featureBranch == null) {
@@ -278,15 +264,6 @@ public class GitClient {
 		}
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
-	}
-
-	/**
-	 * Closes all repositories.
-	 */
-	public void closeAll() {
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			gitClientForSingleRepo.close();
-		}
 	}
 
 	/**
@@ -366,9 +343,9 @@ public class GitClient {
 	public boolean deleteRepositories() {
 		boolean isDeleted = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			isDeleted = isDeleted && gitClientForSingleRepo.deleteRepository();
+			isDeleted = isDeleted && gitClientForSingleRepo.getFileSystemManager().deleteWorkingDirectory();
 		}
-		return isDeleted;
+		return isDeleted && GitRepositoryFileSystemManager.deleteProjectDirectory(projectKey);
 	}
 
 	/**
