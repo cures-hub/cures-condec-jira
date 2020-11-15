@@ -5,6 +5,10 @@
     padding: 1em;
 }
 
+.condec-dashboard-contents.filtering {
+    border: 1px solid grey;
+}
+
 .condec-dashboard-contents.init {
     height: 400px;
     min-height: 400px;
@@ -14,16 +18,10 @@
     border-color: orange;
 }
 
-.condec-dashboard-contents.processing {
-    border: 1px solid grey;
-}
-
 .condec-dashboard-contents.results {
     border: 1px solid grey;
-}
-
-.notsetyet {
-    border: 2px solid red;
+    margin: 1em;
+    padding: 1em;
 }
 
 #decKnowElementsOverlay {
@@ -69,34 +67,4 @@
     cursor: pointer;
     display: inline-block;
     border: 1px solid #2f4554;
-}
-
-.condec-req-dashboard-no-project {
-    border: 2px dashed blue;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
-    height: 400px;
-    min-height: 400px;
-}
-
-.dynamic-content {
-    border: 1px solid grey;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
-}
-
-.configproject {
-    border: 1px solid grey;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
-}
-
-.configissuetype {
-    border: 1px solid grey;
-    border-radius: 1em;
-    margin: 1em;
-    padding: 1em;
 }

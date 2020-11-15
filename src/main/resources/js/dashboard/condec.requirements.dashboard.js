@@ -29,7 +29,6 @@
     var dashboardContentNodeBasics;
     var dashboardProjectNode;
     var dashboardIssueTypeNode;
-    var dashboardSetupErrorNode;
     var dashboardNothingYetNode;
     var dashboardFilterNode;
     var showDiv;
@@ -44,7 +43,6 @@
             , "dynamic-content-basics"
             , "configproject"
             , "configissuetype"
-            , "condec-req-dashboard-fatal-error"
             , "condec-req-dashboard-no-project"
             , "dynamic-content-filter");
         if (showDiv == "configproject") {
@@ -71,13 +69,12 @@
         this.initializeChartForSources(divId, title, subtitle, dataMap);
     }
 
-    function getHTMLNodes(contentName1, contentName2, contentName4, projectName, issueTypeName, errorName, nothingYetName, filterName) {
+    function getHTMLNodes(contentName1, contentName2, contentName4, projectName, issueTypeName, nothingYetName, filterName) {
         dashboardContentNodeGeneral = document.getElementById(contentName1);
         dashboardContentNodeCompleteness = document.getElementById(contentName2);
         dashboardContentNodeBasics = document.getElementById(contentName4);
         dashboardProjectNode = document.getElementById(projectName);
         dashboardIssueTypeNode = document.getElementById(issueTypeName);
-        dashboardSetupErrorNode = document.getElementById(errorName);
         dashboardNothingYetNode = document.getElementById(nothingYetName);
         dashboardFilterNode = document.getElementById(filterName);
     }
@@ -89,7 +86,6 @@
         dashboardContentNodeBasics.classList.add(hiddenClass);
         dashboardProjectNode.classList.add(hiddenClass);
         dashboardIssueTypeNode.classList.add(hiddenClass);
-        dashboardSetupErrorNode.classList.add(hiddenClass);
         dashboardFilterNode.classList.add(hiddenClass);
         dashboardNothingYetNode.classList.remove(hiddenClass);
         node.classList.remove(hiddenClass);
