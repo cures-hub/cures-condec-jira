@@ -110,7 +110,7 @@ public class GitClient {
 	public boolean pullOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.pullOrClone();
+			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();
 		}
 		return isEverythingUpToDate;
 	}
