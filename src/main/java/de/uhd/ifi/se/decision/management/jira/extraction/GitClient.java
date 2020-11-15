@@ -140,6 +140,9 @@ public class GitClient {
 	 */
 	public Diff getDiffOfEntireDefaultBranch() {
 		List<RevCommit> allCommits = getDefaultBranchCommits();
+		if (allCommits.isEmpty()) {
+			return new Diff();
+		}
 
 		// because first commit does not have a parent commit
 		allCommits.remove(0);

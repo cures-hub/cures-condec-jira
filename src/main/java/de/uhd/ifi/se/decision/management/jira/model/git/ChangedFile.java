@@ -34,6 +34,9 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Models a changed file as part of a {@link Diff}.
@@ -51,7 +54,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
  * @con Checking out feature branches is not applicable for multiple users or
  *      analyzing multiple branches at once.
  */
-public class ChangedFile {
+public class ChangedFile extends KnowledgeElement {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
@@ -96,6 +99,8 @@ public class ChangedFile {
 		packageDistance = 0;
 		setCorrect(true);
 		jiraIssueKeys = new LinkedHashSet<>();
+		documentationLocation = DocumentationLocation.COMMIT;
+		type = KnowledgeType.CODE;
 	}
 
 	public ChangedFile(String fileContent) {
@@ -182,6 +187,11 @@ public class ChangedFile {
 			name = getNewFileNameFromTreeWalkPath();
 		}
 		return name;
+	}
+
+	@Override
+	public String getSummary() {
+		return getName();
 	}
 
 	private String getNewFileNameFromDiffEntry() {

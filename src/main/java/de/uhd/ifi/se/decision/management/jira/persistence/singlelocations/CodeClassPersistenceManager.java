@@ -157,16 +157,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	 *         all Jira issues.
 	 */
 	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, ApplicationUser user) {
-		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
-		KnowledgeElement element = codeClassExtractor.createKnowledgeElementFromFile(changedFile);
+		changedFile.setProject(projectKey);
 
 		for (String key : changedFile.getJiraIssueKeys()) {
 			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
 			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-			insertKnowledgeElement(element, user, parentElement);
+			insertKnowledgeElement(changedFile, user, parentElement);
 		}
 
-		return insertKnowledgeElement(element, user);
+		return insertKnowledgeElement(changedFile, user);
 	}
 
 	@Override
