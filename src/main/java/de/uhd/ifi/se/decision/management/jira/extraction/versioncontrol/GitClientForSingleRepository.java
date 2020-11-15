@@ -23,7 +23,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
@@ -36,6 +38,7 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
  * Retrieves commits and code changes (diffs) from one git repository.
@@ -125,17 +128,17 @@ public class GitClientForSingleRepository {
 			// ObjectId oldHead = getRepository().resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
-				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
+
+				TrackingRefUpdate update = fetchResult.getTrackingRefUpdate(defaultBranchName);
+				if (update != null && !update.getNewObjectId().equals(update.getOldObjectId())) {
+					Diff diffSinceLastPull = getDiff(update.getOldObjectId(), update.getNewObjectId());
+					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+				}
 			}
-			// ObjectId newHead = getRepository().resolve("HEAD^{tree}");
-			// Diff diffSinceLastPull = getDiff(oldHead, newHead);
-			// if (!diffSinceLastPull.getChangedFiles().isEmpty()) {
-			// CodeClassPersistenceManager persistenceManager = new
-			// CodeClassPersistenceManager(projectKey);
-			// persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
-			// }
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
 			return false;
