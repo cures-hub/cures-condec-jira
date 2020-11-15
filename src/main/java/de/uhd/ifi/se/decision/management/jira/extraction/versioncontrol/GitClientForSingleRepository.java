@@ -135,9 +135,9 @@ public class GitClientForSingleRepository {
 					if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
 						continue;
 					}
-					Diff diffSinceLastPull = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
+					Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
 					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastFetch);
 				}
 			}
 		} catch (GitAPIException e) {

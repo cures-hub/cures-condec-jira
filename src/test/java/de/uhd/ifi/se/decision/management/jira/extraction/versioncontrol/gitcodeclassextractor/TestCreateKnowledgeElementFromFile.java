@@ -5,9 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -24,11 +21,11 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());
 		assertFalse(extract.getCodeClasses().isEmpty());
-		ChangedFile file = extract.getCodeClasses().get(0);
-		Set<String> list = new HashSet<>();
-		KnowledgeElement element = extract.createKnowledgeElementFromFile(file, list);
+		ChangedFile file = extract.getCodeClasses().get(1);
+		KnowledgeElement element = extract.createKnowledgeElementFromFile(file);
 		assertNotNull(element);
-		assertEquals(element.getSummary(), file.getName());
+		assertEquals("GodClass.java", element.getSummary());
+		assertEquals(0, file.getJiraIssueKeys().size());
 	}
 
 	@Test
@@ -37,18 +34,7 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
 		assertNotNull(extract.getCodeClasses());
 		assertFalse(extract.getCodeClasses().isEmpty());
-		Set<String> list = new HashSet<>();
-		assertNull(extract.createKnowledgeElementFromFile(null, list));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateKnowledgeElementFromFileKeysNull() {
-		GitCodeClassExtractor extract = new GitCodeClassExtractor("TEST");
-		assertNotNull(extract.getCodeClasses());
-		assertFalse(extract.getCodeClasses().isEmpty());
-		ChangedFile file = extract.getCodeClasses().get(0);
-		assertNull(extract.createKnowledgeElementFromFile(file, null));
+		assertNull(extract.createKnowledgeElementFromFile(null));
 	}
 
 	@Test
@@ -56,9 +42,6 @@ public class TestCreateKnowledgeElementFromFile extends TestSetUpGit {
 	public void testCreateKnowledgeElementFromFileProjectKeyNull() {
 		GitCodeClassExtractor extract = new GitCodeClassExtractor(null);
 		ChangedFile file = new ChangedFile("somePath");
-		Set<String> list = new HashSet<>();
-		list.add("Test");
-		assertNull(extract.createKnowledgeElementFromFile(file, list));
+		assertNull(extract.createKnowledgeElementFromFile(file));
 	}
-
 }

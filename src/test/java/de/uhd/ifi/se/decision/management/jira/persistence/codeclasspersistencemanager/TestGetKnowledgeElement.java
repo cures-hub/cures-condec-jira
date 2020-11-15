@@ -55,7 +55,7 @@ public class TestGetKnowledgeElement extends TestSetUp {
 	}
 
 	@Test
-	public void testGetKnowledgeElementByNameAndIssueKeys() {
+	public void testGetKnowledgeElementByName() {
 		assertEquals(classElement2, codeClassPersistenceManager.getKnowledgeElementByName(classElement.getSummary()));
 	}
 

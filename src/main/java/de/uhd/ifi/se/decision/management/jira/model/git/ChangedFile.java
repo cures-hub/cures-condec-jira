@@ -20,6 +20,8 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 
@@ -86,10 +89,13 @@ public class ChangedFile {
 	private CompilationUnit compilationUnit;
 	@JsonIgnore
 	private String fileContent;
+	@JsonIgnore
+	private Set<String> jiraIssueKeys;
 
 	public ChangedFile() {
-		this.packageDistance = 0;
-		this.setCorrect(true);
+		packageDistance = 0;
+		setCorrect(true);
+		jiraIssueKeys = new LinkedHashSet<>();
 	}
 
 	public ChangedFile(String fileContent) {
@@ -109,6 +115,14 @@ public class ChangedFile {
 		this.diffEntry = diffEntry;
 		this.editList = editList;
 		this.methodDeclarations = parseMethods();
+		try (RevWalk revWalk = new RevWalk(repository)) {
+			try {
+				RevCommit commit = revWalk.parseCommit(treeId);
+				jiraIssueKeys = CommitMessageParser.getJiraIssueKeys(commit.getFullMessage());
+			} catch (IOException e) {
+				LOGGER.error("Changed file could not be created. " + e.getMessage());
+			}
+		}
 	}
 
 	private String readFileContentFromDiffEntry(DiffEntry diffEntry, ObjectId treeId, Repository repository) {
@@ -376,4 +390,9 @@ public class ChangedFile {
 	public String getFileContent() {
 		return fileContent;
 	}
+
+	public Set<String> getJiraIssueKeys() {
+		return jiraIssueKeys;
+	}
+
 }

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -117,16 +116,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return element;
 	}
 
-	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
-		Long id = element.getId();
-		CodeClassInDatabase entry = null;
-		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("ID = ?", id))) {
-			entry = databaseEntry;
-		}
-		return entry;
-	}
-
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
@@ -167,17 +156,16 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	 *         id and key. Returns null if insertion failed. Establishes links to
 	 *         all Jira issues.
 	 */
-	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, Set<String> jiraIssueKeys,
-			ApplicationUser user) {
+	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, ApplicationUser user) {
 		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
-		KnowledgeElement element = codeClassExtractor.createKnowledgeElementFromFile(changedFile, jiraIssueKeys);
-		if (jiraIssueKeys != null && !jiraIssueKeys.isEmpty()) {
-			for (String key : jiraIssueKeys) {
-				Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
-				KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-				insertKnowledgeElement(element, user, parentElement);
-			}
+		KnowledgeElement element = codeClassExtractor.createKnowledgeElementFromFile(changedFile);
+
+		for (String key : changedFile.getJiraIssueKeys()) {
+			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
+			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
+			insertKnowledgeElement(element, user, parentElement);
 		}
+
 		return insertKnowledgeElement(element, user);
 	}
 
@@ -284,6 +272,16 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
+	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
+		Long id = element.getId();
+		CodeClassInDatabase entry = null;
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
+				Query.select().where("ID = ?", id))) {
+			entry = databaseEntry;
+		}
+		return entry;
+	}
+
 	public void maintainCodeClassKnowledgeElements(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
@@ -318,7 +316,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		insertKnowledgeElement(changedFile, new HashSet<>(), user);
+		insertKnowledgeElement(changedFile, user);
 	}
 
 	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
