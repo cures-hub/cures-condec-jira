@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.slf4j.Logger;
@@ -243,15 +242,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			}
 		}
 		databaseEntry.setFileName(element.getSummary());
-	}
-
-	// TODO Remove this database table column and replace it with generic links
-	public String getIssueListAsString(Set<String> list) {
-		String keys = "";
-		for (String key : list) {
-			keys = keys + key + ";";
-		}
-		return keys;
 	}
 
 	@Override
