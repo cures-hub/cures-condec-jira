@@ -27,8 +27,8 @@ public interface CommitMessageParser {
 
 	/**
 	 * @param commitMessage
-	 *            that might contain a Jira issue key, e.g., a commit message,
-	 *            branch name, or pull request title.
+	 *            that might contain a Jira issue key. Can also be a branch name or
+	 *            pull request title.
 	 * @return set of all mentioned Jira issue keys in upper case letters ordered by
 	 *         their appearance in the message.
 	 * 

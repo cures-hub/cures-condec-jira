@@ -461,6 +461,7 @@ public class KnowledgeElement {
 		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
 			return ((PartOfJiraIssueText) this).getJiraIssue();
 		}
+		// TODO Add ChangedFile
 		return null;
 	}
 

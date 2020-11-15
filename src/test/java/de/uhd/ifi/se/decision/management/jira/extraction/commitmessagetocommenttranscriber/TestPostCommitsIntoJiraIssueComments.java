@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.commitmessagetocommenttranscriptor;
+package de.uhd.ifi.se.decision.management.jira.extraction.commitmessagetocommenttranscriber;
 
 import static org.junit.Assert.assertEquals;
 

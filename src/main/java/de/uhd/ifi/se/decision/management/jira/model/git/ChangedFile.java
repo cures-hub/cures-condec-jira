@@ -397,12 +397,21 @@ public class ChangedFile extends KnowledgeElement {
 		// new File(repository.getWorkTree(), treeWalk.getPathString());
 	}
 
+	@Override
+	public String getDescription() {
+		return getTreeWalkPath();
+	}
+
 	public String getFileContent() {
 		return fileContent;
 	}
 
 	public Set<String> getJiraIssueKeys() {
 		return jiraIssueKeys;
+	}
+
+	public void setJiraIssueKeys(Set<String> jiraIssueKeys) {
+		this.jiraIssueKeys = jiraIssueKeys;
 	}
 
 }

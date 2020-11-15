@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -144,9 +146,18 @@ public class GitClient {
 			return new Diff();
 		}
 
+		Diff diff = new Diff();
 		// because first commit does not have a parent commit
 		allCommits.remove(0);
-		return getDiff(allCommits);
+		for (RevCommit commit : allCommits) {
+			Set<String> jiraIssueKeys = CommitMessageParser.getJiraIssueKeys(commit.getFullMessage());
+			Diff diffForCommit = getDiff(commit);
+			for (ChangedFile changedFile : diffForCommit.getChangedFiles()) {
+				changedFile.setJiraIssueKeys(jiraIssueKeys);
+				diff.addChangedFile(changedFile);
+			}
+		}
+		return diff;
 	}
 
 	/**

@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetCodeClasses extends TestSetUpGit {
@@ -23,5 +24,8 @@ public class TestGetCodeClasses extends TestSetUpGit {
 	public void testGetCodeClasses() {
 		GitCodeClassExtractor extractor = new GitCodeClassExtractor("TEST");
 		assertEquals(6, extractor.getCodeClasses().size());
+		ChangedFile file = extractor.getCodeClasses().get(1);
+		assertEquals("GodClass.java", file.getSummary());
+		assertEquals(1, file.getJiraIssueKeys().size());
 	}
 }
