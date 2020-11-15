@@ -23,7 +23,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
@@ -64,16 +66,30 @@ public class GitClientForSingleRepository {
 		this.username = username;
 		this.token = token;
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, uri);
-		pullOrClone();
+		fetchOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
 
-	public boolean pullOrClone() {
+	/**
+	 * @issue Should we checkout files in the working directory of the local git
+	 *        repository?
+	 * @decision Do not checkout branches (also not the master branch) into file
+	 *           system. Git repositories are bare, i.e. do not have a working
+	 *           directory! Use git fetch!
+	 * @pro Supports resource and time efficiency (takes less space and time than
+	 *      pulling).
+	 * @alternative Checkout files into working directory, use git pull!
+	 * @pro Git repository content would be human readable on the server.
+	 * @con Pulling takes a lot of time and space resources.
+	 * 
+	 * @return true if fetching or cloning succeeded.
+	 */
+	public boolean fetchOrClone() {
 		File workingDirectory = fileSystemManager.getPathToWorkingDirectory();
 		File gitDirectory = new File(workingDirectory, ".git/");
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
-				if (!pull()) {
+				if (!fetch()) {
 					LOGGER.error("Failed Git pull " + workingDirectory);
 					return false;
 				}
@@ -106,24 +122,25 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
-	public boolean pull() {
+	public boolean fetch() {
 		LOGGER.info("Pulling Repository: " + repoUri);
 		try {
-			ObjectId oldHead = getRepository().resolve("HEAD^{tree}");
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
-				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
+				for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
+					String refName = updateRes.getLocalName();
+					if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
+						continue;
+					}
+					Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
+					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastFetch);
+				}
 			}
-			git.pull().call();
-			ObjectId newHead = getRepository().resolve("HEAD^{tree}");
-			Diff diffSinceLastPull = getDiff(oldHead, newHead);
-			if (!diffSinceLastPull.getChangedFiles().isEmpty()) {
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
-			}
-		} catch (GitAPIException | IOException e) {
+		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
@@ -137,13 +154,19 @@ public class GitClientForSingleRepository {
 		}
 		try {
 			CloneCommand cloneCommand = Git.cloneRepository().setURI(repoUri).setDirectory(directory)
-					.setCloneAllBranches(true);
+					.setCloneAllBranches(true).setNoCheckout(true);
 			UsernamePasswordCredentialsProvider credentialsProvider = getCredentialsProvider();
 			if (credentialsProvider != null) {
 				cloneCommand.setCredentialsProvider(credentialsProvider);
 			}
 			git = cloneCommand.call();
 			setConfig();
+			List<RevCommit> commits = getDefaultBranchCommits();
+			if (!commits.isEmpty()) {
+				Diff diffSinceLastPull = getDiff(commits.get(0), commits.get(commits.size() - 1));
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
+			}
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
