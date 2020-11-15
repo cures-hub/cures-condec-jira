@@ -27,7 +27,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
             <input class="button submit" type="submit" value="Select" id="select-button">
         </div>
     </form>
-
 </div>
 <div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
@@ -101,7 +100,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartInteger-DecSources" class="piechart"></div>
 </div>
 
-
 <div class="condec-dashboard-contents results hidden" id="dynamic-content-completeness">
     <h3>Rationale Completeness Metrics</h3>
     <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
@@ -120,12 +118,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
-</div>
-
-
-<div id="condec-req-dashboard-fatal-error" class="condec-req-dashboard-fatal-error hidden">
-    <h1 class="condec-req-dashboard-fatal-error hidden"> $i18n.getText(
-        "condec.dashboard.requirements.setup.error") </h1>
 </div>
 
 <script type="text/javascript">

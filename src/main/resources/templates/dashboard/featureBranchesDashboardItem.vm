@@ -62,13 +62,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     using jquery instead, which manages gadgets.
  */
 $(document).ready(function() {
-    function projectSelectorOnchange(event) {
-        projectName = event.target.value
-        selectedOptionIndex = event.target.options.selectedIndex
-        selectedOption = event.target.options[selectedOptionIndex]
-        conDecBranchesDashboard.init(projectName,event.target.dataset.uid, selectedOption.dataset.gituri)
+    function projectSelectOrOnChange(event) {
+        projectName = event.target.value;
+        selectedOptionIndex = event.target.options.selectedIndex;
+        selectedOption = event.target.options[selectedOptionIndex];
+        conDecBranchesDashboard.init(projectName, event.target.dataset.uid, selectedOption.dataset.gituri);
     }
     selectNode = document.getElementById("${selectID}");
-    selectNode.addEventListener('change', projectSelectorOnchange);
+    selectNode.addEventListener('change', projectSelectOrOnChange);
 });
 </script>
