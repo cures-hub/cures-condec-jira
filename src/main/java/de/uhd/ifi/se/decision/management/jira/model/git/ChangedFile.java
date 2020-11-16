@@ -196,9 +196,26 @@ public class ChangedFile extends KnowledgeElement {
 		return getName();
 	}
 
+	/**
+	 * @return key of a {@link ChangedFile} object, e.g. "CONDEC:code:1".
+	 */
 	@Override
 	public String getKey() {
 		return getProject().getProjectKey() + ":code:" + getId();
+	}
+
+	/**
+	 * @param key
+	 *            of a {@link ChangedFile} object, e.g. "CONDEC:code:1".
+	 * @return id parsed from the key of a changed file.
+	 */
+	public static long parseIdFromKey(String key) {
+		String[] split = key.split(":");
+		String id = "0";
+		if (split.length > 1) {
+			id = split[2];
+		}
+		return Long.parseLong(id);
 	}
 
 	private String getNewFileNameFromDiffEntry() {

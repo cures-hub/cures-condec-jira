@@ -91,12 +91,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public KnowledgeElement getKnowledgeElement(String key) {
-		String[] split = key.split("-");
-		String id = "0";
-		if (split.length > 1) {
-			id = key.split("-")[1];
-		}
-		return getKnowledgeElement(Long.parseLong(id));
+		long id = ChangedFile.parseIdFromKey(key);
+		return getKnowledgeElement(id);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
@@ -144,58 +140,35 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return GenericLinkManager.getOutwardLinks(element);
 	}
 
-	/**
-	 * @param changedFile
-	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return {@link KnowledgeElement} that is now filled with an internal database
-	 *         id and key. Returns null if insertion failed. Establishes links to
-	 *         all Jira issues.
-	 */
-	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, ApplicationUser user) {
-		changedFile.setProject(projectKey);
-
-		KnowledgeElement element = null;
-
-		for (String key : changedFile.getJiraIssueKeys()) {
-			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
-			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-			element = insertKnowledgeElement((KnowledgeElement) changedFile, user);
-			Link link = new Link(element, parentElement);
-			KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
-		}
-
-		return element;
-	}
-
 	@Override
-	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement changedFile, ApplicationUser user) {
+		System.out.println(changedFile.getSummary());
+		if (changedFile.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+			return null;
+		}
+		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
 		if (existingElement != null) {
+			System.out.println("existing");
+			System.out.println(existingElement.getKey());
+			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
-		setParameters(element, databaseEntry);
+		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
-		KnowledgeElement newElement = new ChangedFile(databaseEntry);
-		if (newElement.getId() > 0) {
-			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
-		}
+		ChangedFile newElement = new ChangedFile(databaseEntry);
+		createLinksToJiraIssues(newElement, user);
+
 		return newElement;
 	}
 
-	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		KnowledgeElement existingElement = new KnowledgeElement();
-		if (element.getId() > 0) {
-			existingElement = getKnowledgeElement(element);
-		} else {
-			existingElement = getKnowledgeElementByName(element.getSummary());
+	private void createLinksToJiraIssues(ChangedFile newElement, ApplicationUser user) {
+		for (String key : newElement.getJiraIssueKeys()) {
+			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
+			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
+			Link link = new Link(newElement, parentElement);
+			KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 		}
-		if (existingElement != null) {
-			return existingElement;
-		}
-		return null;
 	}
 
 	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {

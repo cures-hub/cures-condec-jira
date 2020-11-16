@@ -244,6 +244,7 @@ public class GitClientForSingleRepository {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
+				changedFile.setProject(projectKey);
 				changedFile.setRepoUri(repoUri);
 				diff.addChangedFile(changedFile);
 			} catch (IOException e) {

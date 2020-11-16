@@ -9,6 +9,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -20,7 +21,7 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 	private ApplicationUser user;
 
 	public static KnowledgeElement createTestCodeClass() {
-		KnowledgeElement classElement = new KnowledgeElement();
+		KnowledgeElement classElement = new ChangedFile();
 		classElement.setProject("TEST");
 		classElement.setDescription("TEST-1;");
 		classElement.setType("Other");
