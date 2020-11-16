@@ -137,7 +137,7 @@ public class GitClientForSingleRepository {
 					}
 					Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
 					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastFetch);
+					persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
 				}
 			}
 		} catch (GitAPIException e) {
@@ -161,7 +161,7 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			new CodeClassPersistenceManager(projectKey).extractChangedFiles();
+			new CodeClassPersistenceManager(projectKey).extractAllChangedFiles();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());

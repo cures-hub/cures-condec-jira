@@ -399,6 +399,9 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return name of the file before it was changed.
 	 */
 	public String getOldName() {
+		if (getDiffEntry() == null) {
+			return getName();
+		}
 		Path oldPath = Paths.get(getDiffEntry().getOldPath());
 		return oldPath.getFileName().toString();
 	}

@@ -72,7 +72,7 @@ public class TestGetKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testGetEntryForKnowledgeElement() {
 		assertEquals(classElement.getSummary(),
-				codeClassPersistenceManager.getEntryForKnowledgeElement(classElement2).getFileName());
+				codeClassPersistenceManager.findDatabaseEntry(classElement2).getFileName());
 	}
 
 	@Test

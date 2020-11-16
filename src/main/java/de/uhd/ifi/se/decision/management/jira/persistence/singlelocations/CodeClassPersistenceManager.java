@@ -182,7 +182,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
-		CodeClassInDatabase entry = getEntryForKnowledgeElement(newElement);
+		CodeClassInDatabase entry = findDatabaseEntry(newElement);
 		if (entry == null) {
 			return false;
 		}
@@ -191,7 +191,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
-	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
+	public CodeClassInDatabase findDatabaseEntry(KnowledgeElement element) {
 		Long id = element.getId();
 		CodeClassInDatabase entry = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
@@ -201,58 +201,46 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return entry;
 	}
 
-	public void maintainCodeClassKnowledgeElements(Diff diff) {
+	public void maintainChangedFilesInDatabase(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
 		}
 
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateCodeClassInDatabase(changedFile);
+			updateChangedFileInDatabase(changedFile);
 		}
 	}
 
-	private void updateCodeClassInDatabase(ChangedFile changedFile) {
+	private void updateChangedFileInDatabase(ChangedFile changedFile) {
 		if (!changedFile.isJavaClass()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			diffAdd(null, changedFile);
+			insertKnowledgeElement(changedFile, null);
+		case MODIFY:
+			// same as add, thus, no break after add to fall through
+			// new links could have been added
+			break;
+		case RENAME:
+			handleRename(changedFile);
 			break;
 		case DELETE:
-			diffDelete(null, changedFile);
-			break;
-		case MODIFY:
-			diffModify(null, changedFile);
-		case RENAME:
-			// same as modify, thus, no break after modify to fall through
+			deleteKnowledgeElement(changedFile, null);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void diffAdd(ApplicationUser user, ChangedFile changedFile) {
-		insertKnowledgeElement(changedFile, user);
+	private void handleRename(ChangedFile changedFile) {
+		KnowledgeElement oldFile = getKnowledgeElementByName(changedFile.getOldName());
+		deleteKnowledgeElement(oldFile, null);
+		insertKnowledgeElement(changedFile, null);
 	}
 
-	private void diffModify(ApplicationUser user, ChangedFile changedFile) {
-		KnowledgeElement element = getKnowledgeElementByName(changedFile.getName());
-		deleteKnowledgeElement(element, user);
-		diffAdd(user, changedFile);
-	}
-
-	private void diffDelete(ApplicationUser user, ChangedFile changedFile) {
-		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
-		for (KnowledgeElement element : elements) {
-			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
-			// deleteKnowledgeElement(element, user);
-			// }
-		}
-	}
-
-	public void extractChangedFiles() {
+	public void extractAllChangedFiles() {
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
