@@ -20,6 +20,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -90,14 +92,14 @@ public class ChangedFile extends KnowledgeElement {
 	@JsonIgnore
 	private String fileContent;
 	@JsonIgnore
-	private Set<String> jiraIssueKeys;
+	private List<RevCommit> commits;
 
 	public ChangedFile() {
 		packageDistance = 0;
 		setCorrect(true);
-		jiraIssueKeys = new LinkedHashSet<>();
 		documentationLocation = DocumentationLocation.COMMIT;
 		type = KnowledgeType.CODE;
+		commits = new ArrayList<>();
 	}
 
 	public ChangedFile(String fileContent) {
@@ -396,11 +398,23 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public Set<String> getJiraIssueKeys() {
+		Set<String> jiraIssueKeys = new LinkedHashSet<>();
+		for (RevCommit commit : commits) {
+			jiraIssueKeys.addAll(CommitMessageParser.getJiraIssueKeys(commit.getFullMessage()));
+		}
 		return jiraIssueKeys;
 	}
 
-	public void setJiraIssueKeys(Set<String> jiraIssueKeys) {
-		this.jiraIssueKeys = jiraIssueKeys;
+	public List<RevCommit> getCommits() {
+		return commits;
+	}
+
+	public void setCommits(List<RevCommit> commits) {
+		this.commits = commits;
+	}
+
+	public boolean addCommit(RevCommit revCommit) {
+		return commits.add(revCommit);
 	}
 
 	@Override
@@ -417,5 +431,4 @@ public class ChangedFile extends KnowledgeElement {
 		ChangedFile changedFile = (ChangedFile) object;
 		return getName().equals(changedFile.getName());
 	}
-
 }
