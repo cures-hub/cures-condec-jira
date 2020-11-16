@@ -161,7 +161,7 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			new CodeClassPersistenceManager(projectKey).extractCodeClassKnowledgeElements();
+			new CodeClassPersistenceManager(projectKey).extractChangedFiles();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());

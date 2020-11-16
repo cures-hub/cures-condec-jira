@@ -13,7 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -207,26 +206,25 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			return;
 		}
 
-		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateCodeClassInDatabase(ccExtractor, changedFile);
+			updateCodeClassInDatabase(changedFile);
 		}
 	}
 
-	private void updateCodeClassInDatabase(GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+	private void updateCodeClassInDatabase(ChangedFile changedFile) {
 		if (!changedFile.isJavaClass()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			diffAdd(null, ccExtractor, changedFile);
+			diffAdd(null, changedFile);
 			break;
 		case DELETE:
-			diffDelete(null, ccExtractor, changedFile);
+			diffDelete(null, changedFile);
 			break;
 		case MODIFY:
-			diffModify(null, ccExtractor, changedFile);
+			diffModify(null, changedFile);
 		case RENAME:
 			// same as modify, thus, no break after modify to fall through
 			break;
@@ -235,17 +233,17 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+	private void diffAdd(ApplicationUser user, ChangedFile changedFile) {
 		insertKnowledgeElement(changedFile, user);
 	}
 
-	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+	private void diffModify(ApplicationUser user, ChangedFile changedFile) {
 		KnowledgeElement element = getKnowledgeElementByName(changedFile.getName());
 		deleteKnowledgeElement(element, user);
-		diffAdd(user, ccExtractor, changedFile);
+		diffAdd(user, changedFile);
 	}
 
-	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+	private void diffDelete(ApplicationUser user, ChangedFile changedFile) {
 		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
 		for (KnowledgeElement element : elements) {
 			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
@@ -254,7 +252,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	public void extractCodeClassKnowledgeElements() {
+	public void extractChangedFiles() {
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		for (ChangedFile changedFile : diff.getChangedFiles()) {

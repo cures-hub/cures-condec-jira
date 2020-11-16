@@ -88,7 +88,7 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
 		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
-		new CodeClassPersistenceManager(projectKey).extractCodeClassKnowledgeElements();
+		new CodeClassPersistenceManager(projectKey).extractChangedFiles();
 		return Response.ok(new DiffViewer(projectKey, issueKey)).build();
 	}
 
