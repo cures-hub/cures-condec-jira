@@ -115,6 +115,15 @@ public class ChangedFile extends KnowledgeElement {
 		this.repoUri = uri;
 	}
 
+	public ChangedFile(CodeClassInDatabase databaseEntry) {
+		this();
+		if (databaseEntry == null) {
+			return;
+		}
+		this.id = databaseEntry.getId();
+		this.project = new DecisionKnowledgeProject(databaseEntry.getProjectKey());
+	}
+
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
@@ -154,14 +163,6 @@ public class ChangedFile extends KnowledgeElement {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;
-	}
-
-	public ChangedFile(CodeClassInDatabase entry) {
-		if (entry == null) {
-			return;
-		}
-		this.id = entry.getId();
-		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
 	}
 
 	/**
