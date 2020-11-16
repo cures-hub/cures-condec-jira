@@ -10,30 +10,31 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteGitRepos extends TestSetUpGit {
+public class TestDeleteGitRepos extends TestSetUp {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
-	@Override
 	@Before
 	public void setUp() {
-		configRest = new ConfigRest();
 		init();
-		super.setUp();
+		configRest = new ConfigRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.deleteGitRepos(null, null).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestValidProjectKeyValid() {
 		assertEquals(Status.OK.getStatusCode(), configRest.deleteGitRepos(request, "TEST").getStatus());
 	}
