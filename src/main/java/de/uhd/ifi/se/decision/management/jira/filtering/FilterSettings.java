@@ -412,7 +412,10 @@ public class FilterSettings {
 	@JsonProperty("selectedElement")
 	public void setSelectedElement(String elementKey) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
-		if (elementKey.contains(":")) {
+		if (elementKey.contains(":code")) {
+			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
+					.getManagerForSingleLocation(DocumentationLocation.COMMIT);
+		} else if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
 		} else {

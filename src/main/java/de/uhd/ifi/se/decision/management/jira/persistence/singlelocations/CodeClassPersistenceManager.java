@@ -113,7 +113,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			knowledgeElements.add(new ChangedFile(databaseEntry));
@@ -122,7 +122,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public List<KnowledgeElement> getKnowledgeElementsMatchingName(String fileName) {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
 			knowledgeElements.add(new ChangedFile(databaseEntry));
@@ -142,14 +142,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public KnowledgeElement insertKnowledgeElement(KnowledgeElement changedFile, ApplicationUser user) {
-		System.out.println(changedFile.getSummary());
-		if (changedFile.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+		if (changedFile.getDocumentationLocation() != documentationLocation) {
 			return null;
 		}
 		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
 		if (existingElement != null) {
-			System.out.println("existing");
-			System.out.println(existingElement.getKey());
 			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
 		}
