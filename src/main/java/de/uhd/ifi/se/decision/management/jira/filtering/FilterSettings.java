@@ -410,6 +410,9 @@ public class FilterSettings {
 	 */
 	@JsonProperty("selectedElement")
 	public void setSelectedElement(String elementKey) {
+		if (elementKey == null || elementKey.isBlank()) {
+			return;
+		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":code")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
@@ -420,10 +423,7 @@ public class FilterSettings {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
 		}
-		if (persistenceManager != null) {
-			selectedElement = persistenceManager.getKnowledgeElement(elementKey);
-		}
-		selectedElement = null;
+		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
 	}
 
 	/**

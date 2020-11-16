@@ -114,7 +114,7 @@ public class TestTreeViewer extends TestSetUp {
 	public void testSelectedElementInvalid() {
 		filterSettings.setSelectedElement("");
 		treeViewer = new TreeViewer(filterSettings);
-		assertEquals(10, treeViewer.getNodes().size());
+		assertEquals(1, treeViewer.getNodes().size());
 	}
 
 	@Test
