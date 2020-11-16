@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -148,8 +147,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	/**
 	 * @param changedFile
 	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
-	 * @param jiraIssueKeys
-	 *            all keys of the Jira issues that the file was changed in.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return {@link KnowledgeElement} that is now filled with an internal database
@@ -164,14 +161,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (String key : changedFile.getJiraIssueKeys()) {
 			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
 			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-			element = insertKnowledgeElement(changedFile, user, parentElement);
+			element = insertKnowledgeElement((KnowledgeElement) changedFile, user);
+			Link link = new Link(element, parentElement);
+			KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 		}
 
 		return element;
 	}
 
 	@Override
-	// TODO Refactor, decrease complexity
 	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
 		if (existingElement != null) {
@@ -179,39 +177,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(element, databaseEntry);
-		try {
-			databaseEntry.save();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
+		databaseEntry.save();
 		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
-		if (newElement.getId() <= 0) {
-			return newElement;
+		if (newElement.getId() > 0) {
+			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
 		}
-		KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getJiraIssueManager();
-		List<String> groupsToAssign = new ArrayList<String>();
-		for (String key : element.getDescription().split(";")) {
-			if (!key.isBlank()) {
-				KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
-				if (issueElement != null) {
-					if (issueElement.getDecisionGroups() != null) {
-						groupsToAssign.addAll(issueElement.getDecisionGroups());
-					}
-					Link link = new Link(newElement, issueElement);
-					long databaseId = GenericLinkManager.insertLink(link, null);
-					if (databaseId > 0) {
-						link.setId(databaseId);
-						KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-					}
-				}
-			}
-		}
-		for (String group : groupsToAssign) {
-			DecisionGroupManager.insertGroup(group, newElement);
-		}
-
 		return newElement;
 	}
 
