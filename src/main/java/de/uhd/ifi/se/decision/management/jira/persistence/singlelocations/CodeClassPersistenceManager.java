@@ -12,6 +12,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -229,18 +230,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
-		String issueKeys = "";
-		for (String key : element.getDescription().split(";")) {
-			if (key.contains("-")) {
-				issueKeys = issueKeys + key.split("-")[1] + ";";
-			}
-		}
-		if (issueKeys.length() > 255) {
-			issueKeys = issueKeys.substring(0, 255);
-			while (issueKeys.charAt(issueKeys.length() - 1) != ';') {
-				issueKeys = issueKeys.substring(0, issueKeys.length() - 2);
-			}
-		}
 		databaseEntry.setFileName(element.getSummary());
 	}
 
@@ -322,6 +311,14 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
 			// deleteKnowledgeElement(element, user);
 			// }
+		}
+	}
+
+	public void extractCodeClassKnowledgeElements() {
+		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			insertKnowledgeElement(changedFile, null);
 		}
 	}
 }

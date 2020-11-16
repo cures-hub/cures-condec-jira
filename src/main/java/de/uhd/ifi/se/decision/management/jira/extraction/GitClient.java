@@ -85,7 +85,7 @@ public class GitClient {
 		gitClient = new GitClient(projectKey);
 		instances.put(projectKey, gitClient);
 
-		gitClient.pullOrCloneRepositories();
+		gitClient.fetchOrCloneRepositories();
 		return gitClient;
 	}
 
@@ -107,7 +107,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	public boolean pullOrCloneRepositories() {
+	public boolean fetchOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();

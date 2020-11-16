@@ -161,12 +161,7 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			List<RevCommit> commits = getDefaultBranchCommits();
-			if (!commits.isEmpty()) {
-				Diff diffSinceLastPull = getDiff(commits.get(0), commits.get(commits.size() - 1));
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
-			}
+			new CodeClassPersistenceManager(projectKey).extractCodeClassKnowledgeElements();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
