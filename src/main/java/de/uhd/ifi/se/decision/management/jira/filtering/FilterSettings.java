@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
@@ -421,11 +420,10 @@ public class FilterSettings {
 		} else {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
 		}
-		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
-		if (!elementKey.contains(":") && (selectedElement == null || selectedElement.getKey() == null)) {
-			CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager(project.getProjectKey());
-			selectedElement = ccManager.getKnowledgeElement(elementKey);
+		if (persistenceManager != null) {
+			selectedElement = persistenceManager.getKnowledgeElement(elementKey);
 		}
+		selectedElement = null;
 	}
 
 	/**

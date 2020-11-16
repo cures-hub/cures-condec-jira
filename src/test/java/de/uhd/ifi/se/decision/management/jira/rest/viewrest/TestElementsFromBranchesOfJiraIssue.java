@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -16,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	private ViewRest viewRest;
@@ -67,7 +67,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
+	@NonTransactional
 	public void testExistingIssueKey() {
 		assertEquals(Status.OK.getStatusCode(),
 				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
