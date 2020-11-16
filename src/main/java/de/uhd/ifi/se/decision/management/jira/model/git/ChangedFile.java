@@ -33,9 +33,11 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
  * Models a changed file as part of a {@link Diff}.
@@ -154,6 +156,14 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent;
 	}
 
+	public ChangedFile(CodeClassInDatabase entry) {
+		if (entry == null) {
+			return;
+		}
+		this.id = entry.getId();
+		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
+	}
+
 	/**
 	 * @return the {@link DiffEntry} object.
 	 */
@@ -183,6 +193,11 @@ public class ChangedFile extends KnowledgeElement {
 	@Override
 	public String getSummary() {
 		return getName();
+	}
+
+	@Override
+	public String getKey() {
+		return getProject().getProjectKey() + ":code:" + getId();
 	}
 
 	private String getNewFileNameFromDiffEntry() {

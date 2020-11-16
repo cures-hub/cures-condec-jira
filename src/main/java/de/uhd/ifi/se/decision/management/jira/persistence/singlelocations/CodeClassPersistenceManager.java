@@ -58,7 +58,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -73,7 +73,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -84,7 +84,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		KnowledgeElement element = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			element = new KnowledgeElement(databaseEntry);
+			element = new ChangedFile(databaseEntry);
 		}
 		return element;
 	}
@@ -110,7 +110,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		KnowledgeElement element = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("FILE_NAME = ?", name))) {
-			element = new KnowledgeElement(databaseEntry);
+			element = new ChangedFile(databaseEntry);
 		}
 		return element;
 	}
@@ -120,7 +120,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			knowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new ChangedFile(databaseEntry));
 		}
 		return knowledgeElements;
 	}
@@ -129,7 +129,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
-			knowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new ChangedFile(databaseEntry));
 		}
 		return knowledgeElements;
 	}
@@ -178,7 +178,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(element, databaseEntry);
 		databaseEntry.save();
-		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
+		KnowledgeElement newElement = new ChangedFile(databaseEntry);
 		if (newElement.getId() > 0) {
 			KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
 		}
