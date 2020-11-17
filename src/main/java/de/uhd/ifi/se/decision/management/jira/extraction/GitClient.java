@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -147,13 +148,27 @@ public class GitClient {
 		Diff diff = new Diff();
 		// because first commit does not have a parent commit
 		allCommits.remove(0);
+		diff = getDiff(allCommits);
+
 		for (RevCommit commit : allCommits) {
-			Diff diffForCommit = getDiff(commit);
-			for (ChangedFile changedFile : diffForCommit.getChangedFiles()) {
-				diff.addChangedFile(changedFile);
+			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+			for (DiffEntry diffEntry : diffEntriesInCommit) {
+				for (ChangedFile file : diff.getChangedFiles()) {
+					if (diffEntry.getNewPath().contains(file.getName())) {
+						file.addCommit(commit);
+					}
+				}
 			}
 		}
 		return diff;
+	}
+
+	public List<DiffEntry> getDiffEntries(RevCommit commit) {
+		List<DiffEntry> diffEntries = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			diffEntries.addAll(gitClientForSingleRepo.getDiffEntries(commit));
+		}
+		return diffEntries;
 	}
 
 	/**

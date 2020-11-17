@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -140,7 +139,7 @@ public class ChangedFile extends KnowledgeElement {
 			fileContent = readFileContentFromGitObject(treeWalk, repository);
 			setTreeWalkPath(treeWalk.getPathString());
 			treeWalk.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;
@@ -160,7 +159,7 @@ public class ChangedFile extends KnowledgeElement {
 			byte[] bytes = objectLoader.getBytes();
 			fileContent = new String(bytes, StandardCharsets.UTF_8);
 			objectReader.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;

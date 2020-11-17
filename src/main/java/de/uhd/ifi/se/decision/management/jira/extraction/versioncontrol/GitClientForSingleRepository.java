@@ -219,16 +219,8 @@ public class GitClientForSingleRepository {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 		DiffFormatter diffFormatter = getDiffFormater();
-		try {
-			RevCommit parentCommit = getParent(firstCommit);
-			if (parentCommit != null) {
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
-		}
+		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = null;
 		try {
 			treeId = getRepository().resolve(lastCommit.getName() + "^{tree}");
@@ -238,6 +230,30 @@ public class GitClientForSingleRepository {
 		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 		diffFormatter.close();
 		return diff;
+	}
+
+	/**
+	 * @issue How can we get the Jira issues that the diff entries were committed
+	 *        to?
+	 */
+	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
+		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+		try {
+			RevCommit parentCommit = getParent(firstCommit);
+			if (parentCommit != null) {
+				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
+		}
+		return diffEntries;
+	}
+
+	public List<DiffEntry> getDiffEntries(RevCommit commit) {
+		DiffFormatter diffFormatter = getDiffFormater();
+		List<DiffEntry> diffEntries = getDiffEntries(commit, commit, diffFormatter);
+		diffFormatter.close();
+		return diffEntries;
 	}
 
 	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
