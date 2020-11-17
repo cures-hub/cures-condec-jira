@@ -81,6 +81,8 @@ public class TestGetDiff extends TestSetUpGit {
 	public void testDefaultBranchCommits() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		assertEquals(6, diff.getChangedFiles().size());
+		assertEquals(1, diff.getChangedFiles().get(2).getCommits().size());
+		assertEquals("TEST-26", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
 	}
 
 }

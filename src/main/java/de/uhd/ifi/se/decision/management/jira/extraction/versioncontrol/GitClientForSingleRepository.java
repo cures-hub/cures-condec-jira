@@ -25,7 +25,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
@@ -130,15 +129,18 @@ public class GitClientForSingleRepository {
 				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
-				for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
-					String refName = updateRes.getLocalName();
-					if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
-						continue;
-					}
-					Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
-					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-					persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastFetch);
-				}
+				// @issue How to maintain changed files extracted from git?
+				// for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
+				// String refName = updateRes.getLocalName();
+				// if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
+				// continue;
+				// }
+				// Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(),
+				// updateRes.getNewObjectId());
+				// CodeClassPersistenceManager persistenceManager = new
+				// CodeClassPersistenceManager(projectKey);
+				// persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
+				// }
 			}
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
@@ -161,12 +163,7 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			List<RevCommit> commits = getDefaultBranchCommits();
-			if (!commits.isEmpty()) {
-				Diff diffSinceLastPull = getDiff(commits.get(0), commits.get(commits.size() - 1));
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainCodeClassKnowledgeElements(diffSinceLastPull);
-			}
+			new CodeClassPersistenceManager(projectKey).extractAllChangedFiles();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + repoUri + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
@@ -222,16 +219,8 @@ public class GitClientForSingleRepository {
 	 *         the respective edit list.
 	 */
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 		DiffFormatter diffFormatter = getDiffFormater();
-		try {
-			RevCommit parentCommit = getParent(firstCommit);
-			if (parentCommit != null) {
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
-		}
+		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = null;
 		try {
 			treeId = getRepository().resolve(lastCommit.getName() + "^{tree}");
@@ -243,12 +232,37 @@ public class GitClientForSingleRepository {
 		return diff;
 	}
 
+	/**
+	 * @issue How can we get the Jira issues that the diff entries were committed
+	 *        to?
+	 */
+	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
+		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+		try {
+			RevCommit parentCommit = getParent(firstCommit);
+			if (parentCommit != null) {
+				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
+		}
+		return diffEntries;
+	}
+
+	public List<DiffEntry> getDiffEntries(RevCommit commit) {
+		DiffFormatter diffFormatter = getDiffFormater();
+		List<DiffEntry> diffEntries = getDiffEntries(commit, commit, diffFormatter);
+		diffFormatter.close();
+		return diffEntries;
+	}
+
 	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
 		Diff diff = new Diff();
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
+				changedFile.setProject(projectKey);
 				changedFile.setRepoUri(repoUri);
 				diff.addChangedFile(changedFile);
 			} catch (IOException e) {

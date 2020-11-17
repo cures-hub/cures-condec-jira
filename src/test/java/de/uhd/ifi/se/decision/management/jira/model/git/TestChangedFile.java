@@ -34,6 +34,7 @@ public class TestChangedFile extends TestSetUpGit {
 	public void testGetName() {
 		assertNotNull(changedFile);
 		assertEquals("Tangled2.java", changedFile.getName());
+		assertEquals("Tangled2.java", changedFile.getSummary());
 	}
 
 	@Test
@@ -93,8 +94,20 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
+	public void testGetOldNameDiffEntryNull() {
+		ChangedFile changedFile = new ChangedFile();
+		assertEquals("", changedFile.getOldName());
+	}
+
+	@Test
 	public void testEquals() {
 		assertFalse(changedFile.equals((Object) null));
 		assertFalse(changedFile.equals(new KnowledgeElement()));
+	}
+
+	@Test
+	public void testParseIdFromKey() {
+		assertEquals(1, ChangedFile.parseIdFromKey("TEST:code:1"));
+		assertEquals(0, ChangedFile.parseIdFromKey("invalid key"));
 	}
 }

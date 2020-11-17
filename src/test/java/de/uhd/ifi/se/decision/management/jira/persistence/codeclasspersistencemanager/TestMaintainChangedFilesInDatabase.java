@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
+public class TestMaintainChangedFilesInDatabase extends TestSetUpGit {
 
 	private CodeClassPersistenceManager codeClassPersistenceManager;
 	private Diff diff;
@@ -28,14 +28,14 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithoutClasses() {
-		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(null);
+		codeClassPersistenceManager.maintainChangedFilesInDatabase(null);
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMaintainCodeClassKnowledgeElementsWithOutClasses() {
-		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(diff);
+		codeClassPersistenceManager.maintainChangedFilesInDatabase(diff);
 		assertEquals(6, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
@@ -44,7 +44,15 @@ public class TestMaintainCodeClassKnowledgeElements extends TestSetUpGit {
 	public void testMaintainCodeClassKnowledgeElementsWithClasses() {
 		KnowledgeElement classElement = TestInsertKnowledgeElement.createTestCodeClass();
 		codeClassPersistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		codeClassPersistenceManager.maintainCodeClassKnowledgeElements(diff);
+		codeClassPersistenceManager.maintainChangedFilesInDatabase(diff);
 		assertEquals(7, codeClassPersistenceManager.getKnowledgeElements().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testExtractAllChangedFilesTwice() {
+		codeClassPersistenceManager.extractAllChangedFiles();
+		codeClassPersistenceManager.extractAllChangedFiles();
+		assertEquals(6, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 }

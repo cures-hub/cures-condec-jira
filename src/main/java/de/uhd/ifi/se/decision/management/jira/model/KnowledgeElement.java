@@ -21,7 +21,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
@@ -104,20 +103,6 @@ public class KnowledgeElement {
 		if (issue.getStatus() != null) {
 			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
 		}
-	}
-
-	public KnowledgeElement(CodeClassInDatabase entry) {
-		if (entry == null) {
-			return;
-		}
-		this.id = entry.getId();
-		this.summary = entry.getFileName();
-		this.description = entry.getFileName();
-		this.project = new DecisionKnowledgeProject(entry.getProjectKey());
-		this.key = entry.getProjectKey() + "-" + entry.getId();
-		this.documentationLocation = DocumentationLocation.COMMIT;
-		this.type = KnowledgeType.CODE;
-		this.status = KnowledgeStatus.getKnowledgeStatus(null);
 	}
 
 	/**

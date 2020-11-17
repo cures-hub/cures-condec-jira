@@ -12,14 +12,13 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitCodeClassExtractor;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -58,7 +57,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -73,7 +72,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.COMMIT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new KnowledgeElement(databaseEntry));
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -84,19 +83,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		KnowledgeElement element = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			element = new KnowledgeElement(databaseEntry);
+			element = new ChangedFile(databaseEntry);
 		}
 		return element;
 	}
 
 	@Override
 	public KnowledgeElement getKnowledgeElement(String key) {
-		String[] split = key.split("-");
-		String id = "0";
-		if (split.length > 1) {
-			id = key.split("-")[1];
-		}
-		return getKnowledgeElement(Long.parseLong(id));
+		long id = ChangedFile.parseIdFromKey(key);
+		return getKnowledgeElement(id);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
@@ -110,26 +105,26 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		KnowledgeElement element = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("FILE_NAME = ?", name))) {
-			element = new KnowledgeElement(databaseEntry);
+			element = new ChangedFile(databaseEntry);
 		}
 		return element;
 	}
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			knowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new ChangedFile(databaseEntry));
 		}
 		return knowledgeElements;
 	}
 
 	public List<KnowledgeElement> getKnowledgeElementsMatchingName(String fileName) {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
-			knowledgeElements.add(new KnowledgeElement(databaseEntry));
+			knowledgeElements.add(new ChangedFile(databaseEntry));
 		}
 		return knowledgeElements;
 	}
@@ -144,103 +139,38 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return GenericLinkManager.getOutwardLinks(element);
 	}
 
-	/**
-	 * @param changedFile
-	 *            {@link ChangedFile} in the git repository, e.g. a Java class.
-	 * @param jiraIssueKeys
-	 *            all keys of the Jira issues that the file was changed in.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return {@link KnowledgeElement} that is now filled with an internal database
-	 *         id and key. Returns null if insertion failed. Establishes links to
-	 *         all Jira issues.
-	 */
-	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, ApplicationUser user) {
-		changedFile.setProject(projectKey);
-
-		KnowledgeElement element = null;
-
-		for (String key : changedFile.getJiraIssueKeys()) {
-			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
-			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-			element = insertKnowledgeElement(changedFile, user, parentElement);
-		}
-
-		return element;
-	}
-
 	@Override
-	// TODO Refactor, decrease complexity
-	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement changedFile, ApplicationUser user) {
+		if (changedFile.getDocumentationLocation() != documentationLocation) {
+			return null;
+		}
+		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
 		if (existingElement != null) {
+			changedFile.setId(existingElement.getId());
+			createLinksToJiraIssues((ChangedFile) changedFile, user);
 			return existingElement;
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
-		setParameters(element, databaseEntry);
-		try {
-			databaseEntry.save();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-		KnowledgeElement newElement = new KnowledgeElement(databaseEntry);
-		if (newElement.getId() <= 0) {
-			return newElement;
-		}
-		KnowledgeGraph.getOrCreate(projectKey).addVertex(newElement);
-		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(projectKey).getJiraIssueManager();
-		List<String> groupsToAssign = new ArrayList<String>();
-		for (String key : element.getDescription().split(";")) {
-			if (!key.isBlank()) {
-				KnowledgeElement issueElement = persistenceManager.getKnowledgeElement(key);
-				if (issueElement != null) {
-					if (issueElement.getDecisionGroups() != null) {
-						groupsToAssign.addAll(issueElement.getDecisionGroups());
-					}
-					Link link = new Link(newElement, issueElement);
-					long databaseId = GenericLinkManager.insertLink(link, null);
-					if (databaseId > 0) {
-						link.setId(databaseId);
-						KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
-					}
-				}
-			}
-		}
-		for (String group : groupsToAssign) {
-			DecisionGroupManager.insertGroup(group, newElement);
-		}
+		setParameters(changedFile, databaseEntry);
+		databaseEntry.save();
+		ChangedFile newElement = new ChangedFile(databaseEntry);
+		newElement.setCommits(((ChangedFile) changedFile).getCommits());
+		createLinksToJiraIssues(newElement, user);
 
 		return newElement;
 	}
 
-	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		KnowledgeElement existingElement = new KnowledgeElement();
-		if (element.getId() > 0) {
-			existingElement = getKnowledgeElement(element);
-		} else {
-			existingElement = getKnowledgeElementByName(element.getSummary());
+	private void createLinksToJiraIssues(ChangedFile newElement, ApplicationUser user) {
+		for (String key : newElement.getJiraIssueKeys()) {
+			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
+			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
+			Link link = new Link(newElement, parentElement);
+			KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
 		}
-		if (existingElement != null) {
-			return existingElement;
-		}
-		return null;
 	}
 
 	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
-		String issueKeys = "";
-		for (String key : element.getDescription().split(";")) {
-			if (key.contains("-")) {
-				issueKeys = issueKeys + key.split("-")[1] + ";";
-			}
-		}
-		if (issueKeys.length() > 255) {
-			issueKeys = issueKeys.substring(0, 255);
-			while (issueKeys.charAt(issueKeys.length() - 1) != ';') {
-				issueKeys = issueKeys.substring(0, issueKeys.length() - 2);
-			}
-		}
 		databaseEntry.setFileName(element.getSummary());
 	}
 
@@ -254,7 +184,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
-		CodeClassInDatabase entry = getEntryForKnowledgeElement(newElement);
+		CodeClassInDatabase entry = findDatabaseEntry(newElement);
 		if (entry == null) {
 			return false;
 		}
@@ -263,7 +193,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
-	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
+	public CodeClassInDatabase findDatabaseEntry(KnowledgeElement element) {
 		Long id = element.getId();
 		CodeClassInDatabase entry = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
@@ -273,55 +203,53 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return entry;
 	}
 
-	public void maintainCodeClassKnowledgeElements(Diff diff) {
+	public void maintainChangedFilesInDatabase(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
 		}
 
-		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateCodeClassInDatabase(ccExtractor, changedFile);
+			updateChangedFileInDatabase(changedFile);
 		}
 	}
 
-	private void updateCodeClassInDatabase(GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
+	private void updateChangedFileInDatabase(ChangedFile changedFile) {
 		if (!changedFile.isJavaClass()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			diffAdd(null, ccExtractor, changedFile);
+			insertKnowledgeElement(changedFile, null);
+		case MODIFY:
+			// same as add, thus, no break after add to fall through
+			// new links could have been added
+			break;
+		case RENAME:
+			handleRename(changedFile);
 			break;
 		case DELETE:
-			diffDelete(null, ccExtractor, changedFile);
-			break;
-		case MODIFY:
-			diffModify(null, ccExtractor, changedFile);
-		case RENAME:
-			// same as modify, thus, no break after modify to fall through
+			deleteKnowledgeElement(changedFile, null);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		insertKnowledgeElement(changedFile, user);
+	private void handleRename(ChangedFile changedFile) {
+		KnowledgeElement oldFile = getKnowledgeElementByName(changedFile.getOldName());
+		deleteKnowledgeElement(oldFile, null);
+		insertKnowledgeElement(changedFile, null);
 	}
 
-	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		KnowledgeElement element = getKnowledgeElementByName(changedFile.getName());
-		deleteKnowledgeElement(element, user);
-		diffAdd(user, ccExtractor, changedFile);
-	}
-
-	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
-		for (KnowledgeElement element : elements) {
-			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
-			// deleteKnowledgeElement(element, user);
-			// }
+	public void extractAllChangedFiles() {
+		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			// @issue Which files should be integrated into the knowledge graph?
+			if (changedFile.isJavaClass()) {
+				insertKnowledgeElement(changedFile, null);
+			}
 		}
 	}
 }
