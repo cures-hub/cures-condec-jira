@@ -94,6 +94,12 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
+	public void testGetOldNameDiffEntryNull() {
+		ChangedFile changedFile = new ChangedFile();
+		assertEquals("", changedFile.getOldName());
+	}
+
+	@Test
 	public void testEquals() {
 		assertFalse(changedFile.equals((Object) null));
 		assertFalse(changedFile.equals(new KnowledgeElement()));

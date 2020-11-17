@@ -445,10 +445,6 @@ public class ChangedFile extends KnowledgeElement {
 		return commits;
 	}
 
-	public void setCommits(List<RevCommit> commits) {
-		this.commits = commits;
-	}
-
 	public boolean addCommit(RevCommit revCommit) {
 		return commits.add(revCommit);
 	}
