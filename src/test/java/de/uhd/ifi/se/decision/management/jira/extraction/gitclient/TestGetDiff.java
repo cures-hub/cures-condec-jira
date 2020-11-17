@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
@@ -79,14 +78,9 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	public void testMasterBranchExists() {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
-		String currentBranch = null;
-		try {
-			currentBranch = git.getRepository().getBranch();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		assertEquals("master", currentBranch);
+	public void testDefaultBranchCommits() {
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		assertEquals(6, diff.getChangedFiles().size());
 	}
+
 }

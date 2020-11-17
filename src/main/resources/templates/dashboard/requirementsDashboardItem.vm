@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-<div class="configproject" id="configproject">
+<div class="condec-dashboard-contents filtering" id="configproject">
     <form class="aui" id="configFormProject">
         <div class="field-group">
             <label for="project-input">Project:</label>
@@ -14,7 +14,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         </div>
     </form>
 </div>
-<div class="configissuetype hidden" id="configissuetype">
+<div class="condec-dashboard-contents filtering hidden" id="configissuetype">
     <form class="aui" id="configFormIssue">
         <div class="field-group">            
             <input type="hidden" name="project" value=$projectKey>
@@ -27,12 +27,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
             <input class="button submit" type="submit" value="Select" id="select-button">
         </div>
     </form>
-
 </div>
-<div id="condec-req-dashboard-no-project" class="condec-req-dashboard-no-project hidden">
+<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 </div>
-<div class="dynamic-content hidden" id="dynamic-content-filter">
+<div class="condec-dashboard-contents filtering hidden" id="dynamic-content-filter">
     <h3>Filter:</h3>
     <form class="aui" id="configFormIssue">
         <input type="hidden" name="project" value=$project>
@@ -87,46 +86,38 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
         <input class="button submit" type="submit" value="Filter" id="select-button">
     </form>
-    <!--
-    Group Filter
-    //-->
 </div>
-<div class="dynamic-content hidden" id="dynamic-content-general">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-general">
     <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
     <h3>General Metrics:</h3>
-    <div id="boxplot-CommentsPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="boxplot-DecisionsPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="boxplot-IssuesPerJiraIssue" class="notsetyet boxplot"></div>
-    <div id="piechartInteger-ReqCodeSummary" class="notsetyet piechart"></div>
-    <div id="piechartInteger-DecSources" class="notsetyet piechart"></div>
+    <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+    <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
+    <div id="piechartInteger-DecSources" class="piechart"></div>
 </div>
 
-
-<div class="dynamic-content hidden" id="dynamic-content-completeness">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-completeness">
     <h3>Rationale Completeness Metrics</h3>
     <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
-    <div id="piechartRich-IssuesSolvedByDecision" class="notsetyet piechart"></div>
-    <div id="piechartRich-DecisionsSolvingIssues" class="notsetyet piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="notsetyet piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForDecision" class="notsetyet piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="notsetyet piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForDecision" class="notsetyet piechart"></div>
+    <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
+    <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
 </div>
 
-<div class="dynamic-content hidden" id="dynamic-content-basics">
+<div class="condec-dashboard-contents results hidden" id="dynamic-content-basics">
     <h3>$issueType Completeness Metrics</h3>
     <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
-    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
-    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="notsetyet piechart"></div>
-    <div id="piechartInteger-RelevantSentences" class="notsetyet piechart"></div>
-    <div id="piechartInteger-KnowledgeTypeDistribution" class="notsetyet piechart"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
+    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
+    <div id="piechartInteger-RelevantSentences" class="piechart"></div>
+    <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
 </div>
 
-
-<div id="condec-req-dashboard-fatal-error" class="condec-req-dashboard-fatal-error hidden">
-    <h1 class="condec-req-dashboard-fatal-error hidden"> $i18n.getText(
-        "condec.dashboard.requirements.setup.error") </h1>
-</div>
+#parse("templates/dashboard/navigationOverlay.vm")
 
 <script type="text/javascript">
     // initialize charts
@@ -144,29 +135,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         ConDecReqDash.initializeChart("$name", "$title", "$purpose", dataMap);
         #end
     ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
-</script>
 
-
-<!-- TODO: replace with AUI-styled or other with plugin consistent overlay implementations -->
-<div id="decKnowElementsOverlay" class="hidden overlay">
-    <div class="box">
-        <h1>
-            Involved decision knowledge elements:
-        </h1>
-        <div id="extractedDecKnowElements" class="contents">
-        </div>
-    </div>
-</div>
-
-<script>
 	ConDecReqDash.init("$showDiv");
     $(document).ready(function () {		
-        if (!window.ConDecReqDash) {
-            console.error('Could not find required resources!');
-            errorNode = document.getElementById("condec-req-dashboard-fatal-error");
-            errorNode.classList.remove("hidden");
-            return;
-        } else {
             function projectSelectorOnchange(event) {
                 projectName = event.target.value
                 selectedOptionIndex = event.target.options.selectedIndex
@@ -176,7 +147,5 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
             //selectNode = document.getElementById("${selectID}");
             //selectNode.addEventListener('change', projectSelectorOnchange);
-        }
-
     });
 </script>

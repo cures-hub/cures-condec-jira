@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,5 +46,17 @@ public class TestGetBranches extends TestSetUpGit {
 	public void testBranchNameInvalid() {
 		assertEquals(0, gitClient.getBranches("").size());
 		assertEquals(0, gitClient.getBranches(null).size());
+	}
+
+	@Test
+	public void testMasterBranchExists() {
+		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		String currentBranch = null;
+		try {
+			currentBranch = git.getRepository().getBranch();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		assertEquals("master", currentBranch);
 	}
 }

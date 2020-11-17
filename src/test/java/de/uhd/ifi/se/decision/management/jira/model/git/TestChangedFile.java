@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class TestChangedFile extends TestSetUpGit {
 
@@ -90,4 +92,9 @@ public class TestChangedFile extends TestSetUpGit {
 		assertEquals("null", changedFile.getOldName());
 	}
 
+	@Test
+	public void testEquals() {
+		assertFalse(changedFile.equals((Object) null));
+		assertFalse(changedFile.equals(new KnowledgeElement()));
+	}
 }

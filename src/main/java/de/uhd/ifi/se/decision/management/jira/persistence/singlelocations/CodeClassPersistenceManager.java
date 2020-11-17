@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.slf4j.Logger;
@@ -107,27 +106,13 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return getKnowledgeElement(element.getId());
 	}
 
-	public KnowledgeElement getKnowledgeElementByNameAndIssueKeys(String name, String issueKeys) {
+	public KnowledgeElement getKnowledgeElementByName(String name) {
 		KnowledgeElement element = null;
-		String issueKeysWithRemove = issueKeys;
-		if (issueKeys.contains("-")) {
-			issueKeysWithRemove = removeProjectKey(issueKeys, issueKeys.split("-")[0]);
-		}
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("FILE_NAME = ? AND JIRA_ISSUE_KEYS = ?", name, issueKeysWithRemove))) {
+				Query.select().where("FILE_NAME = ?", name))) {
 			element = new KnowledgeElement(databaseEntry);
 		}
 		return element;
-	}
-
-	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
-		Long id = element.getId();
-		CodeClassInDatabase entry = null;
-		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("ID = ?", id))) {
-			entry = databaseEntry;
-		}
-		return entry;
 	}
 
 	@Override
@@ -170,18 +155,18 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	 *         id and key. Returns null if insertion failed. Establishes links to
 	 *         all Jira issues.
 	 */
-	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, Set<String> jiraIssueKeys,
-			ApplicationUser user) {
-		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
-		KnowledgeElement element = codeClassExtractor.createKnowledgeElementFromFile(changedFile, jiraIssueKeys);
-		if (jiraIssueKeys != null && !jiraIssueKeys.isEmpty()) {
-			for (String key : jiraIssueKeys) {
-				Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
-				KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
-				insertKnowledgeElement(element, user, parentElement);
-			}
+	public KnowledgeElement insertKnowledgeElement(ChangedFile changedFile, ApplicationUser user) {
+		changedFile.setProject(projectKey);
+
+		KnowledgeElement element = null;
+
+		for (String key : changedFile.getJiraIssueKeys()) {
+			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
+			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
+			element = insertKnowledgeElement(changedFile, user, parentElement);
 		}
-		return insertKnowledgeElement(element, user);
+
+		return element;
 	}
 
 	@Override
@@ -229,22 +214,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return newElement;
 	}
 
-	private String removeProjectKey(String oldString, String projectKey) {
-		String newString = "";
-		for (String key : oldString.split(";")) {
-			String keyWithRemove = key.replace(projectKey + "-", "");
-			newString = newString + keyWithRemove + ";";
-		}
-		return newString;
-	}
-
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
 		KnowledgeElement existingElement = new KnowledgeElement();
 		if (element.getId() > 0) {
 			existingElement = getKnowledgeElement(element);
 		} else {
-			existingElement = getKnowledgeElementByNameAndIssueKeys(element.getSummary(),
-					removeProjectKey(element.getDescription(), element.getProject().getProjectKey()));
+			existingElement = getKnowledgeElementByName(element.getSummary());
 		}
 		if (existingElement != null) {
 			return existingElement;
@@ -266,17 +241,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 				issueKeys = issueKeys.substring(0, issueKeys.length() - 2);
 			}
 		}
-		databaseEntry.setJiraIssueKeys(issueKeys);
 		databaseEntry.setFileName(element.getSummary());
-	}
-
-	// TODO Remove this database table column and replace it with generic links
-	public String getIssueListAsString(Set<String> list) {
-		String keys = "";
-		for (String key : list) {
-			keys = keys + key + ";";
-		}
-		return keys;
 	}
 
 	@Override
@@ -298,16 +263,20 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return true;
 	}
 
-	public void maintainCodeClassKnowledgeElements(Diff diff) {
-		List<KnowledgeElement> existingElements = getKnowledgeElements();
-		if (existingElements == null || existingElements.isEmpty()) {
-			extractAllCodeClasses(null);
-			return;
+	public CodeClassInDatabase getEntryForKnowledgeElement(KnowledgeElement element) {
+		Long id = element.getId();
+		CodeClassInDatabase entry = null;
+		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
+				Query.select().where("ID = ?", id))) {
+			entry = databaseEntry;
 		}
+		return entry;
+	}
+
+	public void maintainCodeClassKnowledgeElements(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
 		}
-		// LOGGER.info(("maintainCodeClassKnowledgeElements");
 
 		GitCodeClassExtractor ccExtractor = new GitCodeClassExtractor(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
@@ -338,13 +307,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	private void diffAdd(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		Set<String> jiraIssueKeys = ccExtractor.getJiraIssueKeysForFile(changedFile);
-		insertKnowledgeElement(changedFile, jiraIssueKeys, user);
+		insertKnowledgeElement(changedFile, user);
 	}
 
 	private void diffModify(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
-		KnowledgeElement element = getKnowledgeElementByNameAndIssueKeys(changedFile.getName(),
-				getIssueListAsString(ccExtractor.getJiraIssueKeysForFile(changedFile)));
+		KnowledgeElement element = getKnowledgeElementByName(changedFile.getName());
 		deleteKnowledgeElement(element, user);
 		diffAdd(user, ccExtractor, changedFile);
 	}
@@ -352,21 +319,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	private void diffDelete(ApplicationUser user, GitCodeClassExtractor ccExtractor, ChangedFile changedFile) {
 		List<KnowledgeElement> elements = getKnowledgeElementsMatchingName(changedFile.getOldName());
 		for (KnowledgeElement element : elements) {
-			if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
-				deleteKnowledgeElement(element, user);
-			}
+			// if (ccExtractor.getJiraIssueKeysForFile(changedFile) == null) {
+			// deleteKnowledgeElement(element, user);
+			// }
 		}
 	}
-
-	private void extractAllCodeClasses(ApplicationUser user) {
-		GitCodeClassExtractor codeClassExtractor = new GitCodeClassExtractor(projectKey);
-		List<ChangedFile> codeClasses = codeClassExtractor.getCodeClasses();
-		for (ChangedFile codeClass : codeClasses) {
-			Set<String> issueKeys = codeClassExtractor.getJiraIssueKeysForFile(codeClass);
-			if (issueKeys != null && !issueKeys.isEmpty()) {
-				insertKnowledgeElement(codeClass, issueKeys, user);
-			}
-		}
-	}
-
 }
