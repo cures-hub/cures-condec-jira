@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -13,6 +15,8 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
@@ -23,7 +27,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -126,28 +129,86 @@ public class GitClientForSingleRepository {
 		try {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
-				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+				ObjectId oldId = getDefaultBranchPosition();
+				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
+				ObjectId newId = getDefaultBranchPosition();
+				Iterable<RevCommit> newCommits = getCommitsSinceLastFetch(oldId, newId);
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
-				// @issue How to maintain changed files extracted from git?
-				// for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
-				// String refName = updateRes.getLocalName();
-				// if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
-				// continue;
-				// }
-				// Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(),
-				// updateRes.getNewObjectId());
-				// CodeClassPersistenceManager persistenceManager = new
-				// CodeClassPersistenceManager(projectKey);
-				// persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
-				// }
+				Diff diffSinceLastFetch = getDiffSinceLastFetch(newCommits);
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+				persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
 		LOGGER.info("Pulled from remote in " + git.getRepository().getDirectory());
 		return true;
+	}
+
+	public ObjectId getDefaultBranchPosition() {
+		ObjectId objectId = null;
+		try {
+			objectId = getRepository().resolve(getDefaultBranch().getName());
+		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
+		}
+		return objectId;
+	}
+
+	// @issue How to maintain changed files and links extracted from git?
+	public Diff getDiffSinceLastFetch(Iterable<RevCommit> newCommits) {
+		Iterator<RevCommit> newCommitsIterator = newCommits.iterator();
+		if (!newCommitsIterator.hasNext()) {
+			return new Diff();
+		}
+		List<RevCommit> result = new ArrayList<>();
+		newCommitsIterator.forEachRemaining(result::add);
+		Diff diffSinceLastFetch = getDiff(result);
+		for (RevCommit commit : result) {
+			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+			for (DiffEntry diffEntry : diffEntriesInCommit) {
+				for (ChangedFile file : diffSinceLastFetch.getChangedFiles()) {
+					if (diffEntry.getNewPath().contains(file.getName())) {
+						file.addCommit(commit);
+					}
+				}
+			}
+		}
+		return diffSinceLastFetch;
+
+	}
+
+	/**
+	 * @param commits
+	 *            commits as a list of RevCommit objects.
+	 * @return {@link Diff} object for a list of commits containing the
+	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
+	 *         entry and contains the respective edit list.
+	 */
+	public Diff getDiff(List<RevCommit> commits) {
+		if (commits == null || commits.isEmpty()) {
+			return new Diff();
+		}
+		RevCommit firstCommit = commits.stream().min(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(0));
+		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
+				.orElse(commits.get(commits.size() - 1));
+		return getDiff(firstCommit, lastCommit);
+	}
+
+	public Iterable<RevCommit> getCommitsSinceLastFetch(ObjectId oldId, ObjectId newId) {
+		if (oldId == null || newId == null) {
+			return new ArrayList<>();
+		}
+		Iterable<RevCommit> newCommitsSinceLastFetch = new ArrayList<>();
+		try {
+			newCommitsSinceLastFetch = git.log().addRange(oldId, newId).call();
+		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
+		}
+
+		return newCommitsSinceLastFetch;
 	}
 
 	private boolean cloneRepository(File directory) {
