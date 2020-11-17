@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +19,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +29,14 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
  * Models a changed file as part of a {@link Diff}.
@@ -90,14 +93,14 @@ public class ChangedFile extends KnowledgeElement {
 	@JsonIgnore
 	private String fileContent;
 	@JsonIgnore
-	private Set<String> jiraIssueKeys;
+	private List<RevCommit> commits;
 
 	public ChangedFile() {
 		packageDistance = 0;
 		setCorrect(true);
-		jiraIssueKeys = new LinkedHashSet<>();
 		documentationLocation = DocumentationLocation.COMMIT;
 		type = KnowledgeType.CODE;
+		commits = new ArrayList<>();
 	}
 
 	public ChangedFile(String fileContent) {
@@ -109,6 +112,16 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(String fileContent, String uri) {
 		this(fileContent);
 		this.repoUri = uri;
+	}
+
+	public ChangedFile(CodeClassInDatabase databaseEntry) {
+		this();
+		if (databaseEntry == null) {
+			return;
+		}
+		this.id = databaseEntry.getId();
+		this.project = new DecisionKnowledgeProject(databaseEntry.getProjectKey());
+		this.treeWalkPath = databaseEntry.getFileName();
 	}
 
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
@@ -126,7 +139,7 @@ public class ChangedFile extends KnowledgeElement {
 			fileContent = readFileContentFromGitObject(treeWalk, repository);
 			setTreeWalkPath(treeWalk.getPathString());
 			treeWalk.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;
@@ -146,7 +159,7 @@ public class ChangedFile extends KnowledgeElement {
 			byte[] bytes = objectLoader.getBytes();
 			fileContent = new String(bytes, StandardCharsets.UTF_8);
 			objectReader.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;
@@ -181,6 +194,28 @@ public class ChangedFile extends KnowledgeElement {
 	@Override
 	public String getSummary() {
 		return getName();
+	}
+
+	/**
+	 * @return key of a {@link ChangedFile} object, e.g. "CONDEC:code:1".
+	 */
+	@Override
+	public String getKey() {
+		return getProject().getProjectKey() + ":code:" + getId();
+	}
+
+	/**
+	 * @param key
+	 *            of a {@link ChangedFile} object, e.g. "CONDEC:code:1".
+	 * @return id parsed from the key of a changed file.
+	 */
+	public static long parseIdFromKey(String key) {
+		String[] split = key.split(":");
+		String id = "0";
+		if (split.length > 1) {
+			id = split[2];
+		}
+		return Long.parseLong(id);
 	}
 
 	private String getNewFileNameFromDiffEntry() {
@@ -363,6 +398,9 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return name of the file before it was changed.
 	 */
 	public String getOldName() {
+		if (getDiffEntry() == null) {
+			return getName();
+		}
 		Path oldPath = Paths.get(getDiffEntry().getOldPath());
 		return oldPath.getFileName().toString();
 	}
@@ -396,11 +434,23 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public Set<String> getJiraIssueKeys() {
+		Set<String> jiraIssueKeys = new LinkedHashSet<>();
+		for (RevCommit commit : commits) {
+			jiraIssueKeys.addAll(CommitMessageParser.getJiraIssueKeys(commit.getFullMessage()));
+		}
 		return jiraIssueKeys;
 	}
 
-	public void setJiraIssueKeys(Set<String> jiraIssueKeys) {
-		this.jiraIssueKeys = jiraIssueKeys;
+	public List<RevCommit> getCommits() {
+		return commits;
+	}
+
+	public void setCommits(List<RevCommit> commits) {
+		this.commits = commits;
+	}
+
+	public boolean addCommit(RevCommit revCommit) {
+		return commits.add(revCommit);
 	}
 
 	@Override
@@ -417,5 +467,4 @@ public class ChangedFile extends KnowledgeElement {
 		ChangedFile changedFile = (ChangedFile) object;
 		return getName().equals(changedFile.getName());
 	}
-
 }

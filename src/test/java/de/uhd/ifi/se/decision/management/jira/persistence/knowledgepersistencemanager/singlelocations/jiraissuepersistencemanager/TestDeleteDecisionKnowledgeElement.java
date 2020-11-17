@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testElementNullUserNull() {
 		assertFalse(issueStrategy.deleteKnowledgeElement(null, null));
 	}

@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -87,7 +86,7 @@ public class GitClient {
 		gitClient = new GitClient(projectKey);
 		instances.put(projectKey, gitClient);
 
-		gitClient.pullOrCloneRepositories();
+		gitClient.fetchOrCloneRepositories();
 		return gitClient;
 	}
 
@@ -109,7 +108,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	public boolean pullOrCloneRepositories() {
+	public boolean fetchOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();
@@ -149,15 +148,27 @@ public class GitClient {
 		Diff diff = new Diff();
 		// because first commit does not have a parent commit
 		allCommits.remove(0);
+		diff = getDiff(allCommits);
+
 		for (RevCommit commit : allCommits) {
-			Set<String> jiraIssueKeys = CommitMessageParser.getJiraIssueKeys(commit.getFullMessage());
-			Diff diffForCommit = getDiff(commit);
-			for (ChangedFile changedFile : diffForCommit.getChangedFiles()) {
-				changedFile.setJiraIssueKeys(jiraIssueKeys);
-				diff.addChangedFile(changedFile);
+			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+			for (DiffEntry diffEntry : diffEntriesInCommit) {
+				for (ChangedFile file : diff.getChangedFiles()) {
+					if (diffEntry.getNewPath().contains(file.getName())) {
+						file.addCommit(commit);
+					}
+				}
 			}
 		}
 		return diff;
+	}
+
+	public List<DiffEntry> getDiffEntries(RevCommit commit) {
+		List<DiffEntry> diffEntries = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			diffEntries.addAll(gitClientForSingleRepo.getDiffEntries(commit));
+		}
+		return diffEntries;
 	}
 
 	/**
@@ -212,7 +223,9 @@ public class GitClient {
 	 *         respective edit list.
 	 */
 	public Diff getDiff(RevCommit revCommit) {
-		return getDiff(revCommit, revCommit);
+		Diff diffForCommit = getDiff(revCommit, revCommit);
+		diffForCommit.getChangedFiles().forEach(file -> file.addCommit(revCommit));
+		return diffForCommit;
 	}
 
 	/**

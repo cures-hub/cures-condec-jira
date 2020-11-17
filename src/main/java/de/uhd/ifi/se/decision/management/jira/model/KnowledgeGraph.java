@@ -137,7 +137,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		addVertex(destination);
 
 		try {
-			isEdgeCreated = this.addEdge(source, destination, link);
+			isEdgeCreated = addEdge(source, destination, link);
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}

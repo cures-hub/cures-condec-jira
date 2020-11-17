@@ -329,7 +329,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		if (element.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+		if (element.getDocumentationLocation() != documentationLocation) {
 			return null;
 		}
 		return getKnowledgeElement(element);
