@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -8,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "Recommendation")
 public class Recommendation {
@@ -89,6 +89,12 @@ public class Recommendation {
 	public void addArguments(List<Argument> arguments) {
 		if (this.arguments == null) this.arguments = new ArrayList<>();
 		this.arguments.addAll(arguments);
+		this.arguments = this.arguments.stream().distinct().collect(Collectors.toList());
+	}
+
+	public void addArgument(Argument argument) {
+		if (this.arguments == null) this.arguments = new ArrayList<>();
+		this.arguments.add(argument);
 	}
 
 	@Override

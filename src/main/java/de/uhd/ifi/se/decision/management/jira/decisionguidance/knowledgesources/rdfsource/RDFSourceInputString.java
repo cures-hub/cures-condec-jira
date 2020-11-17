@@ -1,14 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import scala.language;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RDFSourceInputString implements InputMethod<String> {
 
@@ -90,6 +95,7 @@ public class RDFSourceInputString implements InputMethod<String> {
 			// Execute.
 			ResultSet resultSet = queryExecution.execSelect();
 
+
 			return resultSet;
 		} catch (QueryBuildException e) {
 
@@ -115,22 +121,68 @@ public class RDFSourceInputString implements InputMethod<String> {
 		for (String combinedKeyword : combinedKeywords) {
 
 			String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
-			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("\\r|\\n", " ");
+			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
 
 			ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
 
+			Map<String, List<Argument>> argumentsMap = new HashMap<>();
 
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
+
+
 				Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), row.get("?url").toString());
 				recommendations.add(recommendation);
+
+				//TODO keep arguments variable
+				List<Argument> arguments = new ArrayList<>();
+
+
+				if (queryStringWithInput.contains("?license_l")) {
+					String licenseString = row.get("?license_l").toString();
+					KnowledgeElement license = new KnowledgeElement();
+					license.setType(KnowledgeType.ARGUMENT);
+					license.setSummary("License: " + licenseString + "\n");
+					arguments.add(new Argument(license));
+				}
+
+				if (queryStringWithInput.contains("?os_l")) {
+					String OSString = row.get("?os_l").toString();
+					KnowledgeElement os = new KnowledgeElement();
+					os.setType(KnowledgeType.ARGUMENT);
+					os.setSummary("Operating System: " + OSString + "\n");
+					arguments.add(new Argument(os));
+				}
+
+				if (queryStringWithInput.contains("?language_l")) {
+					String programmingLanguageString = row.get("?language_l").toString();
+					KnowledgeElement language = new KnowledgeElement();
+					language.setType(KnowledgeType.ARGUMENT);
+					language.setSummary("Programming Language: " + programmingLanguageString + "\n");
+					arguments.add(new Argument(language));
+				}
+
+
+				try {
+					arguments.addAll(argumentsMap.get(row.get("?alternative").toString()));
+				} catch (Exception e) {
+
+				}
+
+				argumentsMap.put(row.get("?alternative").toString(), arguments);
+
+
 			}
 
 			HashSet<Recommendation> uniqueRecommendation = new HashSet<>(recommendations);
 			for (Recommendation recommendation : uniqueRecommendation) {
+				List<Argument> arguments = argumentsMap.get(recommendation.getRecommendations()).stream().distinct().collect(Collectors.toList());
+				if (arguments != null)
+					recommendation.setArguments(arguments);
 				scoreMap.put(recommendation, Collections.frequency(recommendations, recommendation));
+
 			}
 
 			if (scoreMap.size() != 0) {
