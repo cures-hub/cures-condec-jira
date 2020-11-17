@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -48,12 +49,10 @@ public class TestDecisionGroupView extends TestSetUp {
 				.insertKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup1", nextElement);
 
-		KnowledgeElement element = new KnowledgeElement();
-		element.setDocumentationLocation(DocumentationLocation.COMMIT);
+		KnowledgeElement element = new ChangedFile();
 		element.setSummary("AbstractTestHandler.java");
 		element.setDescription("TEST-3;");
 		element.setProject("TEST");
-		element.setType(KnowledgeType.OTHER);
 		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
 		newElement = ccManager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		DecisionGroupManager.insertGroup("TestGroup2", newElement);
