@@ -54,7 +54,8 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorWithFilterSettingsValidQueryEmpty() {
 		FilteringManager manager = new FilteringManager(user, new FilterSettings("TEST", ""));
-		assertEquals(10, manager.getElementsMatchingFilterSettings().size());
+		// can be > 10 because of code classes in the graph
+		assertTrue(manager.getElementsMatchingFilterSettings().size() >= 10);
 	}
 
 	@Test

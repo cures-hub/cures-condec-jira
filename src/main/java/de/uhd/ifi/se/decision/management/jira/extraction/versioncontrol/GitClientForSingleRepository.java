@@ -25,7 +25,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
@@ -130,15 +129,18 @@ public class GitClientForSingleRepository {
 				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
-				for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
-					String refName = updateRes.getLocalName();
-					if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
-						continue;
-					}
-					Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(), updateRes.getNewObjectId());
-					CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-					persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
-				}
+				// @issue How to maintain changed files extracted from git?
+				// for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
+				// String refName = updateRes.getLocalName();
+				// if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
+				// continue;
+				// }
+				// Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(),
+				// updateRes.getNewObjectId());
+				// CodeClassPersistenceManager persistenceManager = new
+				// CodeClassPersistenceManager(projectKey);
+				// persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
+				// }
 			}
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
