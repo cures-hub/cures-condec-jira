@@ -11,7 +11,7 @@ import java.util.List;
 public class ProjectSource extends KnowledgeSource {
 
 	protected KnowledgePersistenceManager knowledgePersistenceManager;
-	List<KnowledgeElement> knowledgeElements;
+	protected List<KnowledgeElement> knowledgeElements;
 
 	public ProjectSource(String projectKey) {
 		this.projectKey = projectKey;

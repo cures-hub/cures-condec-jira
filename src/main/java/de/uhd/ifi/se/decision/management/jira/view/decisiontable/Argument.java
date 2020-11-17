@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 @XmlRootElement(name = "Argument")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -70,4 +70,5 @@ public class Argument extends DecisionTableElement {
 	public String getImage() {
 		return this.image;
 	}
+	
 }

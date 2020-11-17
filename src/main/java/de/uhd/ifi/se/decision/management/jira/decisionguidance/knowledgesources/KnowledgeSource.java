@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class KnowledgeSource {
@@ -27,12 +26,13 @@ public abstract class KnowledgeSource {
 	public List<Recommendation> getResults(Object object) {
 		getInputMethod();
 		setData();
-		try {
-			return inputMethod.getResults(object);
-		} catch (Exception e) {
-
-		}
-		return new ArrayList<>();
+		return inputMethod.getResults(object);
+//		try {
+//
+//		} catch (Exception e) {
+//
+//		}
+		//return new ArrayList<>();
 	}
 
 	public abstract void setData();

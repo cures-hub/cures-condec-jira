@@ -2,9 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputString;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.SourceInputFactoryUtils;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -67,8 +68,8 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testGetInputMethodAndSetData() {
 		KnowledgeSource rdfSource = new RDFSource();
-		ConfigPersistenceManager.setRecommendationInput(PROJECTKEY, RecommenderType.KEYWORD.toString());
-		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass() );
+		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
+		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
 		rdfSource.setData();
 	}
 
@@ -76,7 +77,7 @@ public class TestRDFSource extends TestSetUp {
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
 		rdfSourceInputString.setData(PROJECTKEY, NAME, SERVICE, QUERY, TIMEOUT, LIMIT);
-		assertEquals(2, rdfSourceInputString.getResults("MySQL").size());
+		assertEquals(9, rdfSourceInputString.getResults("Apache Nutch").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
@@ -140,7 +141,10 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testgetInputMethod() {
 		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
-		assertNotNull(rdfSource.getInputMethod());
+		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
+		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
+		rdfSource.setRecommenderType(RecommenderType.ISSUE);
+		assertEquals(RDFSourceInputKnowledgeElement.class, rdfSource.getInputMethod().getClass());
 	}
 
 	@Test
@@ -164,6 +168,15 @@ public class TestRDFSource extends TestSetUp {
 		RDFSource source = new RDFSource("Test");
 		source.setName("One Two Three");
 		assertEquals("One-Two-Three", source.toString());
+	}
+
+
+	@Test
+	public void testSourceFactory() {
+		InputMethod inputMethod = SourceInputFactoryUtils.getInputMethod(RecommenderType.KEYWORD);
+		assertEquals(RDFSourceInputString.class, inputMethod.getClass());
+		inputMethod = SourceInputFactoryUtils.getInputMethod(RecommenderType.ISSUE);
+		assertEquals(RDFSourceInputKnowledgeElement.class, inputMethod.getClass());
 	}
 
 

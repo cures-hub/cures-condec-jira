@@ -43,7 +43,7 @@
     <h4>Configure RDF Knowledge Sources</h4>
 
     <div>
-        <a href="#" class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
+        <a  class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
         ><span
             class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
         </a>
@@ -109,7 +109,9 @@
                     </div>
                 </div>
                 <div class="description">Enter a SPARQL-Query.</div>
-                <button class="aui-button" id="insert-prefix">Insert DBPedia Prefix.</button>
+                <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
+                <button class="aui-button" id="insert-frameworks">Frameworks</button>
+                <div class="description">Choose an example query.</div>
             </div>
             <div class="field-group">
                 <label for="create-param-knowledgesource">Timeout</label>
@@ -388,15 +390,42 @@
          });
 
 
-        var DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+        const DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
                             "PREFIX dct: <http://purl.org/dc/terms/>\n"+
                             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                            "PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\n";
+                            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                            "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\n";
 
-         $("#insert-prefix").click(function(event) {
+
+
+        const FACTORYPATTERN =
+               "select distinct ?alternative ?url ?links where {\n" +
+                "%variable% dct:subject ?concept.\n" +
+                "?software dct:subject ?concept.\n " +
+                "?url foaf:primaryTopic ?software.\n " +
+               "FILTER(regex(?concept, 'pattern', 'i')).\n" +
+               "?software  dbo:wikiPageExternalLink ?links.\n" +
+               "?software rdfs:label ?alternative.\n" +
+               "FILTER(LANG(?alternative) = 'en'). }";
+
+        const FRAMEWORKS = "select distinct ?alternative ?url ?link   where { \n" +
+                            "%variable% dbo:genre ?genre.\n" +
+                            "?sameGenre dbo:genre ?genre.\n" +
+                            "?sameGenre rdfs:label ?alternative.\n" +
+                            "?sameGenre foaf:isPrimaryTopicOf ?url.\n" +
+                            "FILTER(LANG(?alternative) = 'en').\n" +
+                            "?sameGenre dbo:wikiPageExternalLink ?link.}";
+
+         $("#insert-design-patterns").click(function(event) {
             event.preventDefault();
             var currentText = $("#create-query-knowledgesource").val();
-            $("#create-query-knowledgesource").val(DBPEDIAPREFIX + currentText);
+            $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FACTORYPATTERN);
+         });
+
+        $("#insert-frameworks").click(function(event) {
+            event.preventDefault();
+            var currentText = $("#create-query-knowledgesource").val();
+            $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FRAMEWORKS);
          });
 
          $("#select-rdf-service").change(function() {
