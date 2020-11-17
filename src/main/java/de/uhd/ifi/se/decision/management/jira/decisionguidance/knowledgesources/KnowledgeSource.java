@@ -27,12 +27,13 @@ public abstract class KnowledgeSource {
 	public List<Recommendation> getResults(Object object) {
 		getInputMethod();
 		setData();
-		try {
-			return inputMethod.getResults(object);
-		} catch (Exception e) {
-
-		}
-		return new ArrayList<>();
+		return inputMethod.getResults(object);
+//		try {
+//
+//		} catch (Exception e) {
+//
+//		}
+		//return new ArrayList<>();
 	}
 
 	public abstract void setData();

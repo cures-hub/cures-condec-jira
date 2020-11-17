@@ -126,7 +126,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 	public void testgetResultsFromKnowledgeSource() {
 		BaseRecommender recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
-		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
+		knowledgeSource.setRecommenderType(RecommenderType.ISSUE);
 		assertNotNull(recommender.getResultFromKnowledgeSource(knowledgeSource));
 	}
 

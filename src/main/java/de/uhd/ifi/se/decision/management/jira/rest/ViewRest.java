@@ -306,6 +306,7 @@ public class ViewRest {
 
 		KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
 
+
 		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
 
 		BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
@@ -313,8 +314,13 @@ public class ViewRest {
 
 		if (RecommenderType.KEYWORD.equals(recommenderType))
 			recommender.setInput(keyword);
-		else
+		else {
+			if (knowledgeElement == null) {
+				return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The Knowledgeelement could not be found.")).build();
+			}
 			recommender.setInput(knowledgeElement);
+		}
 
 		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
