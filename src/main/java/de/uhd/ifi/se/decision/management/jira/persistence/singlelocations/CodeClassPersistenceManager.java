@@ -146,13 +146,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
 		if (existingElement != null) {
-			createLinksToJiraIssues(existingElement, user);
+			changedFile.setId(existingElement.getId());
+			createLinksToJiraIssues((ChangedFile) changedFile, user);
 			return existingElement;
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
 		ChangedFile newElement = new ChangedFile(databaseEntry);
+		newElement.setCommits(((ChangedFile) changedFile).getCommits());
 		createLinksToJiraIssues(newElement, user);
 
 		return newElement;
@@ -244,7 +246,10 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			insertKnowledgeElement(changedFile, null);
+			// @issue Which files should be integrated into the knowledge graph?
+			if (changedFile.isJavaClass()) {
+				insertKnowledgeElement(changedFile, null);
+			}
 		}
 	}
 }

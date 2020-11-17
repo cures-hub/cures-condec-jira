@@ -47,4 +47,12 @@ public class TestMaintainChangedFilesInDatabase extends TestSetUpGit {
 		codeClassPersistenceManager.maintainChangedFilesInDatabase(diff);
 		assertEquals(7, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
+
+	@Test
+	@NonTransactional
+	public void testExtractAllChangedFilesTwice() {
+		codeClassPersistenceManager.extractAllChangedFiles();
+		codeClassPersistenceManager.extractAllChangedFiles();
+		assertEquals(6, codeClassPersistenceManager.getKnowledgeElements().size());
+	}
 }
