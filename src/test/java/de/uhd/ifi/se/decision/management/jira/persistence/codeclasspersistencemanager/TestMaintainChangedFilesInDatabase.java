@@ -20,7 +20,7 @@ public class TestMaintainChangedFilesInDatabase extends TestSetUpGit {
 	@Override
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
 		codeClassPersistenceManager = new CodeClassPersistenceManager("TEST");
 		diff = gitClient.getDiffOfEntireDefaultBranch();
 	}

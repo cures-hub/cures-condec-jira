@@ -39,7 +39,15 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
- * Retrieves commits and code changes (diffs) from one git repository.
+ * FIXME Investigate alternative for the following decision problem:
+ * 
+ * @issue How can we assign more than one git repository to a Jira project?
+ * @decision Implement class GitClientForSingleRepository with separate git
+ *           attribute for each repository!
+ * @alternative Use git.remoteAdd() command to add new repos!
+ *
+ *              Retrieves commits and code changes (diffs) from one git
+ *              repository.
  */
 public class GitClientForSingleRepository {
 
@@ -165,13 +173,12 @@ public class GitClientForSingleRepository {
 		return objectId;
 	}
 
-	// @issue How to maintain changed files and links extracted from git?
 	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
 		if (newCommits.isEmpty()) {
 			return new Diff();
 		}
-		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size()));
+		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
 
