@@ -80,10 +80,4 @@ public class TestGetKnowledgeElement extends TestSetUp {
 	public void testGetKnowledgeElements() {
 		assertEquals(1, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
-
-	@Test
-	@NonTransactional
-	public void testGetKnowledgeElementsMatchingName() {
-		assertEquals(1, codeClassPersistenceManager.getKnowledgeElementsMatchingName(classElement.getSummary()).size());
-	}
 }

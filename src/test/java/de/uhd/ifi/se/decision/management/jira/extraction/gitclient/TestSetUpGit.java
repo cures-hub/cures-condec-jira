@@ -226,7 +226,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	private static void makeExampleCommit(String filename, String content, String commitMessage) {
+	public static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),

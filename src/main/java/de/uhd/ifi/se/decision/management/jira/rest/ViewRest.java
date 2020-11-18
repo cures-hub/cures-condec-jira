@@ -37,7 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
@@ -88,7 +87,6 @@ public class ViewRest {
 				.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
 		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
-		new CodeClassPersistenceManager(projectKey).extractAllChangedFiles();
 		return Response.ok(new DiffViewer(projectKey, issueKey)).build();
 	}
 

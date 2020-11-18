@@ -6,16 +6,9 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestGetBranches extends TestSetUpGit {
-
-	@Override
-	@Before
-	public void setUp() {
-		super.setUp();
-	}
 
 	@Test
 	public void testGetAllBranches() {

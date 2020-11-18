@@ -23,7 +23,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -40,7 +39,15 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
- * Retrieves commits and code changes (diffs) from one git repository.
+ * FIXME Investigate alternative for the following decision problem:
+ * 
+ * @issue How can we assign more than one git repository to a Jira project?
+ * @decision Implement class GitClientForSingleRepository with separate git
+ *           attribute for each repository!
+ * @alternative Use git.remoteAdd() command to add new repos!
+ *
+ *              Retrieves commits and code changes (diffs) from one git
+ *              repository.
  */
 public class GitClientForSingleRepository {
 
@@ -89,7 +96,7 @@ public class GitClientForSingleRepository {
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!fetch()) {
-					LOGGER.error("Failed Git pull " + workingDirectory);
+					LOGGER.error("Failed Git fetch " + workingDirectory);
 					return false;
 				}
 			} else {
@@ -121,33 +128,89 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
+	/**
+	 * @issue How can we get the new commits since the last fetch? To know the new
+	 *        commits is important for trace link maintenance between Jira issues
+	 *        and changed files (this includes updating/deleting changed files and
+	 *        their links in database).
+	 * @decision Store the position of the default branch (e.g. master) before
+	 *           fetching and after fetching to determine changes (in particular new
+	 *           commits) since last fetch!
+	 * @alternative Use FetchResult and TrackingRefUpdate to determine changes (in
+	 *              particular new commits) since last fetch!
+	 * @con Might work in productive code but did not work in unit testing.
+	 * 
+	 * @return true if fetching was successful.
+	 */
 	public boolean fetch() {
-		LOGGER.info("Pulling Repository: " + repoUri);
+		LOGGER.info("Fetching Repository: " + repoUri);
 		try {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
-				FetchResult fetchResult = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+				ObjectId oldId = getDefaultBranchPosition();
+				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
+				ObjectId newId = getDefaultBranchPosition();
+				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
+				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
+				persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
-				// @issue How to maintain changed files extracted from git?
-				// for (TrackingRefUpdate updateRes : fetchResult.getTrackingRefUpdates()) {
-				// String refName = updateRes.getLocalName();
-				// if (!refName.toLowerCase().contains(defaultBranchName.toLowerCase())) {
-				// continue;
-				// }
-				// Diff diffSinceLastFetch = getDiff(updateRes.getOldObjectId(),
-				// updateRes.getNewObjectId());
-				// CodeClassPersistenceManager persistenceManager = new
-				// CodeClassPersistenceManager(projectKey);
-				// persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
-				// }
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Issue occurred while pulling from a remote." + "\n\t " + e.getMessage());
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
-		LOGGER.info("Pulled from remote in " + git.getRepository().getDirectory());
+		LOGGER.info("Fetched from remote in " + git.getRepository().getDirectory());
 		return true;
+	}
+
+	private ObjectId getDefaultBranchPosition() {
+		ObjectId objectId = null;
+		try {
+			objectId = getRepository().resolve(getDefaultBranch().getName());
+		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
+		}
+		return objectId;
+	}
+
+	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
+		if (newCommits.isEmpty()) {
+			return new Diff();
+		}
+		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
+		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
+	}
+
+	public Diff addCommitsToChangedFiles(Diff diff, List<RevCommit> commits) {
+		for (RevCommit commit : commits) {
+			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+			for (DiffEntry diffEntry : diffEntriesInCommit) {
+				for (ChangedFile file : diff.getChangedFiles()) {
+					if (diffEntry.getNewPath().contains(file.getName())) {
+						file.addCommit(commit);
+					}
+				}
+			}
+		}
+		return diff;
+	}
+
+	/**
+	 * @return commits between the two git objects as a list of {@link RevCommit}s.
+	 */
+	private List<RevCommit> getCommitsSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+		if (oldObjectId == null || newObjectId == null) {
+			return new ArrayList<>();
+		}
+		List<RevCommit> newCommits = new ArrayList<>();
+		try {
+			Iterable<RevCommit> newCommitsIterable = git.log().addRange(oldObjectId, newObjectId).call();
+			newCommitsIterable.iterator().forEachRemaining(newCommits::add);
+		} catch (Exception e) {
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
+		}
+		return newCommits;
 	}
 
 	private boolean cloneRepository(File directory) {

@@ -56,7 +56,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		boolean isDeleted = false;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.COMMIT);
+			GenericLinkManager.deleteLinksForElement(id, documentationLocation);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
@@ -104,7 +104,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	public KnowledgeElement getKnowledgeElementByName(String name) {
 		KnowledgeElement element = null;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("FILE_NAME = ?", name))) {
+				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, name))) {
 			element = new ChangedFile(databaseEntry);
 		}
 		return element;
@@ -115,15 +115,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			knowledgeElements.add(new ChangedFile(databaseEntry));
-		}
-		return knowledgeElements;
-	}
-
-	public List<KnowledgeElement> getKnowledgeElementsMatchingName(String fileName) {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
-		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND FILE_NAME = ?", projectKey, fileName))) {
 			knowledgeElements.add(new ChangedFile(databaseEntry));
 		}
 		return knowledgeElements;
@@ -140,21 +131,22 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertKnowledgeElement(KnowledgeElement changedFile, ApplicationUser user) {
-		if (changedFile.getDocumentationLocation() != documentationLocation) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement knowledgeElement, ApplicationUser user) {
+		if (knowledgeElement.getDocumentationLocation() != documentationLocation) {
 			return null;
 		}
-		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
+		ChangedFile changedFile = (ChangedFile) knowledgeElement;
+		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getName());
 		if (existingElement != null) {
-			changedFile.setId(existingElement.getId());
-			createLinksToJiraIssues((ChangedFile) changedFile, user);
+			existingElement.setCommits(changedFile.getCommits());
+			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
 		ChangedFile newElement = new ChangedFile(databaseEntry);
-		newElement.setCommits(((ChangedFile) changedFile).getCommits());
+		newElement.setCommits(changedFile.getCommits());
 		createLinksToJiraIssues(newElement, user);
 
 		return newElement;
@@ -203,6 +195,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return entry;
 	}
 
+	/**
+	 * @issue How to maintain changed files and links extracted from git?
+	 */
 	public void maintainChangedFilesInDatabase(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return;
@@ -213,33 +208,41 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	private void updateChangedFileInDatabase(ChangedFile changedFile) {
+	public void updateChangedFileInDatabase(ChangedFile changedFile) {
 		if (!changedFile.isJavaClass()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			insertKnowledgeElement(changedFile, null);
+			// same as modify, thus, no break after add to fall through
 		case MODIFY:
-			// same as add, thus, no break after add to fall through
 			// new links could have been added
+			handleAdd(changedFile);
 			break;
 		case RENAME:
 			handleRename(changedFile);
 			break;
 		case DELETE:
-			deleteKnowledgeElement(changedFile, null);
+			handleDelete(changedFile);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void handleRename(ChangedFile changedFile) {
-		KnowledgeElement oldFile = getKnowledgeElementByName(changedFile.getOldName());
-		deleteKnowledgeElement(oldFile, null);
+	private void handleAdd(ChangedFile changedFile) {
 		insertKnowledgeElement(changedFile, null);
+	}
+
+	private void handleDelete(ChangedFile changedFile) {
+		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(changedFile.getOldName());
+		deleteKnowledgeElement(fileToBeDeleted, null);
+	}
+
+	private void handleRename(ChangedFile changedFile) {
+		handleDelete(changedFile);
+		handleAdd(changedFile);
 	}
 
 	public void extractAllChangedFiles() {
