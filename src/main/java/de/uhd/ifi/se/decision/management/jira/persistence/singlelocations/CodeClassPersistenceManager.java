@@ -131,21 +131,22 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
-	public KnowledgeElement insertKnowledgeElement(KnowledgeElement changedFile, ApplicationUser user) {
-		if (changedFile.getDocumentationLocation() != documentationLocation) {
+	public KnowledgeElement insertKnowledgeElement(KnowledgeElement knowledgeElement, ApplicationUser user) {
+		if (knowledgeElement.getDocumentationLocation() != documentationLocation) {
 			return null;
 		}
-		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getSummary());
+		ChangedFile changedFile = (ChangedFile) knowledgeElement;
+		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getName());
 		if (existingElement != null) {
-			changedFile.setId(existingElement.getId());
-			createLinksToJiraIssues((ChangedFile) changedFile, user);
+			existingElement.setCommits(changedFile.getCommits());
+			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
 		}
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
 		ChangedFile newElement = new ChangedFile(databaseEntry);
-		newElement.setCommits(((ChangedFile) changedFile).getCommits());
+		newElement.setCommits(changedFile.getCommits());
 		createLinksToJiraIssues(newElement, user);
 
 		return newElement;
@@ -214,10 +215,10 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			handleAdd(changedFile);
+			// same as modify, thus, no break after add to fall through
 		case MODIFY:
-			// same as add, thus, no break after add to fall through
 			// new links could have been added
+			handleAdd(changedFile);
 			break;
 		case RENAME:
 			handleRename(changedFile);
