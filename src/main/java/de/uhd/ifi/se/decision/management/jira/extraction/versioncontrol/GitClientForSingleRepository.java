@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -169,18 +168,22 @@ public class GitClientForSingleRepository {
 	// @issue How to maintain changed files and links extracted from git?
 	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
-		Diff diffSinceLastFetch = getDiff(newCommits);
-		for (RevCommit commit : newCommits) {
+		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size()));
+		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
+	}
+
+	public Diff addCommitsToChangedFiles(Diff diff, List<RevCommit> commits) {
+		for (RevCommit commit : commits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
-				for (ChangedFile file : diffSinceLastFetch.getChangedFiles()) {
+				for (ChangedFile file : diff.getChangedFiles()) {
 					if (diffEntry.getNewPath().contains(file.getName())) {
 						file.addCommit(commit);
 					}
 				}
 			}
 		}
-		return diffSinceLastFetch;
+		return diff;
 	}
 
 	/**
@@ -198,24 +201,6 @@ public class GitClientForSingleRepository {
 			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
 		}
 		return newCommits;
-	}
-
-	/**
-	 * @param commits
-	 *            commits as a list of RevCommit objects.
-	 * @return {@link Diff} object for a list of commits containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.isEmpty()) {
-			return new Diff();
-		}
-		RevCommit firstCommit = commits.stream().min(Comparator.comparing(RevCommit::getCommitTime))
-				.orElse(commits.get(0));
-		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
-				.orElse(commits.get(commits.size() - 1));
-		return getDiff(firstCommit, lastCommit);
 	}
 
 	private boolean cloneRepository(File directory) {
