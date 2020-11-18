@@ -168,6 +168,9 @@ public class GitClientForSingleRepository {
 	// @issue How to maintain changed files and links extracted from git?
 	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
+		if (newCommits.isEmpty()) {
+			return new Diff();
+		}
 		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size()));
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
