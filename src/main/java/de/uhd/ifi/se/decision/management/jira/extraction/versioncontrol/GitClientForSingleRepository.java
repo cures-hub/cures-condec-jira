@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -15,8 +14,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
@@ -124,6 +121,20 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
+	/**
+	 * @issue How can we get the new commits since the last fetch? To know the new
+	 *        commits is important for trace link maintenance between Jira issues
+	 *        and changed files (this includes updating/deleting changed files and
+	 *        their links in database).
+	 * @decision Store the position of the default branch (e.g. master) before
+	 *           fetching and after fetching to determine changes (in particular new
+	 *           commits) since last fetch!
+	 * @alternative Use FetchResult and TrackingRefUpdate to determine changes (in
+	 *              particular new commits) since last fetch!
+	 * @con Might work in productive code but did not work in unit testing.
+	 * 
+	 * @return true if fetching was successful.
+	 */
 	public boolean fetch() {
 		LOGGER.info("Fetching Repository: " + repoUri);
 		try {
@@ -133,8 +144,7 @@ public class GitClientForSingleRepository {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
 						.setRemoveDeletedRefs(true).call();
 				ObjectId newId = getDefaultBranchPosition();
-				Iterable<RevCommit> newCommits = getCommitsSinceLastFetch(oldId, newId);
-				Diff diffSinceLastFetch = getDiffSinceLastFetch(newCommits);
+				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
 				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
 				persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
@@ -147,20 +157,6 @@ public class GitClientForSingleRepository {
 		return true;
 	}
 
-	// @alternative FetchResult
-	private Iterable<RevCommit> getCommitsSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
-		if (oldObjectId == null || newObjectId == null) {
-			return new ArrayList<>();
-		}
-		Iterable<RevCommit> newCommitsSinceLastFetch = new ArrayList<>();
-		try {
-			newCommitsSinceLastFetch = git.log().addRange(oldObjectId, newObjectId).call();
-		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
-			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
-		}
-		return newCommitsSinceLastFetch;
-	}
-
 	private ObjectId getDefaultBranchPosition() {
 		ObjectId objectId = null;
 		try {
@@ -171,15 +167,10 @@ public class GitClientForSingleRepository {
 	}
 
 	// @issue How to maintain changed files and links extracted from git?
-	public Diff getDiffSinceLastFetch(Iterable<RevCommit> newCommits) {
-		Iterator<RevCommit> newCommitsIterator = newCommits.iterator();
-		if (!newCommitsIterator.hasNext()) {
-			return new Diff();
-		}
-		List<RevCommit> result = new ArrayList<>();
-		newCommitsIterator.forEachRemaining(result::add);
-		Diff diffSinceLastFetch = getDiff(result);
-		for (RevCommit commit : result) {
+	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
+		Diff diffSinceLastFetch = getDiff(newCommits);
+		for (RevCommit commit : newCommits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
 				for (ChangedFile file : diffSinceLastFetch.getChangedFiles()) {
@@ -190,6 +181,23 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return diffSinceLastFetch;
+	}
+
+	/**
+	 * @return commits between the two git objects as a list of {@link RevCommit}s.
+	 */
+	private List<RevCommit> getCommitsSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+		if (oldObjectId == null || newObjectId == null) {
+			return new ArrayList<>();
+		}
+		List<RevCommit> newCommits = new ArrayList<>();
+		try {
+			Iterable<RevCommit> newCommitsIterable = git.log().addRange(oldObjectId, newObjectId).call();
+			newCommitsIterable.iterator().forEachRemaining(newCommits::add);
+		} catch (Exception e) {
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
+		}
+		return newCommits;
 	}
 
 	/**
