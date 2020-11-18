@@ -92,7 +92,7 @@ public class GitClientForSingleRepository {
 		if (gitDirectory.exists()) {
 			if (openRepository(gitDirectory)) {
 				if (!fetch()) {
-					LOGGER.error("Failed Git pull " + workingDirectory);
+					LOGGER.error("Failed Git fetch " + workingDirectory);
 					return false;
 				}
 			} else {
@@ -125,7 +125,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public boolean fetch() {
-		LOGGER.info("Pulling Repository: " + repoUri);
+		LOGGER.info("Fetching Repository: " + repoUri);
 		try {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
@@ -134,20 +134,34 @@ public class GitClientForSingleRepository {
 						.setRemoveDeletedRefs(true).call();
 				ObjectId newId = getDefaultBranchPosition();
 				Iterable<RevCommit> newCommits = getCommitsSinceLastFetch(oldId, newId);
-				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 				Diff diffSinceLastFetch = getDiffSinceLastFetch(newCommits);
 				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
 				persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
+				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 		} catch (GitAPIException e) {
 			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
 			return false;
 		}
-		LOGGER.info("Pulled from remote in " + git.getRepository().getDirectory());
+		LOGGER.info("Fetched from remote in " + git.getRepository().getDirectory());
 		return true;
 	}
 
-	public ObjectId getDefaultBranchPosition() {
+	// @alternative FetchResult
+	private Iterable<RevCommit> getCommitsSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+		if (oldObjectId == null || newObjectId == null) {
+			return new ArrayList<>();
+		}
+		Iterable<RevCommit> newCommitsSinceLastFetch = new ArrayList<>();
+		try {
+			newCommitsSinceLastFetch = git.log().addRange(oldObjectId, newObjectId).call();
+		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
+			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
+		}
+		return newCommitsSinceLastFetch;
+	}
+
+	private ObjectId getDefaultBranchPosition() {
 		ObjectId objectId = null;
 		try {
 			objectId = getRepository().resolve(getDefaultBranch().getName());
@@ -176,7 +190,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return diffSinceLastFetch;
-
 	}
 
 	/**
@@ -195,20 +208,6 @@ public class GitClientForSingleRepository {
 		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
 				.orElse(commits.get(commits.size() - 1));
 		return getDiff(firstCommit, lastCommit);
-	}
-
-	public Iterable<RevCommit> getCommitsSinceLastFetch(ObjectId oldId, ObjectId newId) {
-		if (oldId == null || newId == null) {
-			return new ArrayList<>();
-		}
-		Iterable<RevCommit> newCommitsSinceLastFetch = new ArrayList<>();
-		try {
-			newCommitsSinceLastFetch = git.log().addRange(oldId, newId).call();
-		} catch (MissingObjectException | IncorrectObjectTypeException | GitAPIException e) {
-			LOGGER.error("Issue occurred while fetching from a remote." + "\n\t " + e.getMessage());
-		}
-
-		return newCommitsSinceLastFetch;
 	}
 
 	private boolean cloneRepository(File directory) {

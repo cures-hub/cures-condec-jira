@@ -40,11 +40,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public class GitClient {
 
-	public static final long REPO_OUTDATED_AFTER = 10 * 60 * 1000; // ex. 10 minutes = 10 minutes * 60 seconds * 1000
-	// miliseconds
-	private List<GitClientForSingleRepository> gitClientsForSingleRepos;
-
 	private String projectKey;
+	private List<GitClientForSingleRepository> gitClientsForSingleRepos;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
 
 	/**
