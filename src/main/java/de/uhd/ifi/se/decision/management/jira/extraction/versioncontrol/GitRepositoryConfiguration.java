@@ -36,25 +36,24 @@ public class GitRepositoryConfiguration {
 	public String getToken() {
 		return this.token;
 	}
+	
+	// public void setRepoUri(String repoUri) {
+	// 	this.repoUri = repoUri;
+	// }
 
-	public void setRepoUri(String repoUri) {
-		this.repoUri = repoUri;
-	}
+	// public void setDefaultBranchName(String defaultBranchName) {
+	// 	this.defaultBranchName = defaultBranchName;
+	// }
 
-	public void setDefaultBranchName(String defaultBranchName) {
-		this.defaultBranchName = defaultBranchName;
-	}
+	// public void setAuthMethod(String authMethod) {
+	// 	this.authMethod = authMethod;
+	// }
 
-	public void setAuthMethod(String authMethod) {
-		this.authMethod = authMethod;
-	}
+	// public void setUsername(String username) {
+	// 	this.username = username;
+	// }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
+	// public void setToken(String token) {
+	// 	this.token = token;
+	// }
 }

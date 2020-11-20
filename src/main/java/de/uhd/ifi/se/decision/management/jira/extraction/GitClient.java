@@ -96,8 +96,8 @@ public class GitClient {
 		this();
 		this.projectKey = projectKey;
 		for (String uri : uris) {
-			GitRepositoryConfiguration gitInfo = new GitRepositoryConfiguration(uri, projectKey);
-			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitInfo));
+			GitRepositoryConfiguration gitConf = new GitRepositoryConfiguration(uri, projectKey);
+			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitConf));
 		}
 	}
 

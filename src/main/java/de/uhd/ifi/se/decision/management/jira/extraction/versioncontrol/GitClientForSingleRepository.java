@@ -57,15 +57,15 @@ public class GitClientForSingleRepository {
 	private Git git;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
-	private GitRepositoryConfiguration gitInfo;
+	private GitRepositoryConfiguration gitConf;
 	private GitRepositoryFileSystemManager fileSystemManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
-	public GitClientForSingleRepository(String projectKey, GitRepositoryConfiguration gitInfo) {
+	public GitClientForSingleRepository(String projectKey, GitRepositoryConfiguration gitConf) {
 		this.projectKey = projectKey;
-		this.gitInfo = gitInfo;
-		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitInfo.getRepoUri());
+		this.gitConf = gitConf;
+		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitConf.getRepoUri());
 		fetchOrClone();
 		defaultBranchCommits = getDefaultBranchCommits();
 	}
@@ -99,7 +99,7 @@ public class GitClientForSingleRepository {
 			}
 		} else {
 			if (!cloneRepository(workingDirectory)) {
-				LOGGER.error("Could not clone repository " + this.gitInfo.getRepoUri() + " to " + workingDirectory.getAbsolutePath());
+				LOGGER.error("Could not clone repository " + this.gitConf.getRepoUri() + " to " + workingDirectory.getAbsolutePath());
 				return false;
 			}
 		}
@@ -137,7 +137,7 @@ public class GitClientForSingleRepository {
 	 * @return true if fetching was successful.
 	 */
 	public boolean fetch() {
-		LOGGER.info("Fetching Repository: " + this.gitInfo.getRepoUri());
+		LOGGER.info("Fetching Repository: " + this.gitConf.getRepoUri());
 		try {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
@@ -208,11 +208,11 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean cloneRepository(File directory) {
-		if (this.gitInfo.getRepoUri() == null || this.gitInfo.getRepoUri().isEmpty()) {
+		if (this.gitConf.getRepoUri() == null || this.gitConf.getRepoUri().isEmpty()) {
 			return false;
 		}
 		try {
-			CloneCommand cloneCommand = Git.cloneRepository().setURI(this.gitInfo.getRepoUri()).setDirectory(directory)
+			CloneCommand cloneCommand = Git.cloneRepository().setURI(this.gitConf.getRepoUri()).setDirectory(directory)
 					.setCloneAllBranches(true).setNoCheckout(true);
 			UsernamePasswordCredentialsProvider credentialsProvider = getCredentialsProvider();
 			if (credentialsProvider != null) {
@@ -222,7 +222,7 @@ public class GitClientForSingleRepository {
 			setConfig();
 			new CodeClassPersistenceManager(projectKey).extractAllChangedFiles();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be cloned: " + this.gitInfo.getRepoUri() + " " + directory.getAbsolutePath() + "\n\t"
+			LOGGER.error("Git repository could not be cloned: " + this.gitConf.getRepoUri() + " " + directory.getAbsolutePath() + "\n\t"
 					+ e.getMessage());
 			return false;
 		}
@@ -230,13 +230,13 @@ public class GitClientForSingleRepository {
 	}
 
 	private UsernamePasswordCredentialsProvider getCredentialsProvider() {
-		switch (this.gitInfo.getAuthMethod()) {
+		switch (this.gitConf.getAuthMethod()) {
 		case "HTTP":
-			return new UsernamePasswordCredentialsProvider(this.gitInfo.getUsername(), this.gitInfo.getToken());
+			return new UsernamePasswordCredentialsProvider(this.gitConf.getUsername(), this.gitConf.getToken());
 		case "GITHUB":
-			return new UsernamePasswordCredentialsProvider(this.gitInfo.getToken(), "");
+			return new UsernamePasswordCredentialsProvider(this.gitConf.getToken(), "");
 		case "GITLAB":
-			return new UsernamePasswordCredentialsProvider(this.gitInfo.getUsername(), this.gitInfo.getToken());
+			return new UsernamePasswordCredentialsProvider(this.gitConf.getUsername(), this.gitConf.getToken());
 		default:
 			return null;
 		}
@@ -320,7 +320,7 @@ public class GitClientForSingleRepository {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
 				changedFile.setProject(projectKey);
-				changedFile.setRepoUri(this.gitInfo.getRepoUri());
+				changedFile.setRepoUri(this.gitConf.getRepoUri());
 				diff.addChangedFile(changedFile);
 			} catch (IOException e) {
 				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: "
@@ -470,7 +470,7 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultBranch() {
 		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(this.gitInfo.getDefaultBranchName())) {
+			if (ref.getName().contains(this.gitConf.getDefaultBranchName())) {
 				return ref;
 			}
 		}
@@ -530,14 +530,14 @@ public class GitClientForSingleRepository {
 	 *         String.
 	 */
 	public String getRemoteUri() {
-		return this.gitInfo.getRepoUri();
+		return this.gitConf.getRepoUri();
 	}
 
 	/**
 	 * @return name of the default branch (e.g. master).
 	 */
 	public String getDefaultBranchName() {
-		return this.gitInfo.getDefaultBranchName();
+		return this.gitConf.getDefaultBranchName();
 	}
 
 	/**
