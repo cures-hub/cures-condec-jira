@@ -36,10 +36,9 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 
 /**
- * FIXME Investigate alternative for the following decision problem:
+ * Retrieves commits and code changes (diffs) from one git repository.
  * 
  * @issue How can we assign more than one git repository to a Jira project?
  * @decision Implement class GitClientForSingleRepository with separate git
@@ -48,9 +47,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
  * @con The purpose of `git.remoteAdd()` is completely different – it simply
  *      executes `git remote add` within an existing repository and does not
  *      manage several repositories
- *
- *              Retrieves commits and code changes (diffs) from one git
- *              repository.
  */
 public class GitClientForSingleRepository {
 
@@ -99,7 +95,8 @@ public class GitClientForSingleRepository {
 			}
 		} else {
 			if (!cloneRepository(workingDirectory)) {
-				LOGGER.error("Could not clone repository " + this.gitConf.getRepoUri() + " to " + workingDirectory.getAbsolutePath());
+				LOGGER.error("Could not clone repository " + this.gitConf.getRepoUri() + " to "
+						+ workingDirectory.getAbsolutePath());
 				return false;
 			}
 		}
@@ -146,8 +143,7 @@ public class GitClientForSingleRepository {
 						.setRemoveDeletedRefs(true).call();
 				ObjectId newId = getDefaultBranchPosition();
 				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
-				CodeClassPersistenceManager persistenceManager = new CodeClassPersistenceManager(projectKey);
-				persistenceManager.maintainChangedFilesInDatabase(diffSinceLastFetch);
+				new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diffSinceLastFetch);
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 		} catch (GitAPIException e) {
@@ -220,10 +216,10 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			new CodeClassPersistenceManager(projectKey).extractAllChangedFiles();
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be cloned: " + this.gitConf.getRepoUri() + " " + directory.getAbsolutePath() + "\n\t"
-					+ e.getMessage());
+			LOGGER.error("Git repository could not be cloned: " + this.gitConf.getRepoUri() + " "
+					+ directory.getAbsolutePath() + "\n\t" + e.getMessage());
 			return false;
 		}
 		return true;

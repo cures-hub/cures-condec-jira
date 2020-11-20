@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jgit.diff.DiffEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,13 +11,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -193,66 +190,5 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			entry = databaseEntry;
 		}
 		return entry;
-	}
-
-	/**
-	 * @issue How to maintain changed files and links extracted from git?
-	 */
-	public void maintainChangedFilesInDatabase(Diff diff) {
-		if (diff == null || diff.getChangedFiles().isEmpty()) {
-			return;
-		}
-
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateChangedFileInDatabase(changedFile);
-		}
-	}
-
-	public void updateChangedFileInDatabase(ChangedFile changedFile) {
-		if (!changedFile.isJavaClass()) {
-			return;
-		}
-		DiffEntry diffEntry = changedFile.getDiffEntry();
-		switch (diffEntry.getChangeType()) {
-		case ADD:
-			// same as modify, thus, no break after add to fall through
-		case MODIFY:
-			// new links could have been added
-			handleAdd(changedFile);
-			break;
-		case RENAME:
-			handleRename(changedFile);
-			break;
-		case DELETE:
-			handleDelete(changedFile);
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void handleAdd(ChangedFile changedFile) {
-		insertKnowledgeElement(changedFile, null);
-	}
-
-	private void handleDelete(ChangedFile changedFile) {
-		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(changedFile.getOldName());
-		deleteKnowledgeElement(fileToBeDeleted, null);
-	}
-
-	private void handleRename(ChangedFile changedFile) {
-		handleDelete(changedFile);
-		handleAdd(changedFile);
-	}
-
-	public void extractAllChangedFiles() {
-		GitClient gitClient = GitClient.getOrCreate(projectKey);
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			// @issue Which files should be integrated into the knowledge graph?
-			if (changedFile.isJavaClass()) {
-				insertKnowledgeElement(changedFile, null);
-			}
-		}
 	}
 }
