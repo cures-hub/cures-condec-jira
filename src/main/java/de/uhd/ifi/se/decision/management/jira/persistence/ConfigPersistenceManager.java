@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import scala.annotation.meta.getter;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -226,9 +227,6 @@ public class ConfigPersistenceManager {
 	public static Map<String, String> getDefaultBranches(String projectKey) {
 		Map<String, String> defaultBranches = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		value = getValue(projectKey, "defaultBranches");
 		if (value == null || value.isBlank()) {
@@ -248,12 +246,13 @@ public class ConfigPersistenceManager {
 		return defaultBranches;
 	}
 
+	public static String getDefaultBranch(String projectKey, String repoUri) {
+		return getDefaultBranches(projectKey).get(repoUri);
+	}
+
 	public static Map<String, String> getAuthMethods(String projectKey) {
 		Map<String, String> authMethods = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		value = getValue(projectKey, "authMethods");
 		if (value == null || value.isBlank()) {
@@ -273,12 +272,13 @@ public class ConfigPersistenceManager {
 		return authMethods;
 	}
 
+	public static String getAuthMethod(String projectKey, String repoUri) {
+		return getAuthMethods(projectKey).get(repoUri);
+	}
+
 	public static Map<String, String> getUsernames(String projectKey) {
 		Map<String, String> usernames = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		value = getValue(projectKey, "usernames");
 		if (value == null || value.isBlank()) {
@@ -298,12 +298,13 @@ public class ConfigPersistenceManager {
 		return usernames;
 	}
 
+	public static String getUsername(String projectKey, String repoUri) {
+		return getUsernames(projectKey).get(repoUri);
+	}
+
 	public static Map<String, String> getTokens(String projectKey) {
 		Map<String, String> tokens = new HashMap<String, String>();
 		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
 		List<String> uris = Arrays.asList(value.split(";;"));
 		value = getValue(projectKey, "tokens");
 		if (value == null || value.isBlank()) {
@@ -321,6 +322,10 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return tokens;
+	}
+
+	public static String getToken(String projectKey, String repoUri) {
+		return getTokens(projectKey).get(repoUri);
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

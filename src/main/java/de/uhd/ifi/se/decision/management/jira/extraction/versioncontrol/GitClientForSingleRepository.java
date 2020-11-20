@@ -57,12 +57,12 @@ public class GitClientForSingleRepository {
 	private Git git;
 	private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
-	private GitRepositoryInformation gitInfo;
+	private GitRepositoryConfiguration gitInfo;
 	private GitRepositoryFileSystemManager fileSystemManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
-	public GitClientForSingleRepository(String projectKey, GitRepositoryInformation gitInfo) {
+	public GitClientForSingleRepository(String projectKey, GitRepositoryConfiguration gitInfo) {
 		this.projectKey = projectKey;
 		this.gitInfo = gitInfo;
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitInfo.getRepoUri());

@@ -20,7 +20,7 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryInformation;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -96,7 +96,7 @@ public class GitClient {
 		this();
 		this.projectKey = projectKey;
 		for (String uri : uris) {
-			GitRepositoryInformation gitInfo = new GitRepositoryInformation(uri, projectKey);
+			GitRepositoryConfiguration gitInfo = new GitRepositoryConfiguration(uri, projectKey);
 			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitInfo));
 		}
 	}
