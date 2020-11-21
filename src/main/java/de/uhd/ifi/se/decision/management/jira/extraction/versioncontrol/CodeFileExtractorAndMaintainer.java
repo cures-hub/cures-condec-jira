@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
  * as follows: 1) Initial trace link creation during git clone. 2) Manual link
  * improvement and maintenance by developers. Developers can manually change
  * links. 3) Automatic trace link maintenance during git fetch based on recent
- * changed.
+ * changes.
  */
 public class CodeFileExtractorAndMaintainer {
 
