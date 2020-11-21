@@ -11,6 +11,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -24,7 +25,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		codeClassPersistenceManager = new CodeClassPersistenceManager("Test");
+		codeClassPersistenceManager = new CodeClassPersistenceManager("TEST");
 		classElement = TestInsertKnowledgeElement.createTestCodeClass();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		classElement = codeClassPersistenceManager.insertKnowledgeElement(classElement, user);
@@ -47,7 +48,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeElementWithElementNotInDatabase() {
-		KnowledgeElement newClassElement = new KnowledgeElement();
+		KnowledgeElement newClassElement = new ChangedFile();
 		newClassElement.setProject("TEST");
 		assertFalse(codeClassPersistenceManager.updateKnowledgeElement(newClassElement, user));
 	}

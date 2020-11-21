@@ -200,6 +200,9 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			return false;
 		}
 		KnowledgeElement fileToBeUpdated = getKnowledgeElementByName(((ChangedFile) newElement).getOldName());
+		if (fileToBeUpdated == null) {
+			return false;
+		}
 		newElement.setId(fileToBeUpdated.getId());
 		CodeClassInDatabase entry = findDatabaseEntry(newElement);
 		if (entry == null) {
