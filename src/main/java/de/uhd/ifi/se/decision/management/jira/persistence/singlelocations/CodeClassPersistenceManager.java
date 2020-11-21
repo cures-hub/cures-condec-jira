@@ -30,6 +30,16 @@ import net.java.ao.Query;
  * @see AbstractPersistenceManagerForSingleLocation
  * @see CodeClassInDatabase
  * 
+ * @issue How should this class be named?
+ * @alternative Call it CodeClassPersistenceManager!
+ * @con In Java, files often contain one class, but there can also be inner
+ *      classes, which would not be detected.
+ * @con In some languages such as JavaScript, there might not be classes but
+ *      files.
+ * @alternative Call it CodeFilePersistenceManager!
+ * @pro Currently, the file name is stored in database and linked to the Jira
+ *      issue.
+ * 
  * @issue Is it really necessary to store the code files in the database?
  * @decision We store code files in the database to establish links to them.
  * @pro When storing code files they get a unique id that is used for linking.
@@ -61,6 +71,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return isDeleted;
 	}
 
+	/**
+	 * Deletes all code files ({@link ChangedFile}s) in database.
+	 * 
+	 * @return true if all files were deleted.
+	 */
 	public boolean deleteKnowledgeElements() {
 		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Elements cannot be deleted since the project key is invalid.");

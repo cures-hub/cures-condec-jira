@@ -44,11 +44,11 @@ public class CodeFileExtractorAndMaintainer {
 		}
 
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateChangedFileInDatabase(changedFile);
+			addDeleteOrUpdateChangedFileInDatabase(changedFile);
 		}
 	}
 
-	public void updateChangedFileInDatabase(ChangedFile changedFile) {
+	public void addDeleteOrUpdateChangedFileInDatabase(ChangedFile changedFile) {
 		if (!changedFile.isJavaClass()) {
 			return;
 		}
