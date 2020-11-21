@@ -153,11 +153,12 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return configuration information of the git repositories for this project
-	 *         as a List<GitRepositoryConfiguration> (if it is set, otherwise an empty List).
+	 * @return configuration information of the git repositories for this project as
+	 *         a {@link List<GitRepositoryConfiguration>} (if it is set, otherwise
+	 *         an empty list).
 	 */
-	public List<GitRepositoryConfiguration> getGitConfigurations() {
-		return ConfigPersistenceManager.getGitConfigurations(getProjectKey());
+	public List<GitRepositoryConfiguration> getGitRepositoryConfigurations() {
+		return ConfigPersistenceManager.getGitRepositoryConfigurations(getProjectKey());
 	}
 
 	/**

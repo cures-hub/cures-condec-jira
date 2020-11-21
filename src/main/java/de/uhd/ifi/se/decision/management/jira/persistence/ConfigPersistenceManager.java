@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -12,6 +18,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.ProjectSource;
@@ -24,18 +31,15 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
-import java.lang.reflect.Type;
-import java.util.*;
-
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
  * activated for a specific project.
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -191,91 +195,33 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
-	public static String getSemicolonStringFromList(List<String> list) {
-		String semicolonString = "";
-		for (int i = 0; i < list.size(); i++) {
-			semicolonString += list.get(i);
-
-			if (i != list.size() - 1) {
-				semicolonString += ";;";
-			}
-		}
-		return semicolonString;
-	}
-
-	public static List<String> getListFromSemicolonString(String string, boolean allowEmptyValues) {
-		if (string.isEmpty() && !allowEmptyValues) {
-			return new ArrayList<String>();
-		}
-		return Arrays.asList(string.split(";;"));
-	}
-
-	public static List<String> getListFromSemicolonString(String string) {
-		return getListFromSemicolonString(string, true);
-	}
-
-	public static void setGitConfigurations(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
-		List<String> gitUris = new ArrayList<String>();
-		List<String> defaultBranches = new ArrayList<String>();
-		List<String> authMethods = new ArrayList<String>();
-		List<String> usernames = new ArrayList<String>();
-		List<String> tokens = new ArrayList<String>();
-
-		for (GitRepositoryConfiguration gitConf : gitConfs) {
-			gitUris.add(gitConf.getRepoUri());
-			defaultBranches.add(gitConf.getDefaultBranch());
-			authMethods.add(gitConf.getAuthMethod());
-			usernames.add(gitConf.getUsername());
-			tokens.add(gitConf.getToken());	
-		}
-
-		setValue(projectKey, "gitUris", getSemicolonStringFromList(gitUris));
-		setValue(projectKey, "defaultBranches", getSemicolonStringFromList(defaultBranches));
-		setValue(projectKey, "authMethods", getSemicolonStringFromList(authMethods));
-		setValue(projectKey, "usernames", getSemicolonStringFromList(usernames));
-		setValue(projectKey, "tokens", getSemicolonStringFromList(tokens));
-	}
-
-	public static void setGitConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
+	public static void setGitRepositoryConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
 		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
 		gitConfs.add(gitConf);
-		setGitConfigurations(projectKey, gitConfs);
+		setGitRepositoryConfigurations(projectKey, gitConfs);
 	}
 
-	public static List<GitRepositoryConfiguration> getListOfGitConfsFromSemicolonStrings(String repoUris, String defaultBranches, String authMethods, String usernames, String tokens) {
-		return getListOfGitConfs(getListFromSemicolonString(repoUris, false), getListFromSemicolonString(defaultBranches), getListFromSemicolonString(authMethods), getListFromSemicolonString(usernames), getListFromSemicolonString(tokens));
+	public static void setGitRepositoryConfigurations(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
+		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+		}.getType();
+		saveObject(projectKey, "gitRepositoryConfigurations", gitConfs, type);
 	}
 
-	public static List<GitRepositoryConfiguration> getListOfGitConfs(List<String> repoUris, List<String> defaultBranches, List<String> authMethods, List<String> usernames, List<String> tokens) {
-		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
-		for (int i = 0; i < repoUris.size(); i++) {
-			gitConfs.add(new GitRepositoryConfiguration(repoUris.get(i), defaultBranches.get(i), authMethods.get(i), usernames.get(i), tokens.get(i)));
+	@SuppressWarnings("unchecked")
+	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
+		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+		}.getType();
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
+		try {
+			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
+					"gitRepositoryConfigurations", type);
+		} catch (JsonSyntaxException e) {
 		}
-		return gitConfs;
-	}
-
-	public static List<GitRepositoryConfiguration> getGitConfigurations(String projectKey) {
-		String gitUrisString = getValue(projectKey, "gitUris");
-		String defaultBranchesString = getValue(projectKey, "defaultBranches");
-		String authMethodsString = getValue(projectKey, "authMethods");
-		String usernamesString = getValue(projectKey, "usernames");
-		String tokensString = getValue(projectKey, "tokens");
-
-		if (gitUrisString.equals("")) {
-			return new ArrayList<GitRepositoryConfiguration>();
-		}
-
-		List<String> gitUris = getListFromSemicolonString(gitUrisString, false);
-		List<String> defaultBranches = getListFromSemicolonString(defaultBranchesString);
-		List<String> authMethods = getListFromSemicolonString(authMethodsString);
-		List<String> usernames = getListFromSemicolonString(usernamesString);
-		List<String> tokens = getListFromSemicolonString(tokensString);
-
-		return getListOfGitConfs(gitUris, defaultBranches, authMethods, usernames, tokens);
+		return gitRepositoryConfigurations;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -338,7 +284,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -484,10 +430,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-					jiraProject.getProjectKey());
+						jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-						projectSourceActivation);
+							projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -519,7 +465,8 @@ public class ConfigPersistenceManager {
 
 	public static RecommenderType getRecommendationInput(String projectKey) {
 		String value = getValue(projectKey, "recommendationInput");
-		if (!value.isBlank()) return RecommenderType.getTypeByString(value);
+		if (!value.isBlank())
+			return RecommenderType.getTypeByString(value);
 		return RecommenderType.getDefault();
 	}
 

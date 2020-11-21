@@ -49,7 +49,7 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 	    String projectKey = project.getKey();
 	    String projectName = project.getName();
 		// TODO: Change to multiple URIs
-		List<GitRepositoryConfiguration> gitConfigurations = ConfigPersistenceManager.getGitConfigurations(projectKey);
+		List<GitRepositoryConfiguration> gitConfigurations = ConfigPersistenceManager.getGitRepositoryConfigurations(projectKey);
 		List<String> projectGitUris = new ArrayList<String>();
 		for (GitRepositoryConfiguration gitConfiguration : gitConfigurations) {
 			projectGitUris.add(gitConfiguration.getRepoUri());

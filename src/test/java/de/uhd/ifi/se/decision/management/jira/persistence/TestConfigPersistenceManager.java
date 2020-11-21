@@ -1,5 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
@@ -10,15 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -26,7 +30,7 @@ import static org.junit.Assert.*;
  *
  * @issue How can we enable that settings can be set during testing?
  * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
- * to enable that settings can be set during testing!
+ *           to enable that settings can be set during testing!
  * @see MockPluginSettings
  * @see MockPluginSettingsFactory
  */
@@ -379,19 +383,21 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetGitRepos() {
-		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP", "user", "secret👀");
-		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB", "githubuser", "token👀");
-		
-		ConfigPersistenceManager.setGitConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP",
+				"user", "secret👀");
+		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
+				"githubuser", "token👀");
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(0);
+		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("HTTP", gitConf.getAuthMethod());
 		assertEquals("user", gitConf.getUsername());
 		assertEquals("secret👀", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
@@ -401,33 +407,26 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetEmptyOrCorruptConfInfo() {
-		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "", "");
-		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB", "githubuser", "token👀");
-		
-		ConfigPersistenceManager.setGitConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "",
+				"");
+		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
+				"githubuser", "token👀");
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(0);
+		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("NONE", gitConf.getAuthMethod());
 		assertEquals("", gitConf.getUsername());
 		assertEquals("", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
 		assertEquals("githubuser", gitConf.getUsername());
 		assertEquals("token👀", gitConf.getToken());
-	}
-
-	@Test
-	public void testGetEmptyConfsList() {
-		ConfigPersistenceManager.setGitConfigurations("TEST", new ArrayList<GitRepositoryConfiguration>());
-		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfigurations("TEST"));
-
-		ConfigPersistenceManager.setGitConfigurations("TEST", ConfigPersistenceManager.getListOfGitConfsFromSemicolonStrings("", "", "", "", ""));
-		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfigurations("TEST"));
 	}
 
 	@Test
@@ -444,12 +443,13 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		int input = 4;
 		ConfigPersistenceManager.setFragmentLength("TEST", input);
 		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
-		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		// Cannot be tested because the MockPluginSettingsFactory does not support
+		// multiple projects
 		/*
-		input = 3;
-		ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
-		assertEquals("Activated should still be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
-
+		 * input = 3; ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
+		 * assertEquals("Activated should still be 4.", 4,
+		 * ConfigPersistenceManager.getFragmentLength("TEST"));
+		 * 
 		 */
 	}
 
@@ -457,13 +457,15 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetAndGetMinLinkSuggestionScore() {
 		double input = 0.4;
 		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
-		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"), 0.0);
-		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
+				0.0);
+		// Cannot be tested because the MockPluginSettingsFactory does not support
+		// multiple projects
 		/*
-		input = 0.3;
-		ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST", input);
-		assertTrue("Activated should still be 0.4.", 0.4 == ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
-
+		 * input = 0.3; ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST",
+		 * input); assertTrue("Activated should still be 0.4.", 0.4 ==
+		 * ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
+		 * 
 		 */
 	}
 
@@ -471,28 +473,36 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetAndGetActivationStatusOfQualityEvent() {
 		String consistencyEvent = "done";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
-		assertTrue("Activated should be true.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+		assertTrue("Activated should be true.",
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
-		assertFalse("Activated should be false.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+		assertFalse("Activated should be false.",
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		String otherConsistencyEvent = "none";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
-		assertFalse("Activated for 'done' should still be false.", ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+		assertFalse("Activated for 'done' should still be false.",
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
-		// Cannot be tested because the MockPluginSettingsFactory does not support multiple projects
+		// Cannot be tested because the MockPluginSettingsFactory does not support
+		// multiple projects
 		/*
-		isActivated = true;
-		ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("NOTTEST", consistencyEvent, isActivated);
-		assertFalse("Activated for 'done' of project 'TEST' should still be false.", ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST", consistencyEvent));
-		*/
+		 * isActivated = true;
+		 * ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("NOTTEST",
+		 * consistencyEvent, isActivated);
+		 * assertFalse("Activated for 'done' of project 'TEST' should still be false.",
+		 * ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST",
+		 * consistencyEvent));
+		 */
 	}
 
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000");
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
-		assertEquals("Number of Knowledge sources should be 1", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+		assertEquals("Number of Knowledge sources should be 1", 1,
+				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000");
 		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
@@ -501,17 +511,20 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("10000", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getTimeout());
 		assertEquals("RDF Name2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getName());
 
-		//Test invalid Source
+		// Test invalid Source
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
-		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
+				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
-		//Test deactivation
+		// Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
-		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
+		assertFalse("The knowledge source should be dectivated!",
+				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
 
-		//Delete KnowledgeSource
+		// Delete KnowledgeSource
 		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
-		assertEquals("The knowledge source should be 0!", 0, ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+		assertEquals("The knowledge source should be 0!", 0,
+				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 
 	@Test
@@ -532,7 +545,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
 		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
 	}
-
 
 	@Test
 	public void testGetActiveProjects() {
@@ -575,7 +587,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetRecommendationInput() {
-		//assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput("TEST"));
+		// assertEquals(RecommenderType.getDefault(),
+		// ConfigPersistenceManager.getRecommendationInput("TEST"));
 		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
 		assertEquals(RecommenderType.KEYWORD, ConfigPersistenceManager.getRecommendationInput("TEST"));
 		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD");
