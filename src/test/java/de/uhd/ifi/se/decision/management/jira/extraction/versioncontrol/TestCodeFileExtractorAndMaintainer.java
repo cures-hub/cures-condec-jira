@@ -52,7 +52,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	@NonTransactional
 	public void testUpdateNonJavaFile() {
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
-		codeFileExtractorAndMaintainer.addDeleteOrUpdateChangedFileInDatabase(new ChangedFile());
+		codeFileExtractorAndMaintainer.addUpdateOrDeleteChangedFileInDatabase(new ChangedFile());
 		assertEquals(0, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}
 
