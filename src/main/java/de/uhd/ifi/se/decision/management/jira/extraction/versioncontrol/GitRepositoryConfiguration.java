@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 /**
@@ -17,8 +19,10 @@ public class GitRepositoryConfiguration {
 	private String username;
 	private String token;
 
-	public GitRepositoryConfiguration(String repoUri, String defaultBranch, String authMethod, String username,
-			String token) {
+	@JsonCreator
+	public GitRepositoryConfiguration(@JsonProperty("repoUri") String repoUri,
+			@JsonProperty("defaultBranch") String defaultBranch, @JsonProperty("authMethod") String authMethod,
+			@JsonProperty("username") String username, @JsonProperty("token") String token) {
 		this.repoUri = repoUri;
 		this.defaultBranch = defaultBranch;
 		this.authMethod = AuthMethod.getAuthMethodByName(authMethod);

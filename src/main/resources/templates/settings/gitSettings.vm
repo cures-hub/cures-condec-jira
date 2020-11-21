@@ -207,31 +207,29 @@
         var usernames = document.getElementsByClassName("text long-field3");
         var tokens = document.getElementsByClassName("text long-field4");
 		var gitRepositoryConfigurations = [];
-        var uriString = "";
-        var defaultBranchesString = "";
-        var authMethodsString = "";
-        var usernamesString = "";
-        var tokensString = "";
         for (i = 0; i < gitUris.length; i++) {
 			var gitRepositoryConfiguration = {
 				"repoUri": gitUris[i].value,
 				"defaultBranch": defaultBranches[i].value,
 				"authMethod": authMethods[i].value,
 				"username": usernames[i].value,
-				"token": tokens[i].value;
+				"token": tokens[i].value
 			};
 			gitRepositoryConfigurations.push(gitRepositoryConfiguration);
         }
        
         console.log(gitRepositoryConfigurations);
         conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
-        
+		
 		var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
 		if (gitToggle.checked) {
             conDecAPI.setKnowledgeExtractedFromGit(gitToggle.checked, gitToggle.value);
         }
+		
         window.onbeforeunload = null;
     });
+	
+	
 
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
