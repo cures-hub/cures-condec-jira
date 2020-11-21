@@ -17,7 +17,7 @@
         
         <div class="aui-group" id="repodiv$repoNumber">
             URI: 
-            <input type="text" class="text long-field repo$repoNumber" value="$gitUri" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;
+            <input type="text" class="text long-field repo$repoNumber" value="$gitRepositoryConfiguration.getRepoUri()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;
             <input type="button" id="delete-entry$repoNumber" class="aui-button aui-button-primary" value="Delete entry"/>
             <br />
             Default Branch: 
@@ -30,7 +30,7 @@
                 <option #if ($gitRepositoryConfiguration.getAuthMethod() == "GITLAB") selected="selected" #end value="GITLAB">GitLab Personal Access Token</option>
             </select>
             <div id="username$repoNumber" style="display: #if ($gitRepositoryConfiguration.getAuthMethod() == 'NONE' || $gitRepositoryConfiguration.getAuthMethod() == 'GITHUB') none #else block #end ;">User Name:
-            <input type="text" class="text long-field3 repo$repoNumber" value="$gitRepositoryConfiguration.getUsername"/></div>
+            <input type="text" class="text long-field3 repo$repoNumber" value="$gitRepositoryConfiguration.getUsername()"/></div>
             <div id="token$repoNumber" style="display: #if ($gitRepositoryConfiguration.getAuthMethod() == 'NONE') none #else block #end ;">Password or Token:
             <input type="password" class="text long-field4 repo$repoNumber" value="$gitRepositoryConfiguration.getToken()"/></div>
         </div>
@@ -221,16 +221,9 @@
         console.log(gitRepositoryConfigurations);
         conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
 		
-		var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
-		if (gitToggle.checked) {
-            conDecAPI.setKnowledgeExtractedFromGit(gitToggle.checked, gitToggle.value);
-        }
-		
         window.onbeforeunload = null;
     });
 	
-	
-
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');

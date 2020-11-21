@@ -85,6 +85,7 @@ public class ConfigRest {
 	private static void resetKnowledgeGraph(String projectKey) {
 		KnowledgeGraph.instances.remove(projectKey);
 		KnowledgePersistenceManager.instances.remove(projectKey);
+		GitClient.instances.remove(projectKey);
 	}
 
 	@Path("/isActivated")

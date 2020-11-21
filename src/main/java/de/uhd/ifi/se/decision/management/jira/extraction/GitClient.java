@@ -49,7 +49,7 @@ public class GitClient {
 	 * Instances of {@link GitClient}s that are identified by the project key (uses
 	 * the multiton pattern).
 	 */
-	private static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
 
 	/**
 	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
@@ -398,7 +398,7 @@ public class GitClient {
 	 */
 	public GitClientForSingleRepository getGitClientsForSingleRepo(String uri) {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			if (gitClientForSingleRepo.getRemoteUri().equals(uri)) {
+			if (gitClientForSingleRepo.getRemoteUri().equalsIgnoreCase(uri)) {
 				return gitClientForSingleRepo;
 			}
 		}
