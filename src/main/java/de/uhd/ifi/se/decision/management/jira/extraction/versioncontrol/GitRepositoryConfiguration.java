@@ -8,18 +8,18 @@ public class GitRepositoryConfiguration {
 	private String token;
 
 	public GitRepositoryConfiguration(String repoUri, String defaultBranch, String authMethod, String username, String token) {
-		if (defaultBranch == "") {
-			defaultBranch = "master";
-		}
-		if (!authMethod.equals("HTTP") && !authMethod.equals("GITHUB") && !authMethod.equals("GITLAB")) {
-			authMethod = "NONE";
-		}
-
 		this.repoUri = repoUri;
 		this.defaultBranch = defaultBranch;
 		this.authMethod = authMethod;
 		this.username = username;
 		this.token = token;
+
+		if (this.defaultBranch.equals("")) {
+			this.defaultBranch = "master";
+		}
+		if (!this.authMethod.equals("HTTP") && !this.authMethod.equals("GITHUB") && !this.authMethod.equals("GITLAB")) {
+			this.authMethod = "NONE";
+		}
 	}
 
 	public String getRepoUri() {

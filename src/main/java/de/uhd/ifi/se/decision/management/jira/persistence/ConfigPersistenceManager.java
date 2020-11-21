@@ -265,7 +265,7 @@ public class ConfigPersistenceManager {
 		String usernamesString = getValue(projectKey, "usernames");
 		String tokensString = getValue(projectKey, "tokens");
 
-		if (gitUrisString == "" || defaultBranchesString == "" || authMethodsString == "" || usernamesString == "" || tokensString == "") {
+		if (gitUrisString.equals("") || defaultBranchesString.equals("") || authMethodsString.equals("") || usernamesString.equals("") || tokensString.equals("")) {
 			return new ArrayList<GitRepositoryConfiguration>();
 		}
 
