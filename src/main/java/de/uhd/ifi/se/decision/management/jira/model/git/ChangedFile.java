@@ -188,6 +188,9 @@ public class ChangedFile extends KnowledgeElement {
 		if (name.isEmpty()) {
 			name = getNewFileNameFromTreeWalkPath();
 		}
+		if (name.isEmpty()) {
+			name = super.getSummary();
+		}
 		return name;
 	}
 

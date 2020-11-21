@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jgit.diff.DiffEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,13 +11,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -27,14 +24,25 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Responsible for storing
- * and retrieving code classes related to Jira issues (work items).
+ * and retrieving code files related to Jira issues (work items or
+ * requirements).
  *
  * @see AbstractPersistenceManagerForSingleLocation
  * @see CodeClassInDatabase
  * 
- * @issue Is it really necessary to store the code classes in the database?
- * @decision We store code classes in the database to establish links to them.
- * @pro When storing code classes they get a unique id that is used for linking.
+ * @issue How should this class be named?
+ * @alternative Call it CodeClassPersistenceManager!
+ * @con In Java, files often contain one class, but there can also be inner
+ *      classes, which would not be detected.
+ * @con In some languages such as JavaScript, there might not be classes but
+ *      files.
+ * @alternative Call it CodeFilePersistenceManager!
+ * @pro Currently, the file name is stored in database and linked to the Jira
+ *      issue.
+ * 
+ * @issue Is it really necessary to store the code files in the database?
+ * @decision We store code files in the database to establish links to them.
+ * @pro When storing code files they get a unique id that is used for linking.
  *      With this id, links can also be changed by the user.
  */
 public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
@@ -44,6 +52,15 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	public CodeClassPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.COMMIT;
+	}
+
+	@Override
+	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+		if (element == null) {
+			return false;
+		}
+		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(((ChangedFile) element).getOldName());
+		return fileToBeDeleted == null ? false : deleteKnowledgeElement(fileToBeDeleted.getId(), user);
 	}
 
 	@Override
@@ -63,6 +80,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		return isDeleted;
 	}
 
+	/**
+	 * Deletes all code files ({@link ChangedFile}s) in database.
+	 * 
+	 * @return true if all files were deleted.
+	 */
 	public boolean deleteKnowledgeElements() {
 		if (projectKey == null || projectKey.isBlank()) {
 			LOGGER.error("Elements cannot be deleted since the project key is invalid.");
@@ -168,7 +190,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public ApplicationUser getCreator(KnowledgeElement element) {
-		return element.getCreator();
+		// currently not implemented
+		return null;
 	}
 
 	@Override
@@ -176,12 +199,18 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
+		KnowledgeElement fileToBeUpdated = getKnowledgeElementByName(((ChangedFile) newElement).getOldName());
+		if (fileToBeUpdated == null) {
+			return false;
+		}
+		newElement.setId(fileToBeUpdated.getId());
 		CodeClassInDatabase entry = findDatabaseEntry(newElement);
 		if (entry == null) {
 			return false;
 		}
 		setParameters(newElement, entry);
 		entry.save();
+		createLinksToJiraIssues((ChangedFile) newElement, user);
 		return true;
 	}
 
@@ -193,66 +222,5 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			entry = databaseEntry;
 		}
 		return entry;
-	}
-
-	/**
-	 * @issue How to maintain changed files and links extracted from git?
-	 */
-	public void maintainChangedFilesInDatabase(Diff diff) {
-		if (diff == null || diff.getChangedFiles().isEmpty()) {
-			return;
-		}
-
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			updateChangedFileInDatabase(changedFile);
-		}
-	}
-
-	public void updateChangedFileInDatabase(ChangedFile changedFile) {
-		if (!changedFile.isJavaClass()) {
-			return;
-		}
-		DiffEntry diffEntry = changedFile.getDiffEntry();
-		switch (diffEntry.getChangeType()) {
-		case ADD:
-			// same as modify, thus, no break after add to fall through
-		case MODIFY:
-			// new links could have been added
-			handleAdd(changedFile);
-			break;
-		case RENAME:
-			handleRename(changedFile);
-			break;
-		case DELETE:
-			handleDelete(changedFile);
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void handleAdd(ChangedFile changedFile) {
-		insertKnowledgeElement(changedFile, null);
-	}
-
-	private void handleDelete(ChangedFile changedFile) {
-		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(changedFile.getOldName());
-		deleteKnowledgeElement(fileToBeDeleted, null);
-	}
-
-	private void handleRename(ChangedFile changedFile) {
-		handleDelete(changedFile);
-		handleAdd(changedFile);
-	}
-
-	public void extractAllChangedFiles() {
-		GitClient gitClient = GitClient.getOrCreate(projectKey);
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			// @issue Which files should be integrated into the knowledge graph?
-			if (changedFile.isJavaClass()) {
-				insertKnowledgeElement(changedFile, null);
-			}
-		}
 	}
 }
