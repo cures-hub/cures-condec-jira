@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -84,6 +85,7 @@ public class ConfigRest {
 	private static void resetKnowledgeGraph(String projectKey) {
 		KnowledgeGraph.instances.remove(projectKey);
 		KnowledgePersistenceManager.instances.remove(projectKey);
+		GitClient.instances.remove(projectKey);
 	}
 
 	@Path("/isActivated")
@@ -545,28 +547,21 @@ public class ConfigRest {
 		}
 	}
 
-	// TODO Create GitRepository model class with attributes for uri and default
-	// branch, map JSON object from client side to such GitRepository objects
-	@Path("/setGitUris")
+	@Path("/setGitRepositoryConfigurations")
 	@POST
-	public Response setGitUris(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("gitUris") String gitUris, @QueryParam("defaultBranches") String defaultBranches,
-			@QueryParam("authMethods") String authMethods, @QueryParam("usernames") String usernames,
-			@QueryParam("tokens") String tokens) {
+	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (gitUris == null || defaultBranches == null || authMethods == null || usernames == null || tokens == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
+		if (gitRepositoryConfigurations == null
+				|| !GitRepositoryConfiguration.areAllGitRepositoryConfigurationsValid(gitRepositoryConfigurations)) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Git repository configurations could not be set because it is null."))
+					.build();
 		}
-		// List<String> gitUriList = Arrays.asList(gitUris.split(";;"));
-		ConfigPersistenceManager.setGitUris(projectKey, gitUris);
-		ConfigPersistenceManager.setDefaultBranches(projectKey, defaultBranches);
-		ConfigPersistenceManager.setAuthMethods(projectKey, authMethods);
-		ConfigPersistenceManager.setUsernames(projectKey, usernames);
-		ConfigPersistenceManager.setTokens(projectKey, tokens);
+		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

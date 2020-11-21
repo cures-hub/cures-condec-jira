@@ -6,7 +6,6 @@ import java.util.Map;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.TestConfigPersistenceManager;
 
@@ -32,15 +31,10 @@ public class MockPluginSettings implements PluginSettings {
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "gitUris", TestSetUpGit.GIT_URI);
-		settings.put(subfix + "defaultBranches", "master");
 		settings.put(subfix + "webhookUrl", "http://true");
 		settings.put(subfix + "webhookSecret", "myhoneybee");
 		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "setClassiferForIssueComments", "false");
-		settings.put(subfix + "authMethods", "HTTP");
-		settings.put(subfix + "usernames", "heinz.guenther");
-		settings.put(subfix + "tokens", "P@ssw0rd!");
 		settings.put(subfix + "users", "user");
 		return settings;
 	}

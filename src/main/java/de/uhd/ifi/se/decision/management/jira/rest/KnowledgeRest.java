@@ -7,7 +7,6 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;

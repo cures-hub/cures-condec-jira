@@ -13,26 +13,26 @@
 	<label for="git-uri-input-field">Git Repositories</label>
 	<div id="repo-wrapper">
     #set( $repoNumber = 1 )
-    #foreach($gitUri in $project.getGitUris())
+    #foreach($gitRepositoryConfiguration in $project.getGitRepositoryConfigurations())
         
         <div class="aui-group" id="repodiv$repoNumber">
             URI: 
-            <input type="text" class="text long-field repo$repoNumber" value="$gitUri" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;
+            <input type="text" class="text long-field repo$repoNumber" value="$gitRepositoryConfiguration.getRepoUri()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"/>&nbsp;
             <input type="button" id="delete-entry$repoNumber" class="aui-button aui-button-primary" value="Delete entry"/>
             <br />
             Default Branch: 
-            <input type="text" class="text long-field2 repo$repoNumber"	value="$project.getDefaultBranches().get($gitUri)" placeholder="master" /><br />
+            <input type="text" class="text long-field2 repo$repoNumber"	value="$gitRepositoryConfiguration.getDefaultBranch()" placeholder="master" /><br />
             Authentication Method: 
             <select name="authMethod" class="select medium-field repo$repoNumber">
-                <option #if ($project.getAuthMethods().get($gitUri) == "NONE") selected="selected" #end value="NONE">None</option>
-                <option #if ($project.getAuthMethods().get($gitUri) == "HTTP") selected="selected" #end value="HTTP">HTTPS with credentials</option>
-                <option #if ($project.getAuthMethods().get($gitUri) == "GITHUB") selected="selected" #end value="GITHUB">GitHub OAuth Token</option>
-                <option #if ($project.getAuthMethods().get($gitUri) == "GITLAB") selected="selected" #end value="GITLAB">GitLab Personal Access Token</option>
+                <option #if ($gitRepositoryConfiguration.getAuthMethod() == "NONE") selected="selected" #end value="NONE">None</option>
+                <option #if ($gitRepositoryConfiguration.getAuthMethod() == "HTTP") selected="selected" #end value="HTTP">HTTPS with credentials</option>
+                <option #if ($gitRepositoryConfiguration.getAuthMethod() == "GITHUB") selected="selected" #end value="GITHUB">GitHub OAuth Token</option>
+                <option #if ($gitRepositoryConfiguration.getAuthMethod() == "GITLAB") selected="selected" #end value="GITLAB">GitLab Personal Access Token</option>
             </select>
-            <div id="username$repoNumber" style="display: #if ($project.getAuthMethods().get($gitUri) == 'NONE' || $project.getAuthMethods().get($gitUri) == 'GITHUB') none #else block #end ;">User Name:
-            <input type="text" class="text long-field3 repo$repoNumber" value="$project.getUsernames().get($gitUri)"/></div>
-            <div id="token$repoNumber" style="display: #if ($project.getAuthMethods().get($gitUri) == 'NONE') none #else block #end ;">Password or Token:
-            <input type="password" class="text long-field4 repo$repoNumber" value="$project.getTokens().get($gitUri)"/></div>
+            <div id="username$repoNumber" style="display: #if ($gitRepositoryConfiguration.getAuthMethod() == 'NONE' || $gitRepositoryConfiguration.getAuthMethod() == 'GITHUB') none #else block #end ;">User Name:
+            <input type="text" class="text long-field3 repo$repoNumber" value="$gitRepositoryConfiguration.getUsername()"/></div>
+            <div id="token$repoNumber" style="display: #if ($gitRepositoryConfiguration.getAuthMethod() == 'NONE') none #else block #end ;">Password or Token:
+            <input type="password" class="text long-field4 repo$repoNumber" value="$gitRepositoryConfiguration.getToken()"/></div>
         </div>
         <script>
             var authMethod${repoNumber} = document.getElementsByClassName("select medium-field repo$repoNumber");
@@ -206,37 +206,24 @@
         var authMethods = document.getElementsByClassName("select medium-field");
         var usernames = document.getElementsByClassName("text long-field3");
         var tokens = document.getElementsByClassName("text long-field4");
-        var uriString = "";
-        var defaultBranchesString = "";
-        var authMethodsString = "";
-        var usernamesString = "";
-        var tokensString = "";
+		var gitRepositoryConfigurations = [];
         for (i = 0; i < gitUris.length; i++) {
-            if (gitUris[i].value.length != 0) {
-                if (i == 0) {
-                    uriString = gitUris[i].value;
-                    defaultBranchesString = defaultBranches[i].value;
-                    authMethodsString = authMethods[i].value;
-                    usernamesString = usernames[i].value;
-                    tokensString = tokens[i].value;
-                } else {
-                    uriString = uriString + ";;" + gitUris[i].value;
-                    defaultBranchesString = defaultBranchesString + ";;" + defaultBranches[i].value;
-                    authMethodsString = authMethodsString + ";;" + authMethods[i].value;
-                    usernamesString = usernamesString + ";;" + usernames[i].value;
-                    tokensString = tokensString + ";;" + tokens[i].value;
-                }
-            }
+			var gitRepositoryConfiguration = {
+				"repoUri": gitUris[i].value,
+				"defaultBranch": defaultBranches[i].value,
+				"authMethod": authMethods[i].value,
+				"username": usernames[i].value,
+				"token": tokens[i].value
+			};
+			gitRepositoryConfigurations.push(gitRepositoryConfiguration);
         }
-        var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
-        console.log(uriString, defaultBranchesString, authMethodsString, usernamesString, tokensString);
-        conDecAPI.setGitUris("$projectKey", uriString, defaultBranchesString, authMethodsString, usernamesString, tokensString);
-        if (gitToggle.checked) {
-            conDecAPI.setKnowledgeExtractedFromGit(gitToggle.checked, gitToggle.value);
-        }
+       
+        console.log(gitRepositoryConfigurations);
+        conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
+		
         window.onbeforeunload = null;
     });
-
+	
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');

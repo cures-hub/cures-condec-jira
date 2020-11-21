@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import javax.wsdl.Input;
 import java.util.ArrayList;
 import java.util.List;
 

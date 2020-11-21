@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -49,7 +49,7 @@ public class GitClient {
 	 * Instances of {@link GitClient}s that are identified by the project key (uses
 	 * the multiton pattern).
 	 */
-	private static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
 
 	/**
 	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
@@ -78,26 +78,24 @@ public class GitClient {
 		GitClient gitClient;
 
 		if (instances.containsKey(projectKey)) {
-			instances.remove(projectKey);
+			gitClient = instances.get(projectKey);
+		} else {
+			gitClient = new GitClient(projectKey);
+			instances.put(projectKey, gitClient);
 		}
-
-		gitClient = new GitClient(projectKey);
-		instances.put(projectKey, gitClient);
 
 		gitClient.fetchOrCloneRepositories();
 		return gitClient;
 	}
 
 	private GitClient(String projectKey) {
-		this(ConfigPersistenceManager.getGitUris(projectKey), projectKey);
-	}
-
-	private GitClient(List<String> uris, String projectKey) {
 		this();
 		this.projectKey = projectKey;
-		for (String uri : uris) {
-			GitRepositoryConfiguration gitConf = new GitRepositoryConfiguration(uri, projectKey);
-			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitConf));
+		for (GitRepositoryConfiguration gitRepositoryConfiguration : ConfigPersistenceManager
+				.getGitRepositoryConfigurations(projectKey)) {
+			if (gitRepositoryConfiguration.isValid()) {
+				gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitRepositoryConfiguration));
+			}
 		}
 	}
 
@@ -400,7 +398,7 @@ public class GitClient {
 	 */
 	public GitClientForSingleRepository getGitClientsForSingleRepo(String uri) {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			if (gitClientForSingleRepo.getRemoteUri().equals(uri)) {
+			if (gitClientForSingleRepo.getRemoteUri().equalsIgnoreCase(uri)) {
 				return gitClientForSingleRepo;
 			}
 		}

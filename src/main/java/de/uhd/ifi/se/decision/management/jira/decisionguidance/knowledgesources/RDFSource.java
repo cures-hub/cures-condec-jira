@@ -5,15 +5,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.Inp
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.apache.jena.atlas.lib.Pair;
-import org.apache.jena.query.*;
-import org.apache.jena.sparql.engine.http.Params;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class RDFSource extends KnowledgeSource {

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,6 +13,7 @@ import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class FeatureBranchQualityDashboardItem implements ContextProvider {
@@ -46,10 +48,14 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 	for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 	    String projectKey = project.getKey();
 	    String projectName = project.getName();
-	    List<String> projectGitUri = ConfigPersistenceManager.getGitUris(projectKey); // TODO: Change to multiple
-											  // URIs
+		// TODO: Change to multiple URIs
+		List<GitRepositoryConfiguration> gitConfigurations = ConfigPersistenceManager.getGitRepositoryConfigurations(projectKey);
+		List<String> projectGitUris = new ArrayList<String>();
+		for (GitRepositoryConfiguration gitConfiguration : gitConfigurations) {
+			projectGitUris.add(gitConfiguration.getRepoUri());
+		}
 	    projectNameMap.put(projectKey, projectName);
-	    projectGitMap.put(projectKey, projectGitUri);
+	    projectGitMap.put(projectKey, projectGitUris);
 	}
 	newContext.put("projectNamesMap", projectNameMap);
 	newContext.put("projectGitMap", projectGitMap);

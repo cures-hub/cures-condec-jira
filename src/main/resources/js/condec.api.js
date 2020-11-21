@@ -535,12 +535,9 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches, authMethods, usernames, tokens) {
-		// TODO Pass gitUris and branches as the JSON payload. Do not pass
-		// concatenated strings separated with ;;
-		generalApi.postJSON(AJS.contextPath() + "/rest/condec/latest" + "/config/setGitUris.json?projectKey=" + projectKey
-			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches + "&authMethods=" + 
-			authMethods + "&usernames=" + usernames + "&tokens=" + tokens, null, function (error, response) {
+	ConDecAPI.prototype.setGitRepositoryConfigurations = function (projectKey, gitRepositoryConfigurations) {
+		generalApi.postJSON(this.restPrefix + "/config/setGitRepositoryConfigurations.json?projectKey=" 
+				+ projectKey, gitRepositoryConfigurations, function (error, response) {
 				if (error === null) {
 					showFlag("success", "The git URIs and credentials for this project have been set.");
 				}
