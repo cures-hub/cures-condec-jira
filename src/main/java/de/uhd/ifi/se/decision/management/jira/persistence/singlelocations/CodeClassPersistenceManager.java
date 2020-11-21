@@ -55,6 +55,12 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	@Override
+	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(((ChangedFile) element).getOldName());
+		return deleteKnowledgeElement(fileToBeDeleted.getId(), user);
+	}
+
+	@Override
 	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0) {
 			LOGGER.error(
@@ -190,6 +196,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (newElement == null || newElement.getProject() == null) {
 			return false;
 		}
+		KnowledgeElement fileToBeUpdated = getKnowledgeElementByName(((ChangedFile) newElement).getOldName());
+		newElement.setId(fileToBeUpdated.getId());
 		CodeClassInDatabase entry = findDatabaseEntry(newElement);
 		if (entry == null) {
 			return false;

@@ -75,37 +75,19 @@ public class CodeFileExtractorAndMaintainer {
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
 		case ADD:
-			// same as modify, thus, no break after add to fall through
+			codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);			
 		case MODIFY:
 			// new links could have been added
-			handleAdd(changedFile);
-			break;
+			// same as rename, thus, no break after add to fall through
 		case RENAME:
-			handleRename(changedFile);
+			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
 			break;
 		case DELETE:
-			handleDelete(changedFile);
+			codeFilePersistenceManager.deleteKnowledgeElement(changedFile, null);
 			break;
 		default:
 			break;
 		}
-	}
-
-	private void handleAdd(ChangedFile changedFile) {
-		codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-	}
-
-	private void handleDelete(ChangedFile changedFile) {
-		KnowledgeElement fileToBeDeleted = codeFilePersistenceManager
-				.getKnowledgeElementByName(changedFile.getOldName());
-		codeFilePersistenceManager.deleteKnowledgeElement(fileToBeDeleted, null);
-	}
-
-	private void handleRename(ChangedFile changedFile) {
-		KnowledgeElement fileToBeUpdated = codeFilePersistenceManager
-				.getKnowledgeElementByName(changedFile.getOldName());
-		changedFile.setId(fileToBeUpdated.getId());
-		codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
 	}
 
 }
