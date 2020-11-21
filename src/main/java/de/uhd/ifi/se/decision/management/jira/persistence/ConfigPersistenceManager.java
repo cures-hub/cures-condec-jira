@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
@@ -190,141 +191,125 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
-	public static void setGitUris(String projectKey, String gitUris) {
-		setValue(projectKey, "gitUris", gitUris);
+	public static String getSemicolonStringFromList(List<String> list) {
+		String semicolonString = "";
+		for (String string : list) {
+			semicolonString += string;
+
+			if (string != list.get(list.size() - 1)) {
+				semicolonString += ";;";
+			}
+		}
+		return semicolonString;
 	}
 
-	public static List<String> getGitUris(String projectKey) {
-		String value = getValue(projectKey, "gitUris");
-		if (value == "") {
+	public static List<String> getListFromSemicolonString(String string, boolean allowEmptyValues) {
+		if (string.isEmpty() && !allowEmptyValues) {
 			return new ArrayList<String>();
 		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		return uris;
+		return Arrays.asList(string.split(";;"));
 	}
 
-	// TODO Add GitConfig
-	public static void setDefaultBranches(String projectKey, String defaultBranches) {
-		setValue(projectKey, "defaultBranches", defaultBranches);
+	public static List<String> getListFromSemicolonString(String string) {
+		return getListFromSemicolonString(string, true);
 	}
 
-	// TODO Add GitConfig
-	public static void setAuthMethods(String projectKey, String authMethods) {
-		setValue(projectKey, "authMethods", authMethods);
-	}
+	public static void setGitConfs(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
+		List<String> gitUris = new ArrayList<String>();
+		List<String> defaultBranches = new ArrayList<String>();
+		List<String> authMethods = new ArrayList<String>();
+		List<String> usernames = new ArrayList<String>();
+		List<String> tokens = new ArrayList<String>();
 
-	// TODO Add GitConfig
-	public static void setUsernames(String projectKey, String usernames) {
-		setValue(projectKey, "usernames", usernames);
-	}
-
-	// TODO Add GitConfig
-	public static void setTokens(String projectKey, String tokens) {
-		setValue(projectKey, "tokens", tokens);
-	}
-
-	public static Map<String, String> getDefaultBranches(String projectKey) {
-		Map<String, String> defaultBranches = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "defaultBranches");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				defaultBranches.put(uri, "master");
-			}
-			return defaultBranches;
+		for (GitRepositoryConfiguration gitConf : gitConfs) {
+			gitUris.add(gitConf.getRepoUri());
+			defaultBranches.add(gitConf.getDefaultBranch());
+			authMethods.add(gitConf.getAuthMethod());
+			usernames.add(gitConf.getUsername());
+			tokens.add(gitConf.getToken());	
 		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				defaultBranches.put(uris.get(i), "master");
-			} else {
-				defaultBranches.put(uris.get(i), branches.get(i));
-			}
-		}
-		return defaultBranches;
+
+		setValue(projectKey, "gitUris", getSemicolonStringFromList(gitUris));
+		setValue(projectKey, "defaultBranches", getSemicolonStringFromList(defaultBranches));
+		setValue(projectKey, "authMethods", getSemicolonStringFromList(authMethods));
+		setValue(projectKey, "usernames", getSemicolonStringFromList(usernames));
+		setValue(projectKey, "tokens", getSemicolonStringFromList(tokens));
 	}
 
-	public static String getDefaultBranch(String projectKey, String repoUri) {
-		return getDefaultBranches(projectKey).get(repoUri);
+	public static void setGitConf(String projectKey, GitRepositoryConfiguration gitConf) {
+		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
+		gitConfs.add(gitConf);
+		setGitConfs(projectKey, gitConfs);
 	}
 
-	public static Map<String, String> getAuthMethods(String projectKey) {
-		Map<String, String> authMethods = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "authMethods");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				authMethods.put(uri, "NONE");
-			}
-			return authMethods;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				authMethods.put(uris.get(i), "NONE");
-			} else {
-				authMethods.put(uris.get(i), branches.get(i));
-			}
-		}
-		return authMethods;
+	public static List<GitRepositoryConfiguration> getListOfGitConfsFromSemicolonStrings(String repoUris, String defaultBranches, String authMethods, String usernames, String tokens) {
+		return getListOfGitConfs(getListFromSemicolonString(repoUris, false), getListFromSemicolonString(defaultBranches), getListFromSemicolonString(authMethods), getListFromSemicolonString(usernames), getListFromSemicolonString(tokens));
 	}
 
-	public static String getAuthMethod(String projectKey, String repoUri) {
-		return getAuthMethods(projectKey).get(repoUri);
+	public static List<GitRepositoryConfiguration> getListOfGitConfs(List<String> repoUris, List<String> defaultBranches, List<String> authMethods, List<String> usernames, List<String> tokens) {
+		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
+		try {
+			for (int i = 0; i < repoUris.size(); i++) {
+				gitConfs.add(new GitRepositoryConfiguration(repoUris.get(i), defaultBranches.get(i), authMethods.get(i), usernames.get(i), tokens.get(i)));
+			}
+		} catch (IndexOutOfBoundsException e) {
+			return gitConfs;
+		}
+		return gitConfs;
 	}
 
-	public static Map<String, String> getUsernames(String projectKey) {
-		Map<String, String> usernames = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "usernames");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				usernames.put(uri, "");
-			}
-			return usernames;
+	public static List<GitRepositoryConfiguration> getGitConfs(String projectKey) {
+		String gitUrisString = getValue(projectKey, "gitUris");
+		String defaultBranchesString = getValue(projectKey, "defaultBranches");
+		String authMethodsString = getValue(projectKey, "authMethods");
+		String usernamesString = getValue(projectKey, "usernames");
+		String tokensString = getValue(projectKey, "tokens");
+
+		if (gitUrisString == "" || defaultBranchesString == "" || authMethodsString == "" || usernamesString == "" || tokensString == "") {
+			return new ArrayList<GitRepositoryConfiguration>();
 		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				usernames.put(uris.get(i), "");
-			} else {
-				usernames.put(uris.get(i), branches.get(i));
-			}
+
+		List<String> gitUris = getListFromSemicolonString(gitUrisString, false);
+		List<String> defaultBranches = getListFromSemicolonString(defaultBranchesString);
+		List<String> authMethods = getListFromSemicolonString(authMethodsString);
+		List<String> usernames = getListFromSemicolonString(usernamesString);
+		List<String> tokens = getListFromSemicolonString(tokensString);
+
+		if (gitUris.size() != defaultBranches.size() || gitUris.size() != authMethods.size() || 
+		gitUris.size() != usernames.size() || gitUris.size() != tokens.size()) {
+			return new ArrayList<GitRepositoryConfiguration>();
 		}
-		return usernames;
+
+		return getListOfGitConfs(gitUris, defaultBranches, authMethods, usernames, tokens);
 	}
 
-	public static String getUsername(String projectKey, String repoUri) {
-		return getUsernames(projectKey).get(repoUri);
-	}
-
-	public static Map<String, String> getTokens(String projectKey) {
-		Map<String, String> tokens = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "tokens");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				tokens.put(uri, "");
-			}
-			return tokens;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				tokens.put(uris.get(i), "");
-			} else {
-				tokens.put(uris.get(i), branches.get(i));
+	public static List<String> getGitConfFields(String projectKey, String field) {
+		List<GitRepositoryConfiguration> gitConfs = getGitConfs(projectKey);
+		List<String> toBeReturned = new ArrayList<String>();
+		for (GitRepositoryConfiguration gitConf : gitConfs) {
+			switch (field) {
+				case "defaultBranches":
+					toBeReturned.add(gitConf.getDefaultBranch());
+					break;
+			
+				case "authMethods":
+					toBeReturned.add(gitConf.getAuthMethod());
+					break;
+			
+				case "usernames":
+					toBeReturned.add(gitConf.getUsername());
+					break;
+			
+				case "tokens":
+					toBeReturned.add(gitConf.getToken());
+					break;
+			
+				default:
+					toBeReturned.add(gitConf.getRepoUri());
+					break;
 			}
 		}
-		return tokens;
-	}
-
-	public static String getToken(String projectKey, String repoUri) {
-		return getTokens(projectKey).get(repoUri);
+		return toBeReturned;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

@@ -470,7 +470,7 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultBranch() {
 		List<Ref> refs = getBranches();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(this.gitConf.getDefaultBranchName())) {
+			if (ref.getName().contains(this.gitConf.getDefaultBranch())) {
 				return ref;
 			}
 		}
@@ -537,7 +537,7 @@ public class GitClientForSingleRepository {
 	 * @return name of the default branch (e.g. master).
 	 */
 	public String getDefaultBranchName() {
-		return this.gitConf.getDefaultBranchName();
+		return this.gitConf.getDefaultBranch();
 	}
 
 	/**

@@ -46,8 +46,8 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 	for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 	    String projectKey = project.getKey();
 	    String projectName = project.getName();
-	    List<String> projectGitUri = ConfigPersistenceManager.getGitUris(projectKey); // TODO: Change to multiple
-											  // URIs
+		// TODO: Change to multiple URIs
+		List<String> projectGitUri = ConfigPersistenceManager.getGitConfFields(projectKey, "repoUris"); 
 	    projectNameMap.put(projectKey, projectName);
 	    projectGitMap.put(projectKey, projectGitUri);
 	}

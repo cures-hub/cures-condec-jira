@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 import javax.xml.bind.annotation.XmlElement;

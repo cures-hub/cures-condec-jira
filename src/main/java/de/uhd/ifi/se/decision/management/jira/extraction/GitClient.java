@@ -89,14 +89,9 @@ public class GitClient {
 	}
 
 	private GitClient(String projectKey) {
-		this(ConfigPersistenceManager.getGitUris(projectKey), projectKey);
-	}
-
-	private GitClient(List<String> uris, String projectKey) {
 		this();
 		this.projectKey = projectKey;
-		for (String uri : uris) {
-			GitRepositoryConfiguration gitConf = new GitRepositoryConfiguration(uri, projectKey);
+		for (GitRepositoryConfiguration gitConf : ConfigPersistenceManager.getGitConfs(projectKey)) {
 			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitConf));
 		}
 	}

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +14,7 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -153,47 +153,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return uniform resource identifiers of the git repositories for this project
-	 *         as a List<String> (if it is set, otherwise an empty List).
+	 * @return configuration information of the git repositories for this project
+	 *         as a List<GitRepositoryConfiguration> (if it is set, otherwise an empty List).
 	 */
-	public List<String> getGitUris() {
-		return ConfigPersistenceManager.getGitUris(getProjectKey());
-	}
-
-	/**
-	 * @return default branches as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         name of default branch as value.
-	 */
-	public Map<String, String> getDefaultBranches() {
-		return ConfigPersistenceManager.getDefaultBranches(getProjectKey());
-	}
-
-	/**
-	 * @return authentification methods as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         identifier of the authentification method as value.
-	 */
-	public Map<String, String> getAuthMethods() {
-		return ConfigPersistenceManager.getAuthMethods(getProjectKey());
-	}
-
-	/**
-	 * @return user names as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         user names as value.
-	 */
-	public Map<String, String> getUsernames() {
-		return ConfigPersistenceManager.getUsernames(getProjectKey());
-	}
-
-	/**
-	 * @return tokens or passwords as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         tokens or passwords as value.
-	 */
-	public Map<String, String> getTokens() {
-		return ConfigPersistenceManager.getTokens(getProjectKey());
+	public List<GitRepositoryConfiguration> getGitConfs() {
+		return ConfigPersistenceManager.getGitConfs(getProjectKey());
 	}
 
 	/**

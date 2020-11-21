@@ -1,28 +1,33 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-
 public class GitRepositoryConfiguration {
     private String repoUri;
-	private String defaultBranchName;
+	private String defaultBranch;
 	private String authMethod;
 	private String username;
 	private String token;
 
-	public GitRepositoryConfiguration(String repoUri, String projectKey) {
+	public GitRepositoryConfiguration(String repoUri, String defaultBranch, String authMethod, String username, String token) {
+		if (defaultBranch == "") {
+			defaultBranch = "master";
+		}
+		if (!authMethod.equals("HTTP") && !authMethod.equals("GITHUB") && !authMethod.equals("GITLAB")) {
+			authMethod = "NONE";
+		}
+
 		this.repoUri = repoUri;
-		this.defaultBranchName = ConfigPersistenceManager.getDefaultBranch(projectKey, repoUri);
-		this.authMethod = ConfigPersistenceManager.getAuthMethod(projectKey, repoUri);
-		this.username = ConfigPersistenceManager.getUsername(projectKey, repoUri);
-		this.token = ConfigPersistenceManager.getToken(projectKey, repoUri);
+		this.defaultBranch = defaultBranch;
+		this.authMethod = authMethod;
+		this.username = username;
+		this.token = token;
 	}
 
 	public String getRepoUri() {
 		return this.repoUri;
 	}
 
-	public String getDefaultBranchName() {
-		return this.defaultBranchName;
+	public String getDefaultBranch() {
+		return this.defaultBranch;
 	}
 
 	public String getAuthMethod() {
