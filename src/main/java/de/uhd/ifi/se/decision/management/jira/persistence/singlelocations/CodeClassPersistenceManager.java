@@ -24,14 +24,15 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Responsible for storing
- * and retrieving code classes related to Jira issues (work items).
+ * and retrieving code files related to Jira issues (work items or
+ * requirements).
  *
  * @see AbstractPersistenceManagerForSingleLocation
  * @see CodeClassInDatabase
  * 
- * @issue Is it really necessary to store the code classes in the database?
- * @decision We store code classes in the database to establish links to them.
- * @pro When storing code classes they get a unique id that is used for linking.
+ * @issue Is it really necessary to store the code files in the database?
+ * @decision We store code files in the database to establish links to them.
+ * @pro When storing code files they get a unique id that is used for linking.
  *      With this id, links can also be changed by the user.
  */
 public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
@@ -165,7 +166,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public ApplicationUser getCreator(KnowledgeElement element) {
-		return element.getCreator();
+		// currently not implemented
+		return null;
 	}
 
 	@Override

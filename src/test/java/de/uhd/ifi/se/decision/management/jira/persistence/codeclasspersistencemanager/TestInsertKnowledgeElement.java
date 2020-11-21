@@ -23,8 +23,6 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 	public static KnowledgeElement createTestCodeClass() {
 		KnowledgeElement classElement = new ChangedFile();
 		classElement.setProject("TEST");
-		classElement.setDescription("TEST-1;");
-		classElement.setType("Other");
 		classElement.setSummary("TestClass.java");
 		return classElement;
 	}
