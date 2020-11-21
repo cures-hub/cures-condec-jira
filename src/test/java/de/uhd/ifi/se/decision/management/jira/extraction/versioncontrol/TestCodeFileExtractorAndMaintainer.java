@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager.TestInsertKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -49,9 +50,18 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	public void testUpdateNonJavaFile() {
+		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
+		codeFileExtractorAndMaintainer.addDeleteOrUpdateChangedFileInDatabase(new ChangedFile());
+		assertEquals(0, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
+	}
+
+	@Test
+	@NonTransactional
 	public void testExtractAllChangedFilesTwice() {
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
 		codeFileExtractorAndMaintainer.extractAllChangedFiles();
+		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 		codeFileExtractorAndMaintainer.extractAllChangedFiles();
 		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}

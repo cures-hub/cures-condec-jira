@@ -4,10 +4,21 @@ import org.eclipse.jgit.diff.DiffEntry;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
+/**
+ * Extracts and links code files when cloning the repo. Maintains links on git
+ * fetch.
+ * 
+ * Extracting means: 1) Adding code files to the {@link CodeClassInDatabase}, 2)
+ * adding links to the {@link LinkInDatabase}, 3) adding code files and links to
+ * the {@link KnowledgeGraph}.
+ */
 public class CodeFileExtractorAndMaintainer {
 
 	private String projectKey;
@@ -19,7 +30,16 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	/**
+	 * Extracts all code files from the default branch (only the files that are
+	 * present in the last version). Links the files to the respective Jira Jira
+	 * issues (e.g., work items or requirements). Extracting means: 1) Adding code
+	 * files to the {@link CodeClassInDatabase}, 2) adding links to the
+	 * {@link LinkInDatabase}, 3) adding code files and links to the
+	 * {@link KnowledgeGraph}.
+	 * 
 	 * @issue Which files should be integrated into the knowledge graph?
+	 * @decision Integrate all Java files into the knowledge graph and link them to
+	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
 	public void extractAllChangedFiles() {
 		GitClient gitClient = GitClient.getOrCreate(projectKey);
@@ -82,8 +102,10 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	private void handleRename(ChangedFile changedFile) {
-		handleDelete(changedFile);
-		handleAdd(changedFile);
+		KnowledgeElement fileToBeUpdated = codeFilePersistenceManager
+				.getKnowledgeElementByName(changedFile.getOldName());
+		changedFile.setId(fileToBeUpdated.getId());
+		codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
 	}
 
 }

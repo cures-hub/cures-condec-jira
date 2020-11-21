@@ -196,6 +196,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		setParameters(newElement, entry);
 		entry.save();
+		createLinksToJiraIssues((ChangedFile) newElement, user);
 		return true;
 	}
 
