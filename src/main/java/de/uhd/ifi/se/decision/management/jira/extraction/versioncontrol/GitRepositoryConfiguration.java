@@ -13,7 +13,7 @@ public class GitRepositoryConfiguration {
 
 	private String repoUri;
 	private String defaultBranch;
-	private String authMethod;
+	private AuthMethod authMethod;
 	private String username;
 	private String token;
 
@@ -21,16 +21,12 @@ public class GitRepositoryConfiguration {
 			String token) {
 		this.repoUri = repoUri;
 		this.defaultBranch = defaultBranch;
-		this.authMethod = authMethod;
+		this.authMethod = AuthMethod.getAuthMethodByName(authMethod);
 		this.username = username;
 		this.token = token;
 
 		if (this.defaultBranch == null || this.defaultBranch.isBlank()) {
 			this.defaultBranch = "master";
-		}
-		// TODO Add enum for AuthMethod
-		if (!this.authMethod.equals("HTTP") && !this.authMethod.equals("GITHUB") && !this.authMethod.equals("GITLAB")) {
-			this.authMethod = "NONE";
 		}
 	}
 
@@ -43,7 +39,7 @@ public class GitRepositoryConfiguration {
 	}
 
 	public String getAuthMethod() {
-		return authMethod;
+		return authMethod.name();
 	}
 
 	public String getUsername() {
@@ -58,13 +54,13 @@ public class GitRepositoryConfiguration {
 		return repoUri != null && !repoUri.isBlank();
 	}
 
-	UsernamePasswordCredentialsProvider getCredentialsProvider() {
+	public UsernamePasswordCredentialsProvider getCredentialsProvider() {
 		switch (authMethod) {
-		case "HTTP":
+		case HTTP:
 			return new UsernamePasswordCredentialsProvider(getUsername(), getToken());
-		case "GITHUB":
+		case GITHUB:
 			return new UsernamePasswordCredentialsProvider(getToken(), "");
-		case "GITLAB":
+		case GITLAB:
 			return new UsernamePasswordCredentialsProvider(getUsername(), getToken());
 		default:
 			return null;
@@ -80,24 +76,4 @@ public class GitRepositoryConfiguration {
 		}
 		return true;
 	}
-
-	// public void setRepoUri(String repoUri) {
-	// this.repoUri = repoUri;
-	// }
-
-	// public void setDefaultBranchName(String defaultBranchName) {
-	// this.defaultBranchName = defaultBranchName;
-	// }
-
-	// public void setAuthMethod(String authMethod) {
-	// this.authMethod = authMethod;
-	// }
-
-	// public void setUsername(String username) {
-	// this.username = username;
-	// }
-
-	// public void setToken(String token) {
-	// this.token = token;
-	// }
 }
