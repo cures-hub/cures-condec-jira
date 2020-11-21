@@ -382,16 +382,16 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP", "user", "secret👀");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB", "githubuser", "token👀");
 		
-		ConfigPersistenceManager.setGitConfs("TEST", Arrays.asList(gitConf1, gitConf2));
+		ConfigPersistenceManager.setGitConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfs("TEST").get(0);
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("HTTP", gitConf.getAuthMethod());
 		assertEquals("user", gitConf.getUsername());
 		assertEquals("secret👀", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitConfs("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
@@ -400,44 +400,20 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testGetGitConfFields() {
-		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP", "user", "secret👀");
-		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB", "githubuser", "token👀");
-		
-		ConfigPersistenceManager.setGitConfs("TEST", Arrays.asList(gitConf1, gitConf2));
-
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "repoUri").get(0));
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "gitUri").get(0));
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "Uri").get(0));
-		assertEquals("master", ConfigPersistenceManager.getGitConfFields("TEST", "defaultBranches").get(0));
-		assertEquals("HTTP", ConfigPersistenceManager.getGitConfFields("TEST", "authMethods").get(0));
-		assertEquals("user", ConfigPersistenceManager.getGitConfFields("TEST", "usernames").get(0));
-		assertEquals("secret👀", ConfigPersistenceManager.getGitConfFields("TEST", "tokens").get(0));
-
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "repoUri").get(1));
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "gitUri").get(1));
-		assertEquals(TestSetUpGit.GIT_URI, ConfigPersistenceManager.getGitConfFields("TEST", "Uri").get(1));
-		assertEquals("develop", ConfigPersistenceManager.getGitConfFields("TEST", "defaultBranches").get(1));
-		assertEquals("GITHUB", ConfigPersistenceManager.getGitConfFields("TEST", "authMethods").get(1));
-		assertEquals("githubuser", ConfigPersistenceManager.getGitConfFields("TEST", "usernames").get(1));
-		assertEquals("token👀", ConfigPersistenceManager.getGitConfFields("TEST", "tokens").get(1));
-	}
-
-	@Test
 	public void testGetEmptyOrCorruptConfInfo() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "", "");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB", "githubuser", "token👀");
 		
-		ConfigPersistenceManager.setGitConfs("TEST", Arrays.asList(gitConf1, gitConf2));
+		ConfigPersistenceManager.setGitConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfs("TEST").get(0);
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("NONE", gitConf.getAuthMethod());
 		assertEquals("", gitConf.getUsername());
 		assertEquals("", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitConfs("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitConfigurations("TEST").get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
@@ -447,11 +423,11 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testGetEmptyConfsList() {
-		ConfigPersistenceManager.setGitConfs("TEST", new ArrayList<GitRepositoryConfiguration>());
-		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfs("TEST"));
+		ConfigPersistenceManager.setGitConfigurations("TEST", new ArrayList<GitRepositoryConfiguration>());
+		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfigurations("TEST"));
 
-		ConfigPersistenceManager.setGitConfs("TEST", ConfigPersistenceManager.getListOfGitConfsFromSemicolonStrings("", "", "", "", ""));
-		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfs("TEST"));
+		ConfigPersistenceManager.setGitConfigurations("TEST", ConfigPersistenceManager.getListOfGitConfsFromSemicolonStrings("", "", "", "", ""));
+		assertEquals(new ArrayList<GitRepositoryConfiguration>(), ConfigPersistenceManager.getGitConfigurations("TEST"));
 	}
 
 	@Test

@@ -86,7 +86,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetGitRepo() {
-		List<GitRepositoryConfiguration> gitConfs = project.getGitConfs();
+		List<GitRepositoryConfiguration> gitConfs = project.getGitConfigurations();
 		assertEquals("master", gitConfs.get(0).getDefaultBranch());
 		assertEquals("HTTP", gitConfs.get(0).getAuthMethod());
 		assertEquals("heinz.guenther", gitConfs.get(0).getUsername());

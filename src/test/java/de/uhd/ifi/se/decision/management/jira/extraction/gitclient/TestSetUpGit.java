@@ -62,7 +62,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			// git client already exists
 			return;
 		}
-		ConfigPersistenceManager.setGitConf("TEST", new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+		ConfigPersistenceManager.setGitConfiguration("TEST", new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
 		gitClient = GitClient.getOrCreate("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
@@ -122,13 +122,13 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 		secureGitClients = new ArrayList<GitClient>();
 
-		ConfigPersistenceManager.setGitConf("HTTP", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
+		ConfigPersistenceManager.setGitConfiguration("HTTP", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
 		secureGitClients.add(GitClient.getOrCreate("HTTP"));
 
-		ConfigPersistenceManager.setGitConf("GITHUB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
+		ConfigPersistenceManager.setGitConfiguration("GITHUB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
 		secureGitClients.add(GitClient.getOrCreate("GITHUB"));
 
-		ConfigPersistenceManager.setGitConf("GITLAB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
+		ConfigPersistenceManager.setGitConfiguration("GITLAB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
 		secureGitClients.add(GitClient.getOrCreate("GITLAB"));
 	}
 

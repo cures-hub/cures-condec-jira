@@ -561,7 +561,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
-		ConfigPersistenceManager.setGitConfs(projectKey, ConfigPersistenceManager.getListOfGitConfsFromSemicolonStrings(gitUris, defaultBranches, authMethods, usernames, tokens));
+		ConfigPersistenceManager.setGitConfigurations(projectKey, ConfigPersistenceManager.getListOfGitConfsFromSemicolonStrings(gitUris, defaultBranches, authMethods, usernames, tokens));
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

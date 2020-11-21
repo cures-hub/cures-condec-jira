@@ -214,7 +214,7 @@ public class ConfigPersistenceManager {
 		return getListFromSemicolonString(string, true);
 	}
 
-	public static void setGitConfs(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
+	public static void setGitConfigurations(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
 		List<String> gitUris = new ArrayList<String>();
 		List<String> defaultBranches = new ArrayList<String>();
 		List<String> authMethods = new ArrayList<String>();
@@ -236,10 +236,10 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "tokens", getSemicolonStringFromList(tokens));
 	}
 
-	public static void setGitConf(String projectKey, GitRepositoryConfiguration gitConf) {
+	public static void setGitConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
 		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
 		gitConfs.add(gitConf);
-		setGitConfs(projectKey, gitConfs);
+		setGitConfigurations(projectKey, gitConfs);
 	}
 
 	public static List<GitRepositoryConfiguration> getListOfGitConfsFromSemicolonStrings(String repoUris, String defaultBranches, String authMethods, String usernames, String tokens) {
@@ -254,7 +254,7 @@ public class ConfigPersistenceManager {
 		return gitConfs;
 	}
 
-	public static List<GitRepositoryConfiguration> getGitConfs(String projectKey) {
+	public static List<GitRepositoryConfiguration> getGitConfigurations(String projectKey) {
 		String gitUrisString = getValue(projectKey, "gitUris");
 		String defaultBranchesString = getValue(projectKey, "defaultBranches");
 		String authMethodsString = getValue(projectKey, "authMethods");
@@ -272,35 +272,6 @@ public class ConfigPersistenceManager {
 		List<String> tokens = getListFromSemicolonString(tokensString);
 
 		return getListOfGitConfs(gitUris, defaultBranches, authMethods, usernames, tokens);
-	}
-
-	public static List<String> getGitConfFields(String projectKey, String field) {
-		List<GitRepositoryConfiguration> gitConfs = getGitConfs(projectKey);
-		List<String> toBeReturned = new ArrayList<String>();
-		for (GitRepositoryConfiguration gitConf : gitConfs) {
-			switch (field) {
-				case "defaultBranches":
-					toBeReturned.add(gitConf.getDefaultBranch());
-					break;
-			
-				case "authMethods":
-					toBeReturned.add(gitConf.getAuthMethod());
-					break;
-			
-				case "usernames":
-					toBeReturned.add(gitConf.getUsername());
-					break;
-			
-				case "tokens":
-					toBeReturned.add(gitConf.getToken());
-					break;
-			
-				default:
-					toBeReturned.add(gitConf.getRepoUri());
-					break;
-			}
-		}
-		return toBeReturned;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
