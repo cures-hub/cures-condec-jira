@@ -56,8 +56,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
+		if (element == null) {
+			return false;
+		}
 		KnowledgeElement fileToBeDeleted = getKnowledgeElementByName(((ChangedFile) element).getOldName());
-		return deleteKnowledgeElement(fileToBeDeleted.getId(), user);
+		return fileToBeDeleted == null ? false : deleteKnowledgeElement(fileToBeDeleted.getId(), user);
 	}
 
 	@Override
