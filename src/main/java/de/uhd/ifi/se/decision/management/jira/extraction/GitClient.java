@@ -78,11 +78,11 @@ public class GitClient {
 		GitClient gitClient;
 
 		if (instances.containsKey(projectKey)) {
-			instances.remove(projectKey);
+			gitClient = instances.get(projectKey);
+		} else {
+			gitClient = new GitClient(projectKey);
+			instances.put(projectKey, gitClient);
 		}
-
-		gitClient = new GitClient(projectKey);
-		instances.put(projectKey, gitClient);
 
 		gitClient.fetchOrCloneRepositories();
 		return gitClient;

@@ -201,10 +201,10 @@ public class ConfigPersistenceManager {
 		setGitRepositoryConfigurations(projectKey, gitConfs);
 	}
 
-	public static void setGitRepositoryConfigurations(String projectKey, List<GitRepositoryConfiguration> gitConfs) {
+	public static void setGitRepositoryConfigurations(String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
-		saveObject(projectKey, "gitRepositoryConfigurations", gitConfs, type);
+		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
 	}
 
 	@SuppressWarnings("unchecked")

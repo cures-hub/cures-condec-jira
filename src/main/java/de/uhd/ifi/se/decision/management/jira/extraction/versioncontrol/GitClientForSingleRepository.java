@@ -111,7 +111,7 @@ public class GitClientForSingleRepository {
 	private boolean openRepository(File directory) {
 		try {
 			git = Git.open(directory);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error(
 					"Git repository could not be opened: " + directory.getAbsolutePath() + "\n\t" + e.getMessage());
 			return false;
