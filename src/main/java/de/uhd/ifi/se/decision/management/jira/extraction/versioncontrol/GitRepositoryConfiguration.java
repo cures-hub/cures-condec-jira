@@ -2,7 +2,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.util.List;
 
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
+/**
+ * Contains the configuration details for one git repository connected to a Jira
+ * project, i.e., the {@link GitClientForSingleRepository}. A Jira project can
+ * be connected to more than one git repository.
+ */
 public class GitRepositoryConfiguration {
+
 	private String repoUri;
 	private String defaultBranch;
 	private String authMethod;
@@ -47,7 +55,20 @@ public class GitRepositoryConfiguration {
 	}
 
 	public boolean isValid() {
-		return repoUri != null;
+		return repoUri != null && !repoUri.isBlank();
+	}
+
+	UsernamePasswordCredentialsProvider getCredentialsProvider() {
+		switch (authMethod) {
+		case "HTTP":
+			return new UsernamePasswordCredentialsProvider(getUsername(), getToken());
+		case "GITHUB":
+			return new UsernamePasswordCredentialsProvider(getToken(), "");
+		case "GITLAB":
+			return new UsernamePasswordCredentialsProvider(getUsername(), getToken());
+		default:
+			return null;
+		}
 	}
 
 	public static boolean areAllGitRepositoryConfigurationsValid(
