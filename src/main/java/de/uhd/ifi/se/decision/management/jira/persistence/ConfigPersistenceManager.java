@@ -193,10 +193,10 @@ public class ConfigPersistenceManager {
 
 	public static String getSemicolonStringFromList(List<String> list) {
 		String semicolonString = "";
-		for (String string : list) {
-			semicolonString += string;
+		for (int i = 0; i < list.size(); i++) {
+			semicolonString += list.get(i);
 
-			if (string != list.get(list.size() - 1)) {
+			if (i != list.size() - 1) {
 				semicolonString += ";;";
 			}
 		}
@@ -248,12 +248,8 @@ public class ConfigPersistenceManager {
 
 	public static List<GitRepositoryConfiguration> getListOfGitConfs(List<String> repoUris, List<String> defaultBranches, List<String> authMethods, List<String> usernames, List<String> tokens) {
 		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
-		try {
-			for (int i = 0; i < repoUris.size(); i++) {
-				gitConfs.add(new GitRepositoryConfiguration(repoUris.get(i), defaultBranches.get(i), authMethods.get(i), usernames.get(i), tokens.get(i)));
-			}
-		} catch (IndexOutOfBoundsException e) {
-			return gitConfs;
+		for (int i = 0; i < repoUris.size(); i++) {
+			gitConfs.add(new GitRepositoryConfiguration(repoUris.get(i), defaultBranches.get(i), authMethods.get(i), usernames.get(i), tokens.get(i)));
 		}
 		return gitConfs;
 	}
@@ -265,7 +261,7 @@ public class ConfigPersistenceManager {
 		String usernamesString = getValue(projectKey, "usernames");
 		String tokensString = getValue(projectKey, "tokens");
 
-		if (gitUrisString.equals("") || defaultBranchesString.equals("") || authMethodsString.equals("") || usernamesString.equals("") || tokensString.equals("")) {
+		if (gitUrisString.equals("")) {
 			return new ArrayList<GitRepositoryConfiguration>();
 		}
 
@@ -274,11 +270,6 @@ public class ConfigPersistenceManager {
 		List<String> authMethods = getListFromSemicolonString(authMethodsString);
 		List<String> usernames = getListFromSemicolonString(usernamesString);
 		List<String> tokens = getListFromSemicolonString(tokensString);
-
-		if (gitUris.size() != defaultBranches.size() || gitUris.size() != authMethods.size() || 
-		gitUris.size() != usernames.size() || gitUris.size() != tokens.size()) {
-			return new ArrayList<GitRepositoryConfiguration>();
-		}
 
 		return getListOfGitConfs(gitUris, defaultBranches, authMethods, usernames, tokens);
 	}
