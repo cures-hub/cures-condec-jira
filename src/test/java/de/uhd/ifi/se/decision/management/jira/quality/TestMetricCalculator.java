@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import net.java.ao.test.jdbc.NonTransactional;
 
+// something fails here…
 public class TestMetricCalculator extends TestSetUpGit {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestMetricCalculator.class);
 
