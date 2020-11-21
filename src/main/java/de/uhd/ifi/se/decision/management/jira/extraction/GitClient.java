@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -91,8 +91,11 @@ public class GitClient {
 	private GitClient(String projectKey) {
 		this();
 		this.projectKey = projectKey;
-		for (GitRepositoryConfiguration gitConf : ConfigPersistenceManager.getGitRepositoryConfigurations(projectKey)) {
-			gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitConf));
+		for (GitRepositoryConfiguration gitRepositoryConfiguration : ConfigPersistenceManager
+				.getGitRepositoryConfigurations(projectKey)) {
+			if (gitRepositoryConfiguration.isValid()) {
+				gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitRepositoryConfiguration));
+			}
 		}
 	}
 
