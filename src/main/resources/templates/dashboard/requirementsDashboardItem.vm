@@ -21,8 +21,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
             <input type="hidden" name="project" value=$projectKey>
 			<label for="issuetype-input">Jira Issue Type:</label>
             <select name="issuetype" id="issuetype-input" class="select">
-                #foreach($string in $issueTypeNamesMap.keySet())
-                    <option value=$issueTypeNamesMap.get($string)>$string</option>
+                #foreach($jiraIssueType in $jiraIssueTypes)
+                    <option value=$jiraIssueType.getId()>$jiraIssueType.getName()</option>
                 #end
             </select>
             <input class="button submit" type="submit" value="Select" id="select-button">
