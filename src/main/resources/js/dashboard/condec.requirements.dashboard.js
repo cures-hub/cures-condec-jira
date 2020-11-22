@@ -24,40 +24,10 @@
     const CHART_BOXPLOT = "boxplot";
     const DEC_STRING_SEPARATOR = " ";
 
-    var dashboardContentNodeGeneral;
-    var dashboardContentNodeCompleteness;
-    var dashboardContentNodeBasics;
-    var dashboardProjectNode;
-    var dashboardIssueTypeNode;
-    var dashboardNothingYetNode;
-    var dashboardFilterNode;
-    var showDiv;
-
     var ConDecReqDash = function ConDecReqDash() {
     };
 
-    ConDecReqDash.prototype.init = function init(_showDiv) {
-        showDiv = _showDiv;
-        getHTMLNodes("dynamic-content-general"
-            , "dynamic-content-completeness"
-            , "dynamic-content-basics"
-            , "configproject"
-            , "configissuetype"
-            , "condec-req-dashboard-no-project"
-            , "dynamic-content-filter");
-        if (showDiv == "configproject") {
-            showDashboardSection(dashboardProjectNode);
-        } else if (showDiv == "configissuetype") {
-            showDashboardSection(dashboardIssueTypeNode);
-        } else if (showDiv == "dynamic-content") {
-            showDashboardSection(dashboardProjectNode);
-            showContentSection();
-        } else {
-            alert("Error while loading Dashboard");
-        }
-        
-        //conDecFiltering.fillFilterElements("requirements-dashboard");
-
+    ConDecReqDash.prototype.init = function init() {
     }
 
     ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
@@ -69,37 +39,6 @@
     ConDecReqDash.prototype.initializeChartForBranchSource = function (divId, title, subtitle, dataMap) {
         isIssueData = false;
         this.initializeChartForSources(divId, title, subtitle, dataMap);
-    }
-
-    function getHTMLNodes(contentName1, contentName2, contentName4, projectName, issueTypeName, nothingYetName, filterName) {
-        dashboardContentNodeGeneral = document.getElementById(contentName1);
-        dashboardContentNodeCompleteness = document.getElementById(contentName2);
-        dashboardContentNodeBasics = document.getElementById(contentName4);
-        dashboardProjectNode = document.getElementById(projectName);
-        dashboardIssueTypeNode = document.getElementById(issueTypeName);
-        dashboardNothingYetNode = document.getElementById(nothingYetName);
-        dashboardFilterNode = document.getElementById(filterName);
-    }
-
-    function showDashboardSection(node) {
-        var hiddenClass = "hidden";
-        dashboardContentNodeGeneral.classList.add(hiddenClass);
-        dashboardContentNodeCompleteness.classList.add(hiddenClass);
-        dashboardContentNodeBasics.classList.add(hiddenClass);
-        dashboardProjectNode.classList.add(hiddenClass);
-        dashboardIssueTypeNode.classList.add(hiddenClass);
-        dashboardFilterNode.classList.add(hiddenClass);
-        dashboardNothingYetNode.classList.remove(hiddenClass);
-        node.classList.remove(hiddenClass);
-    }
-
-    function showContentSection() {
-        var hiddenClass = "hidden";
-        dashboardContentNodeGeneral.classList.remove(hiddenClass);
-        dashboardContentNodeCompleteness.classList.remove(hiddenClass);
-        dashboardContentNodeBasics.classList.remove(hiddenClass);
-        dashboardFilterNode.classList.remove(hiddenClass);
-        dashboardNothingYetNode.classList.add(hiddenClass);
     }
 
     /* TODO: Below function does not need to be exposed! */

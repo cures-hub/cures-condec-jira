@@ -6,86 +6,38 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <form class="aui" id="configFormProject">
         <div class="field-group">
             <label for="project-input">Project:</label>
-            <select name="project" id="project-input" class="select">
+            <select name="project" id="project-input" class="select long-field">
                 #foreach($project in $projects)
                     <option value=$project.getKey()>$project.getKey() - $project.getName()</option>
                 #end
             </select>
-            <input class="aui-button" type="submit" value="Select" id="select-button">
+            <input class="aui-button" type="submit" value="Select project" id="select-button">
         </div>
     </form>
 </div>
 
-<div class="condec-dashboard-contents filtering hidden" id="configissuetype">
-    <form class="aui" id="configFormIssue">
-        <div class="field-group">            
-            <input type="hidden" name="project" value=$projectKey>
-			<label for="issuetype-input">Jira Issue Type:</label>
-            <select name="issuetype" id="issuetype-input" class="select">
-                #foreach($jiraIssueType in $jiraIssueTypes)
-                    <option value=$jiraIssueType.getId()>$jiraIssueType.getName()</option>
-                #end
-            </select>
-            <input class="button submit" type="submit" value="Select" id="select-button">
-        </div>
-    </form>
-</div>
+#if ($projectKey)
+	#parse("templates/dashboard/requirementsDashboardItemFilter.vm")	
+#end
 
-<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init hidden">
-    $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
-</div>
+#if(!$issueTypeId)
+	<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init">
+		$i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
+	</div>
+#end
 
-<div class="condec-dashboard-contents filtering hidden" id="dynamic-content-filter">
-    <h3>Filter:</h3>
-    <form class="aui" id="configFormIssue">
-        <input type="hidden" name="project" value=$project>
-        <input type="hidden" name="issuetype" value=$issueTypeId>
-        <input type="hidden" name="filter" value="true">
-			
-		#set ($viewIdentifier = "requirements-dashboard")	
-		#parse("templates/filter/linkDistance.vm")	
-        #parse("templates/filter/knowledgeType.vm")
-        #parse("templates/filter/status.vm")
-        #parse("templates/filter/decisionGroup.vm")
-
-        <input class="button submit" type="submit" value="Filter" id="select-button">
-    </form>
-</div>
-
-<div class="condec-dashboard-contents results hidden" id="dynamic-content-general">
-    <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
-    <h3>General Metrics:</h3>
-    <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
-    <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
-    <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
-    <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
-    <div id="piechartInteger-DecSources" class="piechart"></div>
-</div>
-
-<div class="condec-dashboard-contents results hidden" id="dynamic-content-completeness">
-    <h3>Rationale Completeness Metrics</h3>
-    <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
-    <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
-    <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
-</div>
-
-<div class="condec-dashboard-contents results hidden" id="dynamic-content-basics">
-    <h3>$issueType Completeness Metrics</h3>
-    <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
-    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
-    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
-    <div id="piechartInteger-RelevantSentences" class="piechart"></div>
-    <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
-</div>
-
-#parse("templates/dashboard/navigationOverlay.vm")
+#if($issueTypeId)
+	#parse("templates/dashboard/requirementsDashboardItemMetrics.vm")
+#end
 
 <script>
-	$(document).ready(function () {
+	$(document).ready(function () {		
+		if ("$projectKey" === null || "$projectKey" === undefined) {	
+			return;
+		}
+		conDecAPI.projectKey = "$projectKey";
+		conDecFiltering.fillFilterElements("requirements-dashboard");
+		
 		// initialize charts
 		#set($title="")
 		#foreach ($name in $chartNamesAndPurpose.keySet())
@@ -98,9 +50,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 			ConDecReqDash.initializeChart("$name", "$title", "$purpose", dataMap);
 		#end
     	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
-		ConDecReqDash.init("$showDiv");
-			
-		conDecAPI.projectKey = "$project";
-		conDecFiltering.fillFilterElements("requirements-dashboard");
+		ConDecReqDash.init();
 	});
 </script>

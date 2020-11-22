@@ -102,7 +102,7 @@ public class TestRequirementsDashboardItem extends TestSetUpGit {
 				.get(0);
 		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueTextPersistenceManager("").updateKnowledgeElement(partOfJiraIssueText, null);
-		assertNotNull(this.dashboardItem.createValues("TEST", "10100", 2, false, KnowledgeType.toStringList(),
+		assertNotNull(this.dashboardItem.createValues("TEST", "10100", 2, KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null));
 	}
 

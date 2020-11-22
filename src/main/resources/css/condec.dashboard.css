@@ -10,7 +10,6 @@
 }
 
 .condec-dashboard-contents.init {
-    height: 400px;
     min-height: 400px;
 }
 
@@ -22,7 +21,6 @@
     border: 1px solid grey;
     margin: 1em;
     padding: 1em;
-    height: 400px;
     min-height: 400px;
 }
 
