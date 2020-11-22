@@ -3,16 +3,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 <div class="condec-dashboard-contents filtering">
 	<form class="aui">
 		<div class="field-group">
-			<label for="${selectID}">Project:</label>
-			<select id="${selectID}" class="select"
-				data-uid="${dashboardUID}"
-			>
+			<label for="condec-dashboard-item-project-selection">Project:</label>
+			<select id="condec-dashboard-item-project-selection" class="select">
 				<option value="">
 					$i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
 				</option>
 			#foreach ($project in $projects)
 				<option value="$project.getKey()"
-					#if(!$projectsWithGit.includes($project))
+					#if ($projectsWithGit.indexOf($project) == -1)
 						style="background-color:yellow"
 					#end
 				>
@@ -24,52 +22,48 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 	</form>
 </div>
 
-<div id="condec-branches-dashboard-contents-data-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+<div id="condec-branches-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
 	$i18n.getText("condec.dashboard.featurebranch.project.data.error")
 </div>
 
-<div id="condec-branches-dashboard-no-project${dashboardUID}" class="condec-dashboard-contents init">
+<div id="condec-branches-dashboard-no-project" class="condec-dashboard-contents init">
     $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 </div>
 
-<div id="condec-branches-dashboard-processing${dashboardUID}" class="condec-dashboard-contents waiting hidden">
+<div id="condec-branches-dashboard-processing" class="condec-dashboard-contents waiting hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.processing")
 </div>
 
-<div id="condec-branches-dashboard-fatal-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+<div id="condec-branches-dashboard-fatal-error" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.featurebranch.setup.error")
 </div>
 
-<div id="condec-branches-dashboard-nogit-error${dashboardUID}" class="condec-dashboard-contents error hidden">
+<div id="condec-branches-dashboard-nogit-error" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.featurebranch.project.nogit")
 </div>
 
-<div id="condec-branches-dashboard-contents-container${dashboardUID}" class="condec-dashboard-contents results hidden">
-	<div id="piechartRich-QualityStatusForBranches${dashboardUID}" class="piechart"></div>
-	<div id="piechartRich-ProblemTypesInBranches${dashboardUID}" class="piechart"></div>
-	<div id="piechartRich-BranchesPerIssue${dashboardUID}" class="piechart"></div>
-	<div id="boxplot-IssuesPerBranch${dashboardUID}" class="piechart"></div>
-	<div id="boxplot-DecisionsPerBranch${dashboardUID}" class="piechart"></div>
-	<div id="boxplot-AlternativesPerBranch${dashboardUID}" class="piechart"></div>
-	<div id="boxplot-ProsPerBranch${dashboardUID}" class="piechart"></div>
-	<div id="boxplot-ConsPerBranch${dashboardUID}" class="piechart"></div>
+<div id="condec-branches-dashboard-contents-container" class="condec-dashboard-contents results hidden">
+	<div id="piechartRich-QualityStatusForBranches" class="piechart"></div>
+	<div id="piechartRich-ProblemTypesInBranches" class="piechart"></div>
+	<div id="piechartRich-BranchesPerIssue" class="piechart"></div>
+	<div id="boxplot-IssuesPerBranch" class="piechart"></div>
+	<div id="boxplot-DecisionsPerBranch" class="piechart"></div>
+	<div id="boxplot-AlternativesPerBranch" class="piechart"></div>
+	<div id="boxplot-ProsPerBranch" class="piechart"></div>
+	<div id="boxplot-ConsPerBranch" class="piechart"></div>
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-/* look up https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
-    window.addEventListener('load'.. does not work well for gadgets.. observed with Firefox
-    using jquery instead, which manages gadgets.
- */
 $(document).ready(function() {
     function projectSelectOrOnChange(event) {
-        projectName = event.target.value;
-        selectedOptionIndex = event.target.options.selectedIndex;
-        selectedOption = event.target.options[selectedOptionIndex];
-        conDecBranchesDashboard.init(projectName, event.target.dataset.uid, selectedOption.dataset.gituri);
+        var projectKey = event.target.value;
+        var selectedOptionIndex = event.target.options.selectedIndex;
+        var selectedOption = event.target.options[selectedOptionIndex];
+        conDecBranchesDashboard.init(projectKey);
     }
-    selectNode = document.getElementById("${selectID}");
-    selectNode.addEventListener('change', projectSelectOrOnChange);
+    selectNode = document.getElementById("condec-dashboard-item-project-selection");
+    selectNode.addEventListener("change", projectSelectOrOnChange);
 });
 </script>

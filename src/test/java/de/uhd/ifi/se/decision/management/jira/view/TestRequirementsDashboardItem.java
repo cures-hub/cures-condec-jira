@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import com.atlassian.jira.issue.issuetype.IssueType;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -39,7 +42,6 @@ public class TestRequirementsDashboardItem extends TestSetUpGit {
 		addElementToDataBase(18, "Decision");
 		addElementToDataBase(19, "Argument");
 		params = new HashMap<String, Object>();
-
 	}
 
 	@Test
@@ -60,9 +62,10 @@ public class TestRequirementsDashboardItem extends TestSetUpGit {
 		this.dashboardItem.loggedUser = JiraUsers.SYS_ADMIN.createApplicationUser();
 		Map<String, Object> ctxResult = this.dashboardItem.getContextMap(params);
 		assertTrue(ctxResult.containsKey("showDiv"));
-		assertTrue(ctxResult.containsKey("issueTypeNamesMap"));
-		Map<String, Object> issueTypeNamesMap = (Map<String, Object>) ctxResult.get("issueTypeNamesMap");
-		assertFalse(issueTypeNamesMap.isEmpty());
+		assertTrue(ctxResult.containsKey("jiraIssueTypes"));
+		@SuppressWarnings("unchecked")
+		Collection<IssueType> jiraIssueTypes = (Collection<IssueType>) ctxResult.get("jiraIssueTypes");
+		assertFalse(jiraIssueTypes.isEmpty());
 	}
 
 	@Test
