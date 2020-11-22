@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;

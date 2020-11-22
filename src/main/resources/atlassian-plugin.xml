@@ -529,7 +529,7 @@
 		<resource name="view" type="velocity"
 			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.FeatureBranchQualityDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
 	</dashboard-item>
 
 	<dashboard-item key="condec-requirements-dashboard-item"
@@ -549,6 +549,6 @@
 		<resource name="view" type="velocity"
 			location="/templates/dashboard/requirementsDashboardItem.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.RequirementsDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RequirementsDashboardItem" />
 	</dashboard-item>
 </atlassian-plugin>
