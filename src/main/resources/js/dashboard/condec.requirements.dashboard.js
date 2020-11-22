@@ -55,6 +55,8 @@
         } else {
             alert("Error while loading Dashboard");
         }
+        
+        //conDecFiltering.fillFilterElements("requirements-dashboard");
 
     }
 

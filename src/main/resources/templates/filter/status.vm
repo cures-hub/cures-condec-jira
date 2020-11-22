@@ -2,4 +2,4 @@
         aria-haspopup="true">
     $i18n.getText("condec.label.knowledge.status")
 </button>
-<aui-dropdown-menu id="status-dropdown-$viewIdentifier"></aui-dropdown-menu>
+<aui-dropdown-menu id="status-dropdown-$viewIdentifier" name="status"></aui-dropdown-menu>

@@ -420,16 +420,4 @@ public class MetricCalculator {
 			jiraIssues.add(issue);
 		}
 	}
-
-	// TODO: Improve test dataset to no longer require this method
-	public void addElementFromGit(KnowledgeElement element, Issue issue) {
-		decisionKnowledgeCodeElements = new ArrayList<>();
-		decisionKnowledgeCodeElements.add(element);
-		decisionKnowledgeCommitElements = new ArrayList<>();
-		decisionKnowledgeCommitElements.add(element);
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.add(element);
-		extractedIssueRelatedElements = new HashMap<>();
-		extractedIssueRelatedElements.put(issue.getKey(), elements);
-	}
 }

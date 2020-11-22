@@ -1,6 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:requirements-dashboard-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+
 <div class="condec-dashboard-contents filtering" id="configproject">
     <form class="aui" id="configFormProject">
         <div class="field-group">
@@ -37,52 +38,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         <input type="hidden" name="project" value=$project>
         <input type="hidden" name="issuetype" value=$issueTypeId>
         <input type="hidden" name="filter" value="true">
-        <label for="linkDistanceFilter">Link Distance:</label>
-        <input type="number" id="linkDistanceFilter" name="linkDistance" value=$linkDistance min="1"
-               class="text short-field">
-
-        <select id="knowledgeType-select" multiple placeholder="Knowledge Type" class="select medium-field"
-                name="knowledgeTypes" style="vertical-align: bottom">
-            #foreach($type in $knowledgeTypes)
-                #if($selectedKnowledgeTypes.contains($type.toString()))
-                    <option selected value="$type.toString()">$type.toString()</option>
-                #else
-                    <option value="$type.toString()">$type.toString()</option>
-                #end
-
-            #end
-        </select>
-
-        <select id="status-select" multiple placeholder="Status" class="select medium-field"
-                name="status" style="vertical-align: bottom">
-            #foreach($state in $status)
-                #if($selectedStatus.contains($state.toString()))
-                    <option selected value="$state.toString()">$state.toString()</option>
-                #else
-                    <option value="$state.toString()">$state.toString()</option>
-                #end
-
-            #end
-        </select>
-
-        <select id="group-select" multiple placeholder="Decision Group" class="select medium-field"
-                name="group" style="vertical-align: bottom">
-            #foreach($group in $groups)
-                #if($selectedGroups.contains($group))
-                    <option selected value="$group">$group</option>
-                #else
-                    <option value="$group">$group</option>
-                #end
-
-            #end
-        </select>
-
-        <label for="ignore-git">Ignore Knowledge From Git</label>
-        #if($ignoreGit=="on")
-            <input class="checked" type="checkbox" checked id="ignore-git" name="ignoreGit"/>
-        #else
-            <input class="checked" type="checkbox" id="ignore-git" name="ignoreGit"/>
-        #end
+			
+		#set ($viewIdentifier = "requirements-dashboard")	
+		#parse("templates/filter/linkDistance.vm")	
+        #parse("templates/filter/knowledgeType.vm")
+        #parse("templates/filter/status.vm")
+        #parse("templates/filter/decisionGroup.vm")
 
         <input class="button submit" type="submit" value="Filter" id="select-button">
     </form>
@@ -147,5 +108,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
             //selectNode = document.getElementById("${selectID}");
             //selectNode.addEventListener('change', projectSelectorOnchange);
+			
+			conDecAPI.projectKey = "$project";
+			conDecFiltering.fillFilterElements("requirements-dashboard");
+			
+			console.log("$knowledgeTypes");
+			//conDecFiltering.initDropdown("knowledge-type-dropdown-requirements-dashboard", "$filterSettings.getKnowledgeTypes()", "$selectedKnowledgeTypes");
+			//conDecFiltering.initDropdown("status-dropdown-requirements-dashboard", conDecAPI.knowledgeStatus, "$selectedStatus");
+			//conDecFiltering.fillDecisionGroupSelect("select2-decision-group-requirements-dashboard");
     });
 </script>
