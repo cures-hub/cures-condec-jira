@@ -24,12 +24,14 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 	}
 
 	@Override
-	public Map<String, Object> getContextMap(final Map<String, Object> context) {
-		final Map<String, Object> newContext = Maps.newHashMap(context);
+	public Map<String, Object> getContextMap(Map<String, Object> context) {
+		Map<String, Object> newContext = Maps.newHashMap(context);
 
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		List<Project> accessableProjects = DecisionKnowledgeProject
 				.getProjectsWithConDecActivatedAndAccessableForUser(user);
+		newContext.put("projects", accessableProjects);
+
 		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
 		for (Project project : accessableProjects) {
 			String projectKey = project.getKey();
@@ -37,7 +39,6 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 				accessableProjectsWithGitRepo.add(project);
 			}
 		}
-		newContext.put("projects", accessableProjects);
 		newContext.put("projectsWithGit", accessableProjectsWithGitRepo);
 
 		return newContext;

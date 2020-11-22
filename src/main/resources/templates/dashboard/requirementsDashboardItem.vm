@@ -83,13 +83,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <script>
     $(document).ready(function () {		
             function projectSelectorOnchange(event) {
-                projectName = event.target.value
+                projectKey = event.target.value
                 selectedOptionIndex = event.target.options.selectedIndex
                 selectedOption = event.target.options[selectedOptionIndex]
-                ConDecReqDash.init(projectName, event.target.dataset.uid)
+                ConDecReqDash.init(projectKey);
             }
 
-            //selectNode = document.getElementById("${selectID}");
+            //selectNode = document.getElementById("condec-dashboard-item-project-selection");
             //selectNode.addEventListener('change', projectSelectorOnchange);
 			
 			conDecAPI.projectKey = "$project";

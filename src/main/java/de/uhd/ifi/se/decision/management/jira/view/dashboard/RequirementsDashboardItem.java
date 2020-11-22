@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,11 +40,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 		Map<String, Object> newContext = Maps.newHashMap(context);
 		newContext.put("projects",
 				DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(loggedUser));
-		SecureRandom random = new SecureRandom();
-		String uid = String.valueOf(random.nextInt(10000));
-		String selectId = "condec-dashboard-item-project-selection" + uid;
-		newContext.put("selectID", selectId);
-		newContext.put("dashboardUID", uid);
 		HttpServletRequest request = getHttpRequest();
 		if (context.containsKey("showIssueType") || (request != null && request.getParameter("project") != null
 				&& request.getParameter("issuetype") == null)) {
