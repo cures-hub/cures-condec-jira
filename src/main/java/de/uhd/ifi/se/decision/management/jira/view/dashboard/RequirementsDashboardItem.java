@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
@@ -17,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
+import sun.awt.AWTAccessor.ComponentAccessor;
 
 public class RequirementsDashboardItem implements ContextProvider {
 
@@ -53,6 +53,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 		Map<String, Object> values = createValues(projectKey, issueTypeId, 2, KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null);
 		newContext.putAll(values);
+		System.out.println(request.getParameter("filterSettings"));
 		return newContext;
 	}
 

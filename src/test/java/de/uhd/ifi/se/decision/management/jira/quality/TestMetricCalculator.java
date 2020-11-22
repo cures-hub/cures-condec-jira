@@ -12,10 +12,9 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
+import com.sun.org.slf4j.internal.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -33,7 +32,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator((long) 1, user, "alternative", false, KnowledgeType.toStringList(),
+		calculator = new MetricCalculator((long) 1, user, "alternative", KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null);
 		calculator.setJiraIssues(getTestJiraIssues());
 	}

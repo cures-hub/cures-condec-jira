@@ -12,6 +12,6 @@
 		#parse("templates/filter/status.vm")
 		#parse("templates/filter/decisionGroup.vm")
 		<input type="hidden" name="project" value=$projectKey>
-        <input class="button submit" type="submit" value="Show metrics" id="select-button">
+        <input class="button submit" type="submit" value="Show metrics" id="show-metrics-button">
     </form>
 </div>

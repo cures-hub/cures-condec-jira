@@ -294,7 +294,6 @@
 
     function fillChildNodes(node, flatList, isIssueData) {
         var listArray = flatList.split(DEC_STRING_SEPARATOR);
-        ;
         if (!isIssueData) {
             listArray = listArray.map(function (e) {
                 return e.replace("refs/remotes/", "");
