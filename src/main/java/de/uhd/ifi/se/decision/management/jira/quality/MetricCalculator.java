@@ -62,6 +62,7 @@ public class MetricCalculator {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
+	// TODO Pass FilterSettings
 	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, List<String> knowledgeTypes,
 			List<String> knowledgeStatus, List<String> decisionGroups) {
 		if (ComponentAccessor.getProjectManager().getProjectObj(projectId) != null) {

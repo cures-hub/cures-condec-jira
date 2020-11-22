@@ -51,15 +51,5 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		#end
     	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
 		ConDecReqDash.init();
-		
-		$('#show-metrics-button').submit(function () {
-			$(this).append($.map(params, function (param) {
-        		return   $('<input>', {
-            		type: 'hidden',
-            		name: "filterSettings,
-            		value: conDecFiltering.getFilterSettings("requirements-dashboard")
-       		 	})
-    		}))
-		});
 	});
 </script>

@@ -50,10 +50,10 @@ public class RequirementsDashboardItem implements ContextProvider {
 		newContext.put("projectKey", projectKey);
 		newContext.put("jiraIssueTypes", JiraIssueTypeGenerator.getJiraIssueTypes(projectKey));
 		newContext.put("jiraBaseUrl", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL));
+		// TODO Create and work with FilterSettings object
 		Map<String, Object> values = createValues(projectKey, issueTypeId, 2, KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null);
 		newContext.putAll(values);
-		System.out.println(request.getParameter("filterSettings"));
 		return newContext;
 	}
 
