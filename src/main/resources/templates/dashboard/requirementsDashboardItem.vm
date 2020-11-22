@@ -8,7 +8,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
             <label for="project-input">Project:</label>
             <select name="project" id="project-input" class="select">
                 #foreach($project in $projects)
-                    <option value=$project.getKey()>$project.getName()</option>
+                    <option value=$project.getKey()>$project.getKey() - $project.getName()</option>
                 #end
             </select>
             <input class="aui-button" type="submit" value="Select" id="select-button">

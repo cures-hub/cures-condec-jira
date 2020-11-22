@@ -72,7 +72,7 @@ public class MockComponentAccessor extends ComponentAccessor {
 				.addMock(SearchService.class, new MockSearchService())
 				.addMock(TransactionTemplate.class, new MockTransactionTemplate())
 				.addMock(ChangeHistoryManager.class, mock(ChangeHistoryManager.class))
-				.addMock(PermissionManager.class, mock(PermissionManager.class)));
+				.addMock(PermissionManager.class, new MockPermissionManager()));
 	}
 
 	public UserManager initUserManager() {

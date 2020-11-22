@@ -22,6 +22,8 @@
     border: 1px solid grey;
     margin: 1em;
     padding: 1em;
+    height: 400px;
+    min-height: 400px;
 }
 
 #decKnowElementsOverlay {

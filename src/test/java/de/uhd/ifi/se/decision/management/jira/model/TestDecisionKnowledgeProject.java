@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 /**
  * Test class for a Jira project with the configuration settings used in this
@@ -133,6 +134,12 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(2, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+	}
+
+	@Test
+	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
+		assertEquals(1, DecisionKnowledgeProject
+				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
 	}
 
 	@AfterClass
