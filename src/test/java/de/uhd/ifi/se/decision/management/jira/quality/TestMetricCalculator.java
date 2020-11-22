@@ -12,9 +12,10 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
-import com.sun.org.slf4j.internal.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
