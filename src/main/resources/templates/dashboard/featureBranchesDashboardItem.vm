@@ -10,12 +10,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 				<option value="">
 					$i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
 				</option>
-			#foreach ($key in $projectNamesMap.keySet())
-				<option value="$key"
-					data-gituri="$projectGitMap.get($key)"
-					#if($projectGitMap.get($key).size() == 0)style="background-color:yellow"#end
+			#foreach ($project in $projects)
+				<option value="$project.getKey()"
+					#if(!$projectsWithGit.includes($project))
+						style="background-color:yellow"
+					#end
 				>
-					$key - $projectNamesMap.get($key)
+					$project.getKey() - $project.getName()
 				</option>
 			#end
 			</select>
