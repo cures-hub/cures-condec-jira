@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
@@ -21,9 +20,9 @@ import com.google.common.collect.Maps;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
 
@@ -173,17 +172,9 @@ public class RequirementsDashboardItem implements ContextProvider {
 
 	private Map<String, Object> attachProjectsMaps() {
 		Map<String, Object> newContext = new HashMap<>();
-		Map<String, String> projectNameMap = new TreeMap<String, String>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			Boolean hasPermission = ComponentAccessor.getPermissionManager()
-					.hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, loggedUser);
-			if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
-				String projectKey = project.getKey();
-				String projectName = project.getName();
-				projectNameMap.put(projectName, projectKey);
-			}
-		}
-		newContext.put("projectNamesMap", projectNameMap);
+		List<Project> projectsWithConDecActivatedAndAccessableForUser = DecisionKnowledgeProject
+				.getProjectsWithConDecActivatedAndAccessableForUser(loggedUser);
+		newContext.put("projects", projectsWithConDecActivatedAndAccessableForUser);
 		return newContext;
 	}
 
