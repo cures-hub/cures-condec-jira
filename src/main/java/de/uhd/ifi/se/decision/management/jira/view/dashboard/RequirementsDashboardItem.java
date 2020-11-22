@@ -39,10 +39,13 @@ public class RequirementsDashboardItem implements ContextProvider {
 				DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(loggedUser));
 
 		HttpServletRequest request = getHttpRequest();
-		String projectKey = request.getParameter("project");
+		String projectKey = "";
+		String issueTypeId = "0";
+		if (request != null) {
+			projectKey = request.getParameter("project");
+			issueTypeId = request.getParameter("issuetype");
+		}
 		newContext.put("projectKey", projectKey);
-
-		String issueTypeId = request.getParameter("issuetype");
 		newContext.put("issueTypeId", issueTypeId);
 		String issueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueTypeId);
 		newContext.put("issueType", issueTypeName);
