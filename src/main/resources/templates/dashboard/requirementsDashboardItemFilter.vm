@@ -1,0 +1,17 @@
+<div class="condec-dashboard-contents filtering" id="configissuetype">
+    <form class="aui" id="configFormIssue">         
+		<label for="issuetype-input">Jira Issue Type</label>
+		<select name="issuetype" id="issuetype-input" class="select">
+			#foreach($jiraIssueType in $jiraIssueTypes)
+                <option value=$jiraIssueType.getId()>$jiraIssueType.getName()</option>
+            #end
+		</select>
+		#set ($viewIdentifier = "requirements-dashboard")	
+		#parse("templates/filter/linkDistance.vm")	
+		#parse("templates/filter/knowledgeType.vm")
+		#parse("templates/filter/status.vm")
+		#parse("templates/filter/decisionGroup.vm")
+		<input type="hidden" name="project" value=$projectKey>
+        <input class="button submit" type="submit" value="Show metrics" id="show-metrics-button">
+    </form>
+</div>

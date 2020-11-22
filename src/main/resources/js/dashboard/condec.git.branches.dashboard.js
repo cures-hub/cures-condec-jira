@@ -13,19 +13,12 @@ var ConDecDevBranchesQuality = [];
 var ConDecDevBranches = [];
 
 (function (global) {
-    var dashboards = {};    /*
-							 * TODO: object muss support more than one
-							 * dashboard.
-							 */
-
-    var dashboardUID;
     var processing = null;
     var projectKey = null;
     var issueBranchKeyRx = null;
 
     var dashboardContentNode;
     var dashboardDataErrorNode;
-    var dashboardFatalErrorNode;
     var dashboardNoContentsNode;
     var dashboardProcessingNode;
     var dashboardProjectWithoutGit;
@@ -36,30 +29,21 @@ var ConDecDevBranches = [];
         console.log("ConDecBranchesDashboard constructor");
     };
 
-    ConDecBranchesDashboard.prototype.init = function init(_projectKey, _dashboardUID, _gituri) {
-        console.log("received for project: " + _projectKey + " UID:" + _dashboardUID);
-        projectKey = _projectKey;
-
+    ConDecBranchesDashboard.prototype.init = function init(projectKey) {
         /*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-        issueBranchKeyRx = RegExp("origin/(" + _projectKey + "-\\d+)\\.|origin/(" + _projectKey + "-\\d+)$", "i");
-        dashboardUID = _dashboardUID;
+        issueBranchKeyRx = RegExp("origin/(" + projectKey + "-\\d+)\\.|origin/(" + projectKey + "-\\d+)$", "i");
 
-        getHTMLNodes("condec-branches-dashboard-contents-container" + dashboardUID
-            , "condec-branches-dashboard-contents-data-error" + dashboardUID
-            , "condec-branches-dashboard-no-project" + dashboardUID
-            , "condec-branches-dashboard-processing" + dashboardUID
-            , "condec-branches-dashboard-nogit-error" + dashboardUID);
+        getHTMLNodes("condec-branches-dashboard-contents-container"
+            , "condec-branches-dashboard-contents-data-error"
+            , "condec-branches-dashboard-no-project"
+            , "condec-branches-dashboard-processing"
+            , "condec-branches-dashboard-nogit-error");
 
         branchesQuality = [];
-
-        if (!_gituri || _gituri.length < 1) {
-            showDashboardSection(dashboardProjectWithoutGit);
-        } else {
-            getBranches(projectKey);
-        }
+        getBranches(projectKey);
     };
 
     function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
@@ -138,12 +122,12 @@ var ConDecDevBranches = [];
         });
     }
 
-    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data, uid) {
+    ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
         console.log(data.responseJSON.error);
         showDashboardSection(dashboardDataErrorNode);
     };
 
-    ConDecBranchesDashboard.prototype.processData = function processData(data, uid) {
+    ConDecBranchesDashboard.prototype.processData = function processData(data) {
         processXhrResponseData(data);
     };
 
@@ -394,22 +378,22 @@ var ConDecDevBranches = [];
         var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
         /* render pie-charts */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches',
             '', 'How many branches document rationale well?', statusesForBranchesData); /* 'Quality status' */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches',
             '', 'Which documentation mistakes are most common?', sortedProblemTypesOccurrance); /*'Total quality problems' */
-        ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue',
             '', 'How many branches do Jira tasks have?', sortedBranchesPerIssue);
         /* render box-plots */
-        ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch',
             '', 'Issues number in branches', issuesInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch',
             '', 'Decisions number in branches', decisionsInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch',
             '', 'Alternatives number in branches', alternativesInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch',
             '', 'Pro arguments number in branches', prosInBranches);
-        ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch' + dashboardUID,
+        ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch',
             '', 'Con arguments number in branches', consInBranches);
 
         /* remember in global scope for development/debugging */

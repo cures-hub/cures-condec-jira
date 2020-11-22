@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -12,7 +13,9 @@ import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -237,5 +240,24 @@ public class DecisionKnowledgeProject {
 	public static Collection<IssueLinkType> getJiraIssueLinkTypes() {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		return linkTypeManager.getIssueLinkTypes(false);
+	}
+
+	/**
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return list of all Jira projects in that the ConDec plugin is activated and
+	 *         for that the user has the rights to browse the project, i.e., view
+	 *         its content.
+	 */
+	public static List<Project> getProjectsWithConDecActivatedAndAccessableForUser(ApplicationUser user) {
+		List<Project> projects = new ArrayList<Project>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			boolean hasPermission = ComponentAccessor.getPermissionManager()
+					.hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, user);
+			if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
+				projects.add(project);
+			}
+		}
+		return projects;
 	}
 }
