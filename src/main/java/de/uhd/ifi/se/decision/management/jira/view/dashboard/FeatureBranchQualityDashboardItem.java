@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class FeatureBranchQualityDashboardItem implements ContextProvider {
 
 	@Override
-	public void init(final Map<String, String> params) throws PluginParseException {
+	public void init(Map<String, String> params) throws PluginParseException {
 		/**
 		 * No special behaviour is foreseen for now.
 		 */

@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +23,9 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetContextMapNull() {
+	public void testGetContextMap() {
 		Map<String, Object> contextMap = dashboardItem.getContextMap(new HashMap<String, Object>());
-		assertNotNull(contextMap);
+		// 2 because of projects and projectsWithGit lists
+		assertEquals(2, contextMap.size());
 	}
 }
