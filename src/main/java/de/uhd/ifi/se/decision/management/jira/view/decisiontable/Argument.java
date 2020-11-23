@@ -1,15 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
-import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Argument")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -72,18 +70,5 @@ public class Argument extends DecisionTableElement {
 	public String getImage() {
 		return this.image;
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Argument argument = (Argument) o;
-		return summary.equals(argument.summary) &&
-			type.equals(argument.type);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(summary, type);
-	}
+	
 }

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class KnowledgeSource {

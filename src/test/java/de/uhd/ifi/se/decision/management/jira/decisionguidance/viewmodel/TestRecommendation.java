@@ -4,7 +4,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Alternative;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -96,14 +94,6 @@ public class TestRecommendation extends TestSetUp {
 		knowledgeElement1.setId(123);
 		knowledgeElement1.setDocumentationLocation("i");
 		knowledgeElement1.setType(KnowledgeType.ARGUMENT);
-
-		Argument argument2 = new Argument(knowledgeElement1);
-		assertTrue(argument.equals(argument));
-		assertTrue(argument.equals(argument2));
-		Alternative alternative = new Alternative(knowledgeElement);
-		assertEquals(false, argument.equals(alternative));
-
-		assertEquals(Objects.hash("Test Argument", KnowledgeType.ARGUMENT.toString()), argument.hashCode());
 	}
 
 }
