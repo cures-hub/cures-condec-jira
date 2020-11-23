@@ -56,26 +56,25 @@ public class MetricCalculator {
 	private String issueTypeId;
 	private GitClient gitClient;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
-	private boolean ignoreGit;
 	private List<String> knowledgeTypes;
 	private List<String> knowledgeStatus;
 	private List<String> decisionGroups;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
-	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, boolean ignoreGit,
-			List<String> knowledgeTypes, List<String> knowledgeStatus, List<String> decisionGroups) {
+	// TODO Pass FilterSettings
+	public MetricCalculator(Long projectId, ApplicationUser user, String issueTypeId, List<String> knowledgeTypes,
+			List<String> knowledgeStatus, List<String> decisionGroups) {
 		if (ComponentAccessor.getProjectManager().getProjectObj(projectId) != null) {
 			this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		}
 		this.user = user;
 		this.graph = KnowledgeGraph.getOrCreate(projectKey);
 		this.jiraIssues = getJiraIssuesForProject(projectId, user);
-		this.ignoreGit = ignoreGit;
 		this.knowledgeTypes = knowledgeTypes;
 		this.knowledgeStatus = knowledgeStatus;
 		this.decisionGroups = decisionGroups;
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey) && !ignoreGit) {
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			this.gitClient = GitClient.getOrCreate(projectKey);
 			extractedIssueRelatedElements = new HashMap<>();
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(projectKey);
@@ -238,12 +237,7 @@ public class MetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		if (ignoreGit) {
-			summaryMap.put("Code Classes", 0);
-		} else {
-			summaryMap.put("Code Classes", graph.getElements(KnowledgeType.CODE).size());
-		}
-
+		summaryMap.put("Code Classes", graph.getElements(KnowledgeType.CODE).size());
 		return summaryMap;
 	}
 
@@ -419,17 +413,5 @@ public class MetricCalculator {
 		for (MutableIssue issue : issues) {
 			jiraIssues.add(issue);
 		}
-	}
-
-	// TODO: Improve test dataset to no longer require this method
-	public void addElementFromGit(KnowledgeElement element, Issue issue) {
-		decisionKnowledgeCodeElements = new ArrayList<>();
-		decisionKnowledgeCodeElements.add(element);
-		decisionKnowledgeCommitElements = new ArrayList<>();
-		decisionKnowledgeCommitElements.add(element);
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.add(element);
-		extractedIssueRelatedElements = new HashMap<>();
-		extractedIssueRelatedElements.put(issue.getKey(), elements);
 	}
 }

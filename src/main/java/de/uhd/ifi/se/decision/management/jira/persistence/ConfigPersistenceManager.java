@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -12,19 +18,18 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-
-import java.lang.reflect.Type;
-import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -32,9 +37,9 @@ import java.util.*;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -190,141 +195,33 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
-	public static void setGitUris(String projectKey, String gitUris) {
-		setValue(projectKey, "gitUris", gitUris);
+	public static void setGitRepositoryConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
+		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
+		gitConfs.add(gitConf);
+		setGitRepositoryConfigurations(projectKey, gitConfs);
 	}
 
-	public static List<String> getGitUris(String projectKey) {
-		String value = getValue(projectKey, "gitUris");
-		if (value == "") {
-			return new ArrayList<String>();
-		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		return uris;
+	public static void setGitRepositoryConfigurations(String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+		}.getType();
+		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
 	}
 
-	// TODO Add GitConfig
-	public static void setDefaultBranches(String projectKey, String defaultBranches) {
-		setValue(projectKey, "defaultBranches", defaultBranches);
-	}
-
-	// TODO Add GitConfig
-	public static void setAuthMethods(String projectKey, String authMethods) {
-		setValue(projectKey, "authMethods", authMethods);
-	}
-
-	// TODO Add GitConfig
-	public static void setUsernames(String projectKey, String usernames) {
-		setValue(projectKey, "usernames", usernames);
-	}
-
-	// TODO Add GitConfig
-	public static void setTokens(String projectKey, String tokens) {
-		setValue(projectKey, "tokens", tokens);
-	}
-
-	public static Map<String, String> getDefaultBranches(String projectKey) {
-		Map<String, String> defaultBranches = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
+	@SuppressWarnings("unchecked")
+	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
+		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+		}.getType();
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
+		try {
+			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
+					"gitRepositoryConfigurations", type);
+		} catch (JsonSyntaxException e) {
 		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "defaultBranches");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				defaultBranches.put(uri, "master");
-			}
-			return defaultBranches;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				defaultBranches.put(uris.get(i), "master");
-			} else {
-				defaultBranches.put(uris.get(i), branches.get(i));
-			}
-		}
-		return defaultBranches;
-	}
-
-	public static Map<String, String> getAuthMethods(String projectKey) {
-		Map<String, String> authMethods = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "authMethods");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				authMethods.put(uri, "NONE");
-			}
-			return authMethods;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				authMethods.put(uris.get(i), "NONE");
-			} else {
-				authMethods.put(uris.get(i), branches.get(i));
-			}
-		}
-		return authMethods;
-	}
-
-	public static Map<String, String> getUsernames(String projectKey) {
-		Map<String, String> usernames = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "usernames");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				usernames.put(uri, "");
-			}
-			return usernames;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				usernames.put(uris.get(i), "");
-			} else {
-				usernames.put(uris.get(i), branches.get(i));
-			}
-		}
-		return usernames;
-	}
-
-	public static Map<String, String> getTokens(String projectKey) {
-		Map<String, String> tokens = new HashMap<String, String>();
-		String value = getValue(projectKey, "gitUris");
-		if (value == null || value.isBlank()) {
-			return null;
-		}
-		List<String> uris = Arrays.asList(value.split(";;"));
-		value = getValue(projectKey, "tokens");
-		if (value == null || value.isBlank()) {
-			for (String uri : uris) {
-				tokens.put(uri, "");
-			}
-			return tokens;
-		}
-		List<String> branches = Arrays.asList(value.split(";;"));
-		for (int i = 0; i < uris.size(); i++) {
-			if (branches.size() <= i) {
-				tokens.put(uris.get(i), "");
-			} else {
-				tokens.put(uris.get(i), branches.get(i));
-			}
-		}
-		return tokens;
+		return gitRepositoryConfigurations;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -387,7 +284,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -533,10 +430,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-					jiraProject.getProjectKey());
+						jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-						projectSourceActivation);
+							projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -568,7 +465,8 @@ public class ConfigPersistenceManager {
 
 	public static RecommenderType getRecommendationInput(String projectKey) {
 		String value = getValue(projectKey, "recommendationInput");
-		if (!value.isBlank()) return RecommenderType.getTypeByString(value);
+		if (!value.isBlank())
+			return RecommenderType.getTypeByString(value);
 		return RecommenderType.getDefault();
 	}
 

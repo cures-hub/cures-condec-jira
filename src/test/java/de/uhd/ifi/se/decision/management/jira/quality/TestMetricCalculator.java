@@ -33,7 +33,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator((long) 1, user, "alternative", false, KnowledgeType.toStringList(),
+		calculator = new MetricCalculator((long) 1, user, "alternative", KnowledgeType.toStringList(),
 				KnowledgeStatus.toStringList(), null);
 		calculator.setJiraIssues(getTestJiraIssues());
 	}

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,10 +11,13 @@ import org.junit.Test;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 /**
  * Test class for a Jira project with the configuration settings used in this
@@ -85,17 +87,15 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	// TODO Add GitConfig class
-	public void testGetGitRepo() {
-		List<String> uris = project.getGitUris();
-		Map<String, String> defaultBranches = project.getDefaultBranches();
-		Map<String, String> authMethods = project.getAuthMethods();
-		Map<String, String> usernames = project.getUsernames();
-		Map<String, String> tokens = project.getTokens();
-		assertEquals("master", defaultBranches.get(uris.get(0)));
-		assertEquals("HTTP", authMethods.get(uris.get(0)));
-		assertEquals("heinz.guenther", usernames.get(uris.get(0)));
-		assertEquals("P@ssw0rd!", tokens.get(uris.get(0)));
+	public void testGetGitRepositoryConfigurations() {
+		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
+				"master", "HTTP", "heinz.guenther", "P@ssw0rd!");
+		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST", gitRepositoryConfiguration);
+		List<GitRepositoryConfiguration> gitConfs = project.getGitRepositoryConfigurations();
+		assertEquals("master", gitConfs.get(0).getDefaultBranch());
+		assertEquals("HTTP", gitConfs.get(0).getAuthMethod());
+		assertEquals("heinz.guenther", gitConfs.get(0).getUsername());
+		assertEquals("P@ssw0rd!", gitConfs.get(0).getToken());
 	}
 
 	@Test
@@ -134,6 +134,12 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(2, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+	}
+
+	@Test
+	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
+		assertEquals(1, DecisionKnowledgeProject
+				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
 	}
 
 	@AfterClass

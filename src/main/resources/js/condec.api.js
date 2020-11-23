@@ -12,12 +12,13 @@
  * settingsForSingleProject.vm
  */
 (function (global) {
-
+	
 	var projectKey = null;
 
 	var ConDecAPI = function () {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
 		projectKey = getProjectKey();
+		this.projectKey = projectKey;
 
 		/**
 		 * @issue How to store settings retrieved from the backend such as
@@ -63,7 +64,7 @@
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function () {
 		if (this.extendedKnowledgeTypes === undefined || this.extendedKnowledgeTypes.length === 0) {
 			this.extendedKnowledgeTypes = generalApi.getResponseAsReturnValue(conDecAPI.restPrefix
-				+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + getProjectKey());
+				+ "/config/getDecisionKnowledgeTypes.json?projectKey=" + conDecAPI.projectKey);
 			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
 		}
 		return this.extendedKnowledgeTypes;
@@ -146,7 +147,6 @@
 
 	ConDecAPI.prototype.assignDecisionGroup = function (level, existingGroups, addgroup, sourceId, documentationLocation, callback) {
 		var newElement = {};
-		var projectKey = getProjectKey();
 		generalApi.postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
 			+ sourceId + "&documentationLocation="
 			+ documentationLocation + "&projectKey="
@@ -535,12 +535,9 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setGitUris = function (projectKey, gitUris, defaultBranches, authMethods, usernames, tokens) {
-		// TODO Pass gitUris and branches as the JSON payload. Do not pass
-		// concatenated strings separated with ;;
-		generalApi.postJSON(AJS.contextPath() + "/rest/condec/latest" + "/config/setGitUris.json?projectKey=" + projectKey
-			+ "&gitUris=" + gitUris + "&defaultBranches=" + defaultBranches + "&authMethods=" + 
-			authMethods + "&usernames=" + usernames + "&tokens=" + tokens, null, function (error, response) {
+	ConDecAPI.prototype.setGitRepositoryConfigurations = function (projectKey, gitRepositoryConfigurations) {
+		generalApi.postJSON(this.restPrefix + "/config/setGitRepositoryConfigurations.json?projectKey=" 
+				+ projectKey, gitRepositoryConfigurations, function (error, response) {
 				if (error === null) {
 					showFlag("success", "The git URIs and credentials for this project have been set.");
 				}
@@ -618,7 +615,7 @@
 	 */
 	ConDecAPI.prototype.getKnowledgeTypes = function () {
 		if (this.knowledgeTypes === undefined || this.knowledgeTypes.length === 0) {
-			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + getProjectKey());
+			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.knowledgeTypes;
 	};
@@ -628,7 +625,7 @@
 	 */
 	ConDecAPI.prototype.getLinkTypes = function () {
 		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
-			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + getProjectKey());
+			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.linkTypes;
 	};
@@ -638,7 +635,7 @@
 	 */
 	ConDecAPI.prototype.getAllDecisionGroups = function () {
 		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
-			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + getProjectKey());
+			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.decisionGroups;
 	};
@@ -718,7 +715,7 @@
 				response) {
 			if (error === null) {
 				showFlag("success",
-					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+					"Usage of classification for Decision Knowledge in Jira Issue Comments has been set to "
 					+ isClassifierUsedForIssues + ".");
 			}
 		});
@@ -798,21 +795,6 @@
 					showFlag("success", "The databases have been cleaned.");
 				}
 			});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
-			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
-				response) {
-			if (error === null) {
-				showFlag("success",
-					"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-					+ isClassifierUsedForIssues + ".");
-			}
-		});
 	};
 
 	/*

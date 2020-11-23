@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,8 +13,11 @@ import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -153,47 +156,12 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return uniform resource identifiers of the git repositories for this project
-	 *         as a List<String> (if it is set, otherwise an empty List).
+	 * @return configuration information of the git repositories for this project as
+	 *         a {@link List<GitRepositoryConfiguration>} (if it is set, otherwise
+	 *         an empty list).
 	 */
-	public List<String> getGitUris() {
-		return ConfigPersistenceManager.getGitUris(getProjectKey());
-	}
-
-	/**
-	 * @return default branches as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         name of default branch as value.
-	 */
-	public Map<String, String> getDefaultBranches() {
-		return ConfigPersistenceManager.getDefaultBranches(getProjectKey());
-	}
-
-	/**
-	 * @return authentification methods as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         identifier of the authentification method as value.
-	 */
-	public Map<String, String> getAuthMethods() {
-		return ConfigPersistenceManager.getAuthMethods(getProjectKey());
-	}
-
-	/**
-	 * @return user names as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         user names as value.
-	 */
-	public Map<String, String> getUsernames() {
-		return ConfigPersistenceManager.getUsernames(getProjectKey());
-	}
-
-	/**
-	 * @return tokens or passwords as Map<String,String> with the uniform resource
-	 *         identifiers of the git repositories for this project as key and the
-	 *         tokens or passwords as value.
-	 */
-	public Map<String, String> getTokens() {
-		return ConfigPersistenceManager.getTokens(getProjectKey());
+	public List<GitRepositoryConfiguration> getGitRepositoryConfigurations() {
+		return ConfigPersistenceManager.getGitRepositoryConfigurations(getProjectKey());
 	}
 
 	/**
@@ -272,5 +240,24 @@ public class DecisionKnowledgeProject {
 	public static Collection<IssueLinkType> getJiraIssueLinkTypes() {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		return linkTypeManager.getIssueLinkTypes(false);
+	}
+
+	/**
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return list of all Jira projects in that the ConDec plugin is activated and
+	 *         for that the user has the rights to browse the project, i.e., view
+	 *         its content.
+	 */
+	public static List<Project> getProjectsWithConDecActivatedAndAccessableForUser(ApplicationUser user) {
+		List<Project> projects = new ArrayList<Project>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			boolean hasPermission = ComponentAccessor.getPermissionManager()
+					.hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, user);
+			if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
+				projects.add(project);
+			}
+		}
+		return projects;
 	}
 }

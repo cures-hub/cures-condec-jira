@@ -84,12 +84,12 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		return (count / (sequenceToCheck.size()));
 	}
 
-	private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {
-		StringBuilder stringToSearch = new StringBuilder();
-		for (int i = index; i < tokens.size() && i < index + numberOfDuplicateTokens; i++) {
-			stringToSearch.append(tokens.get(i)).append(" ");
-		}
-		return stringToSearch.toString().trim();
-	}
+	// private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {
+	// 	StringBuilder stringToSearch = new StringBuilder();
+	// 	for (int i = index; i < tokens.size() && i < index + numberOfDuplicateTokens; i++) {
+	// 		stringToSearch.append(tokens.get(i)).append(" ");
+	// 	}
+	// 	return stringToSearch.toString().trim();
+	// }
 
 }

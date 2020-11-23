@@ -57,23 +57,23 @@ public class RDFSourceInputString implements InputMethod<String> {
 		return combinedKeywords;
 	}
 
-	private int calculateScore(String keywords, String inputs) {
+	// private int calculateScore(String keywords, String inputs) {
 
-		List<String> keywordsList = Arrays.asList(keywords.split("_"));
-		List<String> inputsList = Arrays.asList(inputs.split(" "));
+	// 	List<String> keywordsList = Arrays.asList(keywords.split("_"));
+	// 	List<String> inputsList = Arrays.asList(inputs.split(" "));
 
-		float inputLength = inputsList.size();
-		int match = 0;
+	// 	float inputLength = inputsList.size();
+	// 	int match = 0;
 
-		for (String keyword : keywordsList) {
-			if (inputs.contains(keyword)) match += 1;
-		}
+	// 	for (String keyword : keywordsList) {
+	// 		if (inputs.contains(keyword)) match += 1;
+	// 	}
 
-		float score = (match / inputLength) * 100;
+	// 	float score = (match / inputLength) * 100;
 
-		return Math.round(score);
+	// 	return Math.round(score);
 
-	}
+	// }
 
 	/**
 	 * @param queryString
