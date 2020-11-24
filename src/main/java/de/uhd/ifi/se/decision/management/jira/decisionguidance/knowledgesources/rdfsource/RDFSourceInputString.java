@@ -10,7 +10,6 @@ import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
-import scala.language;
 
 import java.util.*;
 import java.util.stream.Collectors;

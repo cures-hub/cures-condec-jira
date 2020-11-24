@@ -65,8 +65,11 @@ public class TestEvaluationMetrics extends TestSetUp {
 	@Test
 	public void testCalculations() {
 		assertEquals(0.5, fScore.calculateMetric(recommendations, solutionOptions, 5), 0.0);
+		assertEquals("F-Score", fScore.toString());
 		assertEquals(1.0, averagePrecision.calculateMetric(recommendations, solutionOptions, 5), 0.0);
+		assertEquals("Average Precision", averagePrecision.toString());
 		assertEquals(1.0, reciprocalRank.calculateMetric(recommendations, solutionOptions, 5), 0.0);
+		assertEquals("Reciprocal Rank", reciprocalRank.toString());
 	}
 
 	@Test
