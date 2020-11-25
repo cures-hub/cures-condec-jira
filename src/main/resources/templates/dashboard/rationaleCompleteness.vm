@@ -1,0 +1,9 @@
+<div class="condec-dashboard-contents results" id="dynamic-content-completeness">
+    <h3>Intra-Rationale Completeness Metrics</h3>
+    <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
+    <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
+	<div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>    
+</div>

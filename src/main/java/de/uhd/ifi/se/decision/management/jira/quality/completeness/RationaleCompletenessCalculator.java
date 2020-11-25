@@ -29,9 +29,9 @@ public class RationaleCompletenessCalculator {
 		this(filterSettings.getProjectKey());
 	}
 
-	public Map<String, String> getElementsWithNeighborsOfOtherType(
-			KnowledgeType sourceElementType, KnowledgeType targetElementType) {
-		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType 3 4 4 5 4 4 4");
+	public Map<String, String> getElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
+			KnowledgeType targetElementType) {
+		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
 		List<KnowledgeElement> allSourceElements = KnowledgeGraph.getOrCreate(projectKey)
 				.getElements(sourceElementType);
