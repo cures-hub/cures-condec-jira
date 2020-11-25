@@ -139,6 +139,9 @@ public class MetricCalculator {
 					|| issue.getIssueType().getName().equals("Persona")
 					|| issue.getIssueType().getName().equals("Usertask")
 					|| issue.getIssueType().getName().equals("Subtask")
+					|| issue.getIssueType().getName().equals("User Role")
+					|| issue.getIssueType().getName().equals("Quality Requirement")
+					|| issue.getIssueType().getName().equals("Story") || issue.getIssueType().getName().equals("Epic")
 					|| issue.getIssueType().getName().equals("Workspace")) {
 				numberOfRequirements++;
 			}

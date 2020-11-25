@@ -1,7 +1,7 @@
 <div id="decKnowElementsOverlay" class="hidden overlay">
 	<div class="box">
 		<h1>
-			Involved feature task branch(es):
+			Navigate to Detail View of:
 		</h1>
 		<div id="extractedDecKnowElements" class="contents">
 		</div>

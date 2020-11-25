@@ -1,0 +1,7 @@
+<div class="condec-dashboard-contents results" id="dynamic-content-basics">
+    <h3>Rationale Coverage for Jira Issues of Type "$issueType.getName()"</h3>
+	<div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+	<div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>	    
+    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
+</div>

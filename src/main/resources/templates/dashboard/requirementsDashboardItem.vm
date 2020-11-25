@@ -23,6 +23,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #if ($projectKey)
 	#parse("templates/dashboard/rationaleCompleteness.vm")	
 	#parse("templates/dashboard/navigationOverlay.vm")
+	#parse("templates/dashboard/generalMetrics.vm")
 	#parse("templates/dashboard/requirementsDashboardItemFilter.vm")	
 #end
 
@@ -33,7 +34,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #end
 
 #if ($projectKey && $issueType)
-	#parse("templates/dashboard/requirementsDashboardItemMetrics.vm")
+	#parse("templates/dashboard/rationaleCoverage.vm")
 #end
 
 #if ($projectKey)

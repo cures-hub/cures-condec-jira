@@ -18,8 +18,6 @@ public class ChartCreator {
 	public void addChart(String chartName, String chartId, Map<String, Integer> metricData) {
 		this.chartNamesAndPurpose.put(chartId, "\\" + chartName);
 		this.chartNamesAndData.put(chartId, metricData);
-		System.out.println(chartId);
-		System.out.println(metricData);
 	}
 
 	public void addChartWithIssueContent(String chartName, String chartId, Map<String, String> metricData) {
