@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
@@ -40,6 +42,11 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 			}
 		}
 		newContext.put("projectsWithGit", accessableProjectsWithGitRepo);
+		HttpServletRequest request = RequirementsDashboardItem.getHttpRequest();
+		if (request != null) {
+			String projectKey = request.getParameter("project");
+			newContext.put("projectKey", projectKey);
+		}
 
 		return newContext;
 	}

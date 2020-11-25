@@ -54,13 +54,15 @@ public class RequirementsDashboardItem implements ContextProvider {
 		newContext.put("jiraIssueTypes", JiraIssueTypeGenerator.getJiraIssueTypes(projectKey));
 		newContext.put("jiraBaseUrl", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL));
 		// TODO Create and work with FilterSettings object
-		Map<String, Object> values = createValues(projectKey, issueTypeId, 2, KnowledgeType.toStringList(),
-				KnowledgeStatus.toStringList(), null);
-		newContext.putAll(values);
+		if (projectKey != null) {
+			Map<String, Object> values = createValues(projectKey, issueTypeId, 2, KnowledgeType.toStringList(),
+					KnowledgeStatus.toStringList(), null);
+			newContext.putAll(values);
+		}
 		return newContext;
 	}
 
-	private HttpServletRequest getHttpRequest() {
+	public static HttpServletRequest getHttpRequest() {
 		return com.atlassian.jira.web.ExecutingHttpRequest.get();
 	}
 

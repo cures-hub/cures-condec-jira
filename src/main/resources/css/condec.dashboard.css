@@ -15,6 +15,7 @@
 
 .condec-dashboard-contents.waiting {
     border-color: orange;
+    min-height: 400px;
 }
 
 .condec-dashboard-contents.results {
