@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 
 public class RequirementsDashboardItem implements ContextProvider {
 
@@ -82,36 +83,39 @@ public class RequirementsDashboardItem implements ContextProvider {
 				metricCalculator.getDistributionOfKnowledgeTypes());
 		chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
 				metricCalculator.getReqAndClassSummary());
-		chartCreator.addChart("#Elements from Decision Knowledge Sources", "piechartInteger-DecSources",
+		chartCreator.addChart("#Elements from Documentation Locations", "piechartInteger-DecSources",
 				metricCalculator.getKnowledgeSourceCount());
+
+		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
+				filterSettings);
 		chartCreator.addChartWithIssueContent("How many issues (=decision problems) are solved by a decision?",
 				"piechartRich-IssuesSolvedByDecision",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ISSUE,
-						KnowledgeType.DECISION));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.ISSUE, KnowledgeType.DECISION));
 		chartCreator.addChartWithIssueContent("For how many decisions is the issue (=decision problem) documented?",
 				"piechartRich-DecisionsSolvingIssues",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
-						KnowledgeType.ISSUE));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.DECISION, KnowledgeType.ISSUE));
 		chartCreator.addChartWithIssueContent("How many alternatives have at least one pro argument documented?",
 				"piechartRich-ProArgumentDocumentedForAlternative",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
-						KnowledgeType.PRO));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
 		chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
 				"piechartRich-ConArgumentDocumentedForAlternative",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
-						KnowledgeType.CON));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
 		chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
 				"piechartRich-ConArgumentDocumentedForAlternative",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.ALTERNATIVE,
-						KnowledgeType.CON));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
 		chartCreator.addChartWithIssueContent("How many decisions have at least one pro argument documented?",
 				"piechartRich-ProArgumentDocumentedForDecision",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
-						KnowledgeType.PRO));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.DECISION, KnowledgeType.PRO));
 		chartCreator.addChartWithIssueContent("How many decisions have at least one con argument documented?",
 				"piechartRich-ConArgumentDocumentedForDecision",
-				metricCalculator.getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType.DECISION,
-						KnowledgeType.CON));
+				rationaleCompletenessCalculator.getElementsWithNeighborsOfOtherType(
+						KnowledgeType.DECISION, KnowledgeType.CON));
 		chartCreator.addChart("Comments in Jira Issues relevant to Decision Knowledge",
 				"piechartInteger-RelevantSentences", metricCalculator.getNumberOfRelevantComments());
 		chartCreator.addChartWithIssueContent(

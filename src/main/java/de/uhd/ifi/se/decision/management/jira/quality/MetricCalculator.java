@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +18,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
@@ -37,16 +34,12 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 public class MetricCalculator {
 
-	private ApplicationUser user;
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private List<KnowledgeElement> decisionKnowledgeCodeElements;
@@ -59,7 +52,6 @@ public class MetricCalculator {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
 	public MetricCalculator(ApplicationUser user, IssueType issueType, FilterSettings filterSettings) {
-		this.user = user;
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		this.jiraIssues = getJiraIssuesForProject(filterSettings.getProjectKey(), user);
@@ -241,54 +233,6 @@ public class MetricCalculator {
 		sourceMap.put("Issue Content", numberIssueContent);
 		sourceMap.put("Jira Issues", numberIssues);
 		return sourceMap;
-	}
-
-	public Map<String, String> getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType(KnowledgeType linkFrom,
-			KnowledgeType linkTo) {
-		LOGGER.info("RequirementsDashboard getDecKnowlElementsOfATypeGroupedByHavingElementsOfOtherType 3 4 4 5 4 4 4");
-		String[] data = new String[2];
-		Arrays.fill(data, "");
-
-		List<KnowledgeElement> listOfIssues = graph.getElements(linkFrom);
-
-		for (KnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
-					DocumentationLocation.JIRAISSUETEXT);
-			boolean hastOtherElementLinked = false;
-			for (Link link : links) {
-				if (link != null && link.getTarget() != null && link.getSource() != null && link.isValid()
-						&& link.getOppositeElement(issue.getId()) instanceof PartOfJiraIssueText
-						&& link.getOppositeElement(issue.getId()).getType().equals(linkTo)) {
-					hastOtherElementLinked = true;
-					data[0] += issue.getKey() + dataStringSeparator;
-				}
-			}
-			if (!hastOtherElementLinked) {
-				data[1] += issue.getKey() + dataStringSeparator;
-			}
-		}
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		// Elements from Issues
-		for (Issue issue : jiraIssues) {
-			if (issue.getIssueType().getName().equals(linkFrom.toString())
-					&& issueLinkManager.getLinkCollection(issue, user) != null) {
-				Collection<Issue> issueColl = issueLinkManager.getLinkCollection(issue, user).getAllIssues();
-				boolean hasDecision = false;
-				for (Issue linkedIssue : issueColl) {
-					if (!hasDecision && linkedIssue.getIssueType().getName().equals(linkTo.toString())) {
-						hasDecision = true;
-						data[0] += issue.getKey() + dataStringSeparator;
-					}
-				}
-				if (!hasDecision) {
-					data[1] += issue.getKey() + dataStringSeparator;
-				}
-			}
-		}
-		Map<String, String> havingLinkMap = new LinkedHashMap<String, String>();
-		havingLinkMap.put(linkFrom.toString() + " has " + linkTo.toString(), data[0].trim());
-		havingLinkMap.put(linkFrom.toString() + " has no " + linkTo.toString(), data[1].trim());
-		return havingLinkMap;
 	}
 
 	public Map<String, Integer> getNumberOfRelevantComments() {

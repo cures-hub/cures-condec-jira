@@ -65,10 +65,15 @@ $(document).ready(function() {
         conDecBranchesDashboard.init(projectKey);
     }
     selectNode = document.getElementById("condec-dashboard-item-project-selection");
-	selectNode.addEventListener("change", projectSelectOrOnChange);
-	if (typeof $projectKey !== "undefined") {	
-		selectNode.value = "$projectKey";  
-		conDecBranchesDashboard.init("$projectKey");
-	}		
+	selectNode.addEventListener("change", projectSelectOrOnChange);	
 });
 </script>
+
+#if ($projectKey)
+	<script>
+	$(document).ready(function() {
+		selectNode.value = "$projectKey";  
+		conDecBranchesDashboard.init("$projectKey");	
+	});
+	</script>
+#end	
