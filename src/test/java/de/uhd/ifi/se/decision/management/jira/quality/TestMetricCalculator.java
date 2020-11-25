@@ -4,7 +4,6 @@ import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComm
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 
@@ -51,21 +50,6 @@ public class TestMetricCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetDistributionOfKnowledgeTypes() {
 		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetLinksToIssueTypeMapTypeNull() {
-		assertNull(calculator.getLinksToIssueTypeMap(null, 0));
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetLinksToIssueTypeMapTypeFilled() {
-		addComment(getTestJiraIssues().get(6));
-		calculator.setJiraIssues(getTestJiraIssues());
-		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT, 1);
-		assertEquals("{Links from  to Argument=, No links from  to Argument=}", map.toString());
 	}
 
 	@Test

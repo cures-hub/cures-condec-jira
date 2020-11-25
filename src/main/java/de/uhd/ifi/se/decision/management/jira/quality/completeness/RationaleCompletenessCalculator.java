@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Calculates metrics for the intra rationale completeness.
+ * Calculates metrics for the intra-rationale completeness.
  */
 public class RationaleCompletenessCalculator {
 

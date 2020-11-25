@@ -12,21 +12,13 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.issue.search.SearchResults;
-import com.atlassian.jira.jql.builder.JqlClauseBuilder;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.query.Query;
 
-import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -36,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 public class MetricCalculator {
@@ -44,8 +37,6 @@ public class MetricCalculator {
 	private KnowledgeGraph graph;
 	private List<KnowledgeElement> decisionKnowledgeCodeElements;
 	private List<KnowledgeElement> decisionKnowledgeCommitElements;
-	private final String dataStringSeparator = " ";
-	private IssueType issueType;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
 	private FilterSettings filterSettings;
 
@@ -54,7 +45,7 @@ public class MetricCalculator {
 	public MetricCalculator(ApplicationUser user, IssueType issueType, FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-		this.jiraIssues = getJiraIssuesForProject(filterSettings.getProjectKey(), user);
+		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
 		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
 			extractedIssueRelatedElements = new HashMap<>();
 			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(
@@ -67,22 +58,6 @@ public class MetricCalculator {
 				this.decisionKnowledgeCommitElements = null;
 			}
 		}
-		this.issueType = issueType;
-	}
-
-	public static List<Issue> getJiraIssuesForProject(String projectKey, ApplicationUser user) {
-		List<Issue> jiraIssues = new ArrayList<Issue>();
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-		SearchResults<Issue> searchResults = null;
-		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
-		try {
-			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-			jiraIssues = searchResults.getResults();
-		} catch (SearchException e) {
-			LOGGER.error("Getting Jira issues for project failed. Message: " + e.getMessage());
-		}
-		return jiraIssues;
 	}
 
 	private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
@@ -263,42 +238,6 @@ public class MetricCalculator {
 		numberOfRelevantSentences.put("Relevant Comment", isRelevant);
 		numberOfRelevantSentences.put("Irrelevant Comment", isIrrelevant);
 		return numberOfRelevantSentences;
-	}
-
-	public Map<String, String> getLinksToIssueTypeMap(KnowledgeType knowledgeType, int linkDistance) {
-		LOGGER.info("RequirementsDashboard getLinksToIssueTypeMap 1 3");
-		if (knowledgeType == null) {
-			return null;
-		}
-		Map<String, String> result = new LinkedHashMap<String, String>();
-		String withLink = "";
-		String withoutLink = "";
-		for (Issue jiraIssue : jiraIssues) {
-			if (jiraIssue.getIssueTypeId() != null && jiraIssue.getIssueType().equals(issueType)) {
-
-				List<KnowledgeElement> elements = KnowledgePersistenceManager
-						.getOrCreate(filterSettings.getProjectKey()).getJiraIssueTextManager()
-						.getElementsInJiraIssue(jiraIssue.getId());
-				int numberOfElements = elements.size();
-				if (linkDistance >= 1 && extractedIssueRelatedElements != null
-						&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
-					for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-						if (element.getType().equals(knowledgeType)) {
-							numberOfElements++;
-						}
-					}
-				}
-				if (numberOfElements > 0) {
-					withLink += jiraIssue.getKey() + dataStringSeparator;
-				} else {
-					withoutLink += jiraIssue.getKey() + dataStringSeparator;
-				}
-			}
-		}
-		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(issueType.getName());
-		result.put("Links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withLink);
-		result.put("No links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withoutLink);
-		return result;
 	}
 
 	public void setJiraIssues(List<MutableIssue> issues) {
