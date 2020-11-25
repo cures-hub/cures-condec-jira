@@ -1,10 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.InputMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods.RDFSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 import java.util.Objects;
 
 public class RDFSource extends KnowledgeSource {
@@ -52,7 +52,7 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public void setData() {
-		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD))
+		if (recommenderType.equals(RecommenderType.KEYWORD))
 			((RDFSourceInputString) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
 		else {
 			((RDFSourceInputKnowledgeElement) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
@@ -62,11 +62,7 @@ public class RDFSource extends KnowledgeSource {
 
 	@Override
 	public InputMethod getInputMethod() {
-		if (ConfigPersistenceManager.getRecommendationInput(projectKey).equals(RecommenderType.KEYWORD)) {
-			this.inputMethod = new RDFSourceInputString();
-		} else {
-			this.inputMethod = new RDFSourceInputKnowledgeElement();
-		}
+		this.inputMethod = SourceInputFactoryUtils.getInputMethod(recommenderType);
 		return this.inputMethod;
 	}
 

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
 
 @XmlRootElement(name = "RecommendationEval")
 public class RecommendationEvaluation {
@@ -16,17 +17,14 @@ public class RecommendationEvaluation {
 	protected int numberOfResults;
 
 	@XmlElement
-	protected double fScore;
+	protected Map<String, Double> metrics;
 
-	@XmlElement
-	protected double mrr;
 
-	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, double fScore, double mrr) {
+	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, Map<String, Double> metrics) {
 		this.recommenderType = recommenderType;
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.numberOfResults = numberOfResults;
-		this.fScore = fScore;
-		this.mrr = mrr;
+		this.metrics = metrics;
 	}
 
 	public String getKnowledgeSourceName() {
@@ -45,14 +43,6 @@ public class RecommendationEvaluation {
 		this.numberOfResults = numberOfResults;
 	}
 
-	public double getFScore() {
-		return fScore;
-	}
-
-	public void setFScore(double fScore) {
-		this.fScore = fScore;
-	}
-
 	public String getRecommenderType() {
 		return recommenderType;
 	}
@@ -61,11 +51,9 @@ public class RecommendationEvaluation {
 		this.recommenderType = recommenderType;
 	}
 
-	public double getMrr() {
-		return mrr;
+
+	public Map<String, Double> getMetrics() {
+		return metrics;
 	}
 
-	public void setMrr(double mrr) {
-		this.mrr = mrr;
-	}
 }

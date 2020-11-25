@@ -1,5 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.resultmethods;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -7,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElement> {
 
@@ -46,6 +48,7 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 		}
 
 
-		return recommendations;
+
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 }
