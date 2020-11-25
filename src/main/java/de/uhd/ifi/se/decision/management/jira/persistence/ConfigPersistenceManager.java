@@ -216,6 +216,10 @@ public class ConfigPersistenceManager {
 			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
 					"gitRepositoryConfigurations", type);
 		} catch (JsonSyntaxException e) {
+
+		}
+		if (gitRepositoryConfigurations == null) {
+			return new ArrayList<GitRepositoryConfiguration>();
 		}
 		return gitRepositoryConfigurations;
 	}

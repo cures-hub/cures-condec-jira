@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -139,8 +140,14 @@ public class GitClientForSingleRepository {
 			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				ObjectId oldId = getDefaultBranchPosition();
-				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
-						.setRemoveDeletedRefs(true).call();
+				UsernamePasswordCredentialsProvider credentialsProvider = gitRepositoryConfiguration
+						.getCredentialsProvider();
+				FetchCommand fetchCommand = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
+						.setRemoveDeletedRefs(true);
+				if (credentialsProvider != null) {
+					fetchCommand.setCredentialsProvider(credentialsProvider);
+				}
+				fetchCommand.call();
 				ObjectId newId = getDefaultBranchPosition();
 				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
 				new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diffSinceLastFetch);

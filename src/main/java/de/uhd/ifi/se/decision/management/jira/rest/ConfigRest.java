@@ -215,7 +215,7 @@ public class ConfigRest {
 
 	@Path("/setDecisionTableCriteriaQuery")
 	@POST
-	public Response setDesionTabelCriteriaQuery(@Context HttpServletRequest request,
+	public Response setDecisionTableCriteriaQuery(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
