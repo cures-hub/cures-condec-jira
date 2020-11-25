@@ -52,12 +52,22 @@ public class RequirementsDashboardItem implements ContextProvider {
 		newContext.put("issueType", issueType);
 		newContext.put("jiraIssueTypes", JiraIssueTypeGenerator.getJiraIssueTypes(projectKey));
 		newContext.put("jiraBaseUrl", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL));
-		if (projectKey != null && !projectKey.isBlank() && issueType != null) {
-			FilterSettings filterSettings = new FilterSettings(projectKey, "");
-			filterSettings.setLinkDistance(Integer.parseInt(request.getParameter("linkDistance")));
-			Map<String, Object> values = createValues(issueType, filterSettings);
-			newContext.putAll(values);
+		if (projectKey == null || projectKey.isBlank()) {
+			return newContext;
 		}
+
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		String linkDistance = request.getParameter("linkDistance");
+		if (linkDistance != null) {
+			filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
+		}
+		ChartCreator chartCreator = new ChartCreator();
+		addRationaleCompletenessCharts(chartCreator, filterSettings);
+		addGeneralMetricCharts(chartCreator, filterSettings);
+		if (issueType != null) {
+			addRationaleCoverageCharts(chartCreator, issueType, filterSettings);
+		}
+		newContext.putAll(chartCreator.getVelocityParameters());
 		return newContext;
 	}
 
@@ -65,28 +75,7 @@ public class RequirementsDashboardItem implements ContextProvider {
 		return com.atlassian.jira.web.ExecutingHttpRequest.get();
 	}
 
-	public Map<String, Object> createValues(IssueType jiraIssueType, FilterSettings filterSettings) {
-		ChartCreator chartCreator = new ChartCreator();
-		MetricCalculator metricCalculator = new MetricCalculator(loggedUser, jiraIssueType, filterSettings);
-		chartCreator.addChart("#Comments per Jira Issue", "boxplot-CommentsPerJiraIssue",
-				metricCalculator.numberOfCommentsPerIssue());
-		/*
-		 * chartCreator.addChart("#Commits per Jira Issue",
-		 * "boxplot-CommitsPerJiraIssue", metricCalculator.numberOfCommitsPerIssue());
-		 */
-		chartCreator.addChart("#Decisions per Jira Issue", "boxplot-DecisionsPerJiraIssue",
-				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION,
-						filterSettings.getLinkDistance()));
-		chartCreator.addChart("#Issues per Jira Issue", "boxplot-IssuesPerJiraIssue",
-				metricCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE,
-						filterSettings.getLinkDistance()));
-		chartCreator.addChart("Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
-				metricCalculator.getDistributionOfKnowledgeTypes());
-		chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
-				metricCalculator.getReqAndClassSummary());
-		chartCreator.addChart("#Elements from Documentation Locations", "piechartInteger-DecSources",
-				metricCalculator.getKnowledgeSourceCount());
-
+	private void addRationaleCompletenessCharts(ChartCreator chartCreator, FilterSettings filterSettings) {
 		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
 				filterSettings);
 		chartCreator.addChartWithIssueContent("How many issues (=decision problems) are solved by a decision?",
@@ -110,19 +99,42 @@ public class RequirementsDashboardItem implements ContextProvider {
 		chartCreator.addChartWithIssueContent("How many decisions have at least one con argument documented?",
 				"piechartRich-ConArgumentDocumentedForDecision", rationaleCompletenessCalculator
 						.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.CON));
-		chartCreator.addChart("Comments in Jira Issues relevant to Decision Knowledge",
-				"piechartInteger-RelevantSentences", metricCalculator.getNumberOfRelevantComments());
+	}
 
+	private void addRationaleCoverageCharts(ChartCreator chartCreator, IssueType jiraIssueType,
+			FilterSettings filterSettings) {
 		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(loggedUser,
 				filterSettings);
+		chartCreator.addChart("#Decisions per Jira Issue", "boxplot-DecisionsPerJiraIssue",
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
+		chartCreator.addChart("#Issues per Jira Issue", "boxplot-IssuesPerJiraIssue",
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
 		chartCreator.addChartWithIssueContent(
 				"For how many " + jiraIssueType.getName() + " types is an issue documented?",
 				"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-				rationaleCoverageCalculator.getLinksToIssueTypeMap(jiraIssueType, KnowledgeType.ISSUE));
+				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
 		chartCreator.addChartWithIssueContent(
 				"For how many " + jiraIssueType.getName() + " types is a decision documented?",
-				"piechartRich-IssueDocumentedForSelectedJiraIssue",
-				rationaleCoverageCalculator.getLinksToIssueTypeMap(jiraIssueType, KnowledgeType.DECISION));
-		return chartCreator.getVelocityParameters();
+				"piechartRich-IssueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
+						.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
+	}
+
+	private void addGeneralMetricCharts(ChartCreator chartCreator, FilterSettings filterSettings) {
+		MetricCalculator metricCalculator = new MetricCalculator(loggedUser, filterSettings);
+		chartCreator.addChart("#Comments per Jira Issue", "boxplot-CommentsPerJiraIssue",
+				metricCalculator.numberOfCommentsPerIssue());
+		chartCreator.addChart("Distribution of Knowledge Types", "piechartInteger-KnowledgeTypeDistribution",
+				metricCalculator.getDistributionOfKnowledgeTypes());
+		chartCreator.addChart("#Requirements and Code Classes", "piechartInteger-ReqCodeSummary",
+				metricCalculator.getReqAndClassSummary());
+		chartCreator.addChart("#Elements from Documentation Locations", "piechartInteger-DecSources",
+				metricCalculator.getKnowledgeSourceCount());
+		chartCreator.addChart("Comments in Jira Issues relevant to Decision Knowledge",
+				"piechartInteger-RelevantSentences", metricCalculator.getNumberOfRelevantComments());
+
+		/*
+		 * chartCreator.addChart("#Commits per Jira Issue",
+		 * "boxplot-CommitsPerJiraIssue", metricCalculator.numberOfCommitsPerIssue());
+		 */
 	}
 }

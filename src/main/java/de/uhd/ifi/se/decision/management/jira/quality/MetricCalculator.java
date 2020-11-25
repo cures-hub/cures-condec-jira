@@ -16,7 +16,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -42,7 +41,7 @@ public class MetricCalculator {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
-	public MetricCalculator(ApplicationUser user, IssueType issueType, FilterSettings filterSettings) {
+	public MetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
@@ -117,36 +116,6 @@ public class MetricCalculator {
 			numberMap.put(jiraIssue.getKey(), numberOfComments);
 		}
 		return numberMap;
-	}
-
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type,
-			Integer linkDistance) {
-		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
-
-		Map<String, Integer> numberOfSentencesPerIssue = new HashMap<String, Integer>();
-		for (Issue jiraIssue : jiraIssues) {
-			int numberOfElements = 0;
-			List<KnowledgeElement> elements = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey())
-					.getJiraIssueTextManager().getElementsInJiraIssue(jiraIssue.getId());
-			if (jiraIssue.getIssueType().getName().equals(type.toString())) {
-				numberOfElements++;
-			}
-			for (KnowledgeElement element : elements) {
-				if (element.getType().equals(type)) {
-					numberOfElements++;
-				}
-			}
-			if (linkDistance >= 1 && extractedIssueRelatedElements != null
-					&& extractedIssueRelatedElements.get(jiraIssue.getKey()) != null) {
-				for (KnowledgeElement element : extractedIssueRelatedElements.get(jiraIssue.getKey())) {
-					if (element.getType().equals(type)) {
-						numberOfElements++;
-					}
-				}
-			}
-			numberOfSentencesPerIssue.put(jiraIssue.getKey(), numberOfElements);
-		}
-		return numberOfSentencesPerIssue;
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {

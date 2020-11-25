@@ -14,8 +14,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -27,7 +25,7 @@ public class TestMetricCalculator extends TestSetUp {
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator(user, JiraIssueTypes.getTestTypes().get(2), new FilterSettings("TEST", ""));
+		calculator = new MetricCalculator(user, new FilterSettings("TEST", ""));
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 
@@ -50,12 +48,6 @@ public class TestMetricCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetDistributionOfKnowledgeTypes() {
 		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(10, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE, 2).size());
 	}
 
 	@Test
