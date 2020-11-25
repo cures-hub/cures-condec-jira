@@ -360,6 +360,7 @@ public class ChangedFile extends KnowledgeElement {
 			"py",
 			"vm",
 			"html",
+			"htm",
 			"sh"));
 		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
 	}
