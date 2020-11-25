@@ -17,24 +17,24 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMetricCalculator extends TestSetUpGit {
+public class TestMetricCalculator extends TestSetUp {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TestMetricCalculator.class);
 
 	protected MetricCalculator calculator;
 
-	@Override
 	@Before
 	public void setUp() {
-		super.setUp();
-		ApplicationUser user = de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator((long) 1, user, "alternative", KnowledgeType.toStringList(),
-				KnowledgeStatus.toStringList(), null);
+		init();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		calculator = new MetricCalculator(user, JiraIssueTypes.getTestTypes().get(2), new FilterSettings("TEST", ""));
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 

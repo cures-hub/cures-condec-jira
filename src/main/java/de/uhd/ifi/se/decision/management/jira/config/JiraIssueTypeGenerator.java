@@ -63,11 +63,16 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 		return issueTypeSchemeManager.getIssueTypesForProject(project);
 	}
 
-	public static String getJiraIssueTypeName(String typeId) {
-		if (typeId == null || typeId.equals("")) {
-			return "";
+	public static IssueType getJiraIssueType(String typeId) {
+		if (typeId == null || typeId.isBlank()) {
+			return null;
 		}
 		IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(typeId);
+		return issueType;
+	}
+
+	public static String getJiraIssueTypeName(String typeId) {
+		IssueType issueType = getJiraIssueType(typeId);
 		if (issueType == null) {
 			return "";
 		}

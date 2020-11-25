@@ -14,7 +14,7 @@ public class TestChartCreator {
 
 	@Before
 	public void setUp() {
-		creator = new ChartCreator("TestProject");
+		creator = new ChartCreator();
 	}
 
 	@Test

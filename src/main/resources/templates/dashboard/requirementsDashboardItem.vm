@@ -24,19 +24,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	#parse("templates/dashboard/requirementsDashboardItemFilter.vm")	
 #end
 
-#if (!$projectKey || !$issueTypeId)
+#if (!$projectKey || !$issueType)
 	<div id="condec-req-dashboard-no-project" class="condec-dashboard-contents init">
 		$i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
 	</div>
 #end
 
-#if ($projectKey && $issueTypeId)
+#if ($projectKey && $issueType)
 	#parse("templates/dashboard/requirementsDashboardItemMetrics.vm")
 #end
 
 <script>
 	$(document).ready(function () {		
-		if ("$projectKey" === null || "$projectKey" === undefined) {	
+		if (typeof $projectKey !== "undefined") {	
 			return;
 		}
 		conDecAPI.projectKey = "$projectKey";

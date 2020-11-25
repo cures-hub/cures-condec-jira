@@ -1,5 +1,5 @@
 <div class="condec-dashboard-contents results" id="dynamic-content-general">
-    <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
+    <h1>$i18n.getText("condec.jira.project"): $projectKey</h1>
     <h3>General Metrics:</h3>
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
@@ -20,8 +20,8 @@
 </div>
 
 <div class="condec-dashboard-contents results" id="dynamic-content-basics">
-    <h3>$issueType Completeness Metrics</h3>
-    <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
+    <h3>$issueType.getName() Completeness Metrics</h3>
+    <h4>Metrics for completeness of $issueType.getName() related decision knowledge.</h4>
     <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
