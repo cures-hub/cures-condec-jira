@@ -361,6 +361,7 @@ public class ChangedFile extends KnowledgeElement {
 			"vm",
 			"html",
 			"htm",
+			"php",
 			"sh"));
 		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
 	}
