@@ -12,15 +12,16 @@ import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestMetricCalculator extends TestSetUp {
+public class TestMetricCalculator extends TestSetUpGit {
 
 	protected MetricCalculator calculator;
 
+	@Override
 	@Before
 	public void setUp() {
 		init();
