@@ -37,6 +37,6 @@ public class TestChartCreator {
 
 	@Test
 	public void testGetVelocityParameters() {
-		assertEquals(4, creator.getVelocityParameters().size());
+		assertEquals(2, creator.getVelocityParameters().size());
 	}
 }
