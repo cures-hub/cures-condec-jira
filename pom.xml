@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-core</artifactId>
-			<version>8.5.3</version>
+			<version>1000.30.0</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
