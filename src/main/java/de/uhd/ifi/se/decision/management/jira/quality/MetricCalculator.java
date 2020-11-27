@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.commentmetrics.CommentMetricCalculator;
 
 public class MetricCalculator {
 
@@ -32,6 +33,7 @@ public class MetricCalculator {
 	private List<KnowledgeElement> decisionKnowledgeCommitElements;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
 	private FilterSettings filterSettings;
+	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
 
@@ -51,6 +53,7 @@ public class MetricCalculator {
 				this.decisionKnowledgeCommitElements = null;
 			}
 		}
+		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}
 
 	private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
@@ -97,7 +100,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> numberOfCommentsPerIssue() {
-		return new CommentMetricCalculator(jiraIssues, filterSettings.getProjectKey()).numberOfCommentsPerIssue();
+		return commentMetricCalculator.getNumberOfCommentsPerIssue();
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
@@ -165,7 +168,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfRelevantComments() {
-		return new CommentMetricCalculator(jiraIssues, filterSettings.getProjectKey()).getNumberOfRelevantComments();
+		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
 	public void setJiraIssues(List<Issue> issues) {

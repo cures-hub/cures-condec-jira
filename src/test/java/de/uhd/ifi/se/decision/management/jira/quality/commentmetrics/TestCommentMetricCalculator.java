@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality;
+package de.uhd.ifi.se.decision.management.jira.quality.commentmetrics;
 
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
@@ -19,13 +19,13 @@ public class TestCommentMetricCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		commentMetricCalculator = new CommentMetricCalculator(getTestJiraIssues(), "TEST");
+		commentMetricCalculator = new CommentMetricCalculator(getTestJiraIssues());
 	}
 
 	@Test
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
-		Map<String, Integer> map = commentMetricCalculator.numberOfCommentsPerIssue();
+		Map<String, Integer> map = commentMetricCalculator.getNumberOfCommentsPerIssue();
 		assertEquals(10, map.size());
 	}
 
