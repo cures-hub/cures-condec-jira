@@ -276,7 +276,7 @@
 		<dependency>
 			<groupId>com.github.haifengl</groupId>
 			<artifactId>smile-core</artifactId>
-			<version>1.5.3</version>
+			<version>2.5.3</version>
 		</dependency>
 		<!-- Knowledge Graph of requirements, decision knowledge, code and other artefacts -->
 		<dependency>
