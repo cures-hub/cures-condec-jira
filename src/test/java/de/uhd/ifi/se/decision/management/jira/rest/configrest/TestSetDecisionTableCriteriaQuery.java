@@ -32,12 +32,12 @@ public class TestSetDecisionTableCriteriaQuery extends TestSetUp {
 	@Test
 	public void testRequestValidProjectKeyValidQueryValid() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setDesionTabelCriteriaQuery(request, projectKey, testQuery).getStatus());
+				configRest.setDecisionTableCriteriaQuery(request, projectKey, testQuery).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNullQueryValid() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setDesionTabelCriteriaQuery(request, null, testQuery).getStatus());
+				configRest.setDecisionTableCriteriaQuery(request, null, testQuery).getStatus());
 	}
 }

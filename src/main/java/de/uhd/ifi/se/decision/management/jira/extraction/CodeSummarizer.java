@@ -89,7 +89,7 @@ public class CodeSummarizer {
 			return "";
 		}
 
-		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaClass());
+		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaFile());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
 

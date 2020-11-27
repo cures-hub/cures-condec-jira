@@ -4,11 +4,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.HashSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -285,7 +287,7 @@ public class ChangedFile extends KnowledgeElement {
 	private Set<String> parseMethods() {
 		Set<String> methodsInClass = new LinkedHashSet<String>();
 
-		if (!isExistingJavaClass()) {
+		if (!isExistingJavaFile()) {
 			return methodsInClass;
 		}
 
@@ -322,8 +324,8 @@ public class ChangedFile extends KnowledgeElement {
 	 *         version of the git repository. False means that the file could have
 	 *         been deleted or that its name has been changed or it has been moved.
 	 */
-	public boolean isExistingJavaClass() {
-		return exists() && isJavaClass();
+	public boolean isExistingJavaFile() {
+		return exists() && isJavaFile();
 	}
 
 	public boolean exists() {
@@ -340,8 +342,29 @@ public class ChangedFile extends KnowledgeElement {
 	/**
 	 * @return true if the file is a Java class.
 	 */
-	public boolean isJavaClass() {
+	public boolean isJavaFile() {
 		return getName().endsWith("java");
+	}
+
+	public boolean isCodeFile() {
+		Set<String> codeFileEndings = new HashSet<>(Arrays.asList(
+			"java",
+			"cpp",
+			"c++",
+			"c",
+			"hpp",
+			"h++",
+			"h",
+			"xml",
+			"js",
+			"py",
+			"vm",
+			"html",
+			"htm",
+			"css",
+			"php",
+			"sh"));
+		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
 	}
 
 	public boolean isCorrect() {
