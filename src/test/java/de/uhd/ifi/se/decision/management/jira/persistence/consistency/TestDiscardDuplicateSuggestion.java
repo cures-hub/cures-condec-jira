@@ -1,22 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
 
-import com.atlassian.jira.issue.MutableIssue;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-
-import java.util.List;
-
 import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.addDiscardedDuplicate;
 import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.getDiscardedDuplicates;
 import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.resetDiscardedSuggestions;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+
+import com.atlassian.jira.issue.Issue;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+
 public class TestDiscardDuplicateSuggestion extends TestSetUp implements DiscardSuggestionTester {
-	private List<MutableIssue> issues;
+	private List<Issue> issues;
 
 	@Before
 	public void setUp() {
@@ -37,7 +39,8 @@ public class TestDiscardDuplicateSuggestion extends TestSetUp implements Discard
 		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion one discarded suggestion should exist.", 1, discardedDuplicateSuggestions.size());
 
-		assertEquals("The discarded suggestion should be the inserted issue.", knowledgeElement1, discardedDuplicateSuggestions.get(0));
+		assertEquals("The discarded suggestion should be the inserted issue.", knowledgeElement1,
+				discardedDuplicateSuggestions.get(0));
 
 		long sameId = addDiscardedDuplicate(knowledgeElement0, knowledgeElement1);
 		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
@@ -62,7 +65,7 @@ public class TestDiscardDuplicateSuggestion extends TestSetUp implements Discard
 		addDiscardedDuplicate(knowledgeElement0, null);
 		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion of null as a discarded suggestion, no additional discarded issue should exist.",
-			discardedSuggestionsBeforeNullInsertion, discardedDuplicateSuggestions.size());
+				discardedSuggestionsBeforeNullInsertion, discardedDuplicateSuggestions.size());
 
 	}
 

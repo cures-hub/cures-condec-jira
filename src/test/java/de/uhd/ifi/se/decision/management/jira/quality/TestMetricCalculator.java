@@ -5,8 +5,6 @@ import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElem
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,21 +26,6 @@ public class TestMetricCalculator extends TestSetUpGit {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		calculator = new MetricCalculator(user, new FilterSettings("TEST", ""));
 		calculator.setJiraIssues(getTestJiraIssues());
-	}
-
-	@Test
-	@NonTransactional
-	public void testNumberOfCommentsPerIssue() {
-		Map<String, Integer> map = calculator.numberOfCommentsPerIssue();
-		assertEquals(10, map.size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetNumberOfRelevantComments() {
-		addComment(getTestJiraIssues().get(7));
-		calculator.setJiraIssues(getTestJiraIssues());
-		assertEquals(2, calculator.getNumberOfRelevantComments().size());
 	}
 
 	@Test

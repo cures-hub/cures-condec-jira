@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -12,10 +11,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -26,9 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 public class MetricCalculator {
 
@@ -103,19 +97,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> numberOfCommentsPerIssue() {
-		LOGGER.info("RequirementsDashboard numberOfCommentsPerIssue <1");
-		Map<String, Integer> numberMap = new HashMap<String, Integer>();
-		int numberOfComments;
-		for (Issue jiraIssue : jiraIssues) {
-			try {
-				numberOfComments = ComponentAccessor.getCommentManager().getComments(jiraIssue).size();
-			} catch (NullPointerException e) {
-				LOGGER.error("Getting number of comments for Jira issues failed. Message: " + e.getMessage());
-				numberOfComments = 0;
-			}
-			numberMap.put(jiraIssue.getKey(), numberOfComments);
-		}
-		return numberMap;
+		return new CommentMetricCalculator(jiraIssues, filterSettings.getProjectKey()).numberOfCommentsPerIssue();
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
@@ -183,38 +165,12 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfRelevantComments() {
-		LOGGER.info("RequirementsDashboard getNumberOfRelevantComments 3");
-		Map<String, Integer> numberOfRelevantSentences = new LinkedHashMap<String, Integer>();
-		int isRelevant = 0;
-		int isIrrelevant = 0;
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(filterSettings.getProjectKey()).getJiraIssueTextManager();
-		for (Issue jiraIssue : jiraIssues) {
-			List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-			List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
-			for (Comment comment : comments) {
-				boolean relevant = false;
-				for (KnowledgeElement currentElement : elements) {
-					if (comment.getBody().contains(currentElement.getDescription())
-							&& currentElement.getType() == KnowledgeType.OTHER) {
-						relevant = true;
-						isRelevant++;
-					}
-				}
-				if (!relevant) {
-					isIrrelevant++;
-				}
-			}
-		}
-		numberOfRelevantSentences.put("Relevant Comment", isRelevant);
-		numberOfRelevantSentences.put("Irrelevant Comment", isIrrelevant);
-		return numberOfRelevantSentences;
+		return new CommentMetricCalculator(jiraIssues, filterSettings.getProjectKey()).getNumberOfRelevantComments();
 	}
 
-	public void setJiraIssues(List<MutableIssue> issues) {
+	public void setJiraIssues(List<Issue> issues) {
 		jiraIssues = new ArrayList<>();
-		for (MutableIssue issue : issues) {
+		for (Issue issue : issues) {
 			jiraIssues.add(issue);
 		}
 	}
