@@ -36,7 +36,7 @@ public class RationaleCompletenessDashboardItem implements ContextProvider {
 		newContext.put("projects",
 				DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(loggedUser));
 
-		HttpServletRequest request = RequirementsDashboardItem.getHttpRequest();
+		HttpServletRequest request = GeneralMetricsDashboardItem.getHttpRequest();
 		String projectKey = "";
 		if (request != null) {
 			projectKey = request.getParameter("project");

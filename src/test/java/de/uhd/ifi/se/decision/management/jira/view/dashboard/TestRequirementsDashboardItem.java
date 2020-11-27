@@ -17,12 +17,12 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRequirementsDashboardItem extends TestSetUp {
 
-	private RequirementsDashboardItem dashboardItem;
+	private GeneralMetricsDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
 		init();
-		dashboardItem = new RequirementsDashboardItem();
+		dashboardItem = new GeneralMetricsDashboardItem();
 	}
 
 	@Test

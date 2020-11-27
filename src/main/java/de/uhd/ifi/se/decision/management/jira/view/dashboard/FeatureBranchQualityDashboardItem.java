@@ -42,7 +42,7 @@ public class FeatureBranchQualityDashboardItem implements ContextProvider {
 			}
 		}
 		newContext.put("projectsWithGit", accessableProjectsWithGitRepo);
-		HttpServletRequest request = RequirementsDashboardItem.getHttpRequest();
+		HttpServletRequest request = GeneralMetricsDashboardItem.getHttpRequest();
 		if (request != null) {
 			String projectKey = request.getParameter("project");
 			newContext.put("projectKey", projectKey);

@@ -15,11 +15,9 @@ import com.google.common.collect.Maps;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
-public class RequirementsDashboardItem implements ContextProvider {
+public class GeneralMetricsDashboardItem implements ContextProvider {
 
 	public ApplicationUser loggedUser;
 
@@ -62,33 +60,12 @@ public class RequirementsDashboardItem implements ContextProvider {
 		}
 		ChartCreator chartCreator = new ChartCreator();
 		addGeneralMetricCharts(chartCreator, filterSettings);
-		if (issueType != null) {
-			addRationaleCoverageCharts(chartCreator, issueType, filterSettings);
-		}
 		newContext.putAll(chartCreator.getVelocityParameters());
 		return newContext;
 	}
 
 	public static HttpServletRequest getHttpRequest() {
 		return com.atlassian.jira.web.ExecutingHttpRequest.get();
-	}
-
-	private void addRationaleCoverageCharts(ChartCreator chartCreator, IssueType jiraIssueType,
-			FilterSettings filterSettings) {
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(loggedUser,
-				filterSettings);
-		chartCreator.addChart("#Decisions per Jira Issue", "boxplot-DecisionsPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
-		chartCreator.addChart("#Issues per Jira Issue", "boxplot-IssuesPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
-		chartCreator.addChartWithIssueContent(
-				"For how many " + jiraIssueType.getName() + " types is an issue documented?",
-				"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
-		chartCreator.addChartWithIssueContent(
-				"For how many " + jiraIssueType.getName() + " types is a decision documented?",
-				"piechartRich-IssueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-						.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
 	}
 
 	private void addGeneralMetricCharts(ChartCreator chartCreator, FilterSettings filterSettings) {
