@@ -19,9 +19,6 @@
 }
 
 .condec-dashboard-contents.results {
-    border: 1px solid grey;
-    margin: 1em;
-    padding: 1em;
     min-height: 400px;
 }
 

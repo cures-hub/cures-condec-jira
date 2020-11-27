@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.MetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
 public class RequirementsDashboardItem implements ContextProvider {
@@ -62,7 +61,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 			filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
 		}
 		ChartCreator chartCreator = new ChartCreator();
-		addRationaleCompletenessCharts(chartCreator, filterSettings);
 		addGeneralMetricCharts(chartCreator, filterSettings);
 		if (issueType != null) {
 			addRationaleCoverageCharts(chartCreator, issueType, filterSettings);
@@ -73,32 +71,6 @@ public class RequirementsDashboardItem implements ContextProvider {
 
 	public static HttpServletRequest getHttpRequest() {
 		return com.atlassian.jira.web.ExecutingHttpRequest.get();
-	}
-
-	private void addRationaleCompletenessCharts(ChartCreator chartCreator, FilterSettings filterSettings) {
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
-				filterSettings);
-		chartCreator.addChartWithIssueContent("How many issues (=decision problems) are solved by a decision?",
-				"piechartRich-IssuesSolvedByDecision", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
-		chartCreator.addChartWithIssueContent("For how many decisions is the issue (=decision problem) documented?",
-				"piechartRich-DecisionsSolvingIssues", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE));
-		chartCreator.addChartWithIssueContent("How many alternatives have at least one pro argument documented?",
-				"piechartRich-ProArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
-		chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
-				"piechartRich-ConArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
-		chartCreator.addChartWithIssueContent("How many alternatives have at least one con argument documented?",
-				"piechartRich-ConArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
-		chartCreator.addChartWithIssueContent("How many decisions have at least one pro argument documented?",
-				"piechartRich-ProArgumentDocumentedForDecision", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.PRO));
-		chartCreator.addChartWithIssueContent("How many decisions have at least one con argument documented?",
-				"piechartRich-ConArgumentDocumentedForDecision", rationaleCompletenessCalculator
-						.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.CON));
 	}
 
 	private void addRationaleCoverageCharts(ChartCreator chartCreator, IssueType jiraIssueType,

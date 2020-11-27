@@ -551,4 +551,24 @@
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RequirementsDashboardItem" />
 	</dashboard-item>
+	
+	<dashboard-item key="condec-rationale-completeness-dashboard-item"
+		name="ConDec Dashboard for Intra-Rationale Completeness">
+		<definition>
+			<title>ConDec Intra-Rationale Completeness</title>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description>Shows metrics to assess the intra-rationale completeness.</description>
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/rationaleCompleteness.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
+	</dashboard-item>
 </atlassian-plugin>

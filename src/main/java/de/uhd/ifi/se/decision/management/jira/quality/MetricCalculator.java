@@ -117,17 +117,9 @@ public class MetricCalculator {
 		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
 		Map<String, Integer> summaryMap = new HashMap<String, Integer>();
 		int numberOfRequirements = 0;
+		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
 		for (Issue issue : jiraIssues) {
-			// Temporary Solution until Settings are available
-			if (issue.getIssueType().getName().equals("System Function")
-					|| issue.getIssueType().getName().equals("Nonfunctional Requirement")
-					|| issue.getIssueType().getName().equals("Persona")
-					|| issue.getIssueType().getName().equals("Usertask")
-					|| issue.getIssueType().getName().equals("Subtask")
-					|| issue.getIssueType().getName().equals("User Role")
-					|| issue.getIssueType().getName().equals("Quality Requirement")
-					|| issue.getIssueType().getName().equals("Story") || issue.getIssueType().getName().equals("Epic")
-					|| issue.getIssueType().getName().equals("Workspace")) {
+			if (requirementsTypes.contains(issue.getIssueType().getName())) {
 				numberOfRequirements++;
 			}
 		}
