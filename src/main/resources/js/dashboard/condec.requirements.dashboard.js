@@ -32,8 +32,29 @@
 
     ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
         isIssueData = true;
-        this.initializeChartForSources(divId, title, subtitle, dataMap);
+        this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
     }
+    
+    /** @issue How to convert a velocity map into a Javascript map?
+	  * @decision Do a manual conversion from a velocity map into a Javascript map!
+	  * @con Not very elegant at all.
+	  * @alternative Directly use velocity maps in Javascript.
+	  * @con It is not possible to use velocity maps in Javascript.
+	  */	
+	function getMap(velocityMapAsString) {
+		// removes brackets
+		velocityMapAsString = velocityMapAsString.replace("\{", "").replace("\}", "");
+		
+		var jsMap = new Map();
+		var mapEntries = velocityMapAsString.split(", ");
+		for (i = 0; i < mapEntries.length; i++) {
+			var mapEntry = mapEntries[i].split("=");
+			console.log(mapEntry);
+			jsMap.set(mapEntry[0], mapEntry[1]);
+		}
+		console.log(jsMap);
+		return jsMap;
+	}
 
     /* used by branch dashboard item featureBranchesDashboardItem.vm */
     ConDecReqDash.prototype.initializeChartForBranchSource = function (divId, title, subtitle, dataMap) {
