@@ -17,14 +17,14 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestMetricCalculator extends TestSetUpGit {
 
-	protected MetricCalculator calculator;
+	protected GeneralMetricCalculator calculator;
 
 	@Override
 	@Before
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new MetricCalculator(user, new FilterSettings("TEST", ""));
+		calculator = new GeneralMetricCalculator(user, new FilterSettings("TEST", ""));
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 

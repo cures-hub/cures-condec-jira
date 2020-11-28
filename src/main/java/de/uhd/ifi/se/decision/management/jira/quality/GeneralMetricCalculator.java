@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.commentmetrics.CommentMetricCalculator;
 
-public class MetricCalculator {
+public class GeneralMetricCalculator {
 
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
@@ -35,9 +35,9 @@ public class MetricCalculator {
 	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public MetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
@@ -104,7 +104,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
-		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes <1");
+		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			List<KnowledgeElement> elements = graph.getElements(type);
