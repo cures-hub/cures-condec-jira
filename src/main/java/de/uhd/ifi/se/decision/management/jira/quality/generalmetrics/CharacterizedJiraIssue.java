@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetrics;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.commentmetrics.CommentMetricCalculator;
 
 public class GeneralMetricCalculator {
 
@@ -90,7 +89,7 @@ public class GeneralMetricCalculator {
 			List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
 					lastFeatureBranchCommit,
 					GitClient.getOrCreate(filterSettings.getProjectKey()).getBranches().get(0));
-			allGatheredCommitElements.addAll(extractedCodeElements);
+			allGatheredCodeElements.addAll(extractedCodeElements);
 		}
 
 		resultMap.put("Commit", allGatheredCommitElements);

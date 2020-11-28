@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;

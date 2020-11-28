@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.quality.GeneralMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
 
 public class GeneralMetricsDashboardItem extends ConDecDashboardItem {
 
