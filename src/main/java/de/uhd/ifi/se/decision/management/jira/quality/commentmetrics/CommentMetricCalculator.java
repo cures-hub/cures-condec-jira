@@ -47,4 +47,11 @@ public class CommentMetricCalculator {
 		return commentRelevanceMap;
 	}
 
+	public Map<String, Integer> getNumberOfCommitsPerIssue() {
+		LOGGER.info("CommentMetricCalculator numberOfCommitsPerIssue");
+		Map<String, Integer> numberOfCommitsPerJiraIssue = new HashMap<String, Integer>();
+		characterizedJiraIssues.forEach(
+				jiraIssue -> numberOfCommitsPerJiraIssue.put(jiraIssue.getKey(), jiraIssue.getNumberOfCommits()));
+		return numberOfCommitsPerJiraIssue;
+	}
 }

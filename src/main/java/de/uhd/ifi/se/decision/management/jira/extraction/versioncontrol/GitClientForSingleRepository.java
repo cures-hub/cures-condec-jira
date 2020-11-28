@@ -172,7 +172,7 @@ public class GitClientForSingleRepository {
 
 	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
-		defaultBranchCommits.addAll(newCommits);
+		getDefaultBranchCommits().addAll(newCommits);
 		if (newCommits.isEmpty()) {
 			return new Diff();
 		}

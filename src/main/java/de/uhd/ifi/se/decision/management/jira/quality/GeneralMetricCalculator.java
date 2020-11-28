@@ -163,6 +163,13 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
+	public Map<String, Integer> getNumberOfCommits() {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
+			return new HashMap<>();
+		}
+		return commentMetricCalculator.getNumberOfCommitsPerIssue();
+	}
+
 	public void setJiraIssues(List<Issue> issues) {
 		jiraIssues = new ArrayList<>();
 		for (Issue issue : issues) {

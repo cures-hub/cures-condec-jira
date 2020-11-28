@@ -13,6 +13,8 @@ public class GeneralMetricsDashboardItem extends ConDecDashboardItem {
 		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings);
 
 		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
+		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
+
 		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
 		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
 		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getKnowledgeSourceCount());

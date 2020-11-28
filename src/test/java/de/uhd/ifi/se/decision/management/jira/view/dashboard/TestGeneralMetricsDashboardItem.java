@@ -26,7 +26,7 @@ public class TestGeneralMetricsDashboardItem extends TestSetUp {
 	@NonTransactional
 	public void testGetMetrics() {
 		Map<String, Object> metricsMap = dashboardItem.getMetrics();
-		assertEquals(5, metricsMap.size());
+		assertEquals(6, metricsMap.size());
 	}
 
 	@Test
