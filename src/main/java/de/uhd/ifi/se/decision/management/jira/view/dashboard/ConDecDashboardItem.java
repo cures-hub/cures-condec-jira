@@ -50,6 +50,7 @@ public class ConDecDashboardItem implements ContextProvider {
 		newContext.put("issueType", jiraIssueType);
 		newContext.put("jiraIssueTypes", JiraIssueTypeGenerator.getJiraIssueTypes(projectKey));
 		newContext.put("jiraBaseUrl", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL));
+
 		if (projectKey == null || projectKey.isBlank()) {
 			List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
 			newContext.put("projects", projects);

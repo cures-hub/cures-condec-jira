@@ -13,7 +13,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 
-	private FeatureBranchQualityDashboardItem dashboardItem;
+	private ConDecDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
@@ -27,5 +27,13 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 		Map<String, Object> contextMap = dashboardItem.getContextMap(new HashMap<String, Object>());
 		// 5 because of additional projectsWithGit lists
 		assertEquals(5, contextMap.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetMetrics() {
+		Map<String, Object> metricsMap = dashboardItem.getMetrics();
+		// metrics are accessed via REST API
+		assertEquals(0, metricsMap.size());
 	}
 }
