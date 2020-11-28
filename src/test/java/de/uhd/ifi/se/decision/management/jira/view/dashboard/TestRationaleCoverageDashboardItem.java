@@ -9,24 +9,34 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestRationaleCompletenessDashboardItem extends TestSetUp {
+public class TestRationaleCoverageDashboardItem extends TestSetUp {
 
 	private ConDecDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
 		init();
-		dashboardItem = new RationaleCompletenessDashboardItem();
+		dashboardItem = new RationaleCoverageDashboardItem();
 		dashboardItem.filterSettings = new FilterSettings("TEST", "");
+		dashboardItem.jiraIssueType = JiraIssueTypes.getTestTypes().get(0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetMetrics() {
 		Map<String, Object> metricsMap = dashboardItem.getMetrics();
-		assertEquals(6, metricsMap.size());
+		assertEquals(4, metricsMap.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetMetricsJiraIssueTypeNull() {
+		dashboardItem.jiraIssueType = null;
+		Map<String, Object> metricsMap = dashboardItem.getMetrics();
+		assertEquals(0, metricsMap.size());
 	}
 
 	@Test
@@ -35,5 +45,4 @@ public class TestRationaleCompletenessDashboardItem extends TestSetUp {
 		Map<String, Object> additionalParameters = dashboardItem.getAdditionalParameters();
 		assertEquals(0, additionalParameters.size());
 	}
-
 }
