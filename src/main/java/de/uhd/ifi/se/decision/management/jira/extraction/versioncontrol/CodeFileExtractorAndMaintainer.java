@@ -54,7 +54,7 @@ public class CodeFileExtractorAndMaintainer {
 
 	private void extractAllChangedFiles(Diff diff) {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (changedFile.isJavaClass()) {
+			if (changedFile.isCodeFile()) {
 				codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
 			}
 		}
@@ -94,7 +94,7 @@ public class CodeFileExtractorAndMaintainer {
 	 *            {@link ChangedFile} object.
 	 */
 	public void addUpdateOrDeleteChangedFileInDatabase(ChangedFile changedFile) {
-		if (!changedFile.isJavaClass()) {
+		if (!changedFile.isCodeFile()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();
