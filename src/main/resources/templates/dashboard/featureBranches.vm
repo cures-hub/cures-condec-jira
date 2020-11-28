@@ -71,9 +71,9 @@ $(document).ready(function() {
 
 #if ($projectKey)
 	<script>
-	$(document).ready(function() {
-		selectNode.value = "$projectKey";  
+	$(document).ready(function() {		
 		conDecBranchesDashboard.init("$projectKey");	
+		selectNode.value = "$projectKey";  
 	});
 	</script>
 #end	

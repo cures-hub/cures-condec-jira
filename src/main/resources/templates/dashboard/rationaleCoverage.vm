@@ -28,6 +28,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>	    
     <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
 </div>
+#parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
 	$(document).ready(function () {	
