@@ -25,7 +25,7 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 	@NonTransactional
 	public void testGetContextMap() {
 		Map<String, Object> contextMap = dashboardItem.getContextMap(new HashMap<String, Object>());
-		// 2 because of projects and projectsWithGit lists
-		assertEquals(2, contextMap.size());
+		// 5 because of additional projectsWithGit lists
+		assertEquals(5, contextMap.size());
 	}
 }
