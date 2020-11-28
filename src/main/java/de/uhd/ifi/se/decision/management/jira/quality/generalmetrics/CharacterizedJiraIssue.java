@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetrics;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.List;
 
@@ -6,7 +6,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -16,15 +18,16 @@ public class CharacterizedJiraIssue {
 	private Issue jiraIssue;
 	private int numberOfRelevantComments;
 	private int numberOfIrrelevantComment;
+	private int numberOfCommits;
 
 	public CharacterizedJiraIssue(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
 		comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		numberOfRelevantComments = 0;
-		numberOfIrrelevantComment = 0;
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(jiraIssue.getProjectObject().getKey()).getJiraIssueTextManager();
+		String projectKey = jiraIssue.getProjectObject().getKey();
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
 		for (Comment comment : comments) {
 			List<PartOfJiraIssueText> elements = persistenceManager.getElementsInComment(comment.getId());
 			if (elements.isEmpty()) {
@@ -33,6 +36,11 @@ public class CharacterizedJiraIssue {
 				numberOfRelevantComments++;
 			}
 		}
+
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			numberOfCommits = GitClient.getOrCreate(projectKey).getNumberOfCommitsOnDefaultBranches(jiraIssue);
+		}
+
 	}
 
 	public Integer getNumberOfComments() {
@@ -49,5 +57,9 @@ public class CharacterizedJiraIssue {
 
 	public int getNumberOfRelevantComments() {
 		return numberOfRelevantComments;
+	}
+
+	public int getNumberOfCommits() {
+		return numberOfCommits;
 	}
 }

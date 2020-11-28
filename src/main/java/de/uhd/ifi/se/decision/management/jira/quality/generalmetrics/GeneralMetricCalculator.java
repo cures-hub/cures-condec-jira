@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.commentmetrics.CommentMetricCalculator;
 
-public class MetricCalculator {
+public class GeneralMetricCalculator {
 
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
@@ -35,9 +34,9 @@ public class MetricCalculator {
 	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(MetricCalculator.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public MetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
@@ -90,7 +89,7 @@ public class MetricCalculator {
 			List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
 					lastFeatureBranchCommit,
 					GitClient.getOrCreate(filterSettings.getProjectKey()).getBranches().get(0));
-			allGatheredCommitElements.addAll(extractedCodeElements);
+			allGatheredCodeElements.addAll(extractedCodeElements);
 		}
 
 		resultMap.put("Commit", allGatheredCommitElements);
@@ -104,7 +103,7 @@ public class MetricCalculator {
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
-		LOGGER.info("RequirementsDashboard getDistributionOfKnowledgeTypes <1");
+		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			List<KnowledgeElement> elements = graph.getElements(type);
@@ -161,6 +160,13 @@ public class MetricCalculator {
 
 	public Map<String, Integer> getNumberOfRelevantComments() {
 		return commentMetricCalculator.getNumberOfRelevantComments();
+	}
+
+	public Map<String, Integer> getNumberOfCommits() {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
+			return new HashMap<>();
+		}
+		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
 	public void setJiraIssues(List<Issue> issues) {

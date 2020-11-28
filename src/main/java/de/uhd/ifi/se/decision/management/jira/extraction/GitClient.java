@@ -330,13 +330,14 @@ public class GitClient {
 	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
-	 * @return number of commits with the Jira issue key in their commit message.
+	 * @return number of commits with the Jira issue key in their commit message on
+	 *         the default branch.
 	 */
-	public int getNumberOfCommits(Issue jiraIssue) {
+	public int getNumberOfCommitsOnDefaultBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return 0;
 		}
-		List<RevCommit> commits = getCommits(jiraIssue);
+		List<RevCommit> commits = getDefaultBranchCommits(jiraIssue, false);
 		return commits.size();
 	}
 
@@ -361,16 +362,32 @@ public class GitClient {
 	 * @param jiraIssue
 	 *            such as work item/development task/requirements that key was
 	 *            mentioned in the commit messages.
+	 * @param areCommitsSortedByTime
+	 *            true if commits should be sorted by time (oldest commits come
+	 *            first!)
 	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
 	 *         list is sorted by committing time: oldest commits come first.
 	 */
-	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue, boolean areCommitsSortedByTime) {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
 		}
-		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		if (areCommitsSortedByTime) {
+			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		}
 		return commits;
+	}
+
+	/**
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
+	 *         list is sorted by committing time: oldest commits come first.
+	 */
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
+		return getDefaultBranchCommits(jiraIssue, true);
 	}
 
 	/**

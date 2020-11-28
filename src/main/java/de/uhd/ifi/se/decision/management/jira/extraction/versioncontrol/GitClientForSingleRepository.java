@@ -142,8 +142,8 @@ public class GitClientForSingleRepository {
 				ObjectId oldId = getDefaultBranchPosition();
 				UsernamePasswordCredentialsProvider credentialsProvider = gitRepositoryConfiguration
 						.getCredentialsProvider();
-				FetchCommand fetchCommand = git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs())
-						.setRemoveDeletedRefs(true);
+				FetchCommand fetchCommand = git.fetch().setRemote(remote.getName())
+						.setRefSpecs(remote.getFetchRefSpecs()).setRemoveDeletedRefs(true);
 				if (credentialsProvider != null) {
 					fetchCommand.setCredentialsProvider(credentialsProvider);
 				}
@@ -172,6 +172,7 @@ public class GitClientForSingleRepository {
 
 	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
+		getDefaultBranchCommits().addAll(newCommits);
 		if (newCommits.isEmpty()) {
 			return new Diff();
 		}

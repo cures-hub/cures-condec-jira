@@ -11,14 +11,14 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestRationaleCompletenessDashboardItem extends TestSetUp {
+public class TestGeneralMetricsDashboardItem extends TestSetUp {
 
 	private ConDecDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
 		init();
-		dashboardItem = new RationaleCompletenessDashboardItem();
+		dashboardItem = new GeneralMetricsDashboardItem();
 		dashboardItem.filterSettings = new FilterSettings("TEST", "");
 	}
 

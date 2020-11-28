@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.commentmetrics;
+package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,4 +47,11 @@ public class CommentMetricCalculator {
 		return commentRelevanceMap;
 	}
 
+	public Map<String, Integer> getNumberOfCommitsPerIssue() {
+		LOGGER.info("CommentMetricCalculator numberOfCommitsPerIssue");
+		Map<String, Integer> numberOfCommitsPerJiraIssue = new HashMap<String, Integer>();
+		characterizedJiraIssues.forEach(
+				jiraIssue -> numberOfCommitsPerJiraIssue.put(jiraIssue.getKey(), jiraIssue.getNumberOfCommits()));
+		return numberOfCommitsPerJiraIssue;
+	}
 }

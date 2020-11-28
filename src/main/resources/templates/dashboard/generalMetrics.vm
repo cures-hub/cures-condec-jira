@@ -11,6 +11,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <div class="condec-dashboard-contents results" id="dynamic-content-general">
     <h3>General Metrics</h3>
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
+	<div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
     <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
     <div id="piechartInteger-DecSources" class="piechart"></div>
 	<div id="piechartInteger-RelevantSentences" class="piechart"></div>
@@ -19,20 +20,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-	$(document).ready(function () {			
-		// initialize charts
-		#set($title="")
-		#foreach ($name in $chartNamesAndPurpose.keySet())
-			#set($purpose=$chartNamesAndPurpose.get("$name"))
-			#set($data=$chartNamesAndData.get("$name"))
-			dataMap = new Map();
-			#foreach ($dataName in $data.keySet())
-				dataMap.set("$dataName", "$data.get("$dataName")");
-			#end
-			ConDecReqDash.initializeChart("$name", "$title", "$purpose", dataMap);
-		#end
-    	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
-		ConDecReqDash.init();
+	$(document).ready(function () {
+		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue", 
+			"", "#Comments per Jira Issue", "$numberOfCommentsPerJiraIssue");
+		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue", 
+			"", "#Commits per Jira Issue", "$numberOfCommitsPerJiraIssue");
+		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary", 
+			"", "Distribution of Knowledge Types", "$distributionOfKnowledgeTypes");
+		ConDecReqDash.initializeChart("piechartInteger-DecSources", 
+			"", "#Requirements and Code Classes", "$requirementsAndCodeFiles");
+		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences", 
+			"", "#Elements from Documentation Locations", "$numberOfElementsPerDocumentationLocation");
+		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution", 
+			"", "Comments in Jira Issues relevant to Decision Knowledge", "$numberOfRelevantComments");	
 	});
 </script>
 #end
