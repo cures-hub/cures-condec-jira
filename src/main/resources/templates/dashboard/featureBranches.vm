@@ -65,6 +65,15 @@ $(document).ready(function() {
         conDecBranchesDashboard.init(projectKey);
     }
     selectNode = document.getElementById("condec-dashboard-item-project-selection");
-    selectNode.addEventListener("change", projectSelectOrOnChange);
+	selectNode.addEventListener("change", projectSelectOrOnChange);	
 });
 </script>
+
+#if ($projectKey)
+	<script>
+	$(document).ready(function() {		
+		conDecBranchesDashboard.init("$projectKey");	
+		selectNode.value = "$projectKey";  
+	});
+	</script>
+#end	

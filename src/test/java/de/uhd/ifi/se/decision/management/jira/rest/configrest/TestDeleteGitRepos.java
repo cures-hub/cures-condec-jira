@@ -19,6 +19,7 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
+	@Override
 	@Before
 	public void setUp() {
 		init();

@@ -407,6 +407,17 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		return getIssuesMatchingQuery(user, query);
+	}
+
+	public static List<Issue> getAllJiraIssuesForProjectAndType(ApplicationUser user, String projectKey,
+			IssueType jiraIssueType) {
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		Query query = jqlClauseBuilder.project(projectKey).and().issueType(jiraIssueType.getName()).buildQuery();
+		return getIssuesMatchingQuery(user, query);
+	}
+
+	private static List<Issue> getIssuesMatchingQuery(ApplicationUser user, Query query) {
 		SearchResults<Issue> searchResult = null;
 		try {
 			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);

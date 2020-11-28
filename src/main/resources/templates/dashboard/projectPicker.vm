@@ -1,0 +1,17 @@
+<div class="condec-dashboard-contents filtering" id="configproject">
+    <form class="aui" id="configFormProject">
+        <div class="field-group">
+            <label for="project-input">Project:</label>
+            <select name="project" id="project-input" class="select long-field">
+                #foreach($project in $projects)
+                    <option value=$project.getKey()
+					#if ($projectKey && $projectKey.equalsIgnoreCase($project.getKey()))
+						selected
+					#end	
+					>$project.getKey() - $project.getName()</option>
+                #end
+            </select>
+            <input class="aui-button" type="submit" value="Select project" id="select-button">
+        </div>
+    </form>
+</div>

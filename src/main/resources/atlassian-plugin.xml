@@ -527,15 +527,15 @@
 		</definition>
 		<description key="condec.dashboard.featurebranch.description" />
 		<resource name="view" type="velocity"
-			location="/templates/dashboard/featureBranchesDashboardItem.vm" />
+			location="/templates/dashboard/featureBranches.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
 	</dashboard-item>
 
-	<dashboard-item key="condec-requirements-dashboard-item"
-		name="ConDec Dashboard for Project Requirements">
+	<dashboard-item key="condec-general-metrics-dashboard-item"
+		name="ConDec Dashboard for General Metrics">
 		<definition>
-			<title key="condec.dashboard.requirements.title" />
+			<title>ConDec General Metrics</title>
 			<categories>
 				<category>Jira</category>
 			</categories>
@@ -547,8 +547,48 @@
 		</definition>
 		<description key="condec.dashboard.requirements.description" />
 		<resource name="view" type="velocity"
-			location="/templates/dashboard/requirementsDashboardItem.vm" />
+			location="/templates/dashboard/generalMetrics.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RequirementsDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
+	</dashboard-item>
+	
+	<dashboard-item key="condec-rationale-completeness-dashboard-item"
+		name="ConDec Dashboard for Intra-Rationale Completeness">
+		<definition>
+			<title>ConDec Intra-Rationale Completeness Metrics</title>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description>Shows metrics to assess the intra-rationale completeness.</description>
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/rationaleCompleteness.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
+	</dashboard-item>
+	
+	<dashboard-item key="condec-rationale-coverage-dashboard-item"
+		name="ConDec Dashboard for Rationale Coverage">
+		<definition>
+			<title>ConDec Rationale Coverage Metrics</title>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+		<description>Shows metrics to assess the rationale coverage of requirements and code.</description>
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/rationaleCoverage.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
 	</dashboard-item>
 </atlassian-plugin>

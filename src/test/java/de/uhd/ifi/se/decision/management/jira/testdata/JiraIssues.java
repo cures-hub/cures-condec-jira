@@ -29,17 +29,17 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  */
 public class JiraIssues {
 
-	public static List<MutableIssue> jiraIssues = new ArrayList<MutableIssue>();
+	public static List<Issue> jiraIssues = new ArrayList<Issue>();
 
-	public static List<MutableIssue> getTestJiraIssues() {
+	public static List<Issue> getTestJiraIssues() {
 		if (jiraIssues == null || jiraIssues.isEmpty()) {
 			jiraIssues = createJiraIssues(JiraProjects.TEST.createJiraProject(1));
 		}
 		return jiraIssues;
 	}
 
-	public static List<MutableIssue> createJiraIssues(Project project) {
-		List<MutableIssue> jiraIssues = new ArrayList<MutableIssue>();
+	public static List<Issue> createJiraIssues(Project project) {
+		List<Issue> jiraIssues = new ArrayList<Issue>();
 
 		if (project == null) {
 			return jiraIssues;

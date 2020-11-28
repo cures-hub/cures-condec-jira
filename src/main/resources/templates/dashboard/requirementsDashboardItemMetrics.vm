@@ -1,6 +1,5 @@
 <div class="condec-dashboard-contents results" id="dynamic-content-general">
-    <h1>$i18n.getText("condec.jira.project"): $projectName</h1>
-    <h3>General Metrics:</h3>
+    <h3>General Metrics</h3>
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
@@ -8,24 +7,10 @@
     <div id="piechartInteger-DecSources" class="piechart"></div>
 </div>
 
-<div class="condec-dashboard-contents results" id="dynamic-content-completeness">
-    <h3>Rationale Completeness Metrics</h3>
-    <h4>Metrics for completeness of decision knowledge across all Jira issues.</h4>
-    <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
-    <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
-</div>
-
 <div class="condec-dashboard-contents results" id="dynamic-content-basics">
-    <h3>$issueType Completeness Metrics</h3>
-    <h4>Metrics for completeness of $issueType related decision knowledge.</h4>
+    <h3>Rationale Coverage for Jira Issues of Type "$issueType.getName()"</h3>
     <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
 </div>
-
-#parse("templates/dashboard/navigationOverlay.vm")

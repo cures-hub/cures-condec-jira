@@ -10,6 +10,7 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.StatusManager;
 import com.atlassian.jira.config.util.JiraHome;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
@@ -102,8 +103,8 @@ public class MockComponentAccessor extends ComponentAccessor {
 
 	public IssueManager initIssueManager() {
 		MockIssueManager issueManager = new MockIssueManager();
-		for (MutableIssue jiraIssue : JiraIssues.getTestJiraIssues()) {
-			issueManager.addIssue(jiraIssue);
+		for (Issue jiraIssue : JiraIssues.getTestJiraIssues()) {
+			issueManager.addIssue((MutableIssue) jiraIssue);
 		}
 		return issueManager;
 	}

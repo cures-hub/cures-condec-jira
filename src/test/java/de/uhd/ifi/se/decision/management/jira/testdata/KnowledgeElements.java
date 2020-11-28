@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
@@ -25,7 +24,7 @@ public class KnowledgeElements {
 
 	private static List<KnowledgeElement> createKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
-		List<MutableIssue> jiraIssues = JiraIssues.getTestJiraIssues();
+		List<Issue> jiraIssues = JiraIssues.getTestJiraIssues();
 		for (Issue jiraIssue : jiraIssues) {
 			elements.add(new KnowledgeElement(jiraIssue));
 		}

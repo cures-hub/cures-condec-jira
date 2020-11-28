@@ -273,4 +273,19 @@ public enum KnowledgeType {
 	public String getColor() {
 		return color;
 	}
+
+	public static List<String> getRequirementsTypes() {
+		List<String> requirementsTypes = new ArrayList<>();
+		requirementsTypes.add("System Function");
+		requirementsTypes.add("Nonfunctional Requirement");
+		requirementsTypes.add("Persona");
+		requirementsTypes.add("Usertask");
+		requirementsTypes.add("Subtask");
+		requirementsTypes.add("User Role");
+		requirementsTypes.add("Quality Requirement");
+		requirementsTypes.add("Story");
+		requirementsTypes.add("Epic");
+		requirementsTypes.add("Workspace");
+		return requirementsTypes;
+	}
 }

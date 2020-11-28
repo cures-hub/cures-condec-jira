@@ -1,0 +1,50 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+
+#if (!$projectKey)	
+	#parse("templates/dashboard/projectPicker.vm")	
+#end
+
+#if ($projectKey)	
+	#parse("templates/dashboard/requirementsDashboardItemFilter.vm")
+	<script>
+	$(document).ready(function () {	
+		conDecAPI.projectKey = "$projectKey";
+		conDecFiltering.fillFilterElements("requirements-dashboard");
+	});
+</script>
+#end
+
+#if (!$projectKey || !$issueType)
+	#parse("templates/dashboard/noProjectSelected.vm")
+#end
+
+#if ($projectKey && $issueType)
+<div class="condec-dashboard-contents results" id="dynamic-content-basics">
+    <h3>Rationale Coverage for Jira Issues of Type "$issueType.getName()"</h3>
+	<div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+	<div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>	    
+    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
+</div>
+#parse("templates/dashboard/navigationOverlay.vm")
+
+<script>
+	$(document).ready(function () {	
+		// initialize charts
+		#set($title="")
+		#foreach ($name in $chartNamesAndPurpose.keySet())
+			#set($purpose=$chartNamesAndPurpose.get("$name"))
+			#set($data=$chartNamesAndData.get("$name"))
+			dataMap = new Map();
+			#foreach ($dataName in $data.keySet())
+				dataMap.set("$dataName", "$data.get("$dataName")");
+			#end
+			ConDecReqDash.initializeChart("$name", "$title", "$purpose", dataMap);
+		#end
+    	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl")
+		ConDecReqDash.init();
+	});
+</script>
+#end

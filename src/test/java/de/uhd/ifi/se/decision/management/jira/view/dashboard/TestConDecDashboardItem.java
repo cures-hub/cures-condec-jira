@@ -15,14 +15,14 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestRequirementsDashboardItem extends TestSetUp {
+public class TestConDecDashboardItem extends TestSetUp {
 
-	private RequirementsDashboardItem dashboardItem;
+	private ConDecDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
 		init();
-		dashboardItem = new RequirementsDashboardItem();
+		dashboardItem = new ConDecDashboardItem();
 	}
 
 	@Test

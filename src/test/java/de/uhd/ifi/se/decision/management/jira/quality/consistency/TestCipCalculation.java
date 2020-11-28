@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.MockApplicationUser;
@@ -38,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestCipCalculation extends TestSetUp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestCipCalculation.class);
-	private static List<MutableIssue> testIssues;
+	private static List<Issue> testIssues;
 	private Project project;
 
 	@Before

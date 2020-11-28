@@ -25,7 +25,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
  * @issue What is the difference between the IssueManager and the IssueService?
  *        Do we really need both?
  * @decision we need both
- * @pro the issueService only can create new thinks. the manger only manages existing elements and can't change them.
+ * @pro the issueService only can create new thinks. the manger only manages
+ *      existing elements and can't change them.
  */
 public class MockIssueService implements IssueService {
 
@@ -67,26 +68,27 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, Long issueId) {
-		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> issueId.longValue() == jiraIssue.getId())
-				.findFirst().orElse(new MockIssue(issueId));
-		IssueResult result = new IssueResult(issue);
+		Issue issue = JiraIssues.getTestJiraIssues().stream()
+				.filter(jiraIssue -> issueId.longValue() == jiraIssue.getId()).findFirst()
+				.orElse(new MockIssue(issueId));
+		IssueResult result = new IssueResult((MutableIssue) issue);
 		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			ErrorCollection errors = new MockAction();
 			errors.addError("user", "User is not authorized.");
-			result = new IssueResult(issue, errors);
+			result = new IssueResult((MutableIssue) issue, errors);
 		}
 		return result;
 	}
 
 	@Override
 	public IssueResult getIssue(ApplicationUser user, String key) {
-		MutableIssue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> key.equals(jiraIssue.getKey()))
+		Issue issue = JiraIssues.getTestJiraIssues().stream().filter(jiraIssue -> key.equals(jiraIssue.getKey()))
 				.findFirst().orElse(new MockIssue(1, key));
-		IssueResult result = new IssueResult(issue);
+		IssueResult result = new IssueResult((MutableIssue) issue);
 		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			ErrorCollection errors = new MockAction();
 			errors.addError("user", "User is not authorized.");
-			result = new IssueResult(issue, errors);
+			result = new IssueResult((MutableIssue) issue, errors);
 		}
 		return result;
 	}
