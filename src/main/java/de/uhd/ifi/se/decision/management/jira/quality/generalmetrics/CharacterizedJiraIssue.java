@@ -38,7 +38,7 @@ public class CharacterizedJiraIssue {
 		}
 
 		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			numberOfCommits = GitClient.getOrCreate(projectKey).getNumberOfCommits(jiraIssue);
+			numberOfCommits = GitClient.getOrCreate(projectKey).getNumberOfCommitsOnDefaultBranches(jiraIssue);
 		}
 
 	}

@@ -9,13 +9,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCommentMetricCalculator extends TestSetUp {
+public class TestCommentMetricCalculator extends TestSetUpGit {
 
 	protected CommentMetricCalculator commentMetricCalculator;
 
+	@Override
 	@Before
 	public void setUp() {
 		init();
