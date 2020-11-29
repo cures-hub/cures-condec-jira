@@ -20,13 +20,13 @@ public class TestBranchDiff {
 
 	private List<KnowledgeElement> rationaleInBranch;
 	private KnowledgeElement rat1 = new KnowledgeElement(0, "I am an issue", "",
-			KnowledgeType.ISSUE, "TEST", "file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.COMMIT,
+			KnowledgeType.ISSUE, "TEST", "file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.CODE,
 			KnowledgeStatus.UNRESOLVED);
 	private KnowledgeElement rat2 = new KnowledgeElement(0, "I am an issue too", "",
 			KnowledgeType.ISSUE, "TEST", "012345678901234567890123456789012345678a 1:1 abcdef23",
-			DocumentationLocation.COMMIT, KnowledgeStatus.UNRESOLVED);
+			DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 	private KnowledgeElement rat3 = new KnowledgeElement(0, "I am an old issue", "",
-			KnowledgeType.ISSUE, "TEST", "~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.COMMIT,
+			KnowledgeType.ISSUE, "TEST", "~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.CODE,
 			KnowledgeStatus.UNRESOLVED);
 
 	@Before

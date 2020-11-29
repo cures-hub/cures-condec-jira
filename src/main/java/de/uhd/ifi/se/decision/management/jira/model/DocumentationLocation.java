@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Possible documentation locations of decision knowledge.
+ * Possible documentation locations of decision knowledge. The documentation
+ * location is the current location where a knowledge element can be found (and
+ * changed).
+ * 
+ * The {@link Origin} indicates the source of a knowledge element and might be
+ * different from the current documentation location. Commit messages are
+ * transcribed into Jira issue comments. Thus, their documentation location is
+ * {@link DocumentationLocation#JIRAISSUETEXT} but their origin is
+ * {@link Origin#COMMIT}.
  */
 public enum DocumentationLocation {
 	JIRAISSUE("i", "JiraIssues"), // store as first-class entities with own Jira issue type
 	JIRAISSUETEXT("s", "JiraIssueText"), // store in the body of existing Jira issues, e.g. work items or requirements
-	COMMIT("c", "Commit"), // store in commit message (currently not used)
-	PULLREQUEST("p", "PullRequest"), // store in pull requests (currently not used)
+	CODE("c", "Code"), // code files and decision knowledge elements in code comments
 	UNKNOWN("", "Unknown");
 
 	private String identifier;

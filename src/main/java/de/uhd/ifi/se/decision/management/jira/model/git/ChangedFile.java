@@ -100,7 +100,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile() {
 		packageDistance = 0;
 		setCorrect(true);
-		documentationLocation = DocumentationLocation.COMMIT;
+		documentationLocation = DocumentationLocation.CODE;
 		type = KnowledgeType.CODE;
 		commits = new ArrayList<>();
 	}

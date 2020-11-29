@@ -57,7 +57,7 @@ public class TestDocumentationLocation {
 	@Test
 	public void testGetAllDocumentationLocations() {
 		// excludes Unknown documentation location
-		assertEquals(4, DocumentationLocation.getAllDocumentationLocations().size());
+		assertEquals(3, DocumentationLocation.getAllDocumentationLocations().size());
 	}
 
 	@Test

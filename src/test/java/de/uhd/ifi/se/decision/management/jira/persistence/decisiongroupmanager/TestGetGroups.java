@@ -65,7 +65,7 @@ public class TestGetGroups extends TestSetUp {
 
 	@Test
 	public void testGetGroupsForElementDocLocWrong() {
-		assertNull(DecisionGroupManager.getGroupsForElement(0, DocumentationLocation.COMMIT));
+		assertNull(DecisionGroupManager.getGroupsForElement(0, DocumentationLocation.CODE));
 	}
 
 	@Test

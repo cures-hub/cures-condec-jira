@@ -305,7 +305,7 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
 		// TODO Make code class recognition more explicit
-		if (element.getDocumentationLocation() != DocumentationLocation.COMMIT) {
+		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			return true;
 		}
 		if (!element.getSummary().contains(".java")) {

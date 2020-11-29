@@ -51,7 +51,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 
 	public CodeClassPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
-		this.documentationLocation = DocumentationLocation.COMMIT;
+		this.documentationLocation = DocumentationLocation.CODE;
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		boolean isDeleted = false;
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.COMMIT);
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.CODE);
 			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}

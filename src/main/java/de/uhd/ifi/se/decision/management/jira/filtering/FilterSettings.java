@@ -416,7 +416,7 @@ public class FilterSettings {
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":code")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
-					.getManagerForSingleLocation(DocumentationLocation.COMMIT);
+					.getManagerForSingleLocation(DocumentationLocation.CODE);
 		} else if (elementKey.contains(":")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
