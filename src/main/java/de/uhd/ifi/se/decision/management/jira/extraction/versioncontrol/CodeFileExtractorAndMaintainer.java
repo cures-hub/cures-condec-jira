@@ -63,8 +63,10 @@ public class CodeFileExtractorAndMaintainer {
 				diffForFile.addChangedFile(changedFile);
 				GitDecXtract gitExtract = new GitDecXtract(projectKey);
 				for (KnowledgeElement element : gitExtract.getElementsFromCode(diffForFile)) {
-					Link link = new Link(source, element);
-					KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+					KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
+							.addVertexNotBeeingInDatabase(element);
+					Link link = new Link(source, elementInGraph);
+					KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeeingInDatabase(link);
 				}
 			}
 		}

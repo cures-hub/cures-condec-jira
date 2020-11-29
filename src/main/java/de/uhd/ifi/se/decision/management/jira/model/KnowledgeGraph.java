@@ -36,7 +36,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private KnowledgePersistenceManager persistenceManager;
 
 	// for elements that do not exist in database
-	private static long id = 0;
+	private long id = -1;
+	public long linkId = -1;
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -147,17 +148,23 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return isEdgeCreated;
 	}
 
-	@Override
-	public boolean addVertex(KnowledgeElement element) {
+	public KnowledgeElement addVertexNotBeeingInDatabase(KnowledgeElement element) {
 		if (element.getId() == 0 && element.getDocumentationLocation() == DocumentationLocation.CODE) {
-			if (getElementsNotInDatabaseBySummary(element.getSummary()) != null) {
-				return false;
+			KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
+			if (existingElement != null) {
+				return existingElement;
 			}
-			id--;
+			--id;
 			element.setId(id);
 			element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
 		}
-		return super.addVertex(element);
+		super.addVertex(element);
+		return element;
+	}
+
+	public void addEdgeNotBeeingInDatabase(Link link) {
+		link.setId(--linkId);
+		this.addEdge(link);
 	}
 
 	/**
