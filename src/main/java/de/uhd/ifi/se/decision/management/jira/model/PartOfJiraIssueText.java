@@ -308,8 +308,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.commentId = id;
 	}
 
+	/**
+	 * Sets the {@link Origin} to {@link Origin#COMMIT} if the commit message was
+	 * transcribed into the Jira issue comment.
+	 */
 	private void determineOrigin() {
-		System.out.println("determineOrigin");
 		Comment comment = getComment();
 		origin = Origin.determineOrigin(comment);
 	}

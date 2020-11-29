@@ -148,7 +148,6 @@ public class GeneralMetricCalculator {
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				numberIssueContent++;
-				System.out.println(element.getOrigin());
 				if (element.getOrigin() == Origin.COMMIT) {
 					numberCommitElements++;
 				}

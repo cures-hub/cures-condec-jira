@@ -13,6 +13,12 @@ import com.atlassian.jira.issue.comments.Comment;
 public enum Origin {
 	COMMIT, DOCUMENTATION_LOCATION;
 
+	/**
+	 * @param comment
+	 *            Jira issue comment that a decision knowledge element is part of.
+	 * @return {@link Origin#COMMIT} if the commit message was transcribed into the
+	 *         Jira issue comment.
+	 */
 	public static Origin determineOrigin(Comment comment) {
 		if (comment == null) {
 			return DOCUMENTATION_LOCATION;
@@ -20,6 +26,13 @@ public enum Origin {
 		return determineOrigin(comment.getBody());
 	}
 
+	/**
+	 * @param commentBody
+	 *            of a Jira issue comment that a decision knowledge element is part
+	 *            of.
+	 * @return {@link Origin#COMMIT} if the commit message was transcribed into the
+	 *         Jira issue comment.
+	 */
 	public static Origin determineOrigin(String commentBody) {
 		if (commentBody != null && commentBody.contains("Hash:")) {
 			return COMMIT;
