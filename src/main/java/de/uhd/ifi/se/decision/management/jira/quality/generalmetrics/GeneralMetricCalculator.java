@@ -123,7 +123,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		summaryMap.put("Code Classes", graph.getElements(KnowledgeType.CODE).size());
+		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE).size());
 		return summaryMap;
 	}
 

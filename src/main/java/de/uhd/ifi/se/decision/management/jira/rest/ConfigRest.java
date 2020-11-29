@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -501,6 +502,12 @@ public class ConfigRest {
 		if (!isKnowledgeExtractedFromGit) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
+			GitClient.instances.remove(projectKey);
+		} else {
+			// clone or fetch the git repositories
+			GitClient.getOrCreate(projectKey);
+			// read all code files and links from the default branch
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		}
 		return Response.ok(Status.ACCEPTED).build();
 	}

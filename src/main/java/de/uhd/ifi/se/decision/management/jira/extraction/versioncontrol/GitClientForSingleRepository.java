@@ -45,9 +45,9 @@ import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
  * @decision Implement class GitClientForSingleRepository with separate git
  *           attribute for each repository!
  * @alternative Use git.remoteAdd() command to add new repos!
- * @con The purpose of `git.remoteAdd()` is completely different – it simply
+ * @con The purpose of `git.remoteAdd()` is completely different: it simply
  *      executes `git remote add` within an existing repository and does not
- *      manage several repositories
+ *      manage several repositories.
  */
 public class GitClientForSingleRepository {
 
@@ -225,7 +225,6 @@ public class GitClientForSingleRepository {
 			}
 			git = cloneCommand.call();
 			setConfig();
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		} catch (GitAPIException e) {
 			LOGGER.error("Git repository could not be cloned: " + gitRepositoryConfiguration.getRepoUri() + " "
 					+ directory.getAbsolutePath() + "\n\t" + e.getMessage());

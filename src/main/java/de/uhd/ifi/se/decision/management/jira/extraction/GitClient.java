@@ -103,7 +103,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	public boolean fetchOrCloneRepositories() {
+	private boolean fetchOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();
