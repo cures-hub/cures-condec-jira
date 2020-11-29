@@ -200,7 +200,7 @@ public class KnowledgePersistenceManager {
 			return jiraIssuePersistenceManager;
 		case JIRAISSUETEXT:
 			return jiraIssueTextPersistenceManager;
-		case COMMIT:
+		case CODE:
 			return codeClassPersistenceManager;
 		default:
 			return null;

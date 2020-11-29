@@ -28,19 +28,19 @@ public class TestGenerateCommentString extends TestSetUpGit {
 
 	@Test
 	public void testCommitNull() {
-		assertEquals("", transcriber.generateCommentString(null, branch));
+		assertEquals("", transcriber.generateCommentString(null, branch, GIT_URI));
 	}
 
 	@Test
 	public void testBranchNull() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(1);
-		assertEquals("", transcriber.generateCommentString(commit, null));
+		assertEquals("", transcriber.generateCommentString(commit, null, GIT_URI));
 	}
 
 	@Test
 	public void testEmptyCommitMessage() {
 		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(4);
-		assertEquals("", transcriber.generateCommentString(commit, branch));
+		assertEquals("", transcriber.generateCommentString(commit, branch, GIT_URI));
 	}
 
 	@Test
@@ -50,6 +50,6 @@ public class TestGenerateCommentString extends TestSetUpGit {
 				+ "refs/remotes/origin/TEST-4.feature.branch\r\n" + "Commit Hash: ";
 
 		assertEquals("{issue}This is an issue!{issue} But I love pizza!" + commitMetaData + commit.getName(),
-				transcriber.generateCommentString(commit, branch));
+				transcriber.generateCommentString(commit, branch, GIT_URI));
 	}
 }

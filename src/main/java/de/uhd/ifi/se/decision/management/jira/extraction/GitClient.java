@@ -103,7 +103,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	public boolean fetchOrCloneRepositories() {
+	private boolean fetchOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();
@@ -362,6 +362,17 @@ public class GitClient {
 	 * @param jiraIssue
 	 *            such as work item/development task/requirements that key was
 	 *            mentioned in the commit messages.
+	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
+	 *         list is sorted by committing time: oldest commits come first.
+	 */
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
+		return getDefaultBranchCommits(jiraIssue, true);
+	}
+
+	/**
+	 * @param jiraIssue
+	 *            such as work item/development task/requirements that key was
+	 *            mentioned in the commit messages.
 	 * @param areCommitsSortedByTime
 	 *            true if commits should be sorted by time (oldest commits come
 	 *            first!)
@@ -377,17 +388,6 @@ public class GitClient {
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		}
 		return commits;
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            such as work item/development task/requirements that key was
-	 *            mentioned in the commit messages.
-	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
-	 *         list is sorted by committing time: oldest commits come first.
-	 */
-	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
-		return getDefaultBranchCommits(jiraIssue, true);
 	}
 
 	/**

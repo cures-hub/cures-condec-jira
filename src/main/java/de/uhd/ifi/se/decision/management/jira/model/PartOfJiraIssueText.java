@@ -50,6 +50,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setStatus(databaseEntry.getStatus());
 		String text = getText();
 		this.setDescription(text);
+		determineOrigin();
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -305,6 +306,15 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public void setCommentId(long id) {
 		this.commentId = id;
+	}
+
+	/**
+	 * Sets the {@link Origin} to {@link Origin#COMMIT} if the commit message was
+	 * transcribed into the Jira issue comment.
+	 */
+	private void determineOrigin() {
+		Comment comment = getComment();
+		origin = Origin.determineOrigin(comment);
 	}
 
 	/**

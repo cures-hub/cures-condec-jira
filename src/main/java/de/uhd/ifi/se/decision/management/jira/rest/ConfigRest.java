@@ -36,6 +36,8 @@ import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -501,6 +503,12 @@ public class ConfigRest {
 		if (!isKnowledgeExtractedFromGit) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
+			GitClient.instances.remove(projectKey);
+		} else {
+			// clone or fetch the git repositories
+			GitClient.getOrCreate(projectKey);
+			// read all code files and links from the default branch
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		}
 		return Response.ok(Status.ACCEPTED).build();
 	}
@@ -517,7 +525,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
 		}
-		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
@@ -528,7 +536,7 @@ public class ConfigRest {
 
 	@Path("/setPostSquashedCommits")
 	@POST
-	public Response setPostSquashedCommits(@Context HttpServletRequest request,
+	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -536,10 +544,18 @@ public class ConfigRest {
 		}
 		if (checked == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "setPostSquashedCommits-checked = null")).build();
+					.entity(ImmutableMap.of("error", "setPostDefaultBranchCommits-checked = null")).build();
 		}
-		if (Boolean.parseBoolean(ConfigPersistenceManager.getValue(projectKey, "isKnowledgeExtractedFromGit"))) {
-			ConfigPersistenceManager.setPostSquashedCommits(projectKey, Boolean.valueOf(checked));
+
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			boolean isActivated = Boolean.valueOf(checked);
+			ConfigPersistenceManager.setPostSquashedCommits(projectKey, isActivated);
+			if (isActivated) {
+				ApplicationUser user = AuthenticationManager.getUser(request);
+				List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+				jiraIssues.forEach(
+						jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
+			}
 			return Response.ok(Status.ACCEPTED).build();
 		} else {
 			return Response.status(Status.CONFLICT)

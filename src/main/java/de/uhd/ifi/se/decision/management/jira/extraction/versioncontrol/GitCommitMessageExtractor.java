@@ -149,7 +149,7 @@ public class GitCommitMessageExtractor {
 	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
 		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.COMMIT, "");
+				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.CODE, "");
 	}
 
 	private String getDescription(String rationaleText) {

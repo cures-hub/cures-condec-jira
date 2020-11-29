@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -66,22 +65,27 @@ public class CommitMessageToCommentTranscriber {
 		List<Comment> newComments = new ArrayList<>();
 		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
 			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
-			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch));
+			String uri = gitClient.getRepoUriFromBranch(featureBranch);
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
 		}
 		return newComments;
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
-		List<RevCommit> defaultBranchCommits = new ArrayList<>();
-		Ref branch = gitClient.getGitClientsForSingleRepos().get(0).getDefaultBranch();
-		Optional.ofNullable(gitClient.getDefaultBranchCommits(jiraIssue)).ifPresent(defaultBranchCommits::addAll);
-		return postCommitsIntoJiraIssueComments(defaultBranchCommits, branch);
+		List<Comment> newComments = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
+			Ref branch = gitClientForSingleRepository.getDefaultBranch();
+			List<RevCommit> defaultBranchCommits = gitClientForSingleRepository.getCommits(jiraIssue, true);
+			String uri = gitClientForSingleRepository.getRemoteUri();
+			newComments.addAll(postCommitsIntoJiraIssueComments(defaultBranchCommits, branch, uri));
+		}
+		return newComments;
 	}
 
-	private List<Comment> postCommitsIntoJiraIssueComments(List<RevCommit> commits, Ref branch) {
+	private List<Comment> postCommitsIntoJiraIssueComments(List<RevCommit> commits, Ref branch, String uri) {
 		List<Comment> newComments = new ArrayList<>();
 		for (RevCommit commit : commits) {
-			Comment comment = postCommitIntoJiraIssueComment(commit, branch);
+			Comment comment = postCommitIntoJiraIssueComment(commit, branch, uri);
 			if (comment != null) {
 				newComments.add(comment);
 			}
@@ -93,8 +97,8 @@ public class CommitMessageToCommentTranscriber {
 	 * @return new comment or null if no comment was created because the commit was
 	 *         already posted.
 	 */
-	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch) {
-		String commentText = generateCommentString(commit, branch);
+	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
+		String commentText = generateCommentString(commit, branch, uri);
 		if (commentText == null || commentText.isBlank()) {
 			return null;
 		}
@@ -130,18 +134,16 @@ public class CommitMessageToCommentTranscriber {
 		return defaultUser;
 	}
 
-	public String generateCommentString(RevCommit commit, Ref branch) {
+	public String generateCommentString(RevCommit commit, Ref branch, String uri) {
 		if (commit == null || commit.getFullMessage().isBlank() || branch == null) {
 			return "";
 		}
 		String comment = replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(commit.getFullMessage());
-		StringBuilder builder = new StringBuilder(comment);
-		builder.append("\r\n\r\n");
-		builder.append("Author: " + commit.getAuthorIdent().getName() + "\r\n");
-		builder.append(
-				"Repository and Branch: " + gitClient.getRepoUriFromBranch(branch) + " " + branch.getName() + "\r\n");
-		builder.append("Commit Hash: " + commit.getName());
-		return builder.toString();
+		comment += "\r\n\r\n";
+		comment += "Author: " + commit.getAuthorIdent().getName() + "\r\n";
+		comment += "Repository and Branch: " + uri + " " + branch.getName() + "\r\n";
+		comment += "Commit Hash: " + commit.getName();
+		return comment;
 	}
 
 	public static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {

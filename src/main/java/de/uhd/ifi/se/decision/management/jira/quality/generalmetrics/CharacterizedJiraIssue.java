@@ -6,9 +6,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -35,12 +34,11 @@ public class CharacterizedJiraIssue {
 			} else {
 				numberOfRelevantComments++;
 			}
+			// Commits on default branch are transcribed into Jira issue comments
+			if (Origin.determineOrigin(comment) == Origin.COMMIT) {
+				numberOfCommits++;
+			}
 		}
-
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			numberOfCommits = GitClient.getOrCreate(projectKey).getNumberOfCommitsOnDefaultBranches(jiraIssue);
-		}
-
 	}
 
 	public Integer getNumberOfComments() {

@@ -61,7 +61,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public static boolean canProcesElement(KnowledgeElement element) {
-		return element.getDocumentationLocation() == DocumentationLocation.COMMIT;
+		return element.getDocumentationLocation() == DocumentationLocation.CODE;
 	}
 
 	public ArrayList<KnowledgeElement> getElements() {
@@ -97,7 +97,7 @@ public class RationaleFromCodeCommentExtractor {
 	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
 		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.COMMIT,
+				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.CODE,
 				"");
 	}
 

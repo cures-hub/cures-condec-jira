@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -29,7 +31,6 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private List<KnowledgeElement> decisionKnowledgeCodeElements;
-	private List<KnowledgeElement> decisionKnowledgeCommitElements;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
 	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
@@ -46,10 +47,8 @@ public class GeneralMetricCalculator {
 					filterSettings.getProjectKey());
 			if (elementMap != null) {
 				this.decisionKnowledgeCodeElements = elementMap.get("Code");
-				this.decisionKnowledgeCommitElements = elementMap.get("Commit");
 			} else {
 				this.decisionKnowledgeCodeElements = null;
-				this.decisionKnowledgeCommitElements = null;
 			}
 		}
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
@@ -123,7 +122,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", numberOfRequirements);
-		summaryMap.put("Code Classes", graph.getElements(KnowledgeType.CODE).size());
+		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE).size());
 		return summaryMap;
 	}
 
@@ -131,30 +130,32 @@ public class GeneralMetricCalculator {
 		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount <1");
 		Map<String, Integer> sourceMap = new HashMap<String, Integer>();
 		if (decisionKnowledgeCodeElements != null) {
-			sourceMap.put("Code", decisionKnowledgeCodeElements.size());
+			sourceMap.put("Code Comments", decisionKnowledgeCodeElements.size());
 		} else {
-			sourceMap.put("Code", 0);
-		}
-		if (decisionKnowledgeCommitElements != null) {
-			sourceMap.put("Commit", decisionKnowledgeCommitElements.size());
-		} else {
-			sourceMap.put("Commit", 0);
+			sourceMap.put("Code Comments", 0);
 		}
 		int numberIssues = 0;
 		int numberIssueContent = 0;
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			elements.addAll(graph.getElements(type));
-		}
+		int numberCommitElements = 0;
+		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
+			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 				numberIssues++;
-			} else if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+				continue;
+			}
+			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				numberIssueContent++;
+				if (element.getOrigin() == Origin.COMMIT) {
+					numberCommitElements++;
+				}
 			}
 		}
-		sourceMap.put("Issue Content", numberIssueContent);
-		sourceMap.put("Jira Issues", numberIssues);
+		sourceMap.put("Jira Issue Description and Comments", numberIssueContent);
+		sourceMap.put("Entire Jira Issues", numberIssues);
+		sourceMap.put("Commit Message", numberCommitElements);
 		return sourceMap;
 	}
 

@@ -604,8 +604,8 @@ linkBranchCandidates
 
     ConDecLinkBranchCandidates.prototype.getEmptyMapForStatuses = function(initValue) {
         var mapInit = new Map();
-        mapInit.set(BRANCH_STATUS_FINE,initValue);
         mapInit.set(BRANCH_STATUS_BAD,initValue);
+        mapInit.set(BRANCH_STATUS_FINE,initValue);        
         mapInit.set(BRANCH_STATUS_UNSET,initValue);
         return mapInit;
     };

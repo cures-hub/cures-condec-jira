@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -34,5 +35,13 @@ public class TestConDecDashboardItem extends TestSetUp {
 		@SuppressWarnings("unchecked")
 		Collection<IssueType> jiraIssueTypes = (Collection<IssueType>) ctxResult.get("jiraIssueTypes");
 		assertFalse(jiraIssueTypes.isEmpty());
+	}
+
+	@Test
+	@NonTransactional
+	public void testInit() {
+		// nothing happens during init currently
+		dashboardItem.init(null);
+		assertNotNull(dashboardItem);
 	}
 }
