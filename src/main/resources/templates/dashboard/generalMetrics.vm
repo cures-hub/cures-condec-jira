@@ -13,7 +13,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
 	<div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
     <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
-    <div id="piechartInteger-DecSources" class="piechart"></div>
+    <div id="piechartRich-DecSources" class="piechart"></div>
 	<div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
 </div>	
@@ -26,13 +26,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue", 
 			"", "#Commits per Jira Issue", "$numberOfCommitsPerJiraIssue");
 		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary", 
-			"", "Distribution of Knowledge Types", "$distributionOfKnowledgeTypes");
-		ConDecReqDash.initializeChart("piechartInteger-DecSources", 
 			"", "#Requirements and Code Classes", "$requirementsAndCodeFiles");
+		ConDecReqDash.initializeChart("piechartRich-DecSources", 
+			"", "#Rationale Elements per Origin", "$numberOfElementsPerDocumentationLocation");
 		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences", 
-			"", "#Elements from Documentation Locations", "$numberOfElementsPerDocumentationLocation");
+			"", "Comments in Jira Issues relevant to Decision Knowledge", "$numberOfRelevantComments");
 		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution", 
-			"", "Comments in Jira Issues relevant to Decision Knowledge", "$numberOfRelevantComments");	
+			"", "Distribution of Knowledge Types", "$distributionOfKnowledgeTypes");	
 	});
 </script>
 #end

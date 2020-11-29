@@ -126,36 +126,34 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	public Map<String, Integer> getKnowledgeSourceCount() {
+	public Map<String, String> getKnowledgeSourceCount() {
 		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount <1");
-		Map<String, Integer> sourceMap = new HashMap<String, Integer>();
-		if (decisionKnowledgeCodeElements != null) {
-			sourceMap.put("Code Comments", decisionKnowledgeCodeElements.size());
-		} else {
-			sourceMap.put("Code Comments", 0);
-		}
-		int numberIssues = 0;
-		int numberIssueContent = 0;
-		int numberCommitElements = 0;
+		Map<String, String> sourceMap = new HashMap<>();
+
+		String numberIssues = "";
+		String numberIssueContent = "";
+		String numberCommitElements = "";
 		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				numberIssues++;
+				numberIssues += element.getKey() + " ";
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-				numberIssueContent++;
 				if (element.getOrigin() == Origin.COMMIT) {
-					numberCommitElements++;
+					numberCommitElements += element.getKey() + " ";
+				} else {
+					numberIssueContent += element.getKey() + " ";
 				}
 			}
 		}
-		sourceMap.put("Jira Issue Description and Comments", numberIssueContent);
-		sourceMap.put("Entire Jira Issues", numberIssues);
-		sourceMap.put("Commit Message", numberCommitElements);
+		sourceMap.put("Jira Issue Description or Comment", numberIssueContent.trim());
+		sourceMap.put("Entire Jira Issue", numberIssues.trim());
+		sourceMap.put("Commit Message", numberCommitElements.trim());
+		sourceMap.put("Code Comment", "");
 		return sourceMap;
 	}
 
