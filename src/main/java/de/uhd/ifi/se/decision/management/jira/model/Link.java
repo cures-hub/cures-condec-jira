@@ -87,7 +87,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @return id of the link. This id is the internal database id.
 	 */
 	public long getId() {
-		if (id <= 0) {
+		if (id == 0) {
 			id = KnowledgePersistenceManager.getLinkId(this);
 		}
 		return id;
@@ -356,7 +356,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonIgnore
 	public boolean isValid() {
-		return source.existsInDatabase() && target.existsInDatabase();
+		return source.getId() != 0 && target.getId() != 0;
 	}
 
 	/**

@@ -5,6 +5,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -57,12 +58,13 @@ public class CodeFileExtractorAndMaintainer {
 		// Extracts Decision Knowledge from Code Comments
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.isCodeFile()) {
-				codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+				KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
 				Diff diffForFile = new Diff();
 				diffForFile.addChangedFile(changedFile);
 				GitDecXtract gitExtract = new GitDecXtract(projectKey);
 				for (KnowledgeElement element : gitExtract.getElementsFromCode(diffForFile)) {
-					KnowledgeGraph.getOrCreate(projectKey).addVertex(element);
+					Link link = new Link(source, element);
+					KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 				}
 			}
 		}
