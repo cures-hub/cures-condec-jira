@@ -122,12 +122,6 @@ public class GitDecXtract {
 			return "";
 		}
 	}
-	/*
-	 * public List<KnowledgeElement> getElements(Ref branch) { if (branch == null) {
-	 * return getElements((String) null); }
-	 * 
-	 * return getElements(generateBranchShortName(branch)); }
-	 */
 
 	public static String generateBranchShortName(Ref branch) {
 		String[] branchNameComponents = branch.getName().split("/");

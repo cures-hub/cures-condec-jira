@@ -37,7 +37,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	// for elements that do not exist in database
 	private long id = -1;
-	public long linkId = -1;
+	private long linkId = -1;
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -149,15 +149,13 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public KnowledgeElement addVertexNotBeeingInDatabase(KnowledgeElement element) {
-		if (element.getId() == 0 && element.getDocumentationLocation() == DocumentationLocation.CODE) {
-			KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
-			if (existingElement != null) {
-				return existingElement;
-			}
-			--id;
-			element.setId(id);
-			element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
+		KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
+		if (existingElement != null) {
+			return existingElement;
 		}
+		--id;
+		element.setId(id);
+		element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
 		super.addVertex(element);
 		return element;
 	}
