@@ -501,13 +501,12 @@ public class ConfigRest {
 
 		// deactivate other git extraction if false
 		if (!isKnowledgeExtractedFromGit) {
-			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, false);
-			ConfigPersistenceManager.setPostSquashedCommits(projectKey, false);
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories
 			GitClient.getOrCreate(projectKey);
-			// read all code files and links from the default branch
+			// read all code files, decision knowledge elements and links from the default
+			// branch
 			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		}
 		return Response.ok(Status.ACCEPTED).build();

@@ -5,7 +5,8 @@
     <aui-toggle id="isKnowledgeExtractedFromGit-toggle"
                 value="$projectKey" label="Extract from	Git?"></aui-toggle>
     <div class="description">Enables or disables whether decision
-        knowledge is extracted from git for this project.
+        knowledge is extracted from git for this project. 
+		When enabled, all code files are extracted and decision knowledge elements from code comments are added to the knowledge graph.
     </div>
 </div>
 
@@ -265,10 +266,6 @@
         conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
         isPostSquashedCommitsActivatedToggle.disabled = !this.checked;
         isPostFeatureBranchCommitsActivatedToggle.disabled = !this.checked;
-        if (!this.checked) {
-            isPostSquashedCommitsActivatedToggle.checked = false;
-            isPostFeatureBranchCommitsActivatedToggle.checked = false;
-        }
         this.busy = false;
     });
     
