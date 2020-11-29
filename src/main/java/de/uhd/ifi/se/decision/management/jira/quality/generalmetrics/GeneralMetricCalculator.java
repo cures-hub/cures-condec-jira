@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -29,7 +30,6 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private List<KnowledgeElement> decisionKnowledgeCodeElements;
-	private List<KnowledgeElement> decisionKnowledgeCommitElements;
 	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
 	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
@@ -46,10 +46,8 @@ public class GeneralMetricCalculator {
 					filterSettings.getProjectKey());
 			if (elementMap != null) {
 				this.decisionKnowledgeCodeElements = elementMap.get("Code");
-				this.decisionKnowledgeCommitElements = elementMap.get("Commit");
 			} else {
 				this.decisionKnowledgeCodeElements = null;
-				this.decisionKnowledgeCommitElements = null;
 			}
 		}
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
@@ -135,13 +133,9 @@ public class GeneralMetricCalculator {
 		} else {
 			sourceMap.put("Code", 0);
 		}
-		if (decisionKnowledgeCommitElements != null) {
-			sourceMap.put("Commit", decisionKnowledgeCommitElements.size());
-		} else {
-			sourceMap.put("Commit", 0);
-		}
 		int numberIssues = 0;
 		int numberIssueContent = 0;
+		int numberCommitElements = 0;
 		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			elements.addAll(graph.getElements(type));
@@ -149,12 +143,16 @@ public class GeneralMetricCalculator {
 		for (KnowledgeElement element : elements) {
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 				numberIssues++;
+				if (element.getOrigin() == Origin.COMMIT) {
+					numberCommitElements++;
+				}
 			} else if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				numberIssueContent++;
 			}
 		}
 		sourceMap.put("Issue Content", numberIssueContent);
 		sourceMap.put("Jira Issues", numberIssues);
+		sourceMap.put("Commit", numberCommitElements);
 		return sourceMap;
 	}
 

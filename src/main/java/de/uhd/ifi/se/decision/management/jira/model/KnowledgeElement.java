@@ -43,12 +43,16 @@ public class KnowledgeElement {
 	private Date creationDate;
 	private Date updatingDate;
 	protected DocumentationLocation documentationLocation;
+	protected Origin origin;
+
 	protected KnowledgeStatus status;
 
 	public KnowledgeElement() {
 		this.description = "";
 		this.summary = "";
 		this.type = KnowledgeType.OTHER;
+		// the origin is the same as the documentation location per default
+		this.origin = Origin.DOCUMENTATION_LOCATION;
 	}
 
 	public KnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
@@ -367,6 +371,15 @@ public class KnowledgeElement {
 		}
 		this.documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
+
+	/**
+	 * @return {@link Origin} that indicates the source of a knowledge element. The
+	 *         origin might be different from the current
+	 *         {@link DocumentationLocation}.
+	 */
+	public Origin getOrigin() {
+		return origin;
 	}
 
 	/**

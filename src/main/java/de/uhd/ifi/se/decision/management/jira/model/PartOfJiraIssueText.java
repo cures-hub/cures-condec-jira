@@ -305,6 +305,13 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public void setCommentId(long id) {
 		this.commentId = id;
+		Comment comment = getComment();
+		if (comment == null) {
+			return;
+		}
+		if (comment.getBody().contains("Hash:")) {
+			origin = Origin.COMMIT;
+		}
 	}
 
 	/**
