@@ -50,6 +50,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setStatus(databaseEntry.getStatus());
 		String text = getText();
 		this.setDescription(text);
+		determineOrigin();
 	}
 
 	public PartOfJiraIssueText(KnowledgeElement element) {
@@ -305,13 +306,12 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public void setCommentId(long id) {
 		this.commentId = id;
+	}
+
+	private void determineOrigin() {
+		System.out.println("determineOrigin");
 		Comment comment = getComment();
-		if (comment == null) {
-			return;
-		}
-		if (comment.getBody().contains("Hash:")) {
-			origin = Origin.COMMIT;
-		}
+		origin = Origin.determineOrigin(comment);
 	}
 
 	/**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,30 +130,33 @@ public class GeneralMetricCalculator {
 		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount <1");
 		Map<String, Integer> sourceMap = new HashMap<String, Integer>();
 		if (decisionKnowledgeCodeElements != null) {
-			sourceMap.put("Code", decisionKnowledgeCodeElements.size());
+			sourceMap.put("Code Comments", decisionKnowledgeCodeElements.size());
 		} else {
-			sourceMap.put("Code", 0);
+			sourceMap.put("Code Comments", 0);
 		}
 		int numberIssues = 0;
 		int numberIssueContent = 0;
 		int numberCommitElements = 0;
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			elements.addAll(graph.getElements(type));
-		}
+		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
+			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 				numberIssues++;
+				continue;
+			}
+			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+				numberIssueContent++;
+				System.out.println(element.getOrigin());
 				if (element.getOrigin() == Origin.COMMIT) {
 					numberCommitElements++;
 				}
-			} else if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-				numberIssueContent++;
 			}
 		}
-		sourceMap.put("Issue Content", numberIssueContent);
-		sourceMap.put("Jira Issues", numberIssues);
-		sourceMap.put("Commit", numberCommitElements);
+		sourceMap.put("Jira Issue Description and Comments", numberIssueContent);
+		sourceMap.put("Entire Jira Issues", numberIssues);
+		sourceMap.put("Commit Message", numberCommitElements);
 		return sourceMap;
 	}
 

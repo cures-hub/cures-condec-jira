@@ -6,6 +6,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -34,7 +35,7 @@ public class CharacterizedJiraIssue {
 				numberOfRelevantComments++;
 			}
 			// Commits on default branch are transcribed into Jira issue comments
-			if (comment.getBody().contains("Hash:")) {
+			if (Origin.determineOrigin(comment) == Origin.COMMIT) {
 				numberOfCommits++;
 			}
 		}
