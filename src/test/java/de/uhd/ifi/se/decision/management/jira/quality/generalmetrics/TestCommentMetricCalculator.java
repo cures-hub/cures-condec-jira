@@ -9,18 +9,19 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCommentMetricCalculator extends TestSetUpGit {
+public class TestCommentMetricCalculator extends TestSetUp {
 
 	protected CommentMetricCalculator commentMetricCalculator;
 
-	@Override
 	@Before
 	public void setUp() {
 		init();
 		commentMetricCalculator = new CommentMetricCalculator(getTestJiraIssues());
+		JiraIssues.addCommentsToIssue(getTestJiraIssues().get(0), "Hash: 123");
 	}
 
 	@Test
@@ -35,6 +36,12 @@ public class TestCommentMetricCalculator extends TestSetUpGit {
 	public void testGetNumberOfRelevantComments() {
 		addComment(getTestJiraIssues().get(7));
 		assertEquals(2, commentMetricCalculator.getNumberOfRelevantComments().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfCommitsPerJiraIssue() {
+		assertEquals(10, commentMetricCalculator.getNumberOfCommitsPerIssue().size());
 	}
 
 }

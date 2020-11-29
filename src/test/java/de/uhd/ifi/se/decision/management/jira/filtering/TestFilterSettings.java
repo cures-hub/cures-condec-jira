@@ -17,6 +17,8 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
@@ -238,6 +240,16 @@ public class TestFilterSettings extends TestSetUp {
 
 		filterSettings.setSelectedElement("TEST-1:123");
 		assertNull(filterSettings.getSelectedElement());
+
+		filterSettings.setSelectedElement("TEST-1:code:123");
+		// not in graph
+		assertNull(filterSettings.getSelectedElement());
+
+		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
+		elementNotInDatabase.setProject("TEST");
+		KnowledgeGraph.getOrCreate("TEST").addVertexNotBeeingInDatabase(elementNotInDatabase);
+		filterSettings.setSelectedElement("TEST:graph:-2");
+		assertEquals("TEST:graph:-2", filterSettings.getSelectedElement().getKey());
 	}
 
 	@Test

@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -53,9 +55,22 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	private void extractAllChangedFiles(Diff diff) {
+		// Extracts Decision Knowledge from Code Comments
+		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.isCodeFile()) {
-				codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+				KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+				if (!changedFile.isJavaFile()) {
+					continue;
+				}
+				Diff diffForFile = new Diff();
+				diffForFile.addChangedFile(changedFile);
+				for (KnowledgeElement element : gitExtract.getElementsFromCode(diffForFile)) {
+					KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
+							.addVertexNotBeeingInDatabase(element);
+					Link link = new Link(source, elementInGraph);
+					KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeeingInDatabase(link);
+				}
 			}
 		}
 	}
@@ -115,5 +130,4 @@ public class CodeFileExtractorAndMaintainer {
 			break;
 		}
 	}
-
 }

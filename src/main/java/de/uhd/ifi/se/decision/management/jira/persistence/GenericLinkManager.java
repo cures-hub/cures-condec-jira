@@ -101,7 +101,7 @@ public class GenericLinkManager {
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase databaseEntry : linksInDatabase) {
 			Link link = new Link(databaseEntry);
-			if (!link.isValid()) {
+			if (!link.isValid() || !link.getSource().existsInDatabase() || !link.getTarget().existsInDatabase()) {
 				isLinkDeleted = true;
 				LinkInDatabase.deleteLink(databaseEntry);
 			}

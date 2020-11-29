@@ -35,6 +35,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	protected List<Long> linkIds;
 	private KnowledgePersistenceManager persistenceManager;
 
+	// for elements that do not exist in database
+	private long id = -1;
+	private long linkId = -1;
+
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
 	 */
@@ -142,6 +146,23 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}
 		return isEdgeCreated;
+	}
+
+	public KnowledgeElement addVertexNotBeeingInDatabase(KnowledgeElement element) {
+		KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
+		if (existingElement != null) {
+			return existingElement;
+		}
+		--id;
+		element.setId(id);
+		element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
+		super.addVertex(element);
+		return element;
+	}
+
+	public void addEdgeNotBeeingInDatabase(Link link) {
+		link.setId(--linkId);
+		this.addEdge(link);
 	}
 
 	/**
@@ -310,5 +331,30 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		graphToBeCopied.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
 		graphToBeCopied.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
 		return copiedGraph;
+	}
+
+	public KnowledgeElement getElement(String elementKey) {
+		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			if (element.getKey().equals(elementKey)) {
+				return element;
+			}
+		}
+		return null;
+	}
+
+	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
+		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			if (element.getId() > 0) {
+				continue;
+			}
+			if (element.getSummary().equals(summary)) {
+				return element;
+			}
+		}
+		return null;
 	}
 }

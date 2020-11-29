@@ -5,18 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -30,8 +25,6 @@ public class GeneralMetricCalculator {
 
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
-	private List<KnowledgeElement> decisionKnowledgeCodeElements;
-	private Map<String, List<KnowledgeElement>> extractedIssueRelatedElements;
 	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
 
@@ -41,60 +34,7 @@ public class GeneralMetricCalculator {
 		this.filterSettings = filterSettings;
 		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
-			extractedIssueRelatedElements = new HashMap<>();
-			Map<String, List<KnowledgeElement>> elementMap = getDecisionKnowledgeElementsFromCode(
-					filterSettings.getProjectKey());
-			if (elementMap != null) {
-				this.decisionKnowledgeCodeElements = elementMap.get("Code");
-			} else {
-				this.decisionKnowledgeCodeElements = null;
-			}
-		}
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
-	}
-
-	private Map<String, List<KnowledgeElement>> getDecisionKnowledgeElementsFromCode(String projectKey) {
-		LOGGER.info("RequirementsDashboard getDecisionKnowledgeElementsFromCode 7");
-		// Extracts Decision Knowledge from Code Comments AND Commits
-		GitDecXtract gitExtract = new GitDecXtract(projectKey);
-
-		Map<String, List<KnowledgeElement>> resultMap = new HashMap<String, List<KnowledgeElement>>();
-		List<KnowledgeElement> allGatheredCommitElements = new ArrayList<>();
-		List<KnowledgeElement> allGatheredCodeElements = new ArrayList<>();
-		String filter = "(" + projectKey + "-)\\d+";
-		Pattern filterPattern = Pattern.compile(filter, Pattern.CASE_INSENSITIVE);
-
-		List<KnowledgeElement> gatheredCommitElements = new ArrayList<>();
-		List<RevCommit> defaultfeatureCommits = GitClient.getOrCreate(filterSettings.getProjectKey())
-				.getDefaultBranchCommits();
-		if (defaultfeatureCommits == null || defaultfeatureCommits.size() == 0) {
-			return resultMap;
-		} else {
-			for (RevCommit commit : defaultfeatureCommits) {
-				List<KnowledgeElement> extractedCommitElements = gitExtract.getElementsFromMessage(commit);
-				gatheredCommitElements.addAll(extractedCommitElements);
-				if (extractedCommitElements != null && extractedCommitElements.size() > 0) {
-					Matcher matcher = filterPattern.matcher(commit.getFullMessage());
-					if (matcher.find()) {
-						this.extractedIssueRelatedElements.put(matcher.group(), extractedCommitElements);
-					}
-				}
-			}
-			allGatheredCommitElements.addAll(gatheredCommitElements);
-			RevCommit baseCommit = defaultfeatureCommits.get(defaultfeatureCommits.size() - 2);
-			RevCommit lastFeatureBranchCommit = defaultfeatureCommits.get(0);
-			// TODO default branch
-			List<KnowledgeElement> extractedCodeElements = gitExtract.getElementsFromCode(baseCommit,
-					lastFeatureBranchCommit,
-					GitClient.getOrCreate(filterSettings.getProjectKey()).getBranches().get(0));
-			allGatheredCodeElements.addAll(extractedCodeElements);
-		}
-
-		resultMap.put("Commit", allGatheredCommitElements);
-		resultMap.put("Code", allGatheredCodeElements);
-		return resultMap;
-
 	}
 
 	public Map<String, Integer> numberOfCommentsPerIssue() {
@@ -126,37 +66,39 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	public Map<String, Integer> getKnowledgeSourceCount() {
-		LOGGER.info("RequirementsDashboard getKnowledgeSourceCount <1");
-		Map<String, Integer> sourceMap = new HashMap<String, Integer>();
-		if (decisionKnowledgeCodeElements != null) {
-			sourceMap.put("Code Comments", decisionKnowledgeCodeElements.size());
-		} else {
-			sourceMap.put("Code Comments", 0);
-		}
-		int numberIssues = 0;
-		int numberIssueContent = 0;
-		int numberCommitElements = 0;
+	public Map<String, String> getElementsFromDifferentOrigins() {
+		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
+		Map<String, String> originMap = new HashMap<>();
+
+		String elementsInJiraIssues = "";
+		String elementsInJiraIssueText = "";
+		String elementsInCommitMessages = "";
+		String elementsInCodeComments = "";
 		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				numberIssues++;
+				elementsInJiraIssues += element.getKey() + " ";
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-				numberIssueContent++;
 				if (element.getOrigin() == Origin.COMMIT) {
-					numberCommitElements++;
+					elementsInCommitMessages += element.getKey() + " ";
+				} else {
+					elementsInJiraIssueText += element.getKey() + " ";
 				}
 			}
+			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
+				elementsInCodeComments += element.getKey() + " ";
+			}
 		}
-		sourceMap.put("Jira Issue Description and Comments", numberIssueContent);
-		sourceMap.put("Entire Jira Issues", numberIssues);
-		sourceMap.put("Commit Message", numberCommitElements);
-		return sourceMap;
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.trim());
+		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
+		originMap.put("Commit Message", elementsInCommitMessages.trim());
+		originMap.put("Code Comment", elementsInCodeComments.trim());
+		return originMap;
 	}
 
 	public Map<String, Integer> getNumberOfRelevantComments() {

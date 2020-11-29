@@ -413,6 +413,11 @@ public class FilterSettings {
 		if (elementKey == null || elementKey.isBlank()) {
 			return;
 		}
+		if (elementKey.contains(":graph")) {
+			// not in database, only in RAM (singleton KnowledgeGraph object)
+			selectedElement = KnowledgeGraph.getOrCreate(elementKey.split(":")[0]).getElement(elementKey);
+			return;
+		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":code")) {
 			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
