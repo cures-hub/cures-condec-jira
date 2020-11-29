@@ -553,7 +553,7 @@ public class ConfigRest {
 			if (isActivated) {
 				ApplicationUser user = AuthenticationManager.getUser(request);
 				List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-				jiraIssues.parallelStream().forEach(
+				jiraIssues.forEach(
 						jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
 			}
 			return Response.ok(Status.ACCEPTED).build();

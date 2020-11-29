@@ -36,4 +36,11 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 		// metrics are accessed via REST API
 		assertEquals(0, metricsMap.size());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetAdditionalParameters() {
+		Map<String, Object> additionalParameters = dashboardItem.getAdditionalParameters();
+		assertEquals(2, additionalParameters.size());
+	}
 }
