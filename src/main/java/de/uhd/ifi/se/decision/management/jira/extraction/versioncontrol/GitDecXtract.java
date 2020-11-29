@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -48,20 +49,25 @@ public class GitDecXtract {
 
 		RevCommit baseCommit = featureBranchCommits.get(0);
 		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
-		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit, branch));
+		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit));
 		return elements;
 	}
 
-	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd, Ref branch) {
-		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
+	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
 		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
+		return getElementsFromCode(diff);
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(Diff diff) {
+		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
 
 		return elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
-			element.setKey(updateKeyForCodeExtractedElementWithInformationHash(element));
+			element.setDescription(updateKeyForCodeExtractedElementWithInformationHash(element));
+			element.setDocumentationLocation(DocumentationLocation.CODE);
 			return element;
 		}).collect(Collectors.toList());
 	}

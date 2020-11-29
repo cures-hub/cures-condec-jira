@@ -41,7 +41,8 @@
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "incomplete"];
 
-		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Commit", "PullRequest"];
+		// Todo handle origin
+		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Code", "PullRequest"];
 
 		this.linkTypes = [];
 

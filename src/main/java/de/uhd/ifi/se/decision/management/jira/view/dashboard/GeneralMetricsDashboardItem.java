@@ -17,7 +17,7 @@ public class GeneralMetricsDashboardItem extends ConDecDashboardItem {
 
 		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
 		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
-		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getKnowledgeSourceCount());
+		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getElementsFromDifferentOrigins());
 		metrics.put("numberOfRelevantComments", metricCalculator.getNumberOfRelevantComments());
 
 		return metrics;

@@ -35,6 +35,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	protected List<Long> linkIds;
 	private KnowledgePersistenceManager persistenceManager;
 
+	// for elements that do not exist in database
+	private static long id = 0;
+
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
 	 */
@@ -142,6 +145,19 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			LOGGER.error("Error adding link to the graph: " + e.getMessage());
 		}
 		return isEdgeCreated;
+	}
+
+	@Override
+	public boolean addVertex(KnowledgeElement element) {
+		if (element.getId() == 0 && element.getDocumentationLocation() == DocumentationLocation.CODE) {
+			if (getElementsNotInDatabaseBySummary(element.getSummary()) != null) {
+				return false;
+			}
+			id--;
+			element.setId(id);
+			element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
+		}
+		return super.addVertex(element);
 	}
 
 	/**
@@ -310,5 +326,30 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		graphToBeCopied.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
 		graphToBeCopied.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
 		return copiedGraph;
+	}
+
+	public KnowledgeElement getElement(String elementKey) {
+		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			if (element.getKey().equals(elementKey)) {
+				return element;
+			}
+		}
+		return null;
+	}
+
+	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
+		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
+		while (iterator.hasNext()) {
+			KnowledgeElement element = iterator.next();
+			if (element.getId() > 0) {
+				continue;
+			}
+			if (element.getSummary().equals(summary)) {
+				return element;
+			}
+		}
+		return null;
 	}
 }
