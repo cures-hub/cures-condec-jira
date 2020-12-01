@@ -123,12 +123,6 @@ public class RationaleFromCodeCommentExtractor {
 		}
 		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s*\n\\s*", " ");
 		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s+", " ");
-		while (rationaleTextSanitized.startsWith("\\s")) {
-			rationaleTextSanitized = rationaleTextSanitized.substring(1);
-		}
-		while (rationaleTextSanitized.endsWith("\\s")) {
-			rationaleTextSanitized = rationaleTextSanitized.substring(0, rationaleTextSanitized.length() - 1);
-		}
 		return rationaleTextSanitized;
 	}
 
