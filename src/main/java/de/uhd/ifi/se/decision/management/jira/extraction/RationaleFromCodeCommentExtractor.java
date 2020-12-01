@@ -22,7 +22,6 @@ public class RationaleFromCodeCommentExtractor {
 	private ArrayList<KnowledgeElement> elements;
 	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	private CodeComment comment;
-	private final Set<String> COMMENT_STRINGS;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERNS;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
@@ -33,7 +32,7 @@ public class RationaleFromCodeCommentExtractor {
 		String tagSearch = String.join("|", decKnowTags.stream().map(tag -> "@" + tag + "\\:?") // at-char + ratType +
 																								// colon or blank
 				.collect(Collectors.toList()));
-		COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all characters that may interrupt multi-line decision knowledge elements
+		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all characters that may interrupt multi-line decision knowledge elements
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
 		String TWO_EMPTY_LINES_PATTERN_STRING = "\\s*\\n\\s*(";
 		NEWLINE_WITH_COMMENT_CHAR_PATTERNS = new ArrayList<String>();
@@ -118,18 +117,19 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	private String sanitize(String rationaleText) {
+		String rationaleTextSanitized = rationaleText;
 		for (String pattern : NEWLINE_WITH_COMMENT_CHAR_PATTERNS) {
-			rationaleText = rationaleText.replaceAll(pattern, "\n");
+			rationaleTextSanitized = rationaleTextSanitized.replaceAll(pattern, "\n");
 		}
-		rationaleText = rationaleText.replaceAll("\\s*\n\\s*", " ");
-		rationaleText = rationaleText.replaceAll("\\s+", " ");
-		while (rationaleText.startsWith("\\s")) {
-			rationaleText = rationaleText.substring(1);
+		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s*\n\\s*", " ");
+		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s+", " ");
+		while (rationaleTextSanitized.startsWith("\\s")) {
+			rationaleTextSanitized = rationaleTextSanitized.substring(1);
 		}
-		while (rationaleText.endsWith("\\s")) {
-			rationaleText = rationaleText.substring(0, rationaleText.length() - 1);
+		while (rationaleTextSanitized.endsWith("\\s")) {
+			rationaleTextSanitized = rationaleTextSanitized.substring(0, rationaleTextSanitized.length() - 1);
 		}
-		return rationaleText;
+		return rationaleTextSanitized;
 	}
 
 	/**
