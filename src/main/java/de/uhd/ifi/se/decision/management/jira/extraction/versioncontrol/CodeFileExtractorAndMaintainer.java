@@ -93,7 +93,7 @@ public class CodeFileExtractorAndMaintainer {
 							link = new Link(currentAlternativeOrDecision, elementInGraph);
 						}
 					} else {
-						if (currentIssue == null) {
+						if (currentIssue == null || element.getType() == KnowledgeType.GOAL || element.getType() == KnowledgeType.PROBLEM) {
 							link = new Link(source, elementInGraph);
 						} else {
 							link = new Link(currentIssue, elementInGraph);
