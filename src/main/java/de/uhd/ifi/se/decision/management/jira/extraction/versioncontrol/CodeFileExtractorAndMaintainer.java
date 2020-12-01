@@ -5,6 +5,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
@@ -65,10 +66,39 @@ public class CodeFileExtractorAndMaintainer {
 				}
 				Diff diffForFile = new Diff();
 				diffForFile.addChangedFile(changedFile);
+				KnowledgeElement currentIssue = null;
+				KnowledgeElement currentAlternativeOrDecision = null;
 				for (KnowledgeElement element : gitExtract.getElementsFromCode(diffForFile)) {
 					KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
 							.addVertexNotBeingInDatabase(element);
-					Link link = new Link(source, elementInGraph);
+					Link link = new Link();
+					if (element.getType() == KnowledgeType.ISSUE) {
+						link = new Link(source, elementInGraph);
+						currentIssue = elementInGraph;
+					} else if (element.getType() == KnowledgeType.ALTERNATIVE || element.getType() == KnowledgeType.DECISION) {
+						if (currentIssue == null) { // something went wrong or somebody violated structure
+							link = new Link(source, elementInGraph);
+							currentAlternativeOrDecision = null;
+						} else {
+							link = new Link(currentIssue, elementInGraph);
+							currentAlternativeOrDecision = elementInGraph;
+						}
+					} else if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON || element.getType() == KnowledgeType.ARGUMENT) {
+						if (currentIssue == null) { // something went wrong or somebody violated structure
+							link = new Link(source, elementInGraph);
+							currentAlternativeOrDecision = null;
+						} else if (currentAlternativeOrDecision == null) { // something still went wrong or somebody still violated structure
+							link = new Link(currentIssue, elementInGraph);
+						} else {
+							link = new Link(currentAlternativeOrDecision, elementInGraph);
+						}
+					} else {
+						if (currentIssue == null) {
+							link = new Link(source, elementInGraph);
+						} else {
+							link = new Link(currentIssue, elementInGraph);
+						}
+					}
 					KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeingInDatabase(link);
 				}
 			}
