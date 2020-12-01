@@ -26,7 +26,7 @@ public class TestGetElement extends TestSetUp {
 	public void testElementByKey() {
 		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
 		elementNotInDatabase.setProject("TEST");
-		graph.addVertexNotBeeingInDatabase(elementNotInDatabase);
+		graph.addVertexNotBeingInDatabase(elementNotInDatabase);
 		KnowledgeElement elementInGraph = graph.getElement("TEST:graph:-2");
 		assertEquals(elementNotInDatabase, elementInGraph);
 		KnowledgeGraph.instances.clear();

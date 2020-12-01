@@ -247,7 +247,7 @@ public class TestFilterSettings extends TestSetUp {
 
 		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
 		elementNotInDatabase.setProject("TEST");
-		KnowledgeGraph.getOrCreate("TEST").addVertexNotBeeingInDatabase(elementNotInDatabase);
+		KnowledgeGraph.getOrCreate("TEST").addVertexNotBeingInDatabase(elementNotInDatabase);
 		filterSettings.setSelectedElement("TEST:graph:-2");
 		assertEquals("TEST:graph:-2", filterSettings.getSelectedElement().getKey());
 	}
