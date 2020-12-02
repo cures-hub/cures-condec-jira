@@ -73,12 +73,14 @@ public abstract class TestSetUpGit extends TestSetUp {
 				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + 
 				"\n" +
 				"// @goal This is a goal outside an issue, let's see where it lands.\n" +
+				"// @assumption This is an assumption outside an issue, let's see where it lands.\n" +
 				"\n" +
 				"// @alternative Here is another structure violation!\n" + 
 				"\n" + 
 				"/**\n" +
-				" * @issue Is this yet another style violation?\n" +
+				" * @issue Is this yet another structure violation?\n" +
 				" * @con It would appear so.\n" + 
+				" * @assumption Here is an assumption inside an issue, let's see where this one lands.\n" +
 				" * @goal Here is a goal inside an issue, let's see where this one lands.\n" +
 				" */" +
 				"\n" +
