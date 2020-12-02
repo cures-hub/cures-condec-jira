@@ -4,6 +4,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.TruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -23,6 +24,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	protected FScore fScore;
 	protected AveragePrecision averagePrecision;
 	protected ReciprocalRank reciprocalRank;
+	protected TruePositives truePositives;
 	protected List<Recommendation> recommendations;
 	protected List<KnowledgeElement> solutionOptions;
 
@@ -30,9 +32,6 @@ public class TestEvaluationMetrics extends TestSetUp {
 	public void setUp() {
 		init();
 
-		fScore = new FScore();
-		averagePrecision = new AveragePrecision();
-		reciprocalRank = new ReciprocalRank();
 
 		recommendations = new ArrayList<>();
 		solutionOptions = new ArrayList<>();
@@ -64,20 +63,21 @@ public class TestEvaluationMetrics extends TestSetUp {
 		solutionOptions.add(alternativeDiscarded);
 		solutionOptions.add(decision);
 
+
+		fScore = new FScore(recommendations, solutionOptions, 5);
+		averagePrecision = new AveragePrecision(recommendations, solutionOptions, 5);
+		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions, 5);
+		truePositives = new TruePositives(recommendations, solutionOptions, 5);
+
 	}
 
 	@Test
 	public void testCalculations() {
-		assertEquals(0.5, fScore.calculateMetric(recommendations, solutionOptions, 5), 0.0);
-		assertEquals(1.0, averagePrecision.calculateMetric(recommendations, solutionOptions, 5), 0.0);
-		assertEquals(1.0, reciprocalRank.calculateMetric(recommendations, solutionOptions, 5), 0.0);
+		assertEquals(0.5, fScore.calculateMetric(), 0.0);
+		assertEquals(1.0, averagePrecision.calculateMetric(), 0.0);
+		assertEquals(1.0, reciprocalRank.calculateMetric(), 0.0);
+		assertEquals(1.0, truePositives.calculateMetric(), 0.0);
 	}
 
-	@Test
-	public void testDefault() {
-		assertEquals(0.0, fScore.calculateMetric(new ArrayList<>(), new ArrayList<>(), 5), 0.0);
-		assertEquals(0.0, averagePrecision.calculateMetric(new ArrayList<>(), new ArrayList<>(), 5), 0.0);
-		assertEquals(0.0, reciprocalRank.calculateMetric(new ArrayList<>(), new ArrayList<>(), 5), 0.0);
-	}
 
 }

@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.*;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -11,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
+import weka.core.pmml.jaxbbindings.True;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -81,17 +79,12 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		Map<String, Double> metrics = new HashMap<>();
 
-		List<EvaluationMethod> evaluationMethods = new ArrayList<>();
-		evaluationMethods.add(new FScore());
-		evaluationMethods.add(new ReciprocalRank());
-		evaluationMethods.add(new AveragePrecision());
-
-		for (EvaluationMethod evaluationMethod : evaluationMethods) {
-			metrics.put(evaluationMethod.toString(), evaluationMethod.calculateMetric(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		}
-
+		List<EvaluationMethod> metrics = new ArrayList<>();
+		metrics.add(new FScore(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new ReciprocalRank(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new TruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 
 		return new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), metrics);
 	}

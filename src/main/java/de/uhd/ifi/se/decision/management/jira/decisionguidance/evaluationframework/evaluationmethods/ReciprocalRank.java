@@ -5,10 +5,16 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.List;
 
-public class ReciprocalRank implements EvaluationMethod {
+public class ReciprocalRank extends EvaluationMethod {
+
+	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
+		this.recommendations = recommendations;
+		this.solutionOptions = solutionOptions;
+		this.topKResults = topKResults;
+	}
 
 	@Override
-	public double calculateMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
+	public double calculateMetric() {
 		double sum_RR = 0.0;
 
 		int maxResults = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
@@ -21,11 +27,16 @@ public class ReciprocalRank implements EvaluationMethod {
 				}
 			}
 		}
-		return  0.0;
+		return 0.0;
 	}
 
 	@Override
-	public String toString() {
+	public String getName() {
 		return "Reciprocal Rank";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Measures the position of the first correct result";
 	}
 }
