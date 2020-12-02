@@ -14,6 +14,12 @@
     </div>
 </form>
 
+<div style="display:flex; gap:3px;padding-top:6px;padding-bottom:6px;;margin-top:6px;">
+    <h6>Knowledgesources:</h6>
+    <div>DBPedia<span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span></div>
+    <div>Jira-Projekt
+        <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span></div>
+</div>
 <table id="recommendation-container" class="aui">
     <thead>
     <tr>
@@ -29,6 +35,10 @@
 </table>
 <script>
     conDecDecisionGuidance.initView();
+
+
+
+
 </script>
 
 

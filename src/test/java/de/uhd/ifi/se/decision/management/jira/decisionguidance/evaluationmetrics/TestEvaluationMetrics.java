@@ -4,6 +4,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -35,8 +37,10 @@ public class TestEvaluationMetrics extends TestSetUp {
 		recommendations = new ArrayList<>();
 		solutionOptions = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("TEST", "Test Recommendation", "Test Url");
-		Recommendation recommendation2 = new Recommendation("TEST", "Recommendation Test", "Test Url");
+		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", true);
+
+		Recommendation recommendation = new Recommendation(knowledgeSource, "Test Recommendation", "Test Url");
+		Recommendation recommendation2 = new Recommendation(knowledgeSource, "Recommendation Test", "Test Url");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);

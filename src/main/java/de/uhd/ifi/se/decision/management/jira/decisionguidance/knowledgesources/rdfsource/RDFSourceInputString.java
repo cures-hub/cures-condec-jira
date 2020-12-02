@@ -14,8 +14,9 @@ import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RDFSourceInputString implements InputMethod<String> {
+public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
+	protected RDFSource knowledgeSource;
 	protected String projectKey;
 	protected String name;
 	protected String service;
@@ -23,15 +24,17 @@ public class RDFSourceInputString implements InputMethod<String> {
 	protected String timeout;
 	protected int limit;
 
-	public InputMethod setData(String projectKey, String name, String service, String queryName, String timeout, int limit) {
-		this.projectKey = projectKey;
-		this.name = name;
-		this.service = service;
-		this.queryString = queryName;
-		this.timeout = timeout;
-		this.limit = limit;
-		return this;
+	@Override
+	public void setData(RDFSource knowledgeSource) {
+		this.knowledgeSource = knowledgeSource;
+		this.projectKey = this.knowledgeSource.getProjectKey();
+		this.name = this.knowledgeSource.getName();
+		this.service = this.knowledgeSource.getService();
+		this.queryString = this.knowledgeSource.getQueryString();
+		this.timeout = this.knowledgeSource.getTimeout();
+		this.limit = this.knowledgeSource.getLimit();
 	}
+
 
 	private List<String> combineKeywords(List<String> keywords) {
 
@@ -130,7 +133,7 @@ public class RDFSourceInputString implements InputMethod<String> {
 				QuerySolution row = resultSet.nextSolution();
 
 
-				Recommendation recommendation = new Recommendation(this.name, row.get("?alternative").toString(), row.get("?url").toString());
+				Recommendation recommendation = new Recommendation(this.knowledgeSource, row.get("?alternative").toString(), row.get("?url").toString());
 				recommendations.add(recommendation);
 
 				//TODO keep arguments variable
@@ -158,7 +161,7 @@ public class RDFSourceInputString implements InputMethod<String> {
 
 			HashSet<Recommendation> uniqueRecommendation = new HashSet<>(recommendations);
 			for (Recommendation recommendation : uniqueRecommendation) {
-				List<Argument> arguments = argumentsMap.get(recommendation.getRecommendations()).stream().distinct().collect(Collectors.toList());
+				List<Argument> arguments = argumentsMap.get(recommendation.getRecommendation()).stream().distinct().collect(Collectors.toList());
 				if (arguments != null)
 					recommendation.setArguments(arguments);
 				scoreMap.put(recommendation, Collections.frequency(recommendations, recommendation));

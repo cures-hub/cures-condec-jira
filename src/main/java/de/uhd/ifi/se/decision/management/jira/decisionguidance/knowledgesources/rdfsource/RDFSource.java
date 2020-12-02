@@ -31,6 +31,7 @@ public class RDFSource extends KnowledgeSource {
 		this.timeout = "30000";
 		this.limit = 10;
 		this.isActivated = true;
+		this.icon = "aui-iconfont-download";
 	}
 
 	/**
@@ -40,25 +41,16 @@ public class RDFSource extends KnowledgeSource {
 	 * @param name
 	 * @param timeout
 	 */
-	public RDFSource(String projectKey, String service, String queryString, String name, String timeout) {
+	public RDFSource(String projectKey, String service, String queryString, String name, String timeout, int limit) {
 		this.projectKey = projectKey;
 		this.service = service;
 		this.queryString = queryString;
 		this.name = name;
 		this.timeout = timeout;
 		this.isActivated = true;
-		this.limit = 10;
+		this.limit = limit;
+		this.icon = "aui-iconfont-download";
 	}
-
-	@Override
-	public void setData() {
-		if (recommenderType.equals(RecommenderType.KEYWORD))
-			((RDFSourceInputString) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
-		else {
-			((RDFSourceInputKnowledgeElement) this.inputMethod).setData(projectKey, name, service, queryString, timeout, limit);
-		}
-	}
-
 
 	@Override
 	public InputMethod getInputMethod() {
@@ -114,5 +106,10 @@ public class RDFSource extends KnowledgeSource {
 	@Override
 	public int hashCode() {
 		return Objects.hash(name);
+	}
+
+	@Override
+	public String getIcon() {
+		return "aui-iconfont-download";
 	}
 }

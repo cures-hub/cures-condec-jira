@@ -20,10 +20,10 @@ public class FScore implements EvaluationMethod {
 		int intersectedRejected = 0;
 
 		for (Recommendation recommendation : recommendations) {
-			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getRecommendations(), KnowledgeStatus.IDEA);
-			intersectingDiscarded += this.countIntersections(solutionOptions, recommendation.getRecommendations(), KnowledgeStatus.DISCARDED);
-			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getRecommendations(), KnowledgeStatus.DECIDED);
-			intersectedRejected += this.countIntersections(solutionOptions, recommendation.getRecommendations(), KnowledgeStatus.REJECTED);
+			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.IDEA);
+			intersectingDiscarded += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.DISCARDED);
+			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.DECIDED);
+			intersectedRejected += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.REJECTED);
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;

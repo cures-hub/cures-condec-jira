@@ -1,26 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestRecommendation extends TestSetUp {
+
+	private KnowledgeSource knowledgeSource;
 
 	@Before
 	public void setUp() {
 		init();
+		knowledgeSource = new ProjectSource("TEST", "TEST", true);
 	}
 
 	@Test
@@ -31,11 +35,12 @@ public class TestRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendation() {
-		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+
+		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
 		recommendation.setUrl("TEST URL");
 		recommendation.setScore(123);
 		assertEquals("TEST", recommendation.getKnowledgeSourceName());
-		assertEquals("TEST", recommendation.getRecommendations());
+		assertEquals("TEST", recommendation.getRecommendation());
 		assertEquals("TEST URL", recommendation.getUrl());
 		assertEquals(123, recommendation.getScore());
 		assertEquals(0, recommendation.getArguments().size());
@@ -66,26 +71,20 @@ public class TestRecommendation extends TestSetUp {
 
 	@Test
 	public void testHashCode() {
-		Recommendation recommendation = new Recommendation("TEST", "TEST", "TESTURL");
+		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
 
 	}
 
 	@Test
 	public void testEquals() {
-		Recommendation recommendationA = new Recommendation();
-		recommendationA.setKnowledgeSourceName("SourceA");
-		recommendationA.setRecommendations("Recommendation");
+		KnowledgeSource sourceA = new ProjectSource("TEST", "SourceA", true);
+		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
 
-		Recommendation recommendationB = new Recommendation();
-		recommendationB.setKnowledgeSourceName("SourceA");
-		recommendationB.setRecommendations("Recommendation");
+		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceA", true);
+		Recommendation recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
 
 		assertEquals(recommendationA, recommendationB);
-
-		recommendationB.setKnowledgeSourceName("SourceB");
-
-		assertNotEquals(recommendationA, recommendationB);
 	}
 
 	@Test

@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSourceInput;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
@@ -16,7 +15,6 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestProjectSource extends TestSetUp {
 
@@ -47,7 +45,7 @@ public class TestProjectSource extends TestSetUp {
 	@Test
 	public void testStringInput() {
 		ProjectSourceInputString input = new ProjectSourceInputString();
-		input.setData("TEST", "TEST", null);
+		input.setData(new ProjectSource("TEST", "TEST", true));
 		List<Recommendation> recommendations = input.getResults("How can we implement the feature");
 		assertEquals(2, recommendations.size());
 	}
@@ -55,22 +53,12 @@ public class TestProjectSource extends TestSetUp {
 	@Test
 	public void testStringKnowledgeElement() {
 		ProjectSourceInputKnowledgeElement input = new ProjectSourceInputKnowledgeElement();
-		input.setData("TEST", "TEST", null);
+		input.setData(new ProjectSource("TEST", "TEST", true));
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setId(123);
 		knowledgeElement.setSummary("How can we implement the feature");
 		List<Recommendation> recommendations = input.getResults(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(2, recommendations.size());
-	}
-
-	@Test
-	public void testSetData() {
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
-		projectSource.setData();
-		ProjectSourceInput inputMethod = new ProjectSourceInputString();
-		projectSource.setInputMethod(inputMethod);
-		projectSource.setData();
-		assertNotNull(inputMethod.getResults("TEST"));
 	}
 
 	@Test

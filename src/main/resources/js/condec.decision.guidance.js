@@ -49,14 +49,14 @@
 		});
 
 		sortedByScore.forEach((recommendation) => {
-				const alternative = recommendation.recommendations;
+				const alternative = recommendation.recommendation;
 				let url = "";
 				let tableRow = "";
 
 				counter += 1;
 				tableRow += "<tr>";
-				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendations + "</a></td>";
-				tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
+				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
+				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
 				tableRow += "<td>"+ recommendation.score +"%</td>";
 				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
 				tableRow += "<td>";
@@ -72,7 +72,7 @@
 
 				$(" #row_" + counter).click(function() {
 					const currentIssue = conDecDecisionTable.getCurrentIssue();
-					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendations, "");
+					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendation, "");
 					/*recommendation.arguments.forEach((argument) => {
 
 						if(argument.type == "Con") {

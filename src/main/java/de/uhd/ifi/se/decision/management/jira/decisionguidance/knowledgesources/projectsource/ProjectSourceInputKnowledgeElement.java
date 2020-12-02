@@ -17,7 +17,7 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 		List<Recommendation> recommendations = new ArrayList<>();
 
 		ProjectSourceInputString projectSourceInputString = new ProjectSourceInputString();
-		projectSourceInputString.setData(projectKey, name, knowledgeElements);
+		projectSourceInputString.setData(this.knowledgeSource);
 
 		if (knowledgeElement != null) {
 

@@ -11,6 +11,7 @@ public abstract class KnowledgeSource {
 	protected String projectKey;
 	protected boolean isActivated;
 	protected String name;
+	protected String icon;
 
 	protected InputMethod inputMethod;
 	protected RecommenderType recommenderType;
@@ -25,7 +26,7 @@ public abstract class KnowledgeSource {
 	 */
 	public List<Recommendation> getResults(Object object) {
 		getInputMethod();
-		setData();
+		inputMethod.setData(this);
 		return inputMethod.getResults(object);
 //		try {
 //
@@ -34,8 +35,6 @@ public abstract class KnowledgeSource {
 //		}
 		//return new ArrayList<>();
 	}
-
-	public abstract void setData();
 
 	public abstract InputMethod getInputMethod();
 
@@ -70,5 +69,13 @@ public abstract class KnowledgeSource {
 
 	public void setRecommenderType(RecommenderType recommenderType) {
 		this.recommenderType = recommenderType;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 }

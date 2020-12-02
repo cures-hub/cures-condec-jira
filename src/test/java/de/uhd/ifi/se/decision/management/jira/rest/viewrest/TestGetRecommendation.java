@@ -35,9 +35,9 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendation() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 
 	}
 
@@ -72,7 +72,7 @@ public class TestGetRecommendation extends TestSetUp {
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
 		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString());
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
 	}
 
 //	@Test
@@ -96,7 +96,7 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationEvaluationActiveSource() {
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 2, "TEST", 5, "s").getStatus());
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendationEvaluation(request, projectKey, validKeyword, 2, "TEST", 5, "i").getStatus());
 	}
 
 	@Test

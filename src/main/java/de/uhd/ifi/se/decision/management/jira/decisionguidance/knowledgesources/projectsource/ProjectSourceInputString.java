@@ -82,9 +82,9 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	protected Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
 		for (KnowledgeType knowledgeType : knowledgeTypes) {
 			if (source.getType() == knowledgeType)
-				return new Recommendation(this.name, source.getSummary(), source.getUrl());
+				return new Recommendation(this.knowledgeSource, source.getSummary(), source.getUrl());
 			if (target.getType() == knowledgeType)
-				return new Recommendation(this.name, target.getSummary(), target.getUrl());
+				return new Recommendation(this.knowledgeSource, target.getSummary(), target.getUrl());
 		}
 
 		return null;

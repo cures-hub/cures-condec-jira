@@ -87,8 +87,10 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
+		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "Source A", true);
+
+		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", 0, "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1", 0, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -103,8 +105,11 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE B", "SUMMARY 1", 0, "");
+		KnowledgeSource knowledgeSourceA= new ProjectSource("TEST", "Source A", true);
+		KnowledgeSource knowledgeSourceB = new ProjectSource("TEST", "Source B", true);
+
+		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1", 0, "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1", 0, "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
