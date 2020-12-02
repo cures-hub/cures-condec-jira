@@ -344,7 +344,7 @@ public class ConfigRest {
 		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
 			return Response.ok(true).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found"))
 					.build();
 		}
 	}
@@ -356,7 +356,7 @@ public class ConfigRest {
 		if (DecisionGroupManager.deleteGroup(groupName, projectKey)) {
 			return Response.ok(true).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No Group to Rename found"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found"))
 					.build();
 		}
 	}

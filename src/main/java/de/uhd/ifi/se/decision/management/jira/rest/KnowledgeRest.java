@@ -250,12 +250,12 @@ public class KnowledgeRest {
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(sourceId,
 			location);
 		DecisionGroupManager.setGroupAssignment(groupsToAssign, element);
-		inheritGroupAssignent(groupsToAssign, element);
+		inheritGroupAssignment(groupsToAssign, element);
 
 		return Response.status(Status.OK).build();
 	}
 
-	private void inheritGroupAssignent(List<String> groupsToAssign, KnowledgeElement element) {
+	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
 		if (!element.getDocumentationLocation().getIdentifier().equals("c")) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
