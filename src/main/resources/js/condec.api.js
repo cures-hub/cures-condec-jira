@@ -669,8 +669,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, issueID,  callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID,
+	ConDecAPI.prototype.getRecommendation = function (projectKey, keyword, issueID, documentationLocation,  callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID + "&documentationLocation=" + documentationLocation,
 			function (error, results) {
 				callback(results, error);
 			});
@@ -679,8 +679,8 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueID, knowledgeSources, kResults, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID +  "&knowledgeSource=" + knowledgeSources +  "&kResults=" + kResults,
+	ConDecAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueID, knowledgeSources, kResults, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID +  "&knowledgeSource=" + knowledgeSources +  "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
 			function (error, results) {
 				callback(results, error);
 			});

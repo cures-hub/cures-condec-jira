@@ -1,27 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -46,6 +28,17 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * REST resource for view
@@ -288,7 +281,7 @@ public class ViewRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									  @QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID) {
+									  @QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID, @QueryParam("documentationLocation") String documentationLocation) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -304,7 +297,10 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
+		//KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueID, documentationLocation);
 
 
 		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
@@ -342,7 +338,7 @@ public class ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 												@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults) {
+												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -353,8 +349,9 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KnowledgeElement issue = this.getIssueFromDocumentationLocation(issueID, projectKey);
-		// we use?
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		KnowledgeElement issue = manager.getKnowledgeElement(issueID, documentationLocation);
 
 		if (issue == null) {
 			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))

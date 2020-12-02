@@ -25,7 +25,8 @@
 
 			spinner.show();
 			$("#recommendation-error").hide();
-			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,  function(results, error) {
+			console.log(currentIssue);
+			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation ,  function(results, error) {
 
 				if (error === null) {
 					buildRecommendationTable(results);
@@ -60,8 +61,10 @@
 				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
 				tableRow += "<td>";
 				recommendation.arguments.forEach((argument) => {
-					tableRow += "<img src='" + argument.image + "'/>";
-					tableRow += argument.summary;
+					if(argument) {
+						tableRow += "<img src='" + argument.image + "'/>";
+						tableRow += argument.summary;
+					}
 				});
 				tableRow += "</td>";
 				tableRow += "</tr>";
