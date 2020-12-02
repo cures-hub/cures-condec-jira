@@ -93,28 +93,7 @@ public class FilteringManager {
 	private Set<KnowledgeElement> getElementsInLinkDistance() {
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 		int linkDistance = filterSettings.getLinkDistance();
-		return new HashSet<>(getLinkedElements(selectedElement, linkDistance));
-	}
-
-	private Set<KnowledgeElement> getLinkedElements(KnowledgeElement currentElement, int currentDistance) {
-		Set<KnowledgeElement> elements = new HashSet<>();
-		Set<Link> traversedLinks = new HashSet<>();
-		elements.add(currentElement);
-
-		if (currentDistance == 0) {
-			return elements;
-		}
-		for (Link link : graph.edgesOf(currentElement)) {
-			if (!traversedLinks.add(link)) {
-				continue;
-			}
-			KnowledgeElement oppositeElement = link.getOppositeElement(currentElement);
-			if (oppositeElement == null) {
-				continue;
-			}
-			elements.addAll(getLinkedElements(oppositeElement, currentDistance - 1));
-		}
-		return elements;
+		return new HashSet<>(selectedElement.getLinkedElements(linkDistance));
 	}
 
 	private Graph<KnowledgeElement, Link> getSubgraphMatchingLinkTypes(Graph<KnowledgeElement, Link> subgraph) {
