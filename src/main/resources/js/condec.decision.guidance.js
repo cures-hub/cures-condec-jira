@@ -58,7 +58,7 @@
 				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
 				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
 				tableRow += "<td>"+ recommendation.score +"%</td>";
-				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
+				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" +  "Accept" + "</button></td>";
 				tableRow += "<td>";
 				recommendation.arguments.forEach((argument) => {
 					if(argument) {
