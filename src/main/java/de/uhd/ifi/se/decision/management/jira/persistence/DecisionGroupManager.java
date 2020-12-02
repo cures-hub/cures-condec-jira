@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -48,6 +49,15 @@ public class DecisionGroupManager {
 			if (dgData.getGroup().equals(group) && dgData.getSourceId() == element.getId()
 					&& dgData.getSourceDocumentationLocation().equals(element.getDocumentationLocation().getIdentifier())) {
 				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
+			}
+		}
+
+		if (element.getDocumentationLocation().getIdentifier().equals("c")) {
+			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
+			for (KnowledgeElement childElement : childElements) {
+				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
+					isDeleted = isDeleted && deleteGroupAssignment(group, childElement);
+				}
 			}
 		}
 		return isDeleted;
@@ -99,6 +109,16 @@ public class DecisionGroupManager {
 		for (String group : groups) {
 			id = insertGroup(group, element);
 		}
+
+		if (element.getDocumentationLocation().getIdentifier().equals("c")) {
+			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
+			for (KnowledgeElement childElement : childElements) {
+				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
+					success = success && setGroupAssignment(groups, childElement);
+				}
+			}
+		}
+
 		return (success && id != -1);
 
 	}
@@ -148,7 +168,7 @@ public class DecisionGroupManager {
 	 */
 	public static List<String> getGroupsForElement(long elementId, DocumentationLocation documentationLocation) {
 		List<String> groups = new ArrayList<>();
-		if (elementId <= 0 || documentationLocation == null) {
+		if (elementId == 0 || elementId == -1 || documentationLocation == null) {
 			return null;
 		}
 		String identifier = documentationLocation.getIdentifier();
@@ -189,6 +209,20 @@ public class DecisionGroupManager {
 		groupInDatabase.setProjectKey(sourceElement.getProject().getProjectKey());
 		groupInDatabase.setGroup(group);
 		groupInDatabase.save();
+
+		List<Long> returnedIds = new ArrayList<Long>();
+
+		if (sourceElement.getDocumentationLocation().getIdentifier().equals("c")) {
+			Set<KnowledgeElement> childElements = sourceElement.getLinkedElements(3);
+			for (KnowledgeElement childElement : childElements) {
+				if (childElement.getId() < 0 && childElement.getDescription().contains(sourceElement.getSummary())) {
+					returnedIds.add(insertGroup(group, childElement));
+				}
+			}
+		}
+		if (returnedIds.contains(-1L)) {
+			return -1;
+		}
 		return groupInDatabase.getId();
 	}
 
