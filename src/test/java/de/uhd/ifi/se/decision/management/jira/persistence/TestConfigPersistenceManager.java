@@ -589,10 +589,10 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetAndGetRecommendationInput() {
 		// assertEquals(RecommenderType.getDefault(),
 		// ConfigPersistenceManager.getRecommendationInput("TEST"));
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
-		assertEquals(RecommenderType.KEYWORD, ConfigPersistenceManager.getRecommendationInput("TEST"));
-		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD");
-		assertEquals(RecommenderType.getDefault(), ConfigPersistenceManager.getRecommendationInput(null));
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
+		assertEquals(true, ConfigPersistenceManager.getRecommendationInput("TEST", "KEYWORD"));
+		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
+		assertEquals(false, ConfigPersistenceManager.getRecommendationInput(null, null));
 	}
 
 	@Test

@@ -32,6 +32,9 @@ public abstract class BaseRecommender<T> {
 		return this;
 	}
 
+	public abstract RecommenderType getRecommenderType();
+
+
 	public List<KnowledgeSource> getKnowledgeSources() {
 		return this.knowledgeSources;
 	}

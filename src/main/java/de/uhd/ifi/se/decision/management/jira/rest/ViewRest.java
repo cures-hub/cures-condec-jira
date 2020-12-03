@@ -37,8 +37,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * REST resource for view
@@ -302,35 +304,50 @@ public class ViewRest {
 
 		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueID, documentationLocation);
 
+		List<BaseRecommender> recommenders = new ArrayList<>();
 
-		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
+		for (RecommenderType recommenderType : RecommenderType.getRecommenderTypes()) {
+			boolean recommenderTypeKeyword = ConfigPersistenceManager.getRecommendationInput(projectKey, recommenderType.toString());
+			if (recommenderTypeKeyword) {
+				BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
+				recommender.addKnowledgeSource(allKnowledgeSources);
+				recommenders.add(recommender);
+			}
 
-		BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
-		recommender.addKnowledgeSource(allKnowledgeSources);
+		}
 
-		if (RecommenderType.KEYWORD.equals(recommenderType))
-			recommender.setInput(keyword);
-		else {
+
+		List<Recommendation> recommendations = new ArrayList<>();
+
+		for (BaseRecommender recommender : recommenders) {
+
 			if (knowledgeElement == null) {
 				return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The Knowledgeelement could not be found.")).build();
+			} else if (RecommenderType.KEYWORD.equals(recommender.getRecommenderType())) //TODO implement a more advanced logic that is extensible
+				recommender.setInput(keyword);
+			else {
+				recommender.setInput(knowledgeElement);
 			}
-			recommender.setInput(knowledgeElement);
+
+
+			if (checkIfKnowledgeSourceNotConfigured(recommender)) {
+				return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
+						+ projectKey + "&category=decisionGuidance'>Configure</a>"))
+					.build();
+			}
+
+			List<Recommendation> recommendationList = recommender.getRecommendation();
+			recommendations.addAll(recommendationList);
+
+
+			if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
+				recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
 		}
 
-		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
-					+ projectKey + "&category=decisionGuidance'>Configure</a>"))
-				.build();
-		}
+		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 
-		List<Recommendation> recommendationList = recommender.getRecommendation();
-
-		if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
-			recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
-
-		return Response.ok(recommendationList).build();
 	}
 
 	@Path("/getRecommendationEvaluation")
@@ -338,7 +355,8 @@ public class ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 												@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
+												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName,
+												@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}

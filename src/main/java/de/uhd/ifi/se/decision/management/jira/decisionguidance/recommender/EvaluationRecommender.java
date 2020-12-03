@@ -125,4 +125,9 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	public void setKnowledgeElement(KnowledgeElement knowledgeElement) {
 		this.knowledgeElement = knowledgeElement;
 	}
+
+	@Override
+	public RecommenderType getRecommenderType() {
+		return RecommenderType.EVALUATION;
+	}
 }

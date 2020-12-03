@@ -36,7 +36,7 @@ public class TestGetRecommendation extends TestSetUp {
 	@Test
 	public void testGetRecommendation() {
 		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 
 	}
@@ -68,11 +68,11 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationGetRecommender() {
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString());
+		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString(), true);
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString());
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
+		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString(), true);
+		assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
 
 //	@Test

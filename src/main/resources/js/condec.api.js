@@ -943,8 +943,8 @@
 	/*
 	 * external references: condec.decision guidance
 	 */
-	ConDecAPI.prototype.setRecommendationInput = function (projectKey, recommendationInput) {
-		generalApi.postJSON(this.restPrefix + "/config/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput, null,
+	ConDecAPI.prototype.setRecommendationInput = function (projectKey, recommendationInput, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/config/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput +  "&isActivated=" + isActivated, null,
 			function (error, results) {
 				showFlag("success", "Recommendation Input successfully changed");
 			});

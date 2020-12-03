@@ -82,7 +82,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 	@Test
 	public void testEvaluationExecute() {
 
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD");
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).withKnowledgeSource(knowledgeSources, "TEST").execute();
 
 		assertNotNull(recommendationEvaluation);

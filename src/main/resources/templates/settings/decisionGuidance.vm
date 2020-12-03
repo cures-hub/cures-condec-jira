@@ -18,24 +18,29 @@
 <div class="settings-divider">
     <h4>General</h4>
     <div class="settings-divider">
+        <a data-aui-trigger aria-controls='input-method-help' href='input-method-help'>
+        <span
+            class='aui-icon aui-icon-small aui-iconfont-question-circle'>Insert meaningful text here for accessibility</span>
+        </a>
+        <aui-inline-dialog id='input-method-help' responds-to='hover'>
+            <p>Chose the input on which to base a recommendation. The inputs can be combined and deliver various
+                results.</p>
+        </aui-inline-dialog>
         <fieldset class="group">
-            <legend><span>Input for recommendations
+            <legend><span>Keyword-based
         </span></legend>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons-input" id="keyword-based" value="KEYWORD"
-                />
-                <label for="keyword-based">Keyword-based</label>
+            <aui-toggle id="keyword-toggle" name="" value="KEYWORD"
+                        label=""></aui-toggle>
+            <div class="description">Keyword-based recommendations use keywords from the input field.
             </div>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons-input" id="issue-based" value="ISSUE"
-                />
-                <label for="issue-based">Issues-based</label>
-            </div>
-            <div class="description">Chose the input on which to base a recommendation. A Keyword-based only uses the
-                keywords from the input field in the jira issue view.
-                The Issue-based input also uses linked alternatives and other context information provided.
+        </fieldset>
+        <fieldset class="group">
+            <legend><span>Issue-based
+        </span></legend>
+            <aui-toggle id="issue-toggle" name="" value="ISSUE"
+                        label=""></aui-toggle>
+            <div class="description">Issue-based recommendations uses the issue itself and already documented solution
+                options.
             </div>
         </fieldset>
     </div>
@@ -43,7 +48,7 @@
     <h4>Configure RDF Knowledge Sources</h4>
 
     <div>
-        <a  class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
+        <a class="aui-expander-trigger" aria-controls="create-knowledgesource-expander"
         ><span
             class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source</span>Add
         </a>
@@ -96,7 +101,7 @@
                                 PREFIX foaf:&lt;//xmlns.com/foaf/0.1/>
 
 
-                                select distinct ?alternative ?url  ?link where { <br>
+                                select distinct ?alternative ?url ?link where { <br>
                                 %variable% dbo:genre ?genre. <br>
                                 ?sameGenre dbo:genre ?genre. <br>
                                 ?sameGenre rdfs:label ?alternative. <br>
@@ -220,7 +225,8 @@
         <button id="save-max-recommendation-btn" class='aui-button aui-button-primary aui-button-compact'>
             Save
         </button>
-        <div class="description">Set the maximum number of results of recommendations from a rdf source that should be displayed in the
+        <div class="description">Set the maximum number of results of recommendations from a rdf source that should be
+            displayed in the
             jira
             issue view.
         </div>
@@ -263,13 +269,15 @@
 
     $(document).ready(function() {
 
-        if("$calculationMethod" == "SUBSTRING")
-            $("#substring").prop("checked", true);
-        else
-            $("#tokenized").prop("checked", true);
-
-        $('input[type=radio][name=radiobuttons]').change(function() {
-            conDecAPI.setCalculationMethod("$projectKey", this.value);
+        $("#keyword-toggle").change(function() {
+            var value= $(this).val();
+            const isActivated = $(this).prop("checked");
+            conDecAPI.setRecommendationInput("$projectKey", value, isActivated);
+        });
+        $("#issue-toggle").change(function() {
+            var value= $(this).val();
+            const isActivated = $(this).prop("checked");
+            conDecAPI.setRecommendationInput("$projectKey", value, isActivated);
         });
 
         if("$recommendationInput" == "KEYWORD")
@@ -444,6 +452,10 @@
 
 
     });
+
+
+
+
 
 
 

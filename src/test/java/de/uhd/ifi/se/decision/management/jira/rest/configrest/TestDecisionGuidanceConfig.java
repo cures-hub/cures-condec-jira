@@ -226,9 +226,9 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	public void testSetRecommendationInput() {
-		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD").getStatus());
-		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD").getStatus());
-		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD").getStatus());
+		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD", true).getStatus());
 	}
 
 }

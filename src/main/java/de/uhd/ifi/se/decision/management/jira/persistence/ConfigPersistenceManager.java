@@ -37,9 +37,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -214,7 +214,7 @@ public class ConfigPersistenceManager {
 		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
 		try {
 			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
-					"gitRepositoryConfigurations", type);
+				"gitRepositoryConfigurations", type);
 		} catch (JsonSyntaxException e) {
 
 		}
@@ -225,7 +225,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -288,7 +288,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -434,10 +434,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-						jiraProject.getProjectKey());
+					jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-							projectSourceActivation);
+						projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -463,15 +463,13 @@ public class ConfigPersistenceManager {
 		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
 	}
 
-	public static void setRecommendationInput(String projectKey, String recommendationInput) {
-		setValue(projectKey, "recommendationInput", recommendationInput);
+	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {
+		setValue(projectKey, "recommendationInput." + recommendationInput, String.valueOf(isActivated));
 	}
 
-	public static RecommenderType getRecommendationInput(String projectKey) {
-		String value = getValue(projectKey, "recommendationInput");
-		if (!value.isBlank())
-			return RecommenderType.getTypeByString(value);
-		return RecommenderType.getDefault();
+	public static boolean getRecommendationInput(String projectKey, String recommenderInput) {
+		String value = getValue(projectKey, "recommendationInput." + recommenderInput);
+		return Boolean.valueOf(value);
 	}
 
 	/* **************************************/
