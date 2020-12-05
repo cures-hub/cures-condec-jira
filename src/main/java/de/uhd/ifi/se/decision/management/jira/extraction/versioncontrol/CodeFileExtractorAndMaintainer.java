@@ -58,6 +58,7 @@ public class CodeFileExtractorAndMaintainer {
 		extractAllChangedFiles(diff);
 	}
 
+	// TODO This method is too long. Please split it into smaller methods.
 	private void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
@@ -73,21 +74,24 @@ public class CodeFileExtractorAndMaintainer {
 				KnowledgeElement currentAlternativeOrDecision = null;
 				List<KnowledgeElement> elements = gitExtract.getElementsFromCode(diffForFile);
 
+				// Elements should be returned sorted by the method above. Please change the
+				// method getElementsFromCode.
 				elements.sort((e1, e2) -> {
-					/* 
+					/*
 					 * The description of a knowledge element from code is structured as
 					 * 
-					 * "nameOfCodeFile someInteger changeType(some numbers, probably related
-					 * to the git commits) startLine:endLine:inCommentCursor gitCommitHash",
+					 * "nameOfCodeFile someInteger changeType(some numbers, probably related to the
+					 * git commits) startLine:endLine:inCommentCursor gitCommitHash",
 					 * 
 					 * e.g.: "GodClass.java 0 INSERT(0-0,0-24) 1:1:5 70297039"
 					 * 
-					 * We want to extract the startLine:endLine:inCommentCursor part and use 
-					 * it to sort the elements by their position in the code
+					 * We want to extract the startLine:endLine:inCommentCursor part and use it to
+					 * sort the elements by their position in the code
 					 * 
 					 */
 					try {
-						// extract string containing start line, end line and "inCommentCursor" (whatever that is)
+						// extract string containing start line, end line and "inCommentCursor"
+						// (whatever that is)
 						String d1 = e1.getDescription().substring(0, e1.getDescription().lastIndexOf(' '));
 						String d2 = e2.getDescription().substring(0, e2.getDescription().lastIndexOf(' '));
 						d1 = d1.substring(d1.lastIndexOf(' ') + 1);
@@ -119,25 +123,35 @@ public class CodeFileExtractorAndMaintainer {
 					if (element.getType() == KnowledgeType.ISSUE) { // An issue is linked directly to the code file.
 						link = new Link(source, elementInGraph);
 						currentIssue = elementInGraph;
-					} else if (element.getType() == KnowledgeType.ALTERNATIVE || element.getType() == KnowledgeType.DECISION) { // Alternatives and decisions are linked to an issue.
-						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated structure
+					} else if (element.getType() == KnowledgeType.ALTERNATIVE
+							|| element.getType() == KnowledgeType.DECISION) { // Alternatives and decisions are linked
+																				// to an issue.
+						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated
+													// structure
 							link = new Link(source, elementInGraph);
 							currentAlternativeOrDecision = null;
 						} else {
 							link = new Link(currentIssue, elementInGraph);
 							currentAlternativeOrDecision = elementInGraph;
 						}
-					} else if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON || element.getType() == KnowledgeType.ARGUMENT) { // Arguments are linked to alternatives and decisions.
-						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated structure
+					} else if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
+							|| element.getType() == KnowledgeType.ARGUMENT) { // Arguments are linked to alternatives
+																				// and decisions.
+						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated
+													// structure
 							link = new Link(source, elementInGraph);
 							currentAlternativeOrDecision = null;
-						} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or decision – something still went wrong or somebody still violated structure
+						} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
+																			// decision – something still went wrong
+																			// or somebody still violated structure
 							link = new Link(currentIssue, elementInGraph);
 						} else {
 							link = new Link(currentAlternativeOrDecision, elementInGraph);
 						}
 					} else {
-						if (currentIssue == null || element.getType() == KnowledgeType.GOAL || element.getType() == KnowledgeType.PROBLEM) { // Goals and problems are linked directly to the code file.
+						if (currentIssue == null || element.getType() == KnowledgeType.GOAL
+								|| element.getType() == KnowledgeType.PROBLEM) { // Goals and problems are linked
+																					// directly to the code file.
 							link = new Link(source, elementInGraph);
 						} else { // Everything else is linked to an issue.
 							link = new Link(currentIssue, elementInGraph);

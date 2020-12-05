@@ -33,7 +33,7 @@ public interface CommitMessageParser {
 	 *         their appearance in the message.
 	 * 
 	 * @issue How to identify the Jira issue key(s) in a commit message?
-	 * @decision Use the well known regex ((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+) to
+	 * @decision Use the well known regex ((?<!([A-Z]{1,10})-?)[A-Z0-9]+-\\d+) to
 	 *           identify all Jira issue keys in a commit message!
 	 * @pro Works for all known cases.
 	 * @alternative Assume that the Jira issue key is the first word in the commit
@@ -44,7 +44,7 @@ public interface CommitMessageParser {
 	 */
 	public static Set<String> getJiraIssueKeys(String commitMessage) {
 		Set<String> keys = new LinkedHashSet<String>();
-		Pattern pattern = Pattern.compile("((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+)", Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile("((?<!([A-Z]{1,10})-?)[A-Z0-9]+-\\d+)", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(commitMessage);
 		while (matcher.find()) {
 			keys.add(matcher.group(1).toUpperCase(Locale.ENGLISH));

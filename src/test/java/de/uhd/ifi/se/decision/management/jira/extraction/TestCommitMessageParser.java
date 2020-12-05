@@ -51,4 +51,10 @@ public class TestCommitMessageParser {
 		assertFalse(iterator.hasNext());
 	}
 
+	@Test
+	public void testParseJiraIssueKeyWithNumbers() {
+		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("ISE2020-1: Add Solr");
+		assertEquals("ISE2020-1", jiraIssueKey);
+	}
+
 }
