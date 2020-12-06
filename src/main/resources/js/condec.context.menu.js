@@ -70,8 +70,8 @@
 		setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 
 		$(contextMenuNode).css({
-		    left : event.pageX,
-		    top : event.pageY
+		    left : event.clientX,
+		    top : event.clientY
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
