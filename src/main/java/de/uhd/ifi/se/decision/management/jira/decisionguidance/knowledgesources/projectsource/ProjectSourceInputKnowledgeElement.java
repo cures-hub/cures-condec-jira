@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -39,6 +40,7 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 	public List<Recommendation> calculateMeanScore(List<Recommendation> recommendations) {
 		List<Recommendation> filteredRecommendations = new ArrayList<>();
 
+		RecommendationScore meanRecommendationScore = new RecommendationScore(0, "Mean Score");
 
 		for (Recommendation recommendation : recommendations) {
 			Recommendation meanScoreRecommendation = recommendation;
@@ -48,9 +50,11 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 				if (recommendation.equals(recommendation1)) {
 					numberDuplicates += 1;
 					meanScore += recommendation1.getScore();
+					meanRecommendationScore.setComposedScore(recommendation1.getRecommendationScore().getComposeDScore());
 				}
 			}
-			meanScoreRecommendation.setScore(meanScore / numberDuplicates);
+			meanRecommendationScore.setScoreValue(meanScore / numberDuplicates);
+			meanScoreRecommendation.setScore(meanRecommendationScore);
 			filteredRecommendations.add(meanScoreRecommendation);
 		}
 

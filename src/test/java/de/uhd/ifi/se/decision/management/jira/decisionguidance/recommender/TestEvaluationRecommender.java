@@ -28,10 +28,15 @@ public class TestEvaluationRecommender extends TestSetUp {
 	private List<KnowledgeSource> knowledgeSources;
 	private List<KnowledgeElement> solutionOptions;
 	private EvaluationRecommender recommender;
+	private KnowledgeElement testElement;
 
 	@Before
 	public void setUp() {
 		init();
+
+		testElement = new KnowledgeElement();
+		testElement.setId(123);
+		testElement.setSummary("How can we implement the feature");
 
 
 		recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "", 5);
@@ -83,7 +88,8 @@ public class TestEvaluationRecommender extends TestSetUp {
 	public void testEvaluationExecute() {
 
 		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).withKnowledgeSource(knowledgeSources, "TEST").execute();
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(testElement).withKnowledgeSource(knowledgeSources, "TEST").execute();
+
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSourceName());

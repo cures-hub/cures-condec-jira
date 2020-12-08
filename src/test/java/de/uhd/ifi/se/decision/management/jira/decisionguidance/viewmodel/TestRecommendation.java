@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -27,22 +27,17 @@ public class TestRecommendation extends TestSetUp {
 		knowledgeSource = new ProjectSource("TEST", "TEST", true);
 	}
 
-	@Test
-	public void testSetAndGetScore() {
-		Recommendation recommendation = new Recommendation();
-		assertEquals(0, recommendation.getScore());
-	}
 
 	@Test
 	public void testRecommendation() {
 
 		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
 		recommendation.setUrl("TEST URL");
-		recommendation.setScore(123);
+		recommendation.setScore(new RecommendationScore(123, ""));
 		assertEquals("TEST", recommendation.getKnowledgeSourceName());
 		assertEquals("TEST", recommendation.getRecommendation());
 		assertEquals("TEST URL", recommendation.getUrl());
-		assertEquals(123, recommendation.getScore());
+		assertEquals(123, recommendation.getScore(), 0.0);
 		assertEquals(0, recommendation.getArguments().size());
 	}
 

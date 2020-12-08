@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -200,9 +201,13 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		return null;
 	}
 
-	private int getScore(int maxValue, int actualValue) {
-		float score = (actualValue * 1.0f / maxValue) * 100f;
-		return Math.round(score);
+	private RecommendationScore getScore(int maxValue, int actualValue) {
+		RecommendationScore score = new RecommendationScore(0.0f, "Recommendation with most links");
+		score.composeScore(new RecommendationScore(maxValue, "Recommendation with most links"));
+		score.composeScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
+		float scoreValue = (actualValue * 1.0f / maxValue) * 100f;
+		score.setScoreValue(scoreValue);
+		return score;
 	}
 
 	private int getLimit() {

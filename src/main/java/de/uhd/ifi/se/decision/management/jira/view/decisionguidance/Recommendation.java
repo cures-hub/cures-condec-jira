@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +23,7 @@ public class Recommendation {
 	protected String url;
 
 	@XmlElement
-	protected int score;
+	protected RecommendationScore score;
 
 	@XmlElement
 	protected List<Argument> arguments;
@@ -38,7 +39,7 @@ public class Recommendation {
 		this.arguments = new ArrayList<>();
 	}
 
-	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, int score, String url) {
+	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, RecommendationScore score, String url) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendation = recommendation;
 		this.score = score;
@@ -72,11 +73,15 @@ public class Recommendation {
 		this.url = url;
 	}
 
-	public int getScore() {
+	public RecommendationScore getRecommendationScore() {
 		return this.score;
 	}
 
-	public void setScore(int score) {
+	public float getScore() {
+		return this.score.getScoreValue();
+	}
+
+	public void setScore(RecommendationScore score) {
 		this.score = score;
 	}
 

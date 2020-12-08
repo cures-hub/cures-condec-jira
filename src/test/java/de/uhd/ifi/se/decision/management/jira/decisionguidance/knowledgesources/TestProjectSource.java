@@ -7,7 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +56,7 @@ public class TestProjectSource extends TestSetUp {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setId(123);
 		knowledgeElement.setSummary("How can we implement the feature");
-		List<Recommendation> recommendations = input.getResults(KnowledgeElements.getTestKnowledgeElement());
+		List<Recommendation> recommendations = input.getResults(knowledgeElement);
 		assertEquals(2, recommendations.size());
 	}
 

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProjectSourceInputString extends ProjectSourceInput<String> {
+
+	private static final double THRESHHOLD = 0.85;
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
@@ -28,7 +31,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 		//get all alternatives, which parent contains the pattern"
 		issues.forEach(issue -> {
-			if (this.calculateSimilarity(issue.getSummary(), inputs.trim()) > 0.5) {
+			if (this.calculateSimilarity(issue.getSummary(), inputs.trim()) > THRESHHOLD) {
 				issue.getLinks()
 					.stream()
 					.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
@@ -40,7 +43,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 						recommendation.addArguments(this.getArguments(child.getTarget()));
 
 						if (recommendation != null) {
-							int score = calculateScore(inputs, issue, recommendation.getArguments());
+							RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
 							recommendation.setScore(score);
 							recommendations.add(recommendation);
 						}
@@ -53,24 +56,36 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	private int calculateScore(String keywords, KnowledgeElement parentIssue, List<Argument> arguments) {
+	private RecommendationScore calculateScore(String keywords, KnowledgeElement parentIssue, List<Argument> arguments) {
+
+		RecommendationScore score = new RecommendationScore(0, "Simlarity based on Jaccard-Similiarty");
+
+		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
+		double jc = jaccardSimilarity.apply(keywords, parentIssue.getSummary());
+		score.composeScore(new RecommendationScore((float) jc, "<b>" + keywords + "</b> is similar to <b>" + parentIssue.getSummary() + "</b>"));
 
 		float numberProArguments = 0;
 		float numberConArguments = 0;
 
 		for (Argument argument : arguments) {
-			if (argument.getType().equals(KnowledgeType.PRO.toString())) numberProArguments += 1;
-			if (argument.getType().equals(KnowledgeType.CON.toString())) numberConArguments += 1;
+			if (argument.getType().equals(KnowledgeType.PRO.toString())) {
+				numberProArguments += 1;
+				score.composeScore(new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary()));
+			}
+			if (argument.getType().equals(KnowledgeType.CON.toString())) {
+				numberConArguments += 1;
+				score.composeScore(new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary()));
+			}
 		}
 
-		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
-		double jc = jaccardSimilarity.apply(keywords, parentIssue.getSummary());
 
 		float argumentWeight = .1f;
 
 		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments) * argumentWeight)) / (1 + arguments.size() * argumentWeight) * 100f;
 
-		return Math.round(scoreJC);
+		score.setScoreValue(scoreJC);
+
+		return score;
 	}
 
 	private double calculateSimilarity(String left, String right) {

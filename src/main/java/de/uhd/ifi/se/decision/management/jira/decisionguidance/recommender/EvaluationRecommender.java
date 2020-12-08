@@ -8,10 +8,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
-import weka.core.pmml.jaxbbindings.True;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
@@ -52,7 +54,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		}
 
 
-		recommendationsFromKnowledgeSource.sort(Comparator.comparingInt(Recommendation::getScore));
+		recommendationsFromKnowledgeSource.sort(Comparator.comparingDouble(Recommendation::getScore));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
 		List<KnowledgeElement> alternatives = this.knowledgeElement.getLinks().stream()
