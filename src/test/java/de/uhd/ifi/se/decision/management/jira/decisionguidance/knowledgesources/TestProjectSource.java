@@ -25,7 +25,7 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSource() {
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		KnowledgeSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
 		projectSource.setName("TEST");
 
 		projectSource.setRecommenderType(RecommenderType.KEYWORD);
@@ -33,6 +33,10 @@ public class TestProjectSource extends TestSetUp {
 
 		assertEquals(2, recommendations.size());
 		assertEquals("TEST", recommendations.get(0).getKnowledgeSourceName());
+
+		assertEquals("aui-iconfont-jira", projectSource.getIcon());
+		projectSource.setIcon("TEST");
+		assertEquals("TEST", projectSource.getIcon());
 	}
 
 	@Test

@@ -1,19 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 

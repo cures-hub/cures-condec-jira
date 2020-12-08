@@ -82,8 +82,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
 
 		velocityParameters.put("addRecommendationDirectly", ConfigPersistenceManager.getAddRecommendationDirectly(projectKey));
-		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInput(projectKey, "KEYWORD"));
+		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInputAsMap(projectKey));
 
 		return velocityParameters;
 	}
+
 }

@@ -1,11 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -18,7 +12,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
@@ -30,6 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -470,6 +466,14 @@ public class ConfigPersistenceManager {
 	public static boolean getRecommendationInput(String projectKey, String recommenderInput) {
 		String value = getValue(projectKey, "recommendationInput." + recommenderInput);
 		return Boolean.valueOf(value);
+	}
+
+	public static Map<String, Boolean> getRecommendationInputAsMap(String projectKey) {
+		Map<String, Boolean> recommenderTypes = new HashMap<>();
+		for (RecommenderType recommenderType : RecommenderType.values()) {
+			recommenderTypes.put(recommenderType.toString(), Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
+		}
+		return recommenderTypes;
 	}
 
 	/* **************************************/

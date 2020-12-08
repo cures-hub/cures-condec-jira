@@ -79,5 +79,21 @@ public class TestEvaluationMetrics extends TestSetUp {
 		assertEquals(1.0, truePositives.calculateMetric(), 0.0);
 	}
 
+	@Test
+	public void testLabels() {
+		assertEquals("F-Score", fScore.getName());
+		assertEquals("Average Precision", averagePrecision.getName());
+		assertEquals("Reciprocal Rank", reciprocalRank.getName());
+		assertEquals("True Positive", truePositives.getName());
+	}
+
+	@Test
+	public void testDescriptions() {
+		assertEquals(false, fScore.getDescription().isBlank());
+		assertEquals(false, averagePrecision.getDescription().isBlank());
+		assertEquals(false, reciprocalRank.getDescription().isBlank());
+		assertEquals(false, truePositives.getDescription().isBlank());
+	}
+
 
 }

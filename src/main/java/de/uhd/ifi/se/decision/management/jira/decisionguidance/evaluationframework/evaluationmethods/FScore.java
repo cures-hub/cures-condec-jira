@@ -4,9 +4,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FScore extends EvaluationMethod {
 
@@ -51,11 +49,6 @@ public class FScore extends EvaluationMethod {
 				counter += 1;
 		}
 		return counter;
-	}
-
-	public List<KnowledgeElement> getElementsWithStatus(List<KnowledgeElement> knowledgeElements, KnowledgeStatus status) {
-		if (knowledgeElements == null) return new ArrayList<>();
-		return knowledgeElements.stream().filter(element -> element.getStatus().equals(status)).collect(Collectors.toList());
 	}
 
 	@Override

@@ -106,7 +106,7 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		KnowledgeSource knowledgeSourceA= new ProjectSource("TEST", "Source A", true);
+		KnowledgeSource knowledgeSourceA = new ProjectSource("TEST", "Source A", true);
 		KnowledgeSource knowledgeSourceB = new ProjectSource("TEST", "Source B", true);
 
 		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1", new RecommendationScore(0, ""), "");
@@ -118,6 +118,16 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		BaseRecommender recommender = new KeywordBasedRecommender("");
 
 		assertEquals(2, recommender.removeDuplicated(recommendations).size());
+	}
+
+	@Test
+	public void testRecommenderType() {
+		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("KEYWORD"));
+		assertEquals(RecommenderType.ISSUE, RecommenderType.getTypeByString("ISSUE"));
+		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("INVALID"));
+
+		assertEquals(3, RecommenderType.getRecommenderTypes().size());
+
 	}
 
 }

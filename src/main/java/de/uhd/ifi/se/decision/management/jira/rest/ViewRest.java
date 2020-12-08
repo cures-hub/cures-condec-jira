@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.facto
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -40,6 +39,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -306,14 +306,13 @@ public class ViewRest {
 
 		List<BaseRecommender> recommenders = new ArrayList<>();
 
-		for (RecommenderType recommenderType : RecommenderType.getRecommenderTypes()) {
-			boolean recommenderTypeKeyword = ConfigPersistenceManager.getRecommendationInput(projectKey, recommenderType.toString());
-			if (recommenderTypeKeyword) {
-				BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
+
+		for (Map.Entry<String, Boolean> entry : ConfigPersistenceManager.getRecommendationInputAsMap(projectKey).entrySet()) {
+			if (entry.getValue()) {
+				BaseRecommender recommender = RecommenderFactory.getRecommender(RecommenderType.valueOf(entry.getKey()));
 				recommender.addKnowledgeSource(allKnowledgeSources);
 				recommenders.add(recommender);
 			}
-
 		}
 
 
@@ -381,18 +380,6 @@ public class ViewRest {
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 
 		return Response.ok(recommendationEvaluation).build();
-	}
-
-	private KnowledgeElement getIssueFromDocumentationLocation(long id, String projectKey) {
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement issue = null;
-
-		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
-			issue = manager.getKnowledgeElement(id, location);
-			if (issue != null)
-				return issue;
-		}
-		return issue;
 	}
 
 	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender<?> recommender) {

@@ -40,9 +40,10 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 	public List<Recommendation> calculateMeanScore(List<Recommendation> recommendations) {
 		List<Recommendation> filteredRecommendations = new ArrayList<>();
 
-		RecommendationScore meanRecommendationScore = new RecommendationScore(0, "Mean Score");
+
 
 		for (Recommendation recommendation : recommendations) {
+			RecommendationScore meanRecommendationScore = new RecommendationScore(0, "Mean Score");
 			Recommendation meanScoreRecommendation = recommendation;
 			int numberDuplicates = 0;
 			int meanScore = 0;

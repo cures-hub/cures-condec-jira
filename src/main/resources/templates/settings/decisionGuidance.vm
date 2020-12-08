@@ -30,6 +30,9 @@
             <legend><span>Keyword-based
         </span></legend>
             <aui-toggle id="keyword-toggle" name="" value="KEYWORD"
+                        #if ($recommendationInput.KEYWORD)
+                            checked
+                        #end
                         label=""></aui-toggle>
             <div class="description">Keyword-based recommendations use keywords from the input field.
             </div>
@@ -38,6 +41,9 @@
             <legend><span>Issue-based
         </span></legend>
             <aui-toggle id="issue-toggle" name="" value="ISSUE"
+                        #if ($recommendationInput.ISSUE)
+                        checked
+                        #end
                         label=""></aui-toggle>
             <div class="description">Issue-based recommendations uses the issue itself and already documented solution
                 options.

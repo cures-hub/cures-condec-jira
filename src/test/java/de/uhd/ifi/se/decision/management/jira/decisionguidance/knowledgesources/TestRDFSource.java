@@ -61,7 +61,7 @@ public class TestRDFSource extends TestSetUp {
 		ConfigPersistenceManager.setMaxNumberRecommendations(PROJECTKEY, 10);
 
 		assertEquals(LIMIT, rdfSource.getLimit());
-
+		assertEquals("aui-iconfont-download", rdfSource.getIcon());
 	}
 
 	@Test

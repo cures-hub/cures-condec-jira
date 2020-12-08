@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
  *
  * @issue How can we enable that settings can be set during testing?
  * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
- *           to enable that settings can be set during testing!
+ * to enable that settings can be set during testing!
  * @see MockPluginSettings
  * @see MockPluginSettingsFactory
  */
@@ -384,9 +384,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetGitRepos() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP",
-				"user", "secret👀");
+			"user", "secret👀");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-				"githubuser", "token👀");
+			"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -408,9 +408,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetEmptyOrCorruptConfInfo() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "",
-				"");
+			"");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-				"githubuser", "token👀");
+			"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -449,7 +449,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		 * input = 3; ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
 		 * assertEquals("Activated should still be 4.", 4,
 		 * ConfigPersistenceManager.getFragmentLength("TEST"));
-		 * 
+		 *
 		 */
 	}
 
@@ -458,14 +458,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		double input = 0.4;
 		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
 		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
-				0.0);
+			0.0);
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
 		/*
 		 * input = 0.3; ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST",
 		 * input); assertTrue("Activated should still be 0.4.", 0.4 ==
 		 * ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
-		 * 
+		 *
 		 */
 	}
 
@@ -474,16 +474,16 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		String consistencyEvent = "done";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
 		assertTrue("Activated should be true.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
 		assertFalse("Activated should be false.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		String otherConsistencyEvent = "none";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
 		assertFalse("Activated for 'done' should still be false.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
@@ -502,7 +502,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100);
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1,
-				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100);
 		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
@@ -514,17 +514,17 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		// Test invalid Source
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
 		// Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
 		assertFalse("The knowledge source should be dectivated!",
-				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
+			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
 
 		// Delete KnowledgeSource
 		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
 		assertEquals("The knowledge source should be 0!", 0,
-				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
+			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 	}
 
 	@Test
@@ -587,12 +587,18 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetRecommendationInput() {
-		// assertEquals(RecommenderType.getDefault(),
-		// ConfigPersistenceManager.getRecommendationInput("TEST"));
 		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
 		assertEquals(true, ConfigPersistenceManager.getRecommendationInput("TEST", "KEYWORD"));
 		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
 		assertEquals(false, ConfigPersistenceManager.getRecommendationInput(null, null));
+	}
+
+	@Test
+	public void testSetAndGetRecommendationInputAsMap() {
+		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
+		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
+		assertNotNull(ConfigPersistenceManager.getRecommendationInputAsMap("TEST"));
+		assertEquals(RecommenderType.values().length, ConfigPersistenceManager.getRecommendationInputAsMap("TEST").size());
 	}
 
 	@Test

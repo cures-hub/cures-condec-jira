@@ -946,7 +946,10 @@
 	ConDecAPI.prototype.setRecommendationInput = function (projectKey, recommendationInput, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/config/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput +  "&isActivated=" + isActivated, null,
 			function (error, results) {
-				showFlag("success", "Recommendation Input successfully changed");
+				if(error)  showFlag("error", error);
+				if(isActivated)
+					showFlag("success", "Recommendation Input has been successfully <b>activated</b>");
+				else showFlag("success", "Recommendation Input has been successfully <b>deactivated</b>");
 			});
 	};
 
