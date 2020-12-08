@@ -64,7 +64,7 @@ public class TestRationaleFromCodeCommentExtractor {
 	}
 
 	@Test
-	public void testOneRationaleElementAndRestTextSeparetedByLinesWithSpaces() {
+	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpaces() {
 		codeComment.commentContent = "Text @issue with rationale  \n  \n  \nnot rat. text anymore";
 		String expectedKey = commitBeginLine + ":" + commitBeginLine + ":11";
 

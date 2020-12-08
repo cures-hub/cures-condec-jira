@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -68,14 +69,15 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 
 	@Test
 	public void testInheritSetGroupAssignment() {
-		KnowledgeGraph graph = new KnowledgeGraph("TEST");
+		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles();
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
 		KnowledgeElement godClass = null;
 		for (KnowledgeElement codeFile : codeFiles) {
-			System.out.println(codeFile.getSummary());
 			if (codeFile.getSummary().equals("GodClass.java")) {
 				godClass = codeFile;
+				break;
 			}
 		}
 
@@ -84,8 +86,7 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
 		groups.add("New2");
-		assertTrue(DecisionGroupManager.setGroupAssignment(groups, godClass));
-		System.out.println(issueFromCodeCommentInGodClass.getSummary());
+		DecisionGroupManager.setGroupAssignment(groups, godClass);
 		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
 	}
