@@ -122,7 +122,9 @@
                     };
                 }
             }
-        } catch (error) {}
+        } catch (error) {
+            // continue regardless of error
+        }
         return {
             id: 0,
             documentationLocation: ""
