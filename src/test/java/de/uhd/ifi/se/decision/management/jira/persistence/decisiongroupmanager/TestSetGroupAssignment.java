@@ -73,9 +73,9 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 
 		KnowledgeElement godClass = null;
 		for (KnowledgeElement codeFile : codeFiles) {
+			System.out.println(codeFile.getSummary());
 			if (codeFile.getSummary().equals("GodClass.java")) {
 				godClass = codeFile;
-				break;
 			}
 		}
 
@@ -84,7 +84,8 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
 		groups.add("New2");
-		DecisionGroupManager.setGroupAssignment(groups, godClass);
+		assertTrue(DecisionGroupManager.setGroupAssignment(groups, godClass));
+		System.out.println(issueFromCodeCommentInGodClass.getSummary());
 		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
 	}
