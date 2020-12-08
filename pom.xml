@@ -1,119 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
- <modelVersion>4.0.0</modelVersion>
- <groupId>de.uhd.ifi.se.decision</groupId>
- <artifactId>management.jira</artifactId>
- <version>2.2.8</version>
- <organization>
-  <name>Software Engineering Research Group, Heidelberg University</name>
-  <url>https://github.com/cures-hub</url>
- </organization>
- <name>Decision Documentation and Exploration</name>
- <description>Enables developers to continuously document and explore decision knowledge. Decision knowledge covers
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.uhd.ifi.se.decision</groupId>
+	<artifactId>management.jira</artifactId>
+	<version>2.2.8</version>
+	<organization>
+		<name>Software Engineering Research Group, Heidelberg University</name>
+		<url>https://github.com/cures-hub</url>
+	</organization>
+	<name>Decision Documentation and Exploration</name>
+	<description>Enables developers to continuously document and explore decision knowledge. Decision knowledge covers
         knowledge about decisions, the problems they address, solution proposals, their context, and justifications
         (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement
         a feature, or bug reports.
     </description>
- <developers>
-  <!-- sorted alphabetically by id, these are currently active developers you can contact, see the version
-   history for former developers -->
-  <developer>
-   <id>cotchere</id>
-   <name>Colin Otchere</name>
-  </developer>
-  <developer>
-   <id>desombre</id>
-   <name>Philipp de Sombre</name>
-  </developer>
-  <developer>
-   <id>manders</id>
-   <name>Michael Anders</name>
-  </developer>
-  <developer>
-     <id>gerner</id>
-     <name>Rafael Gerner</name>
-  </developer>
-  <developer>
-     <id>zubrod</id>
-     <name>Paul Zubrod</name>
-  </developer>
- </developers>
- <packaging>atlassian-plugin</packaging>
+	<developers>
+		<!-- sorted alphabetically by id, these are currently active developers 
+			you can contact, see the version history for former developers -->
+		<developer>
+			<id>aaaailuj</id>
+			<name>Julia Baum</name>
+		</developer>
+		<developer>
+			<id>cotchere</id>
+			<name>Colin Otchere</name>
+		</developer>
+		<developer>
+			<id>desombre</id>
+			<name>Philipp de Sombre</name>
+		</developer>
+		<developer>
+			<id>manders</id>
+			<name>Michael Anders</name>
+		</developer>
+		<developer>
+			<id>gerner</id>
+			<name>Rafael Gerner</name>
+		</developer>
+		<developer>
+			<id>zubrod</id>
+			<name>Paul Zubrod</name>
+		</developer>
+	</developers>
+	<packaging>atlassian-plugin</packaging>
 
- <repositories>
-  <repository>
-   <id>atlassian-external</id>
-   <url>https://packages.atlassian.com/mvn/maven-external/</url>
-   <snapshots>
-    <enabled>true</enabled>
-    <updatePolicy>never</updatePolicy>
-    <checksumPolicy>warn</checksumPolicy>
-   </snapshots>
-   <releases>
-    <enabled>true</enabled>
-    <checksumPolicy>warn</checksumPolicy>
-   </releases>
-  </repository>
-  <repository>
-   <id>atlassian-public</id>
-   <url>https://packages.atlassian.com/maven-public/</url>
-   <snapshots>
-    <enabled>true</enabled>
-    <updatePolicy>never</updatePolicy>
-    <checksumPolicy>warn</checksumPolicy>
-   </snapshots>
-   <releases>
-    <enabled>true</enabled>
-    <checksumPolicy>warn</checksumPolicy>
-   </releases>
-  </repository>
-  <repository>
-   <id>atlassian-3party</id>
-   <url>https://packages.atlassian.com/maven-3rdparty/</url>
-   <snapshots>
-    <enabled>true</enabled>
-    <updatePolicy>never</updatePolicy>
-    <checksumPolicy>warn</checksumPolicy>
-   </snapshots>
-   <releases>
-    <enabled>true</enabled>
-    <checksumPolicy>warn</checksumPolicy>
-   </releases>
-  </repository>
-  <repository>
-   <id>central</id>
-   <name>Central MVN Repo</name>
-   <url>https://repo1.maven.org/maven2</url>
-  </repository>
-  <repository>
-   <id>spring-release</id>
-   <url>https://repo.spring.io/libs-release/</url>
-   <snapshots>
-    <enabled>true</enabled>
-    <updatePolicy>never</updatePolicy>
-    <checksumPolicy>warn</checksumPolicy>
-   </snapshots>
-   <releases>
-    <enabled>true</enabled>
-    <checksumPolicy>warn</checksumPolicy>
-   </releases>
-  </repository>
- </repositories>
- <pluginRepositories>
-  <pluginRepository>
-   <id>atlassian-public</id>
-   <url>https://m2proxy.atlassian.com/repository/public/</url>
-   <releases>
-    <enabled>true</enabled>
-   </releases>
-   <snapshots>
-    <enabled>true</enabled>
-   </snapshots>
-  </pluginRepository>
- </pluginRepositories>
+	<repositories>
+		<repository>
+			<id>atlassian-external</id>
+			<url>https://packages.atlassian.com/mvn/maven-external/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>atlassian-public</id>
+			<url>https://packages.atlassian.com/maven-public/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>atlassian-3party</id>
+			<url>https://packages.atlassian.com/maven-3rdparty/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Central MVN Repo</name>
+			<url>https://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>spring-release</id>
+			<url>https://repo.spring.io/libs-release/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>atlassian-public</id>
+			<url>https://m2proxy.atlassian.com/repository/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencies>
 		<!-- Jira -->
@@ -123,12 +127,12 @@
 			<version>8.5.3</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.atlassian.jira.plugins</groupId>
-            <artifactId>jira-greenhopper-plugin</artifactId>
-            <version>8.7.1</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.atlassian.jira.plugins</groupId>
+			<artifactId>jira-greenhopper-plugin</artifactId>
+			<version>8.7.1</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-api</artifactId>
@@ -145,7 +149,7 @@
 		<dependency>
 			<groupId>com.atlassian.templaterenderer</groupId>
 			<artifactId>atlassian-template-renderer-api</artifactId>
-			<version>4.0.0</version>
+			<version>4.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -157,7 +161,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.12</version>
+			<version>4.5.13</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Spring -->
@@ -189,7 +193,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.2.2-atlassian-1</version>
+			<version>2.8.6</version>
 		</dependency>
 		<!-- Logger -->
 		<dependency>
@@ -227,26 +231,26 @@
 		</dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-tests</artifactId>
-            <version>8.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-func-tests</artifactId>
-            <version>8.7.1</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Classification of text as decision knowledge -->
-        <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>weka-dev</artifactId>
-            <version>3.9.3</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.meka</groupId>
-            <artifactId>meka</artifactId>
-            <version>1.9.2</version>
+			<artifactId>jira-tests</artifactId>
+			<version>8.6.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-func-tests</artifactId>
+			<version>8.7.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Classification of text as decision knowledge -->
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-dev</artifactId>
+			<version>3.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.meka</groupId>
+			<artifactId>meka</artifactId>
+			<version>1.9.2</version>
 		</dependency>
 		<!-- Git -->
 		<dependency>
@@ -254,11 +258,12 @@
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>5.9.0.202009080501-r</version>
 		</dependency>
-		<!-- Summarization of code changes and extraction of decision knowledge from code comments -->
+		<!-- Summarization of code changes and extraction of decision knowledge 
+			from code comments -->
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.16.2</version>
+			<version>3.18.0</version>
 		</dependency>
 		<!-- Webhook -->
 		<dependency>
@@ -270,7 +275,7 @@
 		<dependency>
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-tools</artifactId>
-			<version>1.9.1</version>
+			<version>1.9.3</version>
 		</dependency>
 		<!-- SMILE: Statistical Machine Intelligence & Learning Engine -->
 		<dependency>
@@ -278,23 +283,24 @@
 			<artifactId>smile-core</artifactId>
 			<version>1.5.3</version>
 		</dependency>
-		<!-- Knowledge Graph of requirements, decision knowledge, code and other artefacts -->
+		<!-- Knowledge Graph of requirements, decision knowledge, code and other 
+			artefacts -->
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.5.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>3.16.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.9</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
+			<version>3.16.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.9</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
 		<plugins>
@@ -306,7 +312,8 @@
 				<configuration>
 					<compressResources>false</compressResources>
 					<extractDependencies>false
-					</extractDependencies> <!-- If enabled, external .jar files will be unzipped into the final .jar file -->
+					</extractDependencies> <!-- If enabled, external .jar files will be unzipped into the final .jar 
+						file -->
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.version}</productDataVersion>
 					<enableQuickReload>true</enableQuickReload>
@@ -347,44 +354,44 @@
 	</build>
 
 
- <profiles>
-  <!-- Creates coverage reports in target/site/jacoco/ -->
-  <profile>
-   <id>jacoco</id>
-   <activation>
-    <activeByDefault>false</activeByDefault>
-   </activation>
-   <build>
-    <plugins>
-     <plugin>
-      <groupId>org.jacoco</groupId>
-      <artifactId>jacoco-maven-plugin</artifactId>
-      <version>${jacoco-version}</version>
-      <executions>
-       <execution>
-        <goals>
-         <goal>prepare-agent</goal>
-        </goals>
-       </execution>
-       <!-- attached to Maven test phase -->
-       <execution>
-        <id>report</id>
-        <phase>test</phase>
-        <goals>
-         <goal>report</goal>
-        </goals>
-       </execution>
-      </executions>
-      <configuration>
-       <excludes>
-        <exclude>**/persistence/tables/*</exclude>
-       </excludes>
-      </configuration>
-     </plugin>
-    </plugins>
-   </build>
-  </profile>
- </profiles>
+	<profiles>
+		<!-- Creates coverage reports in target/site/jacoco/ -->
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<!-- attached to Maven test phase -->
+							<execution>
+								<id>report</id>
+								<phase>test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<excludes>
+								<exclude>**/persistence/tables/*</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<properties>
 		<jira.version>8.13.0</jira.version>
