@@ -90,11 +90,13 @@
 <script>
 
     var init = false;
+    var documentationLocations = {}
     $("#evaluation-container").mouseenter(function() {
         if(!init) {
         conDecAPI.getAllIssues("$projectKey", function(error, results) {
             if (results !== null && results.length > 0) {
                 results.forEach(issue => {
+                     documentationLocations[issue.id] = issue.documentationLocation;
                      $("#select2-issues").append("<option value='" + issue.id + "'>" + issue.summary + "</option>");
                 });
 		    }
@@ -128,18 +130,23 @@
         const spinner = $("#loading-spinner-recommendation");
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults,  function(eval, error) {
+            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults, documentationLocations[issueID],  function(eval, error) {
                 if(eval) {
                     var metrics = ""
-                    const keys = Object.keys(eval.metrics);
-                    console.log(Object.keys(eval.metrics));
-                    keys.forEach(key => {
-                        metrics += "<td>" + eval.metrics[key].toFixed(2) + "</td>";
-
+                    eval.metrics.forEach(metric => {
+                        metrics += "<td>" + metric.value.toFixed(2) + "</td>";
                         if(!buildTableHeader) {
-                            $("#evaluation-results-table thead tr").append("<th>" + key + "</th>");
+                            $("#evaluation-results-table thead tr").append("<th>" + metric.name +
+                             "<a data-aui-trigger aria-controls='"+ metric.name +"' href='"+ metric.name +"'>" +
+                             "<span class='aui-icon aui-icon-small aui-iconfont-question-circle'>Insert meaningful text here for accessibility</span>" +
+                             "</a>" +
+                             "<aui-inline-dialog id='" + metric.name + "' responds-to='hover'>" +
+                             "<p>" + metric.description + "</p>" +
+                             "</aui-inline-dialog>" +
+                             "</th>");
                         }
-                    })
+                    });
+
                     buildTableHeader = true;
 
 

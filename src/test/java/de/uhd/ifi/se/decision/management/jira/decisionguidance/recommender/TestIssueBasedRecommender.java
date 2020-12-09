@@ -56,5 +56,5 @@ public class TestIssueBasedRecommender extends TestSetUp {
 		BaseRecommender recommender = new IssueBasedRecommender(knowledgeElement, knowledgeSources);
 		assertEquals(2, recommender.getKnowledgeSources().size());
 	}
-	
+
 }

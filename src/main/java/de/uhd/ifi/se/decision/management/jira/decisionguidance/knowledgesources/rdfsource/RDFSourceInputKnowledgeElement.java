@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElement> {
+public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElement, RDFSource> {
 
+	protected RDFSource knowledgeSource;
 	protected String projectKey;
 	protected String name;
 	protected String service;
@@ -19,14 +20,15 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	protected String timeout;
 	protected int limit;
 
-	public InputMethod setData(String projectKey, String name, String service, String queryName, String timeout, int limit) {
-		this.projectKey = projectKey;
-		this.name = name;
-		this.service = service;
-		this.queryString = queryName;
-		this.timeout = timeout;
-		this.limit = limit;
-		return this;
+	@Override
+	public void setData(RDFSource knowledgeSource) {
+		this.knowledgeSource = knowledgeSource;
+		this.projectKey = this.knowledgeSource.getProjectKey();
+		this.name = this.knowledgeSource.getName();
+		this.service = this.knowledgeSource.getService();
+		this.queryString = this.knowledgeSource.getQueryString();
+		this.timeout = this.knowledgeSource.getTimeout();
+		this.limit = this.knowledgeSource.getLimit();
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 		if (knowledgeElement == null) return recommendations;
 
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-		rdfSourceInputString.setData(projectKey, name, service, queryString, timeout, limit);
+		rdfSourceInputString.setData(this.knowledgeSource);
 
 		for (Link link : knowledgeElement.getLinks()) {
 			for (KnowledgeElement linkedElement : link.getBothElements()) {
@@ -46,7 +48,6 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 				}
 			}
 		}
-
 
 
 		return recommendations.stream().distinct().collect(Collectors.toList());

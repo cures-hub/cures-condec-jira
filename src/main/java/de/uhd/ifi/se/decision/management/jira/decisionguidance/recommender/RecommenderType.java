@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum RecommenderType {
 	KEYWORD, ISSUE, EVALUATION;
 
@@ -18,6 +21,10 @@ public enum RecommenderType {
 		} catch (IllegalArgumentException e) {
 			return KEYWORD;
 		}
+	}
+
+	public static List<RecommenderType> getRecommenderTypes() {
+		return Arrays.asList(RecommenderType.values());
 	}
 
 

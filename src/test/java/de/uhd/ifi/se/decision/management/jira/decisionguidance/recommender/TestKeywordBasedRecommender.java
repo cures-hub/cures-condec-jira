@@ -4,6 +4,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
@@ -87,8 +88,10 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
+		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "Source A", true);
+
+		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""), "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""), "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -103,8 +106,11 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		Recommendation recommendation = new Recommendation("SOURCE A", "SUMMARY 1", 0, "");
-		Recommendation recommendation2 = new Recommendation("SOURCE B", "SUMMARY 1", 0, "");
+		KnowledgeSource knowledgeSourceA = new ProjectSource("TEST", "Source A", true);
+		KnowledgeSource knowledgeSourceB = new ProjectSource("TEST", "Source B", true);
+
+		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1", new RecommendationScore(0, ""), "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1", new RecommendationScore(0, ""), "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -112,6 +118,16 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		BaseRecommender recommender = new KeywordBasedRecommender("");
 
 		assertEquals(2, recommender.removeDuplicated(recommendations).size());
+	}
+
+	@Test
+	public void testRecommenderType() {
+		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("KEYWORD"));
+		assertEquals(RecommenderType.ISSUE, RecommenderType.getTypeByString("ISSUE"));
+		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("INVALID"));
+
+		assertEquals(3, RecommenderType.getRecommenderTypes().size());
+
 	}
 
 }

@@ -30,4 +30,9 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
 		return knowledgeSource.getResults(input);
 	}
+
+	@Override
+	public RecommenderType getRecommenderType() {
+		return RecommenderType.KEYWORD;
+	}
 }

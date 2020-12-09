@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.*;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -13,7 +10,10 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
@@ -54,7 +54,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		}
 
 
-		recommendationsFromKnowledgeSource.sort(Comparator.comparingInt(Recommendation::getScore));
+		recommendationsFromKnowledgeSource.sort(Comparator.comparingDouble(Recommendation::getScore));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
 		List<KnowledgeElement> alternatives = this.knowledgeElement.getLinks().stream()
@@ -81,17 +81,12 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		Map<String, Double> metrics = new HashMap<>();
 
-		List<EvaluationMethod> evaluationMethods = new ArrayList<>();
-		evaluationMethods.add(new FScore());
-		evaluationMethods.add(new ReciprocalRank());
-		evaluationMethods.add(new AveragePrecision());
-
-		for (EvaluationMethod evaluationMethod : evaluationMethods) {
-			metrics.put(evaluationMethod.toString(), evaluationMethod.calculateMetric(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		}
-
+		List<EvaluationMethod> metrics = new ArrayList<>();
+		metrics.add(new FScore(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new ReciprocalRank(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new TruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 
 		return new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(), recommendationsFromKnowledgeSource.size(), metrics);
 	}
@@ -131,5 +126,10 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	public void setKnowledgeElement(KnowledgeElement knowledgeElement) {
 		this.knowledgeElement = knowledgeElement;
+	}
+
+	@Override
+	public RecommenderType getRecommenderType() {
+		return RecommenderType.EVALUATION;
 	}
 }

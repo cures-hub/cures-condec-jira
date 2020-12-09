@@ -22,6 +22,7 @@ public class ProjectSource extends KnowledgeSource {
 		this(projectKey);
 		this.name = projectSourceName;
 		this.isActivated = isActivated;
+		this.icon = "aui-iconfont-jira";
 		try {
 			this.knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.name);
 		} catch (IllegalArgumentException e) {
@@ -29,11 +30,6 @@ public class ProjectSource extends KnowledgeSource {
 		}
 	}
 
-	@Override
-	public void setData() {
-		if (this.inputMethod != null)
-			((ProjectSourceInput) this.inputMethod).setData(this.projectKey, this.name, this.knowledgeElements);
-	}
 
 	@Override
 	public InputMethod getInputMethod() {

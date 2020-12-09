@@ -30,4 +30,8 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 		return knowledgeSource.getResults(input);
 	}
 
+	@Override
+	public RecommenderType getRecommenderType() {
+		return RecommenderType.ISSUE;
+	}
 }

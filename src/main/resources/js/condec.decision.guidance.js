@@ -25,7 +25,8 @@
 
 			spinner.show();
 			$("#recommendation-error").hide();
-			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,  function(results, error) {
+			console.log(currentIssue);
+			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation ,  function(results, error) {
 
 				if (error === null) {
 					buildRecommendationTable(results);
@@ -44,24 +45,26 @@
 		let counter = 0;
 		var sortedByScore = results.slice(0);
 		sortedByScore.sort(function(a,b) {
-			return b.score - a.score;
+			return b.score.score - a.score.score;
 		});
 
 		sortedByScore.forEach((recommendation) => {
-				const alternative = recommendation.recommendations;
+				const alternative = recommendation.recommendation;
 				let url = "";
 				let tableRow = "";
 
 				counter += 1;
 				tableRow += "<tr>";
-				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendations + "</a></td>";
-				tableRow += "<td>" + recommendation.knowledgeSourceName + "</td>";
-				tableRow += "<td>"+ recommendation.score +"%</td>";
-				tableRow += "<td><button id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>Accept</button></td>";
+				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
+				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
+				tableRow += "<td>"+ buildScore(recommendation.score, recommendation.score.score) +"</td>";
+				tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" +  "Accept" + "</button></td>";
 				tableRow += "<td>";
 				recommendation.arguments.forEach((argument) => {
-					tableRow += "<img src='" + argument.image + "'/>";
-					tableRow += argument.summary;
+					if(argument) {
+						tableRow += "<img src='" + argument.image + "'/>";
+						tableRow += argument.summary;
+					}
 				});
 				tableRow += "</td>";
 				tableRow += "</tr>";
@@ -69,7 +72,7 @@
 
 				$(" #row_" + counter).click(function() {
 					const currentIssue = conDecDecisionTable.getCurrentIssue();
-					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendations, "");
+					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendation, "");
 					/*recommendation.arguments.forEach((argument) => {
 
 						if(argument.type == "Con") {
@@ -91,6 +94,34 @@
 		//Since the data is added later, the table must be set to sortable afterwards
 		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
+
+	function buildScore(scoreObject, ID) {
+		const scoreControl =  "<a data-aui-trigger aria-controls='"+ ID +"' href='"+ ID +"'>" +
+								 + scoreObject.score.toFixed(2) + "%"+
+								 "</a>";
+
+		var inlineDialog = "<aui-inline-dialog id='" + ID + "' responds-to='hover'>";
+		inlineDialog += "<div class='description'>The Score is composed by different aspects. The table gives an overview of the used components, that are used to calculate the score</div>";
+		inlineDialog += "<table>";
+		inlineDialog += "<thead>";
+		inlineDialog += "<th>Description</th>";
+		inlineDialog += "<th>Score</th>";
+		inlineDialog += "</thead>";
+		inlineDialog += "<tbody>";
+		scoreObject.composedScore.forEach(score => {
+			inlineDialog += "<tr>";
+			inlineDialog += "<td>" + score.explanation + "</td><td>" + score.score.toFixed(2)  +  "</td>";
+			inlineDialog += "</tr>";
+		})
+		inlineDialog += "</tbody>";
+		inlineDialog += "</table>";
+		inlineDialog += "<span class='project-config-webpanel-column-content'></span>";
+		inlineDialog += "<p><b>Score: "  + scoreObject.score.toFixed(2)  +  "%</b></p>";
+
+		inlineDialog += "</aui-inline-dialog>";
+
+		return scoreControl + inlineDialog;
+	 }
 
 
 	

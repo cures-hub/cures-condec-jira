@@ -1,27 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -31,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.facto
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -46,6 +27,20 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST resource for view
@@ -288,7 +283,7 @@ public class ViewRest {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									  @QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID) {
+									  @QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID, @QueryParam("documentationLocation") String documentationLocation) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -304,37 +299,54 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
+		//KnowledgeElement knowledgeElement = this.getIssueFromDocumentationLocation(issueID, projectKey);
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueID, documentationLocation);
+
+		List<BaseRecommender> recommenders = new ArrayList<>();
 
 
-		RecommenderType recommenderType = ConfigPersistenceManager.getRecommendationInput(projectKey);
+		for (Map.Entry<String, Boolean> entry : ConfigPersistenceManager.getRecommendationInputAsMap(projectKey).entrySet()) {
+			if (entry.getValue()) {
+				BaseRecommender recommender = RecommenderFactory.getRecommender(RecommenderType.valueOf(entry.getKey()));
+				recommender.addKnowledgeSource(allKnowledgeSources);
+				recommenders.add(recommender);
+			}
+		}
 
-		BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
-		recommender.addKnowledgeSource(allKnowledgeSources);
 
-		if (RecommenderType.KEYWORD.equals(recommenderType))
-			recommender.setInput(keyword);
-		else {
+		List<Recommendation> recommendations = new ArrayList<>();
+
+		for (BaseRecommender recommender : recommenders) {
+
 			if (knowledgeElement == null) {
 				return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The Knowledgeelement could not be found.")).build();
+			} else if (RecommenderType.KEYWORD.equals(recommender.getRecommenderType())) //TODO implement a more advanced logic that is extensible
+				recommender.setInput(keyword);
+			else {
+				recommender.setInput(knowledgeElement);
 			}
-			recommender.setInput(knowledgeElement);
+
+
+			if (checkIfKnowledgeSourceNotConfigured(recommender)) {
+				return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
+						+ projectKey + "&category=decisionGuidance'>Configure</a>"))
+					.build();
+			}
+
+			List<Recommendation> recommendationList = recommender.getRecommendation();
+			recommendations.addAll(recommendationList);
+
+
+			if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
+				recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
 		}
 
-		if (checkIfKnowledgeSourceNotConfigured(recommender)) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
-					+ projectKey + "&category=decisionGuidance'>Configure</a>"))
-				.build();
-		}
+		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 
-		List<Recommendation> recommendationList = recommender.getRecommendation();
-
-		if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
-			recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
-
-		return Response.ok(recommendationList).build();
 	}
 
 	@Path("/getRecommendationEvaluation")
@@ -342,7 +354,8 @@ public class ViewRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 												@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults) {
+												@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName,
+												@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
 		}
@@ -353,8 +366,9 @@ public class ViewRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 
-		KnowledgeElement issue = this.getIssueFromDocumentationLocation(issueID, projectKey);
-		// we use?
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		KnowledgeElement issue = manager.getKnowledgeElement(issueID, documentationLocation);
 
 		if (issue == null) {
 			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))
@@ -366,18 +380,6 @@ public class ViewRest {
 			.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 
 		return Response.ok(recommendationEvaluation).build();
-	}
-
-	private KnowledgeElement getIssueFromDocumentationLocation(long id, String projectKey) {
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement issue = null;
-
-		for (DocumentationLocation location : DocumentationLocation.getAllDocumentationLocations()) {
-			issue = manager.getKnowledgeElement(id, location);
-			if (issue != null)
-				return issue;
-		}
-		return issue;
 	}
 
 	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender<?> recommender) {

@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Map;
+import java.util.List;
 
 @XmlRootElement(name = "RecommendationEval")
 public class RecommendationEvaluation {
@@ -16,15 +18,16 @@ public class RecommendationEvaluation {
 	@XmlElement
 	protected int numberOfResults;
 
+
 	@XmlElement
-	protected Map<String, Double> metrics;
+	protected List<EvaluationMethod> metrics;
 
 
-	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, Map<String, Double> metrics) {
+	public RecommendationEvaluation(String recommenderType, String knowledgeSourceName, int numberOfResults, List<EvaluationMethod> metric2) {
 		this.recommenderType = recommenderType;
 		this.knowledgeSourceName = knowledgeSourceName;
 		this.numberOfResults = numberOfResults;
-		this.metrics = metrics;
+		this.metrics = metric2;
 	}
 
 	public String getKnowledgeSourceName() {
@@ -52,7 +55,7 @@ public class RecommendationEvaluation {
 	}
 
 
-	public Map<String, Double> getMetrics() {
+	public List<EvaluationMethod> getMetrics() {
 		return metrics;
 	}
 

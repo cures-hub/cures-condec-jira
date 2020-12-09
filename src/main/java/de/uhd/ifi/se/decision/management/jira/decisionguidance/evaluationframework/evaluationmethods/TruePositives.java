@@ -6,9 +6,9 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.List;
 
-public class FScore extends EvaluationMethod {
+public class TruePositives extends EvaluationMethod {
 
-	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
+	public TruePositives(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
 		this.recommendations = recommendations;
 		this.solutionOptions = solutionOptions;
 		this.topKResults = topKResults;
@@ -19,24 +19,15 @@ public class FScore extends EvaluationMethod {
 
 
 		int intersectingIdeas = 0;
-		int intersectingDiscarded = 0;
 		int intersectedDecided = 0;
-		int intersectedRejected = 0;
 
 		for (Recommendation recommendation : recommendations) {
 			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.IDEA);
-			intersectingDiscarded += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.DISCARDED);
 			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.DECIDED);
-			intersectedRejected += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.REJECTED);
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;
-		int falseNegative = (solutionOptions.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided - intersectedRejected;
-		int falsePositive = intersectingDiscarded + intersectedRejected;
-
-		double fScore = truePositive / (truePositive + .5 * (falsePositive + falseNegative));
-		if (Double.isNaN(fScore)) fScore = 0.0;
-		return fScore;
+		return truePositive;
 	}
 
 
@@ -53,11 +44,13 @@ public class FScore extends EvaluationMethod {
 
 	@Override
 	public String getName() {
-		return "F-Score";
+		return "True Positive";
 	}
 
 	@Override
 	public String getDescription() {
-		return "F-Score";
+		return "Gives the number of correct recommended results.";
 	}
+
+
 }

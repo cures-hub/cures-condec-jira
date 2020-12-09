@@ -956,13 +956,13 @@ public class ConfigRest {
 	@POST
 	public Response setRecommendationInput(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("recommendationInput") String recommendationInput) {
+			@QueryParam("recommendationInput") String recommendationInput, @QueryParam("isActivated") boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
 
-		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput);
+		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput, isActivated);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 

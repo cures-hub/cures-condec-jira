@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -12,17 +14,16 @@ import java.util.stream.Collectors;
 @XmlRootElement(name = "Recommendation")
 public class Recommendation {
 
-	@XmlElement
-	protected String knowledgeSourceName;
+	protected KnowledgeSource knowledgeSource;
 
 	@XmlElement
-	protected String recommendations;
+	protected String recommendation;
 
 	@XmlElement
 	protected String url;
 
 	@XmlElement
-	protected int score;
+	protected RecommendationScore score;
 
 	@XmlElement
 	protected List<Argument> arguments;
@@ -31,35 +32,37 @@ public class Recommendation {
 
 	}
 
-	public Recommendation(String knowledgeSourceName, String recommendations, String url) {
-		this.knowledgeSourceName = knowledgeSourceName;
-		this.recommendations = recommendations;
+	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, String url) {
+		this.knowledgeSource = knowledgeSource;
+		this.recommendation = recommendation;
 		this.url = url;
 		this.arguments = new ArrayList<>();
 	}
 
-	public Recommendation(String knowledgeSourceName, String recommendations, int score, String url) {
-		this.knowledgeSourceName = knowledgeSourceName;
-		this.recommendations = recommendations;
+	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, RecommendationScore score, String url) {
+		this.knowledgeSource = knowledgeSource;
+		this.recommendation = recommendation;
 		this.score = score;
 		this.url = url;
 		this.arguments = new ArrayList<>();
 	}
 
+	@XmlElement(name = "knowledgeSourceName")
 	public String getKnowledgeSourceName() {
-		return knowledgeSourceName;
+		return this.knowledgeSource.getName();
 	}
 
-	public void setKnowledgeSourceName(String knowledgeSourceName) {
-		this.knowledgeSourceName = knowledgeSourceName;
+	@XmlElement(name ="icon")
+	public String getIcon() {
+		return this.knowledgeSource.getIcon();
 	}
 
-	public String getRecommendations() {
-		return recommendations;
+	public String getRecommendation() {
+		return recommendation;
 	}
 
 	public void setRecommendations(String recommendations) {
-		this.recommendations = recommendations;
+		this.recommendation = recommendations;
 	}
 
 	public String getUrl() {
@@ -70,11 +73,15 @@ public class Recommendation {
 		this.url = url;
 	}
 
-	public int getScore() {
+	public RecommendationScore getRecommendationScore() {
 		return this.score;
 	}
 
-	public void setScore(int score) {
+	public float getScore() {
+		return this.score.getScoreValue();
+	}
+
+	public void setScore(RecommendationScore score) {
 		this.score = score;
 	}
 
@@ -102,13 +109,13 @@ public class Recommendation {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Recommendation that = (Recommendation) o;
-		return knowledgeSourceName.equals(that.knowledgeSourceName) &&
-			recommendations.equals(that.recommendations);
+		return this.knowledgeSource.getName().equals(that.knowledgeSource.getName()) &&
+			recommendation.equals(that.recommendation);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(knowledgeSourceName, recommendations);
+		return Objects.hash(knowledgeSource.getName(), recommendation);
 	}
 
 }

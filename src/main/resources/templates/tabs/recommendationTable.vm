@@ -1,11 +1,11 @@
-<h2>Recommend Solution Options</h2>
+<h2>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</h2>
 <form class="aui">
     <div style="display:flex; align-items:center; gap:12px">
         <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
         <button class="aui-button" id="recommendation-button"
                 title="Adds a new criterion column to decision table">
             <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Get Recommendations</span>
-            Recommend Solution Options
+            $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
         </button>
         <div aria-hidden="true">
             <aui-spinner size="small" id="loading-spinner-recommendation"
@@ -14,14 +14,20 @@
     </div>
 </form>
 
+<div style="display:flex; gap:3px;padding-top:6px;padding-bottom:6px;;margin-top:6px;">
+    <h6>$i18n.getText("condec.decision.guidance.knowledgesources"):</h6>
+    <div>DBPedia<span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span></div>
+    <div>Jira-Projekt
+        <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span></div>
+</div>
 <table id="recommendation-container" class="aui">
     <thead>
     <tr>
-        <th>Recommendation</th>
-        <th>Source</th>
-        <th class="aui-table-column-issue-key">Score</th>
-        <th class="aui-table-column-unsortable">Options</th>
-        <th>Argument</th>
+        <th>$i18n.getText("condec.decision.guidance.recommendations")</th>
+        <th>$i18n.getText("condec.decision.guidance.knowledgesources")</th>
+        <th class="aui-table-column-issue-key">$i18n.getText("condec.decision.guidance.score")</th>
+        <th class="aui-table-column-unsortable">$i18n.getText("condec.decision.guidance.options")</th>
+        <th>$i18n.getText("condec.decision.guidance.arguments")</th>
     </tr>
     </thead>
     <tbody>
@@ -29,6 +35,10 @@
 </table>
 <script>
     conDecDecisionGuidance.initView();
+
+
+
+
 </script>
 
 

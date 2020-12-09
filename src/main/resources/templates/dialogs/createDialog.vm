@@ -4,6 +4,7 @@
 		<button class="aui-close-button" type="button" id="create-dialog-cancel-icon" aria-label="close"></button>
 	</header>
 	<div id="create-dialog-content" class="aui-dialog2-content">
+        <div class="description">$i18n.getText("condec.dialog.create.description")</div>
 		<form class="aui">
 			<div class="field-group" id="create-form-source-element-group">
 				<label for="create-form-source-element">$i18n.getText("condec.label.source.element"):</label>

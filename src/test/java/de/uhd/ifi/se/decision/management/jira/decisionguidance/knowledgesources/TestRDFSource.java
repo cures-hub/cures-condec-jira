@@ -61,7 +61,7 @@ public class TestRDFSource extends TestSetUp {
 		ConfigPersistenceManager.setMaxNumberRecommendations(PROJECTKEY, 10);
 
 		assertEquals(LIMIT, rdfSource.getLimit());
-
+		assertEquals("aui-iconfont-download", rdfSource.getIcon());
 	}
 
 	@Test
@@ -69,18 +69,17 @@ public class TestRDFSource extends TestSetUp {
 		KnowledgeSource rdfSource = new RDFSource();
 		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
 		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
-		rdfSource.setData();
 	}
 
 	@Test
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-		rdfSourceInputString.setData(PROJECTKEY, NAME, SERVICE, QUERY, TIMEOUT, LIMIT);
+		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT));
 		assertEquals(2, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
-		rdfSourceInputString.setData(PROJECTKEY, NAME, "WRONG SERVICE", "INVALID QUERY", TIMEOUT, LIMIT);
+		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT));
 		assertEquals(0, rdfSourceInputString.getResults("MySQL").size());
 
 
@@ -89,7 +88,7 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testRDFSourceWithKnowledgeElement() {
 		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
-		rdfSourceInputKnowledgeElement.setData(PROJECTKEY, NAME, SERVICE, QUERY, TIMEOUT, LIMIT);
+		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT));
 		KnowledgeElement alternative = new KnowledgeElement();
 		alternative.setType(KnowledgeType.ALTERNATIVE);
 		alternative.setSummary("MySQL");
@@ -129,7 +128,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10);
 		assertEquals("TEST", rdfSource.getProjectKey());
 		assertEquals("TEST", rdfSource.getService());
 		assertEquals("TEST", rdfSource.getQueryString());
@@ -139,7 +138,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testgetInputMethod() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10);
 		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
 		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
 		rdfSource.setRecommenderType(RecommenderType.ISSUE);
@@ -148,14 +147,14 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testHashCode() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10);
 		assertEquals(Objects.hash("TEST"), rdfSource.hashCode());
 	}
 
 	@Test
 	public void testEquals() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
-		RDFSource rdfSourceother = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10);
+		RDFSource rdfSourceother = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10);
 		assertTrue(rdfSourceother.equals(rdfSource));
 		assertTrue(rdfSourceother.equals(rdfSourceother));
 		assertFalse(rdfSourceother.equals(null));

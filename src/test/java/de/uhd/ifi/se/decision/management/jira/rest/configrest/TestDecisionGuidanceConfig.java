@@ -42,7 +42,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with valid value.")
 	public void testSetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(200,
 				configRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
@@ -51,7 +51,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourceInvalidProject() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME2", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME2", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(400,
 				configRest.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
@@ -66,7 +66,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourcBlankName() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(400,
 				configRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
@@ -107,7 +107,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void tesUpdateRDFKNowledgeSourceValid() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "VALID SOURCE", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "VALID SOURCE", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(200, configRest
 				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
@@ -116,7 +116,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKNowledgeSourceInValid() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(400, configRest
 				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
@@ -125,7 +125,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKNowledgeSourceInValidRequest() {
-		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000");
+		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10);
 		Gson gson = new Gson();
 		assertEquals(400, configRest
 				.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
@@ -226,9 +226,9 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	public void testSetRecommendationInput() {
-		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD").getStatus());
-		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD").getStatus());
-		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD").getStatus());
+		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD", true).getStatus());
 	}
 
 }
