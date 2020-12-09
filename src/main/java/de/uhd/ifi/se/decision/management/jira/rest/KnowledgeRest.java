@@ -256,7 +256,7 @@ public class KnowledgeRest {
 	}
 
 	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
-		if (!element.getDocumentationLocation() == DocumentationLocation.CODE) {
+		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
 				KnowledgeElement linkedElement = link.getOppositeElement(element);
