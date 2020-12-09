@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;

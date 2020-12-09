@@ -60,7 +60,7 @@ public class GitDecXtract {
 		return getElementsFromCode(diff);
 	}
 
-	Comparator<KnowledgeElement> comparatorForKnowledgeElementsByLocationInCode = new Comparator<KnowledgeElement>() {
+	private Comparator<KnowledgeElement> comparatorForKnowledgeElementsByLocationInCode = new Comparator<KnowledgeElement>() {
 		public int compare(KnowledgeElement e1, KnowledgeElement e2) {
 			/*
 				* The description of a knowledge element from code is structured as

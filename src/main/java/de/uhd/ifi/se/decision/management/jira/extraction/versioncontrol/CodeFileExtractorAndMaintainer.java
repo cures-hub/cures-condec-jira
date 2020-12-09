@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.diff.DiffEntry;
