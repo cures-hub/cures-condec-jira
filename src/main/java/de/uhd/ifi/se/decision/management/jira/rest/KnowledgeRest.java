@@ -256,11 +256,11 @@ public class KnowledgeRest {
 	}
 
 	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
-		if (!element.getDocumentationLocation().getIdentifier().equals("c")) {
+		if (!element.getDocumentationLocation() == DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
 				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation().getIdentifier().equals("c")) {
+				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
 					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
 						DecisionGroupManager.insertGroup("Realization_Level", linkedElement);
 					}

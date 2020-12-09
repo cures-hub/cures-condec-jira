@@ -52,7 +52,7 @@ public class DecisionGroupManager {
 			}
 		}
 
-		if (element.getDocumentationLocation().getIdentifier().equals("c")) {
+		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
 			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
 			for (KnowledgeElement childElement : childElements) {
 				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
@@ -110,7 +110,7 @@ public class DecisionGroupManager {
 			id = insertGroup(group, element);
 		}
 
-		if (element.getDocumentationLocation().getIdentifier().equals("c")) {
+		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
 			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
 			for (KnowledgeElement childElement : childElements) {
 				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
@@ -212,7 +212,7 @@ public class DecisionGroupManager {
 
 		List<Long> returnedIds = new ArrayList<Long>();
 
-		if (sourceElement.getDocumentationLocation().getIdentifier().equals("c")) {
+		if (sourceElement.getDocumentationLocation() == DocumentationLocation.CODE) {
 			Set<KnowledgeElement> childElements = sourceElement.getLinkedElements(3);
 			for (KnowledgeElement childElement : childElements) {
 				if (childElement.getId() < 0 && childElement.getDescription().contains(sourceElement.getSummary())) {
