@@ -44,7 +44,7 @@ public class TestGetDiff extends TestSetUpGit {
 			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
 			EditList editList = changedFile.getEditList();
-			assertEquals("EditList[INSERT(0-0,0-4)]", editList.toString());
+			assertEquals("EditList[INSERT(0-0,0-25)]", editList.toString());
 		}
 	}
 
@@ -74,7 +74,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("ADD GodClass.java"));
 		assertEquals(1, changedFiles.get(1).getEditList().size());
-		assertTrue(changedFiles.get(1).getEditList().toString().contains("INSERT(0-0,0-4)"));
+		assertTrue(changedFiles.get(1).getEditList().toString().contains("INSERT(0-0,0-25)"));
 	}
 
 	@Test

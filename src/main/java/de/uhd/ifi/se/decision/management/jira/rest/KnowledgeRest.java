@@ -250,17 +250,17 @@ public class KnowledgeRest {
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(sourceId,
 			location);
 		DecisionGroupManager.setGroupAssignment(groupsToAssign, element);
-		inheritGroupAssignent(groupsToAssign, element);
+		inheritGroupAssignment(groupsToAssign, element);
 
 		return Response.status(Status.OK).build();
 	}
 
-	private void inheritGroupAssignent(List<String> groupsToAssign, KnowledgeElement element) {
-		if (!element.getDocumentationLocation().getIdentifier().equals("c")) {
+	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
+		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
 				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation().getIdentifier().equals("c")) {
+				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
 					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
 						DecisionGroupManager.insertGroup("Realization_Level", linkedElement);
 					}

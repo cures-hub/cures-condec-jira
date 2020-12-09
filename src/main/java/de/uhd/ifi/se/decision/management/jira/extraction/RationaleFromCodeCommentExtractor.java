@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -20,16 +23,27 @@ public class RationaleFromCodeCommentExtractor {
 	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
-	private final Pattern TWO_EMPTY_LINES_PATTERN;
+	private final Pattern TWO_EMPTY_LINES_PATTERNS;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
 	private final Pattern NEWLINE_CHAR_PATTERN;
+	private final List<String> NEWLINE_WITH_COMMENT_CHAR_PATTERNS;
 
 	public RationaleFromCodeCommentExtractor(CodeComment comment) {
 		String tagSearch = String.join("|", decKnowTags.stream().map(tag -> "@" + tag + "\\:?") // at-char + ratType +
 																								// colon or blank
 				.collect(Collectors.toList()));
+		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all characters that may interrupt multi-line decision knowledge elements
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
-		TWO_EMPTY_LINES_PATTERN = Pattern.compile("\\s*\\n\\s*\\n\\s*\\n"); // with optional white spaces
+		String TWO_EMPTY_LINES_PATTERN_STRING = "\\s*\\n\\s*(";
+		NEWLINE_WITH_COMMENT_CHAR_PATTERNS = new ArrayList<String>();
+		for (String comment_string : COMMENT_STRINGS) {
+			NEWLINE_WITH_COMMENT_CHAR_PATTERNS.add("[^\\S\\n]*\\n[^\\S\\n]*" + comment_string + "*[^\\S\\n]*");
+			TWO_EMPTY_LINES_PATTERN_STRING += comment_string + "|";
+		}
+		TWO_EMPTY_LINES_PATTERN_STRING = TWO_EMPTY_LINES_PATTERN_STRING
+				.substring(0, TWO_EMPTY_LINES_PATTERN_STRING.length() - 1) + // remove last "|"
+				")*\\s*\\n\\s*\\**\\s*";
+		TWO_EMPTY_LINES_PATTERNS = Pattern.compile(TWO_EMPTY_LINES_PATTERN_STRING); // with optional white spaces and optional comment characters
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 		this.comment = comment;
@@ -37,7 +51,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public static int getRationaleStartLineInCode(KnowledgeElement element) {
-		if (!canProcesElement(element)) {
+		if (!canProcessElement(element)) {
 			return -1;
 		} else {
 			return RationaleCommitElementPositionCodingHelper.getStartLine(element.getKey());
@@ -45,7 +59,7 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public static int getRationaleEndLineInCode(KnowledgeElement element) {
-		if (!canProcesElement(element)) {
+		if (!canProcessElement(element)) {
 			return -1;
 		} else {
 			return RationaleCommitElementPositionCodingHelper.getEndLine(element.getKey());
@@ -53,14 +67,14 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public static int getRationaleCursorInCodeComment(KnowledgeElement element) {
-		if (!canProcesElement(element)) {
+		if (!canProcessElement(element)) {
 			return -1;
 		} else {
 			return RationaleCommitElementPositionCodingHelper.getCursor(element.getKey());
 		}
 	}
 
-	public static boolean canProcesElement(KnowledgeElement element) {
+	public static boolean canProcessElement(KnowledgeElement element) {
 		return element.getDocumentationLocation() == DocumentationLocation.CODE;
 	}
 
@@ -95,10 +109,21 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
-		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
+		String rationaleTextSanitized = sanitize(rationaleText);
+		return new KnowledgeElement(0, getSummary(rationaleTextSanitized), getDescription(rationaleTextSanitized),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
 				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.CODE,
 				"");
+	}
+
+	private String sanitize(String rationaleText) {
+		String rationaleTextSanitized = rationaleText;
+		for (String pattern : NEWLINE_WITH_COMMENT_CHAR_PATTERNS) {
+			rationaleTextSanitized = rationaleTextSanitized.replaceAll(pattern, "\n");
+		}
+		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s*\n\\s*", " ");
+		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s+", " ");
+		return rationaleTextSanitized;
 	}
 
 	/**
@@ -159,7 +184,7 @@ public class RationaleFromCodeCommentExtractor {
 	private int getRationaleTextEndPosition(String rationaleText) {
 		int twoLinesPos = -1;
 		int spaceAtCharPos = -1;
-		Matcher matcher = TWO_EMPTY_LINES_PATTERN.matcher(rationaleText);
+		Matcher matcher = TWO_EMPTY_LINES_PATTERNS.matcher(rationaleText);
 		if (matcher.find()) {
 			twoLinesPos = matcher.start();
 		}

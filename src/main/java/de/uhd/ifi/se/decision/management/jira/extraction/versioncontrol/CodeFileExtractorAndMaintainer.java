@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
+import java.util.List;
+
 import org.eclipse.jgit.diff.DiffEntry;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
@@ -65,11 +68,52 @@ public class CodeFileExtractorAndMaintainer {
 				}
 				Diff diffForFile = new Diff();
 				diffForFile.addChangedFile(changedFile);
-				for (KnowledgeElement element : gitExtract.getElementsFromCode(diffForFile)) {
+				KnowledgeElement currentIssue = null;
+				KnowledgeElement currentAlternativeOrDecision = null;
+				List<KnowledgeElement> elements = gitExtract.getElementsFromCode(diffForFile);
+
+				for (KnowledgeElement element : elements) {
 					KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
-							.addVertexNotBeeingInDatabase(element);
-					Link link = new Link(source, elementInGraph);
-					KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeeingInDatabase(link);
+							.addVertexNotBeingInDatabase(element);
+					Link link = new Link();
+					if (element.getType() == KnowledgeType.ISSUE) { // An issue is linked directly to the code file.
+						link = new Link(source, elementInGraph);
+						currentIssue = elementInGraph;
+					} else if (element.getType() == KnowledgeType.ALTERNATIVE
+							|| element.getType() == KnowledgeType.DECISION) { // Alternatives and decisions are linked
+																				// to an issue.
+						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated
+													// structure
+							link = new Link(source, elementInGraph);
+							currentAlternativeOrDecision = null;
+						} else {
+							link = new Link(currentIssue, elementInGraph);
+							currentAlternativeOrDecision = elementInGraph;
+						}
+					} else if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
+							|| element.getType() == KnowledgeType.ARGUMENT) { // Arguments are linked to alternatives
+																				// and decisions.
+						if (currentIssue == null) { // We have no issue – something went wrong or somebody violated
+													// structure
+							link = new Link(source, elementInGraph);
+							currentAlternativeOrDecision = null;
+						} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
+																		   // decision – something still went wrong
+																		   // or somebody still violated structure
+							link = new Link(currentIssue, elementInGraph);
+						} else {
+							link = new Link(currentAlternativeOrDecision, elementInGraph);
+						}
+					} else {
+						if (currentIssue == null || element.getType() == KnowledgeType.GOAL
+								|| element.getType() == KnowledgeType.PROBLEM) { // Goals and problems are linked
+																					// directly to the code file.
+							link = new Link(source, elementInGraph);
+						} else { // Everything else is linked to an issue.
+							link = new Link(currentIssue, elementInGraph);
+						}
+					}
+					KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeingInDatabase(link);
 				}
 			}
 		}

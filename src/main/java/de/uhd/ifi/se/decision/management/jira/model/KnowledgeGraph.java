@@ -148,7 +148,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return isEdgeCreated;
 	}
 
-	public KnowledgeElement addVertexNotBeeingInDatabase(KnowledgeElement element) {
+	public KnowledgeElement addVertexNotBeingInDatabase(KnowledgeElement element) {
 		KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
 		if (existingElement != null) {
 			return existingElement;
@@ -160,7 +160,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return element;
 	}
 
-	public void addEdgeNotBeeingInDatabase(Link link) {
+	public void addEdgeNotBeingInDatabase(Link link) {
 		link.setId(--linkId);
 		this.addEdge(link);
 	}

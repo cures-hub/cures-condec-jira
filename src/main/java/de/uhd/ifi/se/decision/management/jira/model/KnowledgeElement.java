@@ -243,7 +243,7 @@ public class KnowledgeElement {
 	 */
 	public void addDecisionGroups(List<String> decisionGroup) {
 		for (String group : decisionGroup) {
-			DecisionGroupManager.insertGroup(group, this);
+			this.addDecisionGroup(group);
 		}
 	}
 
@@ -531,12 +531,33 @@ public class KnowledgeElement {
 		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
+	public Set<KnowledgeElement> getLinkedElements(int currentDistance) {
+		Set<KnowledgeElement> elements = new HashSet<>();
+		Set<Link> traversedLinks = new HashSet<>();
+		elements.add(this);
+
+		if (currentDistance == 0) {
+			return elements;
+		}
+		for (Link link : this.getLinks()) {
+			if (!traversedLinks.add(link)) {
+				continue;
+			}
+			KnowledgeElement oppositeElement = link.getOppositeElement(this);
+			if (oppositeElement == null) {
+				continue;
+			}
+			elements.addAll(oppositeElement.getLinkedElements(currentDistance - 1));
+		}
+		return elements;
+	}
+
 	/**
 	 * @param otherElement
 	 *            object of {@link KnowledgeElement}.
 	 * @return {@link Link} object if there exists a link (= edge or relationship)
 	 *         between this knowledge element and the other knowledge element in the
-	 *         {@link KnowledgeGraph}. Returns null if no edge/link/relationshio can
+	 *         {@link KnowledgeGraph}. Returns null if no edge/link/relationship can
 	 *         be found.
 	 */
 	public Link getLink(KnowledgeElement otherElement) {

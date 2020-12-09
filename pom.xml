@@ -33,12 +33,16 @@
 			<name>Philipp de Sombre</name>
 		</developer>
 		<developer>
+			<id>gerner</id>
+			<name>Rafael Gerner</name>
+		</developer>
+		<developer>
 			<id>manders</id>
 			<name>Michael Anders</name>
 		</developer>
 		<developer>
-			<id>gerner</id>
-			<name>Rafael Gerner</name>
+			<id>mruder</id>
+			<name>Marvin A. Ruder</name>
 		</developer>
 		<developer>
 			<id>zubrod</id>

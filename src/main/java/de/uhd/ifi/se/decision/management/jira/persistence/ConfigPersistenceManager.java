@@ -201,7 +201,8 @@ public class ConfigPersistenceManager {
 		setGitRepositoryConfigurations(projectKey, gitConfs);
 	}
 
-	public static void setGitRepositoryConfigurations(String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+	public static void setGitRepositoryConfigurations(String projectKey,
+			List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
 		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
