@@ -22,7 +22,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 /**
  * Test class for the persistence of the assigned decision groups.
  */
-public class TestSetGroupAssignment extends TestSetUpGit {
+public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 	private KnowledgeElement decisionKnowledgeElement;
 
@@ -68,7 +68,56 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 	}
 
 	@Test
-	public void testInheritSetGroupAssignment() {
+	public void testDeleteGroupAssignmentIdNull() {
+		assertFalse(DecisionGroupManager.deleteGroupAssignment(null));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroupAssignmentIdNotNull() {
+		DecisionGroupManager.insertGroup("TestGroup2", this.decisionKnowledgeElement);
+		Long elementId = DecisionGroupManager.getGroupInDatabase("TestGroup2", decisionKnowledgeElement).getId();
+		assertTrue(DecisionGroupManager.deleteGroupAssignment(elementId));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroupAssignmentGroupNull() {
+		assertFalse(DecisionGroupManager.deleteGroupAssignment(null, this.decisionKnowledgeElement));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroupAssignmentElementNull() {
+		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1", null));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroupAssignmentGroupAndElementNotNull() {
+		DecisionGroupManager.insertGroup("TestGroup3", this.decisionKnowledgeElement);
+		DecisionGroupManager.deleteGroupAssignment("TestGroup3", this.decisionKnowledgeElement);
+		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup3"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroupWithGroupNull() {
+		DecisionGroupManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
+		assertFalse(DecisionGroupManager.deleteGroup(null, "TEST"));
+
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteGroup() {
+		DecisionGroupManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
+		DecisionGroupManager.deleteGroup("TestGroup4", "TEST");
+		assertTrue(DecisionGroupManager.getAllDecisionElementsWithCertainGroup("TestGroup4", "TEST").size() == 0);
+	}
+
+	@Test
+	public void testInheritSetAndDeleteGroupAssignment() {
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles();
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
@@ -86,9 +135,14 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
 		groups.add("New2");
+
 		DecisionGroupManager.setGroupAssignment(groups, godClass);
 		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
+
+		DecisionGroupManager.deleteGroupAssignment("New1", issueFromCodeCommentInGodClass);
+		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New1"));
+		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New2"));
 	}
 
 }
