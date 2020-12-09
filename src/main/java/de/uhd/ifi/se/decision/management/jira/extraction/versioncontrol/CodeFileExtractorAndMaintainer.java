@@ -58,7 +58,6 @@ public class CodeFileExtractorAndMaintainer {
 		extractAllChangedFiles(diff);
 	}
 
-	// TODO This method is too long. Please split it into smaller methods.
 	private void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
@@ -73,48 +72,6 @@ public class CodeFileExtractorAndMaintainer {
 				KnowledgeElement currentIssue = null;
 				KnowledgeElement currentAlternativeOrDecision = null;
 				List<KnowledgeElement> elements = gitExtract.getElementsFromCode(diffForFile);
-
-				// Elements should be returned sorted by the method above. Please change the
-				// method getElementsFromCode.
-				elements.sort((e1, e2) -> {
-					/*
-					 * The description of a knowledge element from code is structured as
-					 * 
-					 * "nameOfCodeFile someInteger changeType(some numbers, probably related to the
-					 * git commits) startLine:endLine:inCommentCursor gitCommitHash",
-					 * 
-					 * e.g.: "GodClass.java 0 INSERT(0-0,0-24) 1:1:5 70297039"
-					 * 
-					 * We want to extract the startLine:endLine:inCommentCursor part and use it to
-					 * sort the elements by their position in the code
-					 * 
-					 */
-					try {
-						// extract string containing start line, end line and "inCommentCursor"
-						// (whatever that is)
-						String d1 = e1.getDescription().substring(0, e1.getDescription().lastIndexOf(' '));
-						String d2 = e2.getDescription().substring(0, e2.getDescription().lastIndexOf(' '));
-						d1 = d1.substring(d1.lastIndexOf(' ') + 1);
-						d2 = d2.substring(d2.lastIndexOf(' ') + 1);
-
-						// get a list of integers from that string
-						List<String> sl1 = Arrays.asList(d1.split(":"));
-						List<String> sl2 = Arrays.asList(d2.split(":"));
-
-						// now sort elements by the numbers in both lists
-						for (int i = 0; i < sl1.size(); i++) {
-							if (Integer.valueOf(sl1.get(i)) < Integer.valueOf(sl2.get(i))) {
-								return -1;
-							}
-							if (Integer.valueOf(sl1.get(i)) > Integer.valueOf(sl2.get(i))) {
-								return 1;
-							}
-						}
-						return 0;
-					} catch (Exception e) {
-						return 0;
-					}
-				});
 
 				for (KnowledgeElement element : elements) {
 					KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
@@ -142,8 +99,8 @@ public class CodeFileExtractorAndMaintainer {
 							link = new Link(source, elementInGraph);
 							currentAlternativeOrDecision = null;
 						} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
-																			// decision – something still went wrong
-																			// or somebody still violated structure
+																		   // decision – something still went wrong
+																		   // or somebody still violated structure
 							link = new Link(currentIssue, elementInGraph);
 						} else {
 							link = new Link(currentAlternativeOrDecision, elementInGraph);
