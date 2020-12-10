@@ -228,7 +228,7 @@ public class GitDiffedCodeExtractionManager {
 
 	private List<CodeComment> getCommentsFromFile(ChangedFile changedFile, boolean fromNewerFile) {
 		if (changedFile.exists()) {
-			GenericCodeCommentParser commentParser = getCodeCommentParser(changedFile.getTreeWalkPath());
+			GenericCodeCommentParser commentParser = getCodeCommentParser(changedFile);
 			if (commentParser != null) {
 				return commentParser.getComments(changedFile);
 			}
@@ -239,9 +239,8 @@ public class GitDiffedCodeExtractionManager {
 		return null;
 	}
 
-	/* Currently only Java parser is available. */
-	private GenericCodeCommentParser getCodeCommentParser(String resultingFileName) {
-		if (resultingFileName.toLowerCase().endsWith(".java")) {
+	private GenericCodeCommentParser getCodeCommentParser(ChangedFile changedFile) {
+		if (changedFile.isCodeFile()) {
 			return new GenericCodeCommentParser();
 		}
 		// TODO Replace returning null with Optional<> everywhere to avoid

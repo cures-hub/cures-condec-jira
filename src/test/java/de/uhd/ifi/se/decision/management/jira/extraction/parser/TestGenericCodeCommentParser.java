@@ -1,9 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 public class TestGenericCodeCommentParser {
 
@@ -35,8 +39,8 @@ public class TestGenericCodeCommentParser {
                 " */ \t \n}");
         file.setSummary("example.java");
         GenericCodeCommentParser parser = new GenericCodeCommentParser();
-        parser.getComments(file);
-        System.out.println();
+        List<CodeComment> codeComments = parser.getComments(file);
+        assertTrue(codeComments.size() == 6);
     }
     
 }

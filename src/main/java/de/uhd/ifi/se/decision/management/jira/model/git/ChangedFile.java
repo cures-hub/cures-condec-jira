@@ -357,7 +357,7 @@ public class ChangedFile extends KnowledgeElement {
 			"css",
 			"php",
 			"sh"));
-		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
+		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1).toLowerCase());
 	}
 
 	public CommentStyleType getCommentStyleType() {
