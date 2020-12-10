@@ -1,40 +1,45 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
 public enum CommentStyleType {
 
-    NONE(new HashSet<String>()), 
-    JAVA_C(new HashSet<String>(Arrays.asList(
+    NONE(new ArrayList<String>()), 
+    JAVA_C(Arrays.asList(
             "java",
             "cpp",
             "c++",
             "c",
             "hpp",
             "h++",
-            "h"))), 
-    PYTHON(new HashSet<>(Arrays.asList(
+            "h")), 
+    PYTHON(Arrays.asList(
             "py",
-            "sh"))), 
-    HTML(new HashSet<>(Arrays.asList(
+            "sh")), 
+    HTML(Arrays.asList(
             "xml",
             "js",
             "vm",
             "html",
             "htm",
             "css",
-            "php")));
+            "php"));
 
-    private HashSet<String> fileEndings;
+    private List<String> fileEndings;
 
-    private CommentStyleType(HashSet<String> fileEndings) {
+    private CommentStyleType(List<String> fileEndings) {
         this.fileEndings = fileEndings;
+    }
+
+    public static CommentStyleType getCommentStyleTypeByFileName(String fileName) {
+        return getCommentStyleTypeByFileEnding(fileName.substring(fileName.lastIndexOf(".") + 1));
     }
 
     public static CommentStyleType getCommentStyleTypeByFileEnding(String fileEnding) {
         for (CommentStyleType commentStyleType : CommentStyleType.values()) {
-            if (commentStyleType.fileEndings.contains(fileEnding)) {
+            if (commentStyleType.fileEndings.contains(fileEnding.toLowerCase())) {
                 return commentStyleType;
             }
         }

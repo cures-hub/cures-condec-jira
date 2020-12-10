@@ -340,24 +340,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public boolean isCodeFile() {
-		Set<String> codeFileEndings = new HashSet<>(Arrays.asList(
-			"java",
-			"cpp",
-			"c++",
-			"c",
-			"hpp",
-			"h++",
-			"h",
-			"xml",
-			"js",
-			"py",
-			"vm",
-			"html",
-			"htm",
-			"css",
-			"php",
-			"sh"));
-		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1).toLowerCase());
+		return getCommentStyleType() == CommentStyleType.NONE;
 	}
 
 	public CommentStyleType getCommentStyleType() {
