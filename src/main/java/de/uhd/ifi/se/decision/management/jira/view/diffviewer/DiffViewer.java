@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.jgit.lib.Ref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
@@ -23,12 +25,15 @@ public class DiffViewer {
 	@XmlElement(name = "branches")
 	private List<BranchDiff> branchDiffs;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DiffViewer.class);
+
 	public DiffViewer(String projectKey) {
 		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(projectKey));
 	}
 
 	public DiffViewer(String projectKey, String jiraIssueKey) {
 		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(jiraIssueKey));
+		LOGGER.info("projectKey:" + projectKey + ",jiraIssueKey:" + jiraIssueKey);
 	}
 
 	public DiffViewer(String projectKey, List<Ref> branches) {

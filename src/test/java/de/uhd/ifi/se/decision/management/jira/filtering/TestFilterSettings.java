@@ -270,4 +270,9 @@ public class TestFilterSettings extends TestSetUp {
 		assertTrue(filterSettings.isIrrelevantTextShown());
 	}
 
+	@Test
+	public void testToString() {
+		assertTrue(filterSettings.toString().startsWith("{\"projectKey\":\"TEST\""));
+	}
+
 }

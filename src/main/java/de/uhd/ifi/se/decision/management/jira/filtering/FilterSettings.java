@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
@@ -486,5 +488,17 @@ public class FilterSettings {
 	@JsonProperty("isIrrelevantTextShown")
 	public void setIrrelevantTextShown(boolean isIrrelevantTextShown) {
 		this.isIrrelevantTextShown = isIrrelevantTextShown;
+	}
+
+	@Override
+	public String toString() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String filterSettingsAsJson = "";
+		try {
+			filterSettingsAsJson = objectMapper.writeValueAsString(this);
+		} catch (IOException e) {
+
+		}
+		return filterSettingsAsJson;
 	}
 }

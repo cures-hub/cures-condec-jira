@@ -16,6 +16,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -57,6 +59,8 @@ public class TreeViewer {
 	@JsonIgnore
 	private long index;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewer.class);
+
 	public TreeViewer() {
 		this.multiple = false;
 		this.checkCallback = true;
@@ -81,6 +85,7 @@ public class TreeViewer {
 		if (filterSettings == null) {
 			return;
 		}
+		LOGGER.info(filterSettings.toString());
 
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
 		graph = filteringManager.getSubgraphMatchingFilterSettings();
