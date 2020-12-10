@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +203,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *            Jira issue that the decision knowledge element or irrelevant text
 	 *            is part of.
 	 */
+	@JsonProperty("jiraIssue")
 	public void setJiraIssue(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
 	}

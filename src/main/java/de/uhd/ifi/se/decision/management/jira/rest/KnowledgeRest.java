@@ -68,7 +68,7 @@ public class KnowledgeRest {
 		KnowledgeElement decisionKnowledgeElement = persistenceManager.getKnowledgeElement(id,
 				documentationLocationIdentifier);
 		if (decisionKnowledgeElement != null) {
-			LOGGER.info(decisionKnowledgeElement + "was retrieved.");
+			LOGGER.info(decisionKnowledgeElement.getKey() + " was retrieved.");
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 		}
 		return Response.status(Status.NOT_FOUND)
@@ -104,7 +104,7 @@ public class KnowledgeRest {
 		KnowledgeElement element = persistenceManager.getKnowledgeElement(id, documentationLocation);
 		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getOrCreate(projectKey)
 				.getUnlinkedElements(element);
-		LOGGER.info("Unlinked elements for element " + element + "were retrieved.");
+		LOGGER.info("Unlinked elements for " + element.getKey() + " were retrieved.");
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
 
@@ -183,7 +183,7 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		LOGGER.info(newElementWithId + "was created.");
+		LOGGER.info(newElementWithId.getKey() + " was created.");
 		return Response.status(Status.OK).entity(newElementWithId).build();
 	}
 
@@ -229,7 +229,7 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
-		LOGGER.info(updatedElement + "was updated.");
+		LOGGER.info(updatedElement.getKey() + " was updated.");
 		return Response.status(Status.OK).build();
 	}
 
@@ -250,7 +250,7 @@ public class KnowledgeRest {
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
 		}
-		LOGGER.info(knowledgeElement + "was deleted.");
+		LOGGER.info(knowledgeElement.getKey() + " was deleted.");
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 	}
@@ -374,7 +374,7 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		LOGGER.info(link + "was created.");
+		LOGGER.info("Link " + link + " was created.");
 		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 	}
 
@@ -392,7 +392,7 @@ public class KnowledgeRest {
 		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, user);
 
 		if (isDeleted) {
-			LOGGER.info(link + "was deleted.");
+			LOGGER.info("Link " + link + " was deleted.");
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

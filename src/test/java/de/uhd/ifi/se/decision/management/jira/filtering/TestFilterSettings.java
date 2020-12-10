@@ -272,7 +272,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testToString() {
-		assertTrue(filterSettings.toString().startsWith("{\"projectKey\":\"TEST\""));
+		assertTrue(filterSettings.toString().contains("\"projectKey\":\"TEST\""));
 	}
 
 }
