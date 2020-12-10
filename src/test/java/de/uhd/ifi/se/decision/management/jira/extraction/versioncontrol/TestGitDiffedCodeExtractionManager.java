@@ -9,6 +9,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
@@ -35,6 +36,11 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(commits);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
+		String d = "";
+		for (KnowledgeElement knowledgeElement : manager.getNewDecisionKnowledgeElements()) {
+			d += knowledgeElement.getDescription() + "\n";
+		}
+		assertEquals("", d);
 		assertEquals(12, manager.getNewDecisionKnowledgeElements().size());
 	}
 
@@ -43,6 +49,11 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
+		String s = "";
+		for (KnowledgeElement knowledgeElement : manager.getNewDecisionKnowledgeElements()) {
+			s += knowledgeElement.getSummary() + "\n";
+		}
+		assertEquals("", s);
 		assertEquals(12, manager.getNewDecisionKnowledgeElements().size());
 	}
 }
