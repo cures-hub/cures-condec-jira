@@ -367,6 +367,39 @@ public class ChangedFile extends KnowledgeElement {
 		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
 	}
 
+	public CommentStyleType getCommentStyleType() {
+		Set<String> codeFileEndingsJavaC = new HashSet<>(Arrays.asList(
+				"java",
+				"cpp",
+				"c++",
+				"c",
+				"hpp",
+				"h++",
+				"h"));
+		Set<String> codeFileEndingsPython = new HashSet<>(Arrays.asList(
+				"py",
+				"sh"));
+		Set<String> codeFileEndingsHtml = new HashSet<>(Arrays.asList(
+				"xml",
+				"js",
+				"vm",
+				"html",
+				"htm",
+				"css",
+				"php"));
+		
+		if (codeFileEndingsJavaC.contains(getName().substring(getName().lastIndexOf(".") + 1))) {
+			return CommentStyleType.JAVA_C;
+		}
+		if (codeFileEndingsPython.contains(getName().substring(getName().lastIndexOf(".") + 1))) {
+			return CommentStyleType.PYTHON;
+		}
+		if (codeFileEndingsHtml.contains(getName().substring(getName().lastIndexOf(".") + 1))) {
+			return CommentStyleType.HTML;
+		}
+		return CommentStyleType.NONE;
+	}
+
 	public boolean isCorrect() {
 		return isCorrect;
 	}

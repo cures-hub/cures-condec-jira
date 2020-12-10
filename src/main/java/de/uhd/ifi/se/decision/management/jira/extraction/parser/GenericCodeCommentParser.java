@@ -22,14 +22,17 @@ public class GenericCodeCommentParser {
 			int lineNumber = 1;
 			int lastLineCol = -1;
 
-			String singleLineCommentChar = "//"; // TODO change by reading from inspectedFile
-			String multiLineCommentCharStart = "/*"; // TODO change by reading from inspectedFile
-			String multiLineCommentCharEnd = "*/"; // TODO change by reading from inspectedFile
+			String singleLineCommentChar = inspectedFile.getCommentStyleType().getSingleLineCommentChar();
+			String multiLineCommentCharStart = inspectedFile.getCommentStyleType().getMultiLineCommentCharStart();
+			String multiLineCommentCharEnd = inspectedFile.getCommentStyleType().getMultiLineCommentCharEnd();
 
 			while (fileContent.indexOf("\n") != -1) {
 				String line = fileContent.substring(0, fileContent.indexOf("\n") + 1);
 				if (inMultilineComment) { // we are in a multi-line comment
-					int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
+					int multiLineCommentCharEndPos = -1;
+					if (multiLineCommentCharEnd != null) {
+						multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
+					}
 					if (multiLineCommentCharEndPos != -1) { // the multi-line comment ends in this line
 						comment += line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
 						commentList.add(new CodeComment(comment, beginColumn, beginLine, multiLineCommentCharEndPos + multiLineCommentCharEnd.length() + 1, lineNumber));
@@ -39,8 +42,14 @@ public class GenericCodeCommentParser {
 						comment += line;
 					}
 				} else { // we are not in a multi-line comment
-					int singleLineCommentCharPos = line.indexOf(singleLineCommentChar);
-					int multiLineCommentCharStartPos = line.indexOf(multiLineCommentCharStart);
+					int singleLineCommentCharPos = -1;
+					if (singleLineCommentChar != null) { // the file type does not support single-line comments
+						singleLineCommentCharPos = line.indexOf(singleLineCommentChar);
+					}
+					int multiLineCommentCharStartPos = -1;
+					if (multiLineCommentCharStart != null) { // the file type does not support multi-line comments
+						multiLineCommentCharStartPos = line.indexOf(multiLineCommentCharStart);
+					}
 					if (multiLineCommentCharStartPos != -1) { // a multi-line comment starts in this line
 						inMultilineComment = true;
 						beginLine = lineNumber;
@@ -49,7 +58,10 @@ public class GenericCodeCommentParser {
 							commentList.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn, beginLine, lastLineCol, lineNumber - 1));
 							comment = "";
 						}
-						int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
+						int multiLineCommentCharEndPos = -1;
+						if (multiLineCommentCharEnd != null) { // the file type does not support multi-line comments
+							multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
+						}
 						if (multiLineCommentCharEndPos == -1) { // the multi-line comment ends in this line
 							comment = line.substring(multiLineCommentCharStartPos);
 						} else { // the multi-line comment does not end in this line

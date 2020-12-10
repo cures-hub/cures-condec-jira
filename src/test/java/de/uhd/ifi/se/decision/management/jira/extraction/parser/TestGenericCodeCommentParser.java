@@ -33,10 +33,10 @@ public class TestGenericCodeCommentParser {
                 " * \n" + 
                 " * not rationale text anymore\n" +
                 " */ \t \n}");
-        
+        file.setSummary("example.java");
         GenericCodeCommentParser parser = new GenericCodeCommentParser();
         parser.getComments(file);
-        assertTrue(true);
+        System.out.println();
     }
     
 }
