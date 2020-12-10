@@ -325,7 +325,7 @@ public class ChangedFile extends KnowledgeElement {
 	 *         been deleted or that its name has been changed or it has been moved.
 	 */
 	public boolean isExistingJavaFile() {
-		return exists() && isJavaFile();
+		return exists() && getName().endsWith("java");
 	}
 
 	public boolean exists() {
@@ -337,13 +337,6 @@ public class ChangedFile extends KnowledgeElement {
 
 	public int getNumberOfLines() {
 		return fileContent.split("\n").length;
-	}
-
-	/**
-	 * @return true if the file is a Java class.
-	 */
-	public boolean isJavaFile() {
-		return getName().endsWith("java");
 	}
 
 	public boolean isCodeFile() {

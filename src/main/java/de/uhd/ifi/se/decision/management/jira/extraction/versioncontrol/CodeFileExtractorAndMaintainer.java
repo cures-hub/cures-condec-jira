@@ -63,7 +63,7 @@ public class CodeFileExtractorAndMaintainer {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.isCodeFile()) {
 				KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-				if (!changedFile.isJavaFile()) {
+				if (!changedFile.isCodeFile()) {
 					continue;
 				}
 				Diff diffForFile = new Diff();
