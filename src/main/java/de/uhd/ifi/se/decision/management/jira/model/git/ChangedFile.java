@@ -344,7 +344,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public CommentStyleType getCommentStyleType() {
-		return CommentStyleType.getCommentStyleTypeByFileEnding(getName().substring(getName().lastIndexOf(".") + 1));
+		return CommentStyleType.getCommentStyleTypeByFileName(getName());
 	}
 
 	public boolean isCorrect() {
