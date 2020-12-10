@@ -31,8 +31,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -302,7 +302,7 @@ public class ChangedFile extends KnowledgeElement {
 	private MethodVisitor getMethodVisitor() {
 		if (compilationUnit == null) {
 			ParseResult<CompilationUnit> parseResult = null;
-			parseResult = JavaCodeCommentParser.parseJavaFile(fileContent);
+			parseResult = CodeCommentParser.parseJavaFile(fileContent);
 			compilationUnit = parseResult.getResult().get();
 		}
 		MethodVisitor methodVistor = new MethodVisitor();

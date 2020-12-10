@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -243,7 +242,7 @@ public class GitDiffedCodeExtractionManager {
 	/* Currently only Java parser is available. */
 	private CodeCommentParser getCodeCommentParser(String resultingFileName) {
 		if (resultingFileName.toLowerCase().endsWith(".java")) {
-			return new JavaCodeCommentParser();
+			return new CodeCommentParser();
 		}
 		// TODO Replace returning null with Optional<> everywhere to avoid
 		// NullPointerExceptions
