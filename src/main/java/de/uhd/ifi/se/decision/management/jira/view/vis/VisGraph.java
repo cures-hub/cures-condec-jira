@@ -12,6 +12,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -47,6 +49,8 @@ public class VisGraph {
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> subgraph;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(VisGraph.class);
+
 	public VisGraph() {
 		this.nodes = new HashSet<>();
 		this.edges = new HashSet<>();
@@ -57,6 +61,7 @@ public class VisGraph {
 		if (user == null || filterSettings == null || filterSettings.getProjectKey() == null) {
 			return;
 		}
+		LOGGER.info(filterSettings.toString());
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		selectedElement = filterSettings.getSelectedElement();
@@ -129,6 +134,7 @@ public class VisGraph {
 
 	@XmlElement(name = "selectedVisNodeId")
 	public String getSelectedVisNodeId() {
-		return selectedElement == null ? "" : selectedElement.getId() + "_" + selectedElement.getDocumentationLocationAsString();
+		return selectedElement == null ? ""
+				: selectedElement.getId() + "_" + selectedElement.getDocumentationLocationAsString();
 	}
 }

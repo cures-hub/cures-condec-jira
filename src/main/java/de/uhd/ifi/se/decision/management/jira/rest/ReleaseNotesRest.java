@@ -15,6 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
@@ -25,14 +28,16 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenc
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProposal;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProposal;
 
 /**
  * REST resource for release notes
  */
 @Path("/release-note")
 public class ReleaseNotesRest {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesRest.class);
 
 	@Path("/getProposedIssues")
 	@POST
@@ -51,7 +56,8 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
+		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator
+				.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(
@@ -101,6 +107,7 @@ public class ReleaseNotesRest {
 		ReleaseNotes releaseNote = new ReleaseNotes(title, releaseNoteContent, projectKey, startDate, endDate);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
 
+		LOGGER.info("Release notes were created for project: " + projectKey);
 		return Response.ok(id).build();
 	}
 
@@ -131,6 +138,8 @@ public class ReleaseNotesRest {
 	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query) {
 		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, query);
+
+		LOGGER.info("Release notes were viewed for project: " + projectKey);
 		return Response.ok(releaseNotes).build();
 	}
 

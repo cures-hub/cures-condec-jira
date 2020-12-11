@@ -15,6 +15,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -47,6 +49,8 @@ public class Treant {
 	@JsonIgnore
 	private boolean isHyperlinked;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Treant.class);
+
 	public Treant(FilterSettings filterSettings) {
 		this(filterSettings, false);
 	}
@@ -55,6 +59,8 @@ public class Treant {
 		if (filterSettings == null) {
 			return;
 		}
+		LOGGER.info(filterSettings.toString());
+
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
 		this.setChart(new Chart());

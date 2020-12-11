@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -24,6 +27,8 @@ public class ConDecDashboardItem implements ContextProvider {
 	protected ApplicationUser user;
 	protected FilterSettings filterSettings;
 	protected IssueType jiraIssueType;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecDashboardItem.class);
 
 	@Override
 	public void init(Map<String, String> params) throws PluginParseException {
@@ -64,6 +69,8 @@ public class ConDecDashboardItem implements ContextProvider {
 		}
 		newContext.putAll(getAdditionalParameters());
 		newContext.putAll(getMetrics());
+
+		LOGGER.info(filterSettings.toString());
 		return newContext;
 	}
 

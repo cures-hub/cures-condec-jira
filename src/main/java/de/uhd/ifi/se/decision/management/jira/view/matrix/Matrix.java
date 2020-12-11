@@ -7,6 +7,9 @@ import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -33,6 +36,8 @@ public class Matrix {
 
 	private int size;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
+
 	public Matrix(Set<KnowledgeElement> elements) {
 		headerElements = elements;
 		size = headerElements.size();
@@ -40,6 +45,7 @@ public class Matrix {
 
 	public Matrix(FilterSettings filterSettings) {
 		this(new FilteringManager(filterSettings).getSubgraphMatchingFilterSettings().vertexSet());
+		LOGGER.info(filterSettings.toString());
 	}
 
 	public Set<KnowledgeElement> getHeaderElements() {

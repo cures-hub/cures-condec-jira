@@ -5,6 +5,9 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -24,6 +27,8 @@ public class VisTimeLine {
 	private boolean isPlacedAtCreationDate;
 	private boolean isPlacedAtUpdatingDate;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(VisTimeLine.class);
+
 	public VisTimeLine() {
 		this.nodes = new HashSet<VisTimeLineNode>();
 		this.groups = new HashSet<VisTimeLineGroup>();
@@ -41,6 +46,7 @@ public class VisTimeLine {
 		if (user == null || filterSettings == null) {
 			return;
 		}
+		LOGGER.info(filterSettings.toString());
 		this.isPlacedAtCreationDate = isPlacedAtCreationDate;
 		this.isPlacedAtUpdatingDate = isPlacedAtUpdatingDate;
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);

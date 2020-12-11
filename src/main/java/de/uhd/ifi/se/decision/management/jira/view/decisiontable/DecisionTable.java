@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jgrapht.Graph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
@@ -39,6 +41,8 @@ public class DecisionTable {
 	@XmlElement
 	private Map<String, List<DecisionTableElement>> decisionTableData;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
+
 	public DecisionTable(String projectKey) {
 		graph = KnowledgeGraph.getOrCreate(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
@@ -53,6 +57,7 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setIssues(FilterSettings filterSettings, ApplicationUser user) {
+		LOGGER.info(filterSettings.toString());
 		issues = new ArrayList<>();
 
 		FilteringManager filterManager = new FilteringManager(user, filterSettings);

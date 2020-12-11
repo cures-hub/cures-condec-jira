@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,9 +10,15 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -52,6 +59,8 @@ public class FilterSettings {
 	private long endDate;
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
@@ -382,6 +391,7 @@ public class FilterSettings {
 	 *         element in the knowlegde tree view). For example, this can be a Jira
 	 *         issue such as a work item, bug report or requirement.
 	 */
+	@JsonFilter(value = "selectedElementFilter")
 	public KnowledgeElement getSelectedElement() {
 		return selectedElement;
 	}
@@ -486,5 +496,20 @@ public class FilterSettings {
 	@JsonProperty("isIrrelevantTextShown")
 	public void setIrrelevantTextShown(boolean isIrrelevantTextShown) {
 		this.isIrrelevantTextShown = isIrrelevantTextShown;
+	}
+
+	@Override
+	public String toString() {
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter("selectedElementFilter", SimpleBeanPropertyFilter.filterOutAllExcept("key"));
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setFilterProvider(filterProvider);
+		String filterSettingsAsJson = "";
+		try {
+			filterSettingsAsJson = objectMapper.writeValueAsString(this);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return filterSettingsAsJson;
 	}
 }

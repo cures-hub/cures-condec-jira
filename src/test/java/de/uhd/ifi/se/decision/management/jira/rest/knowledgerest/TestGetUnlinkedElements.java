@@ -21,11 +21,6 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	}
 
 	@Test
-	public void testElementIdFilledProjectExistentDocumentationLocationEmpty() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
-	}
-
-	@Test
 	public void testElementIdFilledProjectExistentDocumentationLocationJiraIssue() {
 		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "i").getStatus());
 	}
@@ -43,5 +38,10 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	@Test
 	public void testElementIdFilledProjectKeyNullDocumentationLocationEmpty() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getUnlinkedElements(7, null, "").getStatus());
+	}
+
+	@Test
+	public void testElementIdFilledProjectExistentDocumentationLocationEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
 	}
 }
