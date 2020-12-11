@@ -11,7 +11,7 @@ import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.GenericCodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -228,7 +228,7 @@ public class GitDiffedCodeExtractionManager {
 
 	private List<CodeComment> getCommentsFromFile(ChangedFile changedFile, boolean fromNewerFile) {
 		if (changedFile.exists()) {
-			GenericCodeCommentParser commentParser = getCodeCommentParser(changedFile);
+			CodeCommentParser commentParser = getCodeCommentParser(changedFile);
 			if (commentParser != null) {
 				return commentParser.getComments(changedFile);
 			}
@@ -239,9 +239,9 @@ public class GitDiffedCodeExtractionManager {
 		return null;
 	}
 
-	private GenericCodeCommentParser getCodeCommentParser(ChangedFile changedFile) {
+	private CodeCommentParser getCodeCommentParser(ChangedFile changedFile) {
 		if (changedFile.isCodeFile()) {
-			return new GenericCodeCommentParser();
+			return new CodeCommentParser();
 		}
 		// TODO Replace returning null with Optional<> everywhere to avoid
 		// NullPointerExceptions

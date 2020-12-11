@@ -9,7 +9,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
-public class TestGenericCodeCommentParser {
+public class TestCodeCommentParser {
 
     @Test
     public void testCodeCommentParser() {
@@ -38,7 +38,7 @@ public class TestGenericCodeCommentParser {
                 " * not rationale text anymore\n" +
                 " */ \t \n}");
         file.setSummary("example.java");
-        GenericCodeCommentParser parser = new GenericCodeCommentParser();
+        CodeCommentParser parser = new CodeCommentParser();
         List<CodeComment> codeComments = parser.getComments(file);
         assertTrue(codeComments.size() == 6);
     }
