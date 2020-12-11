@@ -24,12 +24,13 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -297,10 +298,21 @@ public class ChangedFile extends KnowledgeElement {
 		return methodsInClass;
 	}
 
+	private ParseResult<CompilationUnit> parseJavaFile(String inspectedFileContent) {
+		ParseResult<CompilationUnit> parseResult = null;
+		try {
+			JavaParser javaParser = new JavaParser();
+			parseResult = javaParser.parse(inspectedFileContent);
+		} catch (ParseProblemException | NullPointerException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return parseResult;
+	}
+
 	private MethodVisitor getMethodVisitor() {
 		if (compilationUnit == null) {
 			ParseResult<CompilationUnit> parseResult = null;
-			parseResult = JavaCodeParser.parseJavaFile(fileContent);
+			parseResult = parseJavaFile(fileContent);
 			compilationUnit = parseResult.getResult().get();
 		}
 		MethodVisitor methodVistor = new MethodVisitor();
