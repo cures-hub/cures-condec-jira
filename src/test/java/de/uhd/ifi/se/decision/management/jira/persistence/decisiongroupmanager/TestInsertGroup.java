@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -20,7 +20,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 /**
  * Test class for the persistence of the assigned decision groups.
  */
-public class TestInsertGroup extends TestSetUp {
+public class TestInsertGroup extends TestSetUpGit {
 
 	private KnowledgeElement decisionKnowledgeElement;
 
