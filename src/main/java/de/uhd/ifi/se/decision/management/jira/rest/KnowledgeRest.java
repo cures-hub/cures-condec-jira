@@ -102,6 +102,11 @@ public class KnowledgeRest {
 		}
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement element = persistenceManager.getKnowledgeElement(id, documentationLocation);
+		if (element == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Unlinked decision knowledge elements could not be received since the knowledge element was not found."))
+					.build();
+		}
 		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getOrCreate(projectKey)
 				.getUnlinkedElements(element);
 		LOGGER.info("Unlinked elements for " + element.getKey() + " were retrieved.");
