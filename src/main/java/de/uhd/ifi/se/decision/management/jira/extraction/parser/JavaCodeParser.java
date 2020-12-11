@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
