@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public enum CommentStyleType {
 
-    NONE(new ArrayList<String>()), 
+    NONE(new ArrayList<String>(), null, null, null), 
     JAVA_C(Arrays.asList(
             "java",
             "cpp",
@@ -14,10 +14,12 @@ public enum CommentStyleType {
             "c",
             "hpp",
             "h++",
-            "h")), 
+            "h"),
+            "//", "/*", "*/"), 
     PYTHON(Arrays.asList(
             "py",
-            "sh")), 
+            "sh"),
+            "#", null, null), 
     HTML(Arrays.asList(
             "xml",
             "js",
@@ -25,12 +27,23 @@ public enum CommentStyleType {
             "html",
             "htm",
             "css",
-            "php"));
+            "php"),
+            null, "<!--", "-->"),
+    TEX(Arrays.asList(
+            "tex"),
+            "%", null, null);
 
     private List<String> fileEndings;
+    private String singleLineCommentChar;
+    private String multiLineCommentCharStart;
+    private String multiLineCommentCharEnd;
 
-    private CommentStyleType(List<String> fileEndings) {
+    private CommentStyleType(List<String> fileEndings, String singleLineCommentChar, String multiLineCommentCharStart, String multiLineCommentCharEnd) {
         this.fileEndings = fileEndings;
+        this.singleLineCommentChar = singleLineCommentChar;
+        this.multiLineCommentCharStart = multiLineCommentCharStart;
+        this.multiLineCommentCharEnd = multiLineCommentCharEnd;
+    
     }
 
     public static CommentStyleType getCommentStyleTypeByFileName(String fileName) {
@@ -59,50 +72,14 @@ public enum CommentStyleType {
     }
 
     public String getSingleLineCommentChar() {
-        switch (this) {
-            case JAVA_C:
-                return "//";
-
-            case PYTHON:
-                return "#";
-
-            case HTML:
-                return null;
-        
-            default:
-                return null;
-        }
+        return this.singleLineCommentChar;
     }
 
     public String getMultiLineCommentCharStart() {
-        switch (this) {
-            case JAVA_C:
-                return "/*";
-
-            case PYTHON:
-                return null;
-
-            case HTML:
-                return "<!--";
-        
-            default:
-                return null;
-        }
+        return this.multiLineCommentCharStart;
     }
 
     public String getMultiLineCommentCharEnd() {
-        switch (this) {
-            case JAVA_C:
-                return "*/";
-
-            case PYTHON:
-                return null;
-
-            case HTML:
-                return "-->";
-        
-            default:
-                return null;
-        }
+        return this.multiLineCommentCharEnd;
     }
 }
