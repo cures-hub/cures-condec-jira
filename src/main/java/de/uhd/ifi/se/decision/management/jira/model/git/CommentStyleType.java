@@ -59,18 +59,6 @@ public enum CommentStyleType {
         return CommentStyleType.NONE;
     }
 
-	public static CommentStyleType getCommentStyleTypeByName(String name) {
-		if (name == null || name.isBlank()) {
-			return NONE;
-		}
-		for (CommentStyleType commentStyleType : values()) {
-			if (commentStyleType.name().equalsIgnoreCase(name)) {
-				return commentStyleType;
-			}
-		}
-		return NONE;
-    }
-
     public String getSingleLineCommentChar() {
         return this.singleLineCommentChar;
     }
