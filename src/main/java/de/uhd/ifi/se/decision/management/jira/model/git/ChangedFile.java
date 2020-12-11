@@ -338,7 +338,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public boolean isCodeFile() {
-		return getCommentStyleType() == CommentStyleType.NONE;
+		return getCommentStyleType() != CommentStyleType.NONE;
 	}
 
 	public CommentStyleType getCommentStyleType() {
