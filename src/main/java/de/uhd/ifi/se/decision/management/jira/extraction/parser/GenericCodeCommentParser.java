@@ -62,9 +62,9 @@ public class GenericCodeCommentParser {
 						if (multiLineCommentCharEnd != null) { // the file type does not support multi-line comments
 							multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
 						}
-						if (multiLineCommentCharEndPos == -1) { // the multi-line comment ends in this line
+						if (multiLineCommentCharEndPos == -1) { // the multi-line comment does not end in this line
 							comment = line.substring(multiLineCommentCharStartPos);
-						} else { // the multi-line comment does not end in this line
+						} else { // the multi-line comment ends in this line
 							comment = line.substring(multiLineCommentCharStartPos, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
 							commentList.add(new CodeComment(comment, beginColumn, beginLine, multiLineCommentCharEndPos + multiLineCommentCharEnd.length() + 1, lineNumber));
 							comment = "";
