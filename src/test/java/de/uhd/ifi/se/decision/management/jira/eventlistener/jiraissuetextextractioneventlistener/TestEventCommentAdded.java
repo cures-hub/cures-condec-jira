@@ -33,7 +33,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	}
 
 	@Test
-	@NonTransactional
+	// @NonTransactional
 	public void testNoCommentContained() {
 		Comment comment = createCommentAndTestWhetherExistent("");
 		KnowledgeElement element = getFirstElementInComment(comment);
