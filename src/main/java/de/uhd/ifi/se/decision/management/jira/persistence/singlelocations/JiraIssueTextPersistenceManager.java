@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -205,10 +202,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
-		if (elements.size() == 1) {
-			if (elements.get(0).toString() == "") {
+		if (elements.size() == 1 && elements.get(0).toString().equals("")) {
 				return new ArrayList<>();
-			}
 		}
 		return elements;
 	}
