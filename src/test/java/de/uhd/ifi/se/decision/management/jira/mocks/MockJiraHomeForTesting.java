@@ -2,10 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 
 import java.io.File;
 
-import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.config.util.MockJiraHome;
 
-public class MockJiraHomeForTesting extends MockJiraHome implements JiraHome {
+public class MockJiraHomeForTesting extends MockJiraHome {
 
 	@Override
 	public File getHome() {
