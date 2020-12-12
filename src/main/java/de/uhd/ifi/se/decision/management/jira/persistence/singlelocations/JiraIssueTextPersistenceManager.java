@@ -202,6 +202,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
+		if (elements.size() > 0 && elements.get(0).toString().isBlank()) {
+				return new ArrayList<>();
+		}
 		return elements;
 	}
 

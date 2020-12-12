@@ -4,13 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -26,13 +24,14 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JavaCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -299,10 +298,21 @@ public class ChangedFile extends KnowledgeElement {
 		return methodsInClass;
 	}
 
+	private ParseResult<CompilationUnit> parseJavaFile(String inspectedFileContent) {
+		ParseResult<CompilationUnit> parseResult = null;
+		try {
+			JavaParser javaParser = new JavaParser();
+			parseResult = javaParser.parse(inspectedFileContent);
+		} catch (ParseProblemException | NullPointerException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return parseResult;
+	}
+
 	private MethodVisitor getMethodVisitor() {
 		if (compilationUnit == null) {
 			ParseResult<CompilationUnit> parseResult = null;
-			parseResult = JavaCodeCommentParser.parseJavaFile(fileContent);
+			parseResult = parseJavaFile(fileContent);
 			compilationUnit = parseResult.getResult().get();
 		}
 		MethodVisitor methodVistor = new MethodVisitor();
@@ -325,7 +335,7 @@ public class ChangedFile extends KnowledgeElement {
 	 *         been deleted or that its name has been changed or it has been moved.
 	 */
 	public boolean isExistingJavaFile() {
-		return exists() && isJavaFile();
+		return exists() && getName().endsWith("java");
 	}
 
 	public boolean exists() {
@@ -339,32 +349,12 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent.split("\n").length;
 	}
 
-	/**
-	 * @return true if the file is a Java class.
-	 */
-	public boolean isJavaFile() {
-		return getName().endsWith("java");
+	public boolean isCodeFile() {
+		return getCommentStyleType() != CommentStyleType.NONE;
 	}
 
-	public boolean isCodeFile() {
-		Set<String> codeFileEndings = new HashSet<>(Arrays.asList(
-			"java",
-			"cpp",
-			"c++",
-			"c",
-			"hpp",
-			"h++",
-			"h",
-			"xml",
-			"js",
-			"py",
-			"vm",
-			"html",
-			"htm",
-			"css",
-			"php",
-			"sh"));
-		return codeFileEndings.contains(getName().substring(getName().lastIndexOf(".") + 1));
+	public CommentStyleType getCommentStyleType() {
+		return CommentStyleType.getCommentStyleTypeByFileName(getName());
 	}
 
 	public boolean isCorrect() {

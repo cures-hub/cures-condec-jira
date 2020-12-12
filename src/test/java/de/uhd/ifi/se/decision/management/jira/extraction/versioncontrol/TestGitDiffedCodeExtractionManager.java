@@ -35,7 +35,7 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(commits);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
-		assertEquals(12, manager.getNewDecisionKnowledgeElements().size());
+		assertEquals(17, manager.getNewDecisionKnowledgeElements().size());
 	}
 
 	@Test
@@ -43,6 +43,6 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		GitDiffedCodeExtractionManager manager = new GitDiffedCodeExtractionManager(diff);
 		assertTrue(manager.getOldDecisionKnowledgeElements().isEmpty());
-		assertEquals(12, manager.getNewDecisionKnowledgeElements().size());
+		assertEquals(17, manager.getNewDecisionKnowledgeElements().size());
 	}
 }

@@ -233,7 +233,7 @@ public class RationaleFromCodeCommentExtractor {
 
 	private static class RationaleCommitElementPositionCodingHelper {
 		/*
-		 * Keyformat: ...lineStartInt_lineEndInt_CursorInCommetnInt
+		 * Keyformat: ...lineStartInt_lineEndInt_CursorInCommentInt
 		 */
 		// decode method
 		public static int getAttribute(String key, int attributePositionOffsetFromEnd) {
