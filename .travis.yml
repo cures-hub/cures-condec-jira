@@ -16,7 +16,7 @@ before_install:
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install: true
 script:
-  - atlas-package -P jacoco -q
+  - atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
 notifications:
   email: false
 deploy:
