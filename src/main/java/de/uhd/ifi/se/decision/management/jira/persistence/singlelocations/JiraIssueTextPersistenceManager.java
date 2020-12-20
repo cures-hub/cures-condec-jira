@@ -130,8 +130,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", projectKey,
 						jiraIssueId, commentId));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
+
 		}
 		return isDeleted;
 	}
@@ -203,7 +205,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		if (elements.size() > 0 && elements.get(0).toString().isBlank()) {
-				return new ArrayList<>();
+			return new ArrayList<>();
 		}
 		return elements;
 	}
