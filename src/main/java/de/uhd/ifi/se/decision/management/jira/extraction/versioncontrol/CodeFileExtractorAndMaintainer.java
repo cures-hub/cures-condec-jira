@@ -74,6 +74,7 @@ public class CodeFileExtractorAndMaintainer {
 		}
 	}
 
+	// TODO Bring together with AutomaticLinkCreator
 	private void addElementsToKnowledgeGraph(KnowledgeElement source, List<KnowledgeElement> elements) {
 		KnowledgeElement currentIssue = null;
 		KnowledgeElement currentAlternativeOrDecision = null;
@@ -94,15 +95,14 @@ public class CodeFileExtractorAndMaintainer {
 					link = new Link(currentIssue, elementInGraph);
 					currentAlternativeOrDecision = elementInGraph;
 				}
-			} else if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
-					|| element.getType() == KnowledgeType.ARGUMENT) { // Arguments are linked to alternatives
-																		// and decisions.
-				if (currentIssue == null) { // We have no issue – something went wrong or somebody violated
+			} else if (element.getType().replaceProAndConWithArgument() == KnowledgeType.ARGUMENT) {
+				// Arguments are linked to alternatives and decisions.
+				if (currentIssue == null) { // We have no issue, i.e. something went wrong or somebody violated
 											// structure
 					link = new Link(source, elementInGraph);
 					currentAlternativeOrDecision = null;
 				} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
-																	// decision – something still went wrong
+																	// decision, i.e. something still went wrong
 																	// or somebody still violated structure
 					link = new Link(currentIssue, elementInGraph);
 				} else {
@@ -119,7 +119,6 @@ public class CodeFileExtractorAndMaintainer {
 			}
 			KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeingInDatabase(link);
 		}
-
 	}
 
 	/**

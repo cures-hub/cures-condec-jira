@@ -590,7 +590,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		int numberOfNewPartsOfComment = partsOfComment.size();
 		int numberOfElementsInDatabase = elementsInDatabase.size();
 
-		if (numberOfElementsInDatabase > numberOfNewPartsOfComment) {
+		if (numberOfElementsInDatabase != numberOfNewPartsOfComment) {
 			deleteElementsInComment(comment);
 			elementsInDatabase = new ArrayList<>();
 			numberOfElementsInDatabase = 0;
@@ -633,7 +633,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		int numberOfNewPartsInDescription = partsOfDescription.size();
 		int numberOfElementsInDatabase = elementsInDatabase.size();
 
-		if (numberOfElementsInDatabase > numberOfNewPartsInDescription) {
+		if (numberOfElementsInDatabase != numberOfNewPartsInDescription) {
 			deleteElementsInDescription(jiraIssue);
 			elementsInDatabase = new ArrayList<>();
 			numberOfElementsInDatabase = 0;
