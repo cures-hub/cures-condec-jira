@@ -18,9 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextPar
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 
 /**
- * Models textual parts (substrings) of Jira issue comments or the description.
- * These parts can either be relevant decision knowledge elements or irrelevant
- * text.
+ * Models a textual part (substrings/sentence) of a Jira issue comment or the
+ * description. These parts can either be relevant decision knowledge elements
+ * or irrelevant text.
  */
 public class PartOfJiraIssueText extends KnowledgeElement {
 
@@ -378,6 +378,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			return false;
 		}
 		if (getJiraIssue() == null) {
+			return false;
+		}
+		if (getSummary().isBlank() && getDescription().isBlank()) {
 			return false;
 		}
 		if (getCommentId() <= 0) {
