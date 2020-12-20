@@ -586,31 +586,37 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
+		partsOfComment.forEach(sentence -> sentence.setComment(comment));
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
-		int numberOfNewPartsOfComment = partsOfComment.size();
-		int numberOfElementsInDatabase = elementsInDatabase.size();
 
-		if (numberOfElementsInDatabase != numberOfNewPartsOfComment) {
+		if (partsOfComment.size() != elementsInDatabase.size()) {
 			deleteElementsInComment(comment);
-			elementsInDatabase = new ArrayList<>();
-			numberOfElementsInDatabase = 0;
+			return insertKnowledgeElements(partsOfComment);
 		}
 
-		// Update AO entries
-		for (int i = 0; i < numberOfNewPartsOfComment; i++) {
-			PartOfJiraIssueText sentence = partsOfComment.get(i);
-			sentence.setComment(comment);
-			if (i < numberOfElementsInDatabase) {
-				// Update existing AO entry
-				sentence.setId(elementsInDatabase.get(i).getId());
-				updateInDatabase(sentence);
-				elementsInDatabase.set(i, sentence);
-				KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
-			} else {
-				// Create new AO entry
-				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
-				elementsInDatabase.add(sentence);
-			}
+		return updateKnowledgeElements(partsOfComment, elementsInDatabase);
+	}
+
+	private List<PartOfJiraIssueText> insertKnowledgeElements(List<PartOfJiraIssueText> partsOfText) {
+		List<PartOfJiraIssueText> elementsInDatabase = new ArrayList<>();
+		for (PartOfJiraIssueText sentence : partsOfText) {
+			sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
+			elementsInDatabase.add(sentence);
+			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
+		}
+		return elementsInDatabase;
+	}
+
+	// Update existing AO entries
+	private List<PartOfJiraIssueText> updateKnowledgeElements(List<PartOfJiraIssueText> newPartsOfText,
+			List<PartOfJiraIssueText> elementsInDatabase) {
+		for (int i = 0; i < newPartsOfText.size(); i++) {
+			PartOfJiraIssueText sentence = newPartsOfText.get(i);
+			sentence.setId(elementsInDatabase.get(i).getId());
+			sentence.setStatus(elementsInDatabase.get(i).getStatus());
+			updateInDatabase(sentence);
+			elementsInDatabase.set(i, sentence);
+			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
 			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;
@@ -629,33 +635,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
+		partsOfDescription.forEach(sentence -> sentence.setJiraIssue(jiraIssue));
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
-		int numberOfNewPartsInDescription = partsOfDescription.size();
-		int numberOfElementsInDatabase = elementsInDatabase.size();
 
-		if (numberOfElementsInDatabase != numberOfNewPartsInDescription) {
+		if (elementsInDatabase.size() != partsOfDescription.size()) {
 			deleteElementsInDescription(jiraIssue);
-			elementsInDatabase = new ArrayList<>();
-			numberOfElementsInDatabase = 0;
+			return insertKnowledgeElements(partsOfDescription);
 		}
 
-		for (int i = 0; i < numberOfNewPartsInDescription; i++) {
-			PartOfJiraIssueText sentence = partsOfDescription.get(i);
-			sentence.setJiraIssue(jiraIssue);
-			if (i < numberOfElementsInDatabase) {
-				// Update existing AO entry
-				sentence.setId(elementsInDatabase.get(i).getId());
-				updateInDatabase(sentence);
-				elementsInDatabase.set(i, sentence);
-				KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
-			} else {
-				// Create new AO entry
-				sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
-				elementsInDatabase.add(sentence);
-			}
-			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
-		}
-		return elementsInDatabase;
+		return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
 	}
 
 	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {

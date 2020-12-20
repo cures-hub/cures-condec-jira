@@ -384,6 +384,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			// documented in Jira issue description
 			return true;
 		}
+		if (getSummary().isBlank() && getDescription().isBlank()) {
+			return true;
+		}
 		return getComment() != null;
 	}
 }
