@@ -380,11 +380,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		if (getJiraIssue() == null) {
 			return false;
 		}
+		if (getSummary().isBlank() && getDescription().isBlank()) {
+			return false;
+		}
 		if (getCommentId() <= 0) {
 			// documented in Jira issue description
-			return true;
-		}
-		if (getSummary().isBlank() && getDescription().isBlank()) {
 			return true;
 		}
 		return getComment() != null;

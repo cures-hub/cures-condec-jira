@@ -597,31 +597,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updateKnowledgeElements(partsOfComment, elementsInDatabase);
 	}
 
-	private List<PartOfJiraIssueText> insertKnowledgeElements(List<PartOfJiraIssueText> partsOfText) {
-		List<PartOfJiraIssueText> elementsInDatabase = new ArrayList<>();
-		for (PartOfJiraIssueText sentence : partsOfText) {
-			sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
-			elementsInDatabase.add(sentence);
-			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
-		}
-		return elementsInDatabase;
-	}
-
-	// Update existing AO entries
-	private List<PartOfJiraIssueText> updateKnowledgeElements(List<PartOfJiraIssueText> newPartsOfText,
-			List<PartOfJiraIssueText> elementsInDatabase) {
-		for (int i = 0; i < newPartsOfText.size(); i++) {
-			PartOfJiraIssueText sentence = newPartsOfText.get(i);
-			sentence.setId(elementsInDatabase.get(i).getId());
-			sentence.setStatus(elementsInDatabase.get(i).getStatus());
-			updateInDatabase(sentence);
-			elementsInDatabase.set(i, sentence);
-			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
-			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
-		}
-		return elementsInDatabase;
-	}
-
 	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within
 	 * the description of a Jira issue. Splits the description into parts
@@ -644,6 +619,50 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 
 		return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
+	}
+
+	/**
+	 * Inserts all {@link PartOfJiraIssueText}s into database.
+	 * 
+	 * @param partsOfText
+	 *            sentences, i.e. {@link PartOfJiraIssueText}s to be inserted into
+	 *            database.
+	 * @return list of {@link PartOfJiraIssueText}s with database id.
+	 */
+	private List<PartOfJiraIssueText> insertKnowledgeElements(List<PartOfJiraIssueText> partsOfText) {
+		List<PartOfJiraIssueText> elementsInDatabase = new ArrayList<>();
+		for (PartOfJiraIssueText sentence : partsOfText) {
+			sentence = (PartOfJiraIssueText) insertKnowledgeElement(sentence, null);
+			elementsInDatabase.add(sentence);
+			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
+		}
+		return elementsInDatabase;
+	}
+
+	/**
+	 * Updates all {@link PartOfJiraIssueText}s in database after changes in the
+	 * Jira issue description or a comment.
+	 * 
+	 * @param newPartsOfText
+	 *            sentences, i.e. {@link PartOfJiraIssueText}s extracted from the
+	 *            Jira issue description or a comment.
+	 * @param elementsInDatabase
+	 *            existing {@link PartOfJiraIssueText}s in the database that should
+	 *            be updated.
+	 * @return updated list of {@link PartOfJiraIssueText}s with database ids.
+	 */
+	private List<PartOfJiraIssueText> updateKnowledgeElements(List<PartOfJiraIssueText> newPartsOfText,
+			List<PartOfJiraIssueText> elementsInDatabase) {
+		for (int i = 0; i < newPartsOfText.size(); i++) {
+			PartOfJiraIssueText sentence = newPartsOfText.get(i);
+			sentence.setId(elementsInDatabase.get(i).getId());
+			sentence.setStatus(elementsInDatabase.get(i).getStatus());
+			updateInDatabase(sentence);
+			elementsInDatabase.set(i, sentence);
+			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
+			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
+		}
+		return elementsInDatabase;
 	}
 
 	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
