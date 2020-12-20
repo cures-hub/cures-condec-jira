@@ -36,7 +36,7 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class
  * {@link AbstractPersistenceManagerForSingleLocation}. Uses Jira issue comments
- * or the description to store decision knowledge. The sentences in a comment or
+ * or the description to store decision knowledge. A sentence in a comment or
  * the description of a Jira issue is called {@link PartOfJiraIssueText}.
  *
  * @see AbstractPersistenceManagerForSingleLocation
