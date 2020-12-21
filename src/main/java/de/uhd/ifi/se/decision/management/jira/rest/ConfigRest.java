@@ -28,6 +28,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -42,7 +43,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -73,7 +73,7 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setActivated(projectKey, isActivated);
 		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
-		resetKnowledgeGraph(projectKey);
+		ComponentGetter.removeInstances(projectKey);
 		return Response.ok().build();
 	}
 
@@ -82,12 +82,6 @@ public class ConfigRest {
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
 		}
-	}
-
-	private static void resetKnowledgeGraph(String projectKey) {
-		KnowledgeGraph.instances.remove(projectKey);
-		KnowledgePersistenceManager.instances.remove(projectKey);
-		GitClient.instances.remove(projectKey);
 	}
 
 	@Path("/isActivated")
@@ -955,8 +949,8 @@ public class ConfigRest {
 	@Path("/setRecommendationInput")
 	@POST
 	public Response setRecommendationInput(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("recommendationInput") String recommendationInput, @QueryParam("isActivated") boolean isActivated) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("recommendationInput") String recommendationInput,
+			@QueryParam("isActivated") boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;

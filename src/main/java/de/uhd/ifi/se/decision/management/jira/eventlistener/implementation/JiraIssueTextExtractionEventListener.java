@@ -4,27 +4,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.event.ProjectDeletedEvent;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
+import de.uhd.ifi.se.decision.management.jira.eventlistener.ProjectEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
 /**
  * Triggers the extraction of decision knowledge elements and their integration
- * in the knowledge graph when the user changes either a comment or the
- * description of a Jira issue.
+ * in the {@link KnowledgeGraph} when the user changes either a comment or the
+ * description of a Jira issue. Is also responsible for deleting the elements in
+ * database and the knowledge graph after a comment, a Jira issue, or an entire
+ * project has been deleted.
  */
-public class JiraIssueTextExtractionEventListener implements IssueEventListener {
+public class JiraIssueTextExtractionEventListener implements IssueEventListener, ProjectEventListener {
 
 	private String projectKey;
 	private IssueEvent issueEvent;
@@ -155,5 +161,15 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener 
 			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
+	}
+
+	@Override
+	public void onProjectDeletion(ProjectDeletedEvent projectDeletedEvent) {
+		projectKey = projectDeletedEvent.getProject().getKey();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		persistenceManager.deleteInvalidElements(projectDeletedEvent.getUser());
+		GenericLinkManager.deleteInvalidLinks();
+		ComponentGetter.removeInstances(projectKey);
 	}
 }
