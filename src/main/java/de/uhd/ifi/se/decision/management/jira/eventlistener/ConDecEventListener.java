@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -18,7 +16,6 @@ import com.atlassian.jira.event.ProjectDeletedEvent;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -38,7 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * @see SummarizationEventListener
  * @see WebhookEventListener
  */
-@Scanned
 @Component
 public class ConDecEventListener implements InitializingBean, DisposableBean {
 
@@ -51,7 +47,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecEventListener.class);
 
 	@Autowired
-	@Inject
 	public ConDecEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 		LOGGER.info("ConDec event listener object was created.");
