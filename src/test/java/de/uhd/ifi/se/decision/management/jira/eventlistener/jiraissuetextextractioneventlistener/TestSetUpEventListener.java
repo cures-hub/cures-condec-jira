@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public abstract class TestSetUpEventListener extends TestSetUp {
 
 	protected MutableIssue jiraIssue;
-	private ApplicationUser user;
+	protected ApplicationUser user;
 
 	protected ConDecEventListener listener;
 

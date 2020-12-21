@@ -124,6 +124,25 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return deleteElementsInDescription(jiraIssue);
 	}
 
+	/**
+	 * Deletes all decision knowledge elements and their links documented in the
+	 * description and all comments of a Jira project. Does not delete the text or
+	 * change the description itself.
+	 *
+	 * @return true if deletion was successfull.
+	 */
+	public boolean deleteElementsOfProject() {
+		boolean isDeleted = false;
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey));
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
+			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
+		}
+		return isDeleted;
+	}
+
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
 		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,

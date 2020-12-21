@@ -167,8 +167,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		projectKey = projectDeletedEvent.getProject().getKey();
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-		persistenceManager.getKnowledgeElements()
-				.forEach(element -> persistenceManager.deleteKnowledgeElement(element, projectDeletedEvent.getUser()));
+		persistenceManager.deleteElementsOfProject();
 		GenericLinkManager.deleteInvalidLinks();
 	}
 }
