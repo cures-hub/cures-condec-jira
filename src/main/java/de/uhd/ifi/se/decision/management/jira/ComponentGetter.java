@@ -73,6 +73,13 @@ public class ComponentGetter {
 		return getUrlOfResourcesFolder() + ":classifier-resources/";
 	}
 
+	/**
+	 * Removes the singleton objects of the {@link KnowledgeGraph}, the
+	 * {@link KnowledgePersistenceManager}, and the {@link GitClient} for a project.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project.
+	 */
 	public static void removeInstances(String projectKey) {
 		KnowledgeGraph.instances.remove(projectKey);
 		KnowledgePersistenceManager.instances.remove(projectKey);

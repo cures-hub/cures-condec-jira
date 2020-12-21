@@ -10,7 +10,6 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ProjectEventListener;
@@ -168,8 +167,8 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		projectKey = projectDeletedEvent.getProject().getKey();
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-		persistenceManager.deleteInvalidElements(projectDeletedEvent.getUser());
+		persistenceManager.getKnowledgeElements()
+				.forEach(element -> persistenceManager.deleteKnowledgeElement(element, projectDeletedEvent.getUser()));
 		GenericLinkManager.deleteInvalidLinks();
-		ComponentGetter.removeInstances(projectKey);
 	}
 }

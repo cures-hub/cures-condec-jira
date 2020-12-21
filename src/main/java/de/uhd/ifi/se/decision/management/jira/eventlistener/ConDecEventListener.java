@@ -21,6 +21,7 @@ import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueChangeListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
@@ -125,5 +126,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		}
 		this.projectEventListeners
 				.forEach(projectEventListener -> projectEventListener.onProjectDeletion(projectDeletedEvent));
+		ComponentGetter.removeInstances(projectDeletedEvent.getProject().getKey());
 	}
 }
