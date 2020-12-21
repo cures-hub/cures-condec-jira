@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
+import com.atlassian.jira.event.ProjectDeletedEvent;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueChangeListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
@@ -40,6 +42,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
 	private List<IssueEventListener> issueEventListeners;
 	private List<LinkEventListener> linkEventListeners;
+	private List<ProjectEventListener> projectEventListeners;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecEventListener.class);
 
@@ -50,44 +53,36 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		// init lists of listeners
 		issueEventListeners = new ArrayList<>();
 		linkEventListeners = new ArrayList<>();
+		projectEventListeners = new ArrayList<>();
 
 		// attach Jira issue event listeners
-		attach((IssueEventListener) new WebhookEventListener());
-		attach(new JiraIssueTextExtractionEventListener());
-		attach(new SummarizationEventListener());
-		attach(QualityCheckEventListenerSingleton.getInstance());
-		attach(new JiraIssueChangeListener());
+		issueEventListeners.add(new WebhookEventListener());
+		issueEventListeners.add(new JiraIssueTextExtractionEventListener());
+		issueEventListeners.add(new SummarizationEventListener());
+		issueEventListeners.add(QualityCheckEventListenerSingleton.getInstance());
+		issueEventListeners.add(new JiraIssueChangeListener());
 
 		// attach Jira issue link event listeners
-		attach((LinkEventListener) new WebhookEventListener());
-	}
+		linkEventListeners.add(new WebhookEventListener());
 
-	public void attach(IssueEventListener listener) {
-		this.issueEventListeners.add(listener);
-	}
-
-	public void attach(LinkEventListener listener) {
-		this.linkEventListeners.add(listener);
+		// attach Jira project deleted event listeners
+		projectEventListeners.add(new JiraIssueTextExtractionEventListener());
 	}
 
 	/**
 	 * Called when the plugin has been enabled.
-	 *
-	 * @throws Exception
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		eventPublisher.register(this);
 		LOGGER.info("ConDec event listener was registered in Jira.");
 	}
 
 	/**
 	 * Called when the plugin is being disabled or removed.
-	 *
-	 * @throws Exception
 	 */
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
 		eventPublisher.unregister(this);
 		LOGGER.info("ConDec event listener was removed from Jira.");
 	}
@@ -117,5 +112,15 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		KnowledgeGraph.getOrCreate(element.getProject()).removeEdge(link);
 		linkEventListeners.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
 		LOGGER.info("ConDec event listener on link deleted issue event was triggered.");
+	}
+
+	@EventListener
+	public void onProjectDeletedEvent(ProjectDeletedEvent projectDeletedEvent) {
+		if (projectDeletedEvent == null) {
+			return;
+		}
+		this.projectEventListeners
+				.forEach(projectEventListener -> projectEventListener.onProjectDeletion(projectDeletedEvent));
+		ComponentGetter.removeInstances(projectDeletedEvent.getProject().getKey());
 	}
 }

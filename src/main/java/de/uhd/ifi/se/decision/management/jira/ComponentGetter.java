@@ -13,6 +13,8 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -69,5 +71,18 @@ public class ComponentGetter {
 
 	public static String getUrlOfClassifierFolder() {
 		return getUrlOfResourcesFolder() + ":classifier-resources/";
+	}
+
+	/**
+	 * Removes the singleton objects of the {@link KnowledgeGraph}, the
+	 * {@link KnowledgePersistenceManager}, and the {@link GitClient} for a project.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project.
+	 */
+	public static void removeInstances(String projectKey) {
+		KnowledgeGraph.instances.remove(projectKey);
+		KnowledgePersistenceManager.instances.remove(projectKey);
+		GitClient.instances.remove(projectKey);
 	}
 }
