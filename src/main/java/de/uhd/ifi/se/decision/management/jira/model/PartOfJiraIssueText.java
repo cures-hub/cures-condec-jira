@@ -172,6 +172,13 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		return !containsExcludedTag(getTextWithTags());
 	}
 
+	private boolean containsExcludedTag(String body) {
+		if (body == null) {
+			return false;
+		}
+		return StringUtils.indexOfAny(body.toLowerCase(), JiraIssueTextParser.EXCLUDED_TAGS) >= 0;
+	}
+
 	/**
 	 * @return sentence with macro tags, e.g. {issue} How to... {issue} for a
 	 *         decision knowledge element or {code:java} public static ... {code}
@@ -250,13 +257,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			return issue.getUpdated();
 		}
 		return super.getUpdatingDate();
-	}
-
-	private boolean containsExcludedTag(String body) {
-		if (body == null) {
-			return false;
-		}
-		return StringUtils.indexOfAny(body.toLowerCase(), JiraIssueTextParser.EXCLUDED_TAGS) >= 0;
 	}
 
 	/**
