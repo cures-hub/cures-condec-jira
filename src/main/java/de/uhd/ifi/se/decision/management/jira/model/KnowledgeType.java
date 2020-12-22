@@ -23,13 +23,13 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
  * but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
-	ALTERNATIVE("#fff6e8"), //
+	ALTERNATIVE("#fff6e8", "(on)"), //
 	ASSUMPTION, ASSESSMENT, ARGUMENT("#f5f5f5"), //
-	PRO("#defade"), //
-	CON("#ffe7e7"), //
+	PRO("#defade", "(+)"), //
+	CON("#ffe7e7", "(-)"), //
 	CLAIM, CONTEXT("#ffffdd"), //
-	CONSTRAINT, DECISION("#fce3be"), //
-	GOAL, ISSUE("#ffffcc"), //
+	CONSTRAINT, DECISION("#fce3be", "(/)"), //
+	GOAL, ISSUE("#ffffcc", "(!)"), //
 	IMPLICATION, PROBLEM("#ffffcc"), //
 	RATIONALE("#f5f5f5"), //
 	SOLUTION("#fce3be"), //
@@ -38,13 +38,19 @@ public enum KnowledgeType {
 	OTHER; // other system knowledge (requirements) and project knowledge (work items)
 
 	private String color;
+	private String icon;
 
 	private KnowledgeType() {
 		this("#ffffff");
 	}
 
 	private KnowledgeType(String color) {
+		this("#ffffff", "");
+	}
+
+	private KnowledgeType(String color, String icon) {
 		this.color = color;
+		this.icon = icon;
 	}
 
 	/**
@@ -205,23 +211,6 @@ public enum KnowledgeType {
 		return knowledgeTypes;
 	}
 
-	public String getIconString() {
-		switch (this) {
-		case PRO:
-			return "(y)";
-		case CON:
-			return "(n)";
-		case DECISION:
-			return "(/)";
-		case ISSUE:
-			return "(!)";
-		case ALTERNATIVE:
-			return "(?)";
-		default:
-			return "";
-		}
-	}
-
 	public String getIconUrl() {
 		switch (this) {
 		case PRO:
@@ -274,6 +263,10 @@ public enum KnowledgeType {
 		return color;
 	}
 
+	public String getIconString() {
+		return icon;
+	}
+
 	public static List<String> getRequirementsTypes() {
 		List<String> requirementsTypes = new ArrayList<>();
 		requirementsTypes.add("System Function");
@@ -287,5 +280,12 @@ public enum KnowledgeType {
 		requirementsTypes.add("Epic");
 		requirementsTypes.add("Workspace");
 		return requirementsTypes;
+	}
+
+	public String getTag() {
+		if (this == KnowledgeType.OTHER || name().isBlank()) {
+			return "";
+		}
+		return "{" + name().toLowerCase() + "}";
 	}
 }

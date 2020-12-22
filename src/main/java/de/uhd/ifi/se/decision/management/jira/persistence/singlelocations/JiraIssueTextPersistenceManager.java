@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
 
 /**
@@ -328,7 +327,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
+		String tag = element.getType().getTag();
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, false);
 	}
@@ -425,7 +424,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
 			PartOfJiraIssueText formerElement, ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
+		String tag = newElement.getType().getTag();
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
 		String text = formerElement.getTextOfEntireDescriptionOrComment();

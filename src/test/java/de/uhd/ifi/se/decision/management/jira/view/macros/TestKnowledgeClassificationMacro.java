@@ -119,11 +119,4 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 		IssueMacro issueMacro = new IssueMacro();
 		assertEquals(RenderMode.allow(RenderMode.F_LINEBREAKS), issueMacro.getBodyRenderMode());
 	}
-
-	@Test
-	public void testGetTag() {
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((String) null));
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((KnowledgeType) null));
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag(KnowledgeType.OTHER));
-	}
 }

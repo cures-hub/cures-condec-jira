@@ -55,6 +55,7 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 	protected boolean isCommentExistent(String oldComment) {
 		List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
 		for (Comment comment : changedComments) {
+			System.out.println(comment.getBody());
 			if (comment.getBody().equalsIgnoreCase(oldComment)) {
 				return true;
 			}
