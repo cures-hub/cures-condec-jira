@@ -30,9 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  */
 public class JiraIssueTextParser {
 
-	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
-			"{color}" };
-
 	/** List of all knowledge types as tags. Sequence matters! */
 	public static final String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}",
 			"{con}" };
@@ -40,8 +37,7 @@ public class JiraIssueTextParser {
 	/** List of all knowledge types as icons. Sequence matters! */
 	public static final String[] RATIONALE_ICONS = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
 
-	public static final String[] EXCLUDED_STRINGS = (String[]) ArrayUtils
-			.addAll(ArrayUtils.addAll(EXCLUDED_TAGS, RATIONALE_TAGS), RATIONALE_ICONS);
+	public static final String[] EXCLUDED_STRINGS = (String[]) ArrayUtils.addAll(RATIONALE_TAGS, RATIONALE_ICONS);
 
 	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE,
 			KnowledgeType.PRO, KnowledgeType.CON, KnowledgeType.ALTERNATIVE);

@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 
 /**
@@ -162,21 +160,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public int getLength() {
 		return endPosition - startPosition;
-	}
-
-	/**
-	 * @return true if the text of the decision knowledge element or irrelevant text
-	 *         is plain, e.g., does not contain any code or logger ouput.
-	 */
-	public boolean isPlainText() {
-		return !containsExcludedTag(getTextWithTags());
-	}
-
-	private boolean containsExcludedTag(String body) {
-		if (body == null) {
-			return false;
-		}
-		return StringUtils.indexOfAny(body.toLowerCase(), JiraIssueTextParser.EXCLUDED_TAGS) >= 0;
 	}
 
 	/**

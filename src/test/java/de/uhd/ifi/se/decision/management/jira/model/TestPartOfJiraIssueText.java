@@ -116,30 +116,6 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsPlainText() {
-		assertTrue(irrelevantFirstSentence.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextCode() {
-		assertFalse(code.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextAlternative() {
-		assertTrue(alternative.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextIcon() {
-		assertTrue(proMarkedWithIcon.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
 	public void testIsRelevantText() {
 		assertFalse(irrelevantFirstSentence.isRelevant());
 	}
