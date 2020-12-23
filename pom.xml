@@ -183,6 +183,11 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.0</version>
+		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -258,7 +263,6 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Open NLP -->
 		<dependency>
@@ -279,16 +283,11 @@
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<!-- Decision Guidance -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
 			<version>3.17.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.9</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -344,7 +343,6 @@
 		</plugins>
 	</build>
 
-
 	<profiles>
 		<!-- Creates coverage reports in target/site/jacoco/ -->
 		<profile>
@@ -378,6 +376,27 @@
 								<exclude>**/persistence/tables/*</exclude>
 							</excludes>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>3.0.0-M3</version>
+						<executions>
+							<execution>
+								<id>enforce-java</id>
+								<phase>package</phase>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireJavaVersion>
+											<version>11</version>
+										</requireJavaVersion>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
