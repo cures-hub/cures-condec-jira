@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -210,10 +209,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	@Override
 	public void onProjectDeletion(ProjectDeletedEvent projectDeletedEvent) {
 		projectKey = projectDeletedEvent.getProject().getKey();
-		System.out.println("Deleted project " + projectKey);
-		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager(projectKey);
-		persistenceManager.deleteElementsOfProject();
-		persistenceManager.deleteInvalidElements(projectDeletedEvent.getUser());
-		GenericLinkManager.deleteInvalidLinks();
+		new JiraIssueTextPersistenceManager(projectKey).deleteElementsOfProject();
 	}
 }

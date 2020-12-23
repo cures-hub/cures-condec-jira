@@ -57,7 +57,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
 			LOGGER.error(
-					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
+					"Element cannot be deleted since it does not exist in database (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
