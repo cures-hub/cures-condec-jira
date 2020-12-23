@@ -210,10 +210,10 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	@Override
 	public void onProjectDeletion(ProjectDeletedEvent projectDeletedEvent) {
 		projectKey = projectDeletedEvent.getProject().getKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+		System.out.println("Deleted project " + projectKey);
+		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 		persistenceManager.deleteElementsOfProject();
-		GenericLinkManager.deleteInvalidLinks();
 		persistenceManager.deleteInvalidElements(projectDeletedEvent.getUser());
+		GenericLinkManager.deleteInvalidLinks();
 	}
 }

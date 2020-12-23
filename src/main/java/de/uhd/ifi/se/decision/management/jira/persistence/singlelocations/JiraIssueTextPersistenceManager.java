@@ -131,15 +131,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if deletion was successfull.
 	 */
 	public boolean deleteElementsOfProject() {
-		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
-			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-		}
-		return isDeleted;
+		ACTIVE_OBJECTS.delete(databaseEntries);
+		KnowledgeGraph.instances.remove(projectKey);
+		return GenericLinkManager.deleteInvalidLinks();
 	}
 
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {

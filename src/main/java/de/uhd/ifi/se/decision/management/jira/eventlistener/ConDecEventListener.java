@@ -130,7 +130,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		if (projectDeletedEvent == null) {
 			return;
 		}
-		this.projectEventListeners
+		projectEventListeners
 				.forEach(projectEventListener -> projectEventListener.onProjectDeletion(projectDeletedEvent));
 		ComponentGetter.removeInstances(projectDeletedEvent.getProject().getKey());
 	}
