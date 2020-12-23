@@ -25,22 +25,6 @@
 			<name>Julia Baum</name>
 		</developer>
 		<developer>
-			<id>cotchere</id>
-			<name>Colin Otchere</name>
-		</developer>
-		<developer>
-			<id>desombre</id>
-			<name>Philipp de Sombre</name>
-		</developer>
-		<developer>
-			<id>gerner</id>
-			<name>Rafael Gerner</name>
-		</developer>
-		<developer>
-			<id>manders</id>
-			<name>Michael Anders</name>
-		</developer>
-		<developer>
 			<id>mruder</id>
 			<name>Marvin A. Ruder</name>
 		</developer>
@@ -398,7 +382,7 @@
 	</profiles>
 
 	<properties>
-		<jira.version>8.13.0</jira.version>
+		<jira.version>8.14.0</jira.version>
 		<amps.version>8.0.2</amps.version>
 		<ao.version>3.2.10</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
