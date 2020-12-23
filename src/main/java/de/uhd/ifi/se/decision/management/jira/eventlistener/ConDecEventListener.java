@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -16,6 +18,7 @@ import com.atlassian.jira.event.ProjectDeletedEvent;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -34,7 +37,14 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * @see JiraIssueTextExtractionEventListener
  * @see SummarizationEventListener
  * @see WebhookEventListener
+ * 
+ * @issue Which annotations are necessary to make the event listeners working?
+ * @decision The Scanned, Component, Autowired, and Inject annotations seem to
+ *           be necessary! Component, Autowired were enough for the
+ *           IssueEventListeners and LinkEventListeners. For the
+ *           ProjectEventListeners Scanned and Inject are needed.
  */
+@Scanned
 @Component
 public class ConDecEventListener implements InitializingBean, DisposableBean {
 
@@ -46,6 +56,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecEventListener.class);
 
+	@Inject
 	@Autowired
 	public ConDecEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
@@ -119,7 +130,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		if (projectDeletedEvent == null) {
 			return;
 		}
-		this.projectEventListeners
+		projectEventListeners
 				.forEach(projectEventListener -> projectEventListener.onProjectDeletion(projectDeletedEvent));
 		ComponentGetter.removeInstances(projectDeletedEvent.getProject().getKey());
 	}

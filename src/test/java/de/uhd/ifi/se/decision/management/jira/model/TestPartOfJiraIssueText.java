@@ -24,7 +24,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	private PartOfJiraIssueText irrelevantFirstSentence;
 	private PartOfJiraIssueText issue;
 	private PartOfJiraIssueText alternative;
-	private PartOfJiraIssueText proMarkedWithIcon;
+	private PartOfJiraIssueText proArgument;
 	private PartOfJiraIssueText code;
 
 	@Before
@@ -33,12 +33,12 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 		init();
 		List<PartOfJiraIssueText> partsOfText = JiraIssues
 				.getSentencesForCommentText("some sentence in front. {issue} How to do...? {issue}"
-						+ "{Alternative} This is an alternative. {Alternative} (y) this is a pro-argument. "
+						+ "{Alternative} This is an alternative. {Alternative} {pro} this is a pro-argument. {Pro} "
 						+ "{code:Java} int i = 0 {code} some sentence in the back.");
 		irrelevantFirstSentence = partsOfText.get(0);
 		issue = partsOfText.get(1);
 		alternative = partsOfText.get(2);
-		proMarkedWithIcon = partsOfText.get(3);
+		proArgument = partsOfText.get(3);
 		code = partsOfText.get(4);
 	}
 
@@ -116,30 +116,6 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsPlainText() {
-		assertTrue(irrelevantFirstSentence.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextCode() {
-		assertFalse(code.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextAlternative() {
-		assertTrue(alternative.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsPlainTextIcon() {
-		assertTrue(proMarkedWithIcon.isPlainText());
-	}
-
-	@Test
-	@NonTransactional
 	public void testIsRelevantText() {
 		assertFalse(irrelevantFirstSentence.isRelevant());
 	}
@@ -159,7 +135,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		assertTrue(proMarkedWithIcon.isRelevant());
+		assertTrue(proArgument.isRelevant());
 	}
 
 	@Test
@@ -189,13 +165,13 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		assertTrue(proMarkedWithIcon.isValidated());
+		assertTrue(proArgument.isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetLength() {
-		assertEquals(29, proMarkedWithIcon.getLength());
+		assertEquals(35, proArgument.getLength());
 	}
 
 	@Test

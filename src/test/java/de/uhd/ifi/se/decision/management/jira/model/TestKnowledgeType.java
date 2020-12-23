@@ -72,4 +72,10 @@ public class TestKnowledgeType {
 		// parent type of decision and alternative is issue
 		assertEquals(KnowledgeType.ISSUE, KnowledgeType.getParentTypes(KnowledgeType.DECISION).get(0));
 	}
+
+	@Test
+	public void testGetTag() {
+		assertEquals("{issue}", KnowledgeType.ISSUE.getTag());
+		assertEquals("", KnowledgeType.OTHER.getTag());
+	}
 }

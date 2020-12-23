@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 
 public class TestCommitMessageParser {
 

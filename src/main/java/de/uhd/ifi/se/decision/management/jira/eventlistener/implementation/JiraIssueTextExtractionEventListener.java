@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +16,10 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ProjectEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -82,7 +84,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		}
 	}
 
-	private void parseIconsToTags() {
+	private void replaceIconsWithTags() {
 		String projectKey = issueEvent.getProject().getKey();
 		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
 			return;
@@ -91,15 +93,57 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (comment == null) {
 			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
 			String description = jiraIssue.getDescription();
-			description = JiraIssueTextParser.parseIconsToTags(description);
+			description = replaceIconsWithTags(description);
 			jiraIssue.setDescription(description);
 			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
 		} else {
 			String commentBody = comment.getBody();
-			commentBody = JiraIssueTextParser.parseIconsToTags(commentBody);
+			commentBody = replaceIconsWithTags(commentBody);
 			comment.setBody(commentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
 		}
+	}
+
+	/**
+	 * @param text
+	 *            with icons, e.g. (!) for an issue.
+	 * @return text in that all icons are replaced with Jira macro tags, e.g. (!)...
+	 *         is replaced with {issue}...{issue}.
+	 */
+	public static String replaceIconsWithTags(String text) {
+		// find all icons and split text by occurence of icons
+		Pattern pattern = Pattern.compile("(.*)\\((.*)");
+		Matcher matcher = pattern.matcher(text);
+		String textWithoutIcons = "";
+		boolean wasAnyIconReplaced = false;
+		while (matcher.find()) {
+			wasAnyIconReplaced = true;
+			String sentence = text.substring(matcher.start(), matcher.end());
+			for (KnowledgeType type : KnowledgeType.values()) {
+				sentence = replaceIconsWithTags(sentence, type);
+			}
+			textWithoutIcons += sentence;
+		}
+		return wasAnyIconReplaced ? textWithoutIcons : text;
+	}
+
+	/**
+	 * @param text
+	 *            with icons, e.g. (!) for an issue.
+	 * @param type
+	 *            {@link KnowledgeType} for that the icons should be replaced by
+	 *            macro tags, e.g. {@link KnowledgeType#ISSUE}.
+	 * @return text in that all icons are replaced with Jira macro tags, e.g. (!)...
+	 *         is replaced with {issue}...{issue}.
+	 */
+	public static String replaceIconsWithTags(String text, KnowledgeType type) {
+		String icon = type.getIconString();
+		if (icon.isBlank() || !text.contains(icon)) {
+			return text;
+		}
+		String textWithoutIcons = text;
+		textWithoutIcons = text.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), "");
+		return type.getTag() + textWithoutIcons.trim() + type.getTag();
 	}
 
 	private void handleDeleteIssue() {
@@ -124,7 +168,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 			return;
 		}
 
-		parseIconsToTags();
+		replaceIconsWithTags();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -147,7 +191,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 			return;
 		}
 
-		parseIconsToTags();
+		replaceIconsWithTags();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -165,9 +209,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	@Override
 	public void onProjectDeletion(ProjectDeletedEvent projectDeletedEvent) {
 		projectKey = projectDeletedEvent.getProject().getKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		persistenceManager.deleteElementsOfProject();
-		GenericLinkManager.deleteInvalidLinks();
+		new JiraIssueTextPersistenceManager(projectKey).deleteElementsOfProject();
 	}
 }

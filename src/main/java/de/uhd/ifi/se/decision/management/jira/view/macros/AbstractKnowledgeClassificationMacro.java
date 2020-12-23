@@ -50,11 +50,11 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	private String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
 			String colorCode) {
 		String icon = getIconHTML(knowledgeType);
-		String newBody = body.replaceFirst("<p>", "");
-		long elementId = getElementId(renderContext, newBody, knowledgeType);
+		long elementId = getElementId(renderContext, body, knowledgeType);
 		long jiraIssueId = getJiraIssueId(renderContext);
 		String eventCode = getOnContextMenuEventListener(elementId, jiraIssueId);
-		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " " + newBody;
+		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " "
+				+ body.replace("<p>", "").replace("</p>", "") + "</p>";
 	}
 
 	private String getIconHTML(KnowledgeType knowledgeType) {
@@ -63,7 +63,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
 	@Override
 	public RenderMode getBodyRenderMode() {
-		return RenderMode.allow(RenderMode.F_ALL);
+		return RenderMode.allow(RenderMode.F_LINEBREAKS);
 	}
 
 	@Override
@@ -121,20 +121,6 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	protected String putTypeInBrackets(KnowledgeType type) {
-		return "\\" + getTag(type);
-	}
-
-	public static String getTag(String type) {
-		if (type == null || type.isBlank() || type.equalsIgnoreCase("other")) {
-			return "";
-		}
-		return "{" + type + "}";
-	}
-
-	public static String getTag(KnowledgeType type) {
-		if (type == null || type == KnowledgeType.OTHER) {
-			return "";
-		}
-		return getTag(type.name().toLowerCase());
+		return type != null ? "\\" + type.getTag() : "";
 	}
 }

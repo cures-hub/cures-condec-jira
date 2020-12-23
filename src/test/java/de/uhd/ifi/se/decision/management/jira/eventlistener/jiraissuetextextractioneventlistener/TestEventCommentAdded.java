@@ -2,20 +2,18 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestEventCommentAdded extends TestSetUpEventListener {
@@ -51,6 +49,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testExcludedTag() {
 		Comment comment = createCommentAndTestWhetherExistent("{code:java}public static class{code}");
 		PartOfJiraIssueText element = getFirstElementInComment(comment);
@@ -72,10 +71,6 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		// Delete the element that was still in the Database
-		// FIXME: there should be a more elegant way.
-		ActiveObjects ao = ComponentGetter.getActiveObjects();
-		ao.deleteWithSQL(PartOfJiraIssueTextInDatabase.class, "ID = 1");
 		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
 				"{issue}This is a very severe issue.{issue}");
 		KnowledgeElement element = getFirstElementInComment(comment);

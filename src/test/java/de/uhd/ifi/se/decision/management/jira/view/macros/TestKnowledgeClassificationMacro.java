@@ -32,7 +32,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	@Test
 	public void testIssueMacro() throws MacroException {
 		IssueMacro issueMacro = new IssueMacro();
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), issueMacro.getBodyRenderMode());
 		assertTrue(issueMacro.hasBody());
 		String body = "<p>This is an issue.</p>";
 		String result = issueMacro.execute(null, body, issueView);
@@ -46,8 +45,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	@Test
 	public void testDecisionMacro() throws MacroException {
 		DecisionMacro decisionMacro = new DecisionMacro();
-
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), decisionMacro.getBodyRenderMode());
 		assertTrue(decisionMacro.hasBody());
 
 		String body = "<p>This is a decision.</p>";
@@ -64,7 +61,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	public void testAlternativeMacro() throws MacroException {
 		AlternativeMacro alternativeMacro = new AlternativeMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), alternativeMacro.getBodyRenderMode());
 		assertTrue(alternativeMacro.hasBody());
 
 		String body = "<p>This is an alternative.</p>";
@@ -81,7 +77,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	public void testProMacro() throws MacroException {
 		ProMacro proMacro = new ProMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), proMacro.getBodyRenderMode());
 		assertTrue(proMacro.hasBody());
 
 		String body = "<p>This is a supporting argument.</p>";
@@ -100,7 +95,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	public void testConMacro() throws MacroException {
 		ConMacro conMacro = new ConMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), conMacro.getBodyRenderMode());
 		assertTrue(conMacro.hasBody());
 
 		String body = "<p>This is an attacking argument.</p>";
@@ -121,9 +115,8 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 	}
 
 	@Test
-	public void testGetTag() {
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((String) null));
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag((KnowledgeType) null));
-		assertEquals("", AbstractKnowledgeClassificationMacro.getTag(KnowledgeType.OTHER));
+	public void testGetBodyRenderMode() {
+		IssueMacro issueMacro = new IssueMacro();
+		assertEquals(RenderMode.allow(RenderMode.F_LINEBREAKS), issueMacro.getBodyRenderMode());
 	}
 }

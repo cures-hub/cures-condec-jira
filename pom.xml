@@ -25,22 +25,6 @@
 			<name>Julia Baum</name>
 		</developer>
 		<developer>
-			<id>cotchere</id>
-			<name>Colin Otchere</name>
-		</developer>
-		<developer>
-			<id>desombre</id>
-			<name>Philipp de Sombre</name>
-		</developer>
-		<developer>
-			<id>gerner</id>
-			<name>Rafael Gerner</name>
-		</developer>
-		<developer>
-			<id>manders</id>
-			<name>Michael Anders</name>
-		</developer>
-		<developer>
 			<id>mruder</id>
 			<name>Marvin A. Ruder</name>
 		</developer>
@@ -199,6 +183,11 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.0</version>
+		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -294,15 +283,12 @@
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<!-- Decision Guidance -->
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>3.16.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.9</version>
+			<version>3.17.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -357,7 +343,6 @@
 		</plugins>
 	</build>
 
-
 	<profiles>
 		<!-- Creates coverage reports in target/site/jacoco/ -->
 		<profile>
@@ -398,8 +383,8 @@
 	</profiles>
 
 	<properties>
-		<jira.version>8.13.0</jira.version>
-		<amps.version>8.0.2</amps.version>
+		<jira.version>8.14.0</jira.version>
+		<amps.version>8.2.0</amps.version>
 		<ao.version>3.2.10</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>

@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
-import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
 
 /**
@@ -58,7 +57,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public boolean deleteKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
 			LOGGER.error(
-					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
+					"Element cannot be deleted since it does not exist in database (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
@@ -132,15 +131,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if deletion was successfull.
 	 */
 	public boolean deleteElementsOfProject() {
-		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
-			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-		}
-		return isDeleted;
+		ACTIVE_OBJECTS.delete(databaseEntries);
+		KnowledgeGraph.instances.remove(projectKey);
+		return GenericLinkManager.deleteInvalidLinks();
 	}
 
 	private boolean deletePartsOfText(long jiraIssueId, long commentId) {
@@ -328,7 +323,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
+		String tag = element.getType().getTag();
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, false);
 	}
@@ -425,7 +420,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
 			PartOfJiraIssueText formerElement, ApplicationUser user) {
-		String tag = AbstractKnowledgeClassificationMacro.getTag(newElement.getType());
+		String tag = newElement.getType().getTag();
 		String changedPartOfText = tag + newElement.getDescription() + tag;
 
 		String text = formerElement.getTextOfEntireDescriptionOrComment();

@@ -1,11 +1,11 @@
-os: osx
+os: osx # only because osx is less often used than linux on TravisCI and makes building faster
 sudo: false
 language: java
 cache:
   directories:
     - $HOME/.m2
 jdk:
-  - oraclejdk11
+  - oraclejdk15
 before_install:
   - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
   - mkdir opt

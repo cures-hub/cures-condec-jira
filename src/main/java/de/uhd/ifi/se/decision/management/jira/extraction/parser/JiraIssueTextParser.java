@@ -4,7 +4,6 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,9 +11,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -23,26 +19,18 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 /**
  * Splits a text into parts using Jira macro tags and sentences.
  * 
- * TODO Refactor and simplify this parser.
+ * @see AbstractKnowledgeClassificationMacro
+ * @see KnowledgeType
  * 
  * @issue Is there a parser/scanner library we can use to indentify macros or
  *        icons in text and to split the text into sentences?
  */
 public class JiraIssueTextParser {
 
-	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}",
-			"{color}" };
-
-	/** List of all knowledge types as tags. Sequence matters! */
-	public static final String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}",
-			"{con}" };
-
-	/** List of all knowledge types as icons. Sequence matters! */
-	public static final String[] RATIONALE_ICONS = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
-
-	public static final String[] EXCLUDED_STRINGS = (String[]) ArrayUtils
-			.addAll(ArrayUtils.addAll(EXCLUDED_TAGS, RATIONALE_TAGS), RATIONALE_ICONS);
-
+	/**
+	 * Knowledge types that (currently) can be documented in Jira issue description
+	 * or comments using {@link AbstractKnowledgeClassificationMacro}s.
+	 */
 	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE,
 			KnowledgeType.PRO, KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
 
@@ -109,13 +97,9 @@ public class JiraIssueTextParser {
 		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
 		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
 		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
-		for (String tag : RATIONALE_TAGS) {
-			rawSentences = searchForTags(rawSentences, tag, tag);
-		}
-		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
-			for (String icon : RATIONALE_ICONS) {
-				rawSentences = searchForTags(rawSentences, icon, System.getProperty("line.separator"));
-			}
+
+		for (KnowledgeType type : KNOWLEDGE_TYPES) {
+			rawSentences = searchForTags(rawSentences, type.getTag(), type.getTag());
 		}
 
 		runBreakIterator(rawSentences, body);
@@ -185,7 +169,13 @@ public class JiraIssueTextParser {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
-			if (StringUtils.indexOfAny(currentSentence, EXCLUDED_STRINGS) == -1) {
+			boolean containsAnyRationaleElement = false;
+			for (KnowledgeType type : KNOWLEDGE_TYPES) {
+				if (currentSentence.contains(type.getTag())) {
+					containsAnyRationaleElement = true;
+				}
+			}
+			if (!containsAnyRationaleElement) {
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
@@ -229,8 +219,7 @@ public class JiraIssueTextParser {
 	public KnowledgeType getKnowledgeTypeFromTag(String body) {
 		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
-					|| checkIcons && body.contains(type.getIconString())) {
+			if (body.toLowerCase().contains(type.getTag()) || checkIcons && body.contains(type.getIconString())) {
 				return type;
 			}
 		}
@@ -238,48 +227,11 @@ public class JiraIssueTextParser {
 	}
 
 	public boolean isAnyKnowledgeTypeTwiceExisting(String body) {
-		Set<String> knowledgeTypeTags = getAllTagsUsedInProject();
-		for (String tag : knowledgeTypeTags) {
-			if (knowledgeTypeTagExistsTwice(body, tag)) {
+		for (KnowledgeType type : KNOWLEDGE_TYPES) {
+			if (knowledgeTypeTagExistsTwice(body, type.getTag())) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public Set<String> getAllTagsUsedInProject() {
-		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProject(projectKey).getConDecKnowledgeTypes();
-		projectKnowledgeTypes.add(KnowledgeType.PRO);
-		projectKnowledgeTypes.add(KnowledgeType.CON);
-		Set<String> knowledgeTypeTags = new HashSet<String>();
-		for (KnowledgeType type : projectKnowledgeTypes) {
-			knowledgeTypeTags.add(AbstractKnowledgeClassificationMacro.getTag(type));
-		}
-		return knowledgeTypeTags;
-	}
-
-	public static boolean isCommentIconTagged(String text) {
-		// TODO WHY >=
-		return StringUtils.indexOfAny(text, RATIONALE_ICONS) >= 0;
-	}
-
-	public static String parseIconsToTags(String text) {
-		if (text == null) {
-			return "";
-		}
-		String textWithoutIcons = text;
-		for (int i = 0; i < RATIONALE_ICONS.length; i++) {
-			String icon = RATIONALE_ICONS[i];
-			while (textWithoutIcons.contains(icon)) {
-				textWithoutIcons = textWithoutIcons.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
-						RATIONALE_TAGS[i]);
-				if (textWithoutIcons.split(System.getProperty("line.separator")).length == 1
-						&& !textWithoutIcons.endsWith("\r\n")) {
-					textWithoutIcons = textWithoutIcons + RATIONALE_TAGS[i];
-				}
-				textWithoutIcons = textWithoutIcons.replaceFirst("\r\n", RATIONALE_TAGS[i]);
-			}
-		}
-		return textWithoutIcons;
 	}
 }
