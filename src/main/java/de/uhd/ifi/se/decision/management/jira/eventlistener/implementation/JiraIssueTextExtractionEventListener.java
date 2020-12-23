@@ -214,5 +214,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 				.getJiraIssueTextManager();
 		persistenceManager.deleteElementsOfProject();
 		GenericLinkManager.deleteInvalidLinks();
+		persistenceManager.deleteInvalidElements(projectDeletedEvent.getUser());
 	}
 }

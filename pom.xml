@@ -258,6 +258,7 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- Open NLP -->
 		<dependency>
@@ -281,12 +282,14 @@
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>3.16.0</version>
+			<version>3.17.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.9</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -383,7 +386,7 @@
 
 	<properties>
 		<jira.version>8.14.0</jira.version>
-		<amps.version>8.0.2</amps.version>
+		<amps.version>8.2.0</amps.version>
 		<ao.version>3.2.10</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>
