@@ -1,6 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -8,15 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public abstract class BaseRecommender<T> {
 
 	protected T input;
 	protected List<Recommendation> recommendations;
 	protected List<KnowledgeSource> knowledgeSources;
-
 
 	public void setInput(T input) {
 		this.input = input;
@@ -33,7 +33,6 @@ public abstract class BaseRecommender<T> {
 	}
 
 	public abstract RecommenderType getRecommenderType();
-
 
 	public List<KnowledgeSource> getKnowledgeSources() {
 		return this.knowledgeSources;
@@ -70,7 +69,7 @@ public abstract class BaseRecommender<T> {
 		for (Recommendation recommendation : this.recommendations) {
 			KnowledgeElement alternative = new KnowledgeElement();
 
-			//Set information
+			// Set information
 			alternative.setId(id);
 			id += 1;
 			alternative.setSummary(recommendation.getRecommendation());
@@ -81,11 +80,8 @@ public abstract class BaseRecommender<T> {
 			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
 
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
-			insertedElement.setStatus(KnowledgeStatus.RECOMMENDED);
-			manager.updateKnowledgeElement(insertedElement, user);
 			manager.insertLink(rootElement, insertedElement, user);
 		}
 	}
-
 
 }
