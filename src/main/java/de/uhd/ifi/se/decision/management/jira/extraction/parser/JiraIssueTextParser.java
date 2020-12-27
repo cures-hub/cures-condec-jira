@@ -45,10 +45,10 @@ public class JiraIssueTextParser {
 	}
 
 	/**
-	 * @see PartOfJiraIssueText
 	 * @param text
-	 *            text to be split.
-	 * @return parts of text (substrings) as a list.
+	 *            text to be split, e.g. Jira issue description or a comment body.
+	 * @return {@link PartOfJiraIssueText}s (also referred to as sentences or
+	 *         substrings) as a list.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
 		if (text == null || text.isBlank()) {
@@ -95,6 +95,7 @@ public class JiraIssueTextParser {
 		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
 
 		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
+		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
 		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
 		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
 
@@ -102,7 +103,7 @@ public class JiraIssueTextParser {
 			rawSentences = searchForTags(rawSentences, type.getTag(), type.getTag());
 		}
 
-		runBreakIterator(rawSentences, body);
+		rawSentences = runBreakIterator(rawSentences, body);
 		return rawSentences;
 	}
 
@@ -165,7 +166,7 @@ public class JiraIssueTextParser {
 				&& body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1);
 	}
 
-	private void runBreakIterator(List<String> rawSentences, String body) {
+	private List<String> runBreakIterator(List<String> rawSentences, String body) {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
@@ -192,6 +193,7 @@ public class JiraIssueTextParser {
 				this.addSentenceIndex(start1, end1);
 			}
 		}
+		return rawSentences;
 	}
 
 	private static boolean isIncorrectlyTagged(String toSearch, String openTag, String closeTag) {

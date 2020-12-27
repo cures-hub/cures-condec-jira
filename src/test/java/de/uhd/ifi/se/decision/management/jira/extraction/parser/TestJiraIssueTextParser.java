@@ -25,7 +25,7 @@ public class TestJiraIssueTextParser extends TestSetUp {
 	@NonTransactional
 	public void testCommentWithTwoSentences() {
 		List<PartOfJiraIssueText> sentences = JiraIssues
-				.getSentencesForCommentText("This is a test Sentence. With two sentences");
+				.getSentencesForCommentText("This is the first sentence. This is the second sentence.");
 		assertEquals(2, sentences.size());
 	}
 
