@@ -48,7 +48,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 	@NonTransactional
 	public void testRationaleTag() {
 		KnowledgeElement element = getFirstKnowledgeElementInDescription("{issue}This is a very severe issue.{issue}");
-		assertEquals("This is a very severe issue.", element.getDescription());
+		assertEquals("{issue}This is a very severe issue.{issue}", element.getDescription());
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}
 

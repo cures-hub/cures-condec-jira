@@ -2,12 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,13 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  */
 public class JiraIssueTextParser {
 
-	/**
-	 * Knowledge types that (currently) can be documented in Jira issue description
-	 * or comments using {@link AbstractKnowledgeClassificationMacro}s.
-	 */
-	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE,
-			KnowledgeType.PRO, KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
-
 	private List<Integer> startPositions;
 	private List<Integer> endPositions;
 	private String projectKey;
@@ -48,36 +41,57 @@ public class JiraIssueTextParser {
 	 * @param text
 	 *            text to be split, e.g. Jira issue description or a comment body.
 	 * @return {@link PartOfJiraIssueText}s (also referred to as sentences or
-	 *         substrings) as a list.
+	 *         substrings). The list is sorted according the sentence position
+	 *         within the text.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
 		if (text == null || text.isBlank()) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		splitTextIntoSentences(text);
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
 
-		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
-		for (int i = 0; i < startPositions.size(); i++) {
-			int startPosition = startPositions.get(i);
-			int endPosition = endPositions.get(i);
-			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
-				continue;
-			}
-			PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
-			partOfText.setStartPosition(startPosition);
-			partOfText.setEndPosition(endPosition);
-			partOfText.setProject(projectKey);
-			String body = text.substring(startPosition, endPosition);
-			KnowledgeType type = getKnowledgeTypeFromTag(body);
-			partOfText.setType(type);
-			if (type != KnowledgeType.OTHER) {
-				// TODO: Why is this set here?
-				partOfText.setValidated(true);
-			}
-			partOfText.setDescription(stripTagsFromBody(body));
-			parts.add(partOfText);
+		for (KnowledgeType type : KnowledgeType.macroTypes()) {
+			partsOfText.addAll(locateKnowledgeElements(text, type));
 		}
-		return parts;
+
+		partsOfText.addAll(locateOtherMacros(text, "code"));
+		partsOfText.addAll(locateOtherMacros(text, "quote"));
+		partsOfText.addAll(locateOtherMacros(text, "noformat"));
+
+		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
+
+		if (partsOfText.isEmpty()) {
+			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
+		}
+
+		PartOfJiraIssueText firstPart = partsOfText.get(0);
+		if (firstPart.getStartPosition() > 0) {
+			PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, firstPart.getStartPosition(), text);
+			if (!newFirstPart.getDescription().isBlank()) {
+				// TODO Split sentences
+				partsOfText.add(0, newFirstPart);
+			}
+		}
+
+		PartOfJiraIssueText lastPart = partsOfText.get(partsOfText.size() - 1);
+		if (text.length() > lastPart.getEndPosition()) {
+			PartOfJiraIssueText newlastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
+			if (!newlastPart.getDescription().isBlank()) {
+				partsOfText.addAll(splitIntoSentences(newlastPart));
+			}
+		}
+
+		partsOfText.addAll(locateRemainingParts(text));
+		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
+
+		partsOfText.forEach(partOfText -> partOfText.setProject(projectKey));
+
+		// TODO This does not seem to be true that every sentence is validated
+		partsOfText.forEach(partOfText -> {
+			if (partOfText.getType() != KnowledgeType.OTHER)
+				partOfText.setValidated(true);
+		});
+		return partsOfText;
 	}
 
 	public String stripTagsFromBody(String body) {
@@ -91,113 +105,88 @@ public class JiraIssueTextParser {
 		return body.replaceAll("\\(.*?\\)", "");
 	}
 
-	private List<String> splitTextIntoSentences(String body) {
-		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
+	public List<PartOfJiraIssueText> locateKnowledgeElements(String text, KnowledgeType type) {
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		String tag = "\\{" + type.toString() + "\\}";
+		Pattern pattern = Pattern.compile(tag + ".*?" + tag, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(text);
+		while (matcher.find()) {
+			if (isAlreadyIncludedInOtherSentence(matcher)) {
+				continue;
+			}
+			startPositions.add(matcher.start());
+			endPositions.add(matcher.end());
 
-		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
-		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
-		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
-		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
-
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			rawSentences = searchForTags(rawSentences, type.getTag(), type.getTag());
+			PartOfJiraIssueText partOfText = new PartOfJiraIssueText(matcher.start(), matcher.end(), text);
+			partOfText.setType(type);
+			partsOfText.add(partOfText);
 		}
-
-		rawSentences = runBreakIterator(rawSentences, body);
-		return rawSentences;
+		return partsOfText;
 	}
 
-	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
-		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
-		for (String slice : firstSplit) {
-			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
-					closeTag.toLowerCase(), new ArrayList<String>());
-			if (slicesOfSentence.size() > 1) {
-				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
+	public List<PartOfJiraIssueText> locateOtherMacros(String text, String macro) {
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(text);
+		while (matcher.find()) {
+			if (isAlreadyIncludedInOtherSentence(matcher)) {
+				continue;
+			}
+			startPositions.add(matcher.start());
+			endPositions.add(matcher.end());
+
+			PartOfJiraIssueText partOfText = new PartOfJiraIssueText(matcher.start(), matcher.end(), text);
+			partsOfText.add(partOfText);
+		}
+		return partsOfText;
+	}
+
+	public List<PartOfJiraIssueText> locateRemainingParts(String text) {
+		Collections.sort(startPositions);
+		Collections.sort(endPositions);
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		for (int i = 0; i < startPositions.size() - 1; i++) {
+			int tempStartPosition = endPositions.get(i);
+			int tempEndPosition = startPositions.get(i + 1);
+			if (tempStartPosition + 1 >= tempEndPosition) {
+				continue;
+			}
+
+			PartOfJiraIssueText newPart = new PartOfJiraIssueText(tempStartPosition, tempEndPosition, text);
+			if (newPart.getDescription().isBlank()) {
+				continue;
+			}
+
+			newPartsOfText.addAll(splitIntoSentences(newPart));
+		}
+		return newPartsOfText;
+	}
+
+	private boolean isAlreadyIncludedInOtherSentence(Matcher matcher) {
+		for (int i = 0; i < startPositions.size(); i++) {
+			if (matcher.start() > startPositions.get(i) && matcher.start() < endPositions.get(i)) {
+				return true;
+			}
+			if (matcher.end() > startPositions.get(i) && matcher.end() < endPositions.get(i)) {
+				return true;
 			}
 		}
-		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
-			int remove = (int) newSlices.keySet().toArray()[i];
-			firstSplit.remove(remove);
-			firstSplit.addAll(remove, newSlices.get(remove));
-		}
-
-		return firstSplit;
+		return false;
 	}
 
-	private static List<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
-			ArrayList<String> slices) {
-		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
-			slices.add(partOfText);
-			return slices;
-		}
-		// Icon is used to identify a sentence or a closing tag is forgotten
-		if (partOfText.contains(openTag) && !partOfText.contains(closeTag)) {
-			return slices;
-		} // Open and close tags are existent
-		if (partOfText.startsWith(openTag) && partOfText.contains(closeTag)) {
-			String part = StringUtils.substringBetween(partOfText, openTag, closeTag);
-			part = openTag + part + closeTag;
-			slices.add(part);
-			String commentPartSubstring = partOfText.substring(partOfText.indexOf(openTag) + part.length());
-			return searchForTagsRecursively(commentPartSubstring, openTag, closeTag, slices);
-		} else {// currently plain text
-			if (partOfText.contains(openTag)) {// comment block has special text later
-				slices.add(partOfText.substring(0, partOfText.indexOf(openTag)));
-				return searchForTagsRecursively(partOfText.substring(partOfText.indexOf(openTag)), openTag, closeTag,
-						slices);
-			} else {// comment block has no more special text
-				slices.add(partOfText);
-			}
-		}
-		return slices;
-	}
-
-	/**
-	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
-	 * not only whitespaces
-	 *
-	 * @param startIndex
-	 * @param endIndex
-	 * @return
-	 */
-	private boolean startAndEndIndexRules(int startIndex, int endIndex, String body) {
-		return (startIndex >= 0 && endIndex >= 0 && (endIndex - startIndex) > 0
-				&& body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1);
-	}
-
-	private List<String> runBreakIterator(List<String> rawSentences, String body) {
+	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText) {
+		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-
-		for (String currentSentence : rawSentences) {
-			boolean containsAnyRationaleElement = false;
-			for (KnowledgeType type : KNOWLEDGE_TYPES) {
-				if (currentSentence.contains(type.getTag())) {
-					containsAnyRationaleElement = true;
-				}
-			}
-			if (!containsAnyRationaleElement) {
-				iterator.setText(currentSentence);
-				int start = iterator.first();
-				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
-						int startOfSentence = body.toLowerCase()
-								.indexOf(currentSentence.toLowerCase().substring(start, end));
-						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
-						this.addSentenceIndex(startOfSentence, endOfSentence);
-					}
-				}
-			} else {
-				int start1 = body.toLowerCase().indexOf(currentSentence.toLowerCase());
-				int end1 = currentSentence.length() + start1;
-				this.addSentenceIndex(start1, end1);
-			}
+		iterator.setText(partOfText.getDescription());
+		int start = iterator.first();
+		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+			sentence.setStartPosition(partOfText.getStartPosition() + start);
+			sentence.setEndPosition(partOfText.getEndPosition());
+			sentence.setDescription(partOfText.getDescription().substring(start, end).trim());
+			sentences.add(sentence);
 		}
-		return rawSentences;
-	}
-
-	private static boolean isIncorrectlyTagged(String toSearch, String openTag, String closeTag) {
-		return openTag.equals(closeTag) && !knowledgeTypeTagExistsTwice(toSearch, openTag);
+		return sentences;
 	}
 
 	private static boolean knowledgeTypeTagExistsTwice(String body, String knowledgeType) {
@@ -205,11 +194,6 @@ public class JiraIssueTextParser {
 			return false;
 		}
 		return StringUtils.countMatches(body.toLowerCase(), knowledgeType.toLowerCase()) >= 2;
-	}
-
-	public void addSentenceIndex(int startIndex, int endIndex) {
-		this.startPositions.add(startIndex);
-		this.endPositions.add(endIndex);
 	}
 
 	/**
@@ -220,7 +204,7 @@ public class JiraIssueTextParser {
 	 */
 	public KnowledgeType getKnowledgeTypeFromTag(String body) {
 		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
+		for (KnowledgeType type : KnowledgeType.macroTypes()) {
 			if (body.toLowerCase().contains(type.getTag()) || checkIcons && body.contains(type.getIconString())) {
 				return type;
 			}
@@ -229,7 +213,7 @@ public class JiraIssueTextParser {
 	}
 
 	public boolean isAnyKnowledgeTypeTwiceExisting(String body) {
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
+		for (KnowledgeType type : KnowledgeType.macroTypes()) {
 			if (knowledgeTypeTagExistsTwice(body, type.getTag())) {
 				return true;
 			}

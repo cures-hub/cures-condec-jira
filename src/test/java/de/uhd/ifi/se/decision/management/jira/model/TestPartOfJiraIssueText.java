@@ -164,7 +164,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsValidatedIcon() {
+	public void testIsValidatedArgument() {
 		assertTrue(proArgument.isValidated());
 	}
 

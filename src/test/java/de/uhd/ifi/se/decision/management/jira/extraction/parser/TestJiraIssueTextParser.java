@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.text.BreakIterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -111,7 +113,8 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = JiraIssues.getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
 		assertEquals(2, sentences.size());
-		assertTrue(sentences.get(0).getDescription().contains(" this is a noformat "));
+		assertEquals("{noformat} this is a noformat {noformat}", sentences.get(0).getTextWithTags());
+		assertEquals(" {wuzl} and this is a test Sentence {wuzl}", sentences.get(1).getTextWithTags());
 	}
 
 	@Test
@@ -139,4 +142,40 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		assertEquals(KnowledgeType.PRO, sentences.get(4).getType());
 		assertTrue(sentences.get(4).isRelevant());
 	}
+
+	@Test
+	@NonTransactional
+	public void testRegex() {
+		JiraIssueTextParser parser = new JiraIssueTextParser("TEST");
+
+		String text = "Test123 {issue} How to? {issue} {alternative} An alternative could be {alternative}"
+				+ "{pro} Great idea! {pro} This is a test! {decision} We will do ...! {decision} {pro} Even better! {pro} {issue} Second issue {issue}"
+				+ "{decision}{code:java} public static {code}{decision} And more text! And another question? Yes! {noformat} ... {noformat}";
+		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
+
+		// assertEquals(10, partsOfText.size());
+		assertEquals("Test123", partsOfText.get(0).getDescription());
+		assertEquals("{issue} How to? {issue}", partsOfText.get(1).getDescription());
+		assertEquals("{alternative} An alternative could be {alternative}", partsOfText.get(2).getDescription());
+		assertEquals("{pro} Great idea! {pro}", partsOfText.get(3).getDescription());
+		assertEquals("This is a test!", partsOfText.get(4).getDescription());
+		assertEquals("{decision} We will do ...! {decision}", partsOfText.get(5).getDescription());
+		assertEquals("{pro} Even better! {pro}", partsOfText.get(6).getDescription());
+		assertEquals("{issue} Second issue {issue}", partsOfText.get(7).getDescription());
+		assertEquals("{decision}{code:java} public static {code}{decision}", partsOfText.get(8).getDescription());
+		assertEquals("And more text!", partsOfText.get(9).getDescription());
+		assertEquals("And another question?", partsOfText.get(10).getDescription());
+		assertEquals("{noformat} ... {noformat}", partsOfText.get(12).getDescription());
+
+		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+		iterator.setText(text);
+		int start = iterator.first();
+		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
+			if (end - start > 1 && text.substring(start, end).trim().length() > 0) {
+				System.out.println(text.substring(start, end));
+			}
+		}
+
+	}
+
 }
