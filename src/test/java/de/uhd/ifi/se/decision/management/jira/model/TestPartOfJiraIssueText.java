@@ -94,7 +94,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		assertEquals(irrelevantFirstSentence.getText(), "some sentence in front. ");
+		assertEquals("some sentence in front.", irrelevantFirstSentence.getText());
 	}
 
 	@Test

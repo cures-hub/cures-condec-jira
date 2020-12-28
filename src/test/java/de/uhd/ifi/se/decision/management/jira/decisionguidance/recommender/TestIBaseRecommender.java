@@ -55,7 +55,7 @@ public class TestIBaseRecommender extends TestSetUp {
 		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
 
-		assertEquals(10, manager.getKnowledgeElements().size());
+		assertEquals(11, manager.getKnowledgeElements().size());
 	}
 
 	@Test

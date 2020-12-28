@@ -60,7 +60,7 @@ public class JiraIssueTextParser {
 		}
 
 		if (partsOfText.isEmpty()) {
-			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
+			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text), text));
 		}
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
 		partsOfText.addAll(locateRemainingParts(text));
@@ -106,7 +106,7 @@ public class JiraIssueTextParser {
 		if (firstPart.getStartPosition() > 0) {
 			PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, firstPart.getStartPosition(), text);
 			if (!newFirstPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newFirstPart));
+				newPartsOfText.addAll(splitIntoSentences(newFirstPart, text));
 			}
 		}
 
@@ -123,7 +123,7 @@ public class JiraIssueTextParser {
 				continue;
 			}
 
-			newPartsOfText.addAll(splitIntoSentences(newPart));
+			newPartsOfText.addAll(splitIntoSentences(newPart, text));
 		}
 
 		// Find sentences at the end
@@ -131,7 +131,7 @@ public class JiraIssueTextParser {
 		if (text.length() > lastPart.getEndPosition()) {
 			PartOfJiraIssueText newlastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
 			if (!newlastPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newlastPart));
+				newPartsOfText.addAll(splitIntoSentences(newlastPart, text));
 			}
 		}
 
@@ -162,17 +162,19 @@ public class JiraIssueTextParser {
 	 * @return list of sentences. If no splitting was done, the original partOfText
 	 *         is returned in the list.
 	 */
-	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText) {
+	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText, String text) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		iterator.setText(partOfText.getDescription());
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-			sentence.setStartPosition(partOfText.getStartPosition() + start);
-			sentence.setEndPosition(partOfText.getStartPosition() + end);
-			sentence.setDescription(partOfText.getDescription().substring(start, end).trim());
+			int sentenceStartPosition = partOfText.getStartPosition() + start;
+			int sentenceEndPosition = partOfText.getStartPosition() + end;
+			PartOfJiraIssueText sentence = new PartOfJiraIssueText(sentenceStartPosition, sentenceEndPosition, text);
 			sentences.add(sentence);
+		}
+		if (sentences.isEmpty()) {
+			sentences.add(partOfText);
 		}
 		return sentences;
 	}
