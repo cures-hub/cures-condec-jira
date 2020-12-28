@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestUpdateDecisionKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
+public class TestUpdateKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {

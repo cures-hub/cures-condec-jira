@@ -269,7 +269,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * @return part of the text.
+	 * @return part of the text without macro tags and trimmed.
 	 */
 	public String getText() {
 		return getTextWithTags().replaceAll("\\{.*?\\}", "").trim();
