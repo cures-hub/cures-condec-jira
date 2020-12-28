@@ -162,16 +162,20 @@ public class JiraIssueTextParser {
 	 * @return list of sentences. If no splitting was done, the original partOfText
 	 *         is returned in the list.
 	 */
-	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText, String text) {
+	public List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText, String text) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-		iterator.setText(partOfText.getDescription());
+
+		// the description might be already trimmed, thus, we use the entire text
+		iterator.setText(text.substring(partOfText.getStartPosition(), partOfText.getEndPosition()));
 		int start = iterator.first();
-		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
+		int end = start;
+		while ((end = iterator.next()) != BreakIterator.DONE) {
 			int sentenceStartPosition = partOfText.getStartPosition() + start;
 			int sentenceEndPosition = partOfText.getStartPosition() + end;
 			PartOfJiraIssueText sentence = new PartOfJiraIssueText(sentenceStartPosition, sentenceEndPosition, text);
 			sentences.add(sentence);
+			start = end;
 		}
 		if (sentences.isEmpty()) {
 			sentences.add(partOfText);

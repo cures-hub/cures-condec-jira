@@ -101,7 +101,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		assertEquals(sentence.getText(), "");
+		assertEquals("", sentence.getText());
 	}
 
 	@Test
