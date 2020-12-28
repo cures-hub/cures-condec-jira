@@ -272,7 +272,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @return part of the text.
 	 */
 	public String getText() {
-		return getTextWithTags().replaceAll("\\{.*?\\}", "");
+		return getTextWithTags().replaceAll("\\{.*?\\}", "").trim();
 	}
 
 	@Override

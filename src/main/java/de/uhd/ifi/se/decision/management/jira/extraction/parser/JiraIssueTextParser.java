@@ -29,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  */
 public class JiraIssueTextParser {
 
+	private String text;
 	private List<PartOfJiraIssueText> partsOfText;
 	private String projectKey;
 
@@ -49,21 +50,22 @@ public class JiraIssueTextParser {
 		if (text == null || text.isBlank()) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		partsOfText = new ArrayList<PartOfJiraIssueText>();
+		this.partsOfText = new ArrayList<PartOfJiraIssueText>();
+		this.text = text;
 
 		for (KnowledgeType type : KnowledgeType.macroTypes()) {
-			partsOfText.addAll(findKnowledgeElementsOfType(text, type));
+			partsOfText.addAll(findKnowledgeElementsOfType(type));
 		}
 
 		for (String jiraMacro : JIRA_MACROS) {
-			partsOfText.addAll(findMacroTextOfType(text, jiraMacro));
+			partsOfText.addAll(findMacroTextOfType(jiraMacro));
 		}
 
 		if (partsOfText.isEmpty()) {
-			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text), text));
+			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
 		}
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
-		partsOfText.addAll(locateRemainingParts(text));
+		partsOfText.addAll(locateRemainingParts());
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
 
 		partsOfText.forEach(partOfText -> partOfText.setProject(projectKey));
@@ -76,13 +78,13 @@ public class JiraIssueTextParser {
 		return partsOfText;
 	}
 
-	public List<PartOfJiraIssueText> findKnowledgeElementsOfType(String text, KnowledgeType type) {
-		List<PartOfJiraIssueText> partsOfText = findMacroTextOfType(text, type.name());
+	private List<PartOfJiraIssueText> findKnowledgeElementsOfType(KnowledgeType type) {
+		List<PartOfJiraIssueText> partsOfText = findMacroTextOfType(type.name());
 		partsOfText.forEach(partOfText -> partOfText.setType(type));
 		return partsOfText;
 	}
 
-	public List<PartOfJiraIssueText> findMacroTextOfType(String text, String macro) {
+	private List<PartOfJiraIssueText> findMacroTextOfType(String macro) {
 		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
 		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}",
 				Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -98,19 +100,46 @@ public class JiraIssueTextParser {
 		return partsOfText;
 	}
 
-	public List<PartOfJiraIssueText> locateRemainingParts(String text) {
-		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+	private boolean isAlreadyIncludedInOtherSentence(Matcher matcher) {
+		for (PartOfJiraIssueText partOfText : partsOfText) {
+			if (matcher.start() > partOfText.getStartPosition() && matcher.start() < partOfText.getEndPosition()) {
+				return true;
+			}
+			if (matcher.end() > partOfText.getStartPosition() && matcher.end() < partOfText.getEndPosition()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-		// Find sentences at the beginning
+	private List<PartOfJiraIssueText> locateRemainingParts() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		newPartsOfText.addAll(locatePartsAtTheBeginning());
+		newPartsOfText.addAll(locatePartsInBetween());
+		newPartsOfText.addAll(locatePartsAtTheEnd());
+		return newPartsOfText;
+	}
+
+	/**
+	 * @return sentences at the beginning of the text, in front of any Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsAtTheBeginning() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
 		PartOfJiraIssueText firstPart = partsOfText.get(0);
 		if (firstPart.getStartPosition() > 0) {
 			PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, firstPart.getStartPosition(), text);
 			if (!newFirstPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newFirstPart, text));
+				newPartsOfText.addAll(splitIntoSentences(newFirstPart));
 			}
 		}
+		return newPartsOfText;
+	}
 
-		// Find sentences in between
+	/**
+	 * @return sentences in between Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsInBetween() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
 		for (int i = 0; i < partsOfText.size() - 1; i++) {
 			int tempStartPosition = partsOfText.get(i).getEndPosition();
 			int tempEndPosition = partsOfText.get(i + 1).getStartPosition();
@@ -122,32 +151,24 @@ public class JiraIssueTextParser {
 			if (newPart.getDescription().isBlank()) {
 				continue;
 			}
-
-			newPartsOfText.addAll(splitIntoSentences(newPart, text));
+			newPartsOfText.addAll(splitIntoSentences(newPart));
 		}
+		return newPartsOfText;
+	}
 
-		// Find sentences at the end
+	/**
+	 * @return sentences at the end of the text, after any Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsAtTheEnd() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
 		PartOfJiraIssueText lastPart = partsOfText.get(partsOfText.size() - 1);
 		if (text.length() > lastPart.getEndPosition()) {
 			PartOfJiraIssueText newlastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
 			if (!newlastPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newlastPart, text));
+				newPartsOfText.addAll(splitIntoSentences(newlastPart));
 			}
 		}
-
 		return newPartsOfText;
-	}
-
-	private boolean isAlreadyIncludedInOtherSentence(Matcher matcher) {
-		for (PartOfJiraIssueText partOfText : partsOfText) {
-			if (matcher.start() > partOfText.getStartPosition() && matcher.start() < partOfText.getEndPosition()) {
-				return true;
-			}
-			if (matcher.end() > partOfText.getStartPosition() && matcher.end() < partOfText.getEndPosition()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -162,7 +183,7 @@ public class JiraIssueTextParser {
 	 * @return list of sentences. If no splitting was done, the original partOfText
 	 *         is returned in the list.
 	 */
-	public List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText, String text) {
+	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
