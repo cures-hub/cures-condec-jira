@@ -1,5 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
@@ -10,13 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestIBaseRecommender extends TestSetUp {
 
@@ -33,6 +35,7 @@ public class TestIBaseRecommender extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testAddToKnowledgeGraph() {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
@@ -49,7 +52,8 @@ public class TestIBaseRecommender extends TestSetUp {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
 		assertEquals(10, manager.getKnowledgeElements().size());
 
-		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(), JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
+		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
+				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
 
 		assertEquals(11, manager.getKnowledgeElements().size());
 	}

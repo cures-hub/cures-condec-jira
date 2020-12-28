@@ -110,7 +110,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		// Important that sentence object has no tags
 		assertEquals("testobject", element.getDescription().trim());
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("{alternative} testobject {alternative}",
+		assertEquals("{alternative}testobject{alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -127,7 +127,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
 		assertEquals(element.getDescription().trim(), "testobject");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. {alternative} testobject {alternative}",
+		assertEquals("some sentence in front. {alternative}testobject{alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -142,9 +142,9 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		manager.updateKnowledgeElement(oldElement, null);
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
-		assertEquals(element.getDescription(), " testobject ");
+		assertEquals("testobject", element.getDescription());
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. {alternative} testobject {alternative} some sentence in the back.",
+		assertEquals("some sentence in front. {alternative}testobject{alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -160,10 +160,10 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		oldElement.setType(KnowledgeType.PRO);
 		manager.updateKnowledgeElement(oldElement, null);
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
-		assertEquals(" testobject ", element.getDescription());
+		assertEquals("testobject", element.getDescription());
 		assertEquals(element.getTypeAsString(), "Pro");
 
-		assertEquals("some sentence in front. {pro} testobject {pro} some sentence in the back.",
+		assertEquals("some sentence in front. {pro}testobject{pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 

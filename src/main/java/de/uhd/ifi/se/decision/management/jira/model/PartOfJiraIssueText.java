@@ -35,6 +35,18 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
+	public PartOfJiraIssueText(int startPosition, int endPosition, String textOfEntireDescriptionOrComment) {
+		this();
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
+		this.setDescription(textOfEntireDescriptionOrComment.substring(startPosition, endPosition)
+				.replaceAll("\\{.*?\\}", "").trim());
+	}
+
+	public PartOfJiraIssueText(String textOfEntireDescriptionOrComment) {
+		this(0, textOfEntireDescriptionOrComment.length(), textOfEntireDescriptionOrComment);
+	}
+
 	public PartOfJiraIssueText(PartOfJiraIssueTextInDatabase databaseEntry) {
 		this();
 		this.setId(databaseEntry.getId());
@@ -257,10 +269,10 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	/**
-	 * @return part of the text.
+	 * @return part of the text without macro tags and trimmed.
 	 */
 	public String getText() {
-		return getTextWithTags().replaceAll("\\{.*?\\}", "");
+		return getTextWithTags().replaceAll("\\{.*?\\}", "").trim();
 	}
 
 	@Override

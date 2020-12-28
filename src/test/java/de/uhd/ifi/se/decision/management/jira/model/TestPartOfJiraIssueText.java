@@ -94,14 +94,14 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		assertEquals(irrelevantFirstSentence.getText(), "some sentence in front. ");
+		assertEquals("some sentence in front.", irrelevantFirstSentence.getText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		assertEquals(sentence.getText(), "");
+		assertEquals("", sentence.getText());
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsValidatedIcon() {
+	public void testIsValidatedArgument() {
 		assertTrue(proArgument.isValidated());
 	}
 

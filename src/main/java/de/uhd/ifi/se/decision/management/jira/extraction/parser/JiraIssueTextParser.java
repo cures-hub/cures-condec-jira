@@ -2,18 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
 /**
@@ -24,214 +20,187 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  * 
  * @issue Is there a parser/scanner library we can use to indentify macros or
  *        icons in text and to split the text into sentences?
+ * @decision We write our own parser to identify 1) parts of text with tagged
+ *           decision knowledge elements, 2) parts of text tagged with other
+ *           macros (e.g. code), and 3) to split the remaining text into
+ *           sentences.
+ * @pro There seems to be no Jira issue macro parser that we could built on, so
+ *      we have to write one ourselves.
  */
 public class JiraIssueTextParser {
 
-	/**
-	 * Knowledge types that (currently) can be documented in Jira issue description
-	 * or comments using {@link AbstractKnowledgeClassificationMacro}s.
-	 */
-	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE,
-			KnowledgeType.PRO, KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
-
-	private List<Integer> startPositions;
-	private List<Integer> endPositions;
+	private String text;
+	private List<PartOfJiraIssueText> partsOfText;
 	private String projectKey;
+
+	private static final String[] JIRA_MACROS = { "code", "quote", "noformat", "color", "panel" };
 
 	public JiraIssueTextParser(String projectKey) {
 		this.projectKey = projectKey;
-		this.startPositions = new ArrayList<Integer>();
-		this.endPositions = new ArrayList<Integer>();
 	}
 
 	/**
-	 * @see PartOfJiraIssueText
 	 * @param text
-	 *            text to be split.
-	 * @return parts of text (substrings) as a list.
+	 *            text to be split, e.g. Jira issue description or a comment body.
+	 * @return {@link PartOfJiraIssueText}s (also referred to as sentences or
+	 *         substrings). The list is sorted according the sentence position
+	 *         within the text.
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
 		if (text == null || text.isBlank()) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		splitTextIntoSentences(text);
+		this.partsOfText = new ArrayList<PartOfJiraIssueText>();
+		this.text = text;
 
-		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
-		for (int i = 0; i < startPositions.size(); i++) {
-			int startPosition = startPositions.get(i);
-			int endPosition = endPositions.get(i);
-			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
+		for (KnowledgeType type : KnowledgeType.macroTypes()) {
+			partsOfText.addAll(findKnowledgeElementsOfType(type));
+		}
+
+		for (String jiraMacro : JIRA_MACROS) {
+			partsOfText.addAll(findMacroTextOfType(jiraMacro));
+		}
+
+		if (partsOfText.isEmpty()) {
+			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
+		}
+		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
+		partsOfText.addAll(locateRemainingParts());
+		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
+
+		partsOfText.forEach(partOfText -> partOfText.setProject(projectKey));
+
+		// TODO This does not seem to be true that every sentence is validated
+		partsOfText.forEach(partOfText -> {
+			if (partOfText.getType() != KnowledgeType.OTHER)
+				partOfText.setValidated(true);
+		});
+		return partsOfText;
+	}
+
+	private List<PartOfJiraIssueText> findKnowledgeElementsOfType(KnowledgeType type) {
+		List<PartOfJiraIssueText> partsOfText = findMacroTextOfType(type.name());
+		partsOfText.forEach(partOfText -> partOfText.setType(type));
+		return partsOfText;
+	}
+
+	private List<PartOfJiraIssueText> findMacroTextOfType(String macro) {
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}",
+				Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		Matcher matcher = pattern.matcher(text);
+		while (matcher.find()) {
+			if (isAlreadyIncludedInOtherSentence(matcher)) {
 				continue;
 			}
-			PartOfJiraIssueText partOfText = new PartOfJiraIssueText();
-			partOfText.setStartPosition(startPosition);
-			partOfText.setEndPosition(endPosition);
-			partOfText.setProject(projectKey);
-			String body = text.substring(startPosition, endPosition);
-			KnowledgeType type = getKnowledgeTypeFromTag(body);
-			partOfText.setType(type);
-			if (type != KnowledgeType.OTHER) {
-				// TODO: Why is this set here?
-				partOfText.setValidated(true);
+
+			PartOfJiraIssueText partOfText = new PartOfJiraIssueText(matcher.start(), matcher.end(), text);
+			partsOfText.add(partOfText);
+		}
+		return partsOfText;
+	}
+
+	private boolean isAlreadyIncludedInOtherSentence(Matcher matcher) {
+		for (PartOfJiraIssueText partOfText : partsOfText) {
+			if (matcher.start() > partOfText.getStartPosition() && matcher.start() < partOfText.getEndPosition()) {
+				return true;
 			}
-			partOfText.setDescription(stripTagsFromBody(body));
-			parts.add(partOfText);
-		}
-		return parts;
-	}
-
-	public String stripTagsFromBody(String body) {
-		if (body == null) {
-			return "";
-		}
-		if (isAnyKnowledgeTypeTwiceExisting(body)) {
-			int tagLength = 2 + getKnowledgeTypeFromTag(body).toString().length();
-			return body.substring(tagLength, body.length() - tagLength);
-		}
-		return body.replaceAll("\\(.*?\\)", "");
-	}
-
-	private List<String> splitTextIntoSentences(String body) {
-		List<String> rawSentences = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
-
-		rawSentences = searchForTags(rawSentences, "{noformat}", "{noformat}");
-		rawSentences = searchForTags(rawSentences, "{panel:", "{panel}");
-		rawSentences = searchForTags(rawSentences, "{code:", "{code}");
-
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			rawSentences = searchForTags(rawSentences, type.getTag(), type.getTag());
-		}
-
-		runBreakIterator(rawSentences, body);
-		return rawSentences;
-	}
-
-	private static List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
-		Map<Integer, List<String>> newSlices = new HashMap<Integer, List<String>>();
-		for (String slice : firstSplit) {
-			List<String> slicesOfSentence = searchForTagsRecursively(slice.toLowerCase(), openTag.toLowerCase(),
-					closeTag.toLowerCase(), new ArrayList<String>());
-			if (slicesOfSentence.size() > 1) {
-				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
-			}
-		}
-		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
-			int remove = (int) newSlices.keySet().toArray()[i];
-			firstSplit.remove(remove);
-			firstSplit.addAll(remove, newSlices.get(remove));
-		}
-
-		return firstSplit;
-	}
-
-	private static List<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
-			ArrayList<String> slices) {
-		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
-			slices.add(partOfText);
-			return slices;
-		}
-		// Icon is used to identify a sentence or a closing tag is forgotten
-		if (partOfText.contains(openTag) && !partOfText.contains(closeTag)) {
-			return slices;
-		} // Open and close tags are existent
-		if (partOfText.startsWith(openTag) && partOfText.contains(closeTag)) {
-			String part = StringUtils.substringBetween(partOfText, openTag, closeTag);
-			part = openTag + part + closeTag;
-			slices.add(part);
-			String commentPartSubstring = partOfText.substring(partOfText.indexOf(openTag) + part.length());
-			return searchForTagsRecursively(commentPartSubstring, openTag, closeTag, slices);
-		} else {// currently plain text
-			if (partOfText.contains(openTag)) {// comment block has special text later
-				slices.add(partOfText.substring(0, partOfText.indexOf(openTag)));
-				return searchForTagsRecursively(partOfText.substring(partOfText.indexOf(openTag)), openTag, closeTag,
-						slices);
-			} else {// comment block has no more special text
-				slices.add(partOfText);
-			}
-		}
-		return slices;
-	}
-
-	/**
-	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
-	 * not only whitespaces
-	 *
-	 * @param startIndex
-	 * @param endIndex
-	 * @return
-	 */
-	private boolean startAndEndIndexRules(int startIndex, int endIndex, String body) {
-		return (startIndex >= 0 && endIndex >= 0 && (endIndex - startIndex) > 0
-				&& body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1);
-	}
-
-	private void runBreakIterator(List<String> rawSentences, String body) {
-		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-
-		for (String currentSentence : rawSentences) {
-			boolean containsAnyRationaleElement = false;
-			for (KnowledgeType type : KNOWLEDGE_TYPES) {
-				if (currentSentence.contains(type.getTag())) {
-					containsAnyRationaleElement = true;
-				}
-			}
-			if (!containsAnyRationaleElement) {
-				iterator.setText(currentSentence);
-				int start = iterator.first();
-				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
-						int startOfSentence = body.toLowerCase()
-								.indexOf(currentSentence.toLowerCase().substring(start, end));
-						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
-						this.addSentenceIndex(startOfSentence, endOfSentence);
-					}
-				}
-			} else {
-				int start1 = body.toLowerCase().indexOf(currentSentence.toLowerCase());
-				int end1 = currentSentence.length() + start1;
-				this.addSentenceIndex(start1, end1);
-			}
-		}
-	}
-
-	private static boolean isIncorrectlyTagged(String toSearch, String openTag, String closeTag) {
-		return openTag.equals(closeTag) && !knowledgeTypeTagExistsTwice(toSearch, openTag);
-	}
-
-	private static boolean knowledgeTypeTagExistsTwice(String body, String knowledgeType) {
-		if (body == null || knowledgeType == null) {
-			return false;
-		}
-		return StringUtils.countMatches(body.toLowerCase(), knowledgeType.toLowerCase()) >= 2;
-	}
-
-	public void addSentenceIndex(int startIndex, int endIndex) {
-		this.startPositions.add(startIndex);
-		this.endPositions.add(endIndex);
-	}
-
-	/**
-	 * @param body
-	 * @param projectKey
-	 *
-	 * @return tagged knowledge type of a given string
-	 */
-	public KnowledgeType getKnowledgeTypeFromTag(String body) {
-		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			if (body.toLowerCase().contains(type.getTag()) || checkIcons && body.contains(type.getIconString())) {
-				return type;
-			}
-		}
-		return KnowledgeType.OTHER;
-	}
-
-	public boolean isAnyKnowledgeTypeTwiceExisting(String body) {
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			if (knowledgeTypeTagExistsTwice(body, type.getTag())) {
+			if (matcher.end() > partOfText.getStartPosition() && matcher.end() < partOfText.getEndPosition()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private List<PartOfJiraIssueText> locateRemainingParts() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		newPartsOfText.addAll(locatePartsAtTheBeginning());
+		newPartsOfText.addAll(locatePartsInBetween());
+		newPartsOfText.addAll(locatePartsAtTheEnd());
+		return newPartsOfText;
+	}
+
+	/**
+	 * @return sentences at the beginning of the text, in front of any Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsAtTheBeginning() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		PartOfJiraIssueText firstPart = partsOfText.get(0);
+		if (firstPart.getStartPosition() > 0) {
+			PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, firstPart.getStartPosition(), text);
+			if (!newFirstPart.getDescription().isBlank()) {
+				newPartsOfText.addAll(splitIntoSentences(newFirstPart));
+			}
+		}
+		return newPartsOfText;
+	}
+
+	/**
+	 * @return sentences in between Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsInBetween() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		for (int i = 0; i < partsOfText.size() - 1; i++) {
+			int tempStartPosition = partsOfText.get(i).getEndPosition();
+			int tempEndPosition = partsOfText.get(i + 1).getStartPosition();
+			if (tempStartPosition + 1 >= tempEndPosition) {
+				continue;
+			}
+
+			PartOfJiraIssueText newPart = new PartOfJiraIssueText(tempStartPosition, tempEndPosition, text);
+			if (newPart.getDescription().isBlank()) {
+				continue;
+			}
+			newPartsOfText.addAll(splitIntoSentences(newPart));
+		}
+		return newPartsOfText;
+	}
+
+	/**
+	 * @return sentences at the end of the text, after any Jira macros.
+	 */
+	private List<PartOfJiraIssueText> locatePartsAtTheEnd() {
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		PartOfJiraIssueText lastPart = partsOfText.get(partsOfText.size() - 1);
+		if (text.length() > lastPart.getEndPosition()) {
+			PartOfJiraIssueText newlastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
+			if (!newlastPart.getDescription().isBlank()) {
+				newPartsOfText.addAll(splitIntoSentences(newlastPart));
+			}
+		}
+		return newPartsOfText;
+	}
+
+	/**
+	 * @issue How to split a text into sentences?
+	 * @decision Use the java.text.BreakIterator to split a text into sentences.
+	 * @con Only allows Locale.US currently.
+	 * @alternative We could use some more advanced NLP technique to split a text
+	 *              into sentences.
+	 * 
+	 * @param partOfText
+	 *            to be split into sentences.
+	 * @return list of sentences. If no splitting was done, the original partOfText
+	 *         is returned in the list.
+	 */
+	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText) {
+		List<PartOfJiraIssueText> sentences = new ArrayList<>();
+		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+
+		// the description might be already trimmed, thus, we use the entire text
+		iterator.setText(text.substring(partOfText.getStartPosition(), partOfText.getEndPosition()));
+		int start = iterator.first();
+		int end = start;
+		while ((end = iterator.next()) != BreakIterator.DONE) {
+			int sentenceStartPosition = partOfText.getStartPosition() + start;
+			int sentenceEndPosition = partOfText.getStartPosition() + end;
+			PartOfJiraIssueText sentence = new PartOfJiraIssueText(sentenceStartPosition, sentenceEndPosition, text);
+			sentences.add(sentence);
+			start = end;
+		}
+		if (sentences.isEmpty()) {
+			sentences.add(partOfText);
+		}
+		return sentences;
 	}
 }

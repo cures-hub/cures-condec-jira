@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -11,6 +12,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
 /**
  * Models the possible types of decision knowledge elements. The decision
@@ -23,14 +25,19 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
  * but they are not included in this enum (only as OTHER).
  */
 public enum KnowledgeType {
-	ALTERNATIVE("#fff6e8", "(on)"), //
-	ASSUMPTION, ASSESSMENT, ARGUMENT("#f5f5f5"), //
-	PRO("#defade", "(+)"), //
-	CON("#ffe7e7", "(-)"), //
+	ALTERNATIVE("#fff6e8", "(on)", true), //
+	ASSUMPTION, //
+	ASSESSMENT, //
+	ARGUMENT("#f5f5f5"), //
+	PRO("#defade", "(+)", true), //
+	CON("#ffe7e7", "(-)", true), //
 	CLAIM, CONTEXT("#ffffdd"), //
-	CONSTRAINT, DECISION("#fce3be", "(/)"), //
-	GOAL, ISSUE("#ffffcc", "(!)"), //
-	IMPLICATION, PROBLEM("#ffffcc"), //
+	CONSTRAINT, //
+	DECISION("#fce3be", "(/)", true), //
+	GOAL, //
+	ISSUE("#ffffcc", "(!)", true), //
+	IMPLICATION, //
+	PROBLEM("#ffffcc"), //
 	RATIONALE("#f5f5f5"), //
 	SOLUTION("#fce3be"), //
 	QUESTION("#ffffcc"), //
@@ -39,18 +46,20 @@ public enum KnowledgeType {
 
 	private String color;
 	private String icon;
+	private boolean canBeDocumentedInJiraIssueText;
 
 	private KnowledgeType() {
 		this("#ffffff");
 	}
 
 	private KnowledgeType(String color) {
-		this("#ffffff", "");
+		this("#ffffff", "", false);
 	}
 
-	private KnowledgeType(String color, String icon) {
+	private KnowledgeType(String color, String icon, boolean canBeDocumentedInJiraIssueText) {
 		this.color = color;
 		this.icon = icon;
+		this.canBeDocumentedInJiraIssueText = canBeDocumentedInJiraIssueText;
 	}
 
 	/**
@@ -287,5 +296,20 @@ public enum KnowledgeType {
 			return "";
 		}
 		return "{" + name().toLowerCase() + "}";
+	}
+
+	/**
+	 * @return knowledge types that (currently) can be documented in Jira issue
+	 *         description or comments using
+	 *         {@link AbstractKnowledgeClassificationMacro}s.
+	 */
+	public static Set<KnowledgeType> macroTypes() {
+		Set<KnowledgeType> macroTypes = new LinkedHashSet<>();
+		for (KnowledgeType type : KnowledgeType.values()) {
+			if (type.canBeDocumentedInJiraIssueText) {
+				macroTypes.add(type);
+			}
+		}
+		return macroTypes;
 	}
 }

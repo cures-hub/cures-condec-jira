@@ -84,6 +84,66 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		}
 	}
 
+	private void handleDeleteIssue() {
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		persistenceManager.deleteInvalidElements(issueEvent.getUser());
+		KnowledgeElement element = new KnowledgeElement(issueEvent.getIssue());
+		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
+	}
+
+	private void handleDeleteComment() {
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+		persistenceManager.deleteInvalidElements(issueEvent.getUser());
+	}
+
+	private void handleNewOrUpdatedComment() {
+		if (JiraIssueTextExtractionEventListener.editCommentLock) {
+			// If locked, a REST service is currently manipulating a comment or the
+			// description and this event should not be handled by this event listener.
+			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
+			return;
+		}
+
+		replaceIconsWithTags();
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
+		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
+			persistenceManager.deleteElementsInComment(issueEvent.getComment());
+			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
+		} else {
+			MutableComment comment = (MutableComment) issueEvent.getComment();
+			persistenceManager.updateElementsOfCommentInDatabase(comment);
+		}
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
+	}
+
+	private void handleNewJiraIssueOrUpdatedDescription() {
+		if (JiraIssueTextExtractionEventListener.editCommentLock) {
+			// If locked, a REST service is currently manipulating a comment or the
+			// description and this event should not be handled by this event listener.
+			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
+			return;
+		}
+
+		replaceIconsWithTags();
+
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+
+		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
+			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
+			// TODO This seems not to work for manual classified sentences. Check and fix
+			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
+		} else {
+			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
+		}
+		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
+	}
+
 	private void replaceIconsWithTags() {
 		String projectKey = issueEvent.getProject().getKey();
 		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
@@ -144,66 +204,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String textWithoutIcons = text;
 		textWithoutIcons = text.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), "");
 		return type.getTag() + textWithoutIcons.trim() + type.getTag();
-	}
-
-	private void handleDeleteIssue() {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		persistenceManager.deleteInvalidElements(issueEvent.getUser());
-		KnowledgeElement element = new KnowledgeElement(issueEvent.getIssue());
-		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
-	}
-
-	private void handleDeleteComment() {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-		persistenceManager.deleteInvalidElements(issueEvent.getUser());
-	}
-
-	private void handleNewOrUpdatedComment() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating a comment or the
-			// description and this event should not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
-			return;
-		}
-
-		replaceIconsWithTags();
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-
-		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
-			persistenceManager.deleteElementsInComment(issueEvent.getComment());
-			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
-		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-			persistenceManager.updateElementsOfCommentInDatabase(comment);
-		}
-		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
-	}
-
-	private void handleNewJiraIssueOrUpdatedDescription() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating a comment or the
-			// description and this event should not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
-			return;
-		}
-
-		replaceIconsWithTags();
-
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
-
-		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
-			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
-			// TODO This seems not to work for manual classified sentences. Check and fix
-			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
-		} else {
-			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
-		}
-		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
 	@Override
