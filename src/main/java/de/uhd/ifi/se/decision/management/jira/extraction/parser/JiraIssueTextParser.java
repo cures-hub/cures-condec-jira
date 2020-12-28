@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -27,14 +26,11 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  */
 public class JiraIssueTextParser {
 
-	private List<Integer> startPositions;
-	private List<Integer> endPositions;
+	private List<PartOfJiraIssueText> partsOfText;
 	private String projectKey;
 
 	public JiraIssueTextParser(String projectKey) {
 		this.projectKey = projectKey;
-		this.startPositions = new ArrayList<Integer>();
-		this.endPositions = new ArrayList<Integer>();
 	}
 
 	/**
@@ -48,15 +44,15 @@ public class JiraIssueTextParser {
 		if (text == null || text.isBlank()) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		partsOfText = new ArrayList<PartOfJiraIssueText>();
 
 		for (KnowledgeType type : KnowledgeType.macroTypes()) {
-			partsOfText.addAll(locateKnowledgeElements(text, type));
+			partsOfText.addAll(locateKnowledgeElementsOfType(text, type));
 		}
 
-		partsOfText.addAll(locateOtherMacros(text, "code"));
-		partsOfText.addAll(locateOtherMacros(text, "quote"));
-		partsOfText.addAll(locateOtherMacros(text, "noformat"));
+		partsOfText.addAll(locateMacroTextOfType(text, "code"));
+		partsOfText.addAll(locateMacroTextOfType(text, "quote"));
+		partsOfText.addAll(locateMacroTextOfType(text, "noformat"));
 
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
 
@@ -105,26 +101,13 @@ public class JiraIssueTextParser {
 		return body.replaceAll("\\(.*?\\)", "");
 	}
 
-	public List<PartOfJiraIssueText> locateKnowledgeElements(String text, KnowledgeType type) {
-		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
-		String tag = "\\{" + type.toString() + "\\}";
-		Pattern pattern = Pattern.compile(tag + ".*?" + tag, Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(text);
-		while (matcher.find()) {
-			if (isAlreadyIncludedInOtherSentence(matcher)) {
-				continue;
-			}
-			startPositions.add(matcher.start());
-			endPositions.add(matcher.end());
-
-			PartOfJiraIssueText partOfText = new PartOfJiraIssueText(matcher.start(), matcher.end(), text);
-			partOfText.setType(type);
-			partsOfText.add(partOfText);
-		}
+	public List<PartOfJiraIssueText> locateKnowledgeElementsOfType(String text, KnowledgeType type) {
+		List<PartOfJiraIssueText> partsOfText = locateMacroTextOfType(text, type.name());
+		partsOfText.forEach(partOfText -> partOfText.setType(type));
 		return partsOfText;
 	}
 
-	public List<PartOfJiraIssueText> locateOtherMacros(String text, String macro) {
+	public List<PartOfJiraIssueText> locateMacroTextOfType(String text, String macro) {
 		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
 		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(text);
@@ -132,8 +115,6 @@ public class JiraIssueTextParser {
 			if (isAlreadyIncludedInOtherSentence(matcher)) {
 				continue;
 			}
-			startPositions.add(matcher.start());
-			endPositions.add(matcher.end());
 
 			PartOfJiraIssueText partOfText = new PartOfJiraIssueText(matcher.start(), matcher.end(), text);
 			partsOfText.add(partOfText);
@@ -142,12 +123,10 @@ public class JiraIssueTextParser {
 	}
 
 	public List<PartOfJiraIssueText> locateRemainingParts(String text) {
-		Collections.sort(startPositions);
-		Collections.sort(endPositions);
 		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
-		for (int i = 0; i < startPositions.size() - 1; i++) {
-			int tempStartPosition = endPositions.get(i);
-			int tempEndPosition = startPositions.get(i + 1);
+		for (int i = 0; i < partsOfText.size() - 1; i++) {
+			int tempStartPosition = partsOfText.get(i).getEndPosition();
+			int tempEndPosition = partsOfText.get(i + 1).getStartPosition();
 			if (tempStartPosition + 1 >= tempEndPosition) {
 				continue;
 			}
@@ -163,11 +142,11 @@ public class JiraIssueTextParser {
 	}
 
 	private boolean isAlreadyIncludedInOtherSentence(Matcher matcher) {
-		for (int i = 0; i < startPositions.size(); i++) {
-			if (matcher.start() > startPositions.get(i) && matcher.start() < endPositions.get(i)) {
+		for (PartOfJiraIssueText partOfText : partsOfText) {
+			if (matcher.start() > partOfText.getStartPosition() && matcher.start() < partOfText.getEndPosition()) {
 				return true;
 			}
-			if (matcher.end() > startPositions.get(i) && matcher.end() < endPositions.get(i)) {
+			if (matcher.end() > partOfText.getStartPosition() && matcher.end() < partOfText.getEndPosition()) {
 				return true;
 			}
 		}
