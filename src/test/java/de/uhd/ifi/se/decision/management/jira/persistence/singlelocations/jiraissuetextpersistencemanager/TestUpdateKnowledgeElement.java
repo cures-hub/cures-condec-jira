@@ -47,7 +47,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		sentence.setRelevant(true);
 		assertTrue(sentence.isRelevant());
 
-		JiraIssueTextPersistenceManager.updatePartOfJiraIssueText(sentence, user);
+		manager.updateKnowledgeElement(sentence, user);
 		sentence = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
 		assertTrue(sentence.isRelevant());
 	}

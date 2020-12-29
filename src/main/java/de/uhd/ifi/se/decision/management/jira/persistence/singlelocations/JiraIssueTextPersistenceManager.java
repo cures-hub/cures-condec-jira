@@ -390,32 +390,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		if (element == null) {
-			return false;
-		}
-		PartOfJiraIssueText sentence = new PartOfJiraIssueText(element);
-		sentence.setValidated(true);
-		return updatePartOfJiraIssueText(sentence, user);
-	}
-
-	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText newElement, ApplicationUser user) {
-		if (newElement == null || newElement.getProject() == null) {
+		if (element == null || element.getProject() == null || !(element instanceof PartOfJiraIssueText)) {
 			return false;
 		}
 
-		// Get corresponding element from database
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(newElement.getProject()).getJiraIssueTextManager();
-		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(newElement);
+		// get corresponding element from database
+		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) getKnowledgeElement(element);
 		if (formerElement == null) {
 			return false;
 		}
 		// only the knowledge type or status has changed
-		if (newElement.getSummary() == null) {
-			newElement.setSummary(formerElement.getSummary());
-			newElement.setDescription(formerElement.getDescription());
+		if (element.getSummary() == null) {
+			element.setSummary(formerElement.getSummary());
+			element.setDescription(formerElement.getDescription());
 		}
-		return updateElementInTextAndDatabase(newElement, formerElement, user);
+		return updateElementInTextAndDatabase((PartOfJiraIssueText) element, formerElement, user);
 	}
 
 	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
@@ -455,7 +444,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		formerElement.setRelevant(newElement.isRelevant());
 		formerElement.setStatus(newStatus);
 		formerElement.setType(newType);
-		// sentence.setCommentId(element.getCommentId());
 
 		return updateInDatabase(formerElement);
 	}

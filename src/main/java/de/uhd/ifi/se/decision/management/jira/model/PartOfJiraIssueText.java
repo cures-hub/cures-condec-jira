@@ -64,15 +64,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		determineOrigin();
 	}
 
-	public PartOfJiraIssueText(KnowledgeElement element) {
-		this.setId(element.getId());
-		this.setType(element.getType());
-		this.setSummary(element.getSummary());
-		this.setDescription(element.getDescription());
-		this.setProject(element.getProject());
-		this.setStatus(element.getStatus());
-	}
-
 	/**
 	 * @return true if the text is decision knowledge. This attribute is necessary
 	 *         for binary text classification.
