@@ -49,17 +49,6 @@
 </div>
 
 <div class="field-group">
-    <label for="iconParsing-toggle">Use Icons as Tags?</label>
-    <aui-toggle id="iconParsing-toggle" value="$projectKey"
-                label="Use icon labels"></aui-toggle>
-    <div class="description">Enables or disables to use icons for tagging decision knowledge.
-        <br/> WARNING: Use with caution. Sentences will not be labelled/classified
-        correctly if a decision knowledge icon is used for other things
-        than as a decision knowledge tag.
-    </div>
-</div>
-
-<div class="field-group">
     <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
     <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
     <div class="description">Classifies decision knowledge for all issue comments for this project.</div>

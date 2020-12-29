@@ -13,6 +13,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -131,9 +132,17 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testUpdateElementWithWrongDocumentationLocation() {
+	public void testElementWithWrongDocumentationLocation() {
 		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertEquals(DocumentationLocation.JIRAISSUE, element.getDocumentationLocation());
 		assertFalse(manager.updateKnowledgeElement(element, user));
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementWithProjectNull() {
+		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
+		sentence.setProject((DecisionKnowledgeProject) null);
+		assertFalse(manager.updateKnowledgeElement(sentence, user));
 	}
 }

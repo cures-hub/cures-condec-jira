@@ -463,18 +463,6 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/setIconParsing")
-	@POST
-	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
 	/* **************************************/
 	/*										*/
 	/* Configuration for Git integration */

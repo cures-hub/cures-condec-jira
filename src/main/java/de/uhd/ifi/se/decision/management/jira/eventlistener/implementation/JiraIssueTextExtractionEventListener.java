@@ -146,9 +146,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 	private void replaceIconsWithTags() {
 		String projectKey = issueEvent.getProject().getKey();
-		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
-			return;
-		}
 		MutableComment comment = (MutableComment) issueEvent.getComment();
 		if (comment == null) {
 			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
