@@ -432,7 +432,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
-		JiraIssueTextExtractionEventListener.editCommentLock = true;
+		JiraIssueTextExtractionEventListener.editLock = true;
 		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
 			JiraIssuePersistenceManager.updateDescription(formerElement.getJiraIssue(), newBody, user);
@@ -442,7 +442,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			mutableComment.setUpdateAuthor(user);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
-		JiraIssueTextExtractionEventListener.editCommentLock = false;
+		JiraIssueTextExtractionEventListener.editLock = false;
 
 		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);

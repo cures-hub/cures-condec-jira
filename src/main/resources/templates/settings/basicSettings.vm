@@ -17,6 +17,15 @@
 			<li>{pro} ... {pro}</li>
 			<li>{con} ... {con}</li>
 		</ul>
+		As an alternative to the macro syntax, you can also tag sentences in the description and the comments of Jira issues
+		with icons/emojis:
+		<ul>
+			<li>{issue} How to implement ...? {issue}</li>
+			<li>{decision} Use ... to implement ...! {decision}</li>
+			<li>{alternative} Use ... to implement ...! {alternative}</li>
+			<li>{pro} ... {pro}</li>
+			<li>{con} ... {con}</li>
+		</ul>
 		</div>
 </div>
 

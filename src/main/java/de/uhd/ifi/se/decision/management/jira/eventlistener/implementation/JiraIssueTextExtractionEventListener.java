@@ -38,6 +38,13 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
+	/**
+	 * Locks the edit description/comment event function if a REST service or
+	 * another process edits the description/comments so that the event listener
+	 * does not fire.
+	 */
+	public static boolean editLock;
+
 	public JiraIssueTextExtractionEventListener(
 			ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
 		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
@@ -46,11 +53,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	public JiraIssueTextExtractionEventListener() {
 		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueComments();
 	}
-
-	/**
-	 * Locks the edit comment event function if a REST service edits comments.
-	 */
-	public static boolean editCommentLock;
 
 	/**
 	 * @issue How to implement the handling of the concrete event?
@@ -62,6 +64,13 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	 */
 	@Override
 	public void onIssueEvent(IssueEvent issueEvent) {
+		if (editLock) {
+			// If locked, a REST service or another process is currently manipulating a
+			// comment or the description and this event should not be handled by the event
+			// listener.
+			LOGGER.debug("Event handling of changes in Jira issue description or comment is still locked.");
+			return;
+		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
@@ -99,12 +108,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void handleNewOrUpdatedComment() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating a comment or the
-			// description and this event should not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
-			return;
-		}
 
 		replaceIconsWithTags();
 
@@ -122,13 +125,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void handleNewJiraIssueOrUpdatedDescription() {
-		if (JiraIssueTextExtractionEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating a comment or the
-			// description and this event should not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
-			return;
-		}
-
 		replaceIconsWithTags();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
@@ -145,19 +141,33 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void replaceIconsWithTags() {
-		String projectKey = issueEvent.getProject().getKey();
 		MutableComment comment = (MutableComment) issueEvent.getComment();
 		if (comment == null) {
-			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
-			String description = jiraIssue.getDescription();
-			description = replaceIconsWithTags(description);
-			jiraIssue.setDescription(description);
-			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
+			replaceIconsWithTagsInDescription();
 		} else {
-			String commentBody = comment.getBody();
-			commentBody = replaceIconsWithTags(commentBody);
+			replaceIconsWithTagsInComment(comment);
+		}
+	}
+
+	private void replaceIconsWithTagsInDescription() {
+		MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
+		String description = jiraIssue.getDescription();
+		String newDescription = replaceIconsWithTags(description);
+		if (!newDescription.equals(description)) {
+			editLock = true;
+			JiraIssuePersistenceManager.updateDescription(jiraIssue, newDescription, issueEvent.getUser());
+			editLock = false;
+		}
+	}
+
+	private void replaceIconsWithTagsInComment(MutableComment comment) {
+		String commentBody = comment.getBody();
+		String newCommentBody = replaceIconsWithTags(commentBody);
+		if (!newCommentBody.equals(commentBody)) {
+			editLock = true;
 			comment.setBody(commentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
+			editLock = false;
 		}
 	}
 
@@ -169,19 +179,17 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	 */
 	public static String replaceIconsWithTags(String text) {
 		// find all icons and split text by occurence of icons
-		Pattern pattern = Pattern.compile("(.*)\\((.*)");
+		Pattern pattern = Pattern.compile("(.*)\\((.*)", Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
 		String textWithoutIcons = "";
-		boolean wasAnyIconReplaced = false;
 		while (matcher.find()) {
-			wasAnyIconReplaced = true;
 			String sentence = text.substring(matcher.start(), matcher.end());
 			for (KnowledgeType type : KnowledgeType.values()) {
 				sentence = replaceIconsWithTags(sentence, type);
 			}
 			textWithoutIcons += sentence;
 		}
-		return wasAnyIconReplaced ? textWithoutIcons : text;
+		return textWithoutIcons.isBlank() ? text : textWithoutIcons;
 	}
 
 	/**
@@ -198,9 +206,21 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (icon.isBlank() || !text.contains(icon)) {
 			return text;
 		}
-		String textWithoutIcons = text;
-		textWithoutIcons = text.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), "");
-		return type.getTag() + textWithoutIcons.trim() + type.getTag();
+		int positionOfIcon = text.indexOf(icon);
+
+		int positionOfTerminator = text.substring(positionOfIcon).indexOf("{");
+		if (positionOfTerminator == -1) {
+			positionOfTerminator = text.substring(positionOfIcon).indexOf("\r\n");
+		}
+		String textWithoutIcon = text;
+		if (positionOfTerminator > 0) {
+			positionOfTerminator += positionOfIcon;
+			textWithoutIcon = text.substring(0, positionOfTerminator) + type.getTag()
+					+ text.substring(positionOfTerminator);
+		} else {
+			textWithoutIcon += type.getTag();
+		}
+		return textWithoutIcon.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), type.getTag());
 	}
 
 	@Override

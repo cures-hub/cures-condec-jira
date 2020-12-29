@@ -116,10 +116,6 @@
 
     <textarea class="textarea" name="testText-input"
               id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
-
-
-
-
 </div>
 <div class="buttons-container">
     <div class="buttons">
@@ -140,9 +136,6 @@
 
     const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
-
-    const sentenceIconToggle = document.getElementById("iconParsing-toggle");
-    sentenceIconToggle.checked = $project.isIconParsingEnabled() ;
 
     // add listeners
     testClassifierWithTextBtn.addEventListener('click', () =>{
@@ -185,12 +178,6 @@
         currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
         conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
-        this.busy = false;
-    });
-
-    sentenceIconToggle.addEventListener("change", function (error) {
-        this.busy = true;
-        conDecAPI.setIconParsing(this.value, this.checked);
         this.busy = false;
     });
 
