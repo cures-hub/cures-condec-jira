@@ -117,7 +117,8 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
 			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
+			MutableComment comment = (MutableComment) ComponentAccessor.getCommentManager()
+					.getCommentById(issueEvent.getComment().getId());
 			persistenceManager.updateElementsOfCommentInDatabase(comment);
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
@@ -129,7 +130,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String newCommentBody = replaceIconsWithTags(commentBody);
 		if (!newCommentBody.equals(commentBody)) {
 			editLock = true;
-			comment.setBody(commentBody);
+			comment.setBody(newCommentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
 			editLock = false;
 		}
@@ -211,7 +212,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		} else {
 			textWithoutIcon += type.getTag();
 		}
-		return textWithoutIcon.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), type.getTag());
+		return textWithoutIcon.replaceFirst(Pattern.quote(icon), type.getTag());
 	}
 
 	@Override

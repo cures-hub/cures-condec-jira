@@ -72,4 +72,11 @@ public class TestReplaceIconsWithTags {
 		assertEquals("{issue} This is a very severe issue.{issue}{decision} We can solve it!{decision}",
 				JiraIssueTextExtractionEventListener.replaceIconsWithTags(textWithoutIcon));
 	}
+
+	@Test
+	public void testProAndCon() {
+		String textWithoutIcon = "(+) Good idea.\r\n(-) No, this is bad.";
+		assertEquals("{pro} Good idea.{pro}\r\n{con} No, this is bad.{con}",
+				JiraIssueTextExtractionEventListener.replaceIconsWithTags(textWithoutIcon));
+	}
 }
