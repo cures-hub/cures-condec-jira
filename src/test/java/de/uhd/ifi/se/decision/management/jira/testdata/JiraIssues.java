@@ -153,4 +153,9 @@ public class JiraIssues {
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		return sentences;
 	}
+
+	public static PartOfJiraIssueText getIrrelevantSentence() {
+		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("This is a test sentence.");
+		return sentences.get(0);
+	}
 }

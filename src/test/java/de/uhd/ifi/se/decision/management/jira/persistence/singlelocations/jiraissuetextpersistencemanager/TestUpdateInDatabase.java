@@ -1,10 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jiraissuetextpersistencemanager;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +32,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
-		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		PartOfJiraIssueText sentence = comment.get(0);
+		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
@@ -46,8 +42,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
-		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		PartOfJiraIssueText sentence = comment.get(0);
+		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
@@ -56,15 +51,13 @@ public class TestUpdateInDatabase extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testSetSentenceIrrlevant() {
-		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		PartOfJiraIssueText element = comment.get(0);
-
-		element.setRelevant(false);
+	public void testSetSentenceRelevant() {
+		PartOfJiraIssueText element = JiraIssues.getIrrelevantSentence();
+		element.setRelevant(true);
 		element.setValidated(true);
 		JiraIssueTextPersistenceManager.updateInDatabase(element);
 		element = (PartOfJiraIssueText) manager.getKnowledgeElement(element);
-		assertFalse(element.isRelevant());
+		assertTrue(element.isRelevant());
 		assertTrue(element.isValidated());
 		assertEquals(KnowledgeType.OTHER, element.getType());
 	}
