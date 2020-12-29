@@ -126,7 +126,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
 
-			ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, Params.Pair.create("timeout", this.timeout));
+			ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, new Params.Pair("timeout", this.timeout));
 
 			Map<String, List<Argument>> argumentsMap = new HashMap<>();
 

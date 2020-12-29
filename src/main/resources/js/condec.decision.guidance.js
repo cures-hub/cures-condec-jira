@@ -1,9 +1,19 @@
 (function (global) {
 
-	let ConDecDecisionGuidance = function ConDecDecisionGuidance() {};
+	var recommendations;
+	var globalCounter;
+	var idOfExistingElement;
+	var documentationLocationOfExistingElement;
+
+	let ConDecDecisionGuidance = function ConDecDecisionGuidance() {
+		this.globalCounter = 0;
+		this.recommendations = []
+		this.idOfExistingElement = 0;
+		this.documentationLocationOfExistingElement = "s"
+
+	};
 
 	ConDecDecisionGuidance.prototype.initView = function () {
-        console.log("ConDecDecisionGuidance initView");
         conDecObservable.subscribe(this);
     };
 
@@ -25,7 +35,6 @@
 
 			spinner.show();
 			$("#recommendation-error").hide();
-			console.log(currentIssue);
 			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation ,  function(results, error) {
 
 				if (error === null) {
@@ -40,6 +49,7 @@
 	};
 
 	function buildRecommendationTable(results) {
+		conDecDecisionGuidance.recommendations = results;
 		const table = $("#recommendation-container tbody");
 
 		let counter = 0;
@@ -49,11 +59,13 @@
 		});
 
 		sortedByScore.forEach((recommendation) => {
+				const localCounter = counter;
+				counter += 1;
 				const alternative = recommendation.recommendation;
 				let url = "";
 				let tableRow = "";
 
-				counter += 1;
+
 				tableRow += "<tr>";
 				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
 				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
@@ -71,8 +83,18 @@
 				table.append(tableRow);
 
 				$(" #row_" + counter).click(function() {
+					conDecDecisionGuidance.globalCounter = localCounter;
 					const currentIssue = conDecDecisionTable.getCurrentIssue();
-					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendation, "");
+					conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative",  recommendation.recommendation, "", function(id, documentationLocation) {
+							conDecDecisionGuidance.idOfExistingElement = id;
+							conDecDecisionGuidance.documentationLocationOfExistingElement = documentationLocation;
+
+							recommendation.arguments.forEach(argument => {
+									conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
+										conDecAPI.showFlag("success", "Recommendation was added successfully!");
+									});
+							});
+					});
 					/*recommendation.arguments.forEach((argument) => {
 
 						if(argument.type == "Con") {

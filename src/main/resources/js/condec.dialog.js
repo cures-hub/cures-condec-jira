@@ -18,7 +18,7 @@
     var ConDecDialog = function () {
     };
 
-    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative", summary = "", description = "") {
+    ConDecDialog.prototype.showCreateDialog = function (idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative", summary = "", description = "", callback = null) {
         console.log("conDecDialog showCreateDialog");
         console.log(idOfParentElement);
         console.log(documentationLocationOfParentElement);
@@ -48,6 +48,7 @@
             var documentationLocation = selectLocationField.value;
             conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
                 idOfParentElement, documentationLocationOfParentElement, function (id) {
+                 	callback(id, documentationLocationOfParentElement)
                     conDecObservable.notify();
                 });
             AJS.dialog2(createDialog).hide();
