@@ -39,16 +39,4 @@ public class TestEventIssueDeleted extends TestSetUpEventListener {
 	public void testRationaleTag() {
 		assertTrue(testIssueDeleteEvent("{issue}This is a very severe issue.{issue}"));
 	}
-
-	@Test
-	@NonTransactional
-	public void testExcludedTag() {
-		assertTrue(testIssueDeleteEvent("{code}public static class{code}"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testRationaleIcon() {
-		assertTrue(testIssueDeleteEvent("(!)This is a very severe issue."));
-	}
 }

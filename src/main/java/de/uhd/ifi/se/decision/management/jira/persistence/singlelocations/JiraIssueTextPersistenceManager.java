@@ -389,21 +389,27 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		if (element == null || element.getProject() == null || !(element instanceof PartOfJiraIssueText)) {
+		if (element == null || element.getProject() == null
+				|| element.getDocumentationLocation() != this.documentationLocation) {
 			return false;
 		}
 
 		// get corresponding element from database
-		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) getKnowledgeElement(element);
-		if (formerElement == null) {
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getKnowledgeElement(element);
+		if (sentence == null) {
 			return false;
 		}
-		// only the knowledge type or status has changed
-		if (element.getSummary() == null) {
-			element.setSummary(formerElement.getSummary());
-			element.setDescription(formerElement.getDescription());
+		// if the summary is null, only the knowledge type or status has changed
+		if (element.getSummary() != null) {
+			sentence.setSummary(element.getSummary());
 		}
-		return updateElementInTextAndDatabase((PartOfJiraIssueText) element, formerElement, user);
+		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(element);
+		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element);
+		sentence.setType(newType);
+		sentence.setStatus(newStatus);
+		sentence.setValidated(true);
+		sentence.setRelevant(newType != KnowledgeType.OTHER);
+		return updateElementInTextAndDatabase(sentence, user);
 	}
 
 	/**
@@ -413,7 +419,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * 
 	 * @param newElement
 	 *            {@link PartOfJiraIssueText} after the update.
-	 * @param formerElement
+	 * @param sentence
 	 *            {@link PartOfJiraIssueText} before the update, i.e. in the old
 	 *            state.
 	 * @param user
@@ -421,21 +427,20 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if updating the Jira issue description or comment and also the
 	 *         database entries was successful.
 	 */
-	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
-			PartOfJiraIssueText formerElement, ApplicationUser user) {
-		String tag = newElement.getType().getTag();
-		String changedPartOfText = tag + newElement.getDescription() + tag;
+	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
+		String tag = sentence.getType().getTag();
+		String changedPartOfText = tag + sentence.getDescription() + tag;
 
-		String text = formerElement.getTextOfEntireDescriptionOrComment();
-		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
-		String lastPartOfText = text.substring(formerElement.getEndPosition());
+		String text = sentence.getTextOfEntireDescriptionOrComment();
+		String firstPartOfText = text.substring(0, sentence.getStartPosition());
+		String lastPartOfText = text.substring(sentence.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		JiraIssueTextExtractionEventListener.editLock = true;
-		MutableComment mutableComment = formerElement.getComment();
+		MutableComment mutableComment = sentence.getComment();
 		if (mutableComment == null) {
-			JiraIssuePersistenceManager.updateDescription(formerElement.getJiraIssue(), newBody, user);
+			JiraIssuePersistenceManager.updateDescription(sentence.getJiraIssue(), newBody, user);
 		} else {
 			mutableComment.setBody(newBody);
 			mutableComment.setUpdated(new Date());
@@ -444,20 +449,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		JiraIssueTextExtractionEventListener.editLock = false;
 
-		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
-		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);
+		int lengthDifference = changedPartOfText.length() - sentence.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(newElement);
-		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement);
-
-		formerElement.setEndPosition(formerElement.getStartPosition() + changedPartOfText.length());
-		formerElement.setType(newElement.getType());
-		formerElement.setValidated(newElement.isValidated());
-		formerElement.setRelevant(newElement.isRelevant());
-		formerElement.setStatus(newStatus);
-		formerElement.setType(newType);
-
-		return updateInDatabase(formerElement);
+		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
+		return updateInDatabase(sentence);
 	}
 
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {

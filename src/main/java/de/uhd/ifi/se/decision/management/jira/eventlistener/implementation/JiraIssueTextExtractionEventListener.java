@@ -108,8 +108,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void handleNewOrUpdatedComment() {
-
-		replaceIconsWithTags();
+		replaceIconsWithTagsInComment();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -124,8 +123,20 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
+	private void replaceIconsWithTagsInComment() {
+		MutableComment comment = (MutableComment) issueEvent.getComment();
+		String commentBody = comment.getBody();
+		String newCommentBody = replaceIconsWithTags(commentBody);
+		if (!newCommentBody.equals(commentBody)) {
+			editLock = true;
+			comment.setBody(commentBody);
+			ComponentAccessor.getCommentManager().update(comment, true);
+			editLock = false;
+		}
+	}
+
 	private void handleNewJiraIssueOrUpdatedDescription() {
-		replaceIconsWithTags();
+		replaceIconsWithTagsInDescription();
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
@@ -140,15 +151,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
 
-	private void replaceIconsWithTags() {
-		MutableComment comment = (MutableComment) issueEvent.getComment();
-		if (comment == null) {
-			replaceIconsWithTagsInDescription();
-		} else {
-			replaceIconsWithTagsInComment(comment);
-		}
-	}
-
 	private void replaceIconsWithTagsInDescription() {
 		MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
 		String description = jiraIssue.getDescription();
@@ -156,17 +158,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (!newDescription.equals(description)) {
 			editLock = true;
 			JiraIssuePersistenceManager.updateDescription(jiraIssue, newDescription, issueEvent.getUser());
-			editLock = false;
-		}
-	}
-
-	private void replaceIconsWithTagsInComment(MutableComment comment) {
-		String commentBody = comment.getBody();
-		String newCommentBody = replaceIconsWithTags(commentBody);
-		if (!newCommentBody.equals(commentBody)) {
-			editLock = true;
-			comment.setBody(commentBody);
-			ComponentAccessor.getCommentManager().update(comment, true);
 			editLock = false;
 		}
 	}

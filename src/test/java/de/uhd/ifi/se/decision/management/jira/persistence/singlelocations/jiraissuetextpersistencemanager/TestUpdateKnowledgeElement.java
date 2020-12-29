@@ -48,8 +48,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 	public void testSetRelevant() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		assertFalse(sentence.isRelevant());
-		sentence.setRelevant(true);
-		assertTrue(sentence.isRelevant());
+		sentence.setType(KnowledgeType.DECISION);
 
 		manager.updateKnowledgeElement(sentence, user);
 		sentence = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
