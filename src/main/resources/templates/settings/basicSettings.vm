@@ -8,23 +8,23 @@
 		The knowledge graph can be recreated by disabling and enabling this setting.
 		
 		<br/>The extraction of decision knowledge from the description and the comments of Jira issues is automatically enabled
-		when the plugin is enabled for the project. Use the macro syntax in the comments and the description of Jira issues 
+		when the plugin is enabled for the project. Use the <b>macro syntax in the comments and the description of Jira issues</b> 
 		to manually classify text as decision knowledge:
 		<ul>
 			<li>{issue} How to implement ...? {issue}</li>
 			<li>{decision} Use ... to implement ...! {decision}</li>
 			<li>{alternative} Use ... to implement ...! {alternative}</li>
-			<li>{pro} ... {pro}</li>
-			<li>{con} ... {con}</li>
+			<li>{pro} Improves security. {pro}</li>
+			<li>{con} Reduces usability. {con}</li>
 		</ul>
-		As an alternative to the macro syntax, you can also tag sentences in the description and the comments of Jira issues
-		with icons/emojis:
+		<br/>As an alternative to the macro syntax, you can also tag sentences in the description and the comments of Jira issues
+		with <b>icons/emojis</b> (here, you see their String representation):
 		<ul>
-			<li>{issue} How to implement ...? {issue}</li>
-			<li>{decision} Use ... to implement ...! {decision}</li>
-			<li>{alternative} Use ... to implement ...! {alternative}</li>
-			<li>{pro} ... {pro}</li>
-			<li>{con} ... {con}</li>
+			<li>(!) How to implement ...?</li>
+			<li>(/) Use ... to implement ...!</li>
+			<li>(on) Use ... to implement ...!</li>
+			<li>(+) Improves security.</li>
+			<li>(-) Reduces usability.</li>
 		</ul>
 		</div>
 </div>
