@@ -239,6 +239,22 @@
 
     </div>
 
+    <div class="field-group">
+        <label for="similarity-threshold">Maximum number of results</label>
+        <input class="text short-field"
+               type="number"
+               data-aui-validation-field
+               value="$maxNumberRecommendations"
+               id="similarity-threshold"
+               name="similarity-threshold"/>
+        <button id="save-similarity-threshold" class='aui-button aui-button-primary aui-button-compact'>
+            Save
+        </button>
+        <div class="description">Set the threshold for textual similarity.
+        </div>
+
+    </div>
+
     <div class="settings-divider">
         <h4>Configure Project Knowledge Sources</h4>
         <table id="project-source-table" class="aui aui-table-list">
@@ -303,6 +319,13 @@
            conDecAPI.setMaxNumberRecommendations("$projectKey", query);
 
         })
+
+       $("#save-similarity-threshold").click((event) => {
+           event.preventDefault();
+           const value = $("#similarity-threshold").val();
+           conDecAPI.setSimilarityThreshold("$projectKey", value);
+
+       })
 
         $("#create-rdf-source").click((event) => {
            event.preventDefault();

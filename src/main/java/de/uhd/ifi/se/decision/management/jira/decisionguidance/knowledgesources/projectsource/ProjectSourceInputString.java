@@ -3,10 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
-import org.apache.commons.text.similarity.JaccardSimilarity;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.apache.commons.text.similarity.SimilarityScore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,33 +15,29 @@ import java.util.stream.Collectors;
 
 public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
-	private static final double THRESHHOLD = 0.85;
+	private double THRESHHOLD;
+	private static final JaroWinklerDistance similarityScore = new JaroWinklerDistance();
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
+		THRESHHOLD = ConfigPersistenceManager.getSimilarityThreshold(projectKey); //TODO refactor to other location
+
 		this.queryDatabase();
 		if (knowledgeElements == null || inputs == null) return recommendations;
 
-		//filter all knowledge elements by the type "issue"
-		List<KnowledgeElement> issues = knowledgeElements
-			.stream()
-			.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-			.collect(Collectors.toList());
 
 		//get all alternatives, which parent contains the pattern"
-		issues.forEach(issue -> {
-			if (this.calculateSimilarity(issue.getSummary(), inputs.trim()) > THRESHHOLD) {
-				issue.getLinks()
-					.stream()
-					.filter(link -> this.matchingIssueTypes(link.getSource(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION) ||
-						this.matchingIssueTypes(link.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION)) //TODO workaround, checks both directions since the link direction is sometimes wrong.
+		knowledgeElements.forEach(issue -> {
+			if (this.calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHHOLD) {
+
+
+				issue.getLinkedElements(5).stream().filter(element -> this.matchingIssueTypes(element, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 					.forEach(child -> {
 
-						Recommendation recommendation = this.createRecommendation(child.getSource(), child.getTarget(), KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
-						recommendation.addArguments(this.getArguments(child.getSource()));
-						recommendation.addArguments(this.getArguments(child.getTarget()));
+						Recommendation recommendation = this.createRecommendation(child, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
+						recommendation.addArguments(this.getArguments(child));
 
 						if (recommendation != null) {
 							RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
@@ -58,10 +55,9 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement parentIssue, List<Argument> arguments) {
 
-		RecommendationScore score = new RecommendationScore(0, "Simlarity based on Jaccard-Similiarty");
+		RecommendationScore score = new RecommendationScore(0, "Simlarity based on " + similarityScore.toString());
 
-		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
-		double jc = jaccardSimilarity.apply(keywords, parentIssue.getSummary());
+		double jc = this.calculateSimilarity(similarityScore, keywords, parentIssue.getSummary());
 		score.composeScore(new RecommendationScore((float) jc, "<b>" + keywords + "</b> is similar to <b>" + parentIssue.getSummary() + "</b>"));
 
 		float numberProArguments = 0;
@@ -88,18 +84,15 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		return score;
 	}
 
-	private double calculateSimilarity(String left, String right) {
-		JaccardSimilarity jaccardSimilarity = new JaccardSimilarity();
-		double jc = jaccardSimilarity.apply(left.toLowerCase(), right.toLowerCase());
-		return jc;
+	private <T> T calculateSimilarity(SimilarityScore<T> similarityScore, String left, String right) {
+		T score = similarityScore.apply(left.toLowerCase(), right.toLowerCase());
+		return score;
 	}
 
-	protected Recommendation createRecommendation(KnowledgeElement source, KnowledgeElement target, KnowledgeType... knowledgeTypes) {
+	protected Recommendation createRecommendation(KnowledgeElement element, KnowledgeType... knowledgeTypes) {
 		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (source.getType() == knowledgeType)
-				return new Recommendation(this.knowledgeSource, source.getSummary(), source.getUrl());
-			if (target.getType() == knowledgeType)
-				return new Recommendation(this.knowledgeSource, target.getSummary(), target.getUrl());
+			if (element.getType() == knowledgeType)
+				return new Recommendation(this.knowledgeSource, element.getSummary(), element.getUrl());
 		}
 
 		return null;
@@ -116,14 +109,9 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	protected List<Argument> getArguments(KnowledgeElement knowledgeElement) {
 		List<Argument> arguments = new ArrayList<>();
 
-		for (Link link : knowledgeElement.getLinks()) {
-			KnowledgeElement source = link.getSource();
-			KnowledgeElement target = link.getTarget();
-			if (source.getType().equals(KnowledgeType.PRO) || source.getType().equals(KnowledgeType.CON)) {
-				arguments.add(new Argument(source));
-			}
-			if (target.getType().equals(KnowledgeType.PRO) || target.getType().equals(KnowledgeType.CON)) {
-				arguments.add(new Argument(target));
+		for (KnowledgeElement element : knowledgeElement.getLinkedElements(1)) {
+			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
+				arguments.add(new Argument(element));
 			}
 		}
 

@@ -921,6 +921,21 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setSimilarityThreshold = function (projectKey, threshold) {
+		generalApi.postJSON(this.restPrefix + "/config/setSimilarityThreshold.json?projectKey=" + projectKey + "&threshold=" + threshold, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The similarity threshold is updated to: " + threshold);
+			}
+		});
+	};
+
+
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, rdfSource) {
 		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource, function (
 			error, response) {

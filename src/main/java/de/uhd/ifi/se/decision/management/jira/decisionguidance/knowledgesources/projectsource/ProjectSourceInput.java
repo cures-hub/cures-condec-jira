@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
@@ -12,7 +14,7 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 
 	protected String projectKey;
 	protected String name;
-	protected KnowledgePersistenceManager knowledgePersistenceManager;
+	protected KnowledgeGraph knowledgeGraph;
 	protected List<KnowledgeElement> knowledgeElements;
 	protected ProjectSource knowledgeSource;
 
@@ -20,9 +22,9 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 	public abstract List<Recommendation> getResults(T input);
 
 	public void queryDatabase() {
-		knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate(this.name);
-		if (this.knowledgePersistenceManager != null)
-			knowledgeElements = this.knowledgePersistenceManager.getKnowledgeElements();
+		knowledgeGraph = knowledgeGraph.getOrCreate(this.name);
+		if (this.knowledgeGraph != null)
+			knowledgeElements = this.knowledgeGraph.getElements(KnowledgeType.ISSUE);
 		else new ArrayList<>();
 	}
 

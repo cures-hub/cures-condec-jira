@@ -169,7 +169,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 * Updates a knowledge element. If the element is not in the graph it will be
 	 * added.
 	 * 
-	 * @param element
+	 * @param node
 	 */
 	public boolean updateElement(KnowledgeElement node) {
 		KnowledgeElement oldElement = null;

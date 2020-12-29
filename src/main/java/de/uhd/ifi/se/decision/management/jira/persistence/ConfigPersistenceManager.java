@@ -198,7 +198,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setGitRepositoryConfigurations(String projectKey,
-			List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+													  List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
 		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
@@ -329,6 +329,14 @@ public class ConfigPersistenceManager {
 
 	public static int getMaxNumberRecommendations(String projectKey) {
 		return NumberUtils.toInt(getValue(projectKey, "maxNumberRecommendations"), 100);
+	}
+
+	public static void setSimilarityThreshold(String projectKey, double threshold) {
+		setValue(projectKey, "similarityThreshold", Double.toString(threshold));
+	}
+
+	public static double getSimilarityThreshold(String projectKey) {
+		return NumberUtils.toDouble(getValue(projectKey, "similarityThreshold"), 0.85);
 	}
 
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
