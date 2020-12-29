@@ -99,6 +99,7 @@
 			}
 			conDecDecisionTable.build(filterSettings, viewIdentifier, currentIssue);
 			$("#recommendation-keyword").val(currentIssue.summary);
+			$("#recommendation-button").prop("disabled",false);
 		}		
 
 		dropDown.addEventListener("change", selectDecisionProblem);
