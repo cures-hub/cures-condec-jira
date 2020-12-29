@@ -57,11 +57,10 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 	@NonTransactional
 	public void testSetRelevantIntoAOForNonExistingElement() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("first Comment");
-		long id = manager.insertKnowledgeElement(comment.get(0), null).getId();
 
-		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(id);
+		PartOfJiraIssueText element = comment.get(0);
 		element.setRelevant(true);
-		element.setId(id + 2);
+		element.setId(element.getId() + 2);
 
 		assertFalse(JiraIssueTextPersistenceManager.updateInDatabase(element));
 	}

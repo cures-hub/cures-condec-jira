@@ -18,6 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -124,16 +125,17 @@ public class JiraIssues {
 	}
 
 	public static PartOfJiraIssueText addElementToDataBase() {
-		return addElementToDataBase(12231, "Argument");
+		return addElementToDataBase(12231, KnowledgeType.ARGUMENT);
 	}
 
-	public static PartOfJiraIssueText addElementToDataBase(long id, String type) {
+	public static PartOfJiraIssueText addElementToDataBase(long id, KnowledgeType type) {
 		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setProject("TEST");
 		element.setJiraIssue(1);
 		element.setId(id);
 		element.setKey("TEST-" + id);
 		element.setType(type);
+		element.setRelevant(type != KnowledgeType.OTHER);
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()

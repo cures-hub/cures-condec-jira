@@ -81,7 +81,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		assertFalse(alternativeCompletenessCheck.execute(alternative));
 	}
 
@@ -95,9 +95,9 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 
 		// link alternative to a pro-argument
 		KnowledgeElement issue = elements.get(3);
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
-		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, "pro");
+		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(alternative.getLink(proArgument));
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
@@ -113,9 +113,9 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 
 		// link alternative to a con-argument
 		KnowledgeElement issue = elements.get(3);
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, "alternative");
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
-		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, "con");
+		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, KnowledgeType.CON);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(conArgument, alternative, user);
 		assertNotNull(alternative.getLink(conArgument));
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
