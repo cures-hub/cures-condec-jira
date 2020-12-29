@@ -13,12 +13,15 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUpdateKnowledgeElement extends TestSetUp {
@@ -124,5 +127,13 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 		PartOfJiraIssueText secondSentenceAfterUpdate = (PartOfJiraIssueText) manager
 				.getKnowledgeElement(comment.get(1));
 		assertTrue(secondSentenceAfterUpdate.getEndPosition() != comment.get(1).getEndPosition());
+	}
+
+	@Test
+	@NonTransactional
+	public void testUpdateElementWithWrongDocumentationLocation() {
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		assertEquals(DocumentationLocation.JIRAISSUE, element.getDocumentationLocation());
+		assertFalse(manager.updateKnowledgeElement(element, user));
 	}
 }

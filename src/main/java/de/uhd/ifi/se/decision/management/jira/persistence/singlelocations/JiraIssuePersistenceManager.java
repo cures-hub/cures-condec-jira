@@ -339,6 +339,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 				EventDispatchOption.ISSUE_UPDATED, true);
 	}
 
+	public static void updateDescription(Issue jiraIssue, String descriptionText, ApplicationUser user) {
+		((MutableIssue) jiraIssue).setDescription(descriptionText);
+		updateJiraIssue(jiraIssue, user);
+	}
+
 	private List<Issue> getIssueIdCollection() {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(this.projectKey);

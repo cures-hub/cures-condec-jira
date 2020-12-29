@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
@@ -407,6 +406,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updateElementInTextAndDatabase((PartOfJiraIssueText) element, formerElement, user);
 	}
 
+	/**
+	 * Updates the Jira issue description or comment and also the database entries
+	 * for a {@link PartOfJiraIssueText} and all the other parts/sentences of the
+	 * Jira issue description or comment.
+	 * 
+	 * @param newElement
+	 *            {@link PartOfJiraIssueText} after the update.
+	 * @param formerElement
+	 *            {@link PartOfJiraIssueText} before the update, i.e. in the old
+	 *            state.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if updating the Jira issue description or comment and also the
+	 *         database entries was successful.
+	 */
 	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
 			PartOfJiraIssueText formerElement, ApplicationUser user) {
 		String tag = newElement.getType().getTag();
@@ -421,9 +435,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		JiraIssueTextExtractionEventListener.editCommentLock = true;
 		MutableComment mutableComment = formerElement.getComment();
 		if (mutableComment == null) {
-			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
-			jiraIssue.setDescription(newBody);
-			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
+			JiraIssuePersistenceManager.updateDescription(formerElement.getJiraIssue(), newBody, user);
 		} else {
 			mutableComment.setBody(newBody);
 			mutableComment.setUpdated(new Date());
