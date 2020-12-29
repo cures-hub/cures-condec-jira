@@ -29,7 +29,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param element
 	 *            {@link KnowledgeElement} with id in database.
 	 * @param user
-	 *            authenticated Jira application user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deleting was successful.
 	 * @see ApplicationUser
 	 */
@@ -46,7 +46,7 @@ public abstract class AbstractPersistenceManagerForSingleLocation {
 	 * @param id
 	 *            id of the {@link KnowledgeElement} in database.
 	 * @param user
-	 *            authenticated Jira application user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deleting was successful.
 	 * @see ApplicationUser
 	 */

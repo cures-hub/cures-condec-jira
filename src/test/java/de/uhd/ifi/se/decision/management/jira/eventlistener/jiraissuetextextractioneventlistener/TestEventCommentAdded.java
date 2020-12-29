@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -49,8 +48,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	public void testExcludedTag() {
+	public void testJiraMacroTag() {
 		Comment comment = createCommentAndTestWhetherExistent("{code:java}public static class{code}");
 		PartOfJiraIssueText element = getFirstElementInComment(comment);
 		assertEquals("{code:java}public static class{code}", element.getTextWithTags());
@@ -66,15 +64,5 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		assertEquals("{color}green{color}", element.getTextWithTags());
 		assertEquals("green", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
-	}
-
-	@Test
-	@NonTransactional
-	public void testRationaleIcon() {
-		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
-				"{issue}This is a very severe issue.{issue}");
-		KnowledgeElement element = getFirstElementInComment(comment);
-		assertEquals("This is a very severe issue.", element.getDescription());
-		assertEquals(KnowledgeType.ISSUE, element.getType());
 	}
 }

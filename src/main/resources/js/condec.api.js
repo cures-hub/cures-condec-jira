@@ -897,18 +897,6 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setIconParsing = function (projectKey, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/config/setIconParsing.json?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated, null, function (error, response) {
-				if (error === null) {
-					showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
-				}
-			});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
 	ConDecAPI.prototype.setMaxNumberRecommendations = function (projectKey, maxNumberRecommendations) {
 		generalApi.postJSON(this.restPrefix + "/config/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function (
 			error, response) {

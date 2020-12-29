@@ -17,6 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -213,7 +214,7 @@ public class TestFilteringManager extends TestSetUp {
 		settings.setIrrelevantTextShown(true);
 		// Add irrelevant sentence
 		JiraIssues.getSentencesForCommentText("Irrelevant text");
-		JiraIssues.addElementToDataBase(1, "other");
+		JiraIssues.addElementToDataBase(1, KnowledgeType.OTHER);
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size() > 0);

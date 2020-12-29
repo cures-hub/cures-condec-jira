@@ -56,9 +56,9 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsLinkedToAlternative() {
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(321, "alternative");
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(321, KnowledgeType.ALTERNATIVE);
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
-		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, "pro");
+		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, KnowledgeType.PRO);
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));

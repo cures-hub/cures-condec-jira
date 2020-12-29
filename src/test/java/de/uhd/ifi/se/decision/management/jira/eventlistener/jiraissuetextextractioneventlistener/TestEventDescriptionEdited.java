@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.event.issue.IssueEvent;
@@ -54,20 +53,9 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	public void testEnbeddedMacroTagsAreNotChanged() {
+	public void testJiraMacroTags() {
 		KnowledgeElement element = getFirstKnowledgeElementInDescription("{code:java}public static class{code}");
-		assertEquals("{code:java}public static class{code}", element.getDescription());
+		assertEquals("public static class", element.getDescription());
 		assertEquals(KnowledgeType.OTHER, element.getType());
-	}
-
-	@Test
-	@NonTransactional
-	@Ignore
-	public void testRationaleIcon() {
-		KnowledgeElement element = getFirstKnowledgeElementInDescription("(!)This is a very severe issue.");
-		assertEquals("(!)This is a very severe issue.", element.getDescription());
-		assertEquals(KnowledgeType.ISSUE, element.getType());
-		assertEquals("{issue}This is a very severe issue.{issue}", jiraIssue.getDescription());
 	}
 }
