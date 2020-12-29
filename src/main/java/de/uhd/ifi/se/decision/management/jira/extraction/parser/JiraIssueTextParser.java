@@ -85,6 +85,7 @@ public class JiraIssueTextParser {
 		partsOfText.forEach(partOfText -> {
 			partOfText.setType(type);
 			partOfText.setValidated(true);
+			partOfText.setRelevant(true);
 		});
 		return partsOfText;
 	}

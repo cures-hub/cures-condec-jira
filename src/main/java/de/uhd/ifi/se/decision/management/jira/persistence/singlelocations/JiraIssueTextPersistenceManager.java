@@ -376,8 +376,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setCommentId(element.getCommentId());
-		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setType(element.getTypeAsString());
+		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
 			classificationTrainer.update(element);

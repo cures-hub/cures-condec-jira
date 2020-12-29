@@ -53,11 +53,11 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.setStartPosition(databaseEntry.getStartPosition());
 		this.setEndPosition(databaseEntry.getEndPosition());
 		this.setValidated(databaseEntry.isValidated());
+		this.setType(databaseEntry.getType());
 		this.setRelevant(databaseEntry.isRelevant());
 		this.setProject(databaseEntry.getProjectKey());
 		this.setCommentId(databaseEntry.getCommentId());
 		this.setJiraIssue(databaseEntry.getJiraIssueId());
-		this.setType(databaseEntry.getType());
 		this.setStatus(databaseEntry.getStatus());
 		String text = getText();
 		this.setDescription(text);
@@ -90,12 +90,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 */
 	public void setRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
-	}
-
-	@Override
-	public void setType(KnowledgeType type) {
-		super.setType(type);
-		setRelevant(type != KnowledgeType.OTHER);
 	}
 
 	/**
