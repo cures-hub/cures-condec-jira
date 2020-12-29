@@ -65,25 +65,38 @@ public class JiraIssueTextParser {
 			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
 		}
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
-		partsOfText.addAll(locateRemainingParts());
+		partsOfText.addAll(findRemainingParts());
 		partsOfText.sort(Comparator.comparingInt(PartOfJiraIssueText::getStartPosition));
 
 		partsOfText.forEach(partOfText -> partOfText.setProject(projectKey));
+		return partsOfText;
+	}
 
-		// TODO This does not seem to be true that every sentence is validated
+	/**
+	 * @param type
+	 *            {@link KnowledgeType} that can be documented in Jira issue
+	 *            descriptions or comments, see subclasses of
+	 *            {@link AbstractKnowledgeClassificationMacro}.
+	 * @return {@link PartOfJiraIssueText}s (also referred to as sentences or
+	 *         substrings) that include the macro, e.g. {issue}How to?{issue}.
+	 */
+	private List<PartOfJiraIssueText> findKnowledgeElementsOfType(KnowledgeType type) {
+		List<PartOfJiraIssueText> partsOfText = findMacroTextOfType(type.name());
 		partsOfText.forEach(partOfText -> {
-			if (partOfText.getType() != KnowledgeType.OTHER)
-				partOfText.setValidated(true);
+			partOfText.setType(type);
+			partOfText.setValidated(true);
 		});
 		return partsOfText;
 	}
 
-	private List<PartOfJiraIssueText> findKnowledgeElementsOfType(KnowledgeType type) {
-		List<PartOfJiraIssueText> partsOfText = findMacroTextOfType(type.name());
-		partsOfText.forEach(partOfText -> partOfText.setType(type));
-		return partsOfText;
-	}
-
+	/**
+	 * @param macro
+	 *            tag, i.e. decision knowledge tags or Jira macros such as code,
+	 *            quote, noformat. The tag is provided without parenthesis. Also,
+	 *            further information such as "code:java" must not be provided.
+	 * @return {@link PartOfJiraIssueText}s (also referred to as sentences or
+	 *         substrings) that include the macro.
+	 */
 	private List<PartOfJiraIssueText> findMacroTextOfType(String macro) {
 		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
 		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}",
@@ -112,33 +125,32 @@ public class JiraIssueTextParser {
 		return false;
 	}
 
-	private List<PartOfJiraIssueText> locateRemainingParts() {
+	/**
+	 * @return sentences before, in between, and after any macros.
+	 */
+	private List<PartOfJiraIssueText> findRemainingParts() {
 		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
-		newPartsOfText.addAll(locatePartsAtTheBeginning());
-		newPartsOfText.addAll(locatePartsInBetween());
-		newPartsOfText.addAll(locatePartsAtTheEnd());
+		newPartsOfText.addAll(findPartsAtTheBeginning());
+		newPartsOfText.addAll(findPartsInBetween());
+		newPartsOfText.addAll(findPartsAtTheEnd());
 		return newPartsOfText;
 	}
 
 	/**
-	 * @return sentences at the beginning of the text, in front of any Jira macros.
+	 * @return sentences at the beginning of the text, in front of any macros.
 	 */
-	private List<PartOfJiraIssueText> locatePartsAtTheBeginning() {
-		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
-		PartOfJiraIssueText firstPart = partsOfText.get(0);
-		if (firstPart.getStartPosition() > 0) {
-			PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, firstPart.getStartPosition(), text);
-			if (!newFirstPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newFirstPart));
-			}
+	private List<PartOfJiraIssueText> findPartsAtTheBeginning() {
+		PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, partsOfText.get(0).getStartPosition(), text);
+		if (newFirstPart.getDescription().isBlank()) {
+			return new ArrayList<PartOfJiraIssueText>();
 		}
-		return newPartsOfText;
+		return splitIntoSentences(newFirstPart);
 	}
 
 	/**
-	 * @return sentences in between Jira macros.
+	 * @return sentences in between macros.
 	 */
-	private List<PartOfJiraIssueText> locatePartsInBetween() {
+	private List<PartOfJiraIssueText> findPartsInBetween() {
 		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
 		for (int i = 0; i < partsOfText.size() - 1; i++) {
 			int tempStartPosition = partsOfText.get(i).getEndPosition();
@@ -148,27 +160,23 @@ public class JiraIssueTextParser {
 			}
 
 			PartOfJiraIssueText newPart = new PartOfJiraIssueText(tempStartPosition, tempEndPosition, text);
-			if (newPart.getDescription().isBlank()) {
-				continue;
+			if (!newPart.getDescription().isBlank()) {
+				newPartsOfText.addAll(splitIntoSentences(newPart));
 			}
-			newPartsOfText.addAll(splitIntoSentences(newPart));
 		}
 		return newPartsOfText;
 	}
 
 	/**
-	 * @return sentences at the end of the text, after any Jira macros.
+	 * @return sentences at the end of the text, after any macros.
 	 */
-	private List<PartOfJiraIssueText> locatePartsAtTheEnd() {
-		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+	private List<PartOfJiraIssueText> findPartsAtTheEnd() {
 		PartOfJiraIssueText lastPart = partsOfText.get(partsOfText.size() - 1);
-		if (text.length() > lastPart.getEndPosition()) {
-			PartOfJiraIssueText newlastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
-			if (!newlastPart.getDescription().isBlank()) {
-				newPartsOfText.addAll(splitIntoSentences(newlastPart));
-			}
+		PartOfJiraIssueText newLastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
+		if (newLastPart.getDescription().isBlank()) {
+			return new ArrayList<PartOfJiraIssueText>();
 		}
-		return newPartsOfText;
+		return splitIntoSentences(newLastPart);
 	}
 
 	/**
@@ -197,9 +205,6 @@ public class JiraIssueTextParser {
 			PartOfJiraIssueText sentence = new PartOfJiraIssueText(sentenceStartPosition, sentenceEndPosition, text);
 			sentences.add(sentence);
 			start = end;
-		}
-		if (sentences.isEmpty()) {
-			sentences.add(partOfText);
 		}
 		return sentences;
 	}
