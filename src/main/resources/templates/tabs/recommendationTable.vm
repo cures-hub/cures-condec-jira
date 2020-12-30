@@ -33,8 +33,11 @@
     <tbody>
     </tbody>
 </table>
+
+
 <script>
     conDecDecisionGuidance.initView();
+
 </script>
 
 
