@@ -322,7 +322,7 @@ public class KnowledgePersistenceManager {
 	 * @return true if deletion was successful.
 	 */
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		if (link.containsUnknownDocumentationLocation()) {
+		if (link == null || link.containsUnknownDocumentationLocation()) {
 			return false;
 		}
 
