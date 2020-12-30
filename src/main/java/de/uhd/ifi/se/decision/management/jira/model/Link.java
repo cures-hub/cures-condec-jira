@@ -428,6 +428,18 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
+	 * @see DecisionKnowledgeProject
+	 * @param projectKey
+	 *            key of Jira project that the source and target knowledge elements
+	 *            belong to.
+	 */
+	@JsonProperty("projectKey")
+	public void setProject(String projectKey) {
+		target.setProject(projectKey);
+		source.setProject(projectKey);
+	}
+
+	/**
 	 * @see KnowledgeElement
 	 * 
 	 * @return true if both source and destination element of the link are

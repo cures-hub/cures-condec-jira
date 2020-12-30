@@ -34,7 +34,9 @@ import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.issue.status.Status;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 import com.atlassian.jira.web.bean.PagerFilter;
@@ -84,6 +86,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (link == null || user == null) {
 			return false;
 		}
+		Project jiraProject = link.getSource().getProject().getJiraProject();
+		PermissionManager permissionManager = ComponentAccessor.getComponent(PermissionManager.class);
+		if (!permissionManager.hasPermission(ProjectPermissions.LINK_ISSUES, jiraProject, user)) {
+			return false;
+		}
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
@@ -93,6 +100,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 					typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
+				KnowledgeGraph.getOrCreate(jiraProject.getKey()).removeEdge(link);
 				return true;
 			}
 		}
@@ -155,6 +163,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	public static long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType().getName());
+		PermissionManager permissionManager = ComponentAccessor.getComponent(PermissionManager.class);
+		if (!permissionManager.hasPermission(ProjectPermissions.LINK_ISSUES,
+				link.getSource().getProject().getJiraProject(), user)) {
+			return 0;
+		}
 		try {
 			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(), linkTypeId, (long) 0,
 					user);

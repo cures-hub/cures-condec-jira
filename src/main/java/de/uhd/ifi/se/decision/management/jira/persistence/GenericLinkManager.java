@@ -55,6 +55,7 @@ public class GenericLinkManager {
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (link.equals(linkInDatabase)) {
 				isDeleted = LinkInDatabase.deleteLink(linkInDatabase);
+				KnowledgeGraph.getOrCreate(link.getSource().getProject().getProjectKey()).removeEdge(link);
 			}
 		}
 		return isDeleted;
@@ -83,7 +84,6 @@ public class GenericLinkManager {
 		List<Link> linksForElement = getLinksForElement(elementId, documentationLocation);
 		for (Link link : linksForElement) {
 			isLinkDeleted = deleteLink(link);
-			KnowledgeGraph.getOrCreate(link.getSource().getProject()).removeEdge(link);
 		}
 		return isLinkDeleted;
 	}

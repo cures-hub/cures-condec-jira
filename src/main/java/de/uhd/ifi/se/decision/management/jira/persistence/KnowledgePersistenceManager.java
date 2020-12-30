@@ -326,8 +326,6 @@ public class KnowledgePersistenceManager {
 			return false;
 		}
 
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-
 		boolean isDeleted;
 		if (link.isIssueLink()) {
 			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);

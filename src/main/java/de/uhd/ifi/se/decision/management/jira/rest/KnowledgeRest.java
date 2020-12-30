@@ -520,6 +520,20 @@ public class KnowledgeRest {
 		return Response.ok(summary).build();
 	}
 
+	/**
+	 * Rereads all decision knowledge elements documented within the description and
+	 * comments of a Jira issue. For example, this might be useful if linkage
+	 * between knowledge elements was destroyed.
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param jiraIssueId
+	 *            of the {@link Issue} with decision knowledge elements documented
+	 *            within its description and comments (e.g. a user story,
+	 *            development task, ...).
+	 * @return {@link Status.OK} if rereading was successful.
+	 */
 	@Path("/resetDecisionKnowledgeFromText")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -531,7 +545,7 @@ public class KnowledgeRest {
 		}
 		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 		if (jiraIssue == null) {
-			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error",
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
 							+ "because the Jira issue could not be found."))
 					.build();
