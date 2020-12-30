@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.ofbiz.core.entity.GenericValue;
+
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -7,13 +13,9 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.ofbiz.core.entity.GenericValue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class MockIssueLinkManager implements IssueLinkManager {
 
@@ -33,11 +35,11 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getInwardLinks(Long issueId) {
 		List<IssueLink> inwardIssueLinks = new ArrayList<>();
-		if(issueId == 0) {
+		if (issueId == 0) {
 			return inwardIssueLinks;
 		}
-		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
-			if(link.getDestinationId() == issueId) {
+		for (IssueLink link : JiraIssueLinks.getTestJiraIssueLinks()) {
+			if (link.getDestinationId() == issueId) {
 				inwardIssueLinks.add(link);
 			}
 		}
@@ -46,8 +48,8 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long issueLinkId) {
-		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
-			if(link.getId() == issueLinkId) {
+		for (IssueLink link : JiraIssueLinks.getTestJiraIssueLinks()) {
+			if (link.getId() == issueLinkId) {
 				return link;
 			}
 		}
@@ -55,14 +57,18 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	}
 
 	@Override
-	public IssueLink getIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId) {
-		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
-			if(link.getSourceId() == sourceIssueId && link.getDestinationId() == destinationIssueId &&
-					   link.getIssueLinkType().getId() == issueLinkTypeId) {
+	public IssueLink getIssueLink(Long targetIssueId, Long sourceIssueId, Long issueLinkTypeId) {
+		for (IssueLink link : JiraIssueLinks.getTestJiraIssueLinks()) {
+			if (link.getSourceId() == sourceIssueId && link.getDestinationId() == targetIssueId
+					&& link.getIssueLinkType().getId() == issueLinkTypeId) {
 				return link;
 			}
 		}
-		return new MockIssueLink(sourceIssueId, destinationIssueId, 1);
+		if (sourceIssueId > 4200) {
+			// indicates an invalid link
+			return null;
+		}
+		return new MockIssueLink(sourceIssueId, targetIssueId, 1);
 	}
 
 	@Override
@@ -96,11 +102,11 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long issueId) {
 		List<IssueLink> outwardIssueLinks = new ArrayList<IssueLink>();
-		if(issueId == 0) {
+		if (issueId == 0) {
 			return outwardIssueLinks;
 		}
-		for(IssueLink link: JiraIssueLinks.getTestJiraIssueLinks()) {
-			if(link.getSourceId() == issueId) {
+		for (IssueLink link : JiraIssueLinks.getTestJiraIssueLinks()) {
+			if (link.getSourceId() == issueId) {
 				outwardIssueLinks.add(link);
 			}
 		}

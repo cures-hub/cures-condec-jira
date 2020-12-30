@@ -50,6 +50,12 @@ public class TestDeleteLink extends TestSetUp {
 	}
 
 	@Test
+	public void testLinkNotExistingUserFilled() {
+		link.getSource().setId(42000L);
+		assertFalse(persistenceManager.deleteLink(link, user));
+	}
+
+	@Test
 	public void testLinkFilledUserHasNoPermissions() {
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		assertFalse(persistenceManager.deleteLink(link, user));
