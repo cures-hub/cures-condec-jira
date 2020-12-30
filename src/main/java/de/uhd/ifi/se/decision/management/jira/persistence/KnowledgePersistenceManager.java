@@ -401,8 +401,11 @@ public class KnowledgePersistenceManager {
 	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
-		return persistenceManager.deleteKnowledgeElement(element, user);
+		boolean isDeleted = persistenceManager.deleteKnowledgeElement(element, user);
+		if (isDeleted) {
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
+		}
+		return isDeleted;
 	}
 
 	/**
