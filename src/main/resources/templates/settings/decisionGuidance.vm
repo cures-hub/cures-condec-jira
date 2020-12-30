@@ -240,17 +240,20 @@
     </div>
 
     <div class="field-group">
-        <label for="similarity-threshold">Maximum number of results</label>
+        <label for="similarity-threshold">Similarity Score of Issues (%)</label>
         <input class="text short-field"
                type="number"
+               min="0"
+               max="1"
+               step="0.1"
                data-aui-validation-field
-               value="$maxNumberRecommendations"
+               value="$similarityThreshold"
                id="similarity-threshold"
                name="similarity-threshold"/>
         <button id="save-similarity-threshold" class='aui-button aui-button-primary aui-button-compact'>
             Save
         </button>
-        <div class="description">Set the threshold for textual similarity.
+        <div class="description">Set the similarity score for textual similarity.
         </div>
 
     </div>
@@ -481,11 +484,4 @@
 
 
     });
-
-
-
-
-
-
-
 </script>

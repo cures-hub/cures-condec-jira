@@ -823,9 +823,9 @@ public class ConfigRest {
 		if (response.getStatus() != 200) {
 			return response;
 		}
-		if (threshold < 0) {
+		if (threshold < 0 || threshold > 1) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "The threshold cannot be smaller 0.")).build();
+				.entity(ImmutableMap.of("error", "The threshold must be between 0 and 1.")).build();
 		}
 
 		ConfigPersistenceManager.setSimilarityThreshold(projectKey, threshold);

@@ -602,6 +602,12 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testSetAndGetSimilarityThreshold() {
+		ConfigPersistenceManager.setSimilarityThreshold("TEST", 0.5);
+		assertEquals(0.5, ConfigPersistenceManager.getSimilarityThreshold("TEST"), 0.0);
+	}
+
+	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
