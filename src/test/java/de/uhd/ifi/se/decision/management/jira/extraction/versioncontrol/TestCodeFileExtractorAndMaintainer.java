@@ -8,8 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.codeclasspersistencemanager.TestInsertKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.codeclasspersistencemanager.TestInsertKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 

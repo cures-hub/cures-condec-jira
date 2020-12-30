@@ -187,13 +187,6 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true, if icon parsing in Jira issue comments is enabled.
-	 */
-	public boolean isIconParsingEnabled() {
-		return ConfigPersistenceManager.isIconParsing(getProjectKey());
-	}
-
-	/**
 	 * @return true, if the classifier is used for Jira issue comments.
 	 */
 	public boolean isClassifierEnabled() {

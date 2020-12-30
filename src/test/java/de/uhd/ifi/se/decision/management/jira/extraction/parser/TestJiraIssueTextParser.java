@@ -25,6 +25,20 @@ public class TestJiraIssueTextParser extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testTestNull() {
+		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(null);
+		assertEquals(0, partsOfText.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testTestBlank() {
+		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(" ");
+		assertEquals(0, partsOfText.size());
+	}
+
+	@Test
+	@NonTransactional
 	public void testTwoSentences() {
 		List<PartOfJiraIssueText> sentences = parser
 				.getPartsOfText("This is the first sentence. This is the second sentence.");
@@ -156,7 +170,7 @@ public class TestJiraIssueTextParser extends TestSetUp {
 	@NonTransactional
 	public void testDecisionKnowledgeTagsAndOtherMacros() {
 		String text = "Some sentence in the front {issue} How to? {issue} {alternative} An alternative could be {alternative}"
-				+ "{pro} Great idea! {pro} This is a test! {decision} We will do ...! {decision} {pro} Even better! {pro} {issue} Second issue {issue}"
+				+ "{pro} Great idea! {pro} This is a test! {decision} We will do ...! {decision}    {pro} Even better! {pro} {issue} Second issue {issue}"
 				+ "{decision}{code:java} public static {code}{decision} And more text! And another question? {noformat} ... {noformat}";
 		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
 
@@ -173,5 +187,16 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		assertEquals("And more text!", partsOfText.get(9).getDescription());
 		assertEquals("And another question?", partsOfText.get(10).getDescription());
 		assertEquals("...", partsOfText.get(11).getDescription());
+	}
+
+	@Test
+	@NonTransactional
+	public void testOverlappingMacros() {
+		String text = "{code:java}{decision} public static {code}{decision}";
+		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
+
+		assertEquals(1, partsOfText.size());
+		assertEquals("public static", partsOfText.get(0).getDescription());
+		assertEquals(KnowledgeType.DECISION, partsOfText.get(0).getType());
 	}
 }

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
@@ -376,8 +375,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setCommentId(element.getCommentId());
-		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setType(element.getTypeAsString());
+		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
 			classificationTrainer.update(element);
@@ -390,74 +389,71 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		if (element == null) {
+		if (element == null || element.getProject() == null
+				|| element.getDocumentationLocation() != this.documentationLocation) {
 			return false;
 		}
-		PartOfJiraIssueText sentence = new PartOfJiraIssueText(element);
+
+		// get corresponding element from database
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getKnowledgeElement(element);
+		if (sentence == null) {
+			return false;
+		}
+		// if the summary is null, only the knowledge type and/or status has changed
+		if (element.getSummary() != null) {
+			sentence.setSummary(element.getDescription());
+		}
+		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(element);
+		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element);
+		sentence.setType(newType);
+		sentence.setStatus(newStatus);
 		sentence.setValidated(true);
-		return updatePartOfJiraIssueText(sentence, user);
+		sentence.setRelevant(newType != KnowledgeType.OTHER);
+		return updateElementInTextAndDatabase(sentence, user);
 	}
 
-	public static boolean updatePartOfJiraIssueText(PartOfJiraIssueText newElement, ApplicationUser user) {
-		if (newElement == null || newElement.getProject() == null) {
-			return false;
-		}
+	/**
+	 * Updates the Jira issue description or comment and also the database entries
+	 * for a {@link PartOfJiraIssueText} and all the other parts/sentences of the
+	 * Jira issue description or comment.
+	 * 
+	 * @param newElement
+	 *            {@link PartOfJiraIssueText} after the update.
+	 * @param sentence
+	 *            {@link PartOfJiraIssueText} before the update, i.e. in the old
+	 *            state.
+	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if updating the Jira issue description or comment and also the
+	 *         database entries was successful.
+	 */
+	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
+		String tag = sentence.getType().getTag();
+		String changedPartOfText = tag + sentence.getDescription() + tag;
 
-		// Get corresponding element from database
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(newElement.getProject()).getJiraIssueTextManager();
-		PartOfJiraIssueText formerElement = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(newElement);
-		if (formerElement == null) {
-			return false;
-		}
-		// only the knowledge type or status has changed
-		if (newElement.getSummary() == null) {
-			newElement.setSummary(formerElement.getSummary());
-			newElement.setDescription(formerElement.getDescription());
-		}
-		return updateElementInTextAndDatabase(newElement, formerElement, user);
-	}
-
-	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText newElement,
-			PartOfJiraIssueText formerElement, ApplicationUser user) {
-		String tag = newElement.getType().getTag();
-		String changedPartOfText = tag + newElement.getDescription() + tag;
-
-		String text = formerElement.getTextOfEntireDescriptionOrComment();
-		String firstPartOfText = text.substring(0, formerElement.getStartPosition());
-		String lastPartOfText = text.substring(formerElement.getEndPosition());
+		String text = sentence.getTextOfEntireDescriptionOrComment();
+		String firstPartOfText = text.substring(0, sentence.getStartPosition());
+		String lastPartOfText = text.substring(sentence.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
-		JiraIssueTextExtractionEventListener.editCommentLock = true;
-		MutableComment mutableComment = formerElement.getComment();
+		JiraIssueTextExtractionEventListener.editLock = true;
+		MutableComment mutableComment = sentence.getComment();
 		if (mutableComment == null) {
-			MutableIssue jiraIssue = (MutableIssue) formerElement.getJiraIssue();
-			jiraIssue.setDescription(newBody);
-			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, user);
+			JiraIssuePersistenceManager.updateDescription(sentence.getJiraIssue(), newBody, user);
 		} else {
 			mutableComment.setBody(newBody);
 			mutableComment.setUpdated(new Date());
 			mutableComment.setUpdateAuthor(user);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
-		JiraIssueTextExtractionEventListener.editCommentLock = false;
+		JiraIssueTextExtractionEventListener.editLock = false;
 
-		int lengthDifference = changedPartOfText.length() - formerElement.getLength();
-		updateSentenceLengthForOtherSentencesInSameComment(formerElement, lengthDifference);
+		int lengthDifference = changedPartOfText.length() - sentence.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(newElement);
-		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement);
-
-		formerElement.setEndPosition(formerElement.getStartPosition() + changedPartOfText.length());
-		formerElement.setType(newElement.getType());
-		formerElement.setValidated(newElement.isValidated());
-		formerElement.setRelevant(newElement.getType() != KnowledgeType.OTHER);
-		formerElement.setStatus(newStatus);
-		formerElement.setType(newType);
-		// sentence.setCommentId(element.getCommentId());
-
-		return updateInDatabase(formerElement);
+		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
+		return updateInDatabase(sentence);
 	}
 
 	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {
