@@ -129,10 +129,10 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String commentBody = comment.getBody();
 		String newCommentBody = replaceIconsWithTags(commentBody);
 		if (!newCommentBody.equals(commentBody)) {
-			editLock = true;
+			LOGGER.info("Text was manually classified as a decision knowledge using icons in the Jira issue "
+					+ issueEvent.getIssue().getKey());
 			comment.setBody(newCommentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
-			editLock = false;
 		}
 	}
 
@@ -157,9 +157,9 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String description = jiraIssue.getDescription();
 		String newDescription = replaceIconsWithTags(description);
 		if (!newDescription.equals(description)) {
-			editLock = true;
+			LOGGER.info("Text was manually classified as a decision knowledge using icons in the Jira issue "
+					+ issueEvent.getIssue().getKey());
 			JiraIssuePersistenceManager.updateDescription(jiraIssue, newDescription, issueEvent.getUser());
-			editLock = false;
 		}
 	}
 
@@ -198,6 +198,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (icon.isBlank() || !text.contains(icon)) {
 			return text;
 		}
+		LOGGER.info("Text was manually classified as a decision knowledge element with the icon: " + icon);
 		int positionOfIcon = text.indexOf(icon);
 
 		int positionOfTerminator = text.substring(positionOfIcon).indexOf("{");
