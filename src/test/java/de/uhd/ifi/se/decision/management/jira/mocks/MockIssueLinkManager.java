@@ -27,7 +27,8 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public void createIssueLink(Long sourceIssueId, Long destinationIssueId, Long issueLinkTypeId, Long sequence,
 			ApplicationUser user) throws CreateException {
-		if (user == null || user == JiraUsers.BLACK_HEAD.getApplicationUser()) {
+		if (user == null || user == JiraUsers.BLACK_HEAD.getApplicationUser() || sourceIssueId < 0
+				|| destinationIssueId < 0) {
 			throw new CreateException();
 		}
 	}
