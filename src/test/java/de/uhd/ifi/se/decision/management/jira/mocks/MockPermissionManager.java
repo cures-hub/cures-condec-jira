@@ -10,10 +10,7 @@ public class MockPermissionManager extends com.atlassian.jira.mock.MockPermissio
 
 	@Override
 	public boolean hasPermission(ProjectPermissionKey arg0, Project arg1, ApplicationUser user) {
-		if (user.equals(JiraUsers.BLACK_HEAD.getApplicationUser())) {
-			return false;
-		}
-		return true;
+		return !user.equals(JiraUsers.BLACK_HEAD.getApplicationUser());
 	}
 
 }

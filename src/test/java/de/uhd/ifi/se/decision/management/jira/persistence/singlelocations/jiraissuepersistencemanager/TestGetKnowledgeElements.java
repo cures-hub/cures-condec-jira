@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestGetDecisionKnowledgeElements extends TestSetUp {
+public class TestGetKnowledgeElements extends TestSetUp {
 
 	private JiraIssuePersistenceManager persistenceManager;
 
