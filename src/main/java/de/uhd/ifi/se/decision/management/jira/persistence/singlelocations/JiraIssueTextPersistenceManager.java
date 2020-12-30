@@ -568,11 +568,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(sentence, user);
 
 		// create Jira issue and link it
-		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssuePersistenceManager jiraIssuePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueManager();
-		KnowledgeElement jiraIssue = persistenceManager.insertKnowledgeElement(sentence, user);
+		KnowledgeElement jiraIssue = jiraIssuePersistenceManager.insertKnowledgeElement(sentence, user);
 		Link link = Link.instantiateDirectedLink(new KnowledgeElement(sentence.getJiraIssue()), jiraIssue);
-		JiraIssuePersistenceManager.insertLink(link, user);
+		jiraIssuePersistenceManager.insertLink(link, user);
 
 		return ComponentAccessor.getIssueService().getIssue(user, jiraIssue.getId()).getIssue();
 	}

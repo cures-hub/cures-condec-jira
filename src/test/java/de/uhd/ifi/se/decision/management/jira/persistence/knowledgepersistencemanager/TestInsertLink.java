@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -23,7 +24,7 @@ public class TestInsertLink extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		link = Links.getTestLinks().get(0);
+		link = Links.getTestLink();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate("TEST");
 	}
@@ -38,5 +39,25 @@ public class TestInsertLink extends TestSetUp {
 	@NonTransactional
 	public void testLinkValidUserValid() {
 		assertEquals(1, knowledgePersistenceManager.insertLink(link, user));
+	}
+
+	public void testLinkNullUserValid() {
+		assertEquals(0, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(null, user));
+	}
+
+	@Test
+	public void testLinkFilledUserNull() {
+		Link link = new Link(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		link.setType("contains");
+		link.setProject("TEST");
+		assertEquals(0, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null));
+	}
+
+	@Test
+	public void testLinkFilledUserFilled() {
+		Link link = new Link(1, 2, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
+		link.setType("contains");
+		link.setProject("TEST");
+		assertEquals(1, KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, user));
 	}
 }

@@ -82,7 +82,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if deletion was successful.
 	 */
-	public static boolean deleteLink(Link link, ApplicationUser user) {
+	public boolean deleteLink(Link link, ApplicationUser user) {
 		if (link == null || user == null) {
 			return false;
 		}
@@ -100,7 +100,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 					typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
-				KnowledgeGraph.getOrCreate(jiraProject.getKey()).removeEdge(link);
+				KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
 				return true;
 			}
 		}
@@ -160,21 +160,21 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
-	public static long insertLink(Link link, ApplicationUser user) {
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = getLinkTypeId(link.getType().getName());
+	public long insertLink(Link link, ApplicationUser user) {
 		PermissionManager permissionManager = ComponentAccessor.getComponent(PermissionManager.class);
-		if (!permissionManager.hasPermission(ProjectPermissions.LINK_ISSUES,
+		if (user == null || !permissionManager.hasPermission(ProjectPermissions.LINK_ISSUES,
 				link.getSource().getProject().getJiraProject(), user)) {
 			return 0;
 		}
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		long linkTypeId = getLinkTypeId(link.getType().getName());
 		try {
 			issueLinkManager.createIssueLink(link.getSource().getId(), link.getTarget().getId(), linkTypeId, (long) 0,
 					user);
 			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSource().getId(), link.getTarget().getId(),
 					linkTypeId);
 			return issueLink.getId();
-		} catch (CreateException | NullPointerException e) {
+		} catch (CreateException e) {
 			LOGGER.error("Insertion of link into database failed. Message: " + e.getMessage());
 		}
 		return 0;

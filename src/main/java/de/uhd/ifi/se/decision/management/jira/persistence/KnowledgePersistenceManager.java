@@ -219,14 +219,14 @@ public class KnowledgePersistenceManager {
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	public long insertLink(Link link, ApplicationUser user) {
-		if (link.containsUnknownDocumentationLocation()) {
+		if (link == null || link.containsUnknownDocumentationLocation()) {
 			return 0;
 		}
 
 		long databaseId;
 
 		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
+			databaseId = jiraIssuePersistenceManager.insertLink(link, user);
 			if (databaseId > 0) {
 				link.setId(databaseId);
 				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
@@ -328,9 +328,9 @@ public class KnowledgePersistenceManager {
 
 		boolean isDeleted;
 		if (link.isIssueLink()) {
-			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
+			isDeleted = jiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+				isDeleted = jiraIssuePersistenceManager.deleteLink(link.flip(), user);
 			}
 			updateIssueStatus(link, user);
 			return isDeleted;

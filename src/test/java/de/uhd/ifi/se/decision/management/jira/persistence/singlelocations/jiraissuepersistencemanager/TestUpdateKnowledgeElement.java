@@ -3,29 +3,45 @@ package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jirai
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestUpdateKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
+public class TestUpdateKnowledgeElement extends TestSetUp {
+
+	private JiraIssuePersistenceManager persistenceManager;
+	private ApplicationUser user;
+
+	@Before
+	public void setUp() {
+		init();
+		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+	}
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {
-		issueStrategy.updateKnowledgeElement((KnowledgeElement) null, null);
+		persistenceManager.updateKnowledgeElement((KnowledgeElement) null, null);
 	}
 
 	@Test
 	public void testElementNonExistentUserNull() {
 		KnowledgeElement element = new KnowledgeElement();
-		assertFalse(issueStrategy.updateKnowledgeElement(element, null));
+		assertFalse(persistenceManager.updateKnowledgeElement(element, null));
 	}
 
 	@Test
 	public void testElementNonExistentUserExistent() {
 		KnowledgeElement element = new KnowledgeElement();
-		assertNotNull(issueStrategy.updateKnowledgeElement(element, user));
+		assertNotNull(persistenceManager.updateKnowledgeElement(element, user));
 	}
 
 	@Test
@@ -35,7 +51,7 @@ public class TestUpdateKnowledgeElement extends TestJiraIssuePersistenceManagerS
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
 		element.setStatus("unresolved");
-		assertNotNull(issueStrategy.updateKnowledgeElement(element, user));
+		assertNotNull(persistenceManager.updateKnowledgeElement(element, user));
 	}
 
 	@Test
@@ -44,6 +60,6 @@ public class TestUpdateKnowledgeElement extends TestJiraIssuePersistenceManagerS
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		assertFalse(issueStrategy.updateKnowledgeElement(element, JiraUsers.BLACK_HEAD.getApplicationUser()));
+		assertFalse(persistenceManager.updateKnowledgeElement(element, JiraUsers.BLACK_HEAD.getApplicationUser()));
 	}
 }
