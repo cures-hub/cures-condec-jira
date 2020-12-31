@@ -474,14 +474,14 @@ public class KnowledgeRest {
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
 				.getKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
 		if (sentence == null) {
-			return Response.status(Status.NOT_FOUND)
+			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
 
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
 		sentence.setSummary(null);
-		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
+		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
 		if (isUpdated) {
 			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
 			return Response.status(Status.OK).build();
