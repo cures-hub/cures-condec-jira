@@ -16,7 +16,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -438,7 +437,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
-		JiraIssueTextExtractionEventListener.editLock = true;
 		MutableComment mutableComment = sentence.getComment();
 		if (mutableComment == null) {
 			JiraIssuePersistenceManager.updateDescription(sentence.getJiraIssue(), newBody, user);
@@ -448,7 +446,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			mutableComment.setUpdateAuthor(user);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
-		JiraIssueTextExtractionEventListener.editLock = false;
 
 		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);

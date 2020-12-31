@@ -268,6 +268,7 @@ public class TestFilterSettings extends TestSetUp {
 
 		filterSettings.setIrrelevantTextShown(true);
 		assertTrue(filterSettings.isIrrelevantTextShown());
+		assertTrue(filterSettings.getKnowledgeTypes().contains("Other"));
 	}
 
 	@Test

@@ -38,13 +38,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
-	/**
-	 * Locks the edit description/comment event function if a REST service or
-	 * another process edits the description/comments so that the event listener
-	 * does not fire.
-	 */
-	public static boolean editLock;
-
 	public JiraIssueTextExtractionEventListener(
 			ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
 		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
@@ -64,13 +57,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	 */
 	@Override
 	public void onIssueEvent(IssueEvent issueEvent) {
-		if (editLock) {
-			// If locked, a REST service or another process is currently manipulating a
-			// comment or the description and this event should not be handled by the event
-			// listener.
-			LOGGER.debug("Event handling of changes in Jira issue description or comment is still locked.");
-			return;
-		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
