@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -63,14 +62,10 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
-		// TODO Example test for 2 separate graphs
-		List<PartOfJiraIssueText> comment = JiraIssues
-				.getSentencesForCommentText("This is a test comment with some irrelevant text.");
-		PartOfJiraIssueText sentence = comment.get(0);
-		assertEquals("This is a test comment with some irrelevant text.", sentence.getSummary());
+		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		String projectKey = sentence.getProject().getProjectKey();
 		graph = KnowledgeGraph.getOrCreate(projectKey);
-		assertFalse(graph.containsVertex(sentence));
+		assertTrue(graph.containsVertex(sentence));
 	}
 
 	@Test

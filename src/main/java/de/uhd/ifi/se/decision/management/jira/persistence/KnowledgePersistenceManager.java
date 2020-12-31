@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -111,11 +110,6 @@ public class KnowledgePersistenceManager {
 	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		activePersistenceManagersForSingleLocations.forEach(manager -> elements.addAll(manager.getKnowledgeElements()));
-
-		// remove irrelevant sentences from graph
-		elements.removeIf(
-				element -> (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()));
-
 		return elements;
 	}
 
