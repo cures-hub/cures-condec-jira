@@ -280,24 +280,6 @@
 	};
 
 	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.setSentenceIrrelevant = function (id, callback) {
-		var jsondata = {
-			"id": id,
-			"documentationLocation": "s",
-			"projectKey": projectKey
-		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function (
-			error) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
-	};
-
-	/*
 	 * external references: jiraIssueModule.vm
 	 */
 	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function (jiraIssueId, callback) {
