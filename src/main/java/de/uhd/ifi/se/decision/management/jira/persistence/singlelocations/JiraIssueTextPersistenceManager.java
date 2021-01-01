@@ -399,6 +399,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (sentence == null) {
 			return false;
 		}
+		// summary and description are the same for PartOfJiraIssueText objects
 		sentence.setDescription(element.getDescription());
 		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(element);
 		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element);
