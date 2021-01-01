@@ -43,8 +43,8 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = parser
 				.getPartsOfText("This is the first sentence. This is the second sentence.");
 		assertEquals(2, sentences.size());
-		assertEquals("This is the first sentence.", sentences.get(0).getDescription());
-		assertEquals("This is the second sentence.", sentences.get(1).getDescription());
+		assertEquals("This is the first sentence.", sentences.get(0).getDescription().trim());
+		assertEquals("This is the second sentence.", sentences.get(1).getDescription().trim());
 	}
 
 	@Test
@@ -53,8 +53,8 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = parser
 				.getPartsOfText("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertEquals(2, sentences.size());
-		assertEquals("this is a quote", sentences.get(0).getDescription());
-		assertEquals("and this is a test Sentence.", sentences.get(1).getDescription());
+		assertEquals("this is a quote", sentences.get(0).getDescription().trim());
+		assertEquals("and this is a test Sentence.", sentences.get(1).getDescription().trim());
 	}
 
 	@Test
@@ -63,8 +63,8 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = parser
 				.getPartsOfText("and this is a test Sentence. {quote} this is a quote {quote} ");
 		assertEquals(2, sentences.size());
-		assertEquals("and this is a test Sentence.", sentences.get(0).getDescription());
-		assertEquals("this is a quote", sentences.get(1).getDescription());
+		assertEquals("and this is a test Sentence.", sentences.get(0).getDescription().trim());
+		assertEquals("this is a quote", sentences.get(1).getDescription().trim());
 	}
 
 	@Test
@@ -73,9 +73,9 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = parser.getPartsOfText("{quote} this is a quote {quote} "
 				+ "and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertEquals(3, sentences.size());
-		assertEquals("this is a quote", sentences.get(0).getDescription());
-		assertEquals("and this is a test Sentence.", sentences.get(1).getDescription());
-		assertEquals("this is a second quote", sentences.get(2).getDescription());
+		assertEquals("this is a quote", sentences.get(0).getDescription().trim());
+		assertEquals("and this is a test Sentence.", sentences.get(1).getDescription().trim());
+		assertEquals("this is a second quote", sentences.get(2).getDescription().trim());
 	}
 
 	@Test
@@ -135,8 +135,8 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> sentences = parser
 				.getPartsOfText("{noformat} this is a noformat {noformat} {wuzl} and this is a test sentence {wuzl}");
 		assertEquals(2, sentences.size());
-		assertEquals("this is a noformat", sentences.get(0).getDescription());
-		assertEquals("and this is a test sentence", sentences.get(1).getDescription());
+		assertEquals("this is a noformat", sentences.get(0).getDescription().trim());
+		assertEquals("and this is a test sentence", sentences.get(1).getDescription().trim());
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class TestJiraIssueTextParser extends TestSetUp {
 						+ "{quote} this is a also a fourth quote {quote} "
 						+ "{code:java} this is a fifth code {code} and this is a sixth test Sentence.");
 		assertEquals(6, sentences.size());
-		assertEquals("this is a fifth code", sentences.get(4).getDescription());
+		assertEquals(" this is a fifth code ", sentences.get(4).getDescription());
 	}
 
 	@Test
@@ -175,18 +175,18 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
 
 		assertEquals(12, partsOfText.size());
-		assertEquals("Some sentence in the front", partsOfText.get(0).getDescription());
-		assertEquals("How to?", partsOfText.get(1).getDescription());
-		assertEquals("An alternative could be", partsOfText.get(2).getDescription());
-		assertEquals("Great idea!", partsOfText.get(3).getDescription());
-		assertEquals("This is a test!", partsOfText.get(4).getDescription());
-		assertEquals("We will do ...!", partsOfText.get(5).getDescription());
-		assertEquals("Even better!", partsOfText.get(6).getDescription());
-		assertEquals("Second issue", partsOfText.get(7).getDescription());
-		assertEquals("public static", partsOfText.get(8).getDescription());
-		assertEquals("And more text!", partsOfText.get(9).getDescription());
-		assertEquals("And another question?", partsOfText.get(10).getDescription());
-		assertEquals("...", partsOfText.get(11).getDescription());
+		assertEquals("Some sentence in the front", partsOfText.get(0).getDescription().trim());
+		assertEquals("How to?", partsOfText.get(1).getDescription().trim());
+		assertEquals("An alternative could be", partsOfText.get(2).getDescription().trim());
+		assertEquals("Great idea!", partsOfText.get(3).getDescription().trim());
+		assertEquals("This is a test!", partsOfText.get(4).getDescription().trim());
+		assertEquals("We will do ...!", partsOfText.get(5).getDescription().trim());
+		assertEquals("Even better!", partsOfText.get(6).getDescription().trim());
+		assertEquals("Second issue", partsOfText.get(7).getDescription().trim());
+		assertEquals("public static", partsOfText.get(8).getDescription().trim());
+		assertEquals("And more text!", partsOfText.get(9).getDescription().trim());
+		assertEquals("And another question?", partsOfText.get(10).getDescription().trim());
+		assertEquals("...", partsOfText.get(11).getDescription().trim());
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
 
 		assertEquals(1, partsOfText.size());
-		assertEquals("public static", partsOfText.get(0).getDescription());
+		assertEquals("public static", partsOfText.get(0).getDescription().trim());
 		assertEquals(KnowledgeType.DECISION, partsOfText.get(0).getType());
 	}
 }
