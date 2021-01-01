@@ -237,7 +237,8 @@
 			"idOfSourceElement": idOfSourceElement,
 			"idOfDestinationElement": idOfDestinationElement,
 			"documentationLocationOfSourceElement": documentationLocationOfSourceElement,
-			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement
+			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement,
+			"projectKey": projectKey
 		};
 		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink.json?projectKey=" + projectKey,
 			link, function (error, link) {

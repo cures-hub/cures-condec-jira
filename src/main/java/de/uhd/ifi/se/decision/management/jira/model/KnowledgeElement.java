@@ -274,7 +274,7 @@ public class KnowledgeElement {
 	 *         whether the plug-in is activated for the project.
 	 */
 	public DecisionKnowledgeProject getProject() {
-		return this.project;
+		return project;
 	}
 
 	/**

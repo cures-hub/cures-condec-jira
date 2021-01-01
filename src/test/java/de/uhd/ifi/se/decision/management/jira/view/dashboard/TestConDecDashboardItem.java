@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.atlassian.jira.issue.issuetype.IssueType;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestConDecDashboardItem extends TestSetUp {
@@ -24,6 +25,7 @@ public class TestConDecDashboardItem extends TestSetUp {
 	public void setUp() {
 		init();
 		dashboardItem = new ConDecDashboardItem();
+		dashboardItem.user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
 	@Test

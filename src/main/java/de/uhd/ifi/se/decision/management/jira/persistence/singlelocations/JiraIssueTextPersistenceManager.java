@@ -16,7 +16,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -181,20 +180,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns all decision knowledge elements documented in the description or
-	 * comments of a Jira issue.
+	 * Returns all relevant decision knowledge elements documented in the
+	 * description or comments of a Jira issue. Does also return irrelevant
+	 * sentences/parts of text.
 	 *
 	 * @param jiraIssueId
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
 	 * @return list of all decision knowledge elements documented in the description
-	 *         or comments of a Jira issue. Does not return irrelevant parts of
-	 *         text.
+	 *         or comments of a Jira issue. Does also return irrelevant
+	 *         sentences/parts of text.
 	 */
 	public List<KnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND RELEVANT = TRUE", projectKey,
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey,
 						jiraIssueId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
@@ -437,7 +437,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
-		JiraIssueTextExtractionEventListener.editLock = true;
 		MutableComment mutableComment = sentence.getComment();
 		if (mutableComment == null) {
 			JiraIssuePersistenceManager.updateDescription(sentence.getJiraIssue(), newBody, user);
@@ -447,7 +446,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			mutableComment.setUpdateAuthor(user);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
-		JiraIssueTextExtractionEventListener.editLock = false;
 
 		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
@@ -568,11 +566,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(sentence, user);
 
 		// create Jira issue and link it
-		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssuePersistenceManager jiraIssuePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueManager();
-		KnowledgeElement jiraIssue = persistenceManager.insertKnowledgeElement(sentence, user);
+		KnowledgeElement jiraIssue = jiraIssuePersistenceManager.insertKnowledgeElement(sentence, user);
 		Link link = Link.instantiateDirectedLink(new KnowledgeElement(sentence.getJiraIssue()), jiraIssue);
-		JiraIssuePersistenceManager.insertLink(link, user);
+		jiraIssuePersistenceManager.insertLink(link, user);
 
 		return ComponentAccessor.getIssueService().getIssue(user, jiraIssue.getId()).getIssue();
 	}

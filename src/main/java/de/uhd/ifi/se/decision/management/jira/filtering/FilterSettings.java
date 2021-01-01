@@ -447,6 +447,9 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "knowledgeTypes")
 	public Set<String> getKnowledgeTypes() {
+		if (isIrrelevantTextShown) {
+			knowledgeTypes.add(KnowledgeType.OTHER.toString());
+		}
 		return knowledgeTypes;
 	}
 

@@ -249,7 +249,7 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.9.0.202009080501-r</version>
+			<version>5.10.0.202012080955-r</version>
 		</dependency>
 		<!-- Summarization of code changes and extraction of decision knowledge 
 			from code comments -->
@@ -384,10 +384,10 @@
 
 	<properties>
 		<jira.version>8.14.0</jira.version>
-		<amps.version>8.2.0</amps.version>
-		<ao.version>3.2.10</ao.version>
+		<amps.version>8.2.0-2ef5d6e15</amps.version>
+		<ao.version>3.3.0</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
-		<atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>
+		<atlassian.spring.scanner.version>2.2.1-8199150</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

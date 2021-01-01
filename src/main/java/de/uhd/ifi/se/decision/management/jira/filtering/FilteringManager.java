@@ -79,12 +79,6 @@ public class FilteringManager {
 		}
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
-
-		if (filterSettings.isIrrelevantTextShown()) {
-			KnowledgeGraph graphWithIrrelevantSentences = KnowledgeGraph.copy(subgraph);
-			subgraph = graphWithIrrelevantSentences.addIrrelevantSentencesLinkedTo(elements);
-		}
-
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 
 		return subgraph;

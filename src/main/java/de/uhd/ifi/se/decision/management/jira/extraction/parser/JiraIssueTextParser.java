@@ -53,14 +53,17 @@ public class JiraIssueTextParser {
 		this.partsOfText = new ArrayList<PartOfJiraIssueText>();
 		this.text = text;
 
+		// 1) identify parts of text with tagged decision knowledge elements
 		for (KnowledgeType type : KnowledgeType.macroTypes()) {
 			partsOfText.addAll(findKnowledgeElementsOfType(type));
 		}
 
+		// 2) identify parts of text with other Jira macros, e.g. the code macro
 		for (String jiraMacro : JIRA_MACROS) {
 			partsOfText.addAll(findMacroTextOfType(jiraMacro));
 		}
 
+		// 3) split the remaining text into sentences for automatic text classification
 		if (partsOfText.isEmpty()) {
 			partsOfText.addAll(splitIntoSentences(new PartOfJiraIssueText(text)));
 		}

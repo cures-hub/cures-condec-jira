@@ -459,35 +459,34 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			KnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+		if (request == null || decisionKnowledgeElement == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
 					.build();
 		}
+		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
+							+ "or comments of a Jira issue can be set to irrelevant."))
+					.build();
+		}
+
 		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
-		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
-		}
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
 				.getKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
 		if (sentence == null) {
-			return Response.status(Status.NOT_FOUND)
+			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
 
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
 		sentence.setSummary(null);
-		boolean isUpdated = persistenceManager.updateKnowledgeElement(sentence, null);
-		if (isUpdated) {
-			persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
-			return Response.status(Status.OK).build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
+		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
+		persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
+		return Response.status(Status.OK).build();
 	}
 
 	// TODO Change to POST and pass FilterSettings object
@@ -520,6 +519,20 @@ public class KnowledgeRest {
 		return Response.ok(summary).build();
 	}
 
+	/**
+	 * Rereads all decision knowledge elements documented within the description and
+	 * comments of a Jira issue. For example, this might be useful if linkage
+	 * between knowledge elements was destroyed.
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param jiraIssueId
+	 *            of the {@link Issue} with decision knowledge elements documented
+	 *            within its description and comments (e.g. a user story,
+	 *            development task, ...).
+	 * @return {@link Status.OK} if rereading was successful.
+	 */
 	@Path("/resetDecisionKnowledgeFromText")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -531,7 +544,7 @@ public class KnowledgeRest {
 		}
 		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 		if (jiraIssue == null) {
-			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error",
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
 							+ "because the Jira issue could not be found."))
 					.build();
