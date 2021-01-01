@@ -399,10 +399,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (sentence == null) {
 			return false;
 		}
-		// if the summary is null, only the knowledge type and/or status has changed
-		if (element.getSummary() != null) {
-			sentence.setSummary(element.getDescription());
-		}
+		sentence.setDescription(element.getDescription());
 		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(element);
 		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element);
 		sentence.setType(newType);

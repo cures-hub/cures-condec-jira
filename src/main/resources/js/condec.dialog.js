@@ -493,13 +493,14 @@
         var cancelButton = document.getElementById("change-status-dialog-cancel-button");
 
         // Fill HTML elements
-        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (decisionKnowledgeElement) {
-            fillSelectStatusField(selectStatusField, decisionKnowledgeElement);
+        conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (element) {
+            fillSelectStatusField(selectStatusField, element);
 
             // Set onclick listener on buttons
             submitButton.onclick = function () {
                 var status = selectStatusField.value;
-                conDecAPI.setStatus(id, documentationLocation, decisionKnowledgeElement.type, status, function () {
+                conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, element.type, 
+                		documentationLocation, status, function () {
                     conDecObservable.notify();
                 });
                 AJS.dialog2(changeStatusDialog).hide();
