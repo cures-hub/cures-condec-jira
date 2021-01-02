@@ -488,6 +488,15 @@ public class KnowledgePersistenceManager {
 	}
 
 	/**
+	 * @param element
+	 *            KnowledgeElement with valid id and documentationLocation.
+	 * @return {@link KnowledgeElement} or null if it is not found.
+	 */
+	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
+		return getKnowledgeElement(element.getId(), element.getDocumentationLocation());
+	}
+
+	/**
 	 * @param id
 	 *            id of the {@link KnowledgeElement} in database.
 	 * @param documentationLocationIdentifier

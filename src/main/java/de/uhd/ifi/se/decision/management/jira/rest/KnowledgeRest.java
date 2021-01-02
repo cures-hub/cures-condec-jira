@@ -394,7 +394,13 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey).deleteLink(link, user);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
+		// to fill knowledge types
+		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
+		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
+
+		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
 			LOGGER.info("Link " + link + " was deleted.");
@@ -475,7 +481,7 @@ public class KnowledgeRest {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getKnowledgeElement(decisionKnowledgeElement.getId(), DocumentationLocation.JIRAISSUETEXT);
+				.getKnowledgeElement(decisionKnowledgeElement);
 		if (sentence == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
