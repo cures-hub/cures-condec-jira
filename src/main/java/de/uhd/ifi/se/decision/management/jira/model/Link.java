@@ -457,8 +457,9 @@ public class Link extends DefaultWeightedEdge {
 	 *         unknown documentation location.
 	 */
 	public boolean containsUnknownDocumentationLocation() {
-		return this.getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN
-				|| this.getSource().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
+		return getTarget() == null || getSource() == null
+				|| getTarget().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				|| getSource().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
 	}
 
 	/**
