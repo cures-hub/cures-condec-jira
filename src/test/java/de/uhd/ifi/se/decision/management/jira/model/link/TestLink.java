@@ -133,4 +133,10 @@ public class TestLink extends TestSetUp {
 	public void testContainsUnknownDocumentationLocation() {
 		assertFalse(link.containsUnknownDocumentationLocation());
 	}
+
+	@Test
+	public void testSetProject() {
+		link.setProject("TEST");
+		assertEquals("TEST", link.getTarget().getProject().getProjectKey());
+	}
 }

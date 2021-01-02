@@ -107,6 +107,7 @@ public class DecisionKnowledgeProject {
 				enabledKnowledgeTypes.add(knowledgeType);
 			}
 		}
+		enabledKnowledgeTypes.remove(KnowledgeType.OTHER);
 		return enabledKnowledgeTypes;
 	}
 
@@ -210,7 +211,6 @@ public class DecisionKnowledgeProject {
 		for (IssueType type : getJiraIssueTypes()) {
 			issueTypes.add(type.getNameTranslation());
 		}
-		issueTypes.add("Other");
 		return issueTypes;
 	}
 

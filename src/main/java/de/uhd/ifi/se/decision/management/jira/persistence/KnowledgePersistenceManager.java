@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -111,11 +110,6 @@ public class KnowledgePersistenceManager {
 	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		activePersistenceManagersForSingleLocations.forEach(manager -> elements.addAll(manager.getKnowledgeElements()));
-
-		// remove irrelevant sentences from graph
-		elements.removeIf(
-				element -> (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()));
-
 		return elements;
 	}
 
@@ -219,14 +213,14 @@ public class KnowledgePersistenceManager {
 	 * @return internal database id of inserted link, zero if insertion failed.
 	 */
 	public long insertLink(Link link, ApplicationUser user) {
-		if (link.containsUnknownDocumentationLocation()) {
+		if (link == null || link.containsUnknownDocumentationLocation()) {
 			return 0;
 		}
 
 		long databaseId;
 
 		if (link.isIssueLink()) {
-			databaseId = JiraIssuePersistenceManager.insertLink(link, user);
+			databaseId = jiraIssuePersistenceManager.insertLink(link, user);
 			if (databaseId > 0) {
 				link.setId(databaseId);
 				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
@@ -322,17 +316,15 @@ public class KnowledgePersistenceManager {
 	 * @return true if deletion was successful.
 	 */
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		if (link.containsUnknownDocumentationLocation()) {
+		if (link == null || link.containsUnknownDocumentationLocation()) {
 			return false;
 		}
 
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
-
 		boolean isDeleted;
 		if (link.isIssueLink()) {
-			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
+			isDeleted = jiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
+				isDeleted = jiraIssuePersistenceManager.deleteLink(link.flip(), user);
 			}
 			updateIssueStatus(link, user);
 			return isDeleted;
@@ -403,8 +395,11 @@ public class KnowledgePersistenceManager {
 	public boolean deleteKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		AbstractPersistenceManagerForSingleLocation persistenceManager = KnowledgePersistenceManager
 				.getManagerForSingleLocation(element);
-		KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
-		return persistenceManager.deleteKnowledgeElement(element, user);
+		boolean isDeleted = persistenceManager.deleteKnowledgeElement(element, user);
+		if (isDeleted) {
+			KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
+		}
+		return isDeleted;
 	}
 
 	/**

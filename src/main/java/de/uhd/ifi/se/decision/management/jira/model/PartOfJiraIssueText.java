@@ -40,7 +40,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
 		this.setDescription(textOfEntireDescriptionOrComment.substring(startPosition, endPosition)
-				.replaceAll("\\{.*?\\}", "").trim());
+				.replaceAll("\\{.*?\\}", ""));
 	}
 
 	public PartOfJiraIssueText(String textOfEntireDescriptionOrComment) {
