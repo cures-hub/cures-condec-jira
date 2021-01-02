@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -203,10 +204,20 @@ public class KnowledgeElement {
 	 *            alternative, issue, and argument.
 	 */
 	public void setType(KnowledgeType type) {
-		if (type == null) {
-			this.type = KnowledgeType.OTHER;
+		// If the user tries to change a decision to an alternative, the knowledge type
+		// cannot be changed (i.e. it stays a decision), but the status of the decision
+		// is changed to "rejected".
+		if (type == KnowledgeType.ALTERNATIVE && this.type == KnowledgeType.DECISION) {
+			this.type = KnowledgeType.DECISION;
+			this.status = KnowledgeStatus.REJECTED;
+			return;
 		}
-		this.type = type;
+		// For example, if an alternative is picked as the decision, the status changes
+		// from "idea" to "decided".
+		if (this.type != type) {
+			this.status = KnowledgeStatus.getDefaultStatus(type);
+		}
+		this.type = type == null ? KnowledgeType.OTHER : type;
 	}
 
 	/**
@@ -499,24 +510,20 @@ public class KnowledgeElement {
 	 *         of the given {@link KnowledgeType}.
 	 */
 	public boolean hasNeighborOfType(KnowledgeType knowledgeType) {
-		return getNeighborOfType(knowledgeType) != null;
+		return !getNeighborsOfType(knowledgeType).isEmpty();
 	}
 
 	/**
 	 * @param knowledgeType
 	 *            the {@link KnowledgeType} of the element.
-	 * @return another knowledge element that linked to this knowledge element of
-	 *         the given {@link KnowledgeType}. Null if there is no element of this
-	 *         type linked.
+	 * @return set of other knowledge elements that are linked to this knowledge
+	 *         element of the given {@link KnowledgeType}.
 	 */
-	public KnowledgeElement getNeighborOfType(KnowledgeType knowledgeType) {
+	public Set<KnowledgeElement> getNeighborsOfType(KnowledgeType knowledgeType) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
-		for (KnowledgeElement knowledgeElement : neighbors) {
-			if (knowledgeElement.getType() == knowledgeType)
-				return knowledgeElement;
-		}
-		return null;
+		return neighbors.stream().filter(element -> element.getType().getSuperType() == knowledgeType.getSuperType())
+				.collect(Collectors.toSet());
 	}
 
 	/**

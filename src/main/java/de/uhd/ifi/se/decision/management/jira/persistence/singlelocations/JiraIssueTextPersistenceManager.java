@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextPar
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -399,16 +398,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (sentence == null) {
 			return false;
 		}
-		// if the summary is null, only the knowledge type and/or status has changed
-		if (element.getSummary() != null) {
-			sentence.setSummary(element.getDescription());
-		}
-		KnowledgeType newType = KnowledgeStatus.getNewKnowledgeTypeForStatus(element);
-		KnowledgeStatus newStatus = KnowledgeStatus.getNewKnowledgeStatusForType(sentence, element);
-		sentence.setType(newType);
-		sentence.setStatus(newStatus);
+		// summary and description are the same for PartOfJiraIssueText objects
+		sentence.setDescription(element.getDescription());
+		sentence.setStatus(element.getStatus());
+		sentence.setType(element.getType());
 		sentence.setValidated(true);
-		sentence.setRelevant(newType != KnowledgeType.OTHER);
+		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 		return updateElementInTextAndDatabase(sentence, user);
 	}
 
