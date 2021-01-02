@@ -79,14 +79,14 @@
 				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
 				tableRow += "<td>"+ buildScore(recommendation.score, recommendation.score.score) +"</td>";
 				tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" +  "Accept" + "</button></td>";
-				tableRow += "<td>";
+				tableRow += "<td><ul>";
 				recommendation.arguments.forEach((argument) => {
 					if(argument) {
-						tableRow += "<img src='" + argument.image + "'/>";
-						tableRow += argument.summary;
+						tableRow += "<li><img src='" + argument.image + "'/>";
+						tableRow += argument.summary + "</li>";
 					}
 				});
-				tableRow += "</td>";
+				tableRow += "</ul></td>";
 				tableRow += "</tr>";
 				table.append(tableRow);
 

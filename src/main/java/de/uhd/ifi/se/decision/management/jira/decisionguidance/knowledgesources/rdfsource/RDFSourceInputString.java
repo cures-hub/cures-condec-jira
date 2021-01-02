@@ -9,11 +9,11 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
@@ -24,6 +24,13 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	protected String queryString;
 	protected String timeout;
 	protected int limit;
+	protected List<String> constraints;
+
+	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
+		"PREFIX dct: <http://purl.org/dc/terms/>" +
+		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+		"PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
 
 	@Override
 	public void setData(RDFSource knowledgeSource) {
@@ -34,6 +41,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		this.queryString = this.knowledgeSource.getQueryString();
 		this.timeout = this.knowledgeSource.getTimeout();
 		this.limit = this.knowledgeSource.getLimit();
+		this.constraints = Arrays.asList(this.knowledgeSource.getConstraint().split(";"));
 	}
 
 
@@ -59,23 +67,6 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		return combinedKeywords;
 	}
 
-	// private int calculateScore(String keywords, String inputs) {
-
-	// 	List<String> keywordsList = Arrays.asList(keywords.split("_"));
-	// 	List<String> inputsList = Arrays.asList(inputs.split(" "));
-
-	// 	float inputLength = inputsList.size();
-	// 	int match = 0;
-
-	// 	for (String keyword : keywordsList) {
-	// 		if (inputs.contains(keyword)) match += 1;
-	// 	}
-
-	// 	float score = (match / inputLength) * 100;
-
-	// 	return Math.round(score);
-
-	// }
 
 	/**
 	 * @param queryString
@@ -99,10 +90,8 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 
 			return resultSet;
-		} catch (QueryBuildException e) {
-
-		} catch (QueryParseException e) {
-
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -128,46 +117,30 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 			ResultSet resultSet = this.queryDatabase(queryStringWithInput, this.service, new Params.Pair("timeout", this.timeout));
 
-			Map<String, List<Argument>> argumentsMap = new HashMap<>();
-
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
 
+				String label = this.getLabel(row.get("?subject").toString());
 
-				Recommendation recommendation = new Recommendation(this.knowledgeSource, row.get("?alternative").toString(), row.get("?url").toString());
-				recommendations.add(recommendation);
+				Recommendation recommendation = new Recommendation(this.knowledgeSource, label, row.get("?url").toString());
 
-				//TODO keep arguments variable
+				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
+				int numberOfLinks = aggregatedNumberOfLinks.getInt();
+
+				scoreMap.put(recommendation, numberOfLinks);
+
 				List<Argument> arguments = new ArrayList<>();
 
-				Argument license = this.getArgument(queryStringWithInput, "?license_l", row);
-				Argument os = this.getArgument(queryStringWithInput, "?os_l", row);
-				Argument language = this.getArgument(queryStringWithInput, "?language_l", row);
-
-				arguments.add(license);
-				arguments.add(os);
-				arguments.add(language);
-
-
-				try {
-					arguments.addAll(argumentsMap.get(row.get("?alternative").toString()));
-				} catch (Exception e) {
-
+				for (String constraint : this.constraints) {
+					arguments.addAll(this.getArgument(row.get("?subject").toString(), constraint));
 				}
 
-				argumentsMap.put(row.get("?alternative").toString(), arguments);
 
-
-			}
-
-			HashSet<Recommendation> uniqueRecommendation = new HashSet<>(recommendations);
-			for (Recommendation recommendation : uniqueRecommendation) {
-				List<Argument> arguments = argumentsMap.get(recommendation.getRecommendation()).stream().distinct().collect(Collectors.toList());
-				if (arguments != null)
-					recommendation.setArguments(arguments);
-				scoreMap.put(recommendation, Collections.frequency(recommendations, recommendation));
+				recommendation.addArguments(arguments);
+				recommendations.add(recommendation);
 
 			}
+
 		}
 
 		return this.getRecommendationWithScore(scoreMap);
@@ -189,16 +162,39 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		return recommendationWithScore;
 	}
 
-	private Argument getArgument(String query, String constraint, QuerySolution row) {
+	private String getLabel(String resource) {
 
-		if (query.contains(constraint)) {
-			String argumentSummary = row.get(constraint).toString();
-			KnowledgeElement knowledgeElement = new KnowledgeElement();
-			knowledgeElement.setType(KnowledgeType.ARGUMENT);
-			knowledgeElement.setSummary(argumentSummary);
-			return new Argument(knowledgeElement);
+		String query = String.format(PREFIX + " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }", resource);
+
+		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout));
+
+		String label = "";
+		while (arguments != null && arguments.hasNext()) {
+			QuerySolution row = arguments.nextSolution();
+			label = row.get("?label").toString();
 		}
-		return null;
+		return label;
+	}
+
+	private List<Argument> getArgument(String resource, String constraint) {
+
+		String query = String.format(PREFIX + " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}", resource, constraint);
+
+		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout));
+
+		List<Argument> argumentsList = new ArrayList<>();
+
+		while (arguments != null && arguments.hasNext()) {
+			QuerySolution row = arguments.nextSolution();
+			String argumentSummary = constraint + " : " + row.get("?argument").toString();
+			KnowledgeElement knowledgeElement = new KnowledgeElement();
+			knowledgeElement.setType(KnowledgeType.PRO);
+			knowledgeElement.setDocumentationLocation("s");
+			knowledgeElement.setSummary(argumentSummary);
+			argumentsList.add(new Argument(knowledgeElement));
+
+		}
+		return argumentsList;
 	}
 
 	private RecommendationScore getScore(int maxValue, int actualValue) {

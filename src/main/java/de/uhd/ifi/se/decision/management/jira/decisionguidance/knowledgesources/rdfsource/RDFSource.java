@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 import java.util.Objects;
@@ -13,6 +12,7 @@ public class RDFSource extends KnowledgeSource {
 	protected String queryString;
 	protected String timeout;
 	protected int limit;
+	protected String constraint;
 
 	public RDFSource() {
 
@@ -32,6 +32,7 @@ public class RDFSource extends KnowledgeSource {
 		this.limit = 10;
 		this.isActivated = true;
 		this.icon = "aui-iconfont-download";
+		this.constraint = "";
 	}
 
 	/**
@@ -50,6 +51,7 @@ public class RDFSource extends KnowledgeSource {
 		this.isActivated = true;
 		this.limit = limit;
 		this.icon = "aui-iconfont-download";
+		this.constraint = "";
 	}
 
 	@Override
@@ -88,6 +90,14 @@ public class RDFSource extends KnowledgeSource {
 
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+
+	public String getConstraint() {
+		return constraint;
+	}
+
+	public void setConstraints(String constraint) {
+		this.constraint = constraint;
 	}
 
 	@Override
