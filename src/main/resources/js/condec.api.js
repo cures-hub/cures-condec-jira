@@ -194,7 +194,7 @@
 	ConDecAPI.prototype.changeKnowledgeType = function (id, type, documentationLocation, callback) {
 		this.getDecisionKnowledgeElement(id, documentationLocation, function (element) {
         	conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type, 
-				documentationLocation, element.status, callback);
+				documentationLocation, null, callback);
         });
 	};
 
