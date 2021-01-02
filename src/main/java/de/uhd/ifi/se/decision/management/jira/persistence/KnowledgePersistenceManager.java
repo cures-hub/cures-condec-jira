@@ -225,6 +225,7 @@ public class KnowledgePersistenceManager {
 				link.setId(databaseId);
 				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
 			}
+			updateIssueStatus(link, user);
 			return databaseId;
 		}
 
@@ -267,7 +268,7 @@ public class KnowledgePersistenceManager {
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
 		boolean isIssueResolved = false;
 		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
-			if (IssueCompletenessCheck.isDecisionLinkedToDecisionProblem(element)) {
+			if (IssueCompletenessCheck.isValidDecisionLinkedToDecisionProblem(element)) {
 				isIssueResolved = true;
 			}
 
@@ -418,6 +419,9 @@ public class KnowledgePersistenceManager {
 		if (isUpdated) {
 			KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId());
 			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
+			for (KnowledgeElement issue : updatedElement.getNeighborsOfType(KnowledgeType.PROBLEM)) {
+				updateIssueStatus(issue, user);
+			}
 		}
 		return isUpdated;
 	}
@@ -481,6 +485,15 @@ public class KnowledgePersistenceManager {
 			return null;
 		}
 		return persistenceManager.getKnowledgeElement(id);
+	}
+
+	/**
+	 * @param element
+	 *            KnowledgeElement with valid id and documentationLocation.
+	 * @return {@link KnowledgeElement} or null if it is not found.
+	 */
+	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
+		return getKnowledgeElement(element.getId(), element.getDocumentationLocation());
 	}
 
 	/**

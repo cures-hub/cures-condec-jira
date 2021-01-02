@@ -135,7 +135,6 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
-		console.log(newElement);
 		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
 			+ documentationLocationOfExistingElement, newElement, function (error, newElement) {
@@ -187,13 +186,15 @@
 	};
 
 	/**
-	 * Updates the knowledge type of the element. The summary and description are set null 
-	 * to indicate that only the knowledge type is updated. 
+	 * Updates the knowledge type of the element.
 	 *
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function (id, type, documentationLocation, callback) {
-		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, null, callback);
+		this.getDecisionKnowledgeElement(id, documentationLocation, function (element) {
+        	conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type, 
+				documentationLocation, null, callback);
+        });
 	};
 
 	/*
@@ -249,16 +250,6 @@
 			});
 	};
 
-	/**
-	 * Updates the knowledge status of the element. The summary and description are set null 
-	 * to indicate that only the knowledge status is updated. 
-	 *
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.setStatus = function (id, documentationLocation, type, status, callback) {
-		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
-	};
-
 	/*
 	 * external references: condec.export, condec.decision.table
 	 */
@@ -267,24 +258,6 @@
 		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements.json", filterSettings, function (error, elements) {
 			if (error === null) {
 				callback(elements);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.setSentenceIrrelevant = function (id, callback) {
-		var jsondata = {
-			"id": id,
-			"documentationLocation": "s",
-			"projectKey": projectKey
-		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function (
-			error) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
 			}
 		});
 	};

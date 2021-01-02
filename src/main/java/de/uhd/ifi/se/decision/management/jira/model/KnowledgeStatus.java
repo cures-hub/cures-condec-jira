@@ -70,60 +70,6 @@ public enum KnowledgeStatus {
 	}
 
 	/**
-	 * If the knowledge type changes, the status might change as well. For example,
-	 * when an alternative is picked as the decision, the status changes to
-	 * "decided".
-	 *
-	 * @param formerElement
-	 *            {@link KnowledgeElement} before the change.
-	 * @param newElement
-	 *            {@link KnowledgeElement} after it was updated.
-	 * @return new status after the change of the {@link KnowledgeType}.
-	 */
-	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeElement formerElement,
-			KnowledgeElement newElement) {
-		return getNewKnowledgeStatusForType(formerElement.getType(), newElement.getType(), newElement.getStatus());
-	}
-
-	public static KnowledgeStatus getNewKnowledgeStatusForType(KnowledgeType formerType, KnowledgeType newType,
-			KnowledgeStatus newStatus) {
-		if (formerType == KnowledgeType.DECISION && newType == KnowledgeType.ALTERNATIVE) {
-			return REJECTED;
-		}
-		if (formerType == KnowledgeType.ALTERNATIVE && newType == KnowledgeType.DECISION) {
-			return DECIDED;
-		}
-		return newStatus;
-	}
-
-	/**
-	 * If the knowledge status changes, the knowledge type might change as well. For
-	 * example, when the status of an alternative is changed to "decided", the
-	 * alternative becomes a decision.
-	 *
-	 * @param element
-	 *            {@link KnowledgeElement} after it was updated.
-	 * @return new {@link KnowledgeType} after the change of the
-	 *         {@link KnowledgeStatus}.
-	 */
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeElement element) {
-		return getNewKnowledgeTypeForStatus(element.getStatus(), element.getType());
-	}
-
-	public static KnowledgeType getNewKnowledgeTypeForStatus(KnowledgeStatus newStatus, KnowledgeType formerType) {
-		if (formerType == null) {
-			return KnowledgeType.OTHER;
-		}
-		if (formerType == KnowledgeType.DECISION && (newStatus == IDEA || newStatus == DISCARDED)) {
-			return KnowledgeType.ALTERNATIVE;
-		}
-		if (formerType == KnowledgeType.ALTERNATIVE && newStatus == DECIDED) {
-			return KnowledgeType.DECISION;
-		}
-		return formerType;
-	}
-
-	/**
 	 * @return list of all valid knowledge status.
 	 */
 	public static List<KnowledgeStatus> getAllKnowledgeStatus() {

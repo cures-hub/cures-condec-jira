@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model.link;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
@@ -132,6 +133,17 @@ public class TestLink extends TestSetUp {
 	@Test
 	public void testContainsUnknownDocumentationLocation() {
 		assertFalse(link.containsUnknownDocumentationLocation());
+		link.setDocumentationLocationOfDestinationElement("");
+		assertTrue(link.containsUnknownDocumentationLocation());
+		link.setDocumentationLocationOfDestinationElement("i");
+		link.setDocumentationLocationOfSourceElement("");
+		assertTrue(link.containsUnknownDocumentationLocation());
+
+		link.setSourceElement(null);
+		assertTrue(link.containsUnknownDocumentationLocation());
+
+		link.setDestinationElement(null);
+		assertTrue(link.containsUnknownDocumentationLocation());
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
@@ -41,5 +42,16 @@ public class TestGetType extends TestSetUp {
 		KnowledgeElement element = new KnowledgeElement();
 		element.setType((KnowledgeType) null);
 		assertEquals(KnowledgeType.OTHER, element.getType());
+	}
+
+	@Test
+	public void testUpdateKnowledgeTypeAndStatus() {
+		KnowledgeElement newElement = new KnowledgeElement();
+		newElement.setType(KnowledgeType.DECISION);
+		assertEquals(KnowledgeStatus.DECIDED, newElement.getStatus());
+
+		newElement.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeStatus.REJECTED, newElement.getStatus());
+		assertEquals(KnowledgeType.DECISION, newElement.getType());
 	}
 }

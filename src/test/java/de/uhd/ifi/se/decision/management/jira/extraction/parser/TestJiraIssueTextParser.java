@@ -148,7 +148,7 @@ public class TestJiraIssueTextParser extends TestSetUp {
 						+ "{quote} this is a also a fourth quote {quote} "
 						+ "{code:java} this is a fifth code {code} and this is a sixth test Sentence.");
 		assertEquals(6, sentences.size());
-		assertEquals(" this is a fifth code ", sentences.get(4).getDescription());
+		assertEquals("this is a fifth code", sentences.get(4).getDescription());
 	}
 
 	@Test
