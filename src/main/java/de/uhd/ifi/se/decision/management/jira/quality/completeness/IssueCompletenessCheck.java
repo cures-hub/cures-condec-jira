@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -19,7 +21,7 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return isDecisionLinkedToDecisionProblem(issue) && issue.getStatus() != KnowledgeStatus.UNRESOLVED;
+		return isValidDecisionLinkedToDecisionProblem(issue) && issue.getStatus() != KnowledgeStatus.UNRESOLVED;
 	}
 
 	@Override
@@ -37,9 +39,9 @@ public class IssueCompletenessCheck implements CompletenessCheck {
 	 *            decision problem as a {@link KnowledgeElement} object.
 	 * @return true if a valid decision is linked to the issue.
 	 */
-	public static boolean isDecisionLinkedToDecisionProblem(KnowledgeElement issue) {
-		KnowledgeElement linkedDecision = issue.getNeighborOfType(KnowledgeType.DECISION);
-		return linkedDecision != null && linkedDecision.getStatus() != KnowledgeStatus.CHALLENGED
-				&& linkedDecision.getStatus() != KnowledgeStatus.REJECTED;
+	public static boolean isValidDecisionLinkedToDecisionProblem(KnowledgeElement issue) {
+		Set<KnowledgeElement> linkedDecisions = issue.getNeighborsOfType(KnowledgeType.DECISION);
+		return !linkedDecisions.isEmpty()
+				&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() == KnowledgeStatus.DECIDED);
 	}
 }
