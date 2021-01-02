@@ -37,36 +37,6 @@ public class TestKnowledgeStatus {
 	}
 
 	@Test
-	public void testGetNewKnowledgeStatusForType() {
-		KnowledgeElement formerElement = new KnowledgeElement();
-		formerElement.setType(KnowledgeType.ALTERNATIVE);
-		KnowledgeElement newElement = new KnowledgeElement();
-		newElement.setType(KnowledgeType.DECISION);
-		assertEquals(KnowledgeStatus.DECIDED, KnowledgeStatus.getNewKnowledgeStatusForType(formerElement, newElement));
-
-		assertEquals(KnowledgeStatus.REJECTED,
-				KnowledgeStatus.getNewKnowledgeStatusForType(KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, null));
-		assertEquals(KnowledgeStatus.IDEA, KnowledgeStatus.getNewKnowledgeStatusForType(KnowledgeType.ALTERNATIVE,
-				KnowledgeType.ALTERNATIVE, KnowledgeStatus.IDEA));
-	}
-
-	@Test
-	public void testGetNewKnowledgeTypeForStatus() {
-		KnowledgeElement element = new KnowledgeElement();
-		assertEquals(KnowledgeType.OTHER, KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
-		assertEquals(KnowledgeType.OTHER, KnowledgeStatus.getNewKnowledgeTypeForStatus(null, null));
-
-		element.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(KnowledgeType.ALTERNATIVE, KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
-
-		element.setStatus(KnowledgeStatus.DECIDED);
-		assertEquals(KnowledgeType.DECISION, KnowledgeStatus.getNewKnowledgeTypeForStatus(element));
-
-		assertEquals(KnowledgeType.ALTERNATIVE,
-				KnowledgeStatus.getNewKnowledgeTypeForStatus(KnowledgeStatus.IDEA, KnowledgeType.DECISION));
-	}
-
-	@Test
 	public void testGetColor() {
 		assertEquals("crimson", KnowledgeStatus.UNRESOLVED.getColor());
 		assertEquals("gray", KnowledgeStatus.DISCARDED.getColor());

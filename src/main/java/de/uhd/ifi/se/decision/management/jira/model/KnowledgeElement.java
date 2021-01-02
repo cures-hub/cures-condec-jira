@@ -203,10 +203,24 @@ public class KnowledgeElement {
 	 *            alternative, issue, and argument.
 	 */
 	public void setType(KnowledgeType type) {
-		if (type == null) {
-			this.type = KnowledgeType.OTHER;
+		switch (getType()) {
+		case DECISION:
+			// If the user tries to change a decision to an alternative, the knowledge type
+			// cannot be changed (i.e. it stays a decision), but the status of the decision
+			// is changed to "rejected".
+			if (type == KnowledgeType.ALTERNATIVE) {
+				this.type = KnowledgeType.DECISION;
+				this.status = KnowledgeStatus.REJECTED;
+			}
+			break;
+		case ALTERNATIVE:
+			// If an alternative is picked as the decision, the status changes to "decided".
+			if (type == KnowledgeType.DECISION) {
+				this.status = KnowledgeStatus.DECIDED;
+			}
+		default:
+			this.type = type == null ? KnowledgeType.OTHER : type;
 		}
-		this.type = type;
 	}
 
 	/**
