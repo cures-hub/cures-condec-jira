@@ -332,12 +332,14 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (issueToBeUpdated == null) {
 			return false;
 		}
+		// If the user tries to change a decision to an alternative, the knowledge type
+		// cannot be changed (i.e. it stays a decision), but the status of the decision
+		// is changed to "rejected".
 		KnowledgeElement formerElement = new KnowledgeElement(issueToBeUpdated);
-		// for decision -> alternative stays decision
-		formerElement.setType(element.getType());
-		element.setType(KnowledgeType.OTHER);
-		element.setType(formerElement.getType());
-		element.setStatus(formerElement.getStatus());
+		if (element.getType() == KnowledgeType.ALTERNATIVE && formerElement.getType() == KnowledgeType.DECISION) {
+			element.setType(KnowledgeType.DECISION);
+			element.setStatus(KnowledgeStatus.REJECTED);
+		}
 
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		setParameters(element, issueInputParameters);

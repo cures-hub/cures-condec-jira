@@ -135,7 +135,6 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
-		console.log(newElement);
 		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
 			+ documentationLocationOfExistingElement, newElement, function (error, newElement) {
