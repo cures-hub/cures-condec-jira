@@ -32,6 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -39,9 +40,9 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -208,7 +209,7 @@ public class ConfigPersistenceManager {
 		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
 		try {
 			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
-					"gitRepositoryConfigurations", type);
+				"gitRepositoryConfigurations", type);
 		} catch (JsonSyntaxException e) {
 
 		}
@@ -219,7 +220,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
+											   boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
@@ -282,7 +283,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-			List<String> selectedIssueNames) {
+											 List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -361,16 +362,22 @@ public class ConfigPersistenceManager {
 
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
+		List<RDFSource> temp = new ArrayList<>();
 		if (projectKey == null)
 			return rdfSourceList;
 
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		try {
-			rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
+			temp = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
+			if (temp != null) {
+				for (RDFSource source : temp) {
+					source.setLimit(getMaxNumberRecommendations(projectKey));
+					rdfSourceList.add(source);
+				}
+			}
 		} catch (JsonSyntaxException e) {
 		} finally {
-			// TODO Fix: finally block does not complete normally
 			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
 		}
 	}
@@ -436,10 +443,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-						jiraProject.getProjectKey());
+					jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-							projectSourceActivation);
+						projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -478,7 +485,7 @@ public class ConfigPersistenceManager {
 		Map<String, Boolean> recommenderTypes = new HashMap<>();
 		for (RecommenderType recommenderType : RecommenderType.values()) {
 			recommenderTypes.put(recommenderType.toString(),
-					Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
+				Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
 		}
 		return recommenderTypes;
 	}

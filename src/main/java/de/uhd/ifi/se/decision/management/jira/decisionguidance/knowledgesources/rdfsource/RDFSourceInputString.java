@@ -91,7 +91,6 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 			return resultSet;
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return null;
 	}

@@ -483,12 +483,12 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100);
+		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1,
 				ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
 
-		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100);
+		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
 		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
 		assertEquals("service2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getService());
 		assertEquals("query2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getQueryString());
