@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinform
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -40,18 +40,17 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		try {
 			pp.preprocess(baseElement.getDescription());
-			List<CharSequence> stemmedI1Description = pp.getTokens();
+			CharSequence[] stemmedI1Description = pp.getTokens();
 			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
 			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
-
 					pp.preprocess(knowledgeElement.getDescription());
-					List<CharSequence> stemmedI2Description = pp.getTokens();
-					List<CharSequence> concatenatedList = new ArrayList<>();
-					concatenatedList.addAll(stemmedI1Description);
-					concatenatedList.addAll(stemmedI2Description);
+					CharSequence[] stemmedI2Description = pp.getTokens();
+					CharSequence[] concatenatedList = new CharSequence[stemmedI1Description.length
+					                                                   + stemmedI2Description.length];
+					concatenatedList = stemmedI1Description;// + stemmedI2Description
 
 					int unionCount = uniqueElements(concatenatedList).length;
 
@@ -77,8 +76,8 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 
 	}
 
-	private String[] uniqueElements(List<CharSequence> list) {
-		HashSet<CharSequence> hashedArray = new HashSet<CharSequence>(list);
+	private String[] uniqueElements(CharSequence[] list) {
+		Set<CharSequence> hashedArray = Set.of(list);
 		return hashedArray.toArray(String[]::new);
 	}
 

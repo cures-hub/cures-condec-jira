@@ -1,13 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 
 public class PreprocessedData {
 
-	public List<double[]> preprocessedSentences;
+	public double[][] preprocessedSentences;
 	public int[] updatedLabels;
 	public Preprocessor preprocessor;
 
@@ -15,12 +12,12 @@ public class PreprocessedData {
 		preprocessor = Preprocessor.getInstance();
 		if (isFineGrained) {
 			int size = trainingData.relevantSentences.length;
-			preprocessedSentences = new ArrayList<>();
+			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
 			preprocess(trainingData.relevantSentences, trainingData.labelsKnowledgeType);
 		} else {
 			int size = trainingData.sentences.length;
-			preprocessedSentences = new ArrayList<>();
+			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
 			preprocess(trainingData.sentences, trainingData.labelsIsRelevant);
 		}
@@ -39,15 +36,13 @@ public class PreprocessedData {
 	 */
 	private void preprocess(String[] stringsToBePreprocessed, int[] labels) {
 		for (int i = 0; i < stringsToBePreprocessed.length; i++) {
-			List<double[]> preprocessedSentence;
 			try {
-				preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
-				for (int _i = 0; _i < preprocessedSentence.size(); _i++) {
+				double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
+				for (int j = 0; j < preprocessedSentence.length; j++) {
 					updatedLabels[i] = labels[i];
 				}
-				preprocessedSentences.addAll(preprocessedSentence);
+				preprocessedSentences[i] = new double[preprocessedSentence.length];
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

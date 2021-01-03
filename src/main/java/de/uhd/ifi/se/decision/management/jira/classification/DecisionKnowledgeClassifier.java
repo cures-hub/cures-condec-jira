@@ -77,7 +77,7 @@ public class DecisionKnowledgeClassifier {
 	private boolean makeBinaryPrediction(String stringToBeClassified)
 			throws Exception {
 
-		List<double[]> features = preprocess(stringToBeClassified);
+		double[][] features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
@@ -134,13 +134,13 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 *            labels of the instances
 	 */
-	public void trainBinaryClassifier(List<double[]> features, int[] labels) {
+	public void trainBinaryClassifier(double[][] features, int[] labels) {
 		this.binaryClassifier.train(features, labels);
 	}
 
 	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults,
 			int i) throws Exception {
-		List<double[]> features = preprocess(stringToBeClassified);
+		double[][] features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
@@ -206,7 +206,7 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 * @see this.trainBinaryClassifier
 	 */
-	public void trainFineGrainedClassifier(List<double[]> features, int[] labels) {
+	public void trainFineGrainedClassifier(double[][] features, int[] labels) {
 		this.fineGrainedClassifier.train(features, labels);
 	}
 
@@ -218,7 +218,7 @@ public class DecisionKnowledgeClassifier {
 	 *            sentence
 	 * @return preprocessed sentence in a numerical representation.
 	 */
-	public List<double[]> preprocess(String stringsToBePreprocessed) throws Exception {
+	public double[][] preprocess(String stringsToBePreprocessed) throws Exception {
 		return Preprocessor.getInstance().preprocess(stringsToBePreprocessed);
 	}
 

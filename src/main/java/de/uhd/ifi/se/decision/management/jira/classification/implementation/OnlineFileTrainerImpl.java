@@ -135,7 +135,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public boolean update(PartOfJiraIssueText sentence) {
 		try {
-			List<double[]> features = classifier.preprocess(sentence.getSummary());
+			double[][] features = classifier.preprocess(sentence.getSummary());
 			// classifier needs numerical value
 			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
 

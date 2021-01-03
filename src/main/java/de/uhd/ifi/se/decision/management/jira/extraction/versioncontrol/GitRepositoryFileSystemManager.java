@@ -9,8 +9,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
 /**
  * File system manager for git repositories.
@@ -27,8 +26,7 @@ public class GitRepositoryFileSystemManager {
 	 * @pro The Git integration for Jira plug-in clones its repos to a similar
 	 *      folder: JiraHome/data/git-plugin.
 	 */
-	public static String GIT_DIRECTORY = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
+	public static String GIT_DIRECTORY = ComponentGetter.PLUGIN_HOME + "git" + File.separator;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFileSystemManager.class);
 

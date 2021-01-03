@@ -35,7 +35,6 @@ class PreTrainedGloveSingleton {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
-
 	}
 
 	public static PreTrainedGloveSingleton getInstance() {
@@ -49,7 +48,6 @@ class PreTrainedGloveSingleton {
 		return instance;
 	}
 
-	// This method is private because at the moment only the 50D vector is used.
 	public static PreTrainedGloveSingleton getInstance(File file) {
 		if (PreTrainedGloveSingleton.instance == null) {
 			PreTrainedGloveSingleton.instance = new PreTrainedGloveSingleton(file);

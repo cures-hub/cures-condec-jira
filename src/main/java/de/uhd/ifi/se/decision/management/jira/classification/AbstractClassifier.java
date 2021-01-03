@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.util.List;
-
 import smile.classification.SVM;
 import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.MercerKernel;
@@ -44,7 +42,7 @@ public abstract class AbstractClassifier {
 		Double[][] instances = new Double[1][1];
 		double[] weight = new double[1];
 		double b = 1;
-		this.model = new SVM<double[]>(kernel, features, weight, b);
+		this.model = SVM.fit(features, labels, kernel, b, numClasses);
 		double c = 1;
 		double tol = 1;
 		if (!this.currentlyTraining) {
@@ -62,20 +60,6 @@ public abstract class AbstractClassifier {
 			throw new AlreadyInTrainingException(this.toString() + " is already in training!");
 		}
 
-	}
-
-	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param features
-	 * @param labels
-	 */
-	public void train(List<double[]> features, int[] labels) {
-		double[][] featuresArray = new double[features.size()][features.get(0).length];
-		for (int i = 0; i < features.size(); i++) {
-			featuresArray[i] = features.get(i);
-		}
-		// this.train(featuresArray, labels.toArray(Integer[]::new));
 	}
 
 	/**

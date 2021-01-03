@@ -3,16 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
@@ -28,11 +23,9 @@ import opennlp.tools.tokenize.TokenizerModel;
 public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
-	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
+	public static String DEFAULT_DIR = ComponentGetter.PLUGIN_HOME + "classifier" + File.separator;
 
-	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", // "lemmatizer.dict",
-			"glove.6b.50d.csv");
+	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "glove.6b.50d.csv");
 	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
 	public static String URL_TOKEN = "URL";
 
@@ -46,9 +39,8 @@ public class Preprocessor {
 	private Stemmer stemmer;
 	private POSTaggerME tagger;
 	private final PreTrainedGloveSingleton glove;
-	// private NameFinderME nameFinder;
 	private final Integer nGramN;
-	private List<CharSequence> tokens;
+	private CharSequence[] tokens;
 
 	private static Preprocessor instance;
 
@@ -111,8 +103,8 @@ public class Preprocessor {
 	 *            as a string.
 	 * @return list of word tokens.
 	 */
-	public List<String> tokenize(String sentence) {
-		return Arrays.asList(this.tokenizer.tokenize(sentence));
+	public String[] tokenize(String sentence) {
+		return tokenizer.tokenize(sentence);
 	}
 
 	/**
@@ -137,10 +129,14 @@ public class Preprocessor {
 	 *
 	 * @param tokens
 	 *            of words to be stemmed.
-	 * @return List of stemmed tokens.
+	 * @return stemmed tokens.
 	 */
-	public List<CharSequence> stem(List<String> tokens) {
-		return tokens.stream().map((token) -> stemmer.stem(token)).collect(Collectors.toList());
+	public CharSequence[] stem(String[] tokens) {
+		CharSequence[] stemmendTokens = new CharSequence[tokens.length];
+		for (int i = 0; i < tokens.length; i++) {
+			stemmendTokens[i] = stemmer.stem(tokens[i]);
+		}
+		return stemmendTokens;
 
 	}
 
@@ -157,10 +153,10 @@ public class Preprocessor {
 	 *            N-Gram number
 	 * @return List of N-Grams
 	 */
-	public List<double[]> generateNGram(List<double[]> tokens, Integer N) {
-		List<double[]> nGrams = new ArrayList<>();
-		for (int i = 0; i < tokens.size() - N + 1; i++)
-			nGrams.add(concat(tokens, i, i + N));
+	public double[][] generateNGram(double[][] tokens, Integer N) {
+		double[][] nGrams = new double[tokens.length][];
+		for (int i = 0; i < tokens.length - N + 1; i++)
+			nGrams[i] = concat(tokens, i, i + N);
 		return nGrams;
 	}
 
@@ -172,10 +168,10 @@ public class Preprocessor {
 	 *            List of words in String-representation
 	 * @return List of words in numerical representation
 	 */
-	private double[] concat(List<double[]> tokens, int start, int end) {
+	private double[] concat(double[][] tokens, int start, int end) {
 		double[] gram = new double[end - start];
 		for (int i = start; i < end; i++)
-			gram = tokens.get(i);
+			gram = tokens[i];
 		return gram;
 	}
 
@@ -187,10 +183,10 @@ public class Preprocessor {
 	 *            list of words in String representation.
 	 * @return list of words in numerical representation.
 	 */
-	public List<double[]> convertToNumbers(List<String> tokens) {
-		List<double[]> numberTokens = new ArrayList<>();
-		for (String wordToken : tokens) {
-			numberTokens.add(glove.getWordVector(wordToken));
+	public double[][] convertToNumbers(String[] tokens) {
+		double[][] numberTokens = new double[tokens.length][];
+		for (int i = 0; i < tokens.length; i++) {
+			numberTokens[i] = glove.getWordVector(tokens[i]);
 		}
 		return numberTokens;
 	}
@@ -208,7 +204,7 @@ public class Preprocessor {
 	 *            to be preprocessed
 	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
-	public synchronized List<double[]> preprocess(String sentence) {
+	public synchronized double[][] preprocess(String sentence) {
 		try {
 			String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
 			cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
@@ -216,16 +212,16 @@ public class Preprocessor {
 					WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
 			// replace long words and possible methods!
 			cleanedSentence = cleanedSentence.toLowerCase();
-			List<String> tokens = tokenize(cleanedSentence);
+			String[] tokens = tokenize(cleanedSentence);
 			this.tokens = stem(tokens);
 
-			List<double[]> numberTokens = this.convertToNumbers(tokens);
+			double[][] numberTokens = convertToNumbers(tokens);
 
-			return this.generateNGram(numberTokens, this.nGramN);
+			return generateNGram(numberTokens, nGramN);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return new double[sentence.length()][];
 	}
 
 	/**
@@ -238,7 +234,7 @@ public class Preprocessor {
 		}
 	}
 
-	public List<CharSequence> getTokens() {
-		return this.tokens;
+	public CharSequence[] getTokens() {
+		return tokens;
 	}
 }
