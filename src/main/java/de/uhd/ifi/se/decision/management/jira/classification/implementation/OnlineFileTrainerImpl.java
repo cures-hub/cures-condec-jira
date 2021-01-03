@@ -35,8 +35,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import smile.validation.ClassificationMeasure;
-import smile.validation.FMeasure;
+import smile.validation.metric.ClassificationMetric;
+import smile.validation.metric.FScore;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -440,8 +440,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	@Override
 	public Map<String, Double> evaluateClassifier() throws Exception {
 		// create and initialize default measurements list
-		List<ClassificationMeasure> defaultMeasurements = new ArrayList<>();
-		defaultMeasurements.add(new FMeasure());
+		List<ClassificationMetric> defaultMeasurements = new ArrayList<>();
+		defaultMeasurements.add(new FScore());
 		// TODO how to apply to more than binary classification
 		// defaultMeasurements.add(new Precision());
 		// defaultMeasurements.add(new Accuracy());
@@ -458,7 +458,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
+	public Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
 			List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
@@ -495,10 +495,10 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		LOGGER.info("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
 
 		// calculate measurements for each ClassificationMeasure in measurements
-		for (ClassificationMeasure measurement : measurements) {
+		for (ClassificationMetric measurement : measurements) {
 			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
 			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
-			Double binaryMeasurement = measurement.measure(ArrayUtils.toPrimitive(binaryTruths),
+			Double binaryMeasurement = measurement.score(ArrayUtils.toPrimitive(binaryTruths),
 					ArrayUtils.toPrimitive(binaryPredictions));
 			resultsMap.put(binaryKey, binaryMeasurement);
 
@@ -511,7 +511,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 				Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions,
 						classLabel);
 
-				Double fineGrainedMeasurement = measurement.measure(ArrayUtils.toPrimitive(currentFineGrainedTruths),
+				Double fineGrainedMeasurement = measurement.score(ArrayUtils.toPrimitive(currentFineGrainedTruths),
 						ArrayUtils.toPrimitive(currentFineGrainedPredictions));
 				resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
 			}

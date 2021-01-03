@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import smile.validation.ClassificationMeasure;
+import smile.validation.metric.ClassificationMetric;
 
 public interface EvaluableClassifier {
 
@@ -24,6 +24,6 @@ public interface EvaluableClassifier {
 	 * @return Map of evaluation results
 	 * @throws Exception
 	 */
-	Map<String, Double> evaluateClassifier(List<ClassificationMeasure> measurements,
-										   List<KnowledgeElement> partOfJiraIssueTexts) throws Exception;
+	Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
+			List<KnowledgeElement> partOfJiraIssueTexts) throws Exception;
 }

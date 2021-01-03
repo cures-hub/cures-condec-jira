@@ -28,11 +28,9 @@ public abstract class AbstractClassifier {
 	}
 
 	public AbstractClassifier(Double c, MercerKernel<Double[]> kernel, Integer epochs, Integer numClasses) {
-		if (numClasses <= 2) {
-			this.model = new SVM<Double[]>(kernel, c, numClasses);
-		} else {
-			this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ALL);
-		}
+		Double[][] instances = new Double[1][1];
+		double[] weight = new double[1];
+		this.model = new SVM<Double[]>(kernel, instances, weight, c);
 		this.epochs = epochs;
 		this.modelIsTrained = false;
 		this.numClasses = numClasses;
@@ -45,16 +43,17 @@ public abstract class AbstractClassifier {
 	 * @param features
 	 * @param labels
 	 */
-	public void train(Double[][] features, Integer[] labels) throws AlreadyInTrainingException {
-
+	public void train(double[][] features, Integer[] labels) throws AlreadyInTrainingException {
+		double c = 1;
+		double tol = 1;
 		if (!this.currentlyTraining) {
 			this.currentlyTraining = true;
 			for (int i = 0; i < this.epochs; i++) {
-				this.model.learn(features, ArrayUtils.toPrimitive(labels));
+				this.model.fit(features, ArrayUtils.toPrimitive(labels), c, tol);
 			}
-			this.model.finish();
+			// this.model.finish();
 
-			this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
+			// this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
 
 			this.currentlyTraining = false;
 			this.modelIsTrained = true;
@@ -75,7 +74,7 @@ public abstract class AbstractClassifier {
 		for (int i = 0; i < features.size(); i++) {
 			featuresArray[i] = features.get(i).toArray(Double[]::new);
 		}
-		this.train(featuresArray, labels.toArray(Integer[]::new));
+		// this.train(featuresArray, labels.toArray(Integer[]::new));
 	}
 
 	/**
@@ -87,7 +86,7 @@ public abstract class AbstractClassifier {
 	public void train(Double[] features, Integer label) {
 		this.modelIsTrained = true;
 
-		this.model.learn(features, label);
+		// this.model.learn(features, label);
 
 		this.modelIsTrained = true;
 	}
@@ -99,7 +98,8 @@ public abstract class AbstractClassifier {
 	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
 		if (this.modelIsTrained) {
 			double[] probabilities = new double[this.numClasses];
-			this.model.predict(feature, probabilities);
+			// this.model.predict(feature, probabilities);
+			this.model.predict(feature);
 			return probabilities;
 		} else {
 			throw new InstantiationError("Classifier has not been trained!");

@@ -22,4 +22,34 @@ public class GaussianKernelDouble<T extends Double> implements MercerKernel<Doub
 	public double k(Double[] x, Double[] y) {
 		return gaussianKernel.k(ArrayUtils.toPrimitive(x), ArrayUtils.toPrimitive(y));
 	}
+
+	@Override
+	public double[] kg(Double[] x, Double[] y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MercerKernel<Double[]> of(double[] params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] hyperparameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] lo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] hi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
