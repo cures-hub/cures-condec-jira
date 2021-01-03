@@ -26,7 +26,7 @@
 			$("#recommendation-error").hide();
 			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation ,  function(results, error) {
 				if (error === null) {
-					buildQuickRecommendationTable(results);
+					buildQuickRecommendationTable(results, currentIssue);
 				}
 
 			});
@@ -77,7 +77,7 @@
 				tableRow += "<tr>";
 				tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
 				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
-				tableRow += "<td>"+ buildScore(recommendation.score, recommendation.score.score) +"</td>";
+				tableRow += "<td>"+ buildScore(recommendation.score, "score_" + counter) +"</td>";
 				tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" +  "Accept" + "</button></td>";
 				tableRow += "<td><ul>";
 				recommendation.arguments.forEach((argument) => {
@@ -110,7 +110,7 @@
 		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
 
-	function buildQuickRecommendationTable(results) {
+	function buildQuickRecommendationTable(results, currentIssue) {
     		conDecDecisionGuidance.recommendations = results;
     		const table = $("#recommendation-container-short tbody");
     		const recommendationMap = [];
@@ -119,6 +119,7 @@
 
     		var quickPopUp = "";
     		quickPopUp += "<div id='quick-recommendations'>";
+    		quickPopUp += "<h4>" + currentIssue.summary + "</h4>";
             quickPopUp += "<table id='recommendation-container-short' class='aui'>";
             quickPopUp += "<thead>";
             quickPopUp += "<tr>";
@@ -149,7 +150,7 @@
 
     				tableRow += "<tr>";
     				tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small "  + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
-    				tableRow += "<td>"+ buildScore(recommendation.score, recommendation.score.score) +"</td>";
+    				tableRow += "<td>"+ buildScore(recommendation.score, "score_quick" + counter) +"</td>";
     				tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link aui-button accept-solution-button aui-button-compact'>Accept</button></td>";
     				tableRow += "</tr>";
     				quickPopUp += tableRow;
@@ -188,7 +189,6 @@
 			});
 
 			$("#more-recommendations").click(function(event) {
-				event.preventDefault();
 				const currentIssue = conDecDecisionTable.getCurrentIssue();
 				$(this).prop("disabled",true);
 				$("#recommendation-container tbody tr").remove() //TODO the rows are kept in the cache, but they should be removed completly

@@ -136,7 +136,9 @@
                 <input type="text" id="create-constraint-knowledgesource"
                        class="text long-field"
                        name="constraint-knowledgesource">
-                <div class="description">Enter constraints for the knowledgesource. e.g. dbo_license.</div>
+                <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+                    multiple values with "&".
+                </div>
             </div>
             <div class="field-group">
                 <button class="aui-button-primary aui-button" id="create-rdf-source">
@@ -208,7 +210,8 @@
             <input class="constraint-knowledgesource text long-field" name="constraint-knowledgesource"
                    id="$rdfSource.toString()-constraint"
                    value="$rdfSource.getConstraint()"></input>
-            <div class="description">Enter the constraints for the knowledge source.
+            <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+                multiple values with "&".
             </div>
         </div>
         <div class="field-group">
@@ -500,6 +503,8 @@
 
 
     });
+
+
 
 
 

@@ -28,12 +28,6 @@ public abstract class KnowledgeSource {
 		getInputMethod();
 		inputMethod.setData(this);
 		return inputMethod.getResults(object);
-//		try {
-//
-//		} catch (Exception e) {
-//
-//		}
-		//return new ArrayList<>();
 	}
 
 	public abstract InputMethod getInputMethod();

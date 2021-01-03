@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import com.google.common.base.Splitter;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -24,7 +25,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	protected String queryString;
 	protected String timeout;
 	protected int limit;
-	protected List<String> constraints;
+	protected Map<String, String> constraints;
 
 	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
 		"PREFIX dct: <http://purl.org/dc/terms/>" +
@@ -41,7 +42,11 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		this.queryString = this.knowledgeSource.getQueryString();
 		this.timeout = this.knowledgeSource.getTimeout();
 		this.limit = this.knowledgeSource.getLimit();
-		this.constraints = Arrays.asList(this.knowledgeSource.getConstraint().split(";"));
+		try {
+			this.constraints = Splitter.on("&").withKeyValueSeparator("=").split(this.knowledgeSource.getConstraint());
+		} catch (IllegalArgumentException e) {
+			this.constraints = new HashMap<>();
+		}
 	}
 
 
@@ -103,13 +108,13 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		if (inputs == null) return recommendations;
 
 
-		List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-		List<String> combinedKeywords = this.combineKeywords(keywords);
+		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
+		final List<String> combinedKeywords = this.combineKeywords(keywords);
 
 
 		for (String combinedKeyword : combinedKeywords) {
 
-			String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
+			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
 			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
@@ -130,7 +135,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 				List<Argument> arguments = new ArrayList<>();
 
-				for (String constraint : this.constraints) {
+				for (Map.Entry<String, String> constraint : this.constraints.entrySet()) {
 					arguments.addAll(this.getArgument(row.get("?subject").toString(), constraint));
 				}
 
@@ -175,9 +180,9 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		return label;
 	}
 
-	private List<Argument> getArgument(String resource, String constraint) {
+	private List<Argument> getArgument(String resource, Map.Entry<String, String> constraint) {
 
-		String query = String.format(PREFIX + " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}", resource, constraint);
+		String query = String.format(PREFIX + " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}", resource, constraint.getValue());
 
 		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout));
 
@@ -185,7 +190,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 		while (arguments != null && arguments.hasNext()) {
 			QuerySolution row = arguments.nextSolution();
-			String argumentSummary = constraint + " : " + row.get("?argument").toString();
+			String argumentSummary = constraint.getKey() + " : " + row.get("?argument").toString();
 			KnowledgeElement knowledgeElement = new KnowledgeElement();
 			knowledgeElement.setType(KnowledgeType.PRO);
 			knowledgeElement.setDocumentationLocation("s");
