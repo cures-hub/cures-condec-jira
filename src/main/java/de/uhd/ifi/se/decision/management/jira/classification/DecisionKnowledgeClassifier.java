@@ -1,12 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +80,7 @@ public class DecisionKnowledgeClassifier {
 	 * @return list of boolean values in the same order as the input strings. Each
 	 *         value indicates whether a string is relevant (true) or not (false).
 	 */
-	private boolean makeBinaryPrediction(String stringToBeClassified, boolean[] binaryPredictionResults, int finalI)
+	private boolean makeBinaryPrediction(String stringToBeClassified)
 			throws Exception {
 
 		List<double[]> features = preprocess(stringToBeClassified);
@@ -96,7 +93,7 @@ public class DecisionKnowledgeClassifier {
 				predictionResult = currentPredictionResult;
 			}
 		}
-		return binaryClassifier.isRelevant(predictionResult);
+		return BinaryClassifier.isRelevant(predictionResult);
 	}
 
 	/**
@@ -116,7 +113,7 @@ public class DecisionKnowledgeClassifier {
 				final int finalI = i;
 				taskExecutor.execute(() -> {
 					try {
-						binaryPredictionResults[finalI] = makeBinaryPrediction(stringsToBeClassified.get(finalI), binaryPredictionResults, finalI);
+						binaryPredictionResults[finalI] = makeBinaryPrediction(stringsToBeClassified.get(finalI));
 					} catch (Exception e) {
 						LOGGER.error(e.getMessage());
 					}
@@ -143,7 +140,7 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 *            labels of the instances
 	 */
-	public void trainBinaryClassifier(List<double[]> features, List<Integer> labels) {
+	public void trainBinaryClassifier(List<double[]> features, int[] labels) {
 		this.binaryClassifier.train(features, labels);
 	}
 
@@ -215,7 +212,7 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 * @see this.trainBinaryClassifier
 	 */
-	public void trainFineGrainedClassifier(List<double[]> features, List<Integer> labels) {
+	public void trainFineGrainedClassifier(List<double[]> features, int[] labels) {
 		this.fineGrainedClassifier.train(features, labels);
 	}
 
@@ -228,7 +225,7 @@ public class DecisionKnowledgeClassifier {
 	 * @return preprocessed sentences
 	 */
 	public List<double[]> preprocess(String stringsToBePreprocessed) throws Exception {
-		return this.preprocessor.preprocess(stringsToBePreprocessed);
+		return preprocessor.preprocess(stringsToBePreprocessed);
 	}
 
 	/**
@@ -243,20 +240,16 @@ public class DecisionKnowledgeClassifier {
 	 *            labels of the sentences
 	 * @return
 	 */
-	public Map<String, List> preprocess(List<String> stringsToBePreprocessed, List labels) throws Exception {
-		List preprocessedSentences = new ArrayList<>();
-		List updatedLabels = new ArrayList<>();
-		Map<String, List> preprocessedFeaturesWithLabels = new HashMap<String, List>();
+	public PreprocessedData preprocess(List<String> stringsToBePreprocessed, List labels) throws Exception {
+		PreprocessedData preprocessedData = new PreprocessedData(stringsToBePreprocessed.size());
 		for (int i = 0; i < stringsToBePreprocessed.size(); i++) {
-			List preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
+			List<double[]> preprocessedSentence = this.preprocessor.preprocess(stringsToBePreprocessed.get(i));
 			for (int _i = 0; _i < preprocessedSentence.size(); _i++) {
-				updatedLabels.add(labels.get(i));
+				preprocessedData.updatedLabels[i] = (int) labels.get(i);
 			}
-			preprocessedSentences.addAll(preprocessedSentence);
+			preprocessedData.preprocessedSentences.addAll(preprocessedSentence);
 		}
-		preprocessedFeaturesWithLabels.put("labels", updatedLabels);
-		preprocessedFeaturesWithLabels.put("features", preprocessedSentences);
-		return preprocessedFeaturesWithLabels;
+		return preprocessedData;
 	}
 
 	public BinaryClassifier getBinaryClassifier() {

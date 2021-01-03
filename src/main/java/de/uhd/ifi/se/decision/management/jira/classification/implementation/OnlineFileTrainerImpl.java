@@ -30,6 +30,8 @@ import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeCl
 import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.PreprocessedData;
+import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -116,26 +118,22 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	private synchronized void trainBinaryClassifier() throws Exception {
 		LOGGER.debug("Binary Classifier training started.");
 
-		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
-		Map preprocessedSentences;
-		// if (!this.classifier.getBinaryClassifier().loadFromFile()) {
-		preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"),
-				trainingData.get("labelsIsRelevant"));
+		TrainingData trainingData = extractTrainingData(this.getInstances());
+		PreprocessedData preprocessedSentences = classifier.preprocess(trainingData.sentences,
+				trainingData.labelsIsRelevant);
 
-		this.classifier.trainBinaryClassifier((List<double[]>) preprocessedSentences.get("features"),
-				(List<Integer>) preprocessedSentences.get("labels"));
-		// this.classifier.getBinaryClassifier().saveToFile();
+		this.classifier.trainBinaryClassifier(preprocessedSentences.preprocessedSentences,
+				preprocessedSentences.updatedLabels);
 	}
 
 	private synchronized void trainFineGrainedClassifier() throws Exception {
 		LOGGER.debug("Fine-grained Classifier training started.");
 
-		Map<String, List> trainingData = this.extractTrainingData(this.getInstances());
-		Map preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
-				trainingData.get("labelKnowledgeType"));
-
-		this.classifier.trainFineGrainedClassifier((List<double[]>) preprocessedSentences.get("features"),
-				(List<Integer>) preprocessedSentences.get("labels"));
+		TrainingData trainingData = this.extractTrainingData(this.getInstances());
+		PreprocessedData preprocessedSentences = this.classifier.preprocess(trainingData.relevantSentences,
+				trainingData.labelsKnowledgeType);
+		this.classifier.trainFineGrainedClassifier(preprocessedSentences.preprocessedSentences,
+				preprocessedSentences.updatedLabels);
 		// this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 
@@ -388,19 +386,15 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return instance;
 	}
 
-	private Map<String, List> extractTrainingData(Instances trainingData) {
-		Map extractedTrainingData = new HashMap<>();
-		List sentences = new ArrayList<>();
-		List relevantSentences = new ArrayList<>();
-		List labelsIsRelevant = new ArrayList<>();
-		List labelsKnowledgeType = new ArrayList<>();
+	private TrainingData extractTrainingData(Instances trainingData) {
+		TrainingData myTrainingData = new TrainingData();
 		// TODO: can we use the names instead of indices?
 		// iterate over all instances
 
 		for (int i = 0; i < trainingData.size(); i++) {
 			Instance currInstance = trainingData.get(i);
 			// last attribute is the sentence that needs to be classified
-			sentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
+			myTrainingData.sentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
 
 			Integer isRelevant = 0;
 			// Integer fineGrainedLabel = -1;
@@ -408,21 +402,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			for (int j = 0; j < currInstance.numAttributes() - 1; j++) {
 				if (round(currInstance.value(j)) == 1) {
 					isRelevant = 1;
-					labelsKnowledgeType.add(j);
-					relevantSentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
+					myTrainingData.labelsKnowledgeType.add(j);
+					myTrainingData.relevantSentences.add(currInstance.stringValue(currInstance.numAttributes() - 1));
 
 				}
 			}
-			labelsIsRelevant.add(isRelevant);
+			myTrainingData.labelsIsRelevant.add(isRelevant);
 		}
-
-		extractedTrainingData.put("sentences", sentences);
-		extractedTrainingData.put("relevantSentences", relevantSentences);
-
-		extractedTrainingData.put("labelsIsRelevant", labelsIsRelevant);
-		extractedTrainingData.put("labelKnowledgeType", labelsKnowledgeType);
-
-		return extractedTrainingData;
+		return myTrainingData;
 	}
 
 	private List<String> extractStringsFromDke(List<KnowledgeElement> sentences) {

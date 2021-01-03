@@ -12,10 +12,10 @@ public abstract class AbstractClassifier {
 	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
 	protected SVM<double[]> model;
-	private Integer epochs;
+	private int epochs;
 	private boolean modelIsTrained;
 	private int numClasses;
-	private Boolean currentlyTraining;
+	private boolean currentlyTraining;
 	private MercerKernel<double[]> kernel;
 
 	public AbstractClassifier(int numClasses) {
@@ -70,7 +70,7 @@ public abstract class AbstractClassifier {
 	 * @param features
 	 * @param labels
 	 */
-	public void train(List<double[]> features, List<Integer> labels) {
+	public void train(List<double[]> features, int[] labels) {
 		double[][] featuresArray = new double[features.size()][features.get(0).length];
 		for (int i = 0; i < features.size(); i++) {
 			featuresArray[i] = features.get(i);

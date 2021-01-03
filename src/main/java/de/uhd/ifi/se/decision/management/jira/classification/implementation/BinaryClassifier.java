@@ -10,6 +10,11 @@ public class BinaryClassifier extends AbstractClassifier {
 		super(2);
 	}
 
+	public boolean isSentenceRelevant(String sentenceToBeClassified) {
+		// TODO Implement binary classification here
+		return true;
+	}
+
 	@Override
 	public boolean loadFromFile() {
 		return super.loadFromFile(AbstractClassifier.DEFAULT_PATH + BinaryClassifier.DEFAULT_MODEL_NAME);
