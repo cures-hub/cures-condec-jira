@@ -17,7 +17,7 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	private Preprocessor pp;
 
 	public TextualSimilarityCIP() {
-		pp = new Preprocessor();
+		pp = Preprocessor.getInstance();
 		this.linkSuggestions = new ArrayList<>();
 	}
 
@@ -58,8 +58,8 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 					// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
 
 					linkSuggestion
-							.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
-									/ (double) unionCount, this.getName() + ": " + getId());
+					.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
+							/ (double) unionCount, this.getName() + ": " + getId());
 				} catch (Exception e) {
 					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
 				}

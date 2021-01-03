@@ -135,14 +135,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public boolean update(PartOfJiraIssueText sentence) {
 		try {
-			List<double[]> features = this.classifier.preprocess(sentence.getSummary());
+			List<double[]> features = classifier.preprocess(sentence.getSummary());
 			// classifier needs numerical value
 			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
 
 			for (double[] feature : features) {
-				this.classifier.getBinaryClassifier().train(feature, labelIsRelevant);
+				classifier.getBinaryClassifier().train(feature, labelIsRelevant);
 				if (sentence.isRelevant()) {
-					this.classifier.getFineGrainedClassifier().train(feature,
+					classifier.getFineGrainedClassifier().train(feature,
 							sentence.getType());
 				}
 			}
@@ -428,7 +428,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 				.toArray(new Integer[partOfJiraIssueTexts.size()]);
 
 		Integer[] fineGrainedTruths = relevantPartOfJiraIssueTexts.stream()
-				.map(x -> classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x.getType())).collect(toList())
+				.map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x.getType())).collect(toList())
 				.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
 
 		// predict classes
@@ -444,7 +444,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		// sentences took " + (end-start) + " ms.");
 
 		Integer[] fineGrainedPredictions = this.classifier.makeFineGrainedPredictions(relevantSentences).stream()
-				.map(x -> this.classifier.getFineGrainedClassifier().mapKnowledgeTypeToIndex(x)).collect(toList())
+				.map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x)).collect(toList())
 				.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
 
@@ -461,7 +461,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			for (int classLabel : IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses())
 					.toArray()) {
 				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
-						+ this.classifier.getFineGrainedClassifier().mapIndexToKnowledgeType(classLabel);
+						+ FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
 
 				Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
 				Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions,

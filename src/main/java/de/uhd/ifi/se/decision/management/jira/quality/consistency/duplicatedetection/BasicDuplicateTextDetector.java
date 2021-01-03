@@ -15,7 +15,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	private static final double MIN_SIMILARITY = 0.85;
 
 	public BasicDuplicateTextDetector(int fragmentLength) {
-		preprocessor = new Preprocessor();
+		preprocessor = Preprocessor.getInstance();
 
 		this.fragmentLength = fragmentLength;
 	}

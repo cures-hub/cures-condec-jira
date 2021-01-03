@@ -184,8 +184,8 @@ public class Preprocessor {
 	 * calculations for the classification.
 	 *
 	 * @param tokens
-	 *            List of words in String-representation
-	 * @return list of words in numerical representation
+	 *            list of words in String representation.
+	 * @return list of words in numerical representation.
 	 */
 	public List<double[]> convertToNumbers(List<String> tokens) {
 		List<double[]> numberTokens = new ArrayList<>();
@@ -200,30 +200,24 @@ public class Preprocessor {
 	}
 
 	/**
-	 * This method executes all necessary preprocessing steps.
-	 *
+	 * This method executes all necessary preprocessing steps. Preprocesses a
+	 * sentence in such a way, that the classifiers can use them for training or
+	 * prediction.
+	 * 
 	 * @param sentence
 	 *            to be preprocessed
-	 * @return N-Gram numerical representation of sentence
+	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
 	public synchronized List<double[]> preprocess(String sentence) {
 		try {
-			String cleaned_sentence = this.replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
-			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, URL_PATTERN, URL_TOKEN.toLowerCase());
-			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, WHITESPACE_CHARACTERS_PATTERN,
+			String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
+			cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
+			cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
 					WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
 			// replace long words and possible methods!
-			cleaned_sentence = cleaned_sentence.toLowerCase();
-			List<String> tokens = this.tokenize(cleaned_sentence);
-
-			/*
-			 * TODO: if time is sufficient Span[] spans = this.nameFinder.find((String[])
-			 * tokens.toArray()); for (Span span : spans) { span.getType();
-			 *
-			 * } this.nameFinder.clearAdaptiveData();
-			 */
-
-			this.tokens = this.stem(tokens);
+			cleanedSentence = cleanedSentence.toLowerCase();
+			List<String> tokens = tokenize(cleanedSentence);
+			this.tokens = stem(tokens);
 
 			List<double[]> numberTokens = this.convertToNumbers(tokens);
 

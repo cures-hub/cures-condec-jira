@@ -157,7 +157,7 @@ public class DecisionKnowledgeClassifier {
 			 * 
 			 */
 		}
-		KnowledgeType predictedKnowledgeType = fineGrainedClassifier.getType(predictionResult);
+		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.getType(predictionResult);
 		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
 
 	}
@@ -216,7 +216,7 @@ public class DecisionKnowledgeClassifier {
 	 *
 	 * @param stringsToBePreprocessed
 	 *            sentence
-	 * @return preprocessed sentences
+	 * @return preprocessed sentence in a numerical representation.
 	 */
 	public List<double[]> preprocess(String stringsToBePreprocessed) throws Exception {
 		return Preprocessor.getInstance().preprocess(stringsToBePreprocessed);
@@ -234,8 +234,8 @@ public class DecisionKnowledgeClassifier {
 	 * @return whether or not the classifier is currently training.
 	 */
 	public boolean isTraining() {
-		return (this.getFineGrainedClassifier().isCurrentlyTraining()
-				|| this.getBinaryClassifier().isCurrentlyTraining());
+		return this.getFineGrainedClassifier().isCurrentlyTraining()
+				|| this.getBinaryClassifier().isCurrentlyTraining();
 	}
 
 	/**
