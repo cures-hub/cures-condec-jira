@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,7 @@ public class Preprocessor {
 	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
-	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", //"lemmatizer.dict",
+	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", // "lemmatizer.dict",
 			"glove.6b.50d.csv");
 	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
 	public static String URL_TOKEN = "URL";
@@ -51,18 +50,26 @@ public class Preprocessor {
 	private final Integer nGramN;
 	private List<CharSequence> tokens;
 
-	public Preprocessor() {
+	private static Preprocessor instance;
+
+	public static Preprocessor getInstance() {
+		if (instance == null) {
+			instance = new Preprocessor();
+		}
+		return instance;
+	}
+
+	private Preprocessor() {
 		this.nGramN = 3;
 		this.glove = PreTrainedGloveSingleton.getInstance();
 
-		if(filesNotInitialized()){
+		if (filesNotInitialized()) {
 			initFiles();
-
 		}
 	}
 
 	private boolean filesNotInitialized() {
-		return this.tokenizer == null || this.stemmer == null ||this.tagger == null;
+		return this.tokenizer == null || this.stemmer == null || this.tagger == null;
 	}
 
 	private void initFiles() {
@@ -100,7 +107,8 @@ public class Preprocessor {
 	/**
 	 * Generates a list of tokenized word from a sentence.
 	 *
-	 * @param sentence as a string.
+	 * @param sentence
+	 *            as a string.
 	 * @return list of word tokens.
 	 */
 	public List<String> tokenize(String sentence) {
@@ -111,9 +119,12 @@ public class Preprocessor {
 	 * Replaces unwanted patterns from the String using regular expressions and
 	 * replacement token. E.g.: removing newline character.
 	 *
-	 * @param sentence     Sentence that has to be cleaned.
-	 * @param regex        Regular Expression used to be filter out unwanted parts of text.
-	 * @param replaceToken Used to replace the matching pattern of the regex.
+	 * @param sentence
+	 *            Sentence that has to be cleaned.
+	 * @param regex
+	 *            Regular Expression used to be filter out unwanted parts of text.
+	 * @param replaceToken
+	 *            Used to replace the matching pattern of the regex.
 	 * @return Cleaned sentence.
 	 */
 	public String replaceUsingRegEx(String sentence, String regex, String replaceToken) {
@@ -124,7 +135,8 @@ public class Preprocessor {
 	 * Converts a list of tokens into their stemmed form. What is lemmatisation?
 	 * https://en.wikipedia.org/wiki/Lemmatisation E.g.: "better" -> "good".
 	 *
-	 * @param tokens of words to be stemmed.
+	 * @param tokens
+	 *            of words to be stemmed.
 	 * @return List of stemmed tokens.
 	 */
 	public List<CharSequence> stem(List<String> tokens) {
@@ -139,8 +151,10 @@ public class Preprocessor {
 	 * (example from:
 	 * http://text-analytics101.rxnlp.com/2014/11/what-are-n-grams.html)
 	 *
-	 * @param tokens tokenized setntence used t generate N-Grams
-	 * @param N      N-Gram number
+	 * @param tokens
+	 *            tokenized setntence used t generate N-Grams
+	 * @param N
+	 *            N-Gram number
 	 * @return List of N-Grams
 	 */
 	public List<double[]> generateNGram(List<double[]> tokens, Integer N) {
@@ -154,7 +168,8 @@ public class Preprocessor {
 	 * Converts word tokens to a numerical representation. This is necessary for
 	 * calculations for the classification.
 	 *
-	 * @param tokens List of words in String-representation
+	 * @param tokens
+	 *            List of words in String-representation
 	 * @return List of words in numerical representation
 	 */
 	private double[] concat(List<double[]> tokens, int start, int end) {
@@ -168,7 +183,8 @@ public class Preprocessor {
 	 * Converts word tokens to a numerical representation. This is necessary for
 	 * calculations for the classification.
 	 *
-	 * @param tokens List of words in String-representation
+	 * @param tokens
+	 *            List of words in String-representation
 	 * @return list of words in numerical representation
 	 */
 	public List<double[]> convertToNumbers(List<String> tokens) {
@@ -186,10 +202,11 @@ public class Preprocessor {
 	/**
 	 * This method executes all necessary preprocessing steps.
 	 *
-	 * @param sentence to be preprocessed
+	 * @param sentence
+	 *            to be preprocessed
 	 * @return N-Gram numerical representation of sentence
 	 */
-	public synchronized List<double[]> preprocess(String sentence) throws Exception {
+	public synchronized List<double[]> preprocess(String sentence) {
 		try {
 			String cleaned_sentence = this.replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
 			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, URL_PATTERN, URL_TOKEN.toLowerCase());
@@ -198,7 +215,6 @@ public class Preprocessor {
 			// replace long words and possible methods!
 			cleaned_sentence = cleaned_sentence.toLowerCase();
 			List<String> tokens = this.tokenize(cleaned_sentence);
-
 
 			/*
 			 * TODO: if time is sufficient Span[] spans = this.nameFinder.find((String[])
@@ -213,12 +229,10 @@ public class Preprocessor {
 
 			return this.generateNGram(numberTokens, this.nGramN);
 		} catch (Exception e) {
-			LOGGER.info(e.getMessage());
-			//initFiles();
-			throw new FileNotFoundException(e.getMessage());
+			LOGGER.error(e.getMessage());
 		}
+		return new ArrayList<>();
 	}
-
 
 	/**
 	 * Copies the default preprocessing files to the files in the plugin target.

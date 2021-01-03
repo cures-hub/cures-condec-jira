@@ -1,14 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,9 +13,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import net.java.ao.test.jdbc.NonTransactional;
 
 
 public class TestOnlineTrainer extends TestSetUp {
@@ -75,7 +76,6 @@ public class TestOnlineTrainer extends TestSetUp {
 		List<KnowledgeElement> trainingElements = getTrainingData();
 		OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
 		trainer.setTrainingData(trainingElements);
-		//assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
 	}
 
@@ -106,7 +106,7 @@ public class TestOnlineTrainer extends TestSetUp {
 	@NonTransactional
 	public void testMockingOfClassifierDirectoryWorks() {
 		assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
-			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
+				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 
 	@Test
