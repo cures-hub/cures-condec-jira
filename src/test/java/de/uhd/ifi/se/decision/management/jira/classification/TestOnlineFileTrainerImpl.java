@@ -1,15 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,10 +15,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestOnlineFileTrainerImpl extends TestSetUp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestOnlineFileTrainerImpl.class);
@@ -134,7 +135,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
-		assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).size());
+		assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).length);
 	}
 
 	@Test

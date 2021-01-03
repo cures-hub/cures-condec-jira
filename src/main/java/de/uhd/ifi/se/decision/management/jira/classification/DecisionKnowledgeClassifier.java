@@ -83,26 +83,20 @@ public class DecisionKnowledgeClassifier {
 	 * @return list of boolean values in the same order as the input strings. Each
 	 *         value indicates whether a string is relevant (true) or not (false).
 	 */
-	private void makeBinaryPrediction(String stringToBeClassified, List<Boolean> binaryPredictionResults, int finalI)
+	private boolean makeBinaryPrediction(String stringToBeClassified, boolean[] binaryPredictionResults, int finalI)
 			throws Exception {
 
-		List<List<Double>> features = preprocess(stringToBeClassified);
+		List<double[]> features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
-		for (List<Double> feature : features) {
-			double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature.toArray(Double[]::new));
+		for (double[] feature : features) {
+			double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature);
 			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
 				predictionResult = currentPredictionResult;
 			}
-			/*
-			 * IntStream.range(0, predictionResult.length) .forEach(j -> predictionResult[j]
-			 * = predictionResult[j] + currentPredictionResult[j]);
-			 * 
-			 */
 		}
-		boolean predictedIsRelevant = binaryClassifier.isRelevant(ArrayUtils.toObject(predictionResult));
-		binaryPredictionResults.set(finalI, predictedIsRelevant);
+		return binaryClassifier.isRelevant(predictionResult);
 	}
 
 	/**
@@ -110,11 +104,10 @@ public class DecisionKnowledgeClassifier {
 	 * @return
 	 * @see this.makeBinaryDecision
 	 */
-	public List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified) {
+	public boolean[] makeBinaryPredictions(List<String> stringsToBeClassified) {
 		// init list
-		List<Boolean> binaryPredictionResults = Arrays.asList(new Boolean[stringsToBeClassified.size()]);
-		ExecutorService taskExecutor;
-		taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		boolean[] binaryPredictionResults = new boolean[stringsToBeClassified.size()];
+		ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		try {
 			// Classify string instances
@@ -123,7 +116,7 @@ public class DecisionKnowledgeClassifier {
 				final int finalI = i;
 				taskExecutor.execute(() -> {
 					try {
-						makeBinaryPrediction(stringsToBeClassified.get(finalI), binaryPredictionResults, finalI);
+						binaryPredictionResults[finalI] = makeBinaryPrediction(stringsToBeClassified.get(finalI), binaryPredictionResults, finalI);
 					} catch (Exception e) {
 						LOGGER.error(e.getMessage());
 					}
@@ -134,7 +127,7 @@ public class DecisionKnowledgeClassifier {
 
 		} catch (Exception e) {
 			LOGGER.error("Binary classification failed. Message: " + e.getMessage());
-			return new ArrayList<Boolean>();
+			return new boolean[stringsToBeClassified.size()];
 		}
 
 		return binaryPredictionResults;
@@ -150,20 +143,20 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 *            labels of the instances
 	 */
-	public void trainBinaryClassifier(List<List<Double>> features, List<Integer> labels) {
+	public void trainBinaryClassifier(List<double[]> features, List<Integer> labels) {
 		this.binaryClassifier.train(features, labels);
 	}
 
 	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults,
 			int i) throws Exception {
-		List<List<Double>> features = preprocess(stringToBeClassified);
+		List<double[]> features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
 		// ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
-		for (List<Double> feature : features) {
+		for (double[] feature : features) {
 			double[] currentPredictionResult = fineGrainedClassifier
-					.predictProbabilities(feature.toArray(Double[]::new));
+					.predictProbabilities(feature);
 			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
 				predictionResult = currentPredictionResult;
 			}
@@ -174,7 +167,7 @@ public class DecisionKnowledgeClassifier {
 			 */
 		}
 		KnowledgeType predictedKnowledgeType = fineGrainedClassifier
-				.mapIndexToKnowledgeType(fineGrainedClassifier.maxAtInArray(ArrayUtils.toObject(predictionResult)));
+				.mapIndexToKnowledgeType(fineGrainedClassifier.maxAtInArray(predictionResult));
 		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
 
 	}
@@ -223,7 +216,7 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 * @see this.trainBinaryClassifier
 	 */
-	public void trainFineGrainedClassifier(List<List<Double>> features, List<Integer> labels) {
+	public void trainFineGrainedClassifier(List<double[]> features, List<Integer> labels) {
 		this.fineGrainedClassifier.train(features, labels);
 	}
 
@@ -235,7 +228,7 @@ public class DecisionKnowledgeClassifier {
 	 *            sentence
 	 * @return preprocessed sentences
 	 */
-	public List<List<Double>> preprocess(String stringsToBePreprocessed) throws Exception {
+	public List<double[]> preprocess(String stringsToBePreprocessed) throws Exception {
 		return this.preprocessor.preprocess(stringsToBePreprocessed);
 	}
 

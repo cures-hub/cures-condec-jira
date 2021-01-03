@@ -3,11 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -17,7 +13,7 @@ class PreTrainedGloveSingleton {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreTrainedGloveSingleton.class);
 
 	private static PreTrainedGloveSingleton instance;
-	private Map<String, Double[]> map;
+	private Map<String, double[]> map;
 	private Integer dimensions;
 
 	private PreTrainedGloveSingleton(File file) {
@@ -28,12 +24,12 @@ class PreTrainedGloveSingleton {
 			while (line != null) {
 				String[] attributes = line.split(" ");
 
-				List<Double> vector = new ArrayList<Double>();
+				double[] vector = new double[attributes.length];
 				// Skip first entry because that is the itself word.
 				for (int i = 1; i < attributes.length; i++) {
-					vector.add(Double.parseDouble(attributes[i]));
+					vector[i] = Double.parseDouble(attributes[i]);
 				}
-				map.put(attributes[0], Arrays.copyOf(vector.toArray(), vector.size(), Double[].class));
+				map.put(attributes[0], vector);
 				line = br.readLine();
 			}
 		} catch (Exception e) {
@@ -70,12 +66,12 @@ class PreTrainedGloveSingleton {
 	 *            holds the string for which a vector has to be determined
 	 * @return
 	 */
-	public List<Double> getWordVector(String word) {
-		Double[] gloveResult = this.map.get(word);
+	public double[] getWordVector(String word) {
+		double[] gloveResult = this.map.get(word);
 		if (gloveResult != null) {
-			return Arrays.asList(gloveResult);
+			return gloveResult;
 		} else {
-			return new ArrayList<Double>(Collections.nCopies(this.dimensions, 0.0));
+			return new double[this.dimensions];
 		}
 
 	}

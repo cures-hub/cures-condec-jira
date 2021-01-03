@@ -2,10 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.util.List;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.GaussianKernelDouble;
 import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.MercerKernel;
 import weka.core.SerializationHelper;
 
@@ -13,28 +11,27 @@ public abstract class AbstractClassifier {
 
 	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
 
-	protected SVM<Double[]> model;
+	protected SVM<double[]> model;
 	private Integer epochs;
 	private boolean modelIsTrained;
-	private Integer numClasses;
+	private int numClasses;
 	private Boolean currentlyTraining;
+	private MercerKernel<double[]> kernel;
 
-	public AbstractClassifier(Integer numClasses) {
+	public AbstractClassifier(int numClasses) {
 		this(0.5, 3, numClasses);
 	}
 
-	public AbstractClassifier(Double c, Integer epochs, Integer numClasses) {
-		this(c, new GaussianKernelDouble<Double>(), epochs, numClasses);
+	public AbstractClassifier(Double c, Integer epochs, int numClasses) {
+		this(c, new GaussianKernel(1.0), epochs, numClasses);
 	}
 
-	public AbstractClassifier(Double c, MercerKernel<Double[]> kernel, Integer epochs, Integer numClasses) {
-		Double[][] instances = new Double[1][1];
-		double[] weight = new double[1];
-		this.model = new SVM<Double[]>(kernel, instances, weight, c);
+	public AbstractClassifier(Double c, MercerKernel<double[]> kernel, Integer epochs, int numClasses) {
 		this.epochs = epochs;
 		this.modelIsTrained = false;
 		this.numClasses = numClasses;
 		this.currentlyTraining = false;
+		this.kernel = kernel;
 	}
 
 	/**
@@ -43,13 +40,17 @@ public abstract class AbstractClassifier {
 	 * @param features
 	 * @param labels
 	 */
-	public void train(double[][] features, Integer[] labels) throws AlreadyInTrainingException {
+	public void train(double[][] features, int[] labels) throws AlreadyInTrainingException {
+		Double[][] instances = new Double[1][1];
+		double[] weight = new double[1];
+		double b = 1;
+		this.model = new SVM<double[]>(kernel, features, weight, b);
 		double c = 1;
 		double tol = 1;
 		if (!this.currentlyTraining) {
 			this.currentlyTraining = true;
 			for (int i = 0; i < this.epochs; i++) {
-				this.model.fit(features, ArrayUtils.toPrimitive(labels), c, tol);
+				this.model.fit(features, labels, c, tol);
 			}
 			// this.model.finish();
 
@@ -69,10 +70,10 @@ public abstract class AbstractClassifier {
 	 * @param features
 	 * @param labels
 	 */
-	public void train(List<List<Double>> features, List<Integer> labels) {
-		Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
+	public void train(List<double[]> features, List<Integer> labels) {
+		double[][] featuresArray = new double[features.size()][features.get(0).length];
 		for (int i = 0; i < features.size(); i++) {
-			featuresArray[i] = features.get(i).toArray(Double[]::new);
+			featuresArray[i] = features.get(i);
 		}
 		// this.train(featuresArray, labels.toArray(Integer[]::new));
 	}
@@ -83,7 +84,7 @@ public abstract class AbstractClassifier {
 	 * @param features
 	 * @param label
 	 */
-	public void train(Double[] features, Integer label) {
+	public void train(double[] features, Integer label) {
 		this.modelIsTrained = true;
 
 		// this.model.learn(features, label);
@@ -95,7 +96,7 @@ public abstract class AbstractClassifier {
 	 * @param feature
 	 * @return probabilities of the labels
 	 */
-	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
+	public double[] predictProbabilities(double[] feature) throws InstantiationError {
 		if (this.modelIsTrained) {
 			double[] probabilities = new double[this.numClasses];
 			// this.model.predict(feature, probabilities);
@@ -132,9 +133,9 @@ public abstract class AbstractClassifier {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
-		SVM<Double[]> oldModel = this.model;
+		SVM<double[]> oldModel = this.model;
 		try {
-			this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
+			this.model = (SVM<double[]>) SerializationHelper.read(filePathAndName);
 			this.modelIsTrained = true;
 		} catch (Exception e) {
 			this.model = oldModel;

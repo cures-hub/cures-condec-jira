@@ -79,7 +79,7 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
-		List<Boolean> classificationResult = classifierTrainer.getClassifier()
+		boolean[] classificationResult = classifierTrainer.getClassifier()
 				.makeBinaryPredictions(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
@@ -110,15 +110,15 @@ public class ClassificationManagerForJiraIssueComments {
 		return !sentence.isValidated();
 	}
 
-	private List<PartOfJiraIssueText> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
+	private List<PartOfJiraIssueText> updateSentencesWithBinaryClassificationResult(boolean[] classificationResult,
 			List<PartOfJiraIssueText> sentences) {
-		if (classificationResult.size() == 0) {
+		if (classificationResult.length == 0) {
 			return sentences;
 		}
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
-				sentence.setRelevant(classificationResult.get(i));
+				sentence.setRelevant(classificationResult[i]);
 				sentence.setValidated(false);
 				JiraIssueTextPersistenceManager.updateInDatabase(sentence);
 				i++;

@@ -1,7 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
@@ -12,26 +25,15 @@ import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
 	public static String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-		.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
 	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", //"lemmatizer.dict",
-		"glove.6b.50d.csv");
+			"glove.6b.50d.csv");
 	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
 	public static String URL_TOKEN = "URL";
 
@@ -141,8 +143,8 @@ public class Preprocessor {
 	 * @param N      N-Gram number
 	 * @return List of N-Grams
 	 */
-	public List<List<Double>> generateNGram(List<List<Double>> tokens, Integer N) {
-		List<List<Double>> nGrams = new ArrayList<>();
+	public List<double[]> generateNGram(List<double[]> tokens, Integer N) {
+		List<double[]> nGrams = new ArrayList<>();
 		for (int i = 0; i < tokens.size() - N + 1; i++)
 			nGrams.add(concat(tokens, i, i + N));
 		return nGrams;
@@ -155,10 +157,10 @@ public class Preprocessor {
 	 * @param tokens List of words in String-representation
 	 * @return List of words in numerical representation
 	 */
-	private List<Double> concat(List<List<Double>> tokens, int start, int end) {
-		List<Double> gram = new ArrayList<>();
+	private double[] concat(List<double[]> tokens, int start, int end) {
+		double[] gram = new double[end - start];
 		for (int i = start; i < end; i++)
-			gram.addAll(tokens.get(i));
+			gram = tokens.get(i);
 		return gram;
 	}
 
@@ -169,8 +171,8 @@ public class Preprocessor {
 	 * @param tokens List of words in String-representation
 	 * @return list of words in numerical representation
 	 */
-	public List<List<Double>> convertToNumbers(List<String> tokens) {
-		List<List<Double>> numberTokens = new ArrayList<>();
+	public List<double[]> convertToNumbers(List<String> tokens) {
+		List<double[]> numberTokens = new ArrayList<>();
 		for (String wordToken : tokens) {
 			numberTokens.add(glove.getWordVector(wordToken));
 		}
@@ -187,12 +189,12 @@ public class Preprocessor {
 	 * @param sentence to be preprocessed
 	 * @return N-Gram numerical representation of sentence
 	 */
-	public synchronized List<List<Double>> preprocess(String sentence) throws Exception {
+	public synchronized List<double[]> preprocess(String sentence) throws Exception {
 		try {
 			String cleaned_sentence = this.replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
 			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, URL_PATTERN, URL_TOKEN.toLowerCase());
 			cleaned_sentence = this.replaceUsingRegEx(cleaned_sentence, WHITESPACE_CHARACTERS_PATTERN,
-				WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+					WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
 			// replace long words and possible methods!
 			cleaned_sentence = cleaned_sentence.toLowerCase();
 			List<String> tokens = this.tokenize(cleaned_sentence);
@@ -207,7 +209,7 @@ public class Preprocessor {
 
 			this.tokens = this.stem(tokens);
 
-			List<List<Double>> numberTokens = this.convertToNumbers(tokens);
+			List<double[]> numberTokens = this.convertToNumbers(tokens);
 
 			return this.generateNGram(numberTokens, this.nGramN);
 		} catch (Exception e) {
@@ -224,7 +226,7 @@ public class Preprocessor {
 	public static void copyDefaultPreprocessingDataToFile() {
 		for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
 			FileTrainer.copyDataToFile(DecisionKnowledgeClassifier.DEFAULT_DIR, currentPreprocessingFileName,
-				ComponentGetter.getUrlOfClassifierFolder());
+					ComponentGetter.getUrlOfClassifierFolder());
 		}
 	}
 

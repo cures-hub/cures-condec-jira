@@ -55,10 +55,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected Instances instances;
 	protected String projectKey;
 
-	// public static File DEFAULT_TRAINING_DATA = new
-	// File(DecisionKnowledgeClassifier.DEFAULT_DIR + "defaultTrainingData.arff");
-	// private static OnlineClassificationTrainerImpl instance;
-
 	public OnlineFileTrainerImpl() {
 		this.classifier = DecisionKnowledgeClassifier.getInstance();
 		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
@@ -126,7 +122,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		preprocessedSentences = this.classifier.preprocess(trainingData.get("sentences"),
 				trainingData.get("labelsIsRelevant"));
 
-		this.classifier.trainBinaryClassifier((List<List<Double>>) preprocessedSentences.get("features"),
+		this.classifier.trainBinaryClassifier((List<double[]>) preprocessedSentences.get("features"),
 				(List<Integer>) preprocessedSentences.get("labels"));
 		// this.classifier.getBinaryClassifier().saveToFile();
 	}
@@ -138,21 +134,21 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		Map preprocessedSentences = this.classifier.preprocess(trainingData.get("relevantSentences"),
 				trainingData.get("labelKnowledgeType"));
 
-		this.classifier.trainFineGrainedClassifier((List<List<Double>>) preprocessedSentences.get("features"),
+		this.classifier.trainFineGrainedClassifier((List<double[]>) preprocessedSentences.get("features"),
 				(List<Integer>) preprocessedSentences.get("labels"));
 		// this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
 		try {
-			List<List<Double>> features = this.classifier.preprocess(sentence.getSummary());
+			List<double[]> features = this.classifier.preprocess(sentence.getSummary());
 			// classifier needs numerical value
 			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
 
-			for (List<Double> feature : features) {
-				this.classifier.getBinaryClassifier().train(feature.toArray(Double[]::new), labelIsRelevant);
+			for (double[] feature : features) {
+				this.classifier.getBinaryClassifier().train(feature, labelIsRelevant);
 				if (sentence.isRelevant()) {
-					this.classifier.getFineGrainedClassifier().train(feature.toArray(Double[]::new),
+					this.classifier.getFineGrainedClassifier().train(feature,
 							sentence.getType());
 				}
 			}
@@ -481,8 +477,11 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		// predict classes
 		long start = System.currentTimeMillis();
 
-		Integer[] binaryPredictions = this.classifier.makeBinaryPredictions(sentences).stream().map(x -> x ? 1 : 0)
-				.collect(toList()).toArray(new Integer[sentences.size()]);
+		boolean[] binaryPredictionsList = classifier.makeBinaryPredictions(sentences);
+		Integer[] binaryPredictions = new Integer[sentences.size()];
+		for(int i=0; i<binaryPredictionsList.length; i++) {
+			binaryPredictions[i] = (binaryPredictionsList[i] == false ? 0 : 1);
+		}
 
 		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
 		// sentences took " + (end-start) + " ms.");
