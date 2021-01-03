@@ -20,7 +20,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		super.saveToFile(AbstractClassifier.DEFAULT_PATH + BinaryClassifier.DEFAULT_MODEL_NAME);
 	}
 
-	public boolean isRelevant(double[] probabilities) {
+	public static boolean isRelevant(double[] probabilities) {
 		return probabilities[1] > 0.5;
 	}
 }

@@ -11,7 +11,11 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		super(numClasses);
 	}
 
-	public int maxAtInArray(double[] probabilities) {
+	public static KnowledgeType getType(double[] classification) {
+		return mapIndexToKnowledgeType(maxAtInArray(classification));
+	}
+
+	private static int maxAtInArray(double[] probabilities) {
 		int maxAt = 0;
 		for (int i = 0; i < probabilities.length; i++) {
 			maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
@@ -23,7 +27,6 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		super.train(feature, mapKnowledgeTypeToIndex(label));
 	}
 
-
 	@Override
 	public void saveToFile() throws Exception {
 		super.saveToFile(AbstractClassifier.DEFAULT_PATH + FineGrainedClassifier.DEFAULT_MODEL_NAME);
@@ -34,7 +37,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return super.loadFromFile(AbstractClassifier.DEFAULT_PATH + FineGrainedClassifier.DEFAULT_MODEL_NAME);
 	}
 
-	public KnowledgeType mapIndexToKnowledgeType(int index) {
+	public static KnowledgeType mapIndexToKnowledgeType(int index) {
 		switch (index) {
 		case 0:
 			return KnowledgeType.ALTERNATIVE;
@@ -51,7 +54,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		}
 	}
 
-	public Integer mapKnowledgeTypeToIndex(KnowledgeType knowledgeType) {
+	public static int mapKnowledgeTypeToIndex(KnowledgeType knowledgeType) {
 		switch (knowledgeType) {
 		case ALTERNATIVE:
 			return 0;
@@ -64,9 +67,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		case ISSUE:
 			return 4;
 		default:
-			break;
+			return -1;
 		}
-		return -1;
 	}
 
 }

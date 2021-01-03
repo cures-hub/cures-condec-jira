@@ -649,7 +649,7 @@ public class ConfigRest {
 			prettyMapOutput.append("{");
 			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
 				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
-						.append("\" : \"").append(e.getValue()).append("\"");
+				.append("\" : \"").append(e.getValue()).append("\"");
 				prefix = ",";
 			}
 			prettyMapOutput.append(System.lineSeparator()).append("}");
@@ -677,7 +677,7 @@ public class ConfigRest {
 			StringBuilder builder = new StringBuilder();
 			List<String> textList = Collections.singletonList(text);
 
-			Boolean relevant = trainer.getClassifier().makeBinaryPredictions(textList).get(0);
+			boolean relevant = trainer.getClassifier().makeBinaryPredictions(textList)[0];
 			builder.append(relevant ? "Relevant" : "Irrelevant");
 
 			if (relevant) {

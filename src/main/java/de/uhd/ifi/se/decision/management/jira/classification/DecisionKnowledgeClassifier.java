@@ -166,8 +166,7 @@ public class DecisionKnowledgeClassifier {
 			 * 
 			 */
 		}
-		KnowledgeType predictedKnowledgeType = fineGrainedClassifier
-				.mapIndexToKnowledgeType(fineGrainedClassifier.maxAtInArray(predictionResult));
+		KnowledgeType predictedKnowledgeType = fineGrainedClassifier.getType(predictionResult);
 		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
 
 	}
