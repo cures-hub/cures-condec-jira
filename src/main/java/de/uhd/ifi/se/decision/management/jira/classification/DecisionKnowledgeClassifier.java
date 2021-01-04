@@ -17,6 +17,7 @@ import com.atlassian.jira.config.util.JiraHome;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -74,9 +75,7 @@ public class DecisionKnowledgeClassifier {
 	 * @return list of boolean values in the same order as the input strings. Each
 	 *         value indicates whether a string is relevant (true) or not (false).
 	 */
-	private boolean makeBinaryPrediction(String stringToBeClassified)
-			throws Exception {
-
+	private boolean makeBinaryPrediction(String stringToBeClassified) {
 		double[][] features = preprocess(stringToBeClassified);
 		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
@@ -96,31 +95,10 @@ public class DecisionKnowledgeClassifier {
 	 * @see this.makeBinaryDecision
 	 */
 	public boolean[] makeBinaryPredictions(List<String> stringsToBeClassified) {
-		// init list
 		boolean[] binaryPredictionResults = new boolean[stringsToBeClassified.size()];
-		ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-		try {
-			// Classify string instances
-
-			for (int i = 0; i < stringsToBeClassified.size(); i++) {
-				final int finalI = i;
-				taskExecutor.execute(() -> {
-					try {
-						binaryPredictionResults[finalI] = makeBinaryPrediction(stringsToBeClassified.get(finalI));
-					} catch (Exception e) {
-						LOGGER.error(e.getMessage());
-					}
-				});
-			}
-			taskExecutor.shutdown();
-			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
-		} catch (Exception e) {
-			LOGGER.error("Binary classification failed. Message: " + e.getMessage());
-			return new boolean[stringsToBeClassified.size()];
+		for (int i = 0; i < stringsToBeClassified.size(); i++) {
+			binaryPredictionResults[i] = makeBinaryPrediction(stringsToBeClassified.get(i));
 		}
-
 		return binaryPredictionResults;
 
 	}
@@ -134,8 +112,8 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 *            labels of the instances
 	 */
-	public void trainBinaryClassifier(double[][] features, int[] labels) {
-		this.binaryClassifier.train(features, labels);
+	public void trainBinaryClassifier(PreprocessedData data) {
+		this.binaryClassifier.train(data.preprocessedSentences, data.updatedLabels);
 	}
 
 	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults,
@@ -146,8 +124,7 @@ public class DecisionKnowledgeClassifier {
 		// added together.
 		// ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
 		for (double[] feature : features) {
-			double[] currentPredictionResult = fineGrainedClassifier
-					.predictProbabilities(feature);
+			double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature);
 			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
 				predictionResult = currentPredictionResult;
 			}
@@ -206,8 +183,8 @@ public class DecisionKnowledgeClassifier {
 	 * @param labels
 	 * @see this.trainBinaryClassifier
 	 */
-	public void trainFineGrainedClassifier(double[][] features, int[] labels) {
-		this.fineGrainedClassifier.train(features, labels);
+	public void trainFineGrainedClassifier(PreprocessedData data) {
+		this.fineGrainedClassifier.train(data.preprocessedSentences, data.updatedLabels);
 	}
 
 	/**
@@ -218,7 +195,7 @@ public class DecisionKnowledgeClassifier {
 	 *            sentence
 	 * @return preprocessed sentence in a numerical representation.
 	 */
-	public double[][] preprocess(String stringsToBePreprocessed) throws Exception {
+	public double[][] preprocess(String stringsToBePreprocessed) {
 		return Preprocessor.getInstance().preprocess(stringsToBePreprocessed);
 	}
 

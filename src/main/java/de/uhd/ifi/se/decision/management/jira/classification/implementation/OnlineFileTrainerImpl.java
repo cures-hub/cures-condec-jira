@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -82,54 +78,32 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	@Override
 	// is called after setting training-file
 	public boolean train() {
-		AtomicBoolean isTrained = new AtomicBoolean(true);
+		boolean isTrained = true;
 		try {
-			ExecutorService taskExecutor = Executors.newFixedThreadPool(2);
-			taskExecutor.execute(() -> {
-				try {
-					trainBinaryClassifier();
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage());
-					isTrained.set(false);
-				}
-			});
-			taskExecutor.execute(() -> {
-				try {
-					trainFineGrainedClassifier();
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage());
-					isTrained.set(false);
-				}
-			});
-
-			taskExecutor.shutdown();
-			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
+			trainBinaryClassifier();
+			trainFineGrainedClassifier();
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
-			System.err.println("The classifier could not be trained. Message:" + e.getMessage());
-			isTrained.set(false);
+			isTrained = false;
 		}
-		return isTrained.get();
+		return isTrained;
 	}
 
-	private synchronized void trainBinaryClassifier() throws Exception {
-		LOGGER.debug("Binary Classifier training started.");
+	private void trainBinaryClassifier() {
+		LOGGER.debug("Binary classifier training started.");
 
 		TrainingData trainingData = new TrainingData(getInstances());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, false);
 
-		classifier.trainBinaryClassifier(preprocessedSentences.preprocessedSentences,
-				preprocessedSentences.updatedLabels);
+		classifier.trainBinaryClassifier(preprocessedSentences);
 	}
 
-	private synchronized void trainFineGrainedClassifier() throws Exception {
-		LOGGER.debug("Fine-grained Classifier training started.");
+	private void trainFineGrainedClassifier() {
+		LOGGER.debug("Fine-grained classifier training started.");
 
 		TrainingData trainingData = new TrainingData(getInstances());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, true);
-		classifier.trainFineGrainedClassifier(preprocessedSentences.preprocessedSentences,
-				preprocessedSentences.updatedLabels);
+		classifier.trainFineGrainedClassifier(preprocessedSentences);
 		// this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 

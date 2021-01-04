@@ -168,25 +168,25 @@ public class Preprocessor {
 	 * @return List of words in numerical representation
 	 */
 	private double[] concat(double[][] tokens, int start, int end) {
-		double[] gram = null;
+		double[] gram = new double[0];
 		for (int i = start; i < end; i++)
 			gram = concatenate(gram, tokens[i]);
 		return gram;
 	}
 
+	/**
+	 * @param a
+	 *            first array of double values
+	 * @param b
+	 *            second array of double values
+	 * @return concatenated array of double values
+	 */
 	public static double[] concatenate(double[] a, double[] b) {
-		int aLen = 0;
-		if (a != null) {
-			aLen = a.length;
-		}
+		int aLen = a.length;
 		int bLen = b.length;
-
 		double[] c = new double[aLen + bLen];
-		if (a != null) {
-			System.arraycopy(a, 0, c, 0, aLen);
-		}
+		System.arraycopy(a, 0, c, 0, aLen);
 		System.arraycopy(b, 0, c, aLen, bLen);
-
 		return c;
 	}
 
@@ -207,7 +207,7 @@ public class Preprocessor {
 	}
 
 	public String[] calculatePosTags(List<String> tokens) {
-		return this.tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
+		return tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
 	}
 
 	/**

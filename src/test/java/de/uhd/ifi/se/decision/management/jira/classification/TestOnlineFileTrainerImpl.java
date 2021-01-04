@@ -144,7 +144,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 		assertEquals(2, this.trainer.getClassifier().makeFineGrainedPredictions(TEST_SENTENCES).size());
 	}
 
-	private File getTrimmedDefaultArffFile() {
+	public static File getTrimmedDefaultArffFile() {
 		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
 		File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
 
