@@ -4,19 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -26,8 +19,6 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 
 public class TestOnlineTrainer extends TestSetUp {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestOnlineTrainer.class);
-
 
 	@Before
 	public void setUp() {
@@ -113,73 +104,17 @@ public class TestOnlineTrainer extends TestSetUp {
 	@NonTransactional
 	public void testDefaultArffFile() {
 		FileTrainer trainer = new OnlineFileTrainerImpl();
-		File luceneArffFile = getTrimmedDefaultArffFile();
+		File luceneArffFile = TestOnlineFileTrainerImpl.getTrimmedDefaultArffFile();
 		assertTrue(luceneArffFile.exists());
 		trainer.setTrainingFile(luceneArffFile);
-		//assertNotNull(trainer.getInstances());
-		// assertTrue(trainer.train());
-		//
-		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();
-		// List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision",
-		// "Alternative", "Party tonight",
-		// "+1", "Very good.");
-		// // List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
-		// List<Boolean> predictedRelevance =
-		// classifier.makeBinaryPredictions(stringsToBeClassified);
-		// // assertEquals(expectedRelevance, predictedRelevance);
-		// LOGGER.info((predictedRelevance);
-		//
-		// List<KnowledgeType> types =
-		// classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		// LOGGER.info((types);
 	}
 
 	@Test
 	@NonTransactional
 	public void testTrainDefaultClassifier() {
-		File trainingFile = getTrimmedDefaultArffFile();
+		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedDefaultArffFile();
 		assertTrue(FileTrainer.trainClassifier(trainingFile));
 	}
-
-	private File getTrimmedDefaultArffFile() {
-		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-		File trimmedDefaultFile = new File("src/test/resources/classifier/defaultTrainingData.arff");
-
-		int numberOfLines = 25;
-
-		BufferedWriter writer = null;
-		try {
-			if (!trimmedDefaultFile.exists()) {
-				trimmedDefaultFile.getParentFile().mkdirs();
-				trimmedDefaultFile.createNewFile();
-			} else {
-				return trimmedDefaultFile;
-			}
-		} catch (IOException e) {
-			LOGGER.error("Could not create new trimmed training file or directories for unit tests.");
-			LOGGER.error(e.getMessage());
-		}
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
-			writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
-
-			String currentLine;
-			int counter = 0;
-			while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
-				writer.write(currentLine + System.getProperty("line.separator"));
-				counter++;
-			}
-			writer.close();
-			reader.close();
-			return trimmedDefaultFile;
-		} catch (IOException e) {
-			LOGGER.error("Could not add content to trimmed training file for unit tests.");
-			LOGGER.error(e.getMessage());
-		}
-		return fullDefaultFile;
-
-	}
-
 
 	@Test
 	@NonTransactional

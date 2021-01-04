@@ -135,7 +135,8 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
-		assertEquals(2, this.trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).length);
+		trainer.train();
+		assertEquals(2, trainer.getClassifier().makeBinaryPredictions(TEST_SENTENCES).length);
 	}
 
 	@Test
@@ -148,7 +149,11 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
 		File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
 
-		int numberOfLines = 25;
+		if (trimmedDefaultFile.exists()) {
+			return trimmedDefaultFile;
+		}
+
+		int numberOfLines = 50;
 
 		BufferedWriter writer = null;
 		try {

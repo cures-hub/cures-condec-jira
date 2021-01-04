@@ -83,6 +83,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			trainBinaryClassifier();
 			trainFineGrainedClassifier();
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
 			isTrained = false;
 		}
@@ -91,16 +92,13 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	private void trainBinaryClassifier() {
 		LOGGER.debug("Binary classifier training started.");
-
 		TrainingData trainingData = new TrainingData(getInstances());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, false);
-
 		classifier.trainBinaryClassifier(preprocessedSentences);
 	}
 
 	private void trainFineGrainedClassifier() {
 		LOGGER.debug("Fine-grained classifier training started.");
-
 		TrainingData trainingData = new TrainingData(getInstances());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, true);
 		classifier.trainFineGrainedClassifier(preprocessedSentences);

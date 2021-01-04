@@ -53,7 +53,7 @@ public class Preprocessor {
 	}
 
 	private Preprocessor() {
-		this.nGramN = 3;
+		this.nGramN = 1;
 		this.glove = new PreTrainedGloVe();
 		if (filesNotInitialized()) {
 			initFiles();
@@ -154,8 +154,9 @@ public class Preprocessor {
 	 */
 	public double[][] generateNGram(double[][] tokens, int n) {
 		double[][] nGrams = new double[tokens.length][];
-		for (int i = 0; i < tokens.length - n + 1; i++)
+		for (int i = 0; i < tokens.length - n + 1; i++) {
 			nGrams[i] = concat(tokens, i, i + n);
+		}
 		return nGrams;
 	}
 
@@ -219,7 +220,7 @@ public class Preprocessor {
 	 *            to be preprocessed
 	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
-	public synchronized double[][] preprocess(String sentence) {
+	public double[][] preprocess(String sentence) {
 		String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
 		cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
 		cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
@@ -230,7 +231,11 @@ public class Preprocessor {
 		stemmedTokens = stem(tokens);
 
 		double[][] numberTokens = convertToNumbers(tokens);
-		return generateNGram(numberTokens, nGramN);
+		double[][] nGrams = generateNGram(numberTokens, nGramN);
+		if (nGrams[0] == null) {
+			return new double[1][numberTokens[0].length * nGramN];
+		}
+		return nGrams;
 	}
 
 	/**

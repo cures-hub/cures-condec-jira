@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,8 +76,22 @@ public class TestPreprocessor extends TestSetUp {
 
 	@Test
 	public void testGenerateNGrams() {
-		double[][] pre = preprocessor.preprocess(testSentence);
-		assertEquals(150, pre[0].length);
-		assertEquals(10, pre.length);
+		double[][] preprocessing = preprocessor.preprocess(testSentence);
+		// assertEquals(150, preprocessing[0].length);
+		assertEquals(50, preprocessing[0].length);
+		assertEquals(10, preprocessing.length);
+		assertNotNull(preprocessing[0]);
+		assertEquals(0.418, preprocessing[0][0]);
+	}
+
+	@Test
+	public void testGenerateNGramsInvalid() {
+		double[][] preprocessing = preprocessor.preprocess("Issue");
+		assertEquals(1, preprocessing.length);
+		// assertEquals(150, preprocessing[0].length);
+		assertEquals(50, preprocessing[0].length);
+		assertEquals(1, preprocessing.length);
+		assertNotNull(preprocessing[0]);
+		assertNotNull(preprocessing[0][0]);
 	}
 }

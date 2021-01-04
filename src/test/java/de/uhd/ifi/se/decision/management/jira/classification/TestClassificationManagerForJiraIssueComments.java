@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +103,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	@NonTransactional
 	public void testBinaryClassification() {
 		sentences = classificationManager.classifySentencesBinary(sentences);
-		assertTrue(sentences.get(0).isRelevant());
+		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 	}
 

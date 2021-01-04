@@ -35,17 +35,52 @@ public class PreprocessedData {
 	 *            labels of the sentences
 	 */
 	private void preprocess(String[] stringsToBePreprocessed, int[] labels) {
+		preprocessedSentences = new double[0][];
+		updatedLabels = new int[0];
+		preprocessor.preprocess(stringsToBePreprocessed[0]);
 		for (int i = 0; i < stringsToBePreprocessed.length; i++) {
-			try {
-				double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
-				for (int j = 0; j < preprocessedSentence.length; j++) {
-					updatedLabels[i] = labels[i];
-				}
-				preprocessedSentences[i] = new double[preprocessedSentence.length];
-			} catch (Exception e) {
-				e.printStackTrace();
+			double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
+			if (preprocessedSentence[0] == null) {
+				continue;
 			}
+			int[] myLabels = new int[preprocessedSentence.length];
+			for (int j = 0; j < preprocessedSentence.length; j++) {
+				myLabels[j] = labels[i];
+			}
+			updatedLabels = concatenate(updatedLabels, myLabels);
+			preprocessedSentences = concatenate(preprocessedSentences, preprocessedSentence);
 		}
 	}
 
+	/**
+	 * @param a
+	 *            first array of double values
+	 * @param b
+	 *            second array of double values
+	 * @return concatenated array of double values
+	 */
+	public static int[] concatenate(int[] a, int[] b) {
+		int aLen = a.length;
+		int bLen = b.length;
+		int[] c = new int[aLen + bLen];
+		System.arraycopy(a, 0, c, 0, aLen);
+		System.arraycopy(b, 0, c, aLen, bLen);
+		return c;
+	}
+
+	/**
+	 * @param a
+	 *            first array of double values
+	 * @param b
+	 *            second array of double values
+	 * @return concatenated array of double values
+	 */
+	public static double[][] concatenate(double[][] a, double[][] b) {
+		int aLen = a.length;
+		int bLen = b.length;
+		double[][] c = new double[aLen + bLen][];
+		System.arraycopy(a, 0, c, 0, aLen);
+		System.arraycopy(b, 0, c, aLen, bLen);
+		return c;
+	}
 }

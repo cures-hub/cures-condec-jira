@@ -1,12 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +98,6 @@ public class DecisionKnowledgeClassifier {
 			binaryPredictionResults[i] = makeBinaryPrediction(stringsToBeClassified.get(i));
 		}
 		return binaryPredictionResults;
-
 	}
 
 	/**
@@ -116,10 +113,9 @@ public class DecisionKnowledgeClassifier {
 		this.binaryClassifier.train(data.preprocessedSentences, data.updatedLabels);
 	}
 
-	public void makeFineGrainedPrediction(String stringToBeClassified, List<KnowledgeType> fineGrainedPredictionResults,
-			int i) throws Exception {
+	public KnowledgeType makeFineGrainedPrediction(String stringToBeClassified) {
 		double[][] features = preprocess(stringToBeClassified);
-		double[] predictionResult = new double[this.fineGrainedClassifier.getNumClasses()];
+		double[] predictionResult = new double[fineGrainedClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
 		// ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
@@ -135,8 +131,7 @@ public class DecisionKnowledgeClassifier {
 			 */
 		}
 		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.getType(predictionResult);
-		fineGrainedPredictionResults.set(i, predictedKnowledgeType);
-
+		return predictedKnowledgeType;
 	}
 
 	private Double max(double[] array) {
@@ -149,33 +144,16 @@ public class DecisionKnowledgeClassifier {
 	 * @see this.makeBinaryDecision
 	 */
 	public List<KnowledgeType> makeFineGrainedPredictions(List<String> stringsToBeClassified) {
-		List<KnowledgeType> fineGrainedPredictionResults = Arrays
-				.asList(new KnowledgeType[stringsToBeClassified.size()]);
-		ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
 		try {
-
-			// Classify string instances
-			for (int i = 0; i < stringsToBeClassified.size(); i++) {
-
-				final int finalI = i;
-				taskExecutor.execute(() -> {
-					try {
-						makeFineGrainedPrediction(stringsToBeClassified.get(finalI), fineGrainedPredictionResults,
-								finalI);
-					} catch (Exception e) {
-						LOGGER.error(e.getMessage());
-					}
-				});
+			List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<>();
+			for (String string : stringsToBeClassified) {
+				fineGrainedPredictionResults.add(makeFineGrainedPrediction(string));
 			}
-			taskExecutor.shutdown();
-			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			return fineGrainedPredictionResults;
 		} catch (Exception e) {
 			LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
-			return null;
 		}
-
-		return fineGrainedPredictionResults;
+		return null;
 	}
 
 	/**
