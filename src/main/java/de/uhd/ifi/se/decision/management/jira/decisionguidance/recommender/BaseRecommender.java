@@ -12,6 +12,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+/**
+ * Takes the input from the UI and passes it to the configured knowledge sources
+ * @param <T> Datatype of the input e.g. String, KnowledgeElement
+ */
 public abstract class BaseRecommender<T> {
 
 	protected T input;

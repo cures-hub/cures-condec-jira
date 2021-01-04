@@ -63,7 +63,7 @@
 		let counter = 0;
 		var sortedByScore = results.slice(0);
 		sortedByScore.sort(function(a,b) {
-			return b.score.score - a.score.score;
+			return b.score.totalScore - a.score.totalScore;
 		});
 
 		sortedByScore.forEach((recommendation) => {
@@ -135,7 +135,7 @@
     		let counter = 0;
     		var sortedByScore = results.slice(0);
     		sortedByScore.sort(function(a,b) {
-    			return b.score.score - a.score.score;
+    			return b.score.totalScore - a.score.totalScore;
     		});
 
     		var topResults = sortedByScore.slice(0,4);
@@ -213,7 +213,7 @@
 
 	function buildScore(scoreObject, ID) {
 		const scoreControl =  "<a data-aui-trigger aria-controls='"+ ID +"' href='"+ ID +"'>" +
-								 + scoreObject.score.toFixed(2) + "%"+
+								 + scoreObject.totalScore.toFixed(2) + "%"+
 								 "</a>";
 
 		var inlineDialog = "<aui-inline-dialog id='" + ID + "' responds-to='hover'>";
@@ -224,15 +224,15 @@
 		inlineDialog += "<th>Score</th>";
 		inlineDialog += "</thead>";
 		inlineDialog += "<tbody>";
-		scoreObject.composedScore.forEach(score => {
+		scoreObject.partScores.forEach(partScore => {
 			inlineDialog += "<tr>";
-			inlineDialog += "<td>" + score.explanation + "</td><td>" + score.score.toFixed(2)  +  "</td>";
+			inlineDialog += "<td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2)  +  "</td>";
 			inlineDialog += "</tr>";
 		})
 		inlineDialog += "</tbody>";
 		inlineDialog += "</table>";
 		inlineDialog += "<span class='project-config-webpanel-column-content'></span>";
-		inlineDialog += "<p><b>Score: "  + scoreObject.score.toFixed(2)  +  "%</b></p>";
+		inlineDialog += "<p><b>Score: "  + scoreObject.totalScore.toFixed(2)  +  "%</b></p>";
 
 		inlineDialog += "</aui-inline-dialog>";
 

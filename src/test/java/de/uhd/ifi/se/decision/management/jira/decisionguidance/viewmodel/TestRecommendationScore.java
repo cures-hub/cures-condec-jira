@@ -26,8 +26,8 @@ public class TestRecommendationScore extends TestSetUp {
 		score.composeScore(new RecommendationScore(0.5f, "Second Score"));
 		assertEquals(2, score.getComposeDScore().size());
 
-		score.setScoreValue(1.5f);
-		assertEquals(1.5, score.getScoreValue(), 0.0);
+		score.setTotalScore(1.5f);
+		assertEquals(1.5, score.getTotalScore(), 0.0);
 
 		score.setComposedScore(new ArrayList<>());
 		assertEquals(2, score.getComposeDScore().size());

@@ -15,25 +15,25 @@ import java.util.stream.Collectors;
 
 public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
-	private double THRESHHOLD;
+	private double THRESHOLD;
 	private static final JaroWinklerDistance similarityScore = new JaroWinklerDistance();
 
 	@Override
 	public List<Recommendation> getResults(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		THRESHHOLD = ConfigPersistenceManager.getSimilarityThreshold(projectKey); //TODO refactor to other location
+		THRESHOLD = ConfigPersistenceManager.getSimilarityThreshold(projectKey); //TODO refactor to other location
 
 		this.queryDatabase();
 		if (knowledgeElements == null || inputs == null) return recommendations;
 
 
-		//get all alternatives, which parent contains the pattern"
+		//get all issues that are similar to the given input
 		knowledgeElements.forEach(issue -> {
-			if (this.calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHHOLD) {
+			if (this.calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHOLD) {
 
 
-				issue.getLinkedElements(5).stream().filter(element -> this.matchingIssueTypes(element, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+				issue.getLinkedElements(5).stream().filter(element -> this.isMatchingIssueType(element, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 					.forEach(child -> {
 
 						Recommendation recommendation = this.createRecommendation(child, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION);
@@ -55,7 +55,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement parentIssue, List<Argument> arguments) {
 
-		RecommendationScore score = new RecommendationScore(0, "Simlarity based on " + similarityScore.toString());
+		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityScore.toString());
 
 		double jc = this.calculateSimilarity(similarityScore, keywords, parentIssue.getSummary());
 		score.composeScore(new RecommendationScore((float) jc, "<b>" + keywords + "</b> is similar to <b>" + parentIssue.getSummary() + "</b>"));
@@ -75,11 +75,11 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		}
 
 
-		float argumentWeight = .1f;
+		float argumentWeight = .1f; //TODO make the weight of an argument changeable in the UI
 
-		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments) * argumentWeight)) / (1 + arguments.size() * argumentWeight) * 100f;
+		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments) * argumentWeight)) / (1 + arguments.size() * argumentWeight) * 100f; //TODO find better formula
 
-		score.setScoreValue(scoreJC);
+		score.setTotalScore(scoreJC);
 
 		return score;
 	}
@@ -98,12 +98,13 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		return null;
 	}
 
-	protected boolean matchingIssueTypes(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
-		int matchedType = 0;
+	protected boolean isMatchingIssueType(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
+		int numberOfMatchingTypes = 0;
 		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (knowledgeElement.getType() == knowledgeType) matchedType += 1;
+			if (knowledgeElement.getType() == knowledgeType) numberOfMatchingTypes += 1;
 		}
-		return matchedType > 0;
+
+		return numberOfMatchingTypes > 0;
 	}
 
 	protected List<Argument> getArguments(KnowledgeElement knowledgeElement) {

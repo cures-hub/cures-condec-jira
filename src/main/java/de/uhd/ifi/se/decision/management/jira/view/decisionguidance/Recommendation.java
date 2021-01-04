@@ -78,7 +78,7 @@ public class Recommendation {
 	}
 
 	public float getScore() {
-		return this.score.getScoreValue();
+		return this.score.getTotalScore();
 	}
 
 	public void setScore(RecommendationScore score) {

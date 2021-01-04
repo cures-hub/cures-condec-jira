@@ -5,6 +5,9 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 import java.util.List;
 
+/**
+ * A Knowledge Source contains all the configured data from the user and is stored in the system
+ */
 public abstract class KnowledgeSource {
 
 	protected List<Recommendation> recommendations;
