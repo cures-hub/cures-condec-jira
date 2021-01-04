@@ -40,14 +40,14 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		try {
 			pp.preprocess(baseElement.getDescription());
-			CharSequence[] stemmedI1Description = pp.getTokens();
+			CharSequence[] stemmedI1Description = pp.getStemmedTokens();
 			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
 			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
 					pp.preprocess(knowledgeElement.getDescription());
-					CharSequence[] stemmedI2Description = pp.getTokens();
+					CharSequence[] stemmedI2Description = pp.getStemmedTokens();
 					CharSequence[] concatenatedList = new CharSequence[stemmedI1Description.length
 					                                                   + stemmedI2Description.length];
 					concatenatedList = stemmedI1Description;// + stemmedI2Description

@@ -38,9 +38,10 @@ public class Preprocessor {
 	private Tokenizer tokenizer;
 	private Stemmer stemmer;
 	private POSTaggerME tagger;
-	private final PreTrainedGloveSingleton glove;
+	private final PreTrainedGloVe glove;
+
 	private final Integer nGramN;
-	private CharSequence[] tokens;
+	private CharSequence[] stemmedTokens;
 
 	private static Preprocessor instance;
 
@@ -53,8 +54,7 @@ public class Preprocessor {
 
 	private Preprocessor() {
 		this.nGramN = 3;
-		this.glove = PreTrainedGloveSingleton.getInstance();
-
+		this.glove = new PreTrainedGloVe();
 		if (filesNotInitialized()) {
 			initFiles();
 		}
@@ -137,7 +137,6 @@ public class Preprocessor {
 			stemmendTokens[i] = stemmer.stem(tokens[i]);
 		}
 		return stemmendTokens;
-
 	}
 
 	/**
@@ -148,15 +147,15 @@ public class Preprocessor {
 	 * http://text-analytics101.rxnlp.com/2014/11/what-are-n-grams.html)
 	 *
 	 * @param tokens
-	 *            tokenized setntence used t generate N-Grams
-	 * @param N
+	 *            tokenized sentence used to generate N-Grams
+	 * @param n
 	 *            N-Gram number
-	 * @return List of N-Grams
+	 * @return array of N-Grams
 	 */
-	public double[][] generateNGram(double[][] tokens, Integer N) {
+	public double[][] generateNGram(double[][] tokens, int n) {
 		double[][] nGrams = new double[tokens.length][];
-		for (int i = 0; i < tokens.length - N + 1; i++)
-			nGrams[i] = concat(tokens, i, i + N);
+		for (int i = 0; i < tokens.length - n + 1; i++)
+			nGrams[i] = concat(tokens, i, i + n);
 		return nGrams;
 	}
 
@@ -169,10 +168,26 @@ public class Preprocessor {
 	 * @return List of words in numerical representation
 	 */
 	private double[] concat(double[][] tokens, int start, int end) {
-		double[] gram = new double[end - start];
+		double[] gram = null;
 		for (int i = start; i < end; i++)
-			gram = tokens[i];
+			gram = concatenate(gram, tokens[i]);
 		return gram;
+	}
+
+	public static double[] concatenate(double[] a, double[] b) {
+		int aLen = 0;
+		if (a != null) {
+			aLen = a.length;
+		}
+		int bLen = b.length;
+
+		double[] c = new double[aLen + bLen];
+		if (a != null) {
+			System.arraycopy(a, 0, c, 0, aLen);
+		}
+		System.arraycopy(b, 0, c, aLen, bLen);
+
+		return c;
 	}
 
 	/**
@@ -205,23 +220,17 @@ public class Preprocessor {
 	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
 	public synchronized double[][] preprocess(String sentence) {
-		try {
-			String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
-			cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
-			cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
-					WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
-			// replace long words and possible methods!
-			cleanedSentence = cleanedSentence.toLowerCase();
-			String[] tokens = tokenize(cleanedSentence);
-			this.tokens = stem(tokens);
+		String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
+		cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
+		cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
+				WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+		// replace long words and possible methods!
+		cleanedSentence = cleanedSentence.toLowerCase();
+		String[] tokens = tokenize(cleanedSentence);
+		stemmedTokens = stem(tokens);
 
-			double[][] numberTokens = convertToNumbers(tokens);
-
-			return generateNGram(numberTokens, nGramN);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-		return new double[sentence.length()][];
+		double[][] numberTokens = convertToNumbers(tokens);
+		return generateNGram(numberTokens, nGramN);
 	}
 
 	/**
@@ -234,7 +243,11 @@ public class Preprocessor {
 		}
 	}
 
-	public CharSequence[] getTokens() {
-		return tokens;
+	public CharSequence[] getStemmedTokens() {
+		return stemmedTokens;
+	}
+
+	public PreTrainedGloVe getGlove() {
+		return glove;
 	}
 }

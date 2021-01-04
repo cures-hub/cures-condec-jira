@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,38 +10,73 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 
 public class TestPreprocessor extends TestSetUp {
-	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
 
-	private Preprocessor pp;
+	private static final String testSentence = "The quick brown fox jumps over the lazy dog.";
+	private Preprocessor preprocessor;
 
 	@Before
 	public void setUp() {
 		init();
-		pp = Preprocessor.getInstance();
+		preprocessor = Preprocessor.getInstance();
 	}
 
 	@Test
 	public void testTokenizingWorks() {
-		String[] tokenizedTestSentence = { "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "." };
-		assertArrayEquals(tokenizedTestSentence, pp.tokenize(testSentence));
+		String[] tokens = { "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "." };
+		assertArrayEquals(tokens, preprocessor.tokenize(testSentence));
 	}
 
 	@Test
-	public void testStemmingWorksStandalone() {
-		String[] sentenceToTokenize = { "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "." };
-		String[] tokenizedTestSentence = { "The", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "." };
-		assertArrayEquals(tokenizedTestSentence, pp.stem(sentenceToTokenize));
+	public void testStemmingWorks() {
+		String[] tokensNotStemmed = { "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "." };
+		String[] stemmedTokens = { "The", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "." };
+		assertArrayEquals(stemmedTokens, preprocessor.stem(tokensNotStemmed));
 	}
 
 	@Test
 	public void testReplaceUsingRegExWorks() {
 		assertEquals("I put it on master branch and also linked it in the Marketplace.",
-				pp.replaceUsingRegEx("I put it on master branch and also linked it in the Marketplace.\r\n\r\n", Preprocessor.WHITESPACE_CHARACTERS_PATTERN, ""));
+				preprocessor.replaceUsingRegEx(
+						"I put it on master branch and also linked it in the Marketplace.\r\n\r\n",
+						Preprocessor.WHITESPACE_CHARACTERS_PATTERN, ""));
 	}
 
 	@Test
-	public void testPreprocessingWorks() {
-		assertEquals(8, pp.preprocess(testSentence).length);
+	public void testGetStemmedTokens() {
+		preprocessor.preprocess(testSentence);
+		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "." };
+		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokens());
 	}
 
+	@Test
+	public void testConvertingTokensToNumbers() {
+		String[] stemmedTokens = { "the", "quick", "unknownxyzabcsd" };
+		double[][] numberRepresentationOfTokens = preprocessor.convertToNumbers(stemmedTokens);
+		assertEquals(new double[3][50].length, numberRepresentationOfTokens.length);
+		assertEquals(0.418, numberRepresentationOfTokens[0][0]);
+		assertEquals(-0.78581, numberRepresentationOfTokens[0][49]);
+		assertEquals(0.0, numberRepresentationOfTokens[2][49]);
+	}
+
+	@Test
+	public void testGetWordVectorForExistingWord() {
+		double[] wordVector = preprocessor.getGlove().getWordVector("the");
+		assertEquals(50, wordVector.length);
+		assertEquals(0.418, wordVector[0]);
+	}
+
+	@Test
+	public void testGetWordVectorForUnknownWord() {
+		double[] wordVector = preprocessor.getGlove().getWordVector("unknownxyzabcsd");
+		assertEquals(50, wordVector.length);
+		assertEquals(0, wordVector[0]);
+		assertEquals(0, wordVector[49]);
+	}
+
+	@Test
+	public void testGenerateNGrams() {
+		double[][] pre = preprocessor.preprocess(testSentence);
+		assertEquals(150, pre[0].length);
+		assertEquals(10, pre.length);
+	}
 }
