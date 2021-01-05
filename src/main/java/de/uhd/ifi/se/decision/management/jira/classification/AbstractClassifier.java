@@ -1,10 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import smile.classification.LogisticRegression;
 import smile.classification.OnlineClassifier;
 import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.MercerKernel;
-import weka.core.SerializationHelper;
 
 public abstract class AbstractClassifier {
 
@@ -69,8 +74,15 @@ public abstract class AbstractClassifier {
 	 * @param filePathAndName
 	 * @throws Exception
 	 */
-	public void saveToFile(String filePathAndName) throws Exception {
-		SerializationHelper.write(filePathAndName, this.model);
+	public void saveToFile(String filePathAndName) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(filePathAndName);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(model);
+			objectOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -90,8 +102,11 @@ public abstract class AbstractClassifier {
 	public boolean loadFromFile(String filePathAndName) {
 		OnlineClassifier<double[]> oldModel = this.model;
 		try {
-			this.model = (OnlineClassifier<double[]>) SerializationHelper.read(filePathAndName);
+			FileInputStream fileIn = new FileInputStream(filePathAndName);
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			this.model = (OnlineClassifier<double[]>) objectIn.readObject();
 			this.modelIsTrained = true;
+			objectIn.close();
 		} catch (Exception e) {
 			this.model = oldModel;
 			return false;

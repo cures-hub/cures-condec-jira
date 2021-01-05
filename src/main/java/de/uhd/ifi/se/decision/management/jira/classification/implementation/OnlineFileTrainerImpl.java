@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -39,6 +38,7 @@ import smile.data.Tuple;
 import smile.data.type.DataType;
 import smile.data.type.StructField;
 import smile.data.type.StructType;
+import smile.io.Arff;
 import smile.io.Read;
 import smile.validation.metric.ClassificationMetric;
 import smile.validation.metric.FScore;
@@ -203,7 +203,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return prefix + timestamp.getTime() + ".arff";
 	}
 
-	public DataFrame loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
+	public DataFrame loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
 		if (!useOnlyValidatedData) {
@@ -219,21 +219,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		try {
 			arffFile = new File(directory + File.separator + getArffFileName());
 			arffFile.createNewFile();
-			String arffString = createArffString(useOnlyValidatedData);
-			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
-			writer.println(arffString);
-			writer.close();
+			if (instances == null) {
+				instances = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
+			}
+			Arff.write(instances, arffFile.toPath(), "RelationName");
 		} catch (IOException e) {
 			LOGGER.error("The ARFF file could not be saved. Message: " + e.getMessage());
 		}
 		return arffFile;
-	}
-
-	private String createArffString(boolean useOnlyValidatedData) {
-		if (instances == null) {
-			instances = loadMekaTrainingDataFromJiraIssueText(useOnlyValidatedData);
-		}
-		return instances.toString();
 	}
 
 	@Override
