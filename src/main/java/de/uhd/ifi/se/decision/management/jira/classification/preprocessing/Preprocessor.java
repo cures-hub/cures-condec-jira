@@ -50,7 +50,7 @@ public class Preprocessor {
 	}
 
 	private Preprocessor() {
-		this.nGramN = 1;
+		this.nGramN = 3;
 		this.glove = new PreTrainedGloVe();
 		if (filesNotInitialized()) {
 			initFiles();
@@ -229,9 +229,12 @@ public class Preprocessor {
 
 		double[][] numberTokens = convertToNumbers(tokens);
 		double[][] nGrams = generateNGram(numberTokens, nGramN);
-		if (nGrams[0] == null) {
-			return new double[1][numberTokens[0].length * nGramN];
+		for (int i = 0; i < nGrams.length; i++) {
+			if (nGrams[i] == null) {
+				nGrams[i] = new double[numberTokens[0].length * nGramN];
+			}
 		}
+
 		return nGrams;
 	}
 

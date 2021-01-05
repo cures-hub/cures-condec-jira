@@ -105,7 +105,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		// why?
 		assertTrue(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
-		assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
 
 }
