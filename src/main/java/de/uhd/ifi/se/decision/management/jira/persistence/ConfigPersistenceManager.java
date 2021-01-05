@@ -464,6 +464,17 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
+	public static List<KnowledgeSource> getAllActivatedKnowledgeSources(String projectKey) {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+
+		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
+		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
+		// New KnowledgeSources could be added here.
+
+		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
+		return knowledgeSources;
+	}
+
 	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
 		setValue(projectKey, "addRecommendationDirectly", addRecommendationDirectly.toString());
 	}

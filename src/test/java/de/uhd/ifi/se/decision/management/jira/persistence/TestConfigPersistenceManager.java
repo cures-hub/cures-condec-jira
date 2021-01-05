@@ -562,6 +562,13 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testGetAllActivatedKnowledgeSourcesNullProject() {
+		assertEquals(1, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
+		ConfigPersistenceManager.setProjectSource("TEST", "TEST", false);
+		assertEquals(0, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
+	}
+
+	@Test
 	public void testSetAndGetAddRecommendationDirectly() {
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", true);
 		assertTrue(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));

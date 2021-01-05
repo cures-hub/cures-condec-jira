@@ -305,7 +305,7 @@ public class ViewRest {
 				.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
 
-		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
+		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllActivatedKnowledgeSources(projectKey);
 
 		// KnowledgeElement knowledgeElement =
 		// this.getIssueFromDocumentationLocation(issueID, projectKey);
