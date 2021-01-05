@@ -258,14 +258,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 *       decision and the alternative.'
 	 */
 	public DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
-		System.out.print(trainingElements.size());
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();
 
 		for (KnowledgeElement trainingElement : trainingElements) {
 			rows.add(Tuple.of(createTrainingRow(trainingElement), structType));
 		}
-		return DataFrame.of(rows, structType);
+		DataFrame dataFrame = DataFrame.of(rows, structType);
+		return dataFrame;
 	}
 
 	public static StructType getDataFrameStructure() {
@@ -324,14 +324,10 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier() throws Exception {
+	public Map<String, Double> evaluateClassifier() {
 		// create and initialize default measurements list
 		List<ClassificationMetric> defaultMeasurements = new ArrayList<>();
 		defaultMeasurements.add(new FScore());
-		// TODO how to apply to more than binary classification
-		// defaultMeasurements.add(new Precision());
-		// defaultMeasurements.add(new Accuracy());
-		// defaultMeasurements.add(new Recall());
 
 		// load validated Jira Issue texts
 		// JiraIssueTextPersistenceManager manager =
@@ -345,7 +341,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
-			List<KnowledgeElement> partOfJiraIssueTexts) throws Exception {
+			List<KnowledgeElement> partOfJiraIssueTexts) {
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new HashMap<>();
 		List<KnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()

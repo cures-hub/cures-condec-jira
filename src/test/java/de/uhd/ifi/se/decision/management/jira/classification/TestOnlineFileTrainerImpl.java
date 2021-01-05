@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -38,7 +37,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	public void setUp() {
 		init();
 		trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingData(getTrainingData());
+		trainer.setTrainingData(TestClassificationManagerForJiraIssueComments.getTrainingData());
 	}
 
 	@Test
@@ -151,7 +150,6 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 		DataFrame dataFrame = trainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
-		System.out.println(dataFrame);
 	}
 
 	@Test

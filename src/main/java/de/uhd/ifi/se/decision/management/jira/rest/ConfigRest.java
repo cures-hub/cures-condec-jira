@@ -629,31 +629,24 @@ public class ConfigRest {
 		}
 
 		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
+		Map<String, Double> evaluationResults = trainer.evaluateClassifier();
 
-		try {
-			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
-
-			if (evaluationResults.size() == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
-			}
-
-			String prefix = "";
-			StringBuilder prettyMapOutput = new StringBuilder();
-			prettyMapOutput.append("{");
-			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
-				.append("\" : \"").append(e.getValue()).append("\"");
-				prefix = ",";
-			}
-			prettyMapOutput.append(System.lineSeparator()).append("}");
-
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-					.build();
+		if (evaluationResults.size() == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
 		}
+
+		String prefix = "";
+		StringBuilder prettyMapOutput = new StringBuilder();
+		prettyMapOutput.append("{");
+		for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
+			prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
+			.append("\" : \"").append(e.getValue()).append("\"");
+			prefix = ",";
+		}
+		prettyMapOutput.append(System.lineSeparator()).append("}");
+
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 	}
 
 	@Path("/testClassifierWithText")

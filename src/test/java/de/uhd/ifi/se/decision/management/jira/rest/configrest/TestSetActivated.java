@@ -15,8 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSetActivated extends TestSetUp {
-	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	private HttpServletRequest request;
+	private ConfigRest configRest;
 
 	@Before
 	public void setUp() {

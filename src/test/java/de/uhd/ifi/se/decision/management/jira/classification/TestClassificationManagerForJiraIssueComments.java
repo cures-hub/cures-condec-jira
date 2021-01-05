@@ -33,7 +33,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	private ClassificationManagerForJiraIssueComments classificationManager;
 	private Issue issue;
 
-	private KnowledgeElement createElement(KnowledgeType type, String summary) {
+	private static KnowledgeElement createElement(KnowledgeType type, String summary) {
 		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setType(type);
 		element.setSummary(summary);
@@ -54,7 +54,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		fillSentenceList();
 	}
 
-	private List<KnowledgeElement> getTrainingData() {
+	public static List<KnowledgeElement> getTrainingData() {
 		List<KnowledgeElement> trainingElements = new ArrayList<KnowledgeElement>();
 		trainingElements.add(createElement(KnowledgeType.ISSUE, "I have an issue"));
 		trainingElements.add(createElement(KnowledgeType.DECISION, "Thats is a Decision"));
