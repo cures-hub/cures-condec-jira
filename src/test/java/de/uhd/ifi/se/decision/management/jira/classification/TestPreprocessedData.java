@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,10 +55,7 @@ public class TestPreprocessedData extends TestSetUp {
 		int[] uniqueLabels = MathEx.unique(preprocessedData.updatedLabels);
 		assertEquals(5, uniqueLabels.length);
 		assertEquals(preprocessedData.preprocessedSentences.length, preprocessedData.updatedLabels.length);
-		System.out.print(Arrays.toString(preprocessedData.preprocessedSentences));
-		// System.out.println(Arrays.toString(preprocessedData.updatedLabels));
 		assertNotNull(preprocessedData.preprocessedSentences[preprocessedData.updatedLabels.length - 1]);
-
 	}
 
 }

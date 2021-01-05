@@ -281,7 +281,9 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			rowValues[i] = 0;
 		}
 		int index = FineGrainedClassifier.mapKnowledgeTypeToIndex(element.getType());
-		rowValues[index] = 1;
+		if (index > -1) {
+			rowValues[index] = 1;
+		}
 		rowValues[5] = element.getSummary();
 		return rowValues;
 	}
