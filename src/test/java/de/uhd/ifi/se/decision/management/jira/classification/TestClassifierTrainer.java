@@ -49,7 +49,6 @@ public class TestClassifierTrainer extends TestSetUp {
 		trainer.setTrainingFile(file);
 		assertNotNull(trainer.getDataFrame());
 		trainer = new ClassifierTrainer("TEST", file.getName());
-		// assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
 		file.delete();
 	}
@@ -164,6 +163,35 @@ public class TestClassifierTrainer extends TestSetUp {
 			System.err.println(e.getMessage());
 		}
 		return fullDefaultFile;
+	}
+
+	@Test
+	@NonTransactional
+	public void testClassificationTrainerFromCSVFile() {
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		DataFrame dataFrame = trainer.getDataFrame();
+		assertNotNull(dataFrame);
+		assertEquals(0, dataFrame.columnIndex("isAlternative"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testSaveTrainingFile() {
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		File file = trainer.saveTrainingFile(false);
+		assertTrue(file.exists());
+		file.delete();
+	}
+
+	@Test
+	@NonTransactional
+	public void testDefaultTrainingFile() {
+		ClassifierTrainer trainer = new ClassifierTrainer();
+		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
+		assertTrue(trainingFile.exists());
+		trainer.setTrainingFile(trainingFile);
 	}
 
 }

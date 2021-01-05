@@ -1,10 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import smile.classification.LogisticRegression;
 import smile.classification.OnlineClassifier;
@@ -12,6 +16,8 @@ import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.MercerKernel;
 
 public abstract class AbstractClassifier {
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
 	protected OnlineClassifier<double[]> model;
 	private int numClasses;
@@ -64,7 +70,7 @@ public abstract class AbstractClassifier {
 	 * @param filePathAndName
 	 * @throws Exception
 	 */
-	public void saveToFile(String filePathAndName) {
+	public File saveToFile(String filePathAndName) {
 		try {
 			FileOutputStream fileOut = new FileOutputStream(filePathAndName);
 			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
@@ -73,6 +79,7 @@ public abstract class AbstractClassifier {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return new File(filePathAndName);
 	}
 
 	/**
@@ -80,7 +87,7 @@ public abstract class AbstractClassifier {
 	 *
 	 * @throws Exception
 	 */
-	public abstract void saveToFile() throws Exception;
+	public abstract File saveToFile() throws Exception;
 
 	/**
 	 * Loads pre-trained model from file.

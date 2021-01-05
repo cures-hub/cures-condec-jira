@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
+import java.io.File;
+
 import de.uhd.ifi.se.decision.management.jira.classification.AbstractClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -29,8 +31,9 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public void saveToFile() throws Exception {
-		super.saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
+	public File saveToFile() {
+		return super.saveToFile(
+				DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
 	}
 
 	@Override

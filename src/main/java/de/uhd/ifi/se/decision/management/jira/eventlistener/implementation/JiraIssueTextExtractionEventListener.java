@@ -13,7 +13,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ProjectEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;

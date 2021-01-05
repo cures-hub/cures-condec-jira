@@ -24,7 +24,6 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -47,7 +46,7 @@ import smile.validation.metric.FScore;
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select a training data file.
  */
-public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
+public class ClassifierTrainer implements EvaluableClassifier {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ClassifierTrainer.class);
 
 	protected DataFrame dataFrame;
@@ -76,7 +75,6 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 	 * classify the comments and description of a Jira issue and Git-commit
 	 * messages.
 	 */
-	@Override
 	// is called after setting training-file
 	public boolean train() {
 		boolean isTrained = true;
@@ -84,8 +82,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 			trainBinaryClassifier();
 			trainFineGrainedClassifier();
 		} catch (Exception e) {
-			e.printStackTrace();
-			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
+			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;
 		}
 		return isTrained;
@@ -121,7 +118,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Could not update classifier. Message: " + e.getMessage());
+			LOGGER.error("Could not update classifier: " + e.getMessage());
 		}
 		return true;
 	}
@@ -137,7 +134,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 		try {
 			trainingData = Read.csv(arffFile.getAbsolutePath(), CSVFormat.DEFAULT, getDataFrameStructure());
 		} catch (IOException | URISyntaxException e) {
-			LOGGER.error("Data frame could not be loaded from training data file.");
+			LOGGER.error("Data frame could not be loaded from training data file: " + e.getMessage());
 		}
 		return trainingData;
 	}
@@ -197,16 +194,16 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 	 *         could not be saved.
 	 */
 	public File saveTrainingFile(boolean useOnlyValidatedData) {
-		File arffFile = null;
+		File trainingDataFile = null;
 		try {
-			arffFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
-			arffFile.createNewFile();
+			trainingDataFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
+			trainingDataFile.createNewFile();
 			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
-			Write.csv(dataFrame, arffFile.toPath());
+			Write.csv(dataFrame, trainingDataFile.toPath());
 		} catch (IOException e) {
 			LOGGER.error("The training data file could not be saved. Message: " + e.getMessage());
 		}
-		return arffFile;
+		return trainingDataFile;
 	}
 
 	/**
@@ -283,25 +280,8 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 		for (int i = 0; i < rowValues.length - 1; i++) {
 			rowValues[i] = 0;
 		}
-		switch (element.getType()) {
-		case ALTERNATIVE:
-			rowValues[0] = 1;
-			break;
-		case PRO:
-			rowValues[1] = 1;
-			break;
-		case CON:
-			rowValues[2] = 1;
-			break;
-		case DECISION:
-			rowValues[3] = 1;
-			break;
-		case ISSUE:
-			rowValues[4] = 1;
-			break;
-		default:
-			break;
-		}
+		int index = FineGrainedClassifier.mapKnowledgeTypeToIndex(element.getType());
+		rowValues[index] = 1;
 		rowValues[5] = element.getSummary();
 		return rowValues;
 	}

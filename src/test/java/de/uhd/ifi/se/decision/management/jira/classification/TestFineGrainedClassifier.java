@@ -1,11 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -66,5 +70,20 @@ public class TestFineGrainedClassifier extends TestSetUp {
 		assertEquals(3, FineGrainedClassifier.mapKnowledgeTypeToIndex(KnowledgeType.DECISION));
 		assertEquals(4, FineGrainedClassifier.mapKnowledgeTypeToIndex(KnowledgeType.ISSUE));
 		assertEquals(-1, FineGrainedClassifier.mapKnowledgeTypeToIndex(KnowledgeType.OTHER));
+	}
+
+	@Test
+	@NonTransactional
+	public void testSaveToAndLoadFromFile() {
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.train();
+		FineGrainedClassifier fineGrainedClassifier = DecisionKnowledgeClassifier.getInstance()
+				.getFineGrainedClassifier();
+		File file = fineGrainedClassifier.saveToFile();
+		assertTrue(file.exists());
+		assertTrue(fineGrainedClassifier.loadFromFile());
+		assertTrue(fineGrainedClassifier.isModelTrained());
+		file.delete();
 	}
 }

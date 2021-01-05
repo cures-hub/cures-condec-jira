@@ -29,9 +29,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
@@ -611,7 +610,7 @@ public class ConfigRest {
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
-		OnlineTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
+		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
 		boolean isTrained = trainer.train();
 		return Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", isTrained)).build();
 	}

@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
+import java.io.File;
+
 import de.uhd.ifi.se.decision.management.jira.classification.AbstractClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 
@@ -22,8 +24,8 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public void saveToFile() throws Exception {
-		super.saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + BinaryClassifier.DEFAULT_MODEL_NAME);
+	public File saveToFile() {
+		return super.saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + BinaryClassifier.DEFAULT_MODEL_NAME);
 	}
 
 	public static boolean isRelevant(double[] probabilities) {

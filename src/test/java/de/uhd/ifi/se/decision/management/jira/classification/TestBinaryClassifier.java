@@ -3,11 +3,14 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestBinaryClassifier extends TestSetUp {
@@ -22,5 +25,19 @@ public class TestBinaryClassifier extends TestSetUp {
 	public void testIsRelevant() {
 		assertTrue(BinaryClassifier.isRelevant(new double[] { 0.2, 0.8 }));
 		assertFalse(BinaryClassifier.isRelevant(new double[] { 0.8, 0.2 }));
+	}
+
+	@Test
+	@NonTransactional
+	public void testSaveToFile() {
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.train();
+		BinaryClassifier binaryClassifier = DecisionKnowledgeClassifier.getInstance().getBinaryClassifier();
+		File file = binaryClassifier.saveToFile();
+		assertTrue(file.exists());
+		assertTrue(binaryClassifier.loadFromFile());
+		assertTrue(binaryClassifier.isModelTrained());
+		file.delete();
 	}
 }
