@@ -53,7 +53,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	public void testOnlineClassificationTrainerFromArffFile() {
 		File file = trainer.saveTrainingFile(true);
 		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getInstances());
+		assertNotNull(trainer.getDataFrame());
 		trainer = new OnlineFileTrainerImpl("TEST", file.getName());
 		// assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
@@ -129,7 +129,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetInstances() {
-		assertNotNull(this.trainer.getInstances());
+		assertNotNull(this.trainer.getDataFrame());
 	}
 
 	@Test

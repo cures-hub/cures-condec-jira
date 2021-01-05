@@ -706,7 +706,7 @@ public class ConfigRest {
 
 		if (arffFile != null) {
 			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
+					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getDataFrame().toString()))
 					.build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

@@ -21,7 +21,7 @@ public class TestPreprocessedData extends TestSetUp {
 		init();
 		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
 		trainer.setTrainingData(getTrainingData());
-		trainingData = new TrainingData(trainer.getInstances());
+		trainingData = new TrainingData(trainer.getDataFrame());
 	}
 
 	@Test

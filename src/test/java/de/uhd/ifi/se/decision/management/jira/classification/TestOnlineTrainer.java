@@ -77,9 +77,9 @@ public class TestOnlineTrainer extends TestSetUp {
 		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
 		File file = trainer.saveTrainingFile(true);
 		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getInstances());
+		assertNotNull(trainer.getDataFrame());
 		trainer = new OnlineFileTrainerImpl("TEST", file.getName());
-		assertNotNull(trainer.getInstances());
+		assertNotNull(trainer.getDataFrame());
 		assertTrue(trainer.train());
 		file.delete();
 	}

@@ -5,7 +5,9 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,12 +34,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import smile.data.DataFrame;
+import smile.data.Tuple;
+import smile.data.type.DataType;
+import smile.data.type.StructField;
+import smile.data.type.StructType;
+import smile.io.Read;
 import smile.validation.metric.ClassificationMetric;
 import smile.validation.metric.FScore;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
@@ -48,7 +52,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	private DecisionKnowledgeClassifier classifier;
 	protected File directory;
-	protected Instances instances;
+	protected DataFrame instances;
 	protected String projectKey;
 
 	public OnlineFileTrainerImpl() {
@@ -92,14 +96,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	private void trainBinaryClassifier() {
 		LOGGER.debug("Binary classifier training started.");
-		TrainingData trainingData = new TrainingData(getInstances());
+		TrainingData trainingData = new TrainingData(getDataFrame());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, false);
 		classifier.trainBinaryClassifier(preprocessedSentences);
 	}
 
 	private void trainFineGrainedClassifier() {
 		LOGGER.debug("Fine-grained classifier training started.");
-		TrainingData trainingData = new TrainingData(getInstances());
+		TrainingData trainingData = new TrainingData(getDataFrame());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, true);
 		classifier.trainFineGrainedClassifier(preprocessedSentences);
 		// this.classifier.getFineGrainedClassifier().saveToFile();
@@ -150,45 +154,35 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return arffFileNames;
 	}
 
-	private Instances getInstancesFromArffFile(File arffFile) {
-		if (!arffFile.exists()) {
-			return null;
-		}
-		Instances instances = null;
-		try {
-			ConverterUtils.DataSource dataSource = new ConverterUtils.DataSource(arffFile.getPath());
-			instances = dataSource.getDataSet();
-
-			if (instances.classIndex() == -1) {
-				// Reset index
-				instances.setClassIndex(instances.numAttributes() - 1);
-			}
-		} catch (Exception e) {
-			LOGGER.error("Problem to get the instances from ARFF file. Message:" + e.getMessage());
-		}
-		return instances;
-	}
-
-	public Instances getInstancesFromArffFile(String arffFileName) {
+	public DataFrame getInstancesFromArffFile(String arffFileName) {
 		File arffFile = new File(directory + File.separator + arffFileName);
-
-		return getInstancesFromArffFile(arffFile);
+		DataFrame trainingData = getDataFrameFromArffFile(arffFile);
+		return trainingData;
 	}
 
-	public Instances getInstances() {
+	public static DataFrame getDataFrameFromArffFile(File arffFile) {
+		DataFrame trainingData = null;
+		try {
+			trainingData = Read.arff(arffFile.getAbsolutePath());
+		} catch (IOException | ParseException | URISyntaxException e) {
+			LOGGER.error("Data frame could not be loaded from ARFF file.");
+		}
+		return trainingData;
+	}
+
+	public DataFrame getDataFrame() {
 		if (instances == null) {
 			this.instances = loadInstances();
 		}
 		return this.instances;
 	}
 
-	private Instances loadInstances() {
-		Instances loadedInstances;
+	private DataFrame loadInstances() {
 
 		List<File> trainingFiles = getTrainingFiles();
-		loadedInstances = new Instances(getInstancesFromArffFile(trainingFiles.get(0)));
+		DataFrame loadedInstances = getDataFrameFromArffFile(trainingFiles.get(0));
 		for (File trainingFile : trainingFiles.subList(1, trainingFiles.size())) {
-			loadedInstances.addAll(getInstancesFromArffFile(trainingFile));
+			loadedInstances.merge(getDataFrameFromArffFile(trainingFile));
 		}
 
 		return loadedInstances;
@@ -196,7 +190,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public void setTrainingFile(File file) {
-		this.instances = getInstancesFromArffFile(file);
+		this.instances = getDataFrameFromArffFile(file);
 	}
 
 	private String getArffFileName() {
@@ -209,13 +203,13 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return prefix + timestamp.getTime() + ".arff";
 	}
 
-	public Instances loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
+	public DataFrame loadMekaTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
 		if (!useOnlyValidatedData) {
 			partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
 		}
-		Instances instances = buildDatasetForMeka(partsOfText);
+		DataFrame instances = buildDataFrame(partsOfText);
 		return instances;
 	}
 
@@ -244,7 +238,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public void setTrainingData(List<KnowledgeElement> trainingElements) {
-		this.instances = buildDatasetForMeka(trainingElements);
+		this.instances = buildDataFrame(trainingElements);
 	}
 
 	/**
@@ -270,88 +264,54 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 *       am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
 	 *       decision and the alternative.'
 	 */
-	private Instances buildDatasetForMeka(List<KnowledgeElement> trainingElements) {
-		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
-
-		// Declare Class value with {0,1} as possible values
-		wekaAttributes.add(getAttribute("isAlternative"));
-		wekaAttributes.add(getAttribute("isPro"));
-		wekaAttributes.add(getAttribute("isCon"));
-		wekaAttributes.add(getAttribute("isDecision"));
-		wekaAttributes.add(getAttribute("isIssue"));
-
-		// Declare text attribute to hold the message (free form text)
-		Attribute attribute = new Attribute("sentence", (List<String>) null);
-
-		// Declare the feature vector
-		wekaAttributes.add(attribute);
-
-		Instances instances = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
+	private DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
+		List<Tuple> rows = new ArrayList<>();
+		StructField column1 = new StructField("isAlternative", DataType.of(Byte.class));
+		StructField column2 = new StructField("isPro", DataType.of(Byte.class));
+		StructField column3 = new StructField("isCon", DataType.of(Byte.class));
+		StructField column4 = new StructField("isDecisions", DataType.of(Byte.class));
+		StructField column5 = new StructField("isIssue", DataType.of(Byte.class));
+		StructField column6 = new StructField("isSentence", DataType.of(String.class));
+		StructType structType = new StructType(column1, column2, column3, column4, column5, column6);
 
 		for (KnowledgeElement trainingElement : trainingElements) {
-			instances.add(createTrainingInstance(trainingElement, attribute));
+			rows.add(Tuple.of(createTrainingRow(trainingElement), structType));
 		}
-		instances.setClassIndex(instances.numAttributes() - 1);
-		return instances;
+		return DataFrame.of(rows, structType);
 	}
 
 	/**
-	 * Creates a Attribute which defines the binary Value
-	 *
-	 * @param name
-	 * @return Attribute
-	 */
-	private static Attribute getAttribute(String name) {
-		ArrayList<String> rationaleAttribute = new ArrayList<String>();
-		rationaleAttribute.add("0");
-		rationaleAttribute.add("1");
-		return new Attribute(name, rationaleAttribute);
-	}
-
-	/**
-	 * Creates a training instance for the supervised text classifier. The instance
-	 * contains the knowledge type indicated by the value 1 (or 0 for type OTHER)
-	 * and the summary of the element.
+	 * Creates a training data frame for the supervised text classifier. The data
+	 * frame contains the knowledge type indicated by the value 1 (or 0 for type
+	 * OTHER) and the summary of the element.
 	 *
 	 * @param element
 	 *            validated decision knowledge element.
-	 * @param attribute
-	 *            text attribute.
-	 * @return training instance for the supervised text classifier.
+	 * @return training row for the supervised text classifier.
 	 */
-	private DenseInstance createTrainingInstance(KnowledgeElement element, Attribute attribute) {
-		DenseInstance instance = initInstance();
+	private Object[] createTrainingRow(KnowledgeElement element) {
+		Object[] rowValues = new Object[6];
 		switch (element.getType()) {
 		case ALTERNATIVE:
-			instance.setValue(0, 1);
+			rowValues[0] = 1;
 			break;
 		case PRO:
-			instance.setValue(1, 1);
+			rowValues[1] = 1;
 			break;
 		case CON:
-			instance.setValue(2, 1);
+			rowValues[2] = 1;
 			break;
 		case DECISION:
-			instance.setValue(3, 1);
+			rowValues[3] = 1;
 			break;
 		case ISSUE:
-			instance.setValue(4, 1);
+			rowValues[4] = 1;
 			break;
 		default:
 			break;
 		}
-		instance.setValue(attribute, element.getSummary());
-		return instance;
-	}
-
-	private DenseInstance initInstance() {
-		DenseInstance instance = new DenseInstance(6);
-		instance.setValue(0, 0);
-		instance.setValue(1, 0);
-		instance.setValue(2, 0);
-		instance.setValue(3, 0);
-		instance.setValue(4, 0);
-		return instance;
+		rowValues[5] = element.getSummary();
+		return rowValues;
 	}
 
 	private List<String> extractStringsFromDke(List<KnowledgeElement> sentences) {

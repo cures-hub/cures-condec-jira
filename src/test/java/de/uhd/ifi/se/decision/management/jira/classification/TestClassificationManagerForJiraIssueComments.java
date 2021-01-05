@@ -73,7 +73,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
 		trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
 		trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
-		trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is"));
+		trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is which library to choose"));
 		trainingElements.add(createElement(KnowledgeType.DECISION, "I implemented the feature."));
 		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "We could have done option A."));
 		trainingElements.add(createElement(KnowledgeType.PRO, "Great work guys!"));
@@ -88,7 +88,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String
-		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. I got a problem in this class. The previous sentence should be much more relevant";
+		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. The question is which library to choose. The previous sentence should be much more relevant";
 		commentManager.create(issue, currentUser, comment, true);
 	}
 
@@ -106,6 +106,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
 		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
+		assertFalse(sentences.get(2).isRelevant());
+		assertFalse(sentences.get(2).isValidated());
 	}
 
 	@Test
@@ -127,6 +129,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 		assertNotNull(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
 	}
 
 	@Test
