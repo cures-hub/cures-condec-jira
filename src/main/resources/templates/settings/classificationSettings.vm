@@ -31,9 +31,9 @@
                     <strong>The classifier has already been trained!</strong>
                 </p>
                 <p>
-                    If you have enough annotated data from your own project you might want to consider retraining it on
+                    If you have enough annotated data from your own project you might want to retrain it on
                     your project.
-                    Generate an ARFF file of validated decision knowledge and then select the file as the training file.
+                    Generate a CSV file of validated decision knowledge and then select the file as the training file.
                 </p>
             </div>
         #else
@@ -69,9 +69,9 @@
 </div>
 
 <div class="field-group">
-    <label for="saveArffFile-button">Create an ARFF File</label>
-    <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
-    <div class="description">Creates an Attribute-Relation File Format (ARFF) file of <b>user-validated</b> text data
+    <label for="saveTrainingFile-button">Create a Training File</label>
+    <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
+    <div class="description">Creates a training file (in csv format) of <b>user-validated</b> text data
         for the current project that can be used to train the classifier.
         This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
@@ -79,9 +79,9 @@
 </div>
 
 <div class="field-group">
-    <label for="saveAllArffFile-button">Create an ARFF File</label>
-    <input type="button" class="aui-button" id="saveAllArffFile-button" value="Create complete ARFF File"/>
-    <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be
+    <label for="saveAllTrainingFile-button">Create an Training File</label>
+    <input type="button" class="aui-button" id="saveAllTrainingFile-button" value="Create complete Training File"/>
+    <div class="description">Creates a training file (in csv format) for the current project that can be
         used to train the classifier.
         This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
@@ -90,19 +90,19 @@
 
 <div class="field-group">
     <label for="trainClassifier-button">Train the Classifier</label>
-    <select id="select-arff-file-train" name="select-arff-file-train" class="select medium-field">
-        #foreach ($arffFile in $arffFiles)
-            <option value="$arffFile"
-                #if ($arffFile.toString().contains($selectedArffFile))
+    <select id="select-training-file" name="select-training-file" class="select medium-field">
+        #foreach ($trainingFile in $trainingFiles)
+            <option value="$trainingFile"
+                #if ($trainingFile.toString().contains($selectedtrainingFile))
                     selected
                 #end
             >
-                $arffFile</option>
+                $trainingFile</option>
         #end
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
-        Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
+        Trains the classifier on the selected training data file. <br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
         training is very resource expensive!
     </div>
@@ -147,14 +147,14 @@
         conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
-    const saveArffFileButton = document.getElementById("saveArffFile-button");
-    saveArffFileButton.addEventListener("click", function () {
-        conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
+    const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
+    saveTrainingFileButton.addEventListener("click", function () {
+        conDecAPI.saveTrainingFile("$projectKey", true, saveToFile("classifierTrainingData.csv"));
     });
 
-    const saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
-    saveAllArffFileButton.addEventListener("click", function () {
-        conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
+    const saveAllTrainingFileButton = document.getElementById("saveAllTrainingFile-button");
+    saveAllTrainingFileButton.addEventListener("click", function () {
+        conDecAPI.saveTrainingFile("$projectKey", false, saveToFile("AllClassifierTrainingData.csv"));
     });
 
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
@@ -168,7 +168,7 @@
     const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {
-            var trainDataSelect = document.getElementById("select-arff-file-train");
+            var trainDataSelect = document.getElementById("select-training-file");
             var animatedElement = document.getElementById("train-classifier-progress");
             conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
         }

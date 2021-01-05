@@ -11,8 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.TestClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.TestOnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -43,8 +42,8 @@ public class TestEvaluateModel extends TestSetUp {
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
-		OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST",
-				TestClassificationManagerForJiraIssueComments.getTrainingData());
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
+		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
 		trainer.train();
 		assertEquals(Response.Status.OK.getStatusCode(), configRest.evaluateModel(request, "TEST").getStatus());
 	}

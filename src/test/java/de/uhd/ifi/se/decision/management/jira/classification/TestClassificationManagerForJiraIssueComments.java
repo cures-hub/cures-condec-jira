@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -19,8 +18,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -33,54 +30,18 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	private ClassificationManagerForJiraIssueComments classificationManager;
 	private Issue issue;
 
-	private static KnowledgeElement createElement(KnowledgeType type, String summary) {
-		PartOfJiraIssueText element = new PartOfJiraIssueText();
-		element.setType(type);
-		element.setSummary(summary);
-		element.setValidated(true);
-		return element;
-	}
-
 	@Before
 	public void setUp() {
 		init();
 		classificationManager = new ClassificationManagerForJiraIssueComments();
-		classificationManager.getClassifierTrainer().setTrainingData(getTrainingData());
+		classificationManager.getClassifierTrainer()
+		.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
 		classificationManager.getClassifierTrainer().train();
 
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 
 		addCommentsToIssue();
 		fillSentenceList();
-	}
-
-	public static List<KnowledgeElement> getTrainingData() {
-		List<KnowledgeElement> trainingElements = new ArrayList<KnowledgeElement>();
-		trainingElements.add(createElement(KnowledgeType.ISSUE, "I have an issue"));
-		trainingElements.add(createElement(KnowledgeType.DECISION, "Thats is a Decision"));
-		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "This is an Alternative"));
-		trainingElements.add(createElement(KnowledgeType.PRO, "Pro"));
-		trainingElements.add(createElement(KnowledgeType.CON, "Con"));
-		trainingElements.add(createElement(KnowledgeType.OTHER, "Pizza is preferred"));
-		trainingElements.add(createElement(KnowledgeType.ISSUE, "How to do that"));
-		trainingElements.add(createElement(KnowledgeType.DECISION, "We decided on option A."));
-		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "An option would be"));
-		trainingElements.add(createElement(KnowledgeType.PRO, "+1"));
-		trainingElements.add(createElement(KnowledgeType.CON, "-1"));
-		trainingElements.add(createElement(KnowledgeType.OTHER, "Lunch"));
-		trainingElements.add(createElement(KnowledgeType.ISSUE, "I don't know how we can"));
-		trainingElements.add(createElement(KnowledgeType.DECISION, "We will do"));
-		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "A possible solution could be"));
-		trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
-		trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
-		trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
-		trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is which library to choose"));
-		trainingElements.add(createElement(KnowledgeType.DECISION, "I implemented the feature."));
-		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "We could have done option A."));
-		trainingElements.add(createElement(KnowledgeType.PRO, "Great work guys!"));
-		trainingElements.add(createElement(KnowledgeType.CON, "No that is not ok"));
-		trainingElements.add(createElement(KnowledgeType.OTHER, "Hello"));
-		return trainingElements;
 	}
 
 	private void addCommentsToIssue() {

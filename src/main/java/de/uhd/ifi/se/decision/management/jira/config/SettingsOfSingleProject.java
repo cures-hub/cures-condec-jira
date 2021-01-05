@@ -1,6 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import com.atlassian.templaterenderer.TemplateRenderer;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
@@ -8,11 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -64,8 +66,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
-		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
+		velocityParameters.put("trainingFiles", trainer.getTrainingFileNames());
+		velocityParameters.put("selectedTrainingFile",
+				ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());
 		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
 
@@ -75,11 +78,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 
 		velocityParameters.put("maxNumberRecommendations",
-			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
+				ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
 		velocityParameters.put("projectSources",
-			ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
+				ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
 
 		velocityParameters.put("addRecommendationDirectly", ConfigPersistenceManager.getAddRecommendationDirectly(projectKey));
 		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInputAsMap(projectKey));

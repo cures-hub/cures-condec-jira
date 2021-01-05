@@ -37,7 +37,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	public void setUp() {
 		init();
 		trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingData(TestClassificationManagerForJiraIssueComments.getTrainingData());
+		trainer.setTrainingFile(getTrimmedTrainingDataFile());
 	}
 
 	@Test
