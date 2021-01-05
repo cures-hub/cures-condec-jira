@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer.getTrainingData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -20,10 +19,8 @@ public class TestTrainingData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingData(getTrainingData());
-		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedDefaultArffFile();
-		dataFrame = OnlineFileTrainerImpl.getDataFrameFromArffFile(trainingFile);
+		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
+		dataFrame = OnlineFileTrainerImpl.getDataFrameFromCSVFile(trainingFile);
 	}
 
 	@Test
@@ -41,6 +38,9 @@ public class TestTrainingData extends TestSetUp {
 		assertEquals("How can we implement?", trainingData.sentences[0]);
 		assertEquals(1, trainingData.labelsIsRelevant[0]);
 		assertEquals(4, trainingData.labelsKnowledgeType[0]);
+
+		assertEquals(1, trainingData.labelsIsRelevant[1]);
+		assertEquals(4, trainingData.labelsKnowledgeType[1]);
 
 		assertEquals("Nobody knows.", trainingData.sentences[6]);
 		assertEquals(0, trainingData.labelsIsRelevant[6]);

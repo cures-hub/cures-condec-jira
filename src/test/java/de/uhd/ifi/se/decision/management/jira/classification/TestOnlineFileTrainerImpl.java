@@ -22,10 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
+import smile.data.DataFrame;
 
 public class TestOnlineFileTrainerImpl extends TestSetUp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestOnlineFileTrainerImpl.class);
@@ -43,8 +44,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testOnlineClassificationTrainerSetTrainingData() {
-		List<KnowledgeElement> trainingElements = getTrainingData();
-		trainer.setTrainingData(trainingElements);
+		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
 		assertTrue(trainer.train());
 	}
 
@@ -65,7 +65,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	public void testSaveArffFile() {
 		File file = trainer.saveTrainingFile(false);
 		assertTrue(file.exists());
-		file.delete();
+		// file.delete();
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefaultArffFile() {
-		File file = getTrimmedDefaultArffFile();
+		File file = getTrimmedTrainingDataFile();
 		assertTrue(file.exists());
 		trainer.setTrainingFile(file);
 	}
@@ -145,15 +145,32 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 		assertEquals(2, this.trainer.getClassifier().makeFineGrainedPredictions(TEST_SENTENCES).size());
 	}
 
-	public static File getTrimmedDefaultArffFile() {
-		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.arff");
-		File trimmedDefaultFile = new File(TestFileTrainer.TEST_ARFF_FILE_PATH);
+	@Test
+	@NonTransactional
+	public void testBuildDataFrame() {
+		DataFrame dataFrame = trainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
+		assertEquals(5, dataFrame.columnIndex("sentence"));
+		assertTrue(dataFrame.size() > 1);
+		System.out.println(dataFrame);
+	}
 
+	@Test
+	@NonTransactional
+	public void testCreateTrainingRow() {
+		Object[] rowValues = trainer.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
+		assertEquals(0, rowValues[0]);
+		assertEquals("WI: Implement feature", rowValues[5]);
+	}
+
+	public static File getTrimmedTrainingDataFile() {
+		File trimmedDefaultFile = new File(TestFileTrainer.TEST_TRAINING_FILE_PATH);
 		if (trimmedDefaultFile.exists()) {
 			return trimmedDefaultFile;
 		}
 
-		int numberOfLines = 50;
+		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.csv");
+
+		int numberOfLines = 41;
 
 		BufferedWriter writer = null;
 		try {

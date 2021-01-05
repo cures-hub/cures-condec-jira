@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.implementation.Onli
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
+import smile.data.DataFrame;
 
 
 public class TestOnlineTrainer extends TestSetUp {
@@ -63,31 +64,19 @@ public class TestOnlineTrainer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testClassificationTrainerSetTrainingData() {
-		List<KnowledgeElement> trainingElements = getTrainingData();
-		OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingData(trainingElements);
-		assertTrue(trainer.train());
-	}
-
-	@Test
-	@NonTransactional
-	public void testClassificationTrainerFromArffFile() {
-		List<KnowledgeElement> trainingElements = getTrainingData();
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST", trainingElements);
-		File file = trainer.saveTrainingFile(true);
-		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getDataFrame());
-		trainer = new OnlineFileTrainerImpl("TEST", file.getName());
-		assertNotNull(trainer.getDataFrame());
-		assertTrue(trainer.train());
-		file.delete();
+	public void testClassificationTrainerFromCSVFile() {
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
+		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
+		DataFrame dataFrame = trainer.getDataFrame();
+		assertNotNull(dataFrame);
+		assertEquals(0, dataFrame.columnIndex("isAlternative"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSaveArffFile() {
 		FileTrainer trainer = new OnlineFileTrainerImpl("TEST");
+		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
 		File file = trainer.saveTrainingFile(false);
 		assertTrue(file.exists());
 		file.delete();
@@ -104,7 +93,7 @@ public class TestOnlineTrainer extends TestSetUp {
 	@NonTransactional
 	public void testDefaultArffFile() {
 		FileTrainer trainer = new OnlineFileTrainerImpl();
-		File luceneArffFile = TestOnlineFileTrainerImpl.getTrimmedDefaultArffFile();
+		File luceneArffFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
 		assertTrue(luceneArffFile.exists());
 		trainer.setTrainingFile(luceneArffFile);
 	}
@@ -112,7 +101,7 @@ public class TestOnlineTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTrainDefaultClassifier() {
-		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedDefaultArffFile();
+		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
 		assertTrue(FileTrainer.trainClassifier(trainingFile));
 	}
 

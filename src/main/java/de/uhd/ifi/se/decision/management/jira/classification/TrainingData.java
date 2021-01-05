@@ -5,7 +5,6 @@ import java.util.List;
 
 import smile.data.DataFrame;
 import smile.data.Tuple;
-import smile.data.vector.StringVector;
 
 public class TrainingData {
 	public String[] sentences;
@@ -14,25 +13,24 @@ public class TrainingData {
 	public int[] labelsKnowledgeType;
 
 	public TrainingData(DataFrame trainingData) {
-		StringVector sentencesVec = trainingData.stringVector("sentence");
-		sentences = sentencesVec.toArray();
-		labelsIsRelevant = new int[trainingData.size()];
+		// -1 because of column names
+		sentences = new String[trainingData.size() - 1];
+		labelsIsRelevant = new int[trainingData.size() - 1];
 		fillFromWekaInstances(trainingData);
 	}
 
 	public void fillFromWekaInstances(DataFrame trainingData) {
 		List<String> relevantSentencesList = new ArrayList<>();
 		List<Integer> labelsKnowledgeTypeList = new ArrayList<>();
-		double[] indecesWithRelevantSentences = new double[trainingData.size()];
-		for (int i = 0; i < trainingData.size(); i++) {
-			Tuple currInstance = trainingData.get(i);
+		for (int i = 0; i < trainingData.size() - 1; i++) {
+			Tuple currentRow = trainingData.get(i + 1);
 
+			sentences[i] = currentRow.getString(5);
 			int isRelevant = 0;
 			// iterate over the binary attributes for each possible class
-			for (int j = 0; j < currInstance.length() - 1; j++) {
-				if (currInstance.getInt(j) == 1) {
+			for (int j = 0; j < currentRow.length() - 1; j++) {
+				if (currentRow.get(j).equals("1")) {
 					isRelevant = 1;
-					indecesWithRelevantSentences[i] = 1;
 					relevantSentencesList.add(sentences[i]);
 					labelsKnowledgeTypeList.add(j);
 				}

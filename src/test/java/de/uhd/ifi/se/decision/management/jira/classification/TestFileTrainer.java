@@ -20,7 +20,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestFileTrainer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestFileTrainer.class);
 
-	public static final String TEST_ARFF_FILE_PATH = "src/test/resources/classifier/defaultTrainingData.arff";
+	public static final String TEST_TRAINING_FILE_PATH = "src/test/resources/classifier/defaultTrainingData.csv";
 
 	@Test
 	@Ignore
@@ -32,7 +32,7 @@ public class TestFileTrainer {
 	@Test
 	public void testFileContentHash() {
 		try {
-			File file = new File(TEST_ARFF_FILE_PATH);
+			File file = new File(TEST_TRAINING_FILE_PATH);
 			FileInputStream fileStream = new FileInputStream(file);
 			String fileChecksum = FileTrainer.getMD5Checksum(fileStream);
 

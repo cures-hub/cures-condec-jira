@@ -13,8 +13,6 @@ import smile.math.kernel.MercerKernel;
 
 public abstract class AbstractClassifier {
 
-	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
-
 	protected OnlineClassifier<double[]> model;
 	private int epochs;
 	private boolean modelIsTrained;
