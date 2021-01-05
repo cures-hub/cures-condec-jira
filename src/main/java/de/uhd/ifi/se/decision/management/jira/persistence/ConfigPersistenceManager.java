@@ -273,12 +273,12 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
-	public static void setArffFileForClassifier(String projectKey, String arffFileName) {
-		setValue(projectKey, "arffFileName", arffFileName);
+	public static void setTrainingFileForClassifier(String projectKey, String arffFileName) {
+		setValue(projectKey, "trainingFileName", arffFileName);
 	}
 
-	public static String getArffFileForClassifier(String projectKey) {
-		return getValue(projectKey, "arffFileName");
+	public static String getTrainingFileForClassifier(String projectKey) {
+		return getValue(projectKey, "trainingFileName");
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,

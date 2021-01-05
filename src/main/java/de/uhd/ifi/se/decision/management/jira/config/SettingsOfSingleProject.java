@@ -65,7 +65,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
-		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));
+		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());
 		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
 

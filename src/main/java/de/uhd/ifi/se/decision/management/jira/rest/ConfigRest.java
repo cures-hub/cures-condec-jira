@@ -599,31 +599,25 @@ public class ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
+			@QueryParam("trainingFileName") String trainingFileName) {
 
-		Response returnResponse;
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-			returnResponse = isValidDataResponse;
-		} else if (arffFileName == null || arffFileName.isEmpty()) {
-			returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
-		} else {
-			ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-
-			OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, arffFileName);
-			boolean isTrained = trainer.train();
-
-			if (isTrained) {
-				returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true))
-						.build();
-			} else {
-				returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-						"The classifier could not be trained due to an internal server error.")).build();
-			}
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
-
-		return returnResponse;
+		if (trainingFileName == null || trainingFileName.isEmpty()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"The classifier could not be trained since the training file name is invalid.")).build();
+		}
+		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
+		OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, trainingFileName);
+		boolean isTrained = trainer.train();
+		if (isTrained) {
+			return Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+		}
+		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+				ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
+				.build();
 	}
 
 	@Path("/evaluateModel")

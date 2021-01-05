@@ -816,12 +816,12 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.trainClassifier = function (projectKey, arffFileName, animatedElement) {
+	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
-			+ arffFileName,
+		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+			+ trainingFileName,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
