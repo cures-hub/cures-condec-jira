@@ -45,14 +45,14 @@ import smile.validation.metric.FScore;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
- * the project admin needs to create and select an ARFF file.
+ * the project admin needs to create and select a training data file.
  */
 public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer, FileTrainer {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	private DecisionKnowledgeClassifier classifier;
 	protected File directory;
-	protected DataFrame instances;
+	protected DataFrame dataFrame;
 	protected String projectKey;
 
 	public OnlineFileTrainerImpl() {
@@ -71,12 +71,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		if (fileName == null || fileName.isEmpty()) {
 			return;
 		}
-		this.instances = getDataFrameFromCSVFile(fileName);
-	}
-
-	public OnlineFileTrainerImpl(String projectKey, List<KnowledgeElement> trainingElements) {
-		this(projectKey);
-		this.setTrainingData(trainingElements);
+		this.dataFrame = getDataFrameFromCSVFile(fileName);
 	}
 
 	@Override
@@ -135,13 +130,13 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public List<File> getTrainingFiles() {
-		List<File> arffFilesOnServer = new ArrayList<File>();
+		List<File> trainingFilesOnServer = new ArrayList<File>();
 		for (File file : Objects.requireNonNull(directory.listFiles())) {
-			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".arff")) {
-				arffFilesOnServer.add(file);
+			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
+				trainingFilesOnServer.add(file);
 			}
 		}
-		return arffFilesOnServer;
+		return trainingFilesOnServer;
 	}
 
 	@Override
@@ -165,20 +160,19 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		try {
 			trainingData = Read.csv(arffFile.getAbsolutePath(), CSVFormat.DEFAULT, getDataFrameStructure());
 		} catch (IOException | URISyntaxException e) {
-			LOGGER.error("Data frame could not be loaded from ARFF file.");
+			LOGGER.error("Data frame could not be loaded from training data file.");
 		}
 		return trainingData;
 	}
 
 	public DataFrame getDataFrame() {
-		if (instances == null) {
-			this.instances = loadInstances();
+		if (dataFrame == null) {
+			this.dataFrame = loadInstances();
 		}
-		return this.instances;
+		return this.dataFrame;
 	}
 
 	private DataFrame loadInstances() {
-
 		List<File> trainingFiles = getTrainingFiles();
 		DataFrame loadedInstances = getDataFrameFromCSVFile(trainingFiles.get(0));
 		for (File trainingFile : trainingFiles.subList(1, trainingFiles.size())) {
@@ -190,7 +184,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public void setTrainingFile(File file) {
-		this.instances = getDataFrameFromCSVFile(file);
+		this.dataFrame = getDataFrameFromCSVFile(file);
 	}
 
 	private String getTrainingDataFileName() {
@@ -219,27 +213,29 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		try {
 			arffFile = new File(directory + File.separator + getTrainingDataFileName());
 			arffFile.createNewFile();
-			if (instances == null) {
-				instances = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
+			if (dataFrame == null) {
+				dataFrame = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
 			}
-			Write.csv(instances, arffFile.toPath());
+			Write.csv(dataFrame, arffFile.toPath());
 		} catch (IOException e) {
 			LOGGER.error("The ARFF file could not be saved. Message: " + e.getMessage());
 		}
 		return arffFile;
 	}
 
-	@Override
-	public void setTrainingData(List<KnowledgeElement> trainingElements) {
-		this.instances = buildDataFrame(trainingElements);
-	}
-
 	/**
-	 * Creates the training instances for the supervised text classifier. The
-	 * instance contains the knowledge type indicated by the value 1 (or 0 for type
-	 * OTHER) and the summary of the element.
-	 * <p>
-	 * Data appearance:
+	 * Provides a list of decision knowledge element with a knowledge type and a
+	 * summary to train the classifier with.
+	 *
+	 * @param trainingElements
+	 *            list of decision knowledge element with a knowledge type and a
+	 *            summary.
+	 * 
+	 *            Creates the training instances for the supervised text classifier.
+	 *            The instance contains the knowledge type indicated by the value 1
+	 *            (or 0 for type OTHER) and the summary of the element.
+	 *            <p>
+	 *            Data appearance:
 	 *
 	 * @param trainingElements
 	 *            list of validated decision knowledge elements

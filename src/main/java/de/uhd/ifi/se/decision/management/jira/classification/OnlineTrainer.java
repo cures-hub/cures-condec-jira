@@ -1,11 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Interface responsible to train the supervised text classifier. For this
@@ -25,16 +21,6 @@ public interface OnlineTrainer {
 	boolean train();
 
 	/**
-	 * Provides a list of decision knowledge element with a knowledge type and a
-	 * summary to train the classifier with.
-	 *
-	 * @param trainingElements list of decision knowledge element with a knowledge type and a
-	 *                         summary.
-	 */
-	void setTrainingData(List<KnowledgeElement> trainingElements);
-
-
-	/**
 	 * Gets the supervised binary and fine grained classifier to identify decision
 	 * knowledge in natural language texts.
 	 *
@@ -42,6 +28,4 @@ public interface OnlineTrainer {
 	 * @see DecisionKnowledgeClassifier
 	 */
 	DecisionKnowledgeClassifier getClassifier();
-
-
 }
