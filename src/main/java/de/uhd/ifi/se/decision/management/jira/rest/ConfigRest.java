@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
@@ -659,12 +660,13 @@ public class ConfigRest {
 			StringBuilder builder = new StringBuilder();
 			List<String> textList = Collections.singletonList(text);
 
-			boolean relevant = trainer.getClassifier().makeBinaryPredictions(textList)[0];
+			boolean relevant = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(textList)[0];
 			builder.append(relevant ? "Relevant" : "Irrelevant");
 
 			if (relevant) {
 				builder.append(": ");
-				KnowledgeType type = trainer.getClassifier().makeFineGrainedPredictions(textList).get(0);
+				KnowledgeType type = DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(textList)
+						.get(0);
 				builder.append(type.toString());
 			}
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
