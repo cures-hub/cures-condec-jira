@@ -16,7 +16,8 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -27,17 +28,16 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 	private List<PartOfJiraIssueText> sentences;
-	private ClassificationManagerForJiraIssueComments classificationManager;
+	private ClassificationManagerForJiraIssueText classificationManager;
 	private Issue issue;
 
 	@Before
 	public void setUp() {
 		init();
-		classificationManager = new ClassificationManagerForJiraIssueComments();
-		classificationManager.getClassifierTrainer()
-		.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
-		classificationManager.getClassifierTrainer().train();
-
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
+		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
+		trainer.train();
+		classificationManager = new ClassificationManagerForJiraIssueText();
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
 
 		addCommentsToIssue();
@@ -66,10 +66,10 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	public void testBinaryClassification() {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
-		assertFalse(sentences.get(0).isRelevant());
+		assertTrue(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 		assertEquals("How can we implement?", sentences.get(2).getSummary());
-		assertFalse(sentences.get(2).isRelevant());
+		assertTrue(sentences.get(2).isRelevant());
 		assertFalse(sentences.get(2).isValidated());
 	}
 
@@ -79,7 +79,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertFalse(sentences.get(0).isRelevant());
+		assertTrue(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 	}
 
@@ -105,7 +105,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		// why?
 		assertTrue(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
-		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
 	}
 
 }

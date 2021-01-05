@@ -30,7 +30,7 @@ import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
@@ -712,7 +712,7 @@ public class ConfigRest {
 		}
 		try {
 			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
+			ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
 			for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
 				classificationManager.classifyAllCommentsOfJiraIssue(issue);
 			}

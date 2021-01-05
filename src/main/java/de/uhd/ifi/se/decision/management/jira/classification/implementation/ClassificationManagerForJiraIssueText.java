@@ -10,6 +10,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -21,13 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  * decision knowledge elements with certain knowledge types (fine grained
  * classification).
  */
-public class ClassificationManagerForJiraIssueComments {
-
-	private OnlineFileTrainerImpl classifierTrainer;
-
-	public ClassificationManagerForJiraIssueComments() {
-		this.classifierTrainer = new OnlineFileTrainerImpl();
-	}
+public class ClassificationManagerForJiraIssueText {
 
 	public void classifyAllCommentsOfJiraIssue(Issue issue) {
 		if (issue == null) {
@@ -79,7 +74,7 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
-		boolean[] classificationResult = classifierTrainer.getClassifier()
+		boolean[] classificationResult = DecisionKnowledgeClassifier.getInstance()
 				.makeBinaryPredictions(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
@@ -135,7 +130,7 @@ public class ClassificationManagerForJiraIssueComments {
 		// add method to extract text
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
-		List<KnowledgeType> classificationResult = this.classifierTrainer.getClassifier()
+		List<KnowledgeType> classificationResult = DecisionKnowledgeClassifier.getInstance()
 				.makeFineGrainedPredictions(stringsToBeClassified);
 		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
 		return sentences;
@@ -189,10 +184,6 @@ public class ClassificationManagerForJiraIssueComments {
 			}
 		}
 		return sentences;
-	}
-
-	public OnlineFileTrainerImpl getClassifierTrainer() {
-		return this.classifierTrainer;
 	}
 
 	public void classifyComment(Comment comment) {

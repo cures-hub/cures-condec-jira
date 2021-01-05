@@ -9,9 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
@@ -47,15 +46,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			return velocityParameters;
 		}
 
-		// TODO -- Start
-		// TODO: check if directory exists (last folder) and create it if not!
-		FileTrainer.copyDefaultTrainingDataToFile();
-		Preprocessor.copyDefaultPreprocessingDataToFile();
-		// TODO -- End
-
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProject(projectKey);
-		FileTrainer trainer = new OnlineFileTrainerImpl(projectKey);
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
 
 		velocityParameters.put("request", request);
 		velocityParameters.put("project", decisionKnowledgeProject);
@@ -66,7 +59,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("trainingFiles", FileTrainer.getTrainingFileNames());
+		velocityParameters.put("trainingFiles", FileManager.getTrainingFileNames());
 		velocityParameters.put("selectedTrainingFile",
 				ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());

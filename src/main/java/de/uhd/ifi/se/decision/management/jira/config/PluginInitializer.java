@@ -44,6 +44,8 @@ import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescriptorProvider;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -60,6 +62,7 @@ public class PluginInitializer implements InitializingBean {
 	public void afterPropertiesSet() {
 		createDecisionKnowledgeIssueTypes();
 		createDecisionKnowledgeLinkTypes();
+		createFilesForTextClassifier();
 	}
 
 	public void createDecisionKnowledgeIssueTypes() {
@@ -294,5 +297,10 @@ public class PluginInitializer implements InitializingBean {
 				return;
 			}
 		}
+	}
+
+	private void createFilesForTextClassifier() {
+		FileManager.copyDefaultTrainingDataToFile();
+		Preprocessor.copyDefaultPreprocessingDataToFile();
 	}
 }

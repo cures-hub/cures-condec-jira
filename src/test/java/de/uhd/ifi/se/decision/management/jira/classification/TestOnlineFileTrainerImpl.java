@@ -70,7 +70,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
+		assertEquals(FileManager.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
 				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 
@@ -85,7 +85,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetArffFiles() {
-		assertEquals(ArrayList.class, FileTrainer.getTrainingFileNames().getClass());
+		assertEquals(ArrayList.class, FileManager.getTrainingFileNames().getClass());
 	}
 
 	@Test

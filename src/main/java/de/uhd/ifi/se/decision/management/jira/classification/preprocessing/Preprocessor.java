@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.stemmer.PorterStemmer;
@@ -243,8 +242,7 @@ public class Preprocessor {
 	 **/
 	public static void copyDefaultPreprocessingDataToFile() {
 		for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
-			FileTrainer.copyDataToFile(DecisionKnowledgeClassifier.DEFAULT_DIR, currentPreprocessingFileName,
-					ComponentGetter.getUrlOfClassifierFolder());
+			FileManager.copyDataToFile(currentPreprocessingFileName);
 		}
 	}
 

@@ -13,7 +13,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ProjectEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -35,16 +35,16 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 	private String projectKey;
 	private IssueEvent issueEvent;
-	private ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments;
+	private ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
 	public JiraIssueTextExtractionEventListener(
-			ClassificationManagerForJiraIssueComments classificationManagerForJiraIssueComments) {
+			ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments) {
 		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
 	}
 
 	public JiraIssueTextExtractionEventListener() {
-		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueComments();
+		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueText();
 	}
 
 	/**

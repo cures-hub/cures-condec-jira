@@ -1,17 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
 
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
@@ -24,19 +17,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * and fine grained supervised classifier.
  */
 public class DecisionKnowledgeClassifier {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifier.class);
 
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
-
-	/**
-	 * @issue What is the best place to store the supervised text classifier related
-	 *        data?
-	 * @decision Clone git repo to JIRAHome/data/condec-plugin/classifier!
-	 */
-	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
-
-	protected static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifier.class);
 
 	private static DecisionKnowledgeClassifier instance;
 
@@ -75,16 +59,16 @@ public class DecisionKnowledgeClassifier {
 	 */
 	private boolean makeBinaryPrediction(String stringToBeClassified) {
 		double[][] features = preprocess(stringToBeClassified);
-		double[] predictionResult = new double[this.binaryClassifier.getNumClasses()];
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
+		int predictionResult = 0;
 		for (double[] feature : features) {
-			double[] currentPredictionResult = binaryClassifier.predictProbabilities(feature);
-			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
+			int currentPredictionResult = binaryClassifier.predict(feature);
+			if (currentPredictionResult > predictionResult) {
 				predictionResult = currentPredictionResult;
 			}
 		}
-		return BinaryClassifier.isRelevant(predictionResult);
+		return predictionResult > 0;
 	}
 
 	/**
@@ -115,27 +99,17 @@ public class DecisionKnowledgeClassifier {
 
 	public KnowledgeType makeFineGrainedPrediction(String stringToBeClassified) {
 		double[][] features = preprocess(stringToBeClassified);
-		double[] predictionResult = new double[fineGrainedClassifier.getNumClasses()];
+		int predictionResult = 0;
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
 		// ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
 		for (double[] feature : features) {
-			double[] currentPredictionResult = fineGrainedClassifier.predictProbabilities(feature);
-			if (this.max(currentPredictionResult) > this.max(predictionResult)) {
-				predictionResult = currentPredictionResult;
-			}
-			/*
-			 * IntStream.range(0, predictionResult.length) .forEach(j -> predictionResult[j]
-			 * = predictionResult[j] + currentPredictionResult[j]);
-			 * 
-			 */
+			int currentPredictionResult = fineGrainedClassifier.predict(feature);
+			// TODO Calculate prediction that occurred most often
+			predictionResult = currentPredictionResult;
 		}
-		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.getType(predictionResult);
+		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
 		return predictedKnowledgeType;
-	}
-
-	private Double max(double[] array) {
-		return Collections.max(Arrays.asList(ArrayUtils.toObject(array)));
 	}
 
 	/**

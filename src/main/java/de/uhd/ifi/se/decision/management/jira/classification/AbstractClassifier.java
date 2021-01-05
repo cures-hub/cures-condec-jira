@@ -14,8 +14,6 @@ import smile.math.kernel.MercerKernel;
 public abstract class AbstractClassifier {
 
 	protected OnlineClassifier<double[]> model;
-	private int epochs;
-	private boolean modelIsTrained;
 	private int numClasses;
 	private boolean currentlyTraining;
 
@@ -28,8 +26,6 @@ public abstract class AbstractClassifier {
 	}
 
 	public AbstractClassifier(Double c, MercerKernel<double[]> kernel, Integer epochs, int numClasses) {
-		this.epochs = epochs;
-		this.modelIsTrained = false;
 		this.numClasses = numClasses;
 		this.currentlyTraining = false;
 	}
@@ -41,7 +37,7 @@ public abstract class AbstractClassifier {
 	 * @param labels
 	 */
 	public void train(double[][] features, int[] labels) {
-		this.model = LogisticRegression.fit(features, labels);
+		model = LogisticRegression.fit(features, labels);
 	}
 
 	/**
@@ -50,20 +46,16 @@ public abstract class AbstractClassifier {
 	 * @param feature
 	 * @param label
 	 */
-	public void train(double[] feature, int label) {
-		this.modelIsTrained = true;
-		this.model.update(feature, label);
+	public void update(double[] feature, int label) {
+		model.update(feature, label);
 	}
 
 	/**
 	 * @param feature
 	 * @return probabilities of the labels
 	 */
-	public double[] predictProbabilities(double[] feature) {
-		double[] probabilities = new double[this.numClasses];
-		int prediction = this.model.predict(feature);
-		probabilities[0] = prediction;
-		return probabilities;
+	public int predict(double[] feature) {
+		return model.predict(feature);
 	}
 
 	/**
@@ -94,19 +86,17 @@ public abstract class AbstractClassifier {
 	 * Loads pre-trained model from file.
 	 *
 	 * @param filePathAndName
-	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
-		OnlineClassifier<double[]> oldModel = this.model;
+		OnlineClassifier<double[]> oldModel = model;
 		try {
 			FileInputStream fileIn = new FileInputStream(filePathAndName);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			this.model = (OnlineClassifier<double[]>) objectIn.readObject();
-			this.modelIsTrained = true;
+			model = (OnlineClassifier<double[]>) objectIn.readObject();
 			objectIn.close();
 		} catch (Exception e) {
-			this.model = oldModel;
+			model = oldModel;
 			return false;
 		}
 		return true;
@@ -114,20 +104,18 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * Loads pre-trained model from file.
-	 *
-	 * @throws Exception
 	 */
 	public abstract boolean loadFromFile();
 
 	public boolean isModelTrained() {
-		return this.modelIsTrained;
+		return model != null;
 	}
 
-	public Integer getNumClasses() {
+	public int getNumClasses() {
 		return numClasses;
 	}
 
-	public Boolean isCurrentlyTraining() {
-		return this.currentlyTraining;
+	public boolean isCurrentlyTraining() {
+		return currentlyTraining;
 	}
 }

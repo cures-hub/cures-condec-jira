@@ -35,7 +35,7 @@ public class TestOnlineTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSaveArffFile() {
-		FileTrainer trainer = new OnlineFileTrainerImpl("TEST");
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
 		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
 		File file = trainer.saveTrainingFile(false);
 		assertTrue(file.exists());
@@ -45,14 +45,14 @@ public class TestOnlineTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
+		assertEquals(FileManager.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
 				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 
 	@Test
 	@NonTransactional
 	public void testDefaultArffFile() {
-		FileTrainer trainer = new OnlineFileTrainerImpl();
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl();
 		File luceneArffFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
 		assertTrue(luceneArffFile.exists());
 		trainer.setTrainingFile(luceneArffFile);
@@ -60,16 +60,9 @@ public class TestOnlineTrainer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testTrainDefaultClassifier() {
-		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
-		assertTrue(FileTrainer.trainClassifier(trainingFile));
-	}
-
-	@Test
-	@NonTransactional
 	public void testGetArffFiles() {
-		FileTrainer trainer = new OnlineFileTrainerImpl();
-		assertEquals(ArrayList.class, FileTrainer.getTrainingFileNames().getClass());
+		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl();
+		assertEquals(ArrayList.class, FileManager.getTrainingFileNames().getClass());
 	}
 
 }

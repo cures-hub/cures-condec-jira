@@ -26,7 +26,7 @@ public class TestFileTrainer {
 	@Ignore
 	@NonTransactional
 	public void testCopyDefaultTrainingDataToFile() {
-		assertTrue(FileTrainer.copyDefaultTrainingDataToFile().exists());
+		assertTrue(FileManager.copyDefaultTrainingDataToFile().exists());
 	}
 
 	@Test
@@ -34,11 +34,11 @@ public class TestFileTrainer {
 		try {
 			File file = new File(TEST_TRAINING_FILE_PATH);
 			FileInputStream fileStream = new FileInputStream(file);
-			String fileChecksum = FileTrainer.getMD5Checksum(fileStream);
+			String fileChecksum = FileManager.getMD5Checksum(fileStream);
 
 			String testString = "teststring";
 			InputStream testStream = new ByteArrayInputStream(testString.getBytes(StandardCharsets.UTF_8));
-			String testChecksum = FileTrainer.getMD5Checksum(testStream);
+			String testChecksum = FileManager.getMD5Checksum(testStream);
 			assertFalse(testChecksum.equals(fileChecksum));
 
 		} catch (Exception e) {

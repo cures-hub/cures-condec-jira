@@ -23,7 +23,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
@@ -47,7 +47,7 @@ import smile.validation.metric.FScore;
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select a training data file.
  */
-public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer, FileTrainer {
+public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	private DecisionKnowledgeClassifier classifier;
@@ -56,7 +56,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public OnlineFileTrainerImpl() {
 		this.classifier = DecisionKnowledgeClassifier.getInstance();
-		new File(DecisionKnowledgeClassifier.DEFAULT_DIR).mkdirs();
+		new File(FileManager.DEFAULT_DIR).mkdirs();
 	}
 
 	public OnlineFileTrainerImpl(String projectKey) {
@@ -72,6 +72,12 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		this.dataFrame = getDataFrameFromCSVFile(fileName);
 	}
 
+	/**
+	 * Trains the Classifier with the Data from the Database that was set and
+	 * validated from the user. Creates a new model Files that can be used to
+	 * classify the comments and description of a Jira issue and Git-commit
+	 * messages.
+	 */
 	@Override
 	// is called after setting training-file
 	public boolean train() {
@@ -109,7 +115,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
 
 			for (double[] feature : features) {
-				classifier.getBinaryClassifier().train(feature, labelIsRelevant);
+				classifier.getBinaryClassifier().update(feature, labelIsRelevant);
 				if (sentence.isRelevant()) {
 					classifier.getFineGrainedClassifier().train(feature,
 							sentence.getType());
@@ -127,7 +133,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
-		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + File.separator + csvFileName);
+		File file = new File(FileManager.DEFAULT_DIR + File.separator + csvFileName);
 		DataFrame dataFrame = getDataFrameFromCSVFile(file);
 		return dataFrame;
 	}
@@ -150,14 +156,19 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	private DataFrame loadDataFrame() {
-		List<File> trainingFiles = FileTrainer.getAllTrainingFiles();
+		List<File> trainingFiles = FileManager.getAllTrainingFiles();
 		DataFrame loadedInstances = getDataFrameFromCSVFile(trainingFiles.get(0));
 		return loadedInstances;
 	}
 
-	@Override
+	/**
+	 * Reads training data from a file to train the classifier.
+	 *
+	 * @param file
+	 *            file to train the classifier.
+	 */
 	public void setTrainingFile(File file) {
-		this.dataFrame = getDataFrameFromCSVFile(file);
+		dataFrame = getDataFrameFromCSVFile(file);
 	}
 
 	private String getTrainingDataFileName() {
@@ -180,11 +191,21 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return instances;
 	}
 
-	@Override
+	/**
+	 * Creates a new file for the current project that can be used to train the
+	 * classifier and saves it on the server in the JIRA home directory in the
+	 * data/condec-plugin/project-key folder.
+	 *
+	 * @param useOnlyValidatedData
+	 *            Boolean flag to indicated whether to use all or only
+	 *            user-validated data.
+	 * @return ARFF file that was created and saved on the server or null if it
+	 *         could not be saved.
+	 */
 	public File saveTrainingFile(boolean useOnlyValidatedData) {
 		File arffFile = null;
 		try {
-			arffFile = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + File.separator + getTrainingDataFileName());
+			arffFile = new File(FileManager.DEFAULT_DIR + File.separator + getTrainingDataFileName());
 			arffFile.createNewFile();
 			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
 			Write.csv(dataFrame, arffFile.toPath());
