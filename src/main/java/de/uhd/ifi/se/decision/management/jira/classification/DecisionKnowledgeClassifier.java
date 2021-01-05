@@ -1,11 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
@@ -21,6 +23,15 @@ public class DecisionKnowledgeClassifier {
 
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
+
+	/**
+	 * @issue What is the best place to store the supervised text classifier related
+	 *        data?
+	 * @decision Store the data for the text classifier in
+	 *           JiraHome/data/condec-plugin/classifier!
+	 * @pro Similar as for the git repositories.
+	 */
+	public static String CLASSIFIER_DIRECTORY = ComponentGetter.PLUGIN_HOME + "classifier" + File.separator;
 
 	public static DecisionKnowledgeClassifier instance;
 

@@ -15,9 +15,6 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
 /**
@@ -28,21 +25,11 @@ public interface FileManager {
 	Logger LOGGER = LoggerFactory.getLogger(FileManager.class);
 
 	/**
-	 * @issue What is the best place to store the supervised text classifier related
-	 *        data?
-	 * @decision Store the data for the text classifier in
-	 *           JiraHome/data/condec-plugin/classifier!
-	 * @pro Similar as for the git repositories.
-	 */
-	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
-
-	/**
 	 * @return all files on the server as a list.
 	 */
 	static List<File> getAllTrainingFiles() {
 		List<File> trainingFilesOnServer = new ArrayList<File>();
-		for (File file : new File(FileManager.DEFAULT_DIR).listFiles()) {
+		for (File file : new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
 			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
 				trainingFilesOnServer.add(file);
 			}
@@ -72,10 +59,10 @@ public interface FileManager {
 	}
 
 	static File copyDataToFile(String filename) {
-		File classifierDir = new File(DEFAULT_DIR);
+		File classifierDir = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY);
 		classifierDir.mkdirs();
 		String downloadUrlOfFile = ComponentGetter.getUrlOfClassifierFolder() + filename;
-		File file = new File(DEFAULT_DIR + filename);
+		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + filename);
 		try {
 			InputStream inputStream = new URL(downloadUrlOfFile).openStream();
 			if (!file.exists() || hasSameContent(inputStream, new FileInputStream(file))) {

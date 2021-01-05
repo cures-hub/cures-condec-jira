@@ -64,13 +64,6 @@ public class TestClassifierTrainer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(FileManager.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
-				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
-	}
-
-	@Test
-	@NonTransactional
 	public void testDefaultArffFile() {
 		File file = getTestTrainingDataFile();
 		assertTrue(file.exists());

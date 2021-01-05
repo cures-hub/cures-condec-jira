@@ -54,7 +54,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 	protected String projectKey;
 
 	public ClassifierTrainer() {
-		new File(FileManager.DEFAULT_DIR).mkdirs();
+		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
 	}
 
 	public ClassifierTrainer(String projectKey) {
@@ -127,7 +127,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 	}
 
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
-		File file = new File(FileManager.DEFAULT_DIR + File.separator + csvFileName);
+		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + csvFileName);
 		DataFrame dataFrame = getDataFrameFromCSVFile(file);
 		return dataFrame;
 	}
@@ -199,7 +199,7 @@ public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
 	public File saveTrainingFile(boolean useOnlyValidatedData) {
 		File arffFile = null;
 		try {
-			arffFile = new File(FileManager.DEFAULT_DIR + File.separator + getTrainingDataFileName());
+			arffFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
 			arffFile.createNewFile();
 			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
 			Write.csv(dataFrame, arffFile.toPath());

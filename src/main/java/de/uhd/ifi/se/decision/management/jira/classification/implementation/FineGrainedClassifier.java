@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification.implementation;
 
 import de.uhd.ifi.se.decision.management.jira.classification.AbstractClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class FineGrainedClassifier extends AbstractClassifier {
@@ -30,12 +30,12 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	@Override
 	public void saveToFile() throws Exception {
-		super.saveToFile(FileManager.DEFAULT_DIR + FineGrainedClassifier.DEFAULT_MODEL_NAME);
+		super.saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
 	}
 
 	@Override
 	public boolean loadFromFile() {
-		return super.loadFromFile(FileManager.DEFAULT_DIR + FineGrainedClassifier.DEFAULT_MODEL_NAME);
+		return super.loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
 	}
 
 	public static KnowledgeType mapIndexToKnowledgeType(int index) {

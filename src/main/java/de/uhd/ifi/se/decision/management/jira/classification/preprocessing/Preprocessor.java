@@ -9,7 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
@@ -21,8 +21,6 @@ import opennlp.tools.tokenize.TokenizerModel;
 
 public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
-
-	public static String DEFAULT_DIR = ComponentGetter.PLUGIN_HOME + "classifier" + File.separator;
 
 	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "glove.6b.50d.csv");
 	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
@@ -66,8 +64,8 @@ public class Preprocessor {
 	private void initFiles() {
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 
-		File tokenizerFile = new File(Preprocessor.DEFAULT_DIR + "token.bin");
-		File posFile = new File(Preprocessor.DEFAULT_DIR + "pos.bin");
+		File tokenizerFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "token.bin");
+		File posFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "pos.bin");
 		try {
 
 			this.stemmer = new PorterStemmer();
