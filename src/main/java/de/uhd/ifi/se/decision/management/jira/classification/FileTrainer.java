@@ -1,17 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
 
 public interface FileTrainer {
 
@@ -49,12 +52,27 @@ public interface FileTrainer {
 	/**
 	 * @return all files on the server as a list.
 	 */
-	List<File> getAllTrainingFiles();
+	static List<File> getAllTrainingFiles() {
+		List<File> trainingFilesOnServer = new ArrayList<File>();
+		for (File file : new File(DecisionKnowledgeClassifier.DEFAULT_DIR).listFiles()) {
+			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
+				trainingFilesOnServer.add(file);
+			}
+		}
+		return trainingFilesOnServer;
+	}
 
 	/**
 	 * @return names of all files on the server as a list of strings.
 	 */
-	List<String> getTrainingFileNames();
+	static List<String> getTrainingFileNames() {
+		List<File> arffFilesOnServer = getAllTrainingFiles();
+		List<String> arffFileNames = new ArrayList<String>();
+		for (File file : arffFilesOnServer) {
+			arffFileNames.add(file.getName());
+		}
+		return arffFileNames;
+	}
 
 	/**
 	 * @return instance of {@link DecisionKnowledgeClassifier}, i.e., supervised

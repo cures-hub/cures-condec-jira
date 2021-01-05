@@ -69,7 +69,7 @@ public class TestOnlineTrainer extends TestSetUp {
 	@NonTransactional
 	public void testGetArffFiles() {
 		FileTrainer trainer = new OnlineFileTrainerImpl();
-		assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
+		assertEquals(ArrayList.class, FileTrainer.getTrainingFileNames().getClass());
 	}
 
 }

@@ -66,7 +66,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("trainingFiles", trainer.getTrainingFileNames());
+		velocityParameters.put("trainingFiles", FileTrainer.getTrainingFileNames());
 		velocityParameters.put("selectedTrainingFile",
 				ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
 		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());

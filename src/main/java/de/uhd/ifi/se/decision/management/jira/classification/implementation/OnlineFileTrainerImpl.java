@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -127,27 +126,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return classifier;
 	}
 
-	@Override
-	public List<File> getAllTrainingFiles() {
-		List<File> trainingFilesOnServer = new ArrayList<File>();
-		for (File file : new File(DecisionKnowledgeClassifier.DEFAULT_DIR).listFiles()) {
-			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
-				trainingFilesOnServer.add(file);
-			}
-		}
-		return trainingFilesOnServer;
-	}
-
-	@Override
-	public List<String> getTrainingFileNames() {
-		List<File> arffFilesOnServer = getAllTrainingFiles();
-		List<String> arffFileNames = new ArrayList<String>();
-		for (File file : arffFilesOnServer) {
-			arffFileNames.add(file.getName());
-		}
-		return arffFileNames;
-	}
-
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
 		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + File.separator + csvFileName);
 		DataFrame dataFrame = getDataFrameFromCSVFile(file);
@@ -172,7 +150,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	private DataFrame loadDataFrame() {
-		List<File> trainingFiles = getAllTrainingFiles();
+		List<File> trainingFiles = FileTrainer.getAllTrainingFiles();
 		DataFrame loadedInstances = getDataFrameFromCSVFile(trainingFiles.get(0));
 		return loadedInstances;
 	}

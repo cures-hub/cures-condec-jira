@@ -85,7 +85,7 @@ public class TestOnlineFileTrainerImpl extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetArffFiles() {
-		assertEquals(ArrayList.class, trainer.getTrainingFileNames().getClass());
+		assertEquals(ArrayList.class, FileTrainer.getTrainingFileNames().getClass());
 	}
 
 	@Test
