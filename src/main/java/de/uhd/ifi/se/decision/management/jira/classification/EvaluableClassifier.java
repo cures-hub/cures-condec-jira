@@ -12,9 +12,8 @@ public interface EvaluableClassifier {
 	 * Evaluates classifier using predefined metrics.
 	 *
 	 * @return Map of evaluation results
-	 * @throws Exception
 	 */
-	Map<String, Double> evaluateClassifier() throws Exception;
+	Map<String, Double> evaluateClassifier();
 
 	/**
 	 * Evaluates classifier using metrics in parameters.
@@ -22,8 +21,7 @@ public interface EvaluableClassifier {
 	 * @param measurements         List of metrics to be evaluated
 	 * @param partOfJiraIssueTexts
 	 * @return Map of evaluation results
-	 * @throws Exception
 	 */
 	Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
-			List<KnowledgeElement> partOfJiraIssueTexts) throws Exception;
+			List<KnowledgeElement> partOfJiraIssueTexts);
 }

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,6 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -50,7 +50,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String
-		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. The question is which library to choose. The previous sentence should be much more relevant";
+		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. How can we implement? The previous sentence should be much more relevant";
 		commentManager.create(issue, currentUser, comment, true);
 	}
 
@@ -68,6 +68,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
 		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
+		assertEquals("How can we implement?", sentences.get(2).getSummary());
 		assertFalse(sentences.get(2).isRelevant());
 		assertFalse(sentences.get(2).isValidated());
 	}
@@ -78,19 +79,18 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertNotNull(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidData() {
-		sentences.get(0).setRelevant(true);
-
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertNotNull(sentences.get(0).isRelevant());
-		assertTrue(sentences.get(0).isTagged());
+		assertFalse(sentences.get(2).isRelevant());
+		assertFalse(sentences.get(2).isTagged());
+		assertEquals("How can we implement?", sentences.get(2).getSummary());
 		// assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
 	}
 
@@ -102,8 +102,10 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertNotNull(sentences.get(0).isRelevant());
+		// why?
+		assertTrue(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
 
 }

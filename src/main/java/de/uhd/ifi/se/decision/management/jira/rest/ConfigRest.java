@@ -612,12 +612,7 @@ public class ConfigRest {
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, trainingFileName);
 		boolean isTrained = trainer.train();
-		if (isTrained) {
-			return Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-		}
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-				ImmutableMap.of("error", "The classifier could not be trained due to an internal server error."))
-				.build();
+		return Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", isTrained)).build();
 	}
 
 	@Path("/evaluateModel")

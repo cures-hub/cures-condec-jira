@@ -53,7 +53,8 @@ public class TestTrainClassifier extends TestSetUp {
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainingFileNonExistent() {
-		assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+		// ok because it falls back on the default training data
+		assertEquals(Response.Status.OK.getStatusCode(),
 				configRest.trainClassifier(request, "TEST", "fake.csv").getStatus());
 	}
 }
