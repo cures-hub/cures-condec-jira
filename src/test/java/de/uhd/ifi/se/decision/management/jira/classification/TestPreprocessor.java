@@ -30,7 +30,7 @@ public class TestPreprocessor extends TestSetUp {
 	@Test
 	public void testStemmingWorks() {
 		String[] tokensNotStemmed = { "The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "." };
-		String[] stemmedTokens = { "The", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "." };
+		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "ov", "the", "lazy", "dog", "" };
 		assertArrayEquals(stemmedTokens, preprocessor.stem(tokensNotStemmed));
 	}
 
@@ -45,7 +45,7 @@ public class TestPreprocessor extends TestSetUp {
 	@Test
 	public void testGetStemmedTokens() {
 		preprocessor.preprocess(testSentence);
-		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "over", "the", "lazi", "dog", "." };
+		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "ov", "the", "lazy", "dog", "" };
 		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokens());
 	}
 

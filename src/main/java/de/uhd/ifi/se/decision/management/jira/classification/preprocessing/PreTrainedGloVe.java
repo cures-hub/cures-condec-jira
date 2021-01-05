@@ -67,6 +67,10 @@ public class PreTrainedGloVe {
 		if (gloveResult != null) {
 			return gloveResult;
 		} else {
+			// Random random = new Random(2);
+			// double[] newWordVector = random.doubles(50, -1, 1).toArray();
+			// wordToVectorMap.put(word, newWordVector);
+			// return newWordVector;
 			return new double[vectorLength];
 		}
 	}

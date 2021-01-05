@@ -252,6 +252,11 @@
 			<artifactId>smile-io</artifactId>
 			<version>2.6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-nlp</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 		<!-- Git -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>

@@ -13,12 +13,16 @@ import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeCl
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
-import opennlp.tools.stemmer.PorterStemmer;
-import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import smile.nlp.stemmer.LancasterStemmer;
+import smile.nlp.stemmer.Stemmer;
 
+/**
+ * Responsible for sentence preprocessing such as tokenization, stemming, word
+ * to vector conversion, and nGram generation.
+ */
 public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
@@ -68,7 +72,7 @@ public class Preprocessor {
 		File posFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "pos.bin");
 		try {
 
-			this.stemmer = new PorterStemmer();
+			this.stemmer = new LancasterStemmer();
 			// lemmatizerModel = new LemmatizerModel(modelIn);
 
 			if (!tokenizerFile.exists()) {
@@ -168,7 +172,7 @@ public class Preprocessor {
 	private double[] concat(double[][] tokens, int start, int end) {
 		double[] gram = new double[0];
 		for (int i = start; i < end; i++)
-			gram = concatenate(gram, tokens[i]);
+			gram = concat(gram, tokens[i]);
 		return gram;
 	}
 
@@ -179,7 +183,7 @@ public class Preprocessor {
 	 *            second array of double values
 	 * @return concatenated array of double values
 	 */
-	public static double[] concatenate(double[] a, double[] b) {
+	public static double[] concat(double[] a, double[] b) {
 		int aLen = a.length;
 		int bLen = b.length;
 		double[] c = new double[aLen + bLen];
