@@ -687,24 +687,25 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/saveArffFile")
+	@Path("/saveTrainingFile")
 	@POST
-	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response saveTrainingFileForTextClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
 			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
-		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
+		File trainingFile = trainer.saveTrainingFile(useOnlyValidatedData);
 
-		if (arffFile != null) {
-			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getDataFrame().toString()))
-					.build();
+		if (trainingFile != null) {
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("trainingFile", trainingFile.toString(),
+					"content", trainer.getDataFrame().toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
+				.entity(ImmutableMap.of("error",
+						"Training file for text classifier could not be created because of an internal server error."))
 				.build();
 	}
 

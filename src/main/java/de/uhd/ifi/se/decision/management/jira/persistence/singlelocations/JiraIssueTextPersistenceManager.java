@@ -668,7 +668,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return elementsInDatabase;
 	}
 
-	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
+	public List<KnowledgeElement> getUserValidatedPartsOfText() {
 		List<KnowledgeElement> validatedPartsOfText = new ArrayList<>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return validatedPartsOfText;
@@ -683,7 +683,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return validatedPartsOfText;
 	}
 
-	public List<KnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
+	public List<KnowledgeElement> getUnvalidatedPartsOfText() {
 		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<>();
 		if (projectKey == null || projectKey.isEmpty()) {
 			return unvalidatedPartsOfText;

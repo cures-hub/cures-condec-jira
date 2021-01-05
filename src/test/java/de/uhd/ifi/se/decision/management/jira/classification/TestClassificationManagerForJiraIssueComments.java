@@ -34,9 +34,10 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	private Issue issue;
 
 	private KnowledgeElement createElement(KnowledgeType type, String summary) {
-		KnowledgeElement element = new KnowledgeElement();
+		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setType(type);
 		element.setSummary(summary);
+		element.setValidated(true);
 		return element;
 	}
 

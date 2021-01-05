@@ -136,6 +136,7 @@ public class JiraIssues {
 		element.setKey("TEST-" + id);
 		element.setType(type);
 		element.setRelevant(type != KnowledgeType.OTHER);
+		element.setValidated(true);
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()

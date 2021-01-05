@@ -16,8 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestTrainClassifier extends TestSetUp {
 
-	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	private HttpServletRequest request;
+	private ConfigRest configRest;
 
 	@Before
 	public void setUp() {

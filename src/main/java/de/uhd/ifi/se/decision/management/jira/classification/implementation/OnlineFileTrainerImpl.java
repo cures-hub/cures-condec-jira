@@ -205,9 +205,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public DataFrame loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText(projectKey);
+		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText();
 		if (!useOnlyValidatedData) {
-			partsOfText.addAll(manager.getUnvalidatedPartsOfText(projectKey));
+			partsOfText.addAll(manager.getUnvalidatedPartsOfText());
 		}
 		DataFrame instances = buildDataFrame(partsOfText);
 		return instances;
@@ -258,6 +258,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 *       decision and the alternative.'
 	 */
 	public DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
+		System.out.print(trainingElements.size());
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();
 
@@ -268,11 +269,11 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	public static StructType getDataFrameStructure() {
-		StructField column1 = new StructField("isAlternative", DataType.of(Boolean.class));
-		StructField column2 = new StructField("isPro", DataType.of(Boolean.class));
-		StructField column3 = new StructField("isCon", DataType.of(Boolean.class));
-		StructField column4 = new StructField("isDecisions", DataType.of(Boolean.class));
-		StructField column5 = new StructField("isIssue", DataType.of(Boolean.class));
+		StructField column1 = new StructField("isAlternative", DataType.of(Integer.class));
+		StructField column2 = new StructField("isPro", DataType.of(Integer.class));
+		StructField column3 = new StructField("isCon", DataType.of(Integer.class));
+		StructField column4 = new StructField("isDecisions", DataType.of(Integer.class));
+		StructField column5 = new StructField("isIssue", DataType.of(Integer.class));
 		StructField column6 = new StructField("sentence", DataType.of(String.class));
 		return new StructType(column1, column2, column3, column4, column5, column6);
 	}
