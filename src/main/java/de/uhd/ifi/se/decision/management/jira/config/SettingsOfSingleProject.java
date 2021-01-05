@@ -10,7 +10,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
@@ -48,7 +48,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProject(projectKey);
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
+		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
 
 		velocityParameters.put("request", request);
 		velocityParameters.put("project", decisionKnowledgeProject);

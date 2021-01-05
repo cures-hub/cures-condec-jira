@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -34,8 +34,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
 		classificationManager = new ClassificationManagerForJiraIssueText();
 		issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");

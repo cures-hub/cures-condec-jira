@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import smile.data.DataFrame;
 
 public class TestTrainingData extends TestSetUp {
@@ -19,8 +19,8 @@ public class TestTrainingData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		File trainingFile = TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile();
-		dataFrame = OnlineFileTrainerImpl.getDataFrameFromCSVFile(trainingFile);
+		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
+		dataFrame = ClassifierTrainer.getDataFrameFromCSVFile(trainingFile);
 	}
 
 	@Test

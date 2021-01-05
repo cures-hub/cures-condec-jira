@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import smile.math.MathEx;
 
@@ -18,8 +18,8 @@ public class TestPreprocessedData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl("TEST");
-		trainer.setTrainingFile(TestOnlineFileTrainerImpl.getTrimmedTrainingDataFile());
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainingData = new TrainingData(trainer.getDataFrame());
 	}
 

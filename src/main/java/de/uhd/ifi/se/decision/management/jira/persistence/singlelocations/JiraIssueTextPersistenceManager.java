@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -40,11 +40,11 @@ import net.java.ao.Query;
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	private static OnlineFileTrainerImpl classificationTrainer;
+	private static ClassifierTrainer classificationTrainer;
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
 		if (classificationTrainer == null) {
-			classificationTrainer = new OnlineFileTrainerImpl();
+			classificationTrainer = new ClassifierTrainer();
 		}
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;

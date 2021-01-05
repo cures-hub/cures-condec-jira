@@ -68,7 +68,7 @@ public interface FileManager {
 	 * @return updated file with default training content.
 	 */
 	static File copyDefaultTrainingDataToFile() {
-		return copyDataToFile("defaultTrainingData.arff");
+		return copyDataToFile("defaultTrainingData.csv");
 	}
 
 	static File copyDataToFile(String filename) {
@@ -97,8 +97,8 @@ public interface FileManager {
 		return file;
 	}
 
-	static boolean hasSameContent(InputStream fileInputStream1, InputStream fileInputStream2) {
-		return getMD5Checksum(fileInputStream1).equals(getMD5Checksum(fileInputStream2));
+	static boolean hasSameContent(InputStream inputStream1, InputStream inputStream2) {
+		return getMD5Checksum(inputStream1).equals(getMD5Checksum(inputStream2));
 	}
 
 	/**

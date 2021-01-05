@@ -19,13 +19,4 @@ public interface OnlineTrainer {
 	 * messages.
 	 */
 	boolean train();
-
-	/**
-	 * Gets the supervised binary and fine grained classifier to identify decision
-	 * knowledge in natural language texts.
-	 *
-	 * @return instance of DecisionKnowledgeClassifier.
-	 * @see DecisionKnowledgeClassifier
-	 */
-	DecisionKnowledgeClassifier getClassifier();
 }

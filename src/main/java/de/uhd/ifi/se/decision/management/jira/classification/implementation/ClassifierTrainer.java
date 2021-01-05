@@ -47,24 +47,22 @@ import smile.validation.metric.FScore;
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select a training data file.
  */
-public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
+public class ClassifierTrainer implements EvaluableClassifier, OnlineTrainer {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ClassifierTrainer.class);
 
-	private DecisionKnowledgeClassifier classifier;
 	protected DataFrame dataFrame;
 	protected String projectKey;
 
-	public OnlineFileTrainerImpl() {
-		this.classifier = DecisionKnowledgeClassifier.getInstance();
+	public ClassifierTrainer() {
 		new File(FileManager.DEFAULT_DIR).mkdirs();
 	}
 
-	public OnlineFileTrainerImpl(String projectKey) {
+	public ClassifierTrainer(String projectKey) {
 		this();
 		this.projectKey = projectKey;
 	}
 
-	public OnlineFileTrainerImpl(String projectKey, String fileName) {
+	public ClassifierTrainer(String projectKey, String fileName) {
 		this(projectKey);
 		if (fileName == null || fileName.isEmpty()) {
 			return;
@@ -97,18 +95,19 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		LOGGER.debug("Binary classifier training started.");
 		TrainingData trainingData = new TrainingData(getDataFrame());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, false);
-		classifier.trainBinaryClassifier(preprocessedSentences);
+		DecisionKnowledgeClassifier.getInstance().trainBinaryClassifier(preprocessedSentences);
 	}
 
 	private void trainFineGrainedClassifier() {
 		LOGGER.debug("Fine-grained classifier training started.");
 		TrainingData trainingData = new TrainingData(getDataFrame());
 		PreprocessedData preprocessedSentences = new PreprocessedData(trainingData, true);
-		classifier.trainFineGrainedClassifier(preprocessedSentences);
+		DecisionKnowledgeClassifier.getInstance().trainFineGrainedClassifier(preprocessedSentences);
 		// this.classifier.getFineGrainedClassifier().saveToFile();
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
+		DecisionKnowledgeClassifier classifier = DecisionKnowledgeClassifier.getInstance();
 		try {
 			double[][] features = classifier.preprocess(sentence.getSummary());
 			// classifier needs numerical value
@@ -125,11 +124,6 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 			LOGGER.error("Could not update classifier. Message: " + e.getMessage());
 		}
 		return true;
-	}
-
-	@Override
-	public DecisionKnowledgeClassifier getClassifier() {
-		return classifier;
 	}
 
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
@@ -360,7 +354,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		// predict classes
 		long start = System.currentTimeMillis();
 
-		boolean[] binaryPredictionsList = classifier.makeBinaryPredictions(sentences);
+		boolean[] binaryPredictionsList = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(sentences);
 		Integer[] binaryPredictions = new Integer[sentences.size()];
 		for(int i=0; i<binaryPredictionsList.length; i++) {
 			binaryPredictions[i] = (binaryPredictionsList[i] == false ? 0 : 1);
@@ -369,7 +363,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
 		// sentences took " + (end-start) + " ms.");
 
-		Integer[] fineGrainedPredictions = this.classifier.makeFineGrainedPredictions(relevantSentences).stream()
+		Integer[] fineGrainedPredictions = DecisionKnowledgeClassifier.getInstance()
+				.makeFineGrainedPredictions(relevantSentences).stream()
 				.map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x)).collect(toList())
 				.toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
@@ -384,7 +379,8 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 					ArrayUtils.toPrimitive(binaryPredictions));
 			resultsMap.put(binaryKey, binaryMeasurement);
 
-			for (int classLabel : IntStream.range(0, this.classifier.getFineGrainedClassifier().getNumClasses())
+			for (int classLabel : IntStream
+					.range(0, DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().getNumClasses())
 					.toArray()) {
 				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
 						+ FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
@@ -409,5 +405,4 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		return Arrays.stream(array).map(x -> x.equals(currentElement) ? 1 : 0).toArray(Integer[]::new);
 
 	}
-
 }
