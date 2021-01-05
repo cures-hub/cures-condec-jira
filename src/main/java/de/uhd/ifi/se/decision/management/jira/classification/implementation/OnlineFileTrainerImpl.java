@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.apache.commons.csv.CSVFormat;
@@ -29,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -51,14 +52,12 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	protected static final Logger LOGGER = LoggerFactory.getLogger(OnlineFileTrainerImpl.class);
 
 	private DecisionKnowledgeClassifier classifier;
-	protected File directory;
 	protected DataFrame dataFrame;
 	protected String projectKey;
 
 	public OnlineFileTrainerImpl() {
 		this.classifier = DecisionKnowledgeClassifier.getInstance();
-		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
-		directory.mkdirs();
+		new File(DecisionKnowledgeClassifier.DEFAULT_DIR).mkdirs();
 	}
 
 	public OnlineFileTrainerImpl(String projectKey) {
@@ -129,9 +128,9 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	@Override
-	public List<File> getTrainingFiles() {
+	public List<File> getAllTrainingFiles() {
 		List<File> trainingFilesOnServer = new ArrayList<File>();
-		for (File file : Objects.requireNonNull(directory.listFiles())) {
+		for (File file : new File(DecisionKnowledgeClassifier.DEFAULT_DIR).listFiles()) {
 			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
 				trainingFilesOnServer.add(file);
 			}
@@ -141,7 +140,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	@Override
 	public List<String> getTrainingFileNames() {
-		List<File> arffFilesOnServer = getTrainingFiles();
+		List<File> arffFilesOnServer = getAllTrainingFiles();
 		List<String> arffFileNames = new ArrayList<String>();
 		for (File file : arffFilesOnServer) {
 			arffFileNames.add(file.getName());
@@ -150,7 +149,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	}
 
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
-		File file = new File(directory + File.separator + csvFileName);
+		File file = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + File.separator + csvFileName);
 		DataFrame dataFrame = getDataFrameFromCSVFile(file);
 		return dataFrame;
 	}
@@ -167,18 +166,14 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 
 	public DataFrame getDataFrame() {
 		if (dataFrame == null) {
-			this.dataFrame = loadInstances();
+			dataFrame = loadDataFrame();
 		}
-		return this.dataFrame;
+		return dataFrame;
 	}
 
-	private DataFrame loadInstances() {
-		List<File> trainingFiles = getTrainingFiles();
+	private DataFrame loadDataFrame() {
+		List<File> trainingFiles = getAllTrainingFiles();
 		DataFrame loadedInstances = getDataFrameFromCSVFile(trainingFiles.get(0));
-		for (File trainingFile : trainingFiles.subList(1, trainingFiles.size())) {
-			loadedInstances.merge(getDataFrameFromCSVFile(trainingFile));
-		}
-
 		return loadedInstances;
 	}
 
@@ -211,14 +206,12 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	public File saveTrainingFile(boolean useOnlyValidatedData) {
 		File arffFile = null;
 		try {
-			arffFile = new File(directory + File.separator + getTrainingDataFileName());
+			arffFile = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + File.separator + getTrainingDataFileName());
 			arffFile.createNewFile();
-			if (dataFrame == null) {
-				dataFrame = loadTrainingDataFromJiraIssueText(useOnlyValidatedData);
-			}
+			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
 			Write.csv(dataFrame, arffFile.toPath());
 		} catch (IOException e) {
-			LOGGER.error("The ARFF file could not be saved. Message: " + e.getMessage());
+			LOGGER.error("The training data file could not be saved. Message: " + e.getMessage());
 		}
 		return arffFile;
 	}
@@ -253,6 +246,16 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 	 *       am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
 	 *       decision and the alternative.'
 	 */
+	public DataFrame buildDataFrame(Set<KnowledgeElement> trainingElements) {
+		List<Tuple> rows = new ArrayList<>();
+		StructType structType = getDataFrameStructure();
+
+		for (KnowledgeElement trainingElement : trainingElements) {
+			rows.add(Tuple.of(createTrainingRow(trainingElement), structType));
+		}
+		return DataFrame.of(rows, structType);
+	}
+
 	public DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();
@@ -260,8 +263,7 @@ public class OnlineFileTrainerImpl implements EvaluableClassifier, OnlineTrainer
 		for (KnowledgeElement trainingElement : trainingElements) {
 			rows.add(Tuple.of(createTrainingRow(trainingElement), structType));
 		}
-		DataFrame dataFrame = DataFrame.of(rows, structType);
-		return dataFrame;
+		return DataFrame.of(rows, structType);
 	}
 
 	public static StructType getDataFrameStructure() {

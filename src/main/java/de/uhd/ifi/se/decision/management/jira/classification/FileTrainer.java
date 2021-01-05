@@ -49,7 +49,7 @@ public interface FileTrainer {
 	/**
 	 * @return all files on the server as a list.
 	 */
-	List<File> getTrainingFiles();
+	List<File> getAllTrainingFiles();
 
 	/**
 	 * @return names of all files on the server as a list of strings.
