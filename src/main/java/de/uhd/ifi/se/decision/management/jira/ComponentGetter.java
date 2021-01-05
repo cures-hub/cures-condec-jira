@@ -15,6 +15,7 @@ import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 
+import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -89,5 +90,6 @@ public class ComponentGetter {
 		KnowledgeGraph.instances.remove(projectKey);
 		KnowledgePersistenceManager.instances.remove(projectKey);
 		GitClient.instances.remove(projectKey);
+		DecisionKnowledgeClassifier.instance = null;
 	}
 }

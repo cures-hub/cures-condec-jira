@@ -22,7 +22,7 @@ public class DecisionKnowledgeClassifier {
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
 
-	private static DecisionKnowledgeClassifier instance;
+	public static DecisionKnowledgeClassifier instance;
 
 	private DecisionKnowledgeClassifier() {
 		loadDefaultBinaryClassifier();

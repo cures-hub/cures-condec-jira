@@ -653,28 +653,20 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+		StringBuilder builder = new StringBuilder();
+		List<String> textList = Collections.singletonList(text);
 
-		try {
-			ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
+		boolean relevant = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(textList)[0];
+		builder.append(relevant ? "Relevant" : "Irrelevant");
 
-			StringBuilder builder = new StringBuilder();
-			List<String> textList = Collections.singletonList(text);
-
-			boolean relevant = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(textList)[0];
-			builder.append(relevant ? "Relevant" : "Irrelevant");
-
-			if (relevant) {
-				builder.append(": ");
-				KnowledgeType type = DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(textList)
-						.get(0);
-				builder.append(type.toString());
-			}
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-					.build();
+		if (relevant) {
+			builder.append(": ");
+			KnowledgeType type = DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(textList)
+					.get(0);
+			builder.append(type.toString());
 		}
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
+
 	}
 
 	@Path("/saveTrainingFile")
