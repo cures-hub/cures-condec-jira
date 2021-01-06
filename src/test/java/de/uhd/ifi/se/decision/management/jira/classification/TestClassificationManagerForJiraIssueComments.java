@@ -57,12 +57,13 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidData() {
+		// sentences.get(2).setRelevant(true);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
 		assertFalse(sentences.get(2).isRelevant());
 		assertFalse(sentences.get(2).isTagged());
 		assertEquals("How can we implement?", sentences.get(2).getSummary());
-		// assertEquals(KnowledgeType.ISSUE, sentences.get(0).getType());
+		// assertEquals(KnowledgeType.ISSUE, sentences.get(2).getType());
 	}
 
 	@Test
@@ -76,7 +77,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		// why?
 		assertTrue(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
-		assertEquals(KnowledgeType.PRO, sentences.get(0).getType());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
 
 }
