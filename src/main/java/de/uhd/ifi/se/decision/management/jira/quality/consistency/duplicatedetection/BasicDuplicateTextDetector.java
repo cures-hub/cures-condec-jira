@@ -37,11 +37,8 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
 			s2 = cleanMarkdown(s2);
-			preprocessor.preprocess(s1);
-			CharSequence[] preprocessedS1Tokens = preprocessor.getStemmedTokens();
-
-			preprocessor.preprocess(s2);
-			CharSequence[] preprocessedS2Tokens = preprocessor.getStemmedTokens();
+			String[] preprocessedS1Tokens = preprocessor.getStemmedTokens(s1);
+			String[] preprocessedS2Tokens = preprocessor.getStemmedTokens(s1);
 
 			int index = 0;
 			// Iterate over text.

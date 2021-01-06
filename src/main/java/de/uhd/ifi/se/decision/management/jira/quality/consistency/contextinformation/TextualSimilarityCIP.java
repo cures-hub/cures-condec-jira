@@ -39,18 +39,16 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		try {
-			pp.preprocess(baseElement.getDescription());
-			CharSequence[] stemmedI1Description = pp.getStemmedTokens();
+			String[] stemmedI1Description = pp.getStemmedTokens(baseElement.getDescription());
 			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
 			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
-					pp.preprocess(knowledgeElement.getDescription());
-					CharSequence[] stemmedI2Description = pp.getStemmedTokens();
-					CharSequence[] concatenatedList = new CharSequence[stemmedI1Description.length
-					                                                   + stemmedI2Description.length];
-					concatenatedList = stemmedI1Description;// + stemmedI2Description
+					String[] stemmedI2Description = pp.getStemmedTokens(knowledgeElement.getDescription());
+					String[] concatenatedList = new String[stemmedI1Description.length
+					                                       + stemmedI2Description.length];
+					concatenatedList = concatenate(stemmedI1Description, stemmedI2Description);
 
 					int unionCount = uniqueElements(concatenatedList).length;
 
@@ -79,6 +77,22 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 	private String[] uniqueElements(CharSequence[] list) {
 		Set<CharSequence> hashedArray = Set.of(list);
 		return hashedArray.toArray(String[]::new);
+	}
+
+	/**
+	 * @param a
+	 *            first array of double values
+	 * @param b
+	 *            second array of double values
+	 * @return concatenated array of double values
+	 */
+	public static String[] concatenate(String[] a, String[] b) {
+		int aLen = a.length;
+		int bLen = b.length;
+		String[] c = new String[aLen + bLen];
+		System.arraycopy(a, 0, c, 0, aLen);
+		System.arraycopy(b, 0, c, aLen, bLen);
+		return c;
 	}
 
 }

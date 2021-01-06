@@ -44,9 +44,8 @@ public class TestPreprocessor extends TestSetUp {
 
 	@Test
 	public void testGetStemmedTokens() {
-		preprocessor.preprocess(testSentence);
 		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "ov", "the", "lazy", "dog", "" };
-		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokens());
+		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokens(testSentence));
 	}
 
 	@Test
