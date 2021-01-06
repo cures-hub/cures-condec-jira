@@ -44,21 +44,14 @@ public class TestClassifierTrainer extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testOnlineClassificationTrainerFromArffFile() {
-		File file = trainer.saveTrainingFile(true);
+	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
+		File file = trainer.saveTrainingFile();
+		assertTrue(file.exists());
 		trainer.setTrainingFile(file);
 		assertNotNull(trainer.getDataFrame());
 		trainer = new ClassifierTrainer("TEST", file.getName());
 		assertTrue(trainer.train());
 		file.delete();
-	}
-
-	@Test
-	@NonTransactional
-	public void testSaveArffFile() {
-		File file = trainer.saveTrainingFile(false);
-		assertTrue(file.exists());
-		// file.delete();
 	}
 
 	@Test
@@ -173,16 +166,6 @@ public class TestClassifierTrainer extends TestSetUp {
 		DataFrame dataFrame = trainer.getDataFrame();
 		assertNotNull(dataFrame);
 		assertEquals(0, dataFrame.columnIndex("isAlternative"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testSaveTrainingFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		File file = trainer.saveTrainingFile(false);
-		assertTrue(file.exists());
-		file.delete();
 	}
 
 	@Test

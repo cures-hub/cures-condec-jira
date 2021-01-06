@@ -10,7 +10,7 @@
 </div>
 
 <div class="field-group" id="classifierStatus-text">
-    <label>Current classifier status:</label>
+    <label>Current Classifier Status:</label>
     <div class="description">
         #if( $isClassifierTraining == "true" )
             <div class="aui-message aui-message-warning">
@@ -58,9 +58,9 @@
 </div>
 
 <div class="field-group">
-    <label for="evaluateModel-button">Evaluate model</label>
+    <label for="evaluateModel-button">Evaluate Classifier</label>
     <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database. (If the
+    <div class="description">Evaluate the current classifier model using the user-validated data in the database. (If the
         evaluation fails the classifier might need to be trained!)
     </div>
     <div class="aui-progress-indicator">
@@ -79,18 +79,8 @@
 </div>
 
 <div class="field-group">
-    <label for="saveAllTrainingFile-button">Create an Training File</label>
-    <input type="button" class="aui-button" id="saveAllTrainingFile-button" value="Create complete Training File"/>
-    <div class="description">Creates a training file (in csv format) for the current project that can be
-        used to train the classifier.
-        This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
-        If you want to train the classifier with this file you need to reload this page to access the file.
-    </div>
-</div>
-
-<div class="field-group">
     <label for="trainClassifier-button">Train the Classifier</label>
-    <select id="select-training-file" name="select-training-file" class="select medium-field">
+    <select id="select-training-file" name="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
                 #if ($trainingFile.toString().contains($selectedTrainingFile))
@@ -104,7 +94,7 @@
     <div class="description">
         Trains the classifier on the selected training data file. <br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
-        training is very resource expensive!
+        training can be very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -149,12 +139,7 @@
 
     const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
     saveTrainingFileButton.addEventListener("click", function () {
-        conDecAPI.saveTrainingFile("$projectKey", true, saveToFile("classifierTrainingData.csv"));
-    });
-
-    const saveAllTrainingFileButton = document.getElementById("saveAllTrainingFile-button");
-    saveAllTrainingFileButton.addEventListener("click", function () {
-        conDecAPI.saveTrainingFile("$projectKey", false, saveToFile("AllClassifierTrainingData.csv"));
+        conDecAPI.saveTrainingFile("$projectKey", saveToFile("classifierTrainingData.csv"));
     });
 
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");

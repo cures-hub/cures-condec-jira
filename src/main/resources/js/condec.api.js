@@ -851,8 +851,8 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.saveTrainingFile = function (projectKey, useOnlyValidatedData, callback) {
-		generalApi.postJSON(this.restPrefix + "/config/saveTrainingFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+	ConDecAPI.prototype.saveTrainingFile = function (projectKey, callback) {
+		generalApi.postJSON(this.restPrefix + "/config/saveTrainingFile.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The training file was successfully created and saved in "

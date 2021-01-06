@@ -29,23 +29,22 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
-	/**
-	 * TODO: TESTS WITH useOnlyValidatedData FLAG
-	 */
-
 	@Test
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.saveTrainingFileForTextClassifier(null, null, true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.saveTrainingFileForTextClassifier(null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExists() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.saveTrainingFileForTextClassifier(null, "TEST", true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.saveTrainingFileForTextClassifier(null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.saveTrainingFileForTextClassifier(request, null, true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.saveTrainingFileForTextClassifier(request, null).getStatus());
 	}
 
 	@Test
@@ -53,6 +52,6 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 	public void testRequestValidProjectKeyExists() {
 		JiraIssues.addElementToDataBase();
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.saveTrainingFileForTextClassifier(request, "TEST", true).getStatus());
+				configRest.saveTrainingFileForTextClassifier(request, "TEST").getStatus());
 	}
 }

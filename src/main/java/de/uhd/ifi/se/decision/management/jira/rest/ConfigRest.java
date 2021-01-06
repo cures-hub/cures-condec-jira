@@ -673,14 +673,13 @@ public class ConfigRest {
 	@Path("/saveTrainingFile")
 	@POST
 	public Response saveTrainingFileForTextClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
-		File trainingFile = trainer.saveTrainingFile(useOnlyValidatedData);
+		File trainingFile = trainer.saveTrainingFile();
 
 		if (trainingFile != null) {
 			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.toString(),

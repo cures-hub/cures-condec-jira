@@ -107,6 +107,7 @@ public class DecisionKnowledgeClassifier {
 	 *            labels of the instances
 	 */
 	public void trainBinaryClassifier(PreprocessedData data) {
+		System.out.println("Train binary classifier");
 		this.binaryClassifier.train(data.preprocessedSentences, data.updatedLabels);
 	}
 
@@ -115,7 +116,6 @@ public class DecisionKnowledgeClassifier {
 		int predictionResult = 0;
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
-		// ExecutorService taskExecutor = Executors.newFixedThreadPool(features.size());
 		for (double[] feature : features) {
 			int currentPredictionResult = fineGrainedClassifier.predict(feature);
 			// TODO Calculate prediction that occurred most often

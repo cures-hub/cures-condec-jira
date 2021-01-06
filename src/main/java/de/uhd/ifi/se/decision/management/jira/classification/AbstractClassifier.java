@@ -39,29 +39,29 @@ public abstract class AbstractClassifier {
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param features
-	 * @param labels
+	 * @param trainingSamples
+	 * @param trainingLabels
 	 */
-	public void train(double[][] features, int[] labels) {
-		model = LogisticRegression.fit(features, labels);
+	public void train(double[][] trainingSamples, int[] trainingLabels) {
+		model = LogisticRegression.fit(trainingSamples, trainingLabels);
 	}
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param feature
-	 * @param label
+	 * @param trainingSample
+	 * @param trainingLabel
 	 */
-	public void update(double[] feature, int label) {
-		model.update(feature, label);
+	public void update(double[] trainingSample, int trainingLabel) {
+		model.update(trainingSample, trainingLabel);
 	}
 
 	/**
-	 * @param feature
+	 * @param sample
 	 * @return probabilities of the labels
 	 */
-	public int predict(double[] feature) {
-		return model.predict(feature);
+	public int predict(double[] sample) {
+		return model.predict(sample);
 	}
 
 	/**

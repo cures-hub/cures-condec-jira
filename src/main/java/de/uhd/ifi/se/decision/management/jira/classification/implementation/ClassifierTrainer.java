@@ -124,9 +124,8 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	}
 
 	public DataFrame getDataFrameFromCSVFile(String csvFileName) {
-		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + csvFileName);
-		DataFrame dataFrame = getDataFrameFromCSVFile(file);
-		return dataFrame;
+		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + csvFileName);
+		return getDataFrameFromCSVFile(file);
 	}
 
 	public static DataFrame getDataFrameFromCSVFile(File trainingDataFile) {
@@ -134,7 +133,6 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		try {
 			trainingData = Read.csv(trainingDataFile.getAbsolutePath(), CSVFormat.DEFAULT.withFirstRecordAsHeader(),
 					getDataFrameStructure());
-			System.out.println(trainingData);
 		} catch (IOException | URISyntaxException e) {
 			LOGGER.error("Data frame could not be loaded from training data file: " + e.getMessage());
 		}
@@ -195,11 +193,11 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	 * @return ARFF file that was created and saved on the server or null if it
 	 *         could not be saved.
 	 */
-	public File saveTrainingFile(boolean useOnlyValidatedData) {
+	public File saveTrainingFile() {
 		File trainingDataFile = null;
 		try {
 			trainingDataFile = new File(
-					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
+					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getTrainingDataFileName());
 			trainingDataFile.createNewFile();
 			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
 			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
