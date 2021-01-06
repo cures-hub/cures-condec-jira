@@ -682,7 +682,7 @@ public class ConfigRest {
 		File trainingFile = trainer.saveTrainingFile();
 
 		if (trainingFile != null) {
-			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.toString(),
+			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.getPath(),
 					"content", trainer.getDataFrame().toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

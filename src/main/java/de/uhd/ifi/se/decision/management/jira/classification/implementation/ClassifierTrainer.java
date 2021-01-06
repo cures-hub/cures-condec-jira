@@ -31,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import smile.data.DataFrame;
 import smile.data.Tuple;
 import smile.data.type.DataType;
@@ -172,16 +171,6 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		return prefix + timestamp.getTime() + ".csv";
 	}
 
-	public DataFrame loadTrainingDataFromJiraIssueText(boolean useOnlyValidatedData) {
-		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<KnowledgeElement> partsOfText = manager.getUserValidatedPartsOfText();
-		if (!useOnlyValidatedData) {
-			partsOfText.addAll(manager.getUnvalidatedPartsOfText());
-		}
-		DataFrame instances = buildDataFrame(partsOfText);
-		return instances;
-	}
-
 	/**
 	 * Creates a new file for the current project that can be used to train the
 	 * classifier and saves it on the server in the JIRA home directory in the
@@ -199,54 +188,40 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			trainingDataFile = new File(
 					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getTrainingDataFileName());
 			trainingDataFile.createNewFile();
-			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
-			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
+			DataFrame dataFrame = buildDataFrame(getKnowledgeElementsValidForTraining());
+			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT);
 		} catch (IOException e) {
 			LOGGER.error("The training data file could not be saved. Message: " + e.getMessage());
 		}
 		return trainingDataFile;
 	}
 
-	/**
-	 * Provides a list of decision knowledge element with a knowledge type and a
-	 * summary to train the classifier with.
-	 *
-	 * @param trainingElements
-	 *            list of decision knowledge element with a knowledge type and a
-	 *            summary.
-	 * 
-	 *            Creates the training instances for the supervised text classifier.
-	 *            The instance contains the knowledge type indicated by the value 1
-	 *            (or 0 for type OTHER) and the summary of the element.
-	 *            <p>
-	 *            Data appearance:
-	 *
-	 * @param trainingElements
-	 *            list of validated decision knowledge elements
-	 * @return training dataset for the supervised text classifier. The instances
-	 *         that this method returns is the ARFF file that is needed to train the
-	 *         classifier.
-	 * @relation 'sentences: -C 5'
-	 * @attribute isAlternative {0,1}
-	 * @attribute isPro {0,1}
-	 * @attribute isCon {0,1}
-	 * @attribute isDecision {0,1}
-	 * @attribute isIssue {0,1}
-	 * @attribute sentence string
-	 * @data 0, 0, 0, 1, 0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I
-	 *       am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
-	 *       decision and the alternative.'
-	 */
-	public DataFrame buildDataFrame(Set<KnowledgeElement> trainingElements) {
-		List<Tuple> rows = new ArrayList<>();
-		StructType structType = getDataFrameStructure();
-
-		for (KnowledgeElement trainingElement : trainingElements) {
-			rows.add(Tuple.of(createTrainingRow(trainingElement), structType));
+	public List<KnowledgeElement> getKnowledgeElementsValidForTraining() {
+		Set<KnowledgeElement> allElementsInGraph = KnowledgeGraph.getOrCreate(projectKey).vertexSet();
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+		for (KnowledgeElement element : allElementsInGraph) {
+			if (!element.getType().canBeDocumentedInJiraIssueText() && element.getType() != KnowledgeType.OTHER) {
+				continue;
+			}
+			if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isValidated()) {
+				continue;
+			}
+			knowledgeElements.add(element);
 		}
-		return DataFrame.of(rows, structType);
+		return knowledgeElements;
 	}
 
+	/**
+	 * @param trainingElements
+	 *            list of validated decision knowledge elements.
+	 * @return training dataframe for the supervised text classifier. The dataframe
+	 *         contains the knowledge type indicated by the value 1 (or 0 for type
+	 *         OTHER) and the summary of the element.
+	 * 
+	 *         0, 0, 0, 1, 0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I
+	 *         am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for
+	 *         the decision and the alternative.'
+	 */
 	public DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();

@@ -667,34 +667,4 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 		return elementsInDatabase;
 	}
-
-	public List<KnowledgeElement> getUserValidatedPartsOfText() {
-		List<KnowledgeElement> validatedPartsOfText = new ArrayList<>();
-		if (projectKey == null || projectKey.isEmpty()) {
-			return validatedPartsOfText;
-		}
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueText(databaseEntry);
-			validatedPartsOfText.add(validatedPartOfText);
-		}
-		return validatedPartsOfText;
-	}
-
-	public List<KnowledgeElement> getUnvalidatedPartsOfText() {
-		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<>();
-		if (projectKey == null || projectKey.isEmpty()) {
-			return unvalidatedPartsOfText;
-		}
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, false));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueText(databaseEntry);
-			unvalidatedPartsOfText.add(validatedPartOfText);
-		}
-		return unvalidatedPartsOfText;
-	}
 }

@@ -107,7 +107,6 @@ public class DecisionKnowledgeClassifier {
 	 *            labels of the instances
 	 */
 	public void trainBinaryClassifier(PreprocessedData data) {
-		System.out.println("Train binary classifier");
 		this.binaryClassifier.train(data.preprocessedSentences, data.updatedLabels);
 	}
 
