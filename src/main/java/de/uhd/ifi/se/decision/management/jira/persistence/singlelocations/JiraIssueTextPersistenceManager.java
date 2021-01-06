@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -40,12 +40,8 @@ import net.java.ao.Query;
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	private static OnlineFileTrainerImpl classificationTrainer;
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
-		if (classificationTrainer == null) {
-			classificationTrainer = new OnlineFileTrainerImpl();
-		}
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
@@ -378,7 +374,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
-			classificationTrainer.update(element);
+			new ClassifierTrainer(element.getProject().getProjectKey()).update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
@@ -666,35 +662,5 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;
-	}
-
-	public List<KnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
-		List<KnowledgeElement> validatedPartsOfText = new ArrayList<>();
-		if (projectKey == null || projectKey.isEmpty()) {
-			return validatedPartsOfText;
-		}
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueText(databaseEntry);
-			validatedPartsOfText.add(validatedPartOfText);
-		}
-		return validatedPartsOfText;
-	}
-
-	public List<KnowledgeElement> getUnvalidatedPartsOfText(String projectKey) {
-		List<KnowledgeElement> unvalidatedPartsOfText = new ArrayList<>();
-		if (projectKey == null || projectKey.isEmpty()) {
-			return unvalidatedPartsOfText;
-		}
-		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, false));
-
-		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueText(databaseEntry);
-			unvalidatedPartsOfText.add(validatedPartOfText);
-		}
-		return unvalidatedPartsOfText;
 	}
 }

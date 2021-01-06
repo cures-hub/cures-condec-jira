@@ -190,21 +190,17 @@
 	</web-resource>
 
 	<web-resource key="classifier-resources"
-		name="Resources for Decision Knowledge Extraction">
+		name="Resources for Text Classification as Decision Knowledge">
 		<description>
-			Provides the resources needed for extraction of decision knowledge from Jira issue
-			comments such as the model files for Weka and Meka classifiers.
+			Provides the resources needed for the identifiction of decision knowledge elements in Jira issue description and
+			comments, e.g. the training data file for the text classifier.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="defaultTrainingData.arff"
-			location="/classifier/defaultTrainingData.arff" />
+		<resource type="download" name="defaultTrainingData.csv"
+			location="/classifier/defaultTrainingData.csv" />
 
-		<!--Language models -->
-		<resource type="download" name="person.bin" location="/classifier/person.bin" />
-		<resource type="download" name="lemmatizer.dict" location="/classifier/lemmatizer.dict" />
+		<!-- Language models -->
 		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
-		<resource type="download" name="pos.bin" location="/classifier/pos.bin" />
-		<resource type="download" name="token.bin" location="/classifier/token.bin" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->

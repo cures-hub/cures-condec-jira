@@ -1,40 +1,27 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.GaussianKernelDouble;
-import smile.classification.SVM;
-import smile.math.kernel.MercerKernel;
-import weka.core.SerializationHelper;
+import smile.classification.LogisticRegression;
+import smile.classification.OnlineClassifier;
 
 public abstract class AbstractClassifier {
 
-	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
-	protected SVM<Double[]> model;
-	private Integer epochs;
-	private boolean modelIsTrained;
-	private Integer numClasses;
-	private Boolean currentlyTraining;
+	protected OnlineClassifier<double[]> model;
+	private int numClasses;
+	private boolean currentlyTraining;
 
-	public AbstractClassifier(Integer numClasses) {
-		this(0.5, 3, numClasses);
-	}
-
-	public AbstractClassifier(Double c, Integer epochs, Integer numClasses) {
-		this(c, new GaussianKernelDouble<Double>(), epochs, numClasses);
-	}
-
-	public AbstractClassifier(Double c, MercerKernel<Double[]> kernel, Integer epochs, Integer numClasses) {
-		if (numClasses <= 2) {
-			this.model = new SVM<Double[]>(kernel, c, numClasses);
-		} else {
-			this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ALL);
-		}
-		this.epochs = epochs;
-		this.modelIsTrained = false;
+	public AbstractClassifier(int numClasses) {
 		this.numClasses = numClasses;
 		this.currentlyTraining = false;
 	}
@@ -42,69 +29,29 @@ public abstract class AbstractClassifier {
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param features
-	 * @param labels
+	 * @param trainingSamples
+	 * @param trainingLabels
 	 */
-	public void train(Double[][] features, Integer[] labels) throws AlreadyInTrainingException {
-
-		if (!this.currentlyTraining) {
-			this.currentlyTraining = true;
-			for (int i = 0; i < this.epochs; i++) {
-				this.model.learn(features, ArrayUtils.toPrimitive(labels));
-			}
-			this.model.finish();
-
-			this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
-
-			this.currentlyTraining = false;
-			this.modelIsTrained = true;
-		} else {
-			throw new AlreadyInTrainingException(this.toString() + " is already in training!");
-		}
-
+	public void train(double[][] trainingSamples, int[] trainingLabels) {
+		model = LogisticRegression.fit(trainingSamples, trainingLabels);
 	}
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param features
-	 * @param labels
+	 * @param trainingSample
+	 * @param trainingLabel
 	 */
-	public void train(List<List<Double>> features, List<Integer> labels) {
-		Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
-		for (int i = 0; i < features.size(); i++) {
-			featuresArray[i] = features.get(i).toArray(Double[]::new);
-		}
-		this.train(featuresArray, labels.toArray(Integer[]::new));
+	public void update(double[] trainingSample, int trainingLabel) {
+		model.update(trainingSample, trainingLabel);
 	}
 
 	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param features
-	 * @param label
-	 */
-	public void train(Double[] features, Integer label) {
-		this.modelIsTrained = true;
-
-		this.model.learn(features, label);
-
-		this.modelIsTrained = true;
-	}
-
-	/**
-	 * @param feature
+	 * @param sample
 	 * @return probabilities of the labels
 	 */
-	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
-		if (this.modelIsTrained) {
-			double[] probabilities = new double[this.numClasses];
-			this.model.predict(feature, probabilities);
-			return probabilities;
-		} else {
-			throw new InstantiationError("Classifier has not been trained!");
-		}
-
+	public int predict(double[] sample) {
+		return model.predict(sample);
 	}
 
 	/**
@@ -113,8 +60,16 @@ public abstract class AbstractClassifier {
 	 * @param filePathAndName
 	 * @throws Exception
 	 */
-	public void saveToFile(String filePathAndName) throws Exception {
-		SerializationHelper.write(filePathAndName, this.model);
+	public File saveToFile(String filePathAndName) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(filePathAndName);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(model);
+			objectOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new File(filePathAndName);
 	}
 
 	/**
@@ -122,22 +77,23 @@ public abstract class AbstractClassifier {
 	 *
 	 * @throws Exception
 	 */
-	public abstract void saveToFile() throws Exception;
+	public abstract File saveToFile() throws Exception;
 
 	/**
 	 * Loads pre-trained model from file.
 	 *
 	 * @param filePathAndName
-	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
-		SVM<Double[]> oldModel = this.model;
+		OnlineClassifier<double[]> oldModel = model;
 		try {
-			this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
-			this.modelIsTrained = true;
+			FileInputStream fileIn = new FileInputStream(filePathAndName);
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			model = (OnlineClassifier<double[]>) objectIn.readObject();
+			objectIn.close();
 		} catch (Exception e) {
-			this.model = oldModel;
+			model = oldModel;
 			return false;
 		}
 		return true;
@@ -145,20 +101,18 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * Loads pre-trained model from file.
-	 *
-	 * @throws Exception
 	 */
 	public abstract boolean loadFromFile();
 
 	public boolean isModelTrained() {
-		return this.modelIsTrained;
+		return model != null;
 	}
 
-	public Integer getNumClasses() {
+	public int getNumClasses() {
 		return numClasses;
 	}
 
-	public Boolean isCurrentlyTraining() {
-		return this.currentlyTraining;
+	public boolean isCurrentlyTraining() {
+		return currentlyTraining;
 	}
 }

@@ -2,43 +2,49 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.TestOnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-public class TestEvaluateModel extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-	@Override
+public class TestEvaluateModel extends TestSetUp {
+
+	private HttpServletRequest request;
+	private ConfigRest configRest;
+
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-			configRest.evaluateModel(null, null).getEntity());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), configRest.evaluateModel(null, null).getStatus());
 	}
 
-	@Test
-	public void testRequestValidProjectKeyExistsUntrainedClassifier() {
-		try{
-			configRest.evaluateModel(request, "TEST");
-		}catch (Exception exception) {
-			assertEquals("null value in entry: error=null", exception.getMessage());
-		}
-	}
-
-
+	// @Test
+	// public void testRequestValidProjectKeyExistsUntrainedClassifier() {
+	// assertEquals(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(),
+	// configRest.evaluateModel(request, "TEST"));
+	// }
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
-
-		OnlineTrainer trainer = new OnlineFileTrainerImpl("TEST", TestOnlineTrainer.getTrainingData());
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
-		assertEquals(200, configRest.evaluateModel(request, "TEST").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), configRest.evaluateModel(request, "TEST").getStatus());
 	}
 }

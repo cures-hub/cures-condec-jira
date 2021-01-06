@@ -1,4 +1,4 @@
-# Gitignore for JIRA ConDec plug-in
+# Gitignore for the Jira ConDec plug-in
 
 # Directories
 codemr/
@@ -7,6 +7,8 @@ bin/
 .idea/
 .metadata/
 *target/
+.DS_Store
+.vscode/
 
 # Files
 .classpath
@@ -18,10 +20,3 @@ config.properties
 preview_standalone.*
 pngLaTeX.*
 tikz-uml.sty
-
-/defaultTrainingData.arff
-
-src/test/resources/classifier/defaultTrainingData.arff
-
-.DS_Store
-.vscode/

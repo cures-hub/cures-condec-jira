@@ -234,16 +234,22 @@
 			<version>8.7.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Classification of text as decision knowledge -->
+		<!-- SMILE: Statistical Machine Intelligence & Learning Engine for classification 
+			of text as decision knowledge and natural language processing -->
 		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-dev</artifactId>
-			<version>3.9.3</version>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-core</artifactId>
+			<version>2.6.0</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.meka</groupId>
-			<artifactId>meka</artifactId>
-			<version>1.9.2</version>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-io</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-nlp</artifactId>
+			<version>2.6.0</version>
 		</dependency>
 		<!-- Git -->
 		<dependency>
@@ -263,18 +269,6 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-		</dependency>
-		<!-- Open NLP -->
-		<dependency>
-			<groupId>org.apache.opennlp</groupId>
-			<artifactId>opennlp-tools</artifactId>
-			<version>1.9.3</version>
-		</dependency>
-		<!-- SMILE: Statistical Machine Intelligence & Learning Engine -->
-		<dependency>
-			<groupId>com.github.haifengl</groupId>
-			<artifactId>smile-core</artifactId>
-			<version>1.5.3</version>
 		</dependency>
 		<!-- Knowledge Graph of requirements, decision knowledge, code and other 
 			artefacts -->

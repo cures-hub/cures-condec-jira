@@ -795,12 +795,9 @@
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
-
 				if (error === null) {
 					showFlag("success", "The whole project has been classified.");
-				} else {
-					showFlag("error", "The classification process failed.");
-				}
+				} 
 			});
 
 	};
@@ -816,19 +813,17 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.trainClassifier = function (projectKey, arffFileName, animatedElement) {
+	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
-			+ arffFileName,
+		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+			+ trainingFileName,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The classifier was successfully retrained.");
-				} else {
-					showFlag("error", "Training of the classifier failed.");
 				}
 			});
 	};
@@ -854,14 +849,14 @@
 			});
 	};
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.saveArffFile = function (projectKey, useOnlyValidatedData, callback) {
-		generalApi.postJSON(this.restPrefix + "/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+	ConDecAPI.prototype.saveTrainingFile = function (projectKey, callback) {
+		generalApi.postJSON(this.restPrefix + "/config/saveTrainingFile.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
-					showFlag("success", "The ARFF file was successfully created and saved in "
-						+ response["arffFile"] + ".");
+					showFlag("success", "The training file was successfully created and saved in "
+						+ response["trainingFile"] + ".");
 					// console.log(response["content"]);
 					callback(response["content"]);
 				}
