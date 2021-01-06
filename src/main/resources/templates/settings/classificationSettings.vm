@@ -93,7 +93,7 @@
     <select id="select-training-file" name="select-training-file" class="select medium-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
-                #if ($trainingFile.toString().contains($selectedtrainingFile))
+                #if ($trainingFile.toString().contains($selectedTrainingFile))
                     selected
                 #end
             >

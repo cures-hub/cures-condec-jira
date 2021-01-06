@@ -13,11 +13,10 @@ import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeCl
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
-import opennlp.tools.tokenize.Tokenizer;
-import opennlp.tools.tokenize.TokenizerME;
-import opennlp.tools.tokenize.TokenizerModel;
 import smile.nlp.stemmer.LancasterStemmer;
 import smile.nlp.stemmer.Stemmer;
+import smile.nlp.tokenizer.SimpleTokenizer;
+import smile.nlp.tokenizer.Tokenizer;
 
 /**
  * Responsible for sentence preprocessing such as tokenization, stemming, word
@@ -67,20 +66,10 @@ public class Preprocessor {
 
 	private void initFiles() {
 		Preprocessor.copyDefaultPreprocessingDataToFile();
-
-		File tokenizerFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "token.bin");
 		File posFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "pos.bin");
 		try {
-
 			this.stemmer = new LancasterStemmer();
-			// lemmatizerModel = new LemmatizerModel(modelIn);
-
-			if (!tokenizerFile.exists()) {
-				return;
-			}
-			InputStream tokenizerModelIn = new FileInputStream(tokenizerFile);
-			TokenizerModel tokenizerModel = new TokenizerModel(tokenizerModelIn);
-			this.tokenizer = new TokenizerME(tokenizerModel);
+			this.tokenizer = new SimpleTokenizer();
 
 			if (!posFile.exists()) {
 				return;
@@ -105,7 +94,7 @@ public class Preprocessor {
 	 * @return list of word tokens.
 	 */
 	public String[] tokenize(String sentence) {
-		return tokenizer.tokenize(sentence);
+		return tokenizer.split(sentence);
 	}
 
 	/**
