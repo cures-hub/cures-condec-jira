@@ -30,10 +30,10 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testBinary() {
-		assertEquals(40, trainingData.labelsIsRelevant.length);
+		assertEquals(41, trainingData.labelsIsRelevant.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		assertEquals(274, preprocessedData.preprocessedSentences.length);
-		assertEquals(274, preprocessedData.updatedLabels.length);
+		assertEquals(282, preprocessedData.preprocessedSentences.length);
+		assertEquals(282, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(1, preprocessedData.updatedLabels[0]);
 		assertEquals(1, preprocessedData.updatedLabels[1]);
@@ -44,10 +44,10 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(29, trainingData.labelsKnowledgeType.length);
+		assertEquals(30, trainingData.labelsKnowledgeType.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		assertEquals(213, preprocessedData.preprocessedSentences.length);
-		assertEquals(213, preprocessedData.updatedLabels.length);
+		assertEquals(221, preprocessedData.preprocessedSentences.length);
+		assertEquals(221, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(4, preprocessedData.updatedLabels[0]);
 		assertEquals(4, preprocessedData.updatedLabels[1]);

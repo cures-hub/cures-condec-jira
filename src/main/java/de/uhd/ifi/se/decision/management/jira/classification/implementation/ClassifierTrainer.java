@@ -83,6 +83,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			trainFineGrainedClassifier();
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
+			System.err.println(e.getMessage());
 			isTrained = false;
 		}
 		return isTrained;
@@ -113,8 +114,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			for (double[] feature : features) {
 				classifier.getBinaryClassifier().update(feature, labelIsRelevant);
 				if (sentence.isRelevant()) {
-					classifier.getFineGrainedClassifier().train(feature,
-							sentence.getType());
+					classifier.getFineGrainedClassifier().train(feature, sentence.getType());
 				}
 			}
 		} catch (Exception e) {
@@ -129,10 +129,12 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		return dataFrame;
 	}
 
-	public static DataFrame getDataFrameFromCSVFile(File arffFile) {
+	public static DataFrame getDataFrameFromCSVFile(File trainingDataFile) {
 		DataFrame trainingData = null;
 		try {
-			trainingData = Read.csv(arffFile.getAbsolutePath(), CSVFormat.DEFAULT, getDataFrameStructure());
+			trainingData = Read.csv(trainingDataFile.getAbsolutePath(), CSVFormat.DEFAULT.withFirstRecordAsHeader(),
+					getDataFrameStructure());
+			System.out.println(trainingData);
 		} catch (IOException | URISyntaxException e) {
 			LOGGER.error("Data frame could not be loaded from training data file: " + e.getMessage());
 		}
@@ -196,10 +198,11 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	public File saveTrainingFile(boolean useOnlyValidatedData) {
 		File trainingDataFile = null;
 		try {
-			trainingDataFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
+			trainingDataFile = new File(
+					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + File.separator + getTrainingDataFileName());
 			trainingDataFile.createNewFile();
 			DataFrame dataFrame = buildDataFrame(KnowledgeGraph.getOrCreate(projectKey).vertexSet());
-			Write.csv(dataFrame, trainingDataFile.toPath());
+			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
 		} catch (IOException e) {
 			LOGGER.error("The training data file could not be saved. Message: " + e.getMessage());
 		}
@@ -338,7 +341,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 
 		boolean[] binaryPredictionsList = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(sentences);
 		Integer[] binaryPredictions = new Integer[sentences.size()];
-		for(int i=0; i<binaryPredictionsList.length; i++) {
+		for (int i = 0; i < binaryPredictionsList.length; i++) {
 			binaryPredictions[i] = (binaryPredictionsList[i] == false ? 0 : 1);
 		}
 

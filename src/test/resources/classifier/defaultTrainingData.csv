@@ -39,3 +39,4 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,1,0,Therefore we used the second implementation.
 0,0,0,1,0,The decision was made to use a SVM.
 0,0,0,1,0,We chose to use the IDE at the moment.
+0,0,0,0,1,I got a problem in this class.

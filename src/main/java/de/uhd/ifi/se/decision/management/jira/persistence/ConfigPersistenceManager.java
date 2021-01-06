@@ -141,8 +141,8 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	public static boolean isClassifierEnabled(String projectKey) {
-		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
+	public static boolean isTextClassifierEnabled(String projectKey) {
+		return getValue(projectKey, "isTextClassifierEnabled").equals("true");
 	}
 
 	public static boolean isWebhookEnabled(String projectKey) {
@@ -224,8 +224,8 @@ public class ConfigPersistenceManager {
 	}
 
 	// TODO Testing
-	public static void setUseClassifierForIssueComments(String projectKey, boolean isActivated) {
-		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
+	public static void setTextClassifierEnabled(String projectKey, boolean isActivated) {
+		setValue(projectKey, "isTextClassifierEnabled", Boolean.toString(isActivated));
 	}
 
 	public static void setValue(String parameter, String value) {
@@ -273,8 +273,8 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
-	public static void setTrainingFileForClassifier(String projectKey, String arffFileName) {
-		setValue(projectKey, "trainingFileName", arffFileName);
+	public static void setTrainingFileForClassifier(String projectKey, String trainingFileName) {
+		setValue(projectKey, "trainingFileName", trainingFileName);
 	}
 
 	public static String getTrainingFileForClassifier(String projectKey) {

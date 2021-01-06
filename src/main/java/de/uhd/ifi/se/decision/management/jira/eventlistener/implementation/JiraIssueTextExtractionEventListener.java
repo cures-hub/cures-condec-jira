@@ -99,7 +99,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
+		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
 			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
 		} else {
@@ -128,7 +128,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		if (ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
+		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 			// TODO This seems not to work for manual classified sentences. Check and fix
 			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());

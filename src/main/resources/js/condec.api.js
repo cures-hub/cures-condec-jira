@@ -795,12 +795,9 @@
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
-
 				if (error === null) {
 					showFlag("success", "The whole project has been classified.");
-				} else {
-					showFlag("error", "The classification process failed.");
-				}
+				} 
 			});
 
 	};
@@ -827,8 +824,6 @@
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The classifier was successfully retrained.");
-				} else {
-					showFlag("error", "Training of the classifier failed.");
 				}
 			});
 	};

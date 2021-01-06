@@ -69,7 +69,7 @@ public class KnowledgeRest {
 				documentationLocationIdentifier);
 		if (decisionKnowledgeElement != null) {
 			LOGGER.info(decisionKnowledgeElement.getKey() + " was retrieved.");
-			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+			return Response.ok().entity(decisionKnowledgeElement).build();
 		}
 		return Response.status(Status.NOT_FOUND)
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();

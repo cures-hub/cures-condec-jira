@@ -13,17 +13,16 @@ public class TrainingData {
 	public int[] labelsKnowledgeType;
 
 	public TrainingData(DataFrame trainingData) {
-		// -1 because of column names
-		sentences = new String[trainingData.size() - 1];
-		labelsIsRelevant = new int[trainingData.size() - 1];
+		sentences = new String[trainingData.size()];
+		labelsIsRelevant = new int[trainingData.size()];
 		fillFromWekaInstances(trainingData);
 	}
 
 	public void fillFromWekaInstances(DataFrame trainingData) {
 		List<String> relevantSentencesList = new ArrayList<>();
 		List<Integer> labelsKnowledgeTypeList = new ArrayList<>();
-		for (int i = 0; i < trainingData.size() - 1; i++) {
-			Tuple currentRow = trainingData.get(i + 1);
+		for (int i = 0; i < trainingData.size(); i++) {
+			Tuple currentRow = trainingData.get(i);
 
 			sentences[i] = currentRow.getString(5);
 			int isRelevant = 0;

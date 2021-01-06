@@ -191,7 +191,7 @@ public class DecisionKnowledgeProject {
 	 * @return true, if the classifier is used for Jira issue comments.
 	 */
 	public boolean isClassifierEnabled() {
-		return ConfigPersistenceManager.isClassifierEnabled(getProjectKey());
+		return ConfigPersistenceManager.isTextClassifierEnabled(getProjectKey());
 	}
 
 	/**

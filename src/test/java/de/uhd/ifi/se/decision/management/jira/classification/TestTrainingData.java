@@ -31,9 +31,9 @@ public class TestTrainingData extends TestSetUp {
 	@Test
 	public void testTrainingData() {
 		TrainingData trainingData = new TrainingData(dataFrame);
-		assertEquals(40, trainingData.sentences.length);
-		assertEquals(40, trainingData.labelsIsRelevant.length);
-		assertEquals(29, trainingData.relevantSentences.length);
+		assertEquals(41, trainingData.sentences.length);
+		assertEquals(41, trainingData.labelsIsRelevant.length);
+		assertEquals(30, trainingData.relevantSentences.length);
 
 		assertEquals("How can we implement?", trainingData.sentences[0]);
 		assertEquals(1, trainingData.labelsIsRelevant[0]);
