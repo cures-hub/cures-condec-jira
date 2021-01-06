@@ -36,7 +36,7 @@ public class TestFileManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCopyDefaultTrainingDataToFile() {
-		File defaultTrainingDataFile = FileManager.copyDefaultTrainingDataToFile();
+		File defaultTrainingDataFile = FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		assertEquals("defaultTrainingData.csv", defaultTrainingDataFile.getName());
 	}
 

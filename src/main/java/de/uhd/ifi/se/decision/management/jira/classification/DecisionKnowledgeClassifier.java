@@ -36,6 +36,8 @@ public class DecisionKnowledgeClassifier {
 	public static DecisionKnowledgeClassifier instance;
 
 	private DecisionKnowledgeClassifier() {
+		FileManager.copyDefaultTrainingDataToClassifierDirectory();
+		Preprocessor.copyDefaultPreprocessingDataToFile();
 		loadDefaultBinaryClassifier();
 		loadDefaultFineGrainedClassifier();
 	}

@@ -54,7 +54,7 @@ public interface FileManager {
 	 *
 	 * @return updated file with default training content.
 	 */
-	static File copyDefaultTrainingDataToFile() {
+	static File copyDefaultTrainingDataToClassifierDirectory() {
 		return copyDataToFile("defaultTrainingData.csv");
 	}
 
