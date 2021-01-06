@@ -50,6 +50,8 @@ public class Preprocessor {
 
 	private Preprocessor() {
 		LOGGER.info("Init preprocessor for text classification");
+		copyDefaultPreprocessingDataToFile();
+
 		this.nGramN = 3;
 		this.glove = new PreTrainedGloVe();
 		this.stemmer = new LancasterStemmer();

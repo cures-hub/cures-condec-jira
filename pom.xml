@@ -234,14 +234,8 @@
 			<version>8.7.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Open Natural Language Processing -->
-		<dependency>
-			<groupId>org.apache.opennlp</groupId>
-			<artifactId>opennlp-tools</artifactId>
-			<version>1.9.3</version>
-		</dependency>
 		<!-- SMILE: Statistical Machine Intelligence & Learning Engine for classification 
-			of text as decision knowledge -->
+			of text as decision knowledge and natural language processing -->
 		<dependency>
 			<groupId>com.github.haifengl</groupId>
 			<artifactId>smile-core</artifactId>
