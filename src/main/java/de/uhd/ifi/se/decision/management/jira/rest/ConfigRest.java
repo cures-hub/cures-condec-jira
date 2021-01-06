@@ -30,8 +30,8 @@ import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;

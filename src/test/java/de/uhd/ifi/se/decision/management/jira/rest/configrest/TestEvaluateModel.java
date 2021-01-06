@@ -11,8 +11,8 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 

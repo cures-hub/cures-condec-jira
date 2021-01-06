@@ -14,6 +14,7 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,0,0,Ask @ak for advice.
 0,0,0,0,0,Good question. I have no idea.
 0,0,0,0,0,I like to implement it myself.
+0,0,0,0,0,The quick brown fox jumps over the lazy dog.
 1,0,0,0,0,Instead we could do the following thing.
 1,0,0,0,0,This might be an option.
 1,0,0,0,0,Alternatively we can implement it as that.
@@ -39,4 +40,3 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,1,0,Therefore we used the second implementation.
 0,0,0,1,0,The decision was made to use a SVM.
 0,0,0,1,0,We chose to use the IDE at the moment.
-0,0,0,0,1,I got a problem in this class.

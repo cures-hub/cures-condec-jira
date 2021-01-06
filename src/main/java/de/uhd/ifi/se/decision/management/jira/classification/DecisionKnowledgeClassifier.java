@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.FineGrainedClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;

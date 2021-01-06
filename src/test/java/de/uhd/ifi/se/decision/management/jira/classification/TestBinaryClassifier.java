@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.BinaryClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestBinaryClassifier extends TestSetUp {

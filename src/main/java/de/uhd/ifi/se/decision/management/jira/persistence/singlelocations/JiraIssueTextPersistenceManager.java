@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;

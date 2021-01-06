@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import smile.math.MathEx;
 
@@ -32,8 +31,8 @@ public class TestPreprocessedData extends TestSetUp {
 	public void testBinary() {
 		assertEquals(41, trainingData.labelsIsRelevant.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		assertEquals(282, preprocessedData.preprocessedSentences.length);
-		assertEquals(282, preprocessedData.updatedLabels.length);
+		assertEquals(284, preprocessedData.preprocessedSentences.length);
+		assertEquals(284, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(1, preprocessedData.updatedLabels[0]);
 		assertEquals(1, preprocessedData.updatedLabels[1]);
@@ -44,10 +43,10 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(30, trainingData.labelsKnowledgeType.length);
+		assertEquals(29, trainingData.labelsKnowledgeType.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		assertEquals(221, preprocessedData.preprocessedSentences.length);
-		assertEquals(221, preprocessedData.updatedLabels.length);
+		assertEquals(213, preprocessedData.preprocessedSentences.length);
+		assertEquals(213, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(4, preprocessedData.updatedLabels[0]);
 		assertEquals(4, preprocessedData.updatedLabels[1]);

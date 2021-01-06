@@ -1,9 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.classification.implementation;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 
-import de.uhd.ifi.se.decision.management.jira.classification.AbstractClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class FineGrainedClassifier extends AbstractClassifier {

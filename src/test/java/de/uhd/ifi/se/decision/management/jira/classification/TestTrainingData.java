@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassifierTrainer;
 import smile.data.DataFrame;
 
 public class TestTrainingData extends TestSetUp {
@@ -33,7 +32,7 @@ public class TestTrainingData extends TestSetUp {
 		TrainingData trainingData = new TrainingData(dataFrame);
 		assertEquals(41, trainingData.sentences.length);
 		assertEquals(41, trainingData.labelsIsRelevant.length);
-		assertEquals(30, trainingData.relevantSentences.length);
+		assertEquals(29, trainingData.relevantSentences.length);
 
 		assertEquals("How can we implement?", trainingData.sentences[0]);
 		assertEquals(1, trainingData.labelsIsRelevant[0]);

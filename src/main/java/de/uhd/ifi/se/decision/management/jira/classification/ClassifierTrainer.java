@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.classification.implementation;
+package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,10 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.EvaluableClassifier;
-import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
-import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -308,7 +304,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		boolean[] binaryPredictionsList = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(sentences);
 		Integer[] binaryPredictions = new Integer[sentences.size()];
 		for (int i = 0; i < binaryPredictionsList.length; i++) {
-			binaryPredictions[i] = (binaryPredictionsList[i] == false ? 0 : 1);
+			binaryPredictions[i] = binaryPredictionsList[i] ? 1 : 0;
 		}
 
 		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
