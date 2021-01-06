@@ -40,12 +40,8 @@ import net.java.ao.Query;
 public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerForSingleLocation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	private static ClassifierTrainer classificationTrainer;
 
 	public JiraIssueTextPersistenceManager(String projectKey) {
-		if (classificationTrainer == null) {
-			classificationTrainer = new ClassifierTrainer();
-		}
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
@@ -378,7 +374,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
-			classificationTrainer.update(element);
+			new ClassifierTrainer(element.getProject().getProjectKey()).update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());

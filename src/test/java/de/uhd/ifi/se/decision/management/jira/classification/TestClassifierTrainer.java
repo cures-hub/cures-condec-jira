@@ -114,7 +114,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testBuildDataFrame() {
-		DataFrame dataFrame = trainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
+		DataFrame dataFrame = ClassifierTrainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
@@ -122,7 +122,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateTrainingRow() {
-		Object[] rowValues = trainer.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
+		Object[] rowValues = ClassifierTrainer.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(0, rowValues[0]);
 		assertEquals("WI: Implement feature", rowValues[5]);
 	}
@@ -170,7 +170,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefaultTrainingFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer();
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
 		assertTrue(trainingFile.exists());
 		trainer.setTrainingFile(trainingFile);

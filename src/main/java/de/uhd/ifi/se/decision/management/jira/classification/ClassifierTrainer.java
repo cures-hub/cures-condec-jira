@@ -46,12 +46,8 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	protected DataFrame dataFrame;
 	protected String projectKey;
 
-	public ClassifierTrainer() {
-		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
-	}
-
 	public ClassifierTrainer(String projectKey) {
-		this();
+		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
 		this.projectKey = projectKey;
 	}
 
@@ -77,7 +73,6 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			trainFineGrainedClassifier();
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
-			System.err.println(e.getMessage());
 			isTrained = false;
 		}
 		return isTrained;
@@ -217,7 +212,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	 *         am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for
 	 *         the decision and the alternative.'
 	 */
-	public DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
+	public static DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();
 
@@ -227,7 +222,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		return DataFrame.of(rows, structType);
 	}
 
-	public static StructType getDataFrameStructure() {
+	private static StructType getDataFrameStructure() {
 		StructField column1 = new StructField("isAlternative", DataType.of(Integer.class));
 		StructField column2 = new StructField("isPro", DataType.of(Integer.class));
 		StructField column3 = new StructField("isCon", DataType.of(Integer.class));
@@ -246,7 +241,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	 *            validated decision knowledge element.
 	 * @return training row for the supervised text classifier.
 	 */
-	public Object[] createTrainingRow(KnowledgeElement element) {
+	public static Object[] createTrainingRow(KnowledgeElement element) {
 		Object[] rowValues = new Object[6];
 		for (int i = 0; i < rowValues.length - 1; i++) {
 			rowValues[i] = 0;
