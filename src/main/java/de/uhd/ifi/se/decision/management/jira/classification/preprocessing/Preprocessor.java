@@ -1,18 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.POSTaggerME;
+import smile.nlp.pos.HMMPOSTagger;
+import smile.nlp.pos.POSTagger;
+import smile.nlp.pos.PennTreebankPOS;
 import smile.nlp.stemmer.LancasterStemmer;
 import smile.nlp.stemmer.Stemmer;
 import smile.nlp.tokenizer.SimpleTokenizer;
@@ -25,8 +22,8 @@ import smile.nlp.tokenizer.Tokenizer;
 public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
-	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("token.bin", "pos.bin", "glove.6b.50d.csv");
-	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)";
+	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("glove.6b.50d.csv");
+	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|de|COM|ORG|NET|MIL|EDU|DE)";
 	public static String URL_TOKEN = "URL";
 
 	public static String NUMBER_PATTERN = "[+-]?(([0-9]*[.,-:])?[0-9]+)+";
@@ -37,11 +34,10 @@ public class Preprocessor {
 
 	private Tokenizer tokenizer;
 	private Stemmer stemmer;
-	private POSTaggerME tagger;
+	private POSTagger partOfSpeechTagger;
 	private final PreTrainedGloVe glove;
 
 	private final Integer nGramN;
-	private CharSequence[] stemmedTokens;
 
 	private static Preprocessor instance;
 
@@ -53,37 +49,12 @@ public class Preprocessor {
 	}
 
 	private Preprocessor() {
+		LOGGER.info("Init preprocessor for text classification");
 		this.nGramN = 3;
 		this.glove = new PreTrainedGloVe();
-		if (filesNotInitialized()) {
-			initFiles();
-		}
-	}
-
-	private boolean filesNotInitialized() {
-		return this.tokenizer == null || this.stemmer == null || this.tagger == null;
-	}
-
-	private void initFiles() {
-		Preprocessor.copyDefaultPreprocessingDataToFile();
-		File posFile = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "pos.bin");
-		try {
-			this.stemmer = new LancasterStemmer();
-			this.tokenizer = new SimpleTokenizer();
-
-			if (!posFile.exists()) {
-				return;
-			}
-			InputStream posModelIn = new FileInputStream(posFile);
-			POSModel posModel = new POSModel(posModelIn);
-			this.tagger = new POSTaggerME(posModel);
-
-			// modelIn = new FileInputStream(LANGUAGE_MODEL_PATH + "person.bin");
-			// TokenNameFinderModel model = new TokenNameFinderModel(modelIn);
-			// this.nameFinder = new NameFinderME(model);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
+		this.stemmer = new LancasterStemmer();
+		this.tokenizer = new SimpleTokenizer();
+		this.partOfSpeechTagger = HMMPOSTagger.getDefault();
 	}
 
 	/**
@@ -121,8 +92,8 @@ public class Preprocessor {
 	 *            of words to be stemmed.
 	 * @return stemmed tokens.
 	 */
-	public CharSequence[] stem(String[] tokens) {
-		CharSequence[] stemmendTokens = new CharSequence[tokens.length];
+	public String[] stem(String[] tokens) {
+		String[] stemmendTokens = new String[tokens.length];
 		for (int i = 0; i < tokens.length; i++) {
 			stemmendTokens[i] = stemmer.stem(tokens[i]);
 		}
@@ -197,8 +168,8 @@ public class Preprocessor {
 		return numberTokens;
 	}
 
-	public String[] calculatePosTags(List<String> tokens) {
-		return tagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
+	public PennTreebankPOS[] calculatePosTags(List<String> tokens) {
+		return partOfSpeechTagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
 	}
 
 	/**
@@ -211,16 +182,8 @@ public class Preprocessor {
 	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
 	public double[][] preprocess(String sentence) {
-		String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
-		cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
-		cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
-				WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
-		// replace long words and possible methods!
-		cleanedSentence = cleanedSentence.toLowerCase();
-		String[] tokens = tokenize(cleanedSentence);
-		stemmedTokens = stem(tokens);
-
-		double[][] numberTokens = convertToNumbers(tokens);
+		String[] stemmedTokens = getStemmedTokens(sentence);
+		double[][] numberTokens = convertToNumbers(stemmedTokens);
 		double[][] nGrams = generateNGram(numberTokens, nGramN);
 		for (int i = 0; i < nGrams.length; i++) {
 			if (nGrams[i] == null) {
@@ -240,7 +203,15 @@ public class Preprocessor {
 		}
 	}
 
-	public CharSequence[] getStemmedTokens() {
+	public String[] getStemmedTokens(String sentence) {
+		String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
+		cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
+		cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
+				WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
+		// replace long words and possible methods!
+		cleanedSentence = cleanedSentence.toLowerCase();
+		String[] tokens = tokenize(cleanedSentence);
+		String[] stemmedTokens = stem(tokens);
 		return stemmedTokens;
 	}
 
