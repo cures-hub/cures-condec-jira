@@ -48,6 +48,7 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 					String[] stemmedI2Description = pp.getStemmedTokens(knowledgeElement.getDescription());
 					String[] concatenatedList = new String[stemmedI1Description.length
 					                                       + stemmedI2Description.length];
+
 					concatenatedList = concatenate(stemmedI1Description, stemmedI2Description);
 
 					int unionCount = uniqueElements(concatenatedList).length;
