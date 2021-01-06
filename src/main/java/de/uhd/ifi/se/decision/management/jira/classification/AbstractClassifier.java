@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import smile.classification.LogisticRegression;
 import smile.classification.OnlineClassifier;
-import smile.math.kernel.GaussianKernel;
-import smile.math.kernel.MercerKernel;
 
 public abstract class AbstractClassifier {
 
@@ -24,14 +22,6 @@ public abstract class AbstractClassifier {
 	private boolean currentlyTraining;
 
 	public AbstractClassifier(int numClasses) {
-		this(0.5, 3, numClasses);
-	}
-
-	public AbstractClassifier(Double c, Integer epochs, int numClasses) {
-		this(c, new GaussianKernel(1.0), epochs, numClasses);
-	}
-
-	public AbstractClassifier(Double c, MercerKernel<double[]> kernel, Integer epochs, int numClasses) {
 		this.numClasses = numClasses;
 		this.currentlyTraining = false;
 	}

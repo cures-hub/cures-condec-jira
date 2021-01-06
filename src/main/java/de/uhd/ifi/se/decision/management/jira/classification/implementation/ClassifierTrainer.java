@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import smile.data.DataFrame;
 import smile.data.Tuple;
 import smile.data.type.DataType;
@@ -278,14 +277,8 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		List<ClassificationMetric> defaultMeasurements = new ArrayList<>();
 		defaultMeasurements.add(new FScore());
 
-		// load validated Jira Issue texts
-		// JiraIssueTextPersistenceManager manager =
-		// KnowledgePersistenceManager.getOrCreate(projectKey)
-		// .getJiraIssueTextManager();
-		List<KnowledgeElement> partsOfText = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElements();
-		// manager.getUserValidatedPartsOfText(projectKey);
-		// KnowledgePersistenceManager.getOrCreate(projectKey).getDecisionKnowledgeElements();
-		return evaluateClassifier(defaultMeasurements, partsOfText);
+		List<KnowledgeElement> elements = getKnowledgeElementsValidForTraining();
+		return evaluateClassifier(defaultMeasurements, elements);
 	}
 
 	@Override
