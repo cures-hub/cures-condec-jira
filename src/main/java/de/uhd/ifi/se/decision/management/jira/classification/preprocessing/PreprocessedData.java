@@ -51,7 +51,7 @@ public class PreprocessedData {
 		}
 	}
 
-	public int[] getLabelsForCriterion(int toBeOne) {
+	public int[] normalizeLabelsForCriterion(int toBeOne) {
 		int[] isRelevantLabels = new int[updatedLabels.length];
 		for (int i = 0; i < updatedLabels.length; i++) {
 			isRelevantLabels[i] = updatedLabels[i] == toBeOne ? 1 : -1;
@@ -60,27 +60,27 @@ public class PreprocessedData {
 	}
 
 	public int[] getIsRelevantLabels() {
-		return getLabelsForCriterion(1);
+		return normalizeLabelsForCriterion(1);
 	}
 
 	public int[] getIsAlternativeLabels() {
-		return getLabelsForCriterion(0);
+		return normalizeLabelsForCriterion(0);
 	}
 
 	public int[] getIsDecisionLabels() {
-		return getLabelsForCriterion(3);
+		return normalizeLabelsForCriterion(3);
 	}
 
 	public int[] getIsProLabels() {
-		return getLabelsForCriterion(1);
+		return normalizeLabelsForCriterion(1);
 	}
 
 	public int[] getIsConLabels() {
-		return getLabelsForCriterion(2);
+		return normalizeLabelsForCriterion(2);
 	}
 
 	public int[] getIsIssueLabels() {
-		return getLabelsForCriterion(4);
+		return normalizeLabelsForCriterion(4);
 	}
 
 	/**

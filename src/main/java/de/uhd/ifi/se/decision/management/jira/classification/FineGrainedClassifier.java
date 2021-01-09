@@ -6,13 +6,15 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import smile.classification.LogisticRegression;
+import smile.classification.OneVersusRest;
+import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 
 public class FineGrainedClassifier extends AbstractClassifier {
 
 	public FineGrainedClassifier(int numClasses) {
 		super(numClasses);
-		loadFromFile();
+		// loadFromFile();
 	}
 
 	@Override
@@ -28,7 +30,6 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
-		// saveToFile();
 	}
 
 	/**
@@ -39,13 +40,9 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 */
 	@Override
 	public void train(double[][] trainingSamples, int[] trainingLabels) {
-		// if (numClasses <= 2) {
-		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
-		// trainingLabels, new GaussianKernel(8.0),
-		// 500, 1E-3);
-		// } else {
-		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
-		// }
+		model = OneVersusRest.fit(trainingSamples, trainingLabels,
+				(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		// model = LogisticRegression.multinomial(trainingSamples, trainingLabels);
 	}
 
 	public KnowledgeType predict(String stringToBeClassified) {

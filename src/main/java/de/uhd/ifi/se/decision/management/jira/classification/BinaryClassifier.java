@@ -11,7 +11,7 @@ public class BinaryClassifier extends AbstractClassifier {
 
 	public BinaryClassifier() {
 		super(2);
-		loadFromFile();
+		// loadFromFile();
 	}
 
 	@Override
@@ -38,9 +38,8 @@ public class BinaryClassifier extends AbstractClassifier {
 	 */
 	@Override
 	public void train(double[][] trainingSamples, int[] trainingLabels) {
-		this.model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(8.0), 10,
-				1E-3);
-		// model = LogisticRegression.fit(trainingSamples, trainingLabels);
+		model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
+		// model = LogisticRegression.binomial(trainingSamples, trainingLabels);
 	}
 
 	/**
