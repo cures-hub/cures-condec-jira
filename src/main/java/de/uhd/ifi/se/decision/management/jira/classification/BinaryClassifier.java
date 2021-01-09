@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import smile.classification.LogisticRegression;
 
 public class BinaryClassifier extends AbstractClassifier {
 
@@ -37,6 +38,23 @@ public class BinaryClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+	}
+
+	/**
+	 * Trains the model using supervised training data, features and labels.
+	 *
+	 * @param trainingSamples
+	 * @param trainingLabels
+	 */
+	@Override
+	public void train(double[][] trainingSamples, int[] trainingLabels) {
+		// if (numClasses <= 2) {
+		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
+		// trainingLabels, new GaussianKernel(8.0),
+		// 500, 1E-3);
+		// } else {
+		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
+		// }
 	}
 
 	public static boolean isRelevant(double[] probabilities) {
@@ -74,7 +92,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		for (int i = 0; i < features.length; i++) {
 			predictionResults[i] = predict(features[i]);
 		}
-		double predictionResult = DecisionKnowledgeClassifier.median(predictionResults);
+		double predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
 		return predictionResult >= 0.5;
 	}
 }

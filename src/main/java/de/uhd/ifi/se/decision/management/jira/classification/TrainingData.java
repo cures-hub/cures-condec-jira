@@ -85,7 +85,7 @@ public class TrainingData {
 	 *         am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for
 	 *         the decision and the alternative.'
 	 */
-	public static DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
+	private static DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
 		List<Tuple> rows = new ArrayList<>();
 		StructType structType = getDataFrameStructure();
 
@@ -99,7 +99,7 @@ public class TrainingData {
 		File trainingDataFile = null;
 		try {
 			trainingDataFile = new File(
-					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getTrainingDataFileName(projectKey));
+					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + createTrainingDataFileName(projectKey));
 			trainingDataFile.createNewFile();
 			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT);
 		} catch (IOException e) {
@@ -108,7 +108,7 @@ public class TrainingData {
 		return trainingDataFile;
 	}
 
-	private String getTrainingDataFileName(String projectKey) {
+	private String createTrainingDataFileName(String projectKey) {
 		Date date = new Date();
 		Timestamp timestamp = new Timestamp(date.getTime());
 		String prefix = "";

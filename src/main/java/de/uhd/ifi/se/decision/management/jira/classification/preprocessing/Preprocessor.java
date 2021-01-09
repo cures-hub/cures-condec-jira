@@ -62,9 +62,10 @@ public class Preprocessor {
 	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
 	 */
 	public double[][] preprocess(String sentence) {
-		String[] stemmedTokensWithoutStopWords = getStemmedTokensWithoutStopWords(sentence);
-		double[][] numberTokens = convertToNumbers(stemmedTokensWithoutStopWords);
-		double[][] nGrams = generateNGram(numberTokens, nGramN);
+		String cleanedSentence = normalize(sentence);
+		String[] tokens = tokenize(cleanedSentence);
+		double[][] numberTokens = convertToNumbers(tokens);
+		double[][] nGrams = generateNGrams(numberTokens, nGramN);
 		for (int i = 0; i < nGrams.length; i++) {
 			if (nGrams[i] == null) {
 				nGrams[i] = new double[numberTokens[0].length * nGramN];
@@ -76,8 +77,7 @@ public class Preprocessor {
 
 	public String[] getStemmedTokensWithoutStopWords(String sentence) {
 		// replace long words and possible methods!
-		String cleanedSentence = normalize(sentence);
-		String[] tokens = tokenize(cleanedSentence);
+		String[] tokens = tokenize(sentence);
 		String[] tokensWithoutStopWords = removeStopWords(tokens);
 		return stem(tokensWithoutStopWords);
 	}

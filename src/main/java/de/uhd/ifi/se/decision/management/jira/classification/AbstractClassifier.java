@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import smile.classification.LogisticRegression;
 import smile.classification.OnlineClassifier;
 
 public abstract class AbstractClassifier {
@@ -32,15 +31,7 @@ public abstract class AbstractClassifier {
 	 * @param trainingSamples
 	 * @param trainingLabels
 	 */
-	public void train(double[][] trainingSamples, int[] trainingLabels) {
-		// if (numClasses <= 2) {
-		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
-		// trainingLabels, new GaussianKernel(8.0),
-		// 500, 1E-3);
-		// } else {
-		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
-		// }
-	}
+	public abstract void train(double[][] trainingSamples, int[] trainingLabels);
 
 	/**
 	 * Trains the model using supervised training data, features and labels.

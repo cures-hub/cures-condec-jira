@@ -82,9 +82,9 @@ public class TestPreprocessor extends TestSetUp {
 	public void testGenerateNGrams() {
 		double[][] preprocessing = preprocessor.preprocess(testSentence);
 		assertEquals(150, preprocessing[0].length);
-		assertEquals(6, preprocessing.length);
+		assertEquals(10, preprocessing.length);
 		assertNotNull(preprocessing[0]);
-		assertEquals(0.13967, preprocessing[0][0]);
+		assertEquals(0.418, preprocessing[0][0]);
 	}
 
 	@Test

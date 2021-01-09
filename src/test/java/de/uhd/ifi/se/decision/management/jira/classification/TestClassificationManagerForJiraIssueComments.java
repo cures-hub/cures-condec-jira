@@ -37,7 +37,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 	public void testBinaryClassification() {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
-		assertTrue(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 		assertEquals("How can we implement this feature?", sentences.get(2).getSummary());
 		assertTrue(sentences.get(2).isRelevant());
@@ -50,7 +50,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertTrue(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 		assertTrue(sentences.get(2).isRelevant());
 		// TODO: Should be issue

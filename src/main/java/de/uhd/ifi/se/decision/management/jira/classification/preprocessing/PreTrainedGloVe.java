@@ -63,7 +63,7 @@ public class PreTrainedGloVe {
 	 * @return array of double values representing the relationship between words.
 	 */
 	public double[] getWordVector(String word) {
-		double[] gloveResult = wordToVectorMap.get(word);
+		double[] gloveResult = wordToVectorMap.get(word.toLowerCase());
 		if (gloveResult != null) {
 			return gloveResult;
 		} else {

@@ -19,9 +19,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
-import smile.data.DataFrame;
 
 public class TestClassifierTrainer extends TestSetUp {
 	private ClassifierTrainer trainer;
@@ -113,19 +111,25 @@ public class TestClassifierTrainer extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
-	public void testBuildDataFrame() {
-		DataFrame dataFrame = TrainingData.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
-		assertEquals(5, dataFrame.columnIndex("sentence"));
-		assertTrue(dataFrame.size() > 1);
+	public void testModeBinaryClassification() {
+		int[] binaryClassificationResult = new int[4];
+		binaryClassificationResult[0] = 1;
+		assertEquals(0, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
+		binaryClassificationResult[1] = 1;
+		assertEquals(0, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
+		binaryClassificationResult[2] = 1;
+		assertEquals(1, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
 	}
 
 	@Test
-	@NonTransactional
-	public void testCreateTrainingRow() {
-		Object[] rowValues = TrainingData.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
-		assertEquals(0, rowValues[0]);
-		assertEquals("WI: Implement feature", rowValues[5]);
+	public void testModeFineGrainedClassification() {
+		int[] fineGrainedClassificationResult = new int[4];
+		fineGrainedClassificationResult[0] = 4;
+		assertEquals(0, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[1] = 4;
+		assertEquals(0, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[2] = 4;
+		assertEquals(4, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
 	}
 
 	public static File getTestTrainingDataFile() {
@@ -156,16 +160,6 @@ public class TestClassifierTrainer extends TestSetUp {
 			System.err.println(e.getMessage());
 		}
 		return fullDefaultFile;
-	}
-
-	@Test
-	@NonTransactional
-	public void testClassificationTrainerFromCSVFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		DataFrame dataFrame = trainer.getTrainingData().dataFrame;
-		assertNotNull(dataFrame);
-		assertEquals(0, dataFrame.columnIndex("isAlternative"));
 	}
 
 	@Test

@@ -31,8 +31,8 @@ public class TestPreprocessedData extends TestSetUp {
 	public void testBinary() {
 		assertEquals(41, trainingData.labelsIsRelevant.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		assertEquals(104, preprocessedData.preprocessedSentences.length);
-		assertEquals(104, preprocessedData.updatedLabels.length);
+		assertEquals(284, preprocessedData.preprocessedSentences.length);
+		assertEquals(284, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(1, preprocessedData.updatedLabels[0]);
 		assertEquals(1, preprocessedData.updatedLabels[1]);
@@ -45,12 +45,12 @@ public class TestPreprocessedData extends TestSetUp {
 	public void testFineGrained() {
 		assertEquals(29, trainingData.labelsKnowledgeType.length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		assertEquals(74, preprocessedData.preprocessedSentences.length);
-		assertEquals(74, preprocessedData.updatedLabels.length);
+		assertEquals(213, preprocessedData.preprocessedSentences.length);
+		assertEquals(213, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(4, preprocessedData.updatedLabels[0]);
 		assertEquals(4, preprocessedData.updatedLabels[1]);
-		assertEquals(0, preprocessedData.updatedLabels[10]);
+		assertEquals(4, preprocessedData.updatedLabels[10]);
 		int[] uniqueLabels = MathEx.unique(preprocessedData.updatedLabels);
 		assertEquals(5, uniqueLabels.length);
 		assertEquals(preprocessedData.preprocessedSentences.length, preprocessedData.updatedLabels.length);

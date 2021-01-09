@@ -7,6 +7,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import smile.classification.LogisticRegression;
 
 public class FineGrainedClassifier extends AbstractClassifier {
 
@@ -26,6 +27,23 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
 	}
 
+	/**
+	 * Trains the model using supervised training data, features and labels.
+	 *
+	 * @param trainingSamples
+	 * @param trainingLabels
+	 */
+	@Override
+	public void train(double[][] trainingSamples, int[] trainingLabels) {
+		// if (numClasses <= 2) {
+		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
+		// trainingLabels, new GaussianKernel(8.0),
+		// 500, 1E-3);
+		// } else {
+		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
+		// }
+	}
+
 	public KnowledgeType predict(String stringToBeClassified) {
 		double[][] sample = Preprocessor.getInstance().preprocess(stringToBeClassified);
 		// Make predictions for each nGram; then determine maximum probability of all
@@ -34,7 +52,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sample.length; i++) {
 			predictionResults[i] = predict(sample[i]);
 		}
-		int predictionResult = (int) Math.round(DecisionKnowledgeClassifier.median(predictionResults));
+		int predictionResult = (int) Math.round(DecisionKnowledgeClassifier.mode(predictionResults));
 		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
 		return predictedKnowledgeType;
 	}

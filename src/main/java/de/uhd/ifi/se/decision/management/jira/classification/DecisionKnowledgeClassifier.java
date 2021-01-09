@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,19 +60,24 @@ public class DecisionKnowledgeClassifier {
 		this.fineGrainedClassifier = new FineGrainedClassifier(5);
 	}
 
-	public static double median(int[] values) {
-		// sort array
-		Arrays.sort(values);
-		// get count of scores
-		int totalElements = values.length;
-		// check if total number of scores is even
-		if (totalElements % 2 == 0) {
-			int sumOfMiddleElements = values[totalElements / 2] + values[totalElements / 2 - 1];
-			// calculate average of middle elements
-			return ((double) sumOfMiddleElements) / 2;
+	/**
+	 * @param values
+	 *            array of prediction results.
+	 * @return mode, i.e. the most frequent value in the array.
+	 */
+	public static int mode(int[] values) {
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int i : values) {
+			Integer count = map.get(i);
+			map.put(i, count != null ? count + 1 : 1);
 		}
-		// get the middle element
-		return values[values.length / 2];
+		int popular = Collections.max(map.entrySet(), new Comparator<Map.Entry<Integer, Integer>>() {
+			@Override
+			public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		}).getKey();
+		return popular;
 	}
 
 	public BinaryClassifier getBinaryClassifier() {
@@ -83,14 +92,13 @@ public class DecisionKnowledgeClassifier {
 	 * @return whether or not the classifier is currently training.
 	 */
 	public boolean isTraining() {
-		return this.getFineGrainedClassifier().isCurrentlyTraining()
-				|| this.getBinaryClassifier().isCurrentlyTraining();
+		return fineGrainedClassifier.isCurrentlyTraining() || binaryClassifier.isCurrentlyTraining();
 	}
 
 	/**
 	 * @return whether or not the classifier was trained.
 	 */
 	public boolean isTrained() {
-		return getBinaryClassifier().isModelTrained() && getFineGrainedClassifier().isModelTrained();
+		return binaryClassifier.isModelTrained() && fineGrainedClassifier.isModelTrained();
 	}
 }
