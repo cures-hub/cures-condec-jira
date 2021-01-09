@@ -37,8 +37,8 @@ public class DecisionKnowledgeClassifier {
 	private DecisionKnowledgeClassifier() {
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
-		loadDefaultBinaryClassifier();
-		loadDefaultFineGrainedClassifier();
+		binaryClassifier = new BinaryClassifier();
+		fineGrainedClassifier = new FineGrainedClassifier(5);
 	}
 
 	public static DecisionKnowledgeClassifier getInstance() {
@@ -48,18 +48,6 @@ public class DecisionKnowledgeClassifier {
 		return instance;
 	}
 
-	private void loadDefaultBinaryClassifier() {
-		this.binaryClassifier = new BinaryClassifier();
-		/*
-		 * try { //this.binaryClassifier.loadFromFile(); } catch (Exception e) {
-		 * LOGGER.error("Could not load a binary classifier from File."); }
-		 */
-	}
-
-	private void loadDefaultFineGrainedClassifier() {
-		this.fineGrainedClassifier = new FineGrainedClassifier(5);
-	}
-
 	/**
 	 * @param values
 	 *            array of prediction results.
@@ -67,9 +55,9 @@ public class DecisionKnowledgeClassifier {
 	 */
 	public static int mode(int[] values) {
 		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		for (int i : values) {
-			Integer count = map.get(i);
-			map.put(i, count != null ? count + 1 : 1);
+		for (int value : values) {
+			Integer count = map.get(value);
+			map.put(value, count != null ? count + 1 : 1);
 		}
 		int popular = Collections.max(map.entrySet(), new Comparator<Map.Entry<Integer, Integer>>() {
 			@Override

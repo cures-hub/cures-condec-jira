@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.io.File;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
@@ -9,25 +8,14 @@ import smile.classification.LogisticRegression;
 
 public class BinaryClassifier extends AbstractClassifier {
 
-	public static final String DEFAULT_MODEL_NAME = "binaryClassifier.model";
-
 	public BinaryClassifier() {
 		super(2);
-	}
-
-	public boolean isSentenceRelevant(String sentenceToBeClassified) {
-		// TODO Implement binary classification here
-		return true;
+		loadFromFile();
 	}
 
 	@Override
-	public boolean loadFromFile() {
-		return super.loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + BinaryClassifier.DEFAULT_MODEL_NAME);
-	}
-
-	@Override
-	public File saveToFile() {
-		return super.saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + BinaryClassifier.DEFAULT_MODEL_NAME);
+	public String getName() {
+		return "binaryClassifier.model";
 	}
 
 	/**
@@ -38,6 +26,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		// saveToFile();
 	}
 
 	/**
@@ -55,10 +44,6 @@ public class BinaryClassifier extends AbstractClassifier {
 		// } else {
 		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
 		// }
-	}
-
-	public static boolean isRelevant(double[] probabilities) {
-		return probabilities[1] > 0.5;
 	}
 
 	/**
@@ -81,7 +66,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	 * @param sentence
 	 *            sentence that should be classified as relevant or irrelevant wrt.
 	 *            decision knowledge.
-	 * @return boolea value that indicates whether the sentence is relevant (true)
+	 * @return boolean value that indicates whether the sentence is relevant (true)
 	 *         or not (false).
 	 */
 	private boolean predict(String sentence) {
@@ -92,7 +77,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		for (int i = 0; i < features.length; i++) {
 			predictionResults[i] = predict(features[i]);
 		}
-		double predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
-		return predictionResult >= 0.5;
+		int predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
+		return predictionResult > 0;
 	}
 }

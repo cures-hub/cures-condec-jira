@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +10,14 @@ import smile.classification.LogisticRegression;
 
 public class FineGrainedClassifier extends AbstractClassifier {
 
-	public static final String DEFAULT_MODEL_NAME = "fineGrainedClassifier.model";
-
 	public FineGrainedClassifier(int numClasses) {
 		super(numClasses);
+		loadFromFile();
+	}
+
+	@Override
+	public String getName() {
+		return "fineGrainedClassifier.model";
 	}
 
 	/**
@@ -25,6 +28,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		// saveToFile();
 	}
 
 	/**
@@ -52,7 +56,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sample.length; i++) {
 			predictionResults[i] = predict(sample[i]);
 		}
-		int predictionResult = (int) Math.round(DecisionKnowledgeClassifier.mode(predictionResults));
+		int predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
 		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
 		return predictedKnowledgeType;
 	}
@@ -89,17 +93,6 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	public void train(double[] feature, KnowledgeType label) {
 		super.update(feature, mapKnowledgeTypeToIndex(label));
-	}
-
-	@Override
-	public File saveToFile() {
-		return super.saveToFile(
-				DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
-	}
-
-	@Override
-	public boolean loadFromFile() {
-		return super.loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + FineGrainedClassifier.DEFAULT_MODEL_NAME);
 	}
 
 	public static KnowledgeType mapIndexToKnowledgeType(int index) {

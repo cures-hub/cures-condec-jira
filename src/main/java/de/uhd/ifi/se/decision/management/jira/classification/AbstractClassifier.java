@@ -25,6 +25,8 @@ public abstract class AbstractClassifier {
 		this.currentlyTraining = false;
 	}
 
+	public abstract String getName();
+
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
@@ -52,7 +54,7 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Saves model to a file. So that it can be loaded at a later time.
+	 * Saves model to a file, so that it can be loaded at a later time.
 	 *
 	 * @param filePathAndName
 	 * @throws Exception
@@ -71,10 +73,10 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * Saves model to a file. So that it can be loaded at a later time.
-	 *
-	 * @throws Exception
 	 */
-	public abstract File saveToFile() throws Exception;
+	public File saveToFile() {
+		return saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getName());
+	}
 
 	/**
 	 * Loads pre-trained model from file.
@@ -90,6 +92,7 @@ public abstract class AbstractClassifier {
 			model = (OnlineClassifier<double[]>) objectIn.readObject();
 			objectIn.close();
 		} catch (Exception e) {
+			LOGGER.error("Could not load a classifier from file: " + getName());
 			model = oldModel;
 			return false;
 		}
@@ -99,7 +102,9 @@ public abstract class AbstractClassifier {
 	/**
 	 * Loads pre-trained model from file.
 	 */
-	public abstract boolean loadFromFile();
+	public boolean loadFromFile() {
+		return loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getName());
+	}
 
 	public boolean isModelTrained() {
 		return model != null;
