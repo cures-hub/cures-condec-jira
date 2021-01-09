@@ -4,7 +4,8 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import smile.classification.LogisticRegression;
+import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 
 public class BinaryClassifier extends AbstractClassifier {
 
@@ -25,7 +26,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	 */
 	public void train(TrainingData trainingData) {
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
 		// saveToFile();
 	}
 
@@ -37,13 +38,9 @@ public class BinaryClassifier extends AbstractClassifier {
 	 */
 	@Override
 	public void train(double[][] trainingSamples, int[] trainingLabels) {
-		// if (numClasses <= 2) {
-		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
-		// trainingLabels, new GaussianKernel(8.0),
-		// 500, 1E-3);
-		// } else {
-		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
-		// }
+		this.model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(8.0), 10,
+				1E-3);
+		// model = LogisticRegression.fit(trainingSamples, trainingLabels);
 	}
 
 	/**

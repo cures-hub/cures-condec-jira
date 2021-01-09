@@ -19,7 +19,7 @@ public class TestBinaryClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testSaveToFile() {
+	public void testSaveToAndLoadFromFile() {
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();

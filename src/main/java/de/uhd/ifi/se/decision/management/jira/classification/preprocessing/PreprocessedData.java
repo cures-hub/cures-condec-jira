@@ -37,19 +37,50 @@ public class PreprocessedData {
 	private void preprocess(String[] stringsToBePreprocessed, int[] labels) {
 		preprocessedSentences = new double[0][];
 		updatedLabels = new int[0];
-		preprocessor.preprocess(stringsToBePreprocessed[0]);
 		for (int i = 0; i < stringsToBePreprocessed.length; i++) {
 			double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
 			if (preprocessedSentence[0] == null) {
 				continue;
 			}
-			int[] myLabels = new int[preprocessedSentence.length];
+			int[] labelsForSentenceNGrams = new int[preprocessedSentence.length];
 			for (int j = 0; j < preprocessedSentence.length; j++) {
-				myLabels[j] = labels[i];
+				labelsForSentenceNGrams[j] = labels[i];
 			}
-			updatedLabels = concatenate(updatedLabels, myLabels);
+			updatedLabels = concatenate(updatedLabels, labelsForSentenceNGrams);
 			preprocessedSentences = concatenate(preprocessedSentences, preprocessedSentence);
 		}
+	}
+
+	public int[] getLabelsForCriterion(int toBeOne) {
+		int[] isRelevantLabels = new int[updatedLabels.length];
+		for (int i = 0; i < updatedLabels.length; i++) {
+			isRelevantLabels[i] = updatedLabels[i] == toBeOne ? 1 : -1;
+		}
+		return isRelevantLabels;
+	}
+
+	public int[] getIsRelevantLabels() {
+		return getLabelsForCriterion(1);
+	}
+
+	public int[] getIsAlternativeLabels() {
+		return getLabelsForCriterion(0);
+	}
+
+	public int[] getIsDecisionLabels() {
+		return getLabelsForCriterion(3);
+	}
+
+	public int[] getIsProLabels() {
+		return getLabelsForCriterion(1);
+	}
+
+	public int[] getIsConLabels() {
+		return getLabelsForCriterion(2);
+	}
+
+	public int[] getIsIssueLabels() {
+		return getLabelsForCriterion(4);
 	}
 
 	/**

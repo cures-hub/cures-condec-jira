@@ -4,11 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import smile.feature.Bag;
+import smile.math.MathEx;
+import smile.nlp.dictionary.EnglishPunctuations;
+import smile.nlp.dictionary.EnglishStopWords;
 
 public class TestPreprocessor extends TestSetUp {
 
@@ -95,5 +104,49 @@ public class TestPreprocessor extends TestSetUp {
 		assertEquals(1, preprocessing.length);
 		assertNotNull(preprocessing[0]);
 		assertNotNull(preprocessing[0][0]);
+	}
+
+	@Test
+	public void testBagOfWords() {
+		String[] words = preprocessor
+				.getStemmedTokensWithoutStopWords(
+						"The quick brown fox jumps over the lazy dog.");
+		Bag bag = new Bag(words);
+		String[] tokens = { "quick", "brown", "dog" };
+		System.out.print(Arrays.toString(bag.apply(tokens)));
+	}
+
+	@Test
+	public void testTDFIDF() {
+		TrainingData trainingData = new TrainingData();
+		String[] sentences = trainingData.sentences;
+		String[] words = Arrays.stream(sentences).flatMap(s -> Arrays.stream(preprocessor.tokenize(s)))
+				.filter(w -> !(EnglishStopWords.DEFAULT.contains(w.toLowerCase())
+						|| EnglishPunctuations.getInstance().contains(w)))
+				.toArray(String[]::new);
+
+		words = preprocessor.stem(words);
+
+		Map<String, Integer> bags = Arrays.stream(words).map(String::toLowerCase)
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)));
+
+		String[] features = { "like", "good", "perform", "littl", "love", "bad", "best" };
+
+		double[] x = new double[features.length];
+		int zero = Integer.valueOf(0);
+		for (int i = 0; i < x.length; i++) {
+			x[i] = bags.getOrDefault(features[i], zero);
+		}
+
+		double[] y = new double[x.length];
+		int[] df = new int[features.length];
+
+		for (int i = 0; i < x.length; i++) {
+			double maxtf = MathEx.max(x);
+			x[i] = (x[i] / maxtf) * Math.log((1.0 + 1) / (1.0 + df[i]));
+		}
+
+		MathEx.unitize(x);
+
 	}
 }

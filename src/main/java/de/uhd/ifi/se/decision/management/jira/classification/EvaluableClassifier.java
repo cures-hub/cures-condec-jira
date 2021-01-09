@@ -25,3 +25,4 @@ public interface EvaluableClassifier {
 	Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
 			List<KnowledgeElement> partOfJiraIssueTexts);
 }
+

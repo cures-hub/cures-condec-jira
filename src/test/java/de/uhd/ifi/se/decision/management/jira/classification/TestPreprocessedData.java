@@ -39,6 +39,7 @@ public class TestPreprocessedData extends TestSetUp {
 		assertEquals(1, preprocessedData.updatedLabels[2]);
 		assertEquals(1, preprocessedData.updatedLabels[3]);
 		assertEquals(0, preprocessedData.updatedLabels[32]);
+		assertEquals(-1, preprocessedData.getIsRelevantLabels()[32]);
 	}
 
 	@Test
@@ -55,6 +56,10 @@ public class TestPreprocessedData extends TestSetUp {
 		assertEquals(5, uniqueLabels.length);
 		assertEquals(preprocessedData.preprocessedSentences.length, preprocessedData.updatedLabels.length);
 		assertNotNull(preprocessedData.preprocessedSentences[preprocessedData.updatedLabels.length - 1]);
+
+		assertEquals(1, preprocessedData.getIsIssueLabels()[0]);
+		assertEquals(-1, preprocessedData.getIsIssueLabels()[40]);
+		assertEquals(1, preprocessedData.getIsAlternativeLabels()[40]);
 	}
 
 }

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
+import smile.feature.Bag;
 import smile.nlp.dictionary.EnglishPunctuations;
 import smile.nlp.dictionary.EnglishStopWords;
 import smile.nlp.normalizer.SimpleNormalizer;
@@ -73,6 +74,11 @@ public class Preprocessor {
 		}
 
 		return nGrams;
+	}
+
+	public void bagOfWords(String[] words) {
+		Bag bag = new Bag(words);
+		bag.toString();
 	}
 
 	public String[] getStemmedTokensWithoutStopWords(String sentence) {

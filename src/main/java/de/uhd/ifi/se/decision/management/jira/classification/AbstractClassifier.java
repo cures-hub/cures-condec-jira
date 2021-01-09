@@ -10,13 +10,13 @@ import java.io.ObjectOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import smile.classification.OnlineClassifier;
+import smile.classification.Classifier;
 
 public abstract class AbstractClassifier {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
-	protected OnlineClassifier<double[]> model;
+	protected Classifier<double[]> model;
 	private int numClasses;
 	private boolean currentlyTraining;
 
@@ -42,7 +42,7 @@ public abstract class AbstractClassifier {
 	 * @param trainingLabel
 	 */
 	public void update(double[] trainingSample, int trainingLabel) {
-		model.update(trainingSample, trainingLabel);
+		// model.update(trainingSample, trainingLabel);
 	}
 
 	/**
@@ -85,14 +85,14 @@ public abstract class AbstractClassifier {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
-		OnlineClassifier<double[]> oldModel = model;
+		Classifier<double[]> oldModel = model;
 		try {
 			FileInputStream fileIn = new FileInputStream(filePathAndName);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			model = (OnlineClassifier<double[]>) objectIn.readObject();
+			model = (Classifier<double[]>) objectIn.readObject();
 			objectIn.close();
 		} catch (Exception e) {
-			LOGGER.error("Could not load a classifier from file: " + getName());
+			LOGGER.error("Could not load a classifier from file: " + getName() + ". " + e.getMessage());
 			model = oldModel;
 			return false;
 		}
