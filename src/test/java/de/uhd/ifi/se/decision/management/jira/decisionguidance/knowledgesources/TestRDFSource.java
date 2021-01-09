@@ -1,5 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Objects;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
@@ -11,12 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Objects;
-
-import static org.junit.Assert.*;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRDFSource extends TestSetUp {
 
@@ -24,9 +30,9 @@ public class TestRDFSource extends TestSetUp {
 	private final static String NAME = "TESTSOURCE";
 	private final static String SERVICE = "http://dbpedia.org/sparql";
 	private final static String QUERY = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
-		"PREFIX dct: <http://purl.org/dc/terms/> " +
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+			"PREFIX dct: <http://purl.org/dc/terms/> " +
+			"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+			"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
 
 		"select distinct ?alternative ?url ?link where { " +
 		"%variable% dbo:genre ?genre. " +
@@ -44,6 +50,7 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRDFSourceConstructor() {
 		RDFSource rdfSource = new RDFSource();
 		assertNotNull(rdfSource);
@@ -72,6 +79,8 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
+	@Ignore
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT));
@@ -86,6 +95,8 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
+	@Ignore
 	public void testRDFSourceWithKnowledgeElement() {
 		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
 		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT));
@@ -103,6 +114,7 @@ public class TestRDFSource extends TestSetUp {
 
 
 	@Test
+	@NonTransactional
 	public void testRDFSourceActivated() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");
@@ -110,6 +122,7 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRDFSourceDeactivated() {
 		KnowledgeSource source = new RDFSource("Test");
 		source.setName("RDFSource");

@@ -37,7 +37,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	public ClassifierTrainer(String projectKey) {
 		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
 		this.projectKey = projectKey;
-		trainingData = loadDefaultTrainingData();
+		trainingData = new TrainingData();
 	}
 
 	public ClassifierTrainer(String projectKey, String fileName) {
@@ -91,12 +91,6 @@ public class ClassifierTrainer implements EvaluableClassifier {
 
 	public TrainingData getTrainingData() {
 		return trainingData;
-	}
-
-	private TrainingData loadDefaultTrainingData() {
-		List<File> trainingFiles = FileManager.getAllTrainingFiles();
-		TrainingData loadedInstances = new TrainingData(trainingFiles.get(0));
-		return loadedInstances;
 	}
 
 	/**

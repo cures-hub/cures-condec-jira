@@ -26,11 +26,13 @@ public class TestTrainingData extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testTraingDataNotNull() {
 		assertNotNull(trainingData);
 	}
 
 	@Test
+	@NonTransactional
 	public void testTrainingData() {
 		assertEquals(41, trainingData.sentences.length);
 		assertEquals(41, trainingData.labelsIsRelevant.length);
@@ -74,6 +76,14 @@ public class TestTrainingData extends TestSetUp {
 	@NonTransactional
 	public void testCreateTrainingDataFromFileName() {
 		DataFrame dataFrame = new TrainingData("defaultTrainingData.csv").dataFrame;
+		assertEquals(5, dataFrame.columnIndex("sentence"));
+		assertTrue(dataFrame.size() > 1);
+	}
+
+	@Test
+	@NonTransactional
+	public void testCreateTrainingDataFromDafaultTrainingFile() {
+		DataFrame dataFrame = new TrainingData().dataFrame;
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}

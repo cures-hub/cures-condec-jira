@@ -39,6 +39,10 @@ public class TrainingData {
 		fillFromDataFrame(dataFrame);
 	}
 
+	public TrainingData() {
+		this(readDataFrameFromDefaultTrainingDataCSVFile());
+	}
+
 	public TrainingData(String fileName) {
 		this(readDataFrameFromCSVFile(fileName));
 	}
@@ -152,6 +156,14 @@ public class TrainingData {
 
 	public static DataFrame readDataFrameFromCSVFile(String csvFileName) {
 		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + csvFileName);
+		if (!file.exists()) {
+			return readDataFrameFromDefaultTrainingDataCSVFile();
+		}
+		return readDataFrameFromCSVFile(file);
+	}
+
+	public static DataFrame readDataFrameFromDefaultTrainingDataCSVFile() {
+		File file = FileManager.getAllTrainingFiles().get(0);
 		return readDataFrameFromCSVFile(file);
 	}
 
