@@ -29,7 +29,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		classificationManager = new ClassificationManagerForJiraIssueText();
 		sentences = JiraIssues.getSentencesForCommentText(
 				"This is a testentence without any purpose. We expect this to be irrelevant. "
-						+ "How can we implement? The previous sentence should be much more relevant");
+						+ "How can we implement this feature? The previous sentence should be much more relevant");
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
 		assertTrue(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
-		assertEquals("How can we implement?", sentences.get(2).getSummary());
+		assertEquals("How can we implement this feature?", sentences.get(2).getSummary());
 		assertTrue(sentences.get(2).isRelevant());
 		assertFalse(sentences.get(2).isValidated());
 	}
@@ -52,18 +52,22 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 		assertTrue(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
+		assertTrue(sentences.get(2).isRelevant());
+		// TODO: Should be issue
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(2).getType());
 	}
 
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidData() {
-		// sentences.get(2).setRelevant(true);
+		sentences.get(2).setRelevant(true);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertFalse(sentences.get(2).isRelevant());
-		assertFalse(sentences.get(2).isTagged());
-		assertEquals("How can we implement?", sentences.get(2).getSummary());
-		// assertEquals(KnowledgeType.ISSUE, sentences.get(2).getType());
+		assertTrue(sentences.get(2).isRelevant());
+		assertTrue(sentences.get(2).isTagged());
+		assertEquals("How can we implement this feature?", sentences.get(2).getSummary());
+		// TODO: Should be issue
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(2).getType());
 	}
 
 	@Test

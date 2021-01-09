@@ -47,7 +47,7 @@ public class TestClassifierTrainer extends TestSetUp {
 		File file = trainer.saveTrainingFile();
 		assertTrue(file.exists());
 		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getDataFrame());
+		assertNotNull(trainer.getTrainingData());
 		trainer = new ClassifierTrainer("TEST", file.getName());
 		assertTrue(trainer.train());
 		file.delete();
@@ -95,26 +95,27 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetInstances() {
-		assertNotNull(this.trainer.getDataFrame());
+		assertNotNull(this.trainer.getTrainingData());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
 		trainer.train();
-		assertEquals(2, DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(TEST_SENTENCES).length);
+		assertEquals(2, DecisionKnowledgeClassifier.getInstance().getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeFineGrainedPredicition() {
-		assertEquals(2, DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(TEST_SENTENCES).size());
+		assertEquals(2,
+				DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testBuildDataFrame() {
-		DataFrame dataFrame = ClassifierTrainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
+		DataFrame dataFrame = TrainingData.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
@@ -122,7 +123,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateTrainingRow() {
-		Object[] rowValues = ClassifierTrainer.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
+		Object[] rowValues = TrainingData.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(0, rowValues[0]);
 		assertEquals("WI: Implement feature", rowValues[5]);
 	}
@@ -162,7 +163,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	public void testClassificationTrainerFromCSVFile() {
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		DataFrame dataFrame = trainer.getDataFrame();
+		DataFrame dataFrame = trainer.getTrainingData().dataFrame;
 		assertNotNull(dataFrame);
 		assertEquals(0, dataFrame.columnIndex("isAlternative"));
 	}

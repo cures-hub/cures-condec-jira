@@ -657,12 +657,12 @@ public class ConfigRest {
 		StringBuilder builder = new StringBuilder();
 		List<String> textList = Collections.singletonList(text);
 
-		boolean relevant = DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(textList)[0];
+		boolean relevant = DecisionKnowledgeClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
 		builder.append(relevant ? "Relevant" : "Irrelevant");
 
 		if (relevant) {
 			builder.append(": ");
-			KnowledgeType type = DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(textList)
+			KnowledgeType type = DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().predict(textList)
 					.get(0);
 			builder.append(type.toString());
 		}
@@ -683,7 +683,7 @@ public class ConfigRest {
 
 		if (trainingFile != null) {
 			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.getPath(),
-					"content", trainer.getDataFrame().toString())).build();
+					"content", trainer.getTrainingData().toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error",

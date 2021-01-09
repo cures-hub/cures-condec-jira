@@ -19,7 +19,7 @@ public class TestPreprocessedData extends TestSetUp {
 		init();
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainingData = new TrainingData(trainer.getDataFrame());
+		trainingData = trainer.getTrainingData();
 	}
 
 	@Test

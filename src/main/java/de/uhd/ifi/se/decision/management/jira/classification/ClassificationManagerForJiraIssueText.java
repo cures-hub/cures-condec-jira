@@ -73,8 +73,8 @@ public class ClassificationManagerForJiraIssueText {
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
-		boolean[] classificationResult = DecisionKnowledgeClassifier.getInstance()
-				.makeBinaryPredictions(stringsToBeClassified);
+		boolean[] classificationResult = DecisionKnowledgeClassifier.getInstance().getBinaryClassifier()
+				.predict(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
 	}
@@ -129,8 +129,8 @@ public class ClassificationManagerForJiraIssueText {
 		// add method to extract text
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
-		List<KnowledgeType> classificationResult = DecisionKnowledgeClassifier.getInstance()
-				.makeFineGrainedPredictions(stringsToBeClassified);
+		List<KnowledgeType> classificationResult = DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier()
+				.predict(stringsToBeClassified);
 		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
 		return sentences;
 	}

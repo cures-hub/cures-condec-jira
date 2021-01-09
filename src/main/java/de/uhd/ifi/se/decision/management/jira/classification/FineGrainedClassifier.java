@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class FineGrainedClassifier extends AbstractClassifier {
@@ -10,6 +14,47 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	public FineGrainedClassifier(int numClasses) {
 		super(numClasses);
+	}
+
+	/**
+	 * Trains the model.
+	 *
+	 * @param trainingData
+	 */
+	public void train(TrainingData trainingData) {
+		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
+		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+	}
+
+	public KnowledgeType predict(String stringToBeClassified) {
+		double[][] sample = Preprocessor.getInstance().preprocess(stringToBeClassified);
+		// Make predictions for each nGram; then determine maximum probability of all
+		// added together.
+		int predictionResults[] = new int[sample.length];
+		for (int i = 0; i < sample.length; i++) {
+			predictionResults[i] = predict(sample[i]);
+		}
+		int predictionResult = (int) Math.round(DecisionKnowledgeClassifier.median(predictionResults));
+		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
+		return predictedKnowledgeType;
+	}
+
+	/**
+	 * @param stringsToBeClassified
+	 * @return
+	 * @see this.makeBinaryDecision
+	 */
+	public List<KnowledgeType> predict(List<String> stringsToBeClassified) {
+		try {
+			List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<>();
+			for (String string : stringsToBeClassified) {
+				fineGrainedPredictionResults.add(predict(string));
+			}
+			return fineGrainedPredictionResults;
+		} catch (Exception e) {
+			LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
+		}
+		return null;
 	}
 
 	public static KnowledgeType getType(double[] classification) {

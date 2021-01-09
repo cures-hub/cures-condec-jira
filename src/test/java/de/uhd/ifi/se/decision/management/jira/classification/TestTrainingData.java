@@ -9,27 +9,25 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import smile.data.DataFrame;
 
 public class TestTrainingData extends TestSetUp {
 
-	private DataFrame dataFrame;
+	private TrainingData trainingData;
 
 	@Before
 	public void setUp() {
 		init();
 		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
-		dataFrame = ClassifierTrainer.getDataFrameFromCSVFile(trainingFile);
+		trainingData = new TrainingData(trainingFile);
 	}
 
 	@Test
-	public void testInstancesNotNull() {
-		assertNotNull(dataFrame);
+	public void testTraingDataNotNull() {
+		assertNotNull(trainingData);
 	}
 
 	@Test
 	public void testTrainingData() {
-		TrainingData trainingData = new TrainingData(dataFrame);
 		assertEquals(41, trainingData.sentences.length);
 		assertEquals(41, trainingData.labelsIsRelevant.length);
 		assertEquals(29, trainingData.relevantSentences.length);

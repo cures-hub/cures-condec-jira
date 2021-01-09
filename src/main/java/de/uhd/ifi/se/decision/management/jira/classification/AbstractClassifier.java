@@ -33,7 +33,13 @@ public abstract class AbstractClassifier {
 	 * @param trainingLabels
 	 */
 	public void train(double[][] trainingSamples, int[] trainingLabels) {
-		model = LogisticRegression.fit(trainingSamples, trainingLabels);
+		// if (numClasses <= 2) {
+		// this.model = (OnlineClassifier<double[]>) SVM.fit(trainingSamples,
+		// trainingLabels, new GaussianKernel(8.0),
+		// 500, 1E-3);
+		// } else {
+		this.model = LogisticRegression.fit(trainingSamples, trainingLabels);
+		// }
 	}
 
 	/**

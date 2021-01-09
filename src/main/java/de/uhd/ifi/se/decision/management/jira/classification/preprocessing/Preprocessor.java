@@ -99,22 +99,6 @@ public class Preprocessor {
 	}
 
 	/**
-	 * Replaces unwanted patterns from the String using regular expressions and
-	 * replacement token. E.g.: removing newline character.
-	 *
-	 * @param sentence
-	 *            Sentence that has to be cleaned.
-	 * @param regex
-	 *            Regular Expression used to be filter out unwanted parts of text.
-	 * @param replaceToken
-	 *            Used to replace the matching pattern of the regex.
-	 * @return Cleaned sentence.
-	 */
-	public String replaceUsingRegEx(String sentence, String regex, String replaceToken) {
-		return sentence.replaceAll(regex, replaceToken);
-	}
-
-	/**
 	 * Converts a list of tokens into their stemmed form. What is lemmatisation?
 	 * https://en.wikipedia.org/wiki/Lemmatisation E.g.: "better" -> "good".
 	 *
@@ -143,7 +127,7 @@ public class Preprocessor {
 	 *            N-Gram number
 	 * @return array of N-Grams
 	 */
-	public double[][] generateNGram(double[][] tokens, int n) {
+	public double[][] generateNGrams(double[][] tokens, int n) {
 		double[][] nGrams = new double[tokens.length][];
 		for (int i = 0; i < tokens.length - n + 1; i++) {
 			nGrams[i] = concat(tokens, i, i + n);
