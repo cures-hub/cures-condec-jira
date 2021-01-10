@@ -12,6 +12,8 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -19,6 +21,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 
 	private List<PartOfJiraIssueText> sentences;
 	private ClassificationManagerForJiraIssueText classificationManager;
+	private JiraIssueTextPersistenceManager persistenceManager;
 
 	@Before
 	public void setUp() {
@@ -30,6 +33,17 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		sentences = JiraIssues.getSentencesForCommentText(
 				"The quick brown fox jumps over the lazy dog. We expect this to be irrelevant. "
 						+ "How can we implement? The previous sentence should be much more relevant");
+		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+	}
+
+	@Test
+	@NonTransactional
+	public void testClassifyDescriptionAndAllComments() {
+		classificationManager.classifyDescriptionAndAllComments(JiraIssues.getTestJiraIssues().get(0));
+		List<PartOfJiraIssueText> sentences = persistenceManager
+				.getElementsInDescription(JiraIssues.getTestJiraIssues().get(0).getId());
+		assertFalse(sentences.isEmpty());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
 
 	@Test

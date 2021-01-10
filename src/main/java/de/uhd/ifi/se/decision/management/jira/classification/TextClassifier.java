@@ -32,6 +32,7 @@ public class TextClassifier {
 	public static TextClassifier instance;
 
 	private TextClassifier() {
+		LOGGER.info("New text classifier was created");
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 		binaryClassifier = new BinaryClassifier();

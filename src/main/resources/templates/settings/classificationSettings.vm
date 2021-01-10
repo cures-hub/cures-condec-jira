@@ -131,8 +131,8 @@
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
 
     // add listeners
-    testClassifierWithTextBtn.addEventListener('click', () =>{
-       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value,"$projectKey", testClassifierWithTextResult)
+    testClassifierWithTextBtn.addEventListener('click', () => {
+       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
     });
     
     const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
