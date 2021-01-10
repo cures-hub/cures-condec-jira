@@ -29,7 +29,7 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testBinary() {
-		assertEquals(41, trainingData.labelsIsRelevant.length);
+		assertEquals(41, trainingData.getRelevanceLabelsForAllSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		assertEquals(284, preprocessedData.preprocessedSentences.length);
 		assertEquals(284, preprocessedData.updatedLabels.length);
@@ -44,7 +44,7 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(29, trainingData.labelsKnowledgeType.length);
+		assertEquals(29, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		assertEquals(213, preprocessedData.preprocessedSentences.length);
 		assertEquals(213, preprocessedData.updatedLabels.length);

@@ -35,18 +35,18 @@ public class TestTrainingData extends TestSetUp {
 	@NonTransactional
 	public void testTrainingData() {
 		assertEquals(41, trainingData.getAllSentences().length);
-		assertEquals(41, trainingData.labelsIsRelevant.length);
+		assertEquals(41, trainingData.getRelevanceLabelsForAllSentences().length);
 		assertEquals(29, trainingData.getRelevantSentences().length);
 
 		assertEquals("How can we implement?", trainingData.getAllSentences()[0]);
-		assertEquals(1, trainingData.labelsIsRelevant[0]);
-		assertEquals(4, trainingData.labelsKnowledgeType[0]);
+		assertEquals(1, trainingData.getRelevanceLabelsForAllSentences()[0]);
+		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[0]);
 
-		assertEquals(1, trainingData.labelsIsRelevant[1]);
-		assertEquals(4, trainingData.labelsKnowledgeType[1]);
+		assertEquals(1, trainingData.getRelevanceLabelsForAllSentences()[1]);
+		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[1]);
 
 		assertEquals("Nobody knows.", trainingData.getAllSentences()[6]);
-		assertEquals(0, trainingData.labelsIsRelevant[6]);
+		assertEquals(0, trainingData.getRelevanceLabelsForAllSentences()[6]);
 	}
 
 	@Test

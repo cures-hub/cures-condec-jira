@@ -14,12 +14,12 @@ public class PreprocessedData {
 			int size = trainingData.getRelevantSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.getRelevantSentences(), trainingData.labelsKnowledgeType);
+			preprocess(trainingData.getRelevantSentences(), trainingData.getKnowledgeTypeLabelsForRelevantSentences());
 		} else {
 			int size = trainingData.getAllSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.getAllSentences(), trainingData.labelsIsRelevant);
+			preprocess(trainingData.getAllSentences(), trainingData.getRelevanceLabelsForAllSentences());
 		}
 	}
 

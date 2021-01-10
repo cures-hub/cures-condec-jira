@@ -6,7 +6,9 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.slf4j.Logger;
@@ -22,75 +24,151 @@ import smile.data.type.StructType;
 import smile.io.Read;
 import smile.io.Write;
 
+/**
+ * Organizes the data read from csv file (see
+ * {@link #readDataFrameFromCSVFile(File)} or created from the current
+ * {@link KnowledgeGraph) in such a way that it can be used to train and
+ * evaluate the {@link TextClassifier}.
+ * 
+ * Is also responsible for reading and saving training data from/to .csv files.
+ * 
+ * @see #getAllSentences()
+ * @see #getRelevanceLabelsForAllSentences()
+ * 
+ * @see #getRelevantSentences()
+ * @see #getKnowledgeTypeLabelsForRelevantSentences()
+ */
 public class TrainingData {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TrainingData.class);
 
 	private DataFrame dataFrame;
-	private String[] allSentences;
-	private String[] relevantSentences;
+	private Map<String, Integer> allSentenceRelevanceMap;
+	private Map<String, Integer> relevantSentenceKnowledgeTypeLabelMap;
 
-	public int[] labelsIsRelevant;
-	public int[] labelsKnowledgeType;
-
+	/**
+	 * Organizes the data in such a way that it can be used to train and evaluate
+	 * the {@link TextClassifier}.
+	 * 
+	 * @param dataFrame
+	 *            {@link DataFrame} read from csv file (see
+	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
+	 *            current {@link KnowledgeGraph).
+	 */
 	public TrainingData(DataFrame dataFrame) {
 		this.dataFrame = dataFrame;
-		allSentences = new String[dataFrame.size()];
-		labelsIsRelevant = new int[dataFrame.size()];
+		allSentenceRelevanceMap = new LinkedHashMap<>();
+		relevantSentenceKnowledgeTypeLabelMap = new LinkedHashMap<>();
 		parseDataFrame(dataFrame);
 	}
 
 	/**
-	 * Read the defaultTrainingData.csv that comes with the plugin.
+	 * Reads the defaultTrainingData.csv that comes with the plugin.
 	 */
 	public TrainingData() {
 		this(readDataFrameFromDefaultTrainingDataCSVFile());
 	}
 
+	/**
+	 * Reads the given file by its name.
+	 * 
+	 * @param fileName
+	 *            of a .csv file with training data. The file must be stored in the
+	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
+	 */
 	public TrainingData(String fileName) {
 		this(readDataFrameFromCSVFile(fileName));
 	}
 
+	/**
+	 * Reads the given file.
+	 * 
+	 * @param file
+	 *            a .csv file with training data. The file must be stored in the
+	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
+	 */
 	public TrainingData(File file) {
 		this(readDataFrameFromCSVFile(file));
 	}
 
+	/**
+	 * Creates a {@link TrainingData} object including a {@link DataFrame} from the
+	 * given {@link KnowledgeElement}s.
+	 * 
+	 * @param fileName
+	 *            of a .csv file with training data. The file must be stored in the
+	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
+	 */
 	public TrainingData(List<KnowledgeElement> trainingElements) {
 		this(buildDataFrame(trainingElements));
 	}
 
+	/**
+	 * @return {@link DataFrame} read from csv file (see
+	 *         {@link #readDataFrameFromCSVFile(File)} or created from the current
+	 *         {@link KnowledgeGraph).
+	 */
 	public DataFrame getDataFrame() {
 		return dataFrame;
 	}
 
+	/**
+	 * @return both relevant and irrelevant sentences wrt. decision knowledge.
+	 */
 	public String[] getAllSentences() {
-		return allSentences;
+		String[] allSenteces = new String[allSentenceRelevanceMap.keySet().size()];
+		return allSentenceRelevanceMap.keySet().toArray(allSenteces);
 	}
 
+	/**
+	 * @return all relevant sentences wrt. decision knowledge.
+	 */
 	public String[] getRelevantSentences() {
-		return relevantSentences;
+		String[] relevantSenteces = new String[relevantSentenceKnowledgeTypeLabelMap.keySet().size()];
+		return relevantSentenceKnowledgeTypeLabelMap.keySet().toArray(relevantSenteces);
 	}
 
+	/**
+	 * @return relevance labels for the all sentences in the same order as returned
+	 *         by {@link #getAllSentences()}.
+	 */
+	public int[] getRelevanceLabelsForAllSentences() {
+		return allSentenceRelevanceMap.values().stream().mapToInt(i -> i).toArray();
+	}
+
+	/**
+	 * @return knowledge type labels for the relevant sentences in the same order as
+	 *         returned by {@link #getRelevantSentences()}.
+	 * 
+	 * @see FineGrainedClassifier#mapIndexToKnowledgeType(int)
+	 */
+	public int[] getKnowledgeTypeLabelsForRelevantSentences() {
+		return relevantSentenceKnowledgeTypeLabelMap.values().stream().mapToInt(i -> i).toArray();
+	}
+
+	/**
+	 * Parses the {@link DataFrame} so that it can be used to train and evaluate the
+	 * {@link TextClassifier}.
+	 * 
+	 * @param dataFrame
+	 *            {@link DataFrame} read from csv file (see
+	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
+	 *            current {@link KnowledgeGraph).
+	 */
 	private void parseDataFrame(DataFrame dataFrame) {
-		List<String> relevantSentencesList = new ArrayList<>();
-		List<Integer> labelsKnowledgeTypeList = new ArrayList<>();
 		for (int i = 0; i < dataFrame.size(); i++) {
 			Tuple currentRow = dataFrame.get(i);
+			String currentSentence = currentRow.getString(5);
 
-			allSentences[i] = currentRow.getString(5);
 			int isRelevant = 0;
 			// iterate over the binary attributes for each possible class
 			for (int j = 0; j < currentRow.length() - 1; j++) {
 				if (currentRow.getInt(j) == 1) {
 					isRelevant = 1;
-					relevantSentencesList.add(allSentences[i]);
-					labelsKnowledgeTypeList.add(j);
+					relevantSentenceKnowledgeTypeLabelMap.put(currentSentence, j);
 				}
 			}
-			labelsIsRelevant[i] = isRelevant;
+			allSentenceRelevanceMap.put(currentSentence, isRelevant);
 		}
-
-		relevantSentences = relevantSentencesList.toArray(new String[relevantSentencesList.size()]);
-		labelsKnowledgeType = labelsKnowledgeTypeList.stream().mapToInt(i -> i).toArray();
 	}
 
 	/**
