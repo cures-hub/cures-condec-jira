@@ -50,17 +50,20 @@
 
 <div class="field-group">
     <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
-    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
-    <div class="description">Classifies decision knowledge for all issue comments for this project.</div>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <div class="description">
+    	Classifies the text in the description and the comments of all Jira issues for this project. <br/>
+    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
+    </div>
     <div class="aui-progress-indicator">
         <span id="classify-whole-project-progress-bar"></span>
     </div>
 </div>
 
 <div class="field-group">
-    <label for="evaluateModel-button">Evaluate Classifier</label>
-    <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current classifier model using the user-validated data in the database. (If the
+    <label for="evaluateTextClassifier-button">Evaluate Classifier</label>
+    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier"/>
+    <div class="description">Evaluate the current classifier using the user-validated data in the current knowledge graph. (If the
         evaluation fails the classifier might need to be trained!)
     </div>
     <div class="aui-progress-indicator">
@@ -118,7 +121,7 @@
 <script>
     // init the variables
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isClassifierEnabled();
+    isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
 
     const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
     const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
@@ -131,10 +134,11 @@
     testClassifierWithTextBtn.addEventListener('click', () =>{
        conDecAPI.testClassifierWithText(testClassifierWithTextInput.value,"$projectKey", testClassifierWithTextResult)
     });
-    const evaluateModelButton = document.getElementById("evaluateModel-button");
-    evaluateModelButton.addEventListener("click", function () {
+    
+    const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
+    evaluateTextClassifierButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
-        conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
+        conDecAPI.evaluateTextClassifier("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
     const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
@@ -144,7 +148,7 @@
 
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
-        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
+        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big and cannot be reverted!")) {
             var animatedElement = document.getElementById("classify-whole-project-progress-bar");
             conDecAPI.classifyWholeProject("$projectKey", animatedElement);
         }
@@ -162,7 +166,7 @@
     isClassifierUsedToggle.addEventListener("change", function (error) {
         currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
-        conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
+        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
         this.busy = false;
     });
 

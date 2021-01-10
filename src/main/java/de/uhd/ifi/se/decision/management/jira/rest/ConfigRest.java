@@ -582,10 +582,10 @@ public class ConfigRest {
 	/*										*/
 	/* **************************************/
 
-	@Path("/setUseClassifierForIssueComments")
+	@Path("/setTextClassifierEnabled")
 	@POST
-	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("isClassifierUsedForIssues") boolean isActivated) {
+	public Response setTextClassifierEnabled(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("isTextClassifierEnabled") boolean isActivated) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -615,9 +615,10 @@ public class ConfigRest {
 				.entity(ImmutableMap.of("error", "The classifier could not be trained.")).build();
 	}
 
-	@Path("/evaluateModel")
+	@Path("/evaluateTextClassifier")
 	@POST
-	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response evaluateTextClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
