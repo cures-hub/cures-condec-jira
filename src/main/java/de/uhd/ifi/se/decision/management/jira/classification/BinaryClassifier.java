@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import java.io.File;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
@@ -28,9 +29,12 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	/**
-	 * Trains the model.
+	 * Trains the binary classifier.
 	 *
 	 * @param trainingData
+	 *            {@link TrainingData} read from csv file (see
+	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
+	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
 	public void train(TrainingData trainingData) {
@@ -75,7 +79,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	 * @return boolean value that indicates whether the sentence is relevant (true)
 	 *         or not (false).
 	 */
-	private boolean predict(String sentence) {
+	public boolean predict(String sentence) {
 		double[][] features = Preprocessor.getInstance().preprocess(sentence);
 		// Make prediction for each nGram and determine most frequent prediction
 		// result.

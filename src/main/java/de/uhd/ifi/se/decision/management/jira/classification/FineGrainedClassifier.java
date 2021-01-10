@@ -30,9 +30,12 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	/**
-	 * Trains the model.
+	 * Trains the fine grained classifier.
 	 *
 	 * @param trainingData
+	 *            {@link TrainingData} read from csv file (see
+	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
+	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
 	public void train(TrainingData trainingData) {
@@ -55,8 +58,32 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		// model = LogisticRegression.multinomial(trainingSamples, trainingLabels);
 	}
 
-	public KnowledgeType predict(String stringToBeClassified) {
-		double[][] sample = Preprocessor.getInstance().preprocess(stringToBeClassified);
+	/**
+	 * @param sentences
+	 *            for that the {@link KnowledgeType} should be predicted. The
+	 *            sentences need to be relevant wrt. decision knowledge. The
+	 *            relevance is determined by the {@link BinaryClassifier}.
+	 * @return predicted {@link KnowledgeType}s as a list in the same order as the
+	 *         input sentences.
+	 */
+	public List<KnowledgeType> predict(List<String> sentences) {
+		List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<>();
+		for (String string : sentences) {
+			fineGrainedPredictionResults.add(predict(string));
+		}
+		return fineGrainedPredictionResults;
+	}
+
+	/**
+	 * @param sentence
+	 *            for that the {@link KnowledgeType} should be predicted. The
+	 *            sentence needs to be relevant wrt. decision knowledge. The
+	 *            relevance is determined by the {@link BinaryClassifier}.
+	 * @return predicted {@link KnowledgeType}, i.e. whether sentence is a decision,
+	 *         an issue, an alternative, a pro-, or a con-argument.
+	 */
+	public KnowledgeType predict(String sentence) {
+		double[][] sample = Preprocessor.getInstance().preprocess(sentence);
 		// Make predictions for each nGram; then determine maximum probability of all
 		// added together.
 		int predictionResults[] = new int[sample.length];
@@ -66,24 +93,6 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		int predictionResult = mode(predictionResults);
 		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
 		return predictedKnowledgeType;
-	}
-
-	/**
-	 * @param stringsToBeClassified
-	 * @return
-	 * @see this.makeBinaryDecision
-	 */
-	public List<KnowledgeType> predict(List<String> stringsToBeClassified) {
-		try {
-			List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<>();
-			for (String string : stringsToBeClassified) {
-				fineGrainedPredictionResults.add(predict(string));
-			}
-			return fineGrainedPredictionResults;
-		} catch (Exception e) {
-			LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
-		}
-		return null;
 	}
 
 	public void update(double[] feature, KnowledgeType label) {

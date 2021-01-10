@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +16,31 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFineGrainedClassifier extends TestSetUp {
 
+	private FineGrainedClassifier fineGrainedClassifier;
+
 	@Before
 	public void setUp() {
 		init();
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.train();
+		fineGrainedClassifier = TextClassifier.getInstance().getFineGrainedClassifier();
+	}
+
+	@Test
+	@NonTransactional
+	public void testPredictSingleSentence() {
+		assertEquals(KnowledgeType.ISSUE, fineGrainedClassifier.predict("How can we implement?"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testPredictSentences() {
+		List<String> sentences = new ArrayList<>();
+		sentences.add("The decision was made to use a SVM.");
+		sentences.add("The code will be less clear.");
+		assertEquals(KnowledgeType.DECISION, fineGrainedClassifier.predict(sentences).get(0));
+		assertEquals(KnowledgeType.CON, fineGrainedClassifier.predict(sentences).get(1));
 	}
 
 	@Test
@@ -33,11 +57,6 @@ public class TestFineGrainedClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testSaveToAndLoadFromFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
-		FineGrainedClassifier fineGrainedClassifier = TextClassifier.getInstance()
-				.getFineGrainedClassifier();
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
 		assertTrue(fineGrainedClassifier.loadFromFile());

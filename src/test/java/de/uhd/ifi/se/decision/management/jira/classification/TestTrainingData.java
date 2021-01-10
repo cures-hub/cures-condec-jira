@@ -33,25 +33,36 @@ public class TestTrainingData extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testTrainingData() {
+	public void testGetAllSentences() {
 		assertEquals(41, trainingData.getAllSentences().length);
 		assertEquals(41, trainingData.getRelevanceLabelsForAllSentences().length);
-		assertEquals(29, trainingData.getRelevantSentences().length);
 
 		assertEquals("How can we implement?", trainingData.getAllSentences()[0]);
 		assertEquals(1, trainingData.getRelevanceLabelsForAllSentences()[0]);
-		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[0]);
 
 		assertEquals(1, trainingData.getRelevanceLabelsForAllSentences()[1]);
-		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[1]);
 
 		assertEquals("Nobody knows.", trainingData.getAllSentences()[6]);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetRelevantSentences() {
+		assertEquals(29, trainingData.getRelevantSentences().length);
+		assertEquals(29, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
+
+		assertEquals("How can we implement?", trainingData.getRelevantSentences()[0]);
+		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[0]);
+
+		assertEquals(4, trainingData.getKnowledgeTypeLabelsForRelevantSentences()[1]);
+
+		assertEquals("Alternatively we can implement it as that.", trainingData.getRelevantSentences()[6]);
 		assertEquals(0, trainingData.getRelevanceLabelsForAllSentences()[6]);
 	}
 
 	@Test
 	@NonTransactional
-	public void testDataFrame() {
+	public void testGetDataFrame() {
 		assertNotNull(trainingData.getDataFrame());
 		assertEquals(0, trainingData.getDataFrame().columnIndex("isAlternative"));
 	}
