@@ -25,20 +25,23 @@ import smile.io.Write;
 public class TrainingData {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TrainingData.class);
 
-	public DataFrame dataFrame;
+	private DataFrame dataFrame;
+	private String[] allSentences;
+	private String[] relevantSentences;
 
-	public String[] sentences;
-	public String[] relevantSentences;
 	public int[] labelsIsRelevant;
 	public int[] labelsKnowledgeType;
 
 	public TrainingData(DataFrame dataFrame) {
 		this.dataFrame = dataFrame;
-		sentences = new String[dataFrame.size()];
+		allSentences = new String[dataFrame.size()];
 		labelsIsRelevant = new int[dataFrame.size()];
-		fillFromDataFrame(dataFrame);
+		parseDataFrame(dataFrame);
 	}
 
+	/**
+	 * Read the defaultTrainingData.csv that comes with the plugin.
+	 */
 	public TrainingData() {
 		this(readDataFrameFromDefaultTrainingDataCSVFile());
 	}
@@ -55,19 +58,31 @@ public class TrainingData {
 		this(buildDataFrame(trainingElements));
 	}
 
-	public void fillFromDataFrame(DataFrame dataFrame) {
+	public DataFrame getDataFrame() {
+		return dataFrame;
+	}
+
+	public String[] getAllSentences() {
+		return allSentences;
+	}
+
+	public String[] getRelevantSentences() {
+		return relevantSentences;
+	}
+
+	private void parseDataFrame(DataFrame dataFrame) {
 		List<String> relevantSentencesList = new ArrayList<>();
 		List<Integer> labelsKnowledgeTypeList = new ArrayList<>();
 		for (int i = 0; i < dataFrame.size(); i++) {
 			Tuple currentRow = dataFrame.get(i);
 
-			sentences[i] = currentRow.getString(5);
+			allSentences[i] = currentRow.getString(5);
 			int isRelevant = 0;
 			// iterate over the binary attributes for each possible class
 			for (int j = 0; j < currentRow.length() - 1; j++) {
 				if (currentRow.getInt(j) == 1) {
 					isRelevant = 1;
-					relevantSentencesList.add(sentences[i]);
+					relevantSentencesList.add(allSentences[i]);
 					labelsKnowledgeTypeList.add(j);
 				}
 			}
@@ -103,7 +118,7 @@ public class TrainingData {
 		File trainingDataFile = null;
 		try {
 			trainingDataFile = new File(
-					DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + createTrainingDataFileName(projectKey));
+					TextClassifier.CLASSIFIER_DIRECTORY + createTrainingDataFileName(projectKey));
 			trainingDataFile.createNewFile();
 			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT);
 		} catch (IOException e) {
@@ -155,7 +170,7 @@ public class TrainingData {
 	}
 
 	public static DataFrame readDataFrameFromCSVFile(String csvFileName) {
-		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + csvFileName);
+		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + csvFileName);
 		if (!file.exists()) {
 			return readDataFrameFromDefaultTrainingDataCSVFile();
 		}
@@ -163,6 +178,7 @@ public class TrainingData {
 	}
 
 	public static DataFrame readDataFrameFromDefaultTrainingDataCSVFile() {
+
 		File file = FileManager.getAllTrainingFiles().get(0);
 		return readDataFrameFromCSVFile(file);
 	}

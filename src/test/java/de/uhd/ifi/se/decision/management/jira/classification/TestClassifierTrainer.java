@@ -100,36 +100,14 @@ public class TestClassifierTrainer extends TestSetUp {
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
 		trainer.train();
-		assertEquals(2, DecisionKnowledgeClassifier.getInstance().getBinaryClassifier().predict(TEST_SENTENCES).length);
+		assertEquals(2, TextClassifier.getInstance().getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeFineGrainedPredicition() {
 		assertEquals(2,
-				DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().predict(TEST_SENTENCES).size());
-	}
-
-	@Test
-	public void testModeBinaryClassification() {
-		int[] binaryClassificationResult = new int[4];
-		binaryClassificationResult[0] = 1;
-		assertEquals(0, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
-		binaryClassificationResult[1] = 1;
-		assertEquals(0, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
-		binaryClassificationResult[2] = 1;
-		assertEquals(1, DecisionKnowledgeClassifier.mode(binaryClassificationResult));
-	}
-
-	@Test
-	public void testModeFineGrainedClassification() {
-		int[] fineGrainedClassificationResult = new int[4];
-		fineGrainedClassificationResult[0] = 4;
-		assertEquals(0, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
-		fineGrainedClassificationResult[1] = 4;
-		assertEquals(0, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
-		fineGrainedClassificationResult[2] = 4;
-		assertEquals(4, DecisionKnowledgeClassifier.mode(fineGrainedClassificationResult));
+				TextClassifier.getInstance().getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
 	public static File getTestTrainingDataFile() {

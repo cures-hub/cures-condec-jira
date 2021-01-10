@@ -6,6 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +32,7 @@ public abstract class AbstractClassifier {
 	public AbstractClassifier(int numClasses) {
 		this.numClasses = numClasses;
 		this.isCurrentlyTraining = false;
+		loadFromFile();
 	}
 
 	/**
@@ -40,6 +46,14 @@ public abstract class AbstractClassifier {
 	 * @param trainingData
 	 */
 	public abstract void train(TrainingData trainingData);
+
+	/**
+	 * @param sample
+	 * @return probabilities of the labels
+	 */
+	protected int predict(double[] sample) {
+		return model.predict(sample);
+	}
 
 	/**
 	 * Updates the classifier using supervised training data.
@@ -56,18 +70,10 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * @param sample
-	 * @return probabilities of the labels
-	 */
-	public int predict(double[] sample) {
-		return model.predict(sample);
-	}
-
-	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
 	 *
 	 * @param filePathAndName
-	 * @throws Exception
+	 *            absolute path to the classifier file that should be saved.
 	 */
 	public File saveToFile(String filePathAndName) {
 		try {
@@ -82,10 +88,10 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Saves model to a file. So that it can be loaded at a later time.
+	 * Saves model to a file, so that it can be loaded at a later time.
 	 */
 	public File saveToFile() {
-		return saveToFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getName());
+		return saveToFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
 	}
 
 	/**
@@ -114,7 +120,7 @@ public abstract class AbstractClassifier {
 	 * Loads pre-trained classifier from file.
 	 */
 	public boolean loadFromFile() {
-		return loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getName());
+		return loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
 	}
 
 	/**
@@ -136,5 +142,25 @@ public abstract class AbstractClassifier {
 	 */
 	public boolean isCurrentlyTraining() {
 		return isCurrentlyTraining;
+	}
+
+	/**
+	 * @param values
+	 *            array of prediction results.
+	 * @return mode, i.e. the most frequent value in the array.
+	 */
+	public static int mode(int[] values) {
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int value : values) {
+			Integer count = map.get(value);
+			map.put(value, count != null ? count + 1 : 1);
+		}
+		int mode = Collections.max(map.entrySet(), new Comparator<Map.Entry<Integer, Integer>>() {
+			@Override
+			public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		}).getKey();
+		return mode;
 	}
 }

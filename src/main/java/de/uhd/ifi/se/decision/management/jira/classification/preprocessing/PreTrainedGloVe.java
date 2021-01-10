@@ -9,7 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 
 /**
  * Global Vectors for Word Representation (GloVe)
@@ -29,7 +29,7 @@ public class PreTrainedGloVe {
 	private int vectorLength;
 
 	public PreTrainedGloVe() {
-		this(new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + "glove.6b.50d.csv"));
+		this(new File(TextClassifier.CLASSIFIER_DIRECTORY + "glove.6b.50d.csv"));
 	}
 
 	private PreTrainedGloVe(File file) {

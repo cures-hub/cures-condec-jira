@@ -31,7 +31,7 @@ import com.google.gson.Gson;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -657,12 +657,12 @@ public class ConfigRest {
 		StringBuilder builder = new StringBuilder();
 		List<String> textList = Collections.singletonList(text);
 
-		boolean relevant = DecisionKnowledgeClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
+		boolean relevant = TextClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
 		builder.append(relevant ? "Relevant" : "Irrelevant");
 
 		if (relevant) {
 			builder.append(": ");
-			KnowledgeType type = DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().predict(textList)
+			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList)
 					.get(0);
 			builder.append(type.toString());
 		}

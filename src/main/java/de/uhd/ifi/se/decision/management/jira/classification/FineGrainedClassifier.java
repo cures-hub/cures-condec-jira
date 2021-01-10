@@ -16,13 +16,12 @@ import smile.math.kernel.GaussianKernel;
  * (i.e. {@link PartOfJiraIssueText}).
  * 
  * Extends the {@link AbstractClassifier} and is used in the
- * {@link DecisionKnowledgeClassifier}.
+ * {@link TextClassifier}.
  */
 public class FineGrainedClassifier extends AbstractClassifier {
 
 	public FineGrainedClassifier(int numClasses) {
 		super(numClasses);
-		loadFromFile();
 	}
 
 	@Override
@@ -64,7 +63,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sample.length; i++) {
 			predictionResults[i] = predict(sample[i]);
 		}
-		int predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
+		int predictionResult = mode(predictionResults);
 		KnowledgeType predictedKnowledgeType = FineGrainedClassifier.mapIndexToKnowledgeType(predictionResult);
 		return predictedKnowledgeType;
 	}

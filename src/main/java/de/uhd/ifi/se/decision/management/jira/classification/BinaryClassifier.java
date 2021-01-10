@@ -14,13 +14,12 @@ import smile.math.kernel.GaussianKernel;
  * irrelevant.
  * 
  * Extends the {@link AbstractClassifier} and is used in the
- * {@link DecisionKnowledgeClassifier}.
+ * {@link TextClassifier}.
  */
 public class BinaryClassifier extends AbstractClassifier {
 
 	public BinaryClassifier() {
 		super(2);
-		loadFromFile();
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		for (int i = 0; i < features.length; i++) {
 			predictionResults[i] = predict(features[i]);
 		}
-		int predictionResult = DecisionKnowledgeClassifier.mode(predictionResults);
+		int predictionResult = mode(predictionResults);
 		return predictionResult > 0;
 	}
 }

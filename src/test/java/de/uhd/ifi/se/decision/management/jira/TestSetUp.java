@@ -8,7 +8,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -91,6 +91,6 @@ public abstract class TestSetUp {
 	 * Adapts the paths for the files used for preprocessing and classification.
 	 */
 	public static void initClassifierPaths() {
-		DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY = "src/main/resources/classifier/";
+		TextClassifier.CLASSIFIER_DIRECTORY = "src/main/resources/classifier/";
 	}
 }

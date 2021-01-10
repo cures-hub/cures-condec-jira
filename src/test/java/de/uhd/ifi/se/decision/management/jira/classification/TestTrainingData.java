@@ -34,32 +34,32 @@ public class TestTrainingData extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTrainingData() {
-		assertEquals(41, trainingData.sentences.length);
+		assertEquals(41, trainingData.getAllSentences().length);
 		assertEquals(41, trainingData.labelsIsRelevant.length);
-		assertEquals(29, trainingData.relevantSentences.length);
+		assertEquals(29, trainingData.getRelevantSentences().length);
 
-		assertEquals("How can we implement?", trainingData.sentences[0]);
+		assertEquals("How can we implement?", trainingData.getAllSentences()[0]);
 		assertEquals(1, trainingData.labelsIsRelevant[0]);
 		assertEquals(4, trainingData.labelsKnowledgeType[0]);
 
 		assertEquals(1, trainingData.labelsIsRelevant[1]);
 		assertEquals(4, trainingData.labelsKnowledgeType[1]);
 
-		assertEquals("Nobody knows.", trainingData.sentences[6]);
+		assertEquals("Nobody knows.", trainingData.getAllSentences()[6]);
 		assertEquals(0, trainingData.labelsIsRelevant[6]);
 	}
 
 	@Test
 	@NonTransactional
 	public void testDataFrame() {
-		assertNotNull(trainingData.dataFrame);
-		assertEquals(0, trainingData.dataFrame.columnIndex("isAlternative"));
+		assertNotNull(trainingData.getDataFrame());
+		assertEquals(0, trainingData.getDataFrame().columnIndex("isAlternative"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateTrainingDataFromKnowledgeElements() {
-		DataFrame dataFrame = new TrainingData(KnowledgeElements.getTestKnowledgeElements()).dataFrame;
+		DataFrame dataFrame = new TrainingData(KnowledgeElements.getTestKnowledgeElements()).getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
@@ -75,7 +75,7 @@ public class TestTrainingData extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateTrainingDataFromFileName() {
-		DataFrame dataFrame = new TrainingData("defaultTrainingData.csv").dataFrame;
+		DataFrame dataFrame = new TrainingData("defaultTrainingData.csv").getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
@@ -83,7 +83,7 @@ public class TestTrainingData extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateTrainingDataFromDafaultTrainingFile() {
-		DataFrame dataFrame = new TrainingData().dataFrame;
+		DataFrame dataFrame = new TrainingData().getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}

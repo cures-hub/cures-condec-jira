@@ -11,15 +11,15 @@ public class PreprocessedData {
 	public PreprocessedData(TrainingData trainingData, boolean isFineGrained) {
 		preprocessor = Preprocessor.getInstance();
 		if (isFineGrained) {
-			int size = trainingData.relevantSentences.length;
+			int size = trainingData.getRelevantSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.relevantSentences, trainingData.labelsKnowledgeType);
+			preprocess(trainingData.getRelevantSentences(), trainingData.labelsKnowledgeType);
 		} else {
-			int size = trainingData.sentences.length;
+			int size = trainingData.getAllSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.sentences, trainingData.labelsIsRelevant);
+			preprocess(trainingData.getAllSentences(), trainingData.labelsIsRelevant);
 		}
 	}
 

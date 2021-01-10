@@ -35,13 +35,13 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	protected String projectKey;
 
 	public ClassifierTrainer(String projectKey) {
-		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
+		new File(TextClassifier.CLASSIFIER_DIRECTORY).mkdirs();
 		this.projectKey = projectKey;
 		trainingData = new TrainingData();
 	}
 
 	public ClassifierTrainer(String projectKey, String fileName) {
-		new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).mkdirs();
+		new File(TextClassifier.CLASSIFIER_DIRECTORY).mkdirs();
 		this.projectKey = projectKey;
 		if (fileName == null || fileName.isEmpty()) {
 			return;
@@ -60,9 +60,9 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");
-			DecisionKnowledgeClassifier.getInstance().getBinaryClassifier().train(trainingData);
+			TextClassifier.getInstance().getBinaryClassifier().train(trainingData);
 			LOGGER.debug("Fine-grained classifier training started.");
-			DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().train(trainingData);
+			TextClassifier.getInstance().getFineGrainedClassifier().train(trainingData);
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;
@@ -71,7 +71,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
-		DecisionKnowledgeClassifier classifier = DecisionKnowledgeClassifier.getInstance();
+		TextClassifier classifier = TextClassifier.getInstance();
 		try {
 			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
 			// classifier needs numerical value
@@ -171,7 +171,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		// predict classes
 		long start = System.currentTimeMillis();
 
-		boolean[] binaryPredictionsList = DecisionKnowledgeClassifier.getInstance().getBinaryClassifier()
+		boolean[] binaryPredictionsList = TextClassifier.getInstance().getBinaryClassifier()
 				.predict(sentences);
 		Integer[] binaryPredictions = new Integer[sentences.size()];
 		for (int i = 0; i < binaryPredictionsList.length; i++) {
@@ -181,7 +181,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
 		// sentences took " + (end-start) + " ms.");
 
-		Integer[] fineGrainedPredictions = DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier()
+		Integer[] fineGrainedPredictions = TextClassifier.getInstance().getFineGrainedClassifier()
 				.predict(relevantSentences).stream().map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x))
 				.collect(toList()).toArray(new Integer[relevantSentences.size()]);
 		long end = System.currentTimeMillis();
@@ -197,7 +197,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			resultsMap.put(binaryKey, binaryMeasurement);
 
 			for (int classLabel : IntStream
-					.range(0, DecisionKnowledgeClassifier.getInstance().getFineGrainedClassifier().getNumClasses())
+					.range(0, TextClassifier.getInstance().getFineGrainedClassifier().getNumClasses())
 					.toArray()) {
 				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
 						+ FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);

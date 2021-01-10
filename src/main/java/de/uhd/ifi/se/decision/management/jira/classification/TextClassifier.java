@@ -1,24 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 
 /**
  * Tries to identify decision knowledge in natural language texts using a binary
  * and fine grained supervised classifier.
  */
-public class DecisionKnowledgeClassifier {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifier.class);
+public class TextClassifier {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TextClassifier.class);
 
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
@@ -32,46 +29,35 @@ public class DecisionKnowledgeClassifier {
 	 */
 	public static String CLASSIFIER_DIRECTORY = ComponentGetter.PLUGIN_HOME + "classifier" + File.separator;
 
-	public static DecisionKnowledgeClassifier instance;
+	public static TextClassifier instance;
 
-	private DecisionKnowledgeClassifier() {
+	private TextClassifier() {
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 		binaryClassifier = new BinaryClassifier();
 		fineGrainedClassifier = new FineGrainedClassifier(5);
 	}
 
-	public static DecisionKnowledgeClassifier getInstance() {
+	public static TextClassifier getInstance() {
 		if (instance == null) {
-			instance = new DecisionKnowledgeClassifier();
+			instance = new TextClassifier();
 		}
 		return instance;
 	}
 
 	/**
-	 * @param values
-	 *            array of prediction results.
-	 * @return mode, i.e. the most frequent value in the array.
+	 * @return {@link BinaryClassifier} that predicts whether a sentence (i.e.
+	 *         {@link PartOfJiraIssueText}) contains relevant decision knowledge or
+	 *         is irrelevant.
 	 */
-	public static int mode(int[] values) {
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		for (int value : values) {
-			Integer count = map.get(value);
-			map.put(value, count != null ? count + 1 : 1);
-		}
-		int popular = Collections.max(map.entrySet(), new Comparator<Map.Entry<Integer, Integer>>() {
-			@Override
-			public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
-				return o1.getValue().compareTo(o2.getValue());
-			}
-		}).getKey();
-		return popular;
-	}
-
 	public BinaryClassifier getBinaryClassifier() {
 		return binaryClassifier;
 	}
 
+	/**
+	 * @return {@link FineGrainedClassifier} that predicts the {@link KnowledgeType}
+	 *         of a sentence (i.e. {@link PartOfJiraIssueText}).
+	 */
 	public FineGrainedClassifier getFineGrainedClassifier() {
 		return fineGrainedClassifier;
 	}

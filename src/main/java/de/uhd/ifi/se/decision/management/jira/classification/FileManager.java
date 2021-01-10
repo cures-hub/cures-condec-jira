@@ -29,8 +29,8 @@ public interface FileManager {
 	 */
 	static List<File> getAllTrainingFiles() {
 		List<File> trainingFilesOnServer = new ArrayList<File>();
-		for (File file : new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
-			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".csv")) {
+		for (File file : new File(TextClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
+			if (file.getName().toLowerCase(Locale.ENGLISH).matches("(?!glove)(.)*.csv")) {
 				trainingFilesOnServer.add(file);
 			}
 		}
@@ -59,10 +59,10 @@ public interface FileManager {
 	}
 
 	static File copyDataToFile(String filename) {
-		File classifierDir = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY);
+		File classifierDir = new File(TextClassifier.CLASSIFIER_DIRECTORY);
 		classifierDir.mkdirs();
 		String downloadUrlOfFile = ComponentGetter.getUrlOfClassifierFolder() + filename;
-		File file = new File(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + filename);
+		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + filename);
 		try {
 			InputStream inputStream = new URL(downloadUrlOfFile).openStream();
 			if (!file.exists() || hasSameContent(inputStream, new FileInputStream(file))) {

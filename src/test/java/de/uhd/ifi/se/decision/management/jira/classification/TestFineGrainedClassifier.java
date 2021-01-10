@@ -36,12 +36,23 @@ public class TestFineGrainedClassifier extends TestSetUp {
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
-		FineGrainedClassifier fineGrainedClassifier = DecisionKnowledgeClassifier.getInstance()
+		FineGrainedClassifier fineGrainedClassifier = TextClassifier.getInstance()
 				.getFineGrainedClassifier();
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
 		assertTrue(fineGrainedClassifier.loadFromFile());
 		assertTrue(fineGrainedClassifier.isTrained());
 		file.delete();
+	}
+
+	@Test
+	public void testModeFineGrainedClassification() {
+		int[] fineGrainedClassificationResult = new int[4];
+		fineGrainedClassificationResult[0] = 4;
+		assertEquals(0, AbstractClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[1] = 4;
+		assertEquals(0, AbstractClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[2] = 4;
+		assertEquals(4, AbstractClassifier.mode(fineGrainedClassificationResult));
 	}
 }
