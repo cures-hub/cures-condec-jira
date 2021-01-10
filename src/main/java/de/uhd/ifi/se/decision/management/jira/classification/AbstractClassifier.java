@@ -12,37 +12,47 @@ import org.slf4j.LoggerFactory;
 
 import smile.classification.Classifier;
 
+/**
+ * Abstract superclass for the {@link BinaryClassifier} and
+ * {@link FineGrainedClassifier}.
+ */
 public abstract class AbstractClassifier {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
 	protected Classifier<double[]> model;
 	private int numClasses;
-	private boolean currentlyTraining;
+	protected boolean isCurrentlyTraining;
 
 	public AbstractClassifier(int numClasses) {
 		this.numClasses = numClasses;
-		this.currentlyTraining = false;
+		this.isCurrentlyTraining = false;
 	}
 
+	/**
+	 * @return name of the classifier that is used as the file name.
+	 */
 	public abstract String getName();
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param trainingSamples
-	 * @param trainingLabels
+	 * @param trainingData
 	 */
-	public abstract void train(double[][] trainingSamples, int[] trainingLabels);
+	public abstract void train(TrainingData trainingData);
 
 	/**
-	 * Trains the model using supervised training data, features and labels.
+	 * Updates the classifier using supervised training data.
 	 *
 	 * @param trainingSample
 	 * @param trainingLabel
 	 */
 	public void update(double[] trainingSample, int trainingLabel) {
+		isCurrentlyTraining = true;
+		LOGGER.info(
+				"Online training is currently not supported for SVMs in SMILE (Statistical Machine Intelligence and Learning Engine) library.");
 		// model.update(trainingSample, trainingLabel);
+		isCurrentlyTraining = false;
 	}
 
 	/**
@@ -66,7 +76,7 @@ public abstract class AbstractClassifier {
 			objectOut.writeObject(model);
 			objectOut.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(filePathAndName + " could not be saved. " + e.getMessage());
 		}
 		return new File(filePathAndName);
 	}
@@ -79,9 +89,10 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Loads pre-trained model from file.
+	 * Loads pre-trained classifier from file.
 	 *
 	 * @param filePathAndName
+	 *            absolute path to the classifier file that should be loaded.
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
@@ -100,21 +111,30 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Loads pre-trained model from file.
+	 * Loads pre-trained classifier from file.
 	 */
 	public boolean loadFromFile() {
 		return loadFromFile(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY + getName());
 	}
 
-	public boolean isModelTrained() {
+	/**
+	 * @return true if the classifier was trained.
+	 */
+	public boolean isTrained() {
 		return model != null;
 	}
 
+	/**
+	 * @return 2 for the binary classifier and > 2 for the fine grained classifier.
+	 */
 	public int getNumClasses() {
 		return numClasses;
 	}
 
+	/**
+	 * @return true if the classifier is currently training.
+	 */
 	public boolean isCurrentlyTraining() {
-		return currentlyTraining;
+		return isCurrentlyTraining;
 	}
 }

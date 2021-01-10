@@ -27,7 +27,7 @@ public class TestBinaryClassifier extends TestSetUp {
 		File file = binaryClassifier.saveToFile();
 		assertTrue(file.exists());
 		assertTrue(binaryClassifier.loadFromFile());
-		assertTrue(binaryClassifier.isModelTrained());
+		assertTrue(binaryClassifier.isTrained());
 		file.delete();
 	}
 }

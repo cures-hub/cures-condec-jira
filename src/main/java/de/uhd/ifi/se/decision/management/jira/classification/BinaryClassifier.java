@@ -4,14 +4,23 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.SVM;
 import smile.math.kernel.GaussianKernel;
 
+/**
+ * Binary classifier that predicts whether a sentence (i.e.
+ * {@link PartOfJiraIssueText}) contains relevant decision knowledge or is
+ * irrelevant.
+ * 
+ * Extends the {@link AbstractClassifier} and is used in the
+ * {@link DecisionKnowledgeClassifier}.
+ */
 public class BinaryClassifier extends AbstractClassifier {
 
 	public BinaryClassifier() {
 		super(2);
-		// loadFromFile();
+		loadFromFile();
 	}
 
 	@Override
@@ -24,10 +33,13 @@ public class BinaryClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingData
 	 */
+	@Override
 	public void train(TrainingData trainingData) {
+		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
-		// saveToFile();
+		isCurrentlyTraining = false;
+		saveToFile();
 	}
 
 	/**
@@ -36,8 +48,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	 * @param trainingSamples
 	 * @param trainingLabels
 	 */
-	@Override
-	public void train(double[][] trainingSamples, int[] trainingLabels) {
+	private void train(double[][] trainingSamples, int[] trainingLabels) {
 		model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
 		// model = LogisticRegression.binomial(trainingSamples, trainingLabels);
 	}
@@ -67,8 +78,8 @@ public class BinaryClassifier extends AbstractClassifier {
 	 */
 	private boolean predict(String sentence) {
 		double[][] features = Preprocessor.getInstance().preprocess(sentence);
-		// Make predictions for each nGram; then determine maximum probability of all
-		// added together.
+		// Make prediction for each nGram and determine most frequent prediction
+		// result.
 		int predictionResults[] = new int[features.length];
 		for (int i = 0; i < features.length; i++) {
 			predictionResults[i] = predict(features[i]);

@@ -80,7 +80,7 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			for (double[] feature : features) {
 				classifier.getBinaryClassifier().update(feature, labelIsRelevant);
 				if (sentence.isRelevant()) {
-					classifier.getFineGrainedClassifier().train(feature, sentence.getType());
+					classifier.getFineGrainedClassifier().update(feature, sentence.getType());
 				}
 			}
 		} catch (Exception e) {

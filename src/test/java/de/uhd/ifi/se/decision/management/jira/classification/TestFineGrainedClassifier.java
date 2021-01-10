@@ -21,46 +21,6 @@ public class TestFineGrainedClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetTypeAlternative() {
-		double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.ALTERNATIVE, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypePro() {
-		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.PRO, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeCon() {
-		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.CON, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeDecision() {
-		double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.DECISION, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeIssue() {
-		double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.ISSUE, type);
-	}
-
-	@Test
-	@NonTransactional
 	public void testMapKnowledgeTypeToIndex() {
 		assertEquals(0, FineGrainedClassifier.mapKnowledgeTypeToIndex(KnowledgeType.ALTERNATIVE));
 		assertEquals(1, FineGrainedClassifier.mapKnowledgeTypeToIndex(KnowledgeType.PRO));
@@ -81,7 +41,7 @@ public class TestFineGrainedClassifier extends TestSetUp {
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
 		assertTrue(fineGrainedClassifier.loadFromFile());
-		assertTrue(fineGrainedClassifier.isModelTrained());
+		assertTrue(fineGrainedClassifier.isTrained());
 		file.delete();
 	}
 }

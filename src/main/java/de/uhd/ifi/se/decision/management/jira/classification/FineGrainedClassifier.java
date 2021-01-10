@@ -6,15 +6,23 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.OneVersusRest;
 import smile.classification.SVM;
 import smile.math.kernel.GaussianKernel;
 
+/**
+ * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
+ * (i.e. {@link PartOfJiraIssueText}).
+ * 
+ * Extends the {@link AbstractClassifier} and is used in the
+ * {@link DecisionKnowledgeClassifier}.
+ */
 public class FineGrainedClassifier extends AbstractClassifier {
 
 	public FineGrainedClassifier(int numClasses) {
 		super(numClasses);
-		// loadFromFile();
+		loadFromFile();
 	}
 
 	@Override
@@ -27,9 +35,13 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingData
 	 */
+	@Override
 	public void train(TrainingData trainingData) {
+		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		isCurrentlyTraining = false;
+		saveToFile();
 	}
 
 	/**
@@ -38,8 +50,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 * @param trainingSamples
 	 * @param trainingLabels
 	 */
-	@Override
-	public void train(double[][] trainingSamples, int[] trainingLabels) {
+	private void train(double[][] trainingSamples, int[] trainingLabels) {
 		model = OneVersusRest.fit(trainingSamples, trainingLabels,
 				(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
 		// model = LogisticRegression.multinomial(trainingSamples, trainingLabels);
@@ -76,22 +87,16 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return null;
 	}
 
-	public static KnowledgeType getType(double[] classification) {
-		return mapIndexToKnowledgeType(maxAtInArray(classification));
-	}
-
-	private static int maxAtInArray(double[] probabilities) {
-		int maxAt = 0;
-		for (int i = 0; i < probabilities.length; i++) {
-			maxAt = probabilities[i] > probabilities[maxAt] ? i : maxAt;
-		}
-		return maxAt;
-	}
-
-	public void train(double[] feature, KnowledgeType label) {
+	public void update(double[] feature, KnowledgeType label) {
 		super.update(feature, mapKnowledgeTypeToIndex(label));
 	}
 
+	/**
+	 * @param index
+	 *            that represents the {@link KnowledgeType}.
+	 * @return {@link KnowledgeType} for the integer label. For example, if a
+	 *         sentence is labeled with 3, it is of {@link KnowledgeType#DECISION}.
+	 */
 	public static KnowledgeType mapIndexToKnowledgeType(int index) {
 		switch (index) {
 		case 0:
@@ -109,6 +114,13 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		}
 	}
 
+	/**
+	 * @param knowledgeType
+	 *            {@link KnowledgeType} that should be converted into an integer
+	 *            label.
+	 * @return integer label for the {@link KnowledgeType}. For example, if a
+	 *         sentence is of {@link KnowledgeType#DECISION}, it is labeled with 3.
+	 */
 	public static int mapKnowledgeTypeToIndex(KnowledgeType knowledgeType) {
 		switch (knowledgeType) {
 		case ALTERNATIVE:

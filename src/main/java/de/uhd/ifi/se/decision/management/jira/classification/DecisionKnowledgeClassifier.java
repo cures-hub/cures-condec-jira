@@ -87,6 +87,6 @@ public class DecisionKnowledgeClassifier {
 	 * @return whether or not the classifier was trained.
 	 */
 	public boolean isTrained() {
-		return binaryClassifier.isModelTrained() && fineGrainedClassifier.isModelTrained();
+		return binaryClassifier.isTrained() && fineGrainedClassifier.isTrained();
 	}
 }
