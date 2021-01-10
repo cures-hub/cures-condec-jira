@@ -7,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
+import smile.feature.Bag;
+import smile.nlp.dictionary.EnglishPunctuations;
+import smile.nlp.dictionary.EnglishStopWords;
+import smile.nlp.normalizer.SimpleNormalizer;
 import smile.nlp.pos.HMMPOSTagger;
 import smile.nlp.pos.POSTagger;
 import smile.nlp.pos.PennTreebankPOS;
@@ -23,14 +27,6 @@ public class Preprocessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Preprocessor.class);
 
 	public static List<String> PREPROCESSOR_FILE_NAMES = Arrays.asList("glove.6b.50d.csv");
-	public static String URL_PATTERN = "^[a-zA-Z0-9\\-\\.]+\\.(com|org|net|mil|edu|de|COM|ORG|NET|MIL|EDU|DE)";
-	public static String URL_TOKEN = "URL";
-
-	public static String NUMBER_PATTERN = "[+-]?(([0-9]*[.,-:])?[0-9]+)+";
-	public static String NUMBER_TOKEN = "NUMBER";
-
-	public static String WHITESPACE_CHARACTERS_PATTERN = "[\\t\\n\\r]+";
-	public static String WHITESPACE_CHARACTERS_TOKEN = "";
 
 	private Tokenizer tokenizer;
 	private Stemmer stemmer;
@@ -53,8 +49,48 @@ public class Preprocessor {
 		this.nGramN = 3;
 		this.glove = new PreTrainedGloVe();
 		this.stemmer = new LancasterStemmer();
-		this.tokenizer = new SimpleTokenizer();
+		this.tokenizer = new SimpleTokenizer(true);
 		this.partOfSpeechTagger = HMMPOSTagger.getDefault();
+	}
+
+	/**
+	 * This method executes all necessary preprocessing steps. Preprocesses a
+	 * sentence in such a way, that the classifiers can use them for training or
+	 * prediction.
+	 * 
+	 * @param sentence
+	 *            to be preprocessed
+	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
+	 */
+	public double[][] preprocess(String sentence) {
+		String cleanedSentence = normalize(sentence);
+		String[] tokens = tokenize(cleanedSentence);
+		double[][] numberTokens = convertToNumbers(tokens);
+		double[][] nGrams = generateNGrams(numberTokens, nGramN);
+		for (int i = 0; i < nGrams.length; i++) {
+			if (nGrams[i] == null) {
+				nGrams[i] = new double[numberTokens[0].length * nGramN];
+			}
+		}
+
+		return nGrams;
+	}
+
+	public void bagOfWords(String[] words) {
+		Bag bag = new Bag(words);
+		bag.toString();
+	}
+
+	public String[] getStemmedTokensWithoutStopWords(String sentence) {
+		// replace long words and possible methods!
+		String[] tokens = tokenize(sentence);
+		String[] tokensWithoutStopWords = removeStopWords(tokens);
+		return stem(tokensWithoutStopWords);
+	}
+
+	public String normalize(String sentence) {
+		String cleanedSentence = SimpleNormalizer.getInstance().normalize(sentence);
+		return cleanedSentence;
 	}
 
 	/**
@@ -66,22 +102,6 @@ public class Preprocessor {
 	 */
 	public String[] tokenize(String sentence) {
 		return tokenizer.split(sentence);
-	}
-
-	/**
-	 * Replaces unwanted patterns from the String using regular expressions and
-	 * replacement token. E.g.: removing newline character.
-	 *
-	 * @param sentence
-	 *            Sentence that has to be cleaned.
-	 * @param regex
-	 *            Regular Expression used to be filter out unwanted parts of text.
-	 * @param replaceToken
-	 *            Used to replace the matching pattern of the regex.
-	 * @return Cleaned sentence.
-	 */
-	public String replaceUsingRegEx(String sentence, String regex, String replaceToken) {
-		return sentence.replaceAll(regex, replaceToken);
 	}
 
 	/**
@@ -113,7 +133,7 @@ public class Preprocessor {
 	 *            N-Gram number
 	 * @return array of N-Grams
 	 */
-	public double[][] generateNGram(double[][] tokens, int n) {
+	public double[][] generateNGrams(double[][] tokens, int n) {
 		double[][] nGrams = new double[tokens.length][];
 		for (int i = 0; i < tokens.length - n + 1; i++) {
 			nGrams[i] = concat(tokens, i, i + n);
@@ -172,26 +192,9 @@ public class Preprocessor {
 		return partOfSpeechTagger.tag(Arrays.copyOf(tokens.toArray(), tokens.size(), String[].class));
 	}
 
-	/**
-	 * This method executes all necessary preprocessing steps. Preprocesses a
-	 * sentence in such a way, that the classifiers can use them for training or
-	 * prediction.
-	 * 
-	 * @param sentence
-	 *            to be preprocessed
-	 * @return N-Gram numerical representation of sentence (preprocessed sentences)
-	 */
-	public double[][] preprocess(String sentence) {
-		String[] stemmedTokens = getStemmedTokens(sentence);
-		double[][] numberTokens = convertToNumbers(stemmedTokens);
-		double[][] nGrams = generateNGram(numberTokens, nGramN);
-		for (int i = 0; i < nGrams.length; i++) {
-			if (nGrams[i] == null) {
-				nGrams[i] = new double[numberTokens[0].length * nGramN];
-			}
-		}
-
-		return nGrams;
+	public String[] removeStopWords(String[] tokens) {
+		return Arrays.stream(tokens).filter(word -> !(EnglishStopWords.DEFAULT.contains(word.toLowerCase())
+				|| EnglishPunctuations.getInstance().contains(word))).toArray(String[]::new);
 	}
 
 	/**
@@ -201,18 +204,6 @@ public class Preprocessor {
 		for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
 			FileManager.copyDataToFile(currentPreprocessingFileName);
 		}
-	}
-
-	public String[] getStemmedTokens(String sentence) {
-		String cleanedSentence = replaceUsingRegEx(sentence, NUMBER_PATTERN, NUMBER_TOKEN.toLowerCase());
-		cleanedSentence = replaceUsingRegEx(cleanedSentence, URL_PATTERN, URL_TOKEN.toLowerCase());
-		cleanedSentence = replaceUsingRegEx(cleanedSentence, WHITESPACE_CHARACTERS_PATTERN,
-				WHITESPACE_CHARACTERS_TOKEN.toLowerCase());
-		// replace long words and possible methods!
-		cleanedSentence = cleanedSentence.toLowerCase();
-		String[] tokens = tokenize(cleanedSentence);
-		String[] stemmedTokens = stem(tokens);
-		return stemmedTokens;
 	}
 
 	public PreTrainedGloVe getGlove() {

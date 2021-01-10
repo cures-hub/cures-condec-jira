@@ -19,7 +19,7 @@ public class TestPreprocessedData extends TestSetUp {
 		init();
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainingData = new TrainingData(trainer.getDataFrame());
+		trainingData = trainer.getTrainingData();
 	}
 
 	@Test
@@ -29,7 +29,7 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testBinary() {
-		assertEquals(41, trainingData.labelsIsRelevant.length);
+		assertEquals(41, trainingData.getRelevanceLabelsForAllSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		assertEquals(284, preprocessedData.preprocessedSentences.length);
 		assertEquals(284, preprocessedData.updatedLabels.length);
@@ -39,11 +39,12 @@ public class TestPreprocessedData extends TestSetUp {
 		assertEquals(1, preprocessedData.updatedLabels[2]);
 		assertEquals(1, preprocessedData.updatedLabels[3]);
 		assertEquals(0, preprocessedData.updatedLabels[32]);
+		assertEquals(-1, preprocessedData.getIsRelevantLabels()[32]);
 	}
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(29, trainingData.labelsKnowledgeType.length);
+		assertEquals(29, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		assertEquals(213, preprocessedData.preprocessedSentences.length);
 		assertEquals(213, preprocessedData.updatedLabels.length);
@@ -55,6 +56,10 @@ public class TestPreprocessedData extends TestSetUp {
 		assertEquals(5, uniqueLabels.length);
 		assertEquals(preprocessedData.preprocessedSentences.length, preprocessedData.updatedLabels.length);
 		assertNotNull(preprocessedData.preprocessedSentences[preprocessedData.updatedLabels.length - 1]);
+
+		assertEquals(1, preprocessedData.getIsIssueLabels()[0]);
+		assertEquals(-1, preprocessedData.getIsIssueLabels()[40]);
+		assertEquals(1, preprocessedData.getIsAlternativeLabels()[40]);
 	}
 
 }

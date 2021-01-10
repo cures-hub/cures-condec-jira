@@ -30,7 +30,8 @@ public class TestFileManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTrainingFileNames() {
-		assertTrue(FileManager.getTrainingFileNames().size() >= 0);
+		assertFalse(FileManager.getTrainingFileNames().contains("glove.6b.50d.csv"));
+		assertTrue(FileManager.getTrainingFileNames().contains("defaultTrainingData.csv"));
 	}
 
 	@Test
@@ -59,7 +60,7 @@ public class TestFileManager extends TestSetUp {
 	@NonTransactional
 	@Ignore
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(DecisionKnowledgeClassifier.CLASSIFIER_DIRECTORY, System.getProperty("user.home") + File.separator + "data" + File.separator
+		assertEquals(TextClassifier.CLASSIFIER_DIRECTORY, System.getProperty("user.home") + File.separator + "data" + File.separator
 				+ "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 

@@ -19,9 +19,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
-import smile.data.DataFrame;
 
 public class TestClassifierTrainer extends TestSetUp {
 	private ClassifierTrainer trainer;
@@ -47,7 +45,7 @@ public class TestClassifierTrainer extends TestSetUp {
 		File file = trainer.saveTrainingFile();
 		assertTrue(file.exists());
 		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getDataFrame());
+		assertNotNull(trainer.getTrainingData());
 		trainer = new ClassifierTrainer("TEST", file.getName());
 		assertTrue(trainer.train());
 		file.delete();
@@ -95,36 +93,21 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetInstances() {
-		assertNotNull(this.trainer.getDataFrame());
+		assertNotNull(this.trainer.getTrainingData());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
 		trainer.train();
-		assertEquals(2, DecisionKnowledgeClassifier.getInstance().makeBinaryPredictions(TEST_SENTENCES).length);
+		assertEquals(2, TextClassifier.getInstance().getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeFineGrainedPredicition() {
-		assertEquals(2, DecisionKnowledgeClassifier.getInstance().makeFineGrainedPredictions(TEST_SENTENCES).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testBuildDataFrame() {
-		DataFrame dataFrame = ClassifierTrainer.buildDataFrame(KnowledgeElements.getTestKnowledgeElements());
-		assertEquals(5, dataFrame.columnIndex("sentence"));
-		assertTrue(dataFrame.size() > 1);
-	}
-
-	@Test
-	@NonTransactional
-	public void testCreateTrainingRow() {
-		Object[] rowValues = ClassifierTrainer.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
-		assertEquals(0, rowValues[0]);
-		assertEquals("WI: Implement feature", rowValues[5]);
+		assertEquals(2,
+				TextClassifier.getInstance().getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
 	public static File getTestTrainingDataFile() {
@@ -155,16 +138,6 @@ public class TestClassifierTrainer extends TestSetUp {
 			System.err.println(e.getMessage());
 		}
 		return fullDefaultFile;
-	}
-
-	@Test
-	@NonTransactional
-	public void testClassificationTrainerFromCSVFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		DataFrame dataFrame = trainer.getDataFrame();
-		assertNotNull(dataFrame);
-		assertEquals(0, dataFrame.columnIndex("isAlternative"));
 	}
 
 	@Test

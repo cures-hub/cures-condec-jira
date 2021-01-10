@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -57,8 +57,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("isClassifierTraining", DecisionKnowledgeClassifier.getInstance().isTraining());
-		velocityParameters.put("isClassifierTrained", DecisionKnowledgeClassifier.getInstance().isTrained());
+		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance().isTraining());
+		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance().isTrained());
 		velocityParameters.put("trainingFiles", FileManager.getTrainingFileNames());
 		velocityParameters.put("selectedTrainingFile",
 				ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));

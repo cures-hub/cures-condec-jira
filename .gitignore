@@ -20,3 +20,4 @@ config.properties
 preview_standalone.*
 pngLaTeX.*
 tikz-uml.sty
+*.model

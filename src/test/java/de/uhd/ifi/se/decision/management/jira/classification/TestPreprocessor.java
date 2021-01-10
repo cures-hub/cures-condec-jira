@@ -35,17 +35,22 @@ public class TestPreprocessor extends TestSetUp {
 	}
 
 	@Test
-	public void testReplaceUsingRegExWorks() {
+	public void testNormalzingWorks() {
 		assertEquals("I put it on master branch and also linked it in the Marketplace.",
-				preprocessor.replaceUsingRegEx(
-						"I put it on master branch and also linked it in the Marketplace.\r\n\r\n",
-						Preprocessor.WHITESPACE_CHARACTERS_PATTERN, ""));
+				preprocessor.normalize("I put it on master branch and also linked it in the Marketplace.\r\n\r\n"));
 	}
 
 	@Test
-	public void testGetStemmedTokens() {
+	public void testGetStemmedTokensWithoutStopWords() {
+		String[] stemmedTokens = { "quick", "brown", "fox", "jump", "lazy", "dog" };
+		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokensWithoutStopWords(testSentence));
+	}
+
+	@Test
+	public void testRemovingStopWordsWorks() {
 		String[] stemmedTokens = { "the", "quick", "brown", "fox", "jump", "ov", "the", "lazy", "dog", "" };
-		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokens(testSentence));
+		String[] tokensWithoutStopWords = { "quick", "brown", "fox", "jump", "ov", "lazy", "dog", "" };
+		assertArrayEquals(tokensWithoutStopWords, preprocessor.removeStopWords(stemmedTokens));
 	}
 
 	@Test
@@ -91,4 +96,5 @@ public class TestPreprocessor extends TestSetUp {
 		assertNotNull(preprocessing[0]);
 		assertNotNull(preprocessing[0][0]);
 	}
+
 }

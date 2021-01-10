@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrain
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestEvaluateModel extends TestSetUp {
+public class TestEvaluateTextClassifier extends TestSetUp {
 
 	private HttpServletRequest request;
 	private ConfigRest configRest;
@@ -31,7 +31,7 @@ public class TestEvaluateModel extends TestSetUp {
 
 	@Test
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), configRest.evaluateModel(null, null).getStatus());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), configRest.evaluateTextClassifier(null, null).getStatus());
 	}
 
 	// @Test
@@ -45,6 +45,6 @@ public class TestEvaluateModel extends TestSetUp {
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
-		assertEquals(Response.Status.OK.getStatusCode(), configRest.evaluateModel(request, "TEST").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), configRest.evaluateTextClassifier(request, "TEST").getStatus());
 	}
 }

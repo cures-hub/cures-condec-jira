@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,49 +16,31 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFineGrainedClassifier extends TestSetUp {
 
+	private FineGrainedClassifier fineGrainedClassifier;
+
 	@Before
 	public void setUp() {
 		init();
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.train();
+		fineGrainedClassifier = TextClassifier.getInstance().getFineGrainedClassifier();
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetTypeAlternative() {
-		double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.ALTERNATIVE, type);
+	public void testPredictSingleSentence() {
+		assertEquals(KnowledgeType.ISSUE, fineGrainedClassifier.predict("How can we implement?"));
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetTypePro() {
-		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.PRO, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeCon() {
-		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.CON, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeDecision() {
-		double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.DECISION, type);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetTypeIssue() {
-		double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
-		KnowledgeType type = FineGrainedClassifier.getType(classification);
-		assertEquals(KnowledgeType.ISSUE, type);
+	public void testPredictSentences() {
+		List<String> sentences = new ArrayList<>();
+		sentences.add("The decision was made to use a SVM.");
+		sentences.add("The code will be less clear.");
+		assertEquals(KnowledgeType.DECISION, fineGrainedClassifier.predict(sentences).get(0));
+		assertEquals(KnowledgeType.CON, fineGrainedClassifier.predict(sentences).get(1));
 	}
 
 	@Test
@@ -72,16 +56,33 @@ public class TestFineGrainedClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testMapIndexToKnowledgeType() {
+		assertEquals(KnowledgeType.ALTERNATIVE, FineGrainedClassifier.mapIndexToKnowledgeType(0));
+		assertEquals(KnowledgeType.PRO, FineGrainedClassifier.mapIndexToKnowledgeType(1));
+		assertEquals(KnowledgeType.CON, FineGrainedClassifier.mapIndexToKnowledgeType(2));
+		assertEquals(KnowledgeType.DECISION, FineGrainedClassifier.mapIndexToKnowledgeType(3));
+		assertEquals(KnowledgeType.ISSUE, FineGrainedClassifier.mapIndexToKnowledgeType(4));
+		assertEquals(KnowledgeType.OTHER, FineGrainedClassifier.mapIndexToKnowledgeType(-1));
+	}
+
+	@Test
+	@NonTransactional
 	public void testSaveToAndLoadFromFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
-		FineGrainedClassifier fineGrainedClassifier = DecisionKnowledgeClassifier.getInstance()
-				.getFineGrainedClassifier();
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
 		assertTrue(fineGrainedClassifier.loadFromFile());
-		assertTrue(fineGrainedClassifier.isModelTrained());
+		assertTrue(fineGrainedClassifier.isTrained());
 		file.delete();
+	}
+
+	@Test
+	public void testModeFineGrainedClassification() {
+		int[] fineGrainedClassificationResult = new int[4];
+		fineGrainedClassificationResult[0] = 4;
+		assertEquals(0, AbstractClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[1] = 4;
+		assertEquals(0, AbstractClassifier.mode(fineGrainedClassificationResult));
+		fineGrainedClassificationResult[2] = 4;
+		assertEquals(4, AbstractClassifier.mode(fineGrainedClassificationResult));
 	}
 }

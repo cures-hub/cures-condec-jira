@@ -11,15 +11,15 @@ public class PreprocessedData {
 	public PreprocessedData(TrainingData trainingData, boolean isFineGrained) {
 		preprocessor = Preprocessor.getInstance();
 		if (isFineGrained) {
-			int size = trainingData.relevantSentences.length;
+			int size = trainingData.getRelevantSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.relevantSentences, trainingData.labelsKnowledgeType);
+			preprocess(trainingData.getRelevantSentences(), trainingData.getKnowledgeTypeLabelsForRelevantSentences());
 		} else {
-			int size = trainingData.sentences.length;
+			int size = trainingData.getAllSentences().length;
 			preprocessedSentences = new double[size][];
 			updatedLabels = new int[size];
-			preprocess(trainingData.sentences, trainingData.labelsIsRelevant);
+			preprocess(trainingData.getAllSentences(), trainingData.getRelevanceLabelsForAllSentences());
 		}
 	}
 
@@ -37,19 +37,50 @@ public class PreprocessedData {
 	private void preprocess(String[] stringsToBePreprocessed, int[] labels) {
 		preprocessedSentences = new double[0][];
 		updatedLabels = new int[0];
-		preprocessor.preprocess(stringsToBePreprocessed[0]);
 		for (int i = 0; i < stringsToBePreprocessed.length; i++) {
 			double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
 			if (preprocessedSentence[0] == null) {
 				continue;
 			}
-			int[] myLabels = new int[preprocessedSentence.length];
+			int[] labelsForSentenceNGrams = new int[preprocessedSentence.length];
 			for (int j = 0; j < preprocessedSentence.length; j++) {
-				myLabels[j] = labels[i];
+				labelsForSentenceNGrams[j] = labels[i];
 			}
-			updatedLabels = concatenate(updatedLabels, myLabels);
+			updatedLabels = concatenate(updatedLabels, labelsForSentenceNGrams);
 			preprocessedSentences = concatenate(preprocessedSentences, preprocessedSentence);
 		}
+	}
+
+	public int[] normalizeLabelsForCriterion(int toBeOne) {
+		int[] isRelevantLabels = new int[updatedLabels.length];
+		for (int i = 0; i < updatedLabels.length; i++) {
+			isRelevantLabels[i] = updatedLabels[i] == toBeOne ? 1 : -1;
+		}
+		return isRelevantLabels;
+	}
+
+	public int[] getIsRelevantLabels() {
+		return normalizeLabelsForCriterion(1);
+	}
+
+	public int[] getIsAlternativeLabels() {
+		return normalizeLabelsForCriterion(0);
+	}
+
+	public int[] getIsDecisionLabels() {
+		return normalizeLabelsForCriterion(3);
+	}
+
+	public int[] getIsProLabels() {
+		return normalizeLabelsForCriterion(1);
+	}
+
+	public int[] getIsConLabels() {
+		return normalizeLabelsForCriterion(2);
+	}
+
+	public int[] getIsIssueLabels() {
+		return normalizeLabelsForCriterion(4);
 	}
 
 	/**
