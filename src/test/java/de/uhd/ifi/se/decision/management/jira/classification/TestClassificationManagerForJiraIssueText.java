@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
+public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 
 	private List<PartOfJiraIssueText> sentences;
 	private ClassificationManagerForJiraIssueText classificationManager;
@@ -28,18 +28,19 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		trainer.train();
 		classificationManager = new ClassificationManagerForJiraIssueText();
 		sentences = JiraIssues.getSentencesForCommentText(
-				"This is a testentence without any purpose. We expect this to be irrelevant. "
-						+ "How can we implement this feature? The previous sentence should be much more relevant");
+				"The quick brown fox jumps over the lazy dog. We expect this to be irrelevant. "
+						+ "How can we implement? The previous sentence should be much more relevant");
 	}
 
 	@Test
 	@NonTransactional
 	public void testBinaryClassification() {
 		sentences = classificationManager.classifySentencesBinary(sentences);
-		assertEquals("This is a testentence without any purpose.", sentences.get(0).getDescription());
-		assertTrue(sentences.get(0).isRelevant());
+		assertEquals("The quick brown fox jumps over the lazy dog.", sentences.get(0).getDescription());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
-		assertEquals("How can we implement this feature?", sentences.get(2).getSummary());
+
+		assertEquals("How can we implement?", sentences.get(2).getSummary());
 		assertTrue(sentences.get(2).isRelevant());
 		assertFalse(sentences.get(2).isValidated());
 	}
@@ -50,11 +51,10 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
-		assertTrue(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 		assertTrue(sentences.get(2).isRelevant());
-		// TODO: Should be issue
-		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(2).getType());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(2).getType());
 	}
 
 	@Test
@@ -65,9 +65,8 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUp {
 
 		assertTrue(sentences.get(2).isRelevant());
 		assertTrue(sentences.get(2).isTagged());
-		assertEquals("How can we implement this feature?", sentences.get(2).getSummary());
-		// TODO: Should be issue
-		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(2).getType());
+		assertEquals("How can we implement?", sentences.get(2).getSummary());
+		assertEquals(KnowledgeType.ISSUE, sentences.get(2).getType());
 	}
 
 	@Test

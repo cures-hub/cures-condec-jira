@@ -340,8 +340,7 @@ public class ConfigRest {
 		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
 			return Response.ok(true).build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found"))
-				.build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found")).build();
 	}
 
 	@Path("/deleteDecisionGroup")
@@ -351,8 +350,7 @@ public class ConfigRest {
 		if (DecisionGroupManager.deleteGroup(groupName, projectKey)) {
 			return Response.ok(true).build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found"))
-				.build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found")).build();
 	}
 
 	@Path("/getAllDecisionGroups")
@@ -662,8 +660,7 @@ public class ConfigRest {
 
 		if (relevant) {
 			builder.append(": ");
-			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList)
-					.get(0);
+			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList).get(0);
 			builder.append(type.toString());
 		}
 		return Response.ok(ImmutableMap.of("content", builder.toString())).build();
@@ -682,8 +679,8 @@ public class ConfigRest {
 		File trainingFile = trainer.saveTrainingFile();
 
 		if (trainingFile != null) {
-			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.getPath(),
-					"content", trainer.getTrainingData().toString())).build();
+			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.getPath(), "content",
+					trainer.getTrainingData().toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error",
@@ -699,23 +696,16 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-
 		if (!ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			return Response.status(Status.FORBIDDEN)
 					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
-		try {
-			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-			ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
-			for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
-				classificationManager.classifyAllCommentsOfJiraIssue(issue);
-			}
-			return Response.ok().build();
-		} catch (Exception e) {
-			return Response.status(Status.CONFLICT).entity(
-					ImmutableMap.of("error", "Failed to classify the whole project. Message: " + e.getMessage()))
-					.build();
+		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
+		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
+			classificationManager.classifyDescriptionAndAllComments(issue);
 		}
+		return Response.ok().build();
 	}
 
 	/* **************************************/

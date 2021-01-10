@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrain
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestEvaluateModel extends TestSetUp {
+public class TestEvaluateTextClassifier extends TestSetUp {
 
 	private HttpServletRequest request;
 	private ConfigRest configRest;

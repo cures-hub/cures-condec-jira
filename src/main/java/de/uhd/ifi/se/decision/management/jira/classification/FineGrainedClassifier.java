@@ -84,8 +84,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 */
 	public KnowledgeType predict(String sentence) {
 		double[][] sample = Preprocessor.getInstance().preprocess(sentence);
-		// Make predictions for each nGram; then determine maximum probability of all
-		// added together.
+		// Make prediction for each nGram and determine most frequent prediction
+		// result.
 		int predictionResults[] = new int[sample.length];
 		for (int i = 0; i < sample.length; i++) {
 			predictionResults[i] = predict(sample[i]);

@@ -29,6 +29,14 @@ public abstract class AbstractClassifier {
 	private int numClasses;
 	protected boolean isCurrentlyTraining;
 
+	/**
+	 * Reads the classifier from file if it was already trained and saved to file
+	 * system.
+	 * 
+	 * @param numClasses
+	 *            2 for the binary classifier and > 2 for the fine grained
+	 *            classifier.
+	 */
 	public AbstractClassifier(int numClasses) {
 		this.numClasses = numClasses;
 		this.isCurrentlyTraining = false;

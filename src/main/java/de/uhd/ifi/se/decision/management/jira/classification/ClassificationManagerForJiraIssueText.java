@@ -1,12 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
@@ -14,26 +13,45 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
 /**
- * Class to classify the text in Jira issue comments as either irrelevant in
- * terms of decision knowledge (binary classification) or - if relevant - into
- * decision knowledge elements with certain knowledge types (fine grained
- * classification).
+ * Classifies the sentences (i.e. {@link PartOfJiraIssueText} objects) of Jira
+ * issue comments and description as either irrelevant in terms of decision
+ * knowledge (binary classification) or - if relevant - into decision knowledge
+ * elements with certain knowledge types (fine grained classification).
  */
 public class ClassificationManagerForJiraIssueText {
 
-	public void classifyAllCommentsOfJiraIssue(Issue issue) {
-		if (issue == null) {
-			return;
-		}
-		this.classifyComments(getComments(issue));
+	/**
+	 * Splits the description and all comments of the Jira issue into sentences,
+	 * i.e. {@link PartOfJiraIssueText} objects and predicts whether each sentence
+	 * contains relevant decision knowledge and -if yes - its {@link KnowledgeType}.
+	 * Directly overwrites the description and comments with the classification
+	 * results, i.e. introduces macro tags
+	 * ({@link AbstractKnowledgeClassificationMacro}) for the
+	 * {@link KnowledgeType}s.
+	 * 
+	 * @param issue
+	 *            Jira issue.
+	 */
+	public void classifyDescriptionAndAllComments(Issue issue) {
+		classifyDescription(issue);
+		classifyComments(getComments(issue));
 	}
 
-	public void classifyDescription(MutableIssue issue) {
-		if (issue == null) {
-			return;
-		}
+	/**
+	 * Splits the description of the Jira issue into sentences, i.e.
+	 * {@link PartOfJiraIssueText} objects and predicts whether each sentence
+	 * contains relevant decision knowledge and -if yes - its {@link KnowledgeType}.
+	 * Directly overwrites the description with the classification results, i.e.
+	 * introduces macro tags ({@link AbstractKnowledgeClassificationMacro}) for the
+	 * {@link KnowledgeType}s.
+	 * 
+	 * @param issue
+	 *            Jira issue.
+	 */
+	public void classifyDescription(Issue issue) {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(issue.getProjectObject().getKey()).getJiraIssueTextManager();
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager
@@ -46,15 +64,18 @@ public class ClassificationManagerForJiraIssueText {
 		if (comments == null || comments.isEmpty()) {
 			return;
 		}
-		List<PartOfJiraIssueText> sentences = new ArrayList<PartOfJiraIssueText>();
-
 		for (Comment comment : comments) {
-			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-					.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
-			List<PartOfJiraIssueText> sentencesOfComment = persistenceManager
-					.updateElementsOfCommentInDatabase(comment);
-			sentences.addAll(sentencesOfComment);
+			classifyComment(comment);
 		}
+	}
+
+	public void classifyComment(Comment comment) {
+		List<PartOfJiraIssueText> sentences = new ArrayList<>();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
+		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager
+				.updateElementsOfCommentInDatabase(comment);
+		sentences.addAll(sentencesOfComment);
 		classifySentencesBinary(sentences);
 		classifySentencesFineGrained(sentences);
 	}
@@ -72,7 +93,9 @@ public class ClassificationManagerForJiraIssueText {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
-		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesRelevantForBinaryClf);
+		List<String> stringsToBeClassified = sentencesRelevantForBinaryClf.stream()
+				.map(PartOfJiraIssueText::getDescription)
+				.collect(Collectors.toList());
 		boolean[] classificationResult = TextClassifier.getInstance().getBinaryClassifier()
 				.predict(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
@@ -125,22 +148,13 @@ public class ClassificationManagerForJiraIssueText {
 		if (sentences == null) {
 			return new ArrayList<PartOfJiraIssueText>();
 		}
-		// make getStringsForFineGrainedClassification return List<PartOfJiraIssueText>
-		// add method to extract text
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
-		List<String> stringsToBeClassified = extractStringsFromPoji(sentencesToBeClassified);
+		List<String> stringsToBeClassified = sentencesToBeClassified.stream().map(PartOfJiraIssueText::getDescription)
+				.collect(Collectors.toList());
 		List<KnowledgeType> classificationResult = TextClassifier.getInstance().getFineGrainedClassifier()
 				.predict(stringsToBeClassified);
 		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
 		return sentences;
-	}
-
-	public static List<String> extractStringsFromPoji(List<PartOfJiraIssueText> sentences) {
-		List<String> extractedStringsFromPoji = new ArrayList<String>();
-		for (PartOfJiraIssueText sentence : sentences) {
-			extractedStringsFromPoji.add(sentence.getDescription());
-		}
-		return extractedStringsFromPoji;
 	}
 
 	private List<PartOfJiraIssueText> getSentencesForFineGrainedClassification(List<PartOfJiraIssueText> sentences) {
@@ -183,9 +197,5 @@ public class ClassificationManagerForJiraIssueText {
 			}
 		}
 		return sentences;
-	}
-
-	public void classifyComment(Comment comment) {
-		this.classifyComments(Collections.singletonList(comment));
 	}
 }

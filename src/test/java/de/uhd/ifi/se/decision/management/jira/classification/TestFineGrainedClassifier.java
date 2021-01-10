@@ -56,6 +56,17 @@ public class TestFineGrainedClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testMapIndexToKnowledgeType() {
+		assertEquals(KnowledgeType.ALTERNATIVE, FineGrainedClassifier.mapIndexToKnowledgeType(0));
+		assertEquals(KnowledgeType.PRO, FineGrainedClassifier.mapIndexToKnowledgeType(1));
+		assertEquals(KnowledgeType.CON, FineGrainedClassifier.mapIndexToKnowledgeType(2));
+		assertEquals(KnowledgeType.DECISION, FineGrainedClassifier.mapIndexToKnowledgeType(3));
+		assertEquals(KnowledgeType.ISSUE, FineGrainedClassifier.mapIndexToKnowledgeType(4));
+		assertEquals(KnowledgeType.OTHER, FineGrainedClassifier.mapIndexToKnowledgeType(-1));
+	}
+
+	@Test
+	@NonTransactional
 	public void testSaveToAndLoadFromFile() {
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
