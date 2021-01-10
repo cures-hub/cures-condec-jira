@@ -85,13 +85,11 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testFineGrainedClassificationWithValidDataInAO() {
+	public void testFineGrainedClassificationWithValidDataInDatabase() {
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setDescription("An option would be");
 
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
-
-		// why?
 		assertTrue(sentences.get(0).isRelevant());
 		assertTrue(sentences.get(0).isTagged());
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());

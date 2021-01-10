@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -81,11 +80,7 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public static List<Comment> getComments(Issue issue) {
-		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		if (issue != null && commentManager.getComments(issue) != null) {
-			return commentManager.getComments(issue);
-		}
-		return new ArrayList<Comment>();
+		return ComponentAccessor.getCommentManager().getComments(issue);
 	}
 
 	public List<PartOfJiraIssueText> classifySentencesBinary(List<PartOfJiraIssueText> sentences) {
@@ -113,15 +108,12 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	/**
-	 * Determines whether a part of Jira issue comment (substring) should be the
-	 * input for binary classification. It is qualified if it's plain text, and if
-	 * its type is not yet validated.
-	 *
 	 * @param sentence
-	 *            part of Jira issue comment (substring) to check if qualified for
-	 *            binary classification.
-	 * @return true if the part of Jira issue comment (substring) should be the
-	 *         input for binary classification.
+	 *            {@link PartOfJiraIssueText} to check if qualified for binary
+	 *            classification.
+	 * @return true if a sentence, i.e. {@link PartOfJiraIssueText} should be the
+	 *         input for binary classification. It is qualified if its type is not
+	 *         yet validated.
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
 		return !sentence.isValidated();
