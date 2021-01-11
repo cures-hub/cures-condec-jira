@@ -10,12 +10,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 public class TestRDFSource extends TestSetUp {
 
@@ -68,20 +74,31 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceWithStringInput() {
-		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
+
+		List<Recommendation> mockedRecommendations = new ArrayList<>();
+		mockedRecommendations.add(new Recommendation());
+		mockedRecommendations.add(new Recommendation());
+		mockedRecommendations.add(new Recommendation());
+
+
+		RDFSourceInputString rdfSourceInputString = mock(RDFSourceInputString.class);
+		when(rdfSourceInputString.getResults("MySQL")).thenReturn(mockedRecommendations);
+
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
-		assertEquals(34, rdfSourceInputString.getResults("MySQL").size());
+
+
+
+		assertEquals(3, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT, ""));
-		assertEquals(0, rdfSourceInputString.getResults("MySQL").size());
+		assertEquals(0, rdfSourceInputString.getResults("Does not matter").size());
 	}
 
 	@Test
 	public void testRDFSourceWithKnowledgeElement() {
-		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
-		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
+
 		KnowledgeElement alternative = new KnowledgeElement();
 		alternative.setType(KnowledgeType.ALTERNATIVE);
 		alternative.setSummary("MySQL");
@@ -89,7 +106,21 @@ public class TestRDFSource extends TestSetUp {
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(PROJECTKEY);
 		graph.addEdge(link);
-		assertEquals(34, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
+
+
+		List<Recommendation> mockedRecommendations = new ArrayList<>();
+		mockedRecommendations.add(new Recommendation());
+		mockedRecommendations.add(new Recommendation());
+		mockedRecommendations.add(new Recommendation());
+
+
+		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = mock(RDFSourceInputKnowledgeElement.class);
+		when(rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement())).thenReturn(mockedRecommendations);
+
+
+		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
+
+		assertEquals(3, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
 	}
