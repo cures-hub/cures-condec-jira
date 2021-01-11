@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -15,7 +16,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	private static final double MIN_SIMILARITY = 0.85;
 
 	public BasicDuplicateTextDetector(int fragmentLength) {
-		preprocessor = new Preprocessor();
+		preprocessor = Preprocessor.getInstance();
 
 		this.fragmentLength = fragmentLength;
 	}
@@ -36,25 +37,23 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
 			s2 = cleanMarkdown(s2);
-			this.preprocessor.preprocess(s1);
-			List<CharSequence> preprocessedS1Tokens = this.preprocessor.getTokens();
-
-			this.preprocessor.preprocess(s2);
-			List<CharSequence> preprocessedS2Tokens = this.preprocessor.getTokens();
+			String[] preprocessedS1Tokens = preprocessor.getStemmedTokensWithoutStopWords(s1);
+			String[] preprocessedS2Tokens = preprocessor.getStemmedTokensWithoutStopWords(s2);
 
 			int index = 0;
 			// Iterate over text.
-			while (index < preprocessedS1Tokens.size() - fragmentLength + 1) {
+			while (index < preprocessedS1Tokens.length - fragmentLength + 1) {
 				int internalIndex = 0;
 				// Get Lists of text based on the fragmentLength
-				List<CharSequence> sequenceToCheck = preprocessedS1Tokens.subList(index, index + fragmentLength);
-				List<CharSequence> sequenceToCheckAgainst = preprocessedS2Tokens.subList(internalIndex,
-						Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.size()));
+				CharSequence[] sequenceToCheck = Arrays.copyOfRange(preprocessedS1Tokens, index,
+						index + fragmentLength);
+				CharSequence[] sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
+						Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.length));
 
 				while (calculateScore(sequenceToCheck, sequenceToCheckAgainst) <= MIN_SIMILARITY
-						&& internalIndex < preprocessedS2Tokens.size() - fragmentLength + 1) {
-					sequenceToCheckAgainst = preprocessedS2Tokens.subList(internalIndex,
-							Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.size()));
+						&& internalIndex < preprocessedS2Tokens.length - fragmentLength + 1) {
+					sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
+							Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.length));
 					internalIndex++;
 				}
 
@@ -76,12 +75,12 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 
 	// Check if the words are present in the same sequence with minor deviation k
 	// allowed.
-	private double calculateScore(List<CharSequence> sequenceToCheck, List<CharSequence> sequenceToCheckAgainst) {
+	private double calculateScore(CharSequence[] sequenceToCheck, CharSequence[] sequenceToCheckAgainst) {
 		double count = 0.;
 		for (CharSequence toCheck : sequenceToCheck) {
-			count += sequenceToCheckAgainst.contains(toCheck) ? 1 : 0;
+			count += Arrays.stream(sequenceToCheckAgainst).anyMatch(seq -> ((String) seq).contains(toCheck)) ? 1 : 0;
 		}
-		return (count / (sequenceToCheck.size()));
+		return count / sequenceToCheck.length;
 	}
 
 	// private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {

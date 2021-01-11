@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -9,6 +11,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
+import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 
@@ -31,7 +34,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 @Named("ComponentUtil")
 public class ComponentGetter {
 
-	public final static String PLUGIN_KEY = "de.uhd.ifi.se.decision.management.jira";
+	public static final String PLUGIN_KEY = "de.uhd.ifi.se.decision.management.jira";
+	public static final String PLUGIN_HOME = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator;
 
 	@ComponentImport
 	private static UserManager userManager;
@@ -84,5 +89,6 @@ public class ComponentGetter {
 		KnowledgeGraph.instances.remove(projectKey);
 		KnowledgePersistenceManager.instances.remove(projectKey);
 		GitClient.instances.remove(projectKey);
+		// DecisionKnowledgeClassifier.instance = null;
 	}
 }

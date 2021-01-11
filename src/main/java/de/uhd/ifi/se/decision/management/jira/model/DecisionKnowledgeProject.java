@@ -63,20 +63,14 @@ public class DecisionKnowledgeProject {
 	 * @return key of the Jira project.
 	 */
 	public String getProjectKey() {
-		if (jiraProject == null) {
-			return "";
-		}
-		return jiraProject.getKey();
+		return jiraProject != null ? jiraProject.getKey() : "";
 	}
 
 	/**
 	 * @return name of the Jira project.
 	 */
 	public String getProjectName() {
-		if (jiraProject == null) {
-			return "";
-		}
-		return jiraProject.getName();
+		return jiraProject != null ? jiraProject.getName() : "";
 	}
 
 	/**
@@ -188,10 +182,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true, if the classifier is used for Jira issue comments.
+	 * @return true if the text classifier is enabled to automatically classify the
+	 *         text of Jira issue descriptions and comments.
 	 */
-	public boolean isClassifierEnabled() {
-		return ConfigPersistenceManager.isClassifierEnabled(getProjectKey());
+	public boolean isTextClassifierEnabled() {
+		return ConfigPersistenceManager.isTextClassifierEnabled(getProjectKey());
 	}
 
 	/**

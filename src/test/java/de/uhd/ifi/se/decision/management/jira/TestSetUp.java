@@ -8,7 +8,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -27,7 +27,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
  * {@link ComponentGetter} of the ConDec plugin, and test data (e.g.,
  * {@link KnowledgeElements}, {@link Links}, {@link JiraUsers},
  * {@link JiraProjects}, {@link JiraIssueTypes}, and {@link JiraIssues}).
- * <p>
+ * 
  * The following annotations are used to mock the active objects databases
  * before every test execution. Test classes need to extend this TestSetUp class
  * if they use the mocked active objects databases.
@@ -91,8 +91,6 @@ public abstract class TestSetUp {
 	 * Adapts the paths for the files used for preprocessing and classification.
 	 */
 	public static void initClassifierPaths() {
-		Preprocessor.DEFAULT_DIR = "src/main/resources/classifier/";
-		// FileTrainer.DEFAULT_TRAINING_DATA = new File(
-		// "src/main/resources/classifier/defaultTrainingData.arff");
+		TextClassifier.CLASSIFIER_DIRECTORY = "src/main/resources/classifier/";
 	}
 }

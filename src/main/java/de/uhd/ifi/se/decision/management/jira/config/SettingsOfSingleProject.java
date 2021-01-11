@@ -1,18 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import com.atlassian.templaterenderer.TemplateRenderer;
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.FileTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import com.atlassian.templaterenderer.TemplateRenderer;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -45,16 +46,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			return velocityParameters;
 		}
 
-		// TODO -- Start
-		// TODO: check if directory exists (last folder) and create it if not!
-		FileTrainer.copyDefaultTrainingDataToFile();
-		Preprocessor.copyDefaultPreprocessingDataToFile();
-		// TODO -- End
-
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProject(projectKey);
-		FileTrainer trainer = new OnlineFileTrainerImpl(projectKey);
-
 		velocityParameters.put("request", request);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
@@ -64,10 +57,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("arffFiles", trainer.getTrainingFileNames());
-		velocityParameters.put("selectedArffFile", ConfigPersistenceManager.getArffFileForClassifier(projectKey));
-		velocityParameters.put("isClassifierTraining", trainer.getClassifier().isTraining());
-		velocityParameters.put("isClassifierTrained", trainer.getClassifier().isTrained());
+		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance().isTraining());
+		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance().isTrained());
+		velocityParameters.put("trainingFiles", FileManager.getTrainingFileNames());
+		velocityParameters.put("selectedTrainingFile",
+				ConfigPersistenceManager.getTrainingFileForClassifier(projectKey));
 
 		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
 
@@ -75,11 +69,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 
 		velocityParameters.put("maxNumberRecommendations",
-			ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
+				ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
 
 		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSource(projectKey));
 		velocityParameters.put("projectSources",
-			ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
+				ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
 
 		velocityParameters.put("addRecommendationDirectly", ConfigPersistenceManager.getAddRecommendationDirectly(projectKey));
 		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInputAsMap(projectKey));

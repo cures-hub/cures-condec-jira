@@ -276,6 +276,10 @@ public enum KnowledgeType {
 		return icon;
 	}
 
+	public boolean canBeDocumentedInJiraIssueText() {
+		return canBeDocumentedInJiraIssueText;
+	}
+
 	public static List<String> getRequirementsTypes() {
 		List<String> requirementsTypes = new ArrayList<>();
 		requirementsTypes.add("System Function");

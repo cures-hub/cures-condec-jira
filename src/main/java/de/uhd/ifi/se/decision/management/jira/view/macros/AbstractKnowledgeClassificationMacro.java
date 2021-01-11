@@ -9,7 +9,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-import de.uhd.ifi.se.decision.management.jira.classification.DecisionKnowledgeClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  * @see ConMacro
  * 
  * @see JiraIssueTextPersistenceManager
- * @see DecisionKnowledgeClassifier
+ * @see TextClassifier
  */
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 

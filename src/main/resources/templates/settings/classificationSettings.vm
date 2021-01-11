@@ -10,7 +10,7 @@
 </div>
 
 <div class="field-group" id="classifierStatus-text">
-    <label>Current classifier status:</label>
+    <label>Current Classifier Status:</label>
     <div class="description">
         #if( $isClassifierTraining == "true" )
             <div class="aui-message aui-message-warning">
@@ -31,9 +31,9 @@
                     <strong>The classifier has already been trained!</strong>
                 </p>
                 <p>
-                    If you have enough annotated data from your own project you might want to consider retraining it on
+                    If you have enough annotated data from your own project you might want to retrain it on
                     your project.
-                    Generate an ARFF file of validated decision knowledge and then select the file as the training file.
+                    Generate a CSV file of validated decision knowledge and then select the file as the training file.
                 </p>
             </div>
         #else
@@ -50,17 +50,20 @@
 
 <div class="field-group">
     <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
-    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments"/>
-    <div class="description">Classifies decision knowledge for all issue comments for this project.</div>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <div class="description">
+    	Classifies the text in the description and the comments of all Jira issues for this project. <br/>
+    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
+    </div>
     <div class="aui-progress-indicator">
         <span id="classify-whole-project-progress-bar"></span>
     </div>
 </div>
 
 <div class="field-group">
-    <label for="evaluateModel-button">Evaluate model</label>
-    <input type="button" class="aui-button" id="evaluateModel-button" value="Evaluate model"/>
-    <div class="description">Evaluate the current model using the user-validated data in the database. (If the
+    <label for="evaluateTextClassifier-button">Evaluate Classifier</label>
+    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier"/>
+    <div class="description">Evaluate the current classifier using the user-validated data in the current knowledge graph. (If the
         evaluation fails the classifier might need to be trained!)
     </div>
     <div class="aui-progress-indicator">
@@ -69,9 +72,9 @@
 </div>
 
 <div class="field-group">
-    <label for="saveArffFile-button">Create an ARFF File</label>
-    <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
-    <div class="description">Creates an Attribute-Relation File Format (ARFF) file of <b>user-validated</b> text data
+    <label for="saveTrainingFile-button">Create a Training File</label>
+    <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
+    <div class="description">Creates a training file (in csv format) of <b>user-validated</b> text data
         for the current project that can be used to train the classifier.
         This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
@@ -79,32 +82,22 @@
 </div>
 
 <div class="field-group">
-    <label for="saveAllArffFile-button">Create an ARFF File</label>
-    <input type="button" class="aui-button" id="saveAllArffFile-button" value="Create complete ARFF File"/>
-    <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be
-        used to train the classifier.
-        This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
-        If you want to train the classifier with this file you need to reload this page to access the file.
-    </div>
-</div>
-
-<div class="field-group">
     <label for="trainClassifier-button">Train the Classifier</label>
-    <select id="select-arff-file-train" name="select-arff-file-train" class="select medium-field">
-        #foreach ($arffFile in $arffFiles)
-            <option value="$arffFile"
-                #if ($arffFile.toString().contains($selectedArffFile))
+    <select id="select-training-file" name="select-training-file" class="select medium-long-field">
+        #foreach ($trainingFile in $trainingFiles)
+            <option value="$trainingFile"
+                #if ($trainingFile.toString().contains($selectedTrainingFile))
                     selected
                 #end
             >
-                $arffFile</option>
+                $trainingFile</option>
         #end
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
-        Trains the classifier on the selected Attribute-Relation File Format (ARFF) file. <br/>
+        Trains the classifier on the selected training data file. <br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
-        training is very resource expensive!
+        training can be very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -128,7 +121,7 @@
 <script>
     // init the variables
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isClassifierEnabled();
+    isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
 
     const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
     const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
@@ -138,28 +131,24 @@
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
 
     // add listeners
-    testClassifierWithTextBtn.addEventListener('click', () =>{
-       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value,"$projectKey", testClassifierWithTextResult)
+    testClassifierWithTextBtn.addEventListener('click', () => {
+       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
     });
-    const evaluateModelButton = document.getElementById("evaluateModel-button");
-    evaluateModelButton.addEventListener("click", function () {
+    
+    const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
+    evaluateTextClassifierButton.addEventListener("click", function () {
         var animatedElement = document.getElementById("evaluate-classifier-progress");
-        conDecAPI.evaluateModel("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
+        conDecAPI.evaluateTextClassifier("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
     });
 
-    const saveArffFileButton = document.getElementById("saveArffFile-button");
-    saveArffFileButton.addEventListener("click", function () {
-        conDecAPI.saveArffFile("$projectKey", true, saveToFile("ClassifierTrainingData.arff"));
-    });
-
-    const saveAllArffFileButton = document.getElementById("saveAllArffFile-button");
-    saveAllArffFileButton.addEventListener("click", function () {
-        conDecAPI.saveArffFile("$projectKey", false, saveToFile("AllClassifierTrainingData.arff"));
+    const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
+    saveTrainingFileButton.addEventListener("click", function () {
+        conDecAPI.saveTrainingFile("$projectKey", saveToFile("classifierTrainingData.csv"));
     });
 
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
-        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big.")) {
+        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big and cannot be reverted!")) {
             var animatedElement = document.getElementById("classify-whole-project-progress-bar");
             conDecAPI.classifyWholeProject("$projectKey", animatedElement);
         }
@@ -168,7 +157,7 @@
     const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {
-            var trainDataSelect = document.getElementById("select-arff-file-train");
+            var trainDataSelect = document.getElementById("select-training-file");
             var animatedElement = document.getElementById("train-classifier-progress");
             conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
         }
@@ -177,7 +166,7 @@
     isClassifierUsedToggle.addEventListener("change", function (error) {
         currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
         this.busy = true;
-        conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
+        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
         this.busy = false;
     });
 

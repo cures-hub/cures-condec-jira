@@ -682,21 +682,6 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setUseClassifierForIssueComments = function (isClassifierUsedForIssues, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setUseClassifierForIssueComments.json?projectKey="
-			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function (error,
-				response) {
-			if (error === null) {
-				showFlag("success",
-					"Usage of classification for Decision Knowledge in Jira Issue Comments has been set to "
-					+ isClassifierUsedForIssues + ".");
-			}
-		});
-	};
-
-	/*
 	 * external references: consistencySettings.vm
 	 */
 	ConDecAPI.prototype.setConsistencyActivated = function (isConsistencyActivated, projectKey) {
@@ -772,8 +757,39 @@
 			});
 	};
 
+	ConDecAPI.prototype.getDecisionGroups = function (id, location, callback) {
+		// TODO Change to POST method and post knowledgeElement
+		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
+			+ "&location=" + location + "&projectKey=" + projectKey, function (error, decisionGroups) {
+				if (error === null) {
+					callback(decisionGroups);
+				}
+			});
+	};
+	
+	ConDecAPI.prototype.renameDecisionGroup = function (oldName, newName, callback) {
+		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
+			+ "&oldName=" + oldName + "&newName=" + newName);
+		callback();
+	};
+	
 	/*
-	 * external references: classificationSettings.vm
+	 * external references: templates/settings/classificationSettings.vm
+	 */
+	ConDecAPI.prototype.setTextClassifierEnabled = function (isTextClassifierEnabled, projectKey) {
+		generalApi.postJSON(this.restPrefix + "/config/setTextClassifierEnabled.json?projectKey="
+			+ projectKey + "&isTextClassifierEnabled=" + isTextClassifierEnabled, null, function (error,
+				response) {
+			if (error === null) {
+				showFlag("success",
+					"Activation of text classification for decision knowledge in Jira issue description and comments was set to "
+					+ isTextClassifierEnabled + ".");
+			}
+		});
+	};
+	
+	/*
+	 * external references: templates/settings/classificationSettings.vm
 	 */
 	ConDecAPI.prototype.testClassifierWithText = function (text, projectKey, resultDomElement) {
 		generalApi.postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
@@ -787,7 +803,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function (projectKey, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
@@ -795,74 +811,53 @@
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
-
 				if (error === null) {
 					showFlag("success", "The whole project has been classified.");
-				} else {
-					showFlag("error", "The classification process failed.");
-				}
-			});
-
-	};
-
-	ConDecAPI.prototype.getDecisionGroups = function (id, location, callback) {
-		// TODO Change to POST method and post knowledgeElement
-		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
-			+ "&location=" + location + "&projectKey=" + projectKey, function (error, decisionGroups) {
-				if (error === null) {
-					callback(decisionGroups);
-				}
+				} 
 			});
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.trainClassifier = function (projectKey, arffFileName, animatedElement) {
+	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
-			+ arffFileName,
+		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+			+ trainingFileName,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The classifier was successfully retrained.");
-				} else {
-					showFlag("error", "Training of the classifier failed.");
 				}
 			});
 	};
 
-	ConDecAPI.prototype.renameDecisionGroup = function (oldName, newName, callback) {
-		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
-			+ "&oldName=" + oldName + "&newName=" + newName);
-		callback();
-	};
-
-	ConDecAPI.prototype.evaluateModel = function (projectKey, animatedElement, callback) {
-		// console.log("ConDecAPI.prototype.evaluateModel");
+	/*
+	 * external references: templates/settings/classificationSettings.vm
+	 */
+	ConDecAPI.prototype.evaluateTextClassifier = function (projectKey, animatedElement, callback) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/evaluateModel.json?projectKey=" + projectKey,
+		generalApi.postJSON(this.restPrefix + "/config/evaluateTextClassifier.json?projectKey=" + projectKey,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The evaluation results file was successfully created.");
-					// //console.log(response["content"]);
 					callback(response["content"]);
 				}
 			});
 	};
+	
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.saveArffFile = function (projectKey, useOnlyValidatedData, callback) {
-		generalApi.postJSON(this.restPrefix + "/config/saveArffFile.json?projectKey=" + projectKey + "&useOnlyValidatedData=" + useOnlyValidatedData, null,
+	ConDecAPI.prototype.saveTrainingFile = function (projectKey, callback) {
+		generalApi.postJSON(this.restPrefix + "/config/saveTrainingFile.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
-					showFlag("success", "The ARFF file was successfully created and saved in "
-						+ response["arffFile"] + ".");
-					// console.log(response["content"]);
+					showFlag("success", "The training file was successfully created and saved in "
+						+ response["trainingFile"] + ".");
 					callback(response["content"]);
 				}
 			});

@@ -1,164 +1,174 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.GaussianKernelDouble;
-import smile.classification.SVM;
-import smile.math.kernel.MercerKernel;
-import weka.core.SerializationHelper;
+import smile.classification.Classifier;
 
+/**
+ * Abstract superclass for the {@link BinaryClassifier} and
+ * {@link FineGrainedClassifier}.
+ */
 public abstract class AbstractClassifier {
 
-	public static final String DEFAULT_PATH = DecisionKnowledgeClassifier.DEFAULT_DIR;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
-	protected SVM<Double[]> model;
-	private Integer epochs;
-	private boolean modelIsTrained;
-	private Integer numClasses;
-	private Boolean currentlyTraining;
+	protected Classifier<double[]> model;
+	private int numClasses;
+	protected boolean isCurrentlyTraining;
 
-	public AbstractClassifier(Integer numClasses) {
-		this(0.5, 3, numClasses);
-	}
-
-	public AbstractClassifier(Double c, Integer epochs, Integer numClasses) {
-		this(c, new GaussianKernelDouble<Double>(), epochs, numClasses);
-	}
-
-	public AbstractClassifier(Double c, MercerKernel<Double[]> kernel, Integer epochs, Integer numClasses) {
-		if (numClasses <= 2) {
-			this.model = new SVM<Double[]>(kernel, c, numClasses);
-		} else {
-			this.model = new SVM<Double[]>(kernel, c, numClasses, SVM.Multiclass.ONE_VS_ALL);
-		}
-		this.epochs = epochs;
-		this.modelIsTrained = false;
+	/**
+	 * Reads the classifier from file if it was already trained and saved to file
+	 * system.
+	 * 
+	 * @param numClasses
+	 *            2 for the binary classifier and > 2 for the fine grained
+	 *            classifier.
+	 */
+	public AbstractClassifier(int numClasses) {
 		this.numClasses = numClasses;
-		this.currentlyTraining = false;
+		this.isCurrentlyTraining = false;
+		loadFromFile();
 	}
+
+	/**
+	 * @return name of the classifier that is used as the file name.
+	 */
+	public abstract String getName();
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
 	 *
-	 * @param features
-	 * @param labels
+	 * @param trainingData
 	 */
-	public void train(Double[][] features, Integer[] labels) throws AlreadyInTrainingException {
-
-		if (!this.currentlyTraining) {
-			this.currentlyTraining = true;
-			for (int i = 0; i < this.epochs; i++) {
-				this.model.learn(features, ArrayUtils.toPrimitive(labels));
-			}
-			this.model.finish();
-
-			this.model.trainPlattScaling(features, ArrayUtils.toPrimitive(labels));
-
-			this.currentlyTraining = false;
-			this.modelIsTrained = true;
-		} else {
-			throw new AlreadyInTrainingException(this.toString() + " is already in training!");
-		}
-
-	}
+	public abstract void train(TrainingData trainingData);
 
 	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param features
-	 * @param labels
-	 */
-	public void train(List<List<Double>> features, List<Integer> labels) {
-		Double[][] featuresArray = new Double[features.size()][features.get(0).size()];
-		for (int i = 0; i < features.size(); i++) {
-			featuresArray[i] = features.get(i).toArray(Double[]::new);
-		}
-		this.train(featuresArray, labels.toArray(Integer[]::new));
-	}
-
-	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param features
-	 * @param label
-	 */
-	public void train(Double[] features, Integer label) {
-		this.modelIsTrained = true;
-
-		this.model.learn(features, label);
-
-		this.modelIsTrained = true;
-	}
-
-	/**
-	 * @param feature
+	 * @param sample
 	 * @return probabilities of the labels
 	 */
-	public double[] predictProbabilities(Double[] feature) throws InstantiationError {
-		if (this.modelIsTrained) {
-			double[] probabilities = new double[this.numClasses];
-			this.model.predict(feature, probabilities);
-			return probabilities;
-		} else {
-			throw new InstantiationError("Classifier has not been trained!");
+	protected int predict(double[] sample) {
+		return model.predict(sample);
+	}
+
+	/**
+	 * Updates the classifier using supervised training data.
+	 *
+	 * @param trainingSample
+	 * @param trainingLabel
+	 */
+	public void update(double[] trainingSample, int trainingLabel) {
+		isCurrentlyTraining = true;
+		LOGGER.info(
+				"Online training is currently not supported for SVMs in SMILE (Statistical Machine Intelligence and Learning Engine) library.");
+		// model.update(trainingSample, trainingLabel);
+		isCurrentlyTraining = false;
+	}
+
+	/**
+	 * Saves model to a file, so that it can be loaded at a later time.
+	 *
+	 * @param filePathAndName
+	 *            absolute path to the classifier file that should be saved.
+	 */
+	public File saveToFile(String filePathAndName) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(filePathAndName);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(model);
+			objectOut.close();
+		} catch (IOException e) {
+			LOGGER.error(filePathAndName + " could not be saved. " + e.getMessage());
 		}
-
+		return new File(filePathAndName);
 	}
 
 	/**
-	 * Saves model to a file. So that it can be loaded at a later time.
-	 *
-	 * @param filePathAndName
-	 * @throws Exception
+	 * Saves model to a file, so that it can be loaded at a later time.
 	 */
-	public void saveToFile(String filePathAndName) throws Exception {
-		SerializationHelper.write(filePathAndName, this.model);
+	public File saveToFile() {
+		return saveToFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
 	}
 
 	/**
-	 * Saves model to a file. So that it can be loaded at a later time.
-	 *
-	 * @throws Exception
-	 */
-	public abstract void saveToFile() throws Exception;
-
-	/**
-	 * Loads pre-trained model from file.
+	 * Loads pre-trained classifier from file.
 	 *
 	 * @param filePathAndName
-	 * @throws Exception
+	 *            absolute path to the classifier file that should be loaded.
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean loadFromFile(String filePathAndName) {
-		SVM<Double[]> oldModel = this.model;
+		Classifier<double[]> oldModel = model;
 		try {
-			this.model = (SVM<Double[]>) SerializationHelper.read(filePathAndName);
-			this.modelIsTrained = true;
+			FileInputStream fileIn = new FileInputStream(filePathAndName);
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			model = (Classifier<double[]>) objectIn.readObject();
+			objectIn.close();
 		} catch (Exception e) {
-			this.model = oldModel;
+			LOGGER.error("Could not load a classifier from file: " + getName() + ". " + e.getMessage());
+			model = oldModel;
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Loads pre-trained model from file.
-	 *
-	 * @throws Exception
+	 * Loads pre-trained classifier from file.
 	 */
-	public abstract boolean loadFromFile();
-
-	public boolean isModelTrained() {
-		return this.modelIsTrained;
+	public boolean loadFromFile() {
+		return loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
 	}
 
-	public Integer getNumClasses() {
+	/**
+	 * @return true if the classifier was trained.
+	 */
+	public boolean isTrained() {
+		return model != null;
+	}
+
+	/**
+	 * @return 2 for the binary classifier and > 2 for the fine grained classifier.
+	 */
+	public int getNumClasses() {
 		return numClasses;
 	}
 
-	public Boolean isCurrentlyTraining() {
-		return this.currentlyTraining;
+	/**
+	 * @return true if the classifier is currently training.
+	 */
+	public boolean isCurrentlyTraining() {
+		return isCurrentlyTraining;
+	}
+
+	/**
+	 * @param values
+	 *            array of prediction results.
+	 * @return mode, i.e. the most frequent value in the array.
+	 */
+	public static int mode(int[] values) {
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int value : values) {
+			Integer count = map.get(value);
+			map.put(value, count != null ? count + 1 : 1);
+		}
+		int mode = Collections.max(map.entrySet(), new Comparator<Map.Entry<Integer, Integer>>() {
+			@Override
+			public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
+				return o1.getValue().compareTo(o2.getValue());
+			}
+		}).getKey();
+		return mode;
 	}
 }

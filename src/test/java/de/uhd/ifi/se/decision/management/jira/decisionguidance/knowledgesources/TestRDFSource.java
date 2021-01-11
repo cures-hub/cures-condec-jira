@@ -70,7 +70,7 @@ public class TestRDFSource extends TestSetUp {
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
-		assertEquals(33, rdfSourceInputString.getResults("MySQL").size());
+		assertEquals(34, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
@@ -89,7 +89,7 @@ public class TestRDFSource extends TestSetUp {
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(PROJECTKEY);
 		graph.addEdge(link);
-		assertEquals(33, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
+		assertEquals(34, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
 	}

@@ -5,13 +5,31 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-public class TestSetReleaseNoteMapping extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestSetReleaseNoteMapping extends TestSetUp {
+
+	private HttpServletRequest request;
+	private ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+	}
 
 	@Test
 	public void testSetReleaseNoteMappingWithEmptyValues() {
@@ -26,8 +44,8 @@ public class TestSetReleaseNoteMapping extends TestConfigSuper {
 		List<String> selectedIssueNames = new ArrayList<>();
 		selectedIssueNames.add("firstName");
 		selectedIssueNames.add("secondName");
-		assertEquals(Status.ACCEPTED,
-				configRest.setReleaseNoteMapping(request, projectKey, category, selectedIssueNames).getEntity());
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.setReleaseNoteMapping(request, projectKey, category, selectedIssueNames).getStatus());
 	}
 
 	@Test

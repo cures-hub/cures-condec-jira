@@ -29,9 +29,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.OnlineTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.classification.implementation.OnlineFileTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -71,6 +71,7 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+		LOGGER.info("ConDec activation was set to " + isActivated + " for project " + projectKey);
 		ConfigPersistenceManager.setActivated(projectKey, isActivated);
 		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 		ComponentGetter.removeInstances(projectKey);
@@ -116,7 +117,7 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
 		manageDefaultIssueTypes(projectKey, isIssueStrategy);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
@@ -172,7 +173,7 @@ public class ConfigRest {
 				PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
 			}
 		}
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/**
@@ -254,7 +255,7 @@ public class ConfigRest {
 		} else {
 			PluginInitializer.removeLinkTypeFromScheme(linkType, projectKey);
 		}
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/**
@@ -286,6 +287,7 @@ public class ConfigRest {
 		return Response.ok(linkTypes).build();
 	}
 
+	// TODO Refactor: too many ifs
 	@Path("/getDecisionGroups")
 	@GET
 	public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,
@@ -335,10 +337,8 @@ public class ConfigRest {
 										@QueryParam("oldName") String oldGroupName, @QueryParam("newName") String newGroupName) {
 		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
 			return Response.ok(true).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found"))
-				.build();
 		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found")).build();
 	}
 
 	@Path("/deleteDecisionGroup")
@@ -347,10 +347,8 @@ public class ConfigRest {
 										@QueryParam("groupName") String groupName) {
 		if (DecisionGroupManager.deleteGroup(groupName, projectKey)) {
 			return Response.ok(true).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found"))
-				.build();
 		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found")).build();
 	}
 
 	@Path("/getAllDecisionGroups")
@@ -374,7 +372,7 @@ public class ConfigRest {
 		}
 		boolean isActivated = Boolean.parseBoolean(isActivatedString);
 		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setWebhookData")
@@ -403,7 +401,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/sendTestPost")
@@ -411,7 +409,7 @@ public class ConfigRest {
 	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		WebhookConnector connector = new WebhookConnector(projectKey);
 		if (connector.sendTestPost()) {
-			return Response.ok(Status.ACCEPTED).build();
+			return Response.ok().build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
 			.build();
@@ -427,7 +425,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		ConfigPersistenceManager.setReleaseNoteMapping(projectKey, category, selectedIssueNames);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/releaseNoteMapping")
@@ -458,7 +456,7 @@ public class ConfigRest {
 		GenericLinkManager.deleteInvalidLinks();
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/* **************************************/
@@ -489,7 +487,7 @@ public class ConfigRest {
 			// branch
 			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		}
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setPostFeatureBranchCommits")
@@ -506,7 +504,7 @@ public class ConfigRest {
 		}
 		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
-			return Response.ok(Status.ACCEPTED).build();
+			return Response.ok().build();
 		} else {
 			return Response.status(Status.CONFLICT)
 				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
@@ -535,7 +533,7 @@ public class ConfigRest {
 				jiraIssues.forEach(
 					jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
 			}
-			return Response.ok(Status.ACCEPTED).build();
+			return Response.ok().build();
 		} else {
 			return Response.status(Status.CONFLICT)
 				.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
@@ -557,7 +555,7 @@ public class ConfigRest {
 				.build();
 		}
 		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/deleteGitRepos")
@@ -573,7 +571,7 @@ public class ConfigRest {
 				.entity(ImmutableMap.of("error", "Git repositories could not be deleted.")).build();
 		}
 		new CodeClassPersistenceManager(projectKey).deleteKnowledgeElements();
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/* **************************************/
@@ -582,82 +580,67 @@ public class ConfigRest {
 	/*										*/
 	/* **************************************/
 
-	@Path("/setUseClassifierForIssueComments")
+	@Path("/setTextClassifierEnabled")
 	@POST
-	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
-													 @QueryParam("projectKey") String projectKey, @QueryParam("isClassifierUsedForIssues") boolean isActivated) {
+	public Response setTextClassifierEnabled(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("isTextClassifierEnabled") boolean isActivated) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ConfigPersistenceManager.setUseClassifierForIssueComments(projectKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		ConfigPersistenceManager.setTextClassifierEnabled(projectKey, isActivated);
+		return Response.ok().build();
 	}
 
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-									@QueryParam("arffFileName") String arffFileName) {// , @Suspended final AsyncResponse asyncResponse) {
-
-		Response returnResponse;
+			@QueryParam("trainingFileName") String trainingFileName) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-			returnResponse = isValidDataResponse;
-		} else if (arffFileName == null || arffFileName.isEmpty()) {
-			returnResponse = Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-				"The classifier could not be trained since the ARFF file name is invalid.")).build();
-		} else {
-			ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-
-			OnlineTrainer trainer = new OnlineFileTrainerImpl(projectKey, arffFileName);
-			boolean isTrained = trainer.train();
-
-			if (isTrained) {
-				returnResponse = Response.ok(Response.Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true))
-					.build();
-			} else {
-				returnResponse = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-					"The classifier could not be trained due to an internal server error.")).build();
-			}
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
-
-		return returnResponse;
+		if (trainingFileName == null || trainingFileName.isEmpty()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"The classifier could not be trained since the training file name is invalid.")).build();
+		}
+		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
+		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
+		if (trainer.train()) {
+			return Response.ok().build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "The classifier could not be trained.")).build();
 	}
 
-	@Path("/evaluateModel")
+	@Path("/evaluateTextClassifier")
 	@POST
-	public Response evaluateModel(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response evaluateTextClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
+		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
+		Map<String, Double> evaluationResults = trainer.evaluateClassifier();
 
-		try {
-			Map<String, Double> evaluationResults = trainer.evaluateClassifier();
-
-			if (evaluationResults.size() == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
+		if (evaluationResults.size() == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
-			}
-
-			String prefix = "";
-			StringBuilder prettyMapOutput = new StringBuilder();
-			prettyMapOutput.append("{");
-			for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-				prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
-					.append("\" : \"").append(e.getValue()).append("\"");
-				prefix = ",";
-			}
-			prettyMapOutput.append(System.lineSeparator()).append("}");
-
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", prettyMapOutput.toString())).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-				.build();
 		}
+
+		String prefix = "";
+		StringBuilder prettyMapOutput = new StringBuilder();
+		prettyMapOutput.append("{");
+		for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
+			prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
+			.append("\" : \"").append(e.getValue()).append("\"");
+			prefix = ",";
+		}
+		prettyMapOutput.append(System.lineSeparator()).append("}");
+
+		return Response.ok(ImmutableMap.of("content", prettyMapOutput.toString())).build();
 	}
 
 	@Path("/testClassifierWithText")
@@ -668,48 +651,40 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+		StringBuilder builder = new StringBuilder();
+		List<String> textList = Collections.singletonList(text);
 
-		try {
-			OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
+		boolean relevant = TextClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
+		builder.append(relevant ? "Relevant" : "Irrelevant");
 
-			StringBuilder builder = new StringBuilder();
-			List<String> textList = Collections.singletonList(text);
-
-			Boolean relevant = trainer.getClassifier().makeBinaryPredictions(textList).get(0);
-			builder.append(relevant ? "Relevant" : "Irrelevant");
-
-			if (relevant) {
-				builder.append(": ");
-				KnowledgeType type = trainer.getClassifier().makeFineGrainedPredictions(textList).get(0);
-				builder.append(type.toString());
-			}
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("content", builder.toString())).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", e.getMessage()))
-				.build();
+		if (relevant) {
+			builder.append(": ");
+			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList).get(0);
+			builder.append(type.toString());
 		}
+		return Response.ok(ImmutableMap.of("content", builder.toString())).build();
+
 	}
 
-	@Path("/saveArffFile")
+	@Path("/saveTrainingFile")
 	@POST
-	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("useOnlyValidatedData") boolean useOnlyValidatedData) {
+	public Response saveTrainingFileForTextClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		OnlineFileTrainerImpl trainer = new OnlineFileTrainerImpl(projectKey);
-		File arffFile = trainer.saveTrainingFile(useOnlyValidatedData);
+		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
+		File trainingFile = trainer.saveTrainingFile();
 
-		if (arffFile != null) {
-			return Response.ok(Status.ACCEPTED).entity(
-				ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
-				.build();
+		if (trainingFile != null) {
+			return Response.ok(ImmutableMap.of("trainingFile", trainingFile.getPath(), "content",
+					trainer.getTrainingData().toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-			.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
-			.build();
+				.entity(ImmutableMap.of("error",
+						"Training file for text classifier could not be created because of an internal server error."))
+				.build();
 	}
 
 	@Path("/classifyWholeProject")
@@ -720,23 +695,16 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-
-		if (!ConfigPersistenceManager.isClassifierEnabled(projectKey)) {
+		if (!ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			return Response.status(Status.FORBIDDEN)
 				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
-		try {
-			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
-			for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
-				classificationManager.classifyAllCommentsOfJiraIssue(issue);
-			}
-
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-		} catch (Exception e) {
-			LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
-			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
+		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
+		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
+			classificationManager.classifyDescriptionAndAllComments(issue);
 		}
+		return Response.ok().build();
 	}
 
 	/* **************************************/
@@ -759,7 +727,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setMinLinkSuggestionScore(projectKey, minLinkSuggestionProbability);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setMinimumDuplicateLength")
@@ -775,7 +743,7 @@ public class ConfigRest {
 				.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
 		}
 		ConfigPersistenceManager.setFragmentLength(projectKey, fragmentLength);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/* **************************************/
@@ -799,7 +767,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setMaxNumberRecommendations(projectKey, maxNumberRecommendations);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setSimilarityThreshold")
@@ -861,7 +829,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/deleteKnowledgeSource")
@@ -879,7 +847,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/updateKnowledgeSource")
@@ -900,7 +868,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.updateKnowledgeSource(projectKey, knowledgeSourceName, rdfSource);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setKnowledgeSourceActivated")
@@ -918,7 +886,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setProjectSource")
@@ -934,7 +902,7 @@ public class ConfigRest {
 				.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
 		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setAddRecommendationDirectly")
@@ -948,7 +916,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setAddRecommendationDirectly(projectKey, Boolean.valueOf(addRecommendationDirectly));
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setRecommendationInput")
@@ -962,7 +930,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/* **************************************/
@@ -987,7 +955,7 @@ public class ConfigRest {
 		}
 
 		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	/* **********************************************************/
@@ -1006,7 +974,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfQualityEvent(projectKey, eventKey);
-		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isActivated", isActivated)).build();
+		return Response.ok().entity(ImmutableMap.of("isActivated", isActivated)).build();
 	}
 
 	@Path("/activateQualityEvent")
@@ -1019,7 +987,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent(projectKey, eventKey, isActivated);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 	private boolean checkIfQualityTriggerExists(String triggerName) {
@@ -1049,9 +1017,7 @@ public class ConfigRest {
 	@GET
 	public Response getAllConsistencyCheckEventTriggerNames() {
 		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
-			.getInstance();
-		return Response.ok(Status.ACCEPTED)
-			.entity(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
-
+				.getInstance();
+		return Response.ok(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
 	}
 }

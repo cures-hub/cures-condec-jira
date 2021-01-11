@@ -116,7 +116,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testIsClassifierEnabled() {
-		assertEquals(false, project.isClassifierEnabled());
+		assertEquals(false, project.isTextClassifierEnabled());
 	}
 
 	@Test
