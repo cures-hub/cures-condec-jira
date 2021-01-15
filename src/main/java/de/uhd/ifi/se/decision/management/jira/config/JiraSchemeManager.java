@@ -41,10 +41,20 @@ import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescri
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
- * Handles plug-in initialization
+ * Handles the creation and removal of Jira issues types, Jira link types, and
+ * workflows.
+ * 
+ * Adds and removes Jira issue types to the issue type scheme of a project.
+ * 
+ * Adds and removes Jira workflows to the workflow scheme of a project.
  */
-public class PluginInitializer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PluginInitializer.class);
+public class JiraSchemeManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraSchemeManager.class);
+	private String projectKey;
+
+	public JiraSchemeManager(String projectKey) {
+		this.projectKey = projectKey;
+	}
 
 	public static IssueType createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -60,7 +70,7 @@ public class PluginInitializer {
 		String issueTypeFileName = getFileName(issueTypeName);
 
 		InputStream inputStream = ClassLoaderUtils.getResourceAsStream("images/" + issueTypeFileName,
-				PluginInitializer.class);
+				JiraSchemeManager.class);
 		Avatar tmpAvatar = AvatarImpl.createCustomAvatar(issueTypeFileName, "image/png", "0",
 				IconType.ISSUE_TYPE_ICON_TYPE);
 		Avatar issueAvatar = null;
@@ -72,8 +82,7 @@ public class PluginInitializer {
 				newIssueType = issueTypeManager.createIssueType(issueTypeName, issueTypeName, issueAvatar.getId());
 			}
 		} catch (DataAccessException | IOException e) {
-			LOGGER.error("Issue type " + issueTypeName + " could not be created.");
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Issue type " + issueTypeName + " could not be created: " + e.getMessage());
 		}
 
 		return newIssueType;
@@ -106,16 +115,16 @@ public class PluginInitializer {
 		return true;
 	}
 
-	public static boolean addLinkTypeToScheme(String linkTypeName, String projectKey) {
-		if (linkTypeName == null || projectKey == null) {
+	public boolean addLinkTypeToScheme(String linkTypeName) {
+		if (linkTypeName == null) {
 			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
 		return createLinkType(linkTypeName);
 	}
 
-	public static boolean removeLinkTypeFromScheme(String linkTypeName, String projectKey) {
-		if (linkTypeName == null || projectKey == null) {
+	public boolean removeLinkTypeFromScheme(String linkTypeName) {
+		if (linkTypeName == null) {
 			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
@@ -130,8 +139,8 @@ public class PluginInitializer {
 		return ComponentGetter.getUrlOfImageFolder() + getFileName(issueTypeName);
 	}
 
-	public static boolean addIssueTypeToScheme(IssueType jiraIssueType, String projectKey) {
-		if (jiraIssueType == null || projectKey == null) {
+	public boolean addIssueTypeToScheme(IssueType jiraIssueType) {
+		if (jiraIssueType == null) {
 			return false;
 		}
 
@@ -208,10 +217,10 @@ public class PluginInitializer {
 		return jiraWorkflow;
 	}
 
-	public static boolean removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
+	public boolean removeIssueTypeFromScheme(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypeName == null || issueTypes == null || projectKey == null) {
+		if (issueTypeName == null || issueTypes == null) {
 			return false;
 		}
 
