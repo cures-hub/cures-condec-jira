@@ -2,11 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +12,6 @@ import com.atlassian.core.util.ClassLoaderUtils;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarImpl;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.icon.IconType;
@@ -42,8 +38,6 @@ import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescriptorProvider;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
@@ -51,34 +45,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public class PluginInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginInitializer.class);
-
-	public void createDecisionKnowledgeIssueTypes() {
-		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
-		for (String issueTypeName : missingDecisionKnowledgeIssueTypeNames) {
-			createIssueType(issueTypeName);
-		}
-	}
-
-	public List<String> findMissingDecisionKnowledgeIssueTypes() {
-		List<String> knowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			knowledgeTypes.add(type.toString());
-		}
-		for (String issueTypeName : getNamesOfExistingIssueTypes()) {
-			knowledgeTypes.remove(issueTypeName);
-		}
-		return knowledgeTypes;
-	}
-
-	public List<String> getNamesOfExistingIssueTypes() {
-		List<String> existingIssueTypeNames = new ArrayList<String>();
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> issueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : issueTypes) {
-			existingIssueTypeNames.add(issueType.getName());
-		}
-		return existingIssueTypeNames;
-	}
 
 	public static IssueType createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -111,20 +77,6 @@ public class PluginInitializer {
 		}
 
 		return newIssueType;
-	}
-
-	public void createDecisionKnowledgeLinkTypes() {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Set<String> existingIssueLinkTypeNames = DecisionKnowledgeProject.getNamesOfLinkTypes();
-
-		for (LinkType linkType : LinkType.getDefaultTypes()) {
-			if (existingIssueLinkTypeNames.contains(linkType.getName())) {
-				continue;
-			}
-			// TODO Use "createLinkType" method from below
-			issueLinkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardName(),
-					linkType.getInwardName(), linkType.getStyle());
-		}
 	}
 
 	public static void createLinkType(String linkTypeName) {

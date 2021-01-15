@@ -7,11 +7,11 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 
-public class TestPluginInitializer {
+public class TestPluginInitializer extends TestSetUp {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		TestSetUp.init();
+		init();
 	}
 
 	@Test
