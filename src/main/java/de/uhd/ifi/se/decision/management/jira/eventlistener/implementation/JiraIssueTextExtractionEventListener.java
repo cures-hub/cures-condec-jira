@@ -35,17 +35,14 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 	private String projectKey;
 	private IssueEvent issueEvent;
-	private ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
-	public JiraIssueTextExtractionEventListener(
-			ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments) {
-		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
-	}
-
-	public JiraIssueTextExtractionEventListener() {
-		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueText();
-	}
+	/**
+	 * Locks the edit description/comment event function if a REST service or
+	 * another process edits the description/comments so that the event listener
+	 * does not fire.
+	 */
+	public static boolean editLock;
 
 	/**
 	 * @issue How to implement the handling of the concrete event?
@@ -57,6 +54,13 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	 */
 	@Override
 	public void onIssueEvent(IssueEvent issueEvent) {
+		if (editLock) {
+			// If locked, a REST service or another process is currently manipulating a
+			// comment or the description and this event should not be handled by the event
+			// listener.
+			LOGGER.debug("Event handling of changes in Jira issue description or comment is still locked.");
+			return;
+		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
@@ -101,7 +105,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
-			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
+			new ClassificationManagerForJiraIssueText(projectKey).classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) ComponentAccessor.getCommentManager()
 					.getCommentById(issueEvent.getComment().getId());
@@ -115,10 +119,12 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String commentBody = comment.getBody();
 		String newCommentBody = replaceIconsWithTags(commentBody);
 		if (!newCommentBody.equals(commentBody)) {
+			editLock = true;
 			LOGGER.info("Text was manually classified as a decision knowledge using icons in the Jira issue "
 					+ issueEvent.getIssue().getKey());
 			comment.setBody(newCommentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
+			editLock = false;
 		}
 	}
 
@@ -131,7 +137,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 			// TODO This seems not to work for manual classified sentences. Check and fix
-			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
+			new ClassificationManagerForJiraIssueText(projectKey).classifyDescription(issueEvent.getIssue());
 		} else {
 			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
 		}
@@ -143,9 +149,11 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		String description = jiraIssue.getDescription();
 		String newDescription = replaceIconsWithTags(description);
 		if (!newDescription.equals(description)) {
+			editLock = true;
 			LOGGER.info("Text was manually classified as a decision knowledge using icons in the Jira issue "
 					+ issueEvent.getIssue().getKey());
 			JiraIssuePersistenceManager.updateDescription(jiraIssue, newDescription, issueEvent.getUser());
+			editLock = false;
 		}
 	}
 
@@ -195,7 +203,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (positionOfTerminator > 0) {
 			positionOfTerminator += positionOfIcon;
 			textWithoutIcon = text.substring(0, positionOfTerminator) + type.getTag()
-					+ text.substring(positionOfTerminator);
+			+ text.substring(positionOfTerminator);
 		} else {
 			textWithoutIcon += type.getTag();
 		}

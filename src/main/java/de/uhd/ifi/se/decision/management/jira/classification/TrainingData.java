@@ -155,6 +155,9 @@ public class TrainingData {
 	 *            current {@link KnowledgeGraph).
 	 */
 	private void parseDataFrame(DataFrame dataFrame) {
+		if (dataFrame == null) {
+			return;
+		}
 		for (int i = 0; i < dataFrame.size(); i++) {
 			Tuple currentRow = dataFrame.get(i);
 			String currentSentence = currentRow.getString(5);
@@ -256,8 +259,11 @@ public class TrainingData {
 	}
 
 	public static DataFrame readDataFrameFromDefaultTrainingDataCSVFile() {
-
-		File file = FileManager.getAllTrainingFiles().get(0);
+		List<File> trainingFiles = FileManager.getAllTrainingFiles();
+		if (trainingFiles.isEmpty()) {
+			return null;
+		}
+		File file = trainingFiles.get(0);
 		return readDataFrameFromCSVFile(file);
 	}
 

@@ -4,8 +4,8 @@
  *
  * A dynamic, browser-based visualization library.
  *
- * @version 8.2.1
- * @date    2020-08-29T08:03:10.316Z
+ * @version 9.0.0
+ * @date    2021-01-10T19:09:14.375Z
  *
  * @copyright (c) 2011-2017 Almende B.V, http://almende.com
  * @copyright (c) 2017-2019 visjs contributors, https://github.com/visjs
@@ -41,7 +41,9 @@ var check = function (it) {
 
 var global_1 = // eslint-disable-next-line no-undef
 check(typeof globalThis == 'object' && globalThis) || check(typeof window == 'object' && window) || check(typeof self == 'object' && self) || check(typeof commonjsGlobal == 'object' && commonjsGlobal) || // eslint-disable-next-line no-new-func
-Function('return this')();
+function () {
+  return this;
+}() || Function('return this')();
 
 var fails = function (exec) {
   try {
@@ -836,8 +838,8 @@ function drawDatabase(ctx, x, y, w, h) {
  * @param pattern - List of lengths starting with line and then alternating between space and line.
  *
  * @author David Jordan
- * @date 2012-08-08
  * @remarks
+ * date 2012-08-08
  * http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvas
  */
 
@@ -1300,7 +1302,7 @@ var shared = createCommonjsModule(function (module) {
   (module.exports = function (key, value) {
     return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
   })('versions', []).push({
-    version: '3.6.4',
+    version: '3.8.1',
     mode:  'pure' ,
     copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
   });
@@ -1539,12 +1541,13 @@ var getterFor = function (TYPE) {
 };
 
 if (nativeWeakMap) {
-  var store$1 = new WeakMap$1();
+  var store$1 = sharedStore.state || (sharedStore.state = new WeakMap$1());
   var wmget = store$1.get;
   var wmhas = store$1.has;
   var wmset = store$1.set;
 
   set = function (it, metadata) {
+    metadata.facade = it;
     wmset.call(store$1, it, metadata);
     return metadata;
   };
@@ -1561,6 +1564,7 @@ if (nativeWeakMap) {
   hiddenKeys[STATE] = true;
 
   set = function (it, metadata) {
+    metadata.facade = it;
     createNonEnumerableProperty(it, STATE, metadata);
     return metadata;
   };
@@ -1600,7 +1604,7 @@ var arraySpeciesCreate = function (originalArray, length) {
   return new (C === undefined ? Array : C)(length === 0 ? 0 : length);
 };
 
-var push = [].push; // `Array.prototype.{ forEach, map, filter, some, every, find, findIndex }` methods implementation
+var push = [].push; // `Array.prototype.{ forEach, map, filter, some, every, find, findIndex, filterOut }` methods implementation
 
 var createMethod$1 = function (TYPE) {
   var IS_MAP = TYPE == 1;
@@ -1608,6 +1612,7 @@ var createMethod$1 = function (TYPE) {
   var IS_SOME = TYPE == 3;
   var IS_EVERY = TYPE == 4;
   var IS_FIND_INDEX = TYPE == 6;
+  var IS_FILTER_OUT = TYPE == 7;
   var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
   return function ($this, callbackfn, that, specificCreate) {
     var O = toObject($this);
@@ -1616,7 +1621,7 @@ var createMethod$1 = function (TYPE) {
     var length = toLength(self.length);
     var index = 0;
     var create = specificCreate || arraySpeciesCreate;
-    var target = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var target = IS_MAP ? create($this, length) : IS_FILTER || IS_FILTER_OUT ? create($this, 0) : undefined;
     var value, result;
 
     for (; length > index; index++) if (NO_HOLES || index in self) {
@@ -1641,7 +1646,15 @@ var createMethod$1 = function (TYPE) {
             case 2:
               push.call(target, value);
             // filter
-          } else if (IS_EVERY) return false; // every
+          } else switch (TYPE) {
+            case 4:
+              return false;
+            // every
+
+            case 7:
+              push.call(target, value);
+            // filterOut
+          }
       }
     }
 
@@ -1670,7 +1683,10 @@ var arrayIteration = {
   find: createMethod$1(5),
   // `Array.prototype.findIndex` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
-  findIndex: createMethod$1(6)
+  findIndex: createMethod$1(6),
+  // `Array.prototype.filterOut` method
+  // https://github.com/tc39/proposal-array-filtering
+  filterOut: createMethod$1(7)
 };
 
 var $forEach = arrayIteration.forEach;
@@ -2369,12 +2385,19 @@ var getIteratorMethod_1 = getIteratorMethod;
 
 var getIteratorMethod$1 = getIteratorMethod_1;
 
+var iteratorClose = function (iterator) {
+  var returnMethod = iterator['return'];
+
+  if (returnMethod !== undefined) {
+    return anObject(returnMethod.call(iterator)).value;
+  }
+};
+
 var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
   try {
     return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value); // 7.4.6 IteratorClose(iterator, completion)
   } catch (error) {
-    var returnMethod = iterator['return'];
-    if (returnMethod !== undefined) anObject(returnMethod.call(iterator));
+    iteratorClose(iterator);
     throw error;
   }
 };
@@ -2497,6 +2520,161 @@ var from_1$1 = from_1;
 
 var from_1$2 = from_1$1;
 
+// https://tc39.github.io/ecma262/#sec-array.prototype.fill
+
+
+var arrayFill = function fill(value
+/* , start = 0, end = @length */
+) {
+  var O = toObject(this);
+  var length = toLength(O.length);
+  var argumentsLength = arguments.length;
+  var index = toAbsoluteIndex(argumentsLength > 1 ? arguments[1] : undefined, length);
+  var end = argumentsLength > 2 ? arguments[2] : undefined;
+  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
+
+  while (endPos > index) O[index++] = value;
+
+  return O;
+};
+
+// https://tc39.github.io/ecma262/#sec-array.prototype.fill
+
+_export({
+  target: 'Array',
+  proto: true
+}, {
+  fill: arrayFill
+}); // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+
+var fill = entryVirtual('Array').fill;
+
+var ArrayPrototype$1 = Array.prototype;
+
+var fill_1 = function (it) {
+  var own = it.fill;
+  return it === ArrayPrototype$1 || it instanceof Array && own === ArrayPrototype$1.fill ? fill : own;
+};
+
+var fill$1 = fill_1;
+
+var fill$2 = fill$1;
+
+var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
+
+var slice$1 = [].slice;
+var MSIE = /MSIE .\./.test(engineUserAgent); // <- dirty ie9- check
+
+var wrap$1 = function (scheduler) {
+  return function (handler, timeout
+  /* , ...arguments */
+  ) {
+    var boundArgs = arguments.length > 2;
+    var args = boundArgs ? slice$1.call(arguments, 2) : undefined;
+    return scheduler(boundArgs ? function () {
+      // eslint-disable-next-line no-new-func
+      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+    } : handler, timeout);
+  };
+}; // ie9- setTimeout & setInterval additional parameters fix
+// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+
+
+_export({
+  global: true,
+  bind: true,
+  forced: MSIE
+}, {
+  // `setTimeout` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+  setTimeout: wrap$1(global_1.setTimeout),
+  // `setInterval` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+  setInterval: wrap$1(global_1.setInterval)
+});
+
+var setTimeout$1 = path.setTimeout;
+
+var setTimeout$2 = setTimeout$1;
+
+var $stringify$1 = getBuiltIn('JSON', 'stringify');
+var re = /[\uD800-\uDFFF]/g;
+var low = /^[\uD800-\uDBFF]$/;
+var hi = /^[\uDC00-\uDFFF]$/;
+
+var fix = function (match, offset, string) {
+  var prev = string.charAt(offset - 1);
+  var next = string.charAt(offset + 1);
+
+  if (low.test(match) && !hi.test(next) || hi.test(match) && !low.test(prev)) {
+    return '\\u' + match.charCodeAt(0).toString(16);
+  }
+
+  return match;
+};
+
+var FORCED$1 = fails(function () {
+  return $stringify$1('\uDF06\uD834') !== '"\\udf06\\ud834"' || $stringify$1('\uDEAD') !== '"\\udead"';
+});
+
+if ($stringify$1) {
+  // https://github.com/tc39/proposal-well-formed-stringify
+  _export({
+    target: 'JSON',
+    stat: true,
+    forced: FORCED$1
+  }, {
+    // eslint-disable-next-line no-unused-vars
+    stringify: function stringify(it, replacer, space) {
+      var result = $stringify$1.apply(null, arguments);
+      return typeof result == 'string' ? result.replace(re, fix) : result;
+    }
+  });
+}
+
+if (!path.JSON) path.JSON = {
+  stringify: JSON.stringify
+}; // eslint-disable-next-line no-unused-vars
+
+var stringify = function stringify(it, replacer, space) {
+  return path.JSON.stringify.apply(null, arguments);
+};
+
+var stringify$1 = stringify;
+
+var stringify$2 = stringify$1;
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+var classCallCheck = _classCallCheck;
+
+var defineProperty$5 = defineProperty_1;
+
+var defineProperty$6 = defineProperty$5;
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+
+    defineProperty$6(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+var createClass = _createClass;
+
 // https://tc39.github.io/ecma262/#sec-object.create
 
 _export({
@@ -2516,10 +2694,6 @@ var create = function create(P, D) {
 var create$1 = create;
 
 var create$2 = create$1;
-
-var defineProperty$5 = defineProperty_1;
-
-var defineProperty$6 = defineProperty$5;
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -2639,53 +2813,49 @@ var arrayMethodUsesToLength = function (METHOD_NAME, options) {
   });
 };
 
-var $forEach$1 = arrayIteration.forEach;
-var STRICT_METHOD = arrayMethodIsStrict('forEach');
-var USES_TO_LENGTH = arrayMethodUsesToLength('forEach'); // `Array.prototype.forEach` method implementation
-// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-
-var arrayForEach = !STRICT_METHOD || !USES_TO_LENGTH ? function forEach(callbackfn
-/* , thisArg */
-) {
-  return $forEach$1(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-} : [].forEach;
-
-// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
-
+var $indexOf = arrayIncludes.indexOf;
+var nativeIndexOf = [].indexOf;
+var NEGATIVE_ZERO = !!nativeIndexOf && 1 / [1].indexOf(1, -0) < 0;
+var STRICT_METHOD = arrayMethodIsStrict('indexOf');
+var USES_TO_LENGTH = arrayMethodUsesToLength('indexOf', {
+  ACCESSORS: true,
+  1: 0
+}); // `Array.prototype.indexOf` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.indexof
 
 _export({
   target: 'Array',
   proto: true,
-  forced: [].forEach != arrayForEach
+  forced: NEGATIVE_ZERO || !STRICT_METHOD || !USES_TO_LENGTH
 }, {
-  forEach: arrayForEach
+  indexOf: function indexOf(searchElement
+  /* , fromIndex = 0 */
+  ) {
+    return NEGATIVE_ZERO // convert -0 to +0
+    ? nativeIndexOf.apply(this, arguments) || 0 : $indexOf(this, searchElement, arguments.length > 1 ? arguments[1] : undefined);
+  }
 });
 
-var forEach = entryVirtual('Array').forEach;
+var indexOf$1 = entryVirtual('Array').indexOf;
 
-var forEach$1 = forEach;
+var ArrayPrototype$2 = Array.prototype;
 
-var ArrayPrototype$1 = Array.prototype;
-var DOMIterables = {
-  DOMTokenList: true,
-  NodeList: true
+var indexOf_1 = function (it) {
+  var own = it.indexOf;
+  return it === ArrayPrototype$2 || it instanceof Array && own === ArrayPrototype$2.indexOf ? indexOf$1 : own;
 };
 
-var forEach_1 = function (it) {
-  var own = it.forEach;
-  return it === ArrayPrototype$1 || it instanceof Array && own === ArrayPrototype$1.forEach // eslint-disable-next-line no-prototype-builtins
-  || DOMIterables.hasOwnProperty(classof(it)) ? forEach$1 : own;
-};
+var indexOf$2 = indexOf_1;
 
-var forEach$2 = forEach_1;
+var indexOf$3 = indexOf$2;
 
 var trim$3 = stringTrim.trim;
 var $parseInt = global_1.parseInt;
 var hex = /^[+-]?0[Xx]/;
-var FORCED$1 = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22; // `parseInt` method
+var FORCED$2 = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22; // `parseInt` method
 // https://tc39.github.io/ecma262/#sec-parseint-string-radix
 
-var numberParseInt = FORCED$1 ? function parseInt(string, radix) {
+var numberParseInt = FORCED$2 ? function parseInt(string, radix) {
   var S = trim$3(String(string));
   return $parseInt(S, radix >>> 0 || (hex.test(S) ? 16 : 10));
 } : $parseInt;
@@ -2755,8 +2925,6 @@ var values$1 = values;
 
 var values$2 = values$1;
 
-var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
-
 var process = global_1.process;
 var versions = process && process.versions;
 var v8 = versions && versions.v8;
@@ -2817,11 +2985,11 @@ _export({
 
 var filter = entryVirtual('Array').filter;
 
-var ArrayPrototype$2 = Array.prototype;
+var ArrayPrototype$3 = Array.prototype;
 
 var filter_1 = function (it) {
   var own = it.filter;
-  return it === ArrayPrototype$2 || it instanceof Array && own === ArrayPrototype$2.filter ? filter : own;
+  return it === ArrayPrototype$3 || it instanceof Array && own === ArrayPrototype$3.filter ? filter : own;
 };
 
 var filter$1 = filter_1;
@@ -2850,41 +3018,255 @@ var getPrototypeOf$1 = getPrototypeOf;
 
 var getPrototypeOf$2 = getPrototypeOf$1;
 
-var $indexOf = arrayIncludes.indexOf;
-var nativeIndexOf = [].indexOf;
-var NEGATIVE_ZERO = !!nativeIndexOf && 1 / [1].indexOf(1, -0) < 0;
-var STRICT_METHOD$1 = arrayMethodIsStrict('indexOf');
+var $includes = arrayIncludes.includes;
 var USES_TO_LENGTH$2 = arrayMethodUsesToLength('indexOf', {
   ACCESSORS: true,
   1: 0
-}); // `Array.prototype.indexOf` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.indexof
+}); // `Array.prototype.includes` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.includes
 
 _export({
   target: 'Array',
   proto: true,
-  forced: NEGATIVE_ZERO || !STRICT_METHOD$1 || !USES_TO_LENGTH$2
+  forced: !USES_TO_LENGTH$2
 }, {
-  indexOf: function indexOf(searchElement
+  includes: function includes(el
   /* , fromIndex = 0 */
   ) {
-    return NEGATIVE_ZERO // convert -0 to +0
-    ? nativeIndexOf.apply(this, arguments) || 0 : $indexOf(this, searchElement, arguments.length > 1 ? arguments[1] : undefined);
+    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
+  }
+}); // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+
+var includes = entryVirtual('Array').includes;
+
+var MATCH = wellKnownSymbol('match'); // `IsRegExp` abstract operation
+// https://tc39.github.io/ecma262/#sec-isregexp
+
+var isRegexp = function (it) {
+  var isRegExp;
+  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
+};
+
+var notARegexp = function (it) {
+  if (isRegexp(it)) {
+    throw TypeError("The method doesn't accept regular expressions");
+  }
+
+  return it;
+};
+
+var MATCH$1 = wellKnownSymbol('match');
+
+var correctIsRegexpLogic = function (METHOD_NAME) {
+  var regexp = /./;
+
+  try {
+    '/./'[METHOD_NAME](regexp);
+  } catch (error1) {
+    try {
+      regexp[MATCH$1] = false;
+      return '/./'[METHOD_NAME](regexp);
+    } catch (error2) {
+      /* empty */
+    }
+  }
+
+  return false;
+};
+
+// https://tc39.github.io/ecma262/#sec-string.prototype.includes
+
+
+_export({
+  target: 'String',
+  proto: true,
+  forced: !correctIsRegexpLogic('includes')
+}, {
+  includes: function includes(searchString
+  /* , position = 0 */
+  ) {
+    return !!~String(requireObjectCoercible(this)).indexOf(notARegexp(searchString), arguments.length > 1 ? arguments[1] : undefined);
   }
 });
 
-var indexOf$1 = entryVirtual('Array').indexOf;
+var includes$1 = entryVirtual('String').includes;
 
-var ArrayPrototype$3 = Array.prototype;
+var ArrayPrototype$4 = Array.prototype;
+var StringPrototype$1 = String.prototype;
 
-var indexOf_1 = function (it) {
-  var own = it.indexOf;
-  return it === ArrayPrototype$3 || it instanceof Array && own === ArrayPrototype$3.indexOf ? indexOf$1 : own;
+var includes$2 = function (it) {
+  var own = it.includes;
+  if (it === ArrayPrototype$4 || it instanceof Array && own === ArrayPrototype$4.includes) return includes;
+
+  if (typeof it === 'string' || it === StringPrototype$1 || it instanceof String && own === StringPrototype$1.includes) {
+    return includes$1;
+  }
+
+  return own;
 };
 
-var indexOf$2 = indexOf_1;
+var includes$3 = includes$2;
 
-var indexOf$3 = indexOf$2;
+var includes$4 = includes$3;
+
+var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('splice');
+var USES_TO_LENGTH$3 = arrayMethodUsesToLength('splice', {
+  ACCESSORS: true,
+  0: 0,
+  1: 2
+});
+var max$1 = Math.max;
+var min$2 = Math.min;
+var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded'; // `Array.prototype.splice` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.splice
+// with adding support of @@species
+
+_export({
+  target: 'Array',
+  proto: true,
+  forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$3
+}, {
+  splice: function splice(start, deleteCount
+  /* , ...items */
+  ) {
+    var O = toObject(this);
+    var len = toLength(O.length);
+    var actualStart = toAbsoluteIndex(start, len);
+    var argumentsLength = arguments.length;
+    var insertCount, actualDeleteCount, A, k, from, to;
+
+    if (argumentsLength === 0) {
+      insertCount = actualDeleteCount = 0;
+    } else if (argumentsLength === 1) {
+      insertCount = 0;
+      actualDeleteCount = len - actualStart;
+    } else {
+      insertCount = argumentsLength - 2;
+      actualDeleteCount = min$2(max$1(toInteger(deleteCount), 0), len - actualStart);
+    }
+
+    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER) {
+      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
+    }
+
+    A = arraySpeciesCreate(O, actualDeleteCount);
+
+    for (k = 0; k < actualDeleteCount; k++) {
+      from = actualStart + k;
+      if (from in O) createProperty(A, k, O[from]);
+    }
+
+    A.length = actualDeleteCount;
+
+    if (insertCount < actualDeleteCount) {
+      for (k = actualStart; k < len - actualDeleteCount; k++) {
+        from = k + actualDeleteCount;
+        to = k + insertCount;
+        if (from in O) O[to] = O[from];else delete O[to];
+      }
+
+      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
+    } else if (insertCount > actualDeleteCount) {
+      for (k = len - actualDeleteCount; k > actualStart; k--) {
+        from = k + actualDeleteCount - 1;
+        to = k + insertCount - 1;
+        if (from in O) O[to] = O[from];else delete O[to];
+      }
+    }
+
+    for (k = 0; k < insertCount; k++) {
+      O[k + actualStart] = arguments[k + 2];
+    }
+
+    O.length = len - actualDeleteCount + insertCount;
+    return A;
+  }
+});
+
+var splice = entryVirtual('Array').splice;
+
+var ArrayPrototype$5 = Array.prototype;
+
+var splice_1 = function (it) {
+  var own = it.splice;
+  return it === ArrayPrototype$5 || it instanceof Array && own === ArrayPrototype$5.splice ? splice : own;
+};
+
+var splice$1 = splice_1;
+
+var splice$2 = splice$1;
+
+var nativeReverse = [].reverse;
+var test$1 = [1, 2]; // `Array.prototype.reverse` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.reverse
+// fix for Safari 12.0 bug
+// https://bugs.webkit.org/show_bug.cgi?id=188794
+
+_export({
+  target: 'Array',
+  proto: true,
+  forced: String(test$1) === String(test$1.reverse())
+}, {
+  reverse: function reverse() {
+    // eslint-disable-next-line no-self-assign
+    if (isArray(this)) this.length = this.length;
+    return nativeReverse.call(this);
+  }
+});
+
+var reverse = entryVirtual('Array').reverse;
+
+var ArrayPrototype$6 = Array.prototype;
+
+var reverse_1 = function (it) {
+  var own = it.reverse;
+  return it === ArrayPrototype$6 || it instanceof Array && own === ArrayPrototype$6.reverse ? reverse : own;
+};
+
+var reverse$1 = reverse_1;
+
+var reverse$2 = reverse$1;
+
+var $forEach$1 = arrayIteration.forEach;
+var STRICT_METHOD$1 = arrayMethodIsStrict('forEach');
+var USES_TO_LENGTH$4 = arrayMethodUsesToLength('forEach'); // `Array.prototype.forEach` method implementation
+// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
+
+var arrayForEach = !STRICT_METHOD$1 || !USES_TO_LENGTH$4 ? function forEach(callbackfn
+/* , thisArg */
+) {
+  return $forEach$1(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+} : [].forEach;
+
+// https://tc39.github.io/ecma262/#sec-array.prototype.foreach
+
+
+_export({
+  target: 'Array',
+  proto: true,
+  forced: [].forEach != arrayForEach
+}, {
+  forEach: arrayForEach
+});
+
+var forEach = entryVirtual('Array').forEach;
+
+var forEach$1 = forEach;
+
+var ArrayPrototype$7 = Array.prototype;
+var DOMIterables = {
+  DOMTokenList: true,
+  NodeList: true
+};
+
+var forEach_1 = function (it) {
+  var own = it.forEach;
+  return it === ArrayPrototype$7 || it instanceof Array && own === ArrayPrototype$7.forEach // eslint-disable-next-line no-prototype-builtins
+  || DOMIterables.hasOwnProperty(classof(it)) ? forEach$1 : own;
+};
+
+var forEach$2 = forEach_1;
 
 // https://tc39.github.io/ecma262/#sec-array.isarray
 
@@ -2920,7 +3302,7 @@ var isIterable_1 = isIterable;
 var isIterable$1 = isIterable_1;
 
 var IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');
-var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
 var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded'; // We can't use this feature detection in V8 since it causes
 // deoptimization and serious performance degradation
 // https://github.com/zloirock/core-js/issues/679
@@ -2938,14 +3320,14 @@ var isConcatSpreadable = function (O) {
   return spreadable !== undefined ? !!spreadable : isArray(O);
 };
 
-var FORCED$2 = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT; // `Array.prototype.concat` method
+var FORCED$3 = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT; // `Array.prototype.concat` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.concat
 // with adding support of @@isConcatSpreadable and @@species
 
 _export({
   target: 'Array',
   proto: true,
-  forced: FORCED$2
+  forced: FORCED$3
 }, {
   concat: function concat(arg) {
     // eslint-disable-line no-unused-vars
@@ -2959,11 +3341,11 @@ _export({
 
       if (isConcatSpreadable(E)) {
         len = toLength(E.length);
-        if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+        if (n + len > MAX_SAFE_INTEGER$1) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
 
         for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);
       } else {
-        if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+        if (n >= MAX_SAFE_INTEGER$1) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
         createProperty(A, n++, E);
       }
     }
@@ -3022,10 +3404,6 @@ defineWellKnownSymbol('toStringTag');
 // https://tc39.github.io/ecma262/#sec-symbol.unscopables
 
 defineWellKnownSymbol('unscopables');
-
-// https://tc39.github.io/ecma262/#sec-math-@@tostringtag
-
-setToStringTag(Math, 'Math', true);
 
 // https://tc39.github.io/ecma262/#sec-json-@@tostringtag
 
@@ -3088,22 +3466,22 @@ var from_1$3 = from_1;
 
 var from_1$4 = from_1$3;
 
-var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('slice');
-var USES_TO_LENGTH$3 = arrayMethodUsesToLength('slice', {
+var HAS_SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('slice');
+var USES_TO_LENGTH$5 = arrayMethodUsesToLength('slice', {
   ACCESSORS: true,
   0: 0,
   1: 2
 });
 var SPECIES$2 = wellKnownSymbol('species');
 var nativeSlice = [].slice;
-var max$1 = Math.max; // `Array.prototype.slice` method
+var max$2 = Math.max; // `Array.prototype.slice` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.slice
 // fallback for not array-like ES3 strings and DOM objects
 
 _export({
   target: 'Array',
   proto: true,
-  forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$3
+  forced: !HAS_SPECIES_SUPPORT$2 || !USES_TO_LENGTH$5
 }, {
   slice: function slice(start, end) {
     var O = toIndexedObject(this);
@@ -3128,7 +3506,7 @@ _export({
       }
     }
 
-    result = new (Constructor === undefined ? Array : Constructor)(max$1(fin - k, 0));
+    result = new (Constructor === undefined ? Array : Constructor)(max$2(fin - k, 0));
 
     for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
 
@@ -3137,18 +3515,18 @@ _export({
   }
 });
 
-var slice$1 = entryVirtual('Array').slice;
+var slice$2 = entryVirtual('Array').slice;
 
-var ArrayPrototype$4 = Array.prototype;
+var ArrayPrototype$8 = Array.prototype;
 
 var slice_1 = function (it) {
   var own = it.slice;
-  return it === ArrayPrototype$4 || it instanceof Array && own === ArrayPrototype$4.slice ? slice$1 : own;
+  return it === ArrayPrototype$8 || it instanceof Array && own === ArrayPrototype$8.slice ? slice$2 : own;
 };
 
-var slice$2 = slice_1;
+var slice$3 = slice_1;
 
-var slice$3 = slice$2;
+var slice$4 = slice$3;
 
 function _arrayLikeToArray(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
@@ -3168,7 +3546,7 @@ function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
   if (typeof o === "string") return arrayLikeToArray(o, minLen);
 
-  var n = slice$3(_context = Object.prototype.toString.call(o)).call(_context, 8, -1);
+  var n = slice$4(_context = Object.prototype.toString.call(o)).call(_context, 8, -1);
 
   if (n === "Object" && o.constructor) n = o.constructor.name;
   if (n === "Map" || n === "Set") return from_1$4(o);
@@ -3228,16 +3606,16 @@ var keys$2 = keys$1;
 var keys$3 = keys$2;
 
 var $map = arrayIteration.map;
-var HAS_SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('map'); // FF49- issue
+var HAS_SPECIES_SUPPORT$3 = arrayMethodHasSpeciesSupport('map'); // FF49- issue
 
-var USES_TO_LENGTH$4 = arrayMethodUsesToLength('map'); // `Array.prototype.map` method
+var USES_TO_LENGTH$6 = arrayMethodUsesToLength('map'); // `Array.prototype.map` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.map
 // with adding support of @@species
 
 _export({
   target: 'Array',
   proto: true,
-  forced: !HAS_SPECIES_SUPPORT$2 || !USES_TO_LENGTH$4
+  forced: !HAS_SPECIES_SUPPORT$3 || !USES_TO_LENGTH$6
 }, {
   map: function map(callbackfn
   /* , thisArg */
@@ -3248,11 +3626,11 @@ _export({
 
 var map = entryVirtual('Array').map;
 
-var ArrayPrototype$5 = Array.prototype;
+var ArrayPrototype$9 = Array.prototype;
 
 var map_1 = function (it) {
   var own = it.map;
-  return it === ArrayPrototype$5 || it instanceof Array && own === ArrayPrototype$5.map ? map : own;
+  return it === ArrayPrototype$9 || it instanceof Array && own === ArrayPrototype$9.map ? map : own;
 };
 
 var map$1 = map_1;
@@ -3304,9 +3682,9 @@ var ownKeys$2 = ownKeys$1;
 
 var ownKeys$3 = ownKeys$2;
 
-var slice$4 = slice_1;
+var slice$5 = slice_1;
 
-var slice$5 = slice$4;
+var slice$6 = slice$5;
 
 function _arrayWithoutHoles(arr) {
   if (isArray$3(arr)) return arrayLikeToArray(arr);
@@ -3334,11 +3712,11 @@ var toConsumableArray = _toConsumableArray;
 
 var concat = entryVirtual('Array').concat;
 
-var ArrayPrototype$6 = Array.prototype;
+var ArrayPrototype$a = Array.prototype;
 
 var concat_1 = function (it) {
   var own = it.concat;
-  return it === ArrayPrototype$6 || it instanceof Array && own === ArrayPrototype$6.concat ? concat : own;
+  return it === ArrayPrototype$a || it instanceof Array && own === ArrayPrototype$a.concat ? concat : own;
 };
 
 var concat$1 = concat_1;
@@ -3348,4212 +3726,6 @@ var concat$2 = concat$1;
 var symbol$3 = symbol;
 
 var symbol$4 = symbol$3;
-
-function ownKeys$4(object, enumerableOnly) { var keys = keys$3(object); if (getOwnPropertySymbols$2) { var symbols = getOwnPropertySymbols$2(object); if (enumerableOnly) symbols = filter$2(symbols).call(symbols, function (sym) { return getOwnPropertyDescriptor$3(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { var _context14; forEach$2(_context14 = ownKeys$4(Object(source), true)).call(_context14, function (key) { defineProperty$7(target, key, source[key]); }); } else if (getOwnPropertyDescriptors$2) { defineProperties$1(target, getOwnPropertyDescriptors$2(source)); } else { var _context15; forEach$2(_context15 = ownKeys$4(Object(source))).call(_context15, function (key) { defineProperty$2(target, key, getOwnPropertyDescriptor$3(source, key)); }); } } return target; }
-
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray$1(o, minLen) { var _context13; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = slice$5(_context13 = Object.prototype.toString.call(o)).call(_context13, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-/**
- * vis-util
- * https://github.com/visjs/vis-util
- *
- * utilitie collection for visjs
- *
- * @version 4.3.4
- * @date    2020-08-01T15:11:53.524Z
- *
- * @copyright (c) 2011-2017 Almende B.V, http://almende.com
- * @copyright (c) 2017-2019 visjs contributors, https://github.com/visjs
- *
- * @license
- * vis.js is dual licensed under both
- *
- *   1. The Apache 2.0 License
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   and
- *
- *   2. The MIT License
- *      http://opensource.org/licenses/MIT
- *
- * vis.js may be distributed under either license.
- */
-
-/**
- * Use this symbol to delete properies in deepObjectAssign.
- */
-var DELETE = symbol$4("DELETE");
-/**
- * Pure version of deepObjectAssign, it doesn't modify any of it's arguments.
- *
- * @param base - The base object that fullfils the whole interface T.
- * @param updates - Updates that may change or delete props.
- *
- * @returns A brand new instance with all the supplied objects deeply merged.
- */
-
-
-function pureDeepObjectAssign(base) {
-  var _context;
-
-  for (var _len = arguments.length, updates = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    updates[_key - 1] = arguments[_key];
-  }
-
-  return deepObjectAssign.apply(void 0, concat$2(_context = [{}, base]).call(_context, updates));
-}
-/**
- * Deep version of object assign with additional deleting by the DELETE symbol.
- *
- * @param values - Objects to be deeply merged.
- *
- * @returns The first object from values.
- */
-
-
-function deepObjectAssign() {
-  var merged = deepObjectAssignNonentry.apply(void 0, arguments);
-  stripDelete(merged);
-  return merged;
-}
-/**
- * Deep version of object assign with additional deleting by the DELETE symbol.
- *
- * @remarks
- * This doesn't strip the DELETE symbols so they may end up in the final object.
- *
- * @param values - Objects to be deeply merged.
- *
- * @returns The first object from values.
- */
-
-
-function deepObjectAssignNonentry() {
-  for (var _len2 = arguments.length, values = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    values[_key2] = arguments[_key2];
-  }
-
-  if (values.length < 2) {
-    return values[0];
-  } else if (values.length > 2) {
-    var _context2;
-
-    return deepObjectAssignNonentry.apply(void 0, concat$2(_context2 = [deepObjectAssign(values[0], values[1])]).call(_context2, toConsumableArray(slice$5(values).call(values, 2))));
-  }
-
-  var a = values[0];
-  var b = values[1];
-
-  var _iterator = _createForOfIteratorHelper(ownKeys$3(b)),
-      _step;
-
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var prop = _step.value;
-      if (!Object.prototype.propertyIsEnumerable.call(b, prop)) ;else if (b[prop] === DELETE) {
-        delete a[prop];
-      } else if (a[prop] !== null && b[prop] !== null && _typeof_1(a[prop]) === "object" && _typeof_1(b[prop]) === "object" && !isArray$5(a[prop]) && !isArray$5(b[prop])) {
-        a[prop] = deepObjectAssignNonentry(a[prop], b[prop]);
-      } else {
-        a[prop] = clone(b[prop]);
-      }
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-
-  return a;
-}
-/**
- * Deep clone given object or array. In case of primitive simply return.
- *
- * @param a - Anything.
- *
- * @returns Deep cloned object/array or unchanged a.
- */
-
-
-function clone(a) {
-  if (isArray$5(a)) {
-    return map$2(a).call(a, function (value) {
-      return clone(value);
-    });
-  } else if (_typeof_1(a) === "object" && a !== null) {
-    return deepObjectAssignNonentry({}, a);
-  } else {
-    return a;
-  }
-}
-/**
- * Strip DELETE from given object.
- *
- * @param a - Object which may contain DELETE but won't after this is executed.
- */
-
-
-function stripDelete(a) {
-  for (var _i = 0, _Object$keys = keys$3(a); _i < _Object$keys.length; _i++) {
-    var prop = _Object$keys[_i];
-
-    if (a[prop] === DELETE) {
-      delete a[prop];
-    } else if (_typeof_1(a[prop]) === "object" && a[prop] !== null) {
-      stripDelete(a[prop]);
-    }
-  }
-}
-/**
- * Seedable, fast and reasonably good (not crypto but more than okay for our
- * needs) random number generator.
- *
- * @remarks
- * Adapted from {@link https://web.archive.org/web/20110429100736/http://baagoe.com:80/en/RandomMusings/javascript}.
- * Original algorithm created by Johannes Baagøe \<baagoe\@baagoe.com\> in 2010.
- */
-
-/**
- * Create a seeded pseudo random generator based on Alea by Johannes Baagøe.
- *
- * @param seed - All supplied arguments will be used as a seed. In case nothing
- * is supplied the current time will be used to seed the generator.
- *
- * @returns A ready to use seeded generator.
- */
-
-
-function Alea() {
-  for (var _len3 = arguments.length, seed = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-    seed[_key3] = arguments[_key3];
-  }
-
-  return AleaImplementation(seed.length ? seed : [now$2()]);
-}
-/**
- * An implementation of [[Alea]] without user input validation.
- *
- * @param seed - The data that will be used to seed the generator.
- *
- * @returns A ready to use seeded generator.
- */
-
-
-function AleaImplementation(seed) {
-  var _mashSeed = mashSeed(seed),
-      _mashSeed2 = slicedToArray(_mashSeed, 3),
-      s0 = _mashSeed2[0],
-      s1 = _mashSeed2[1],
-      s2 = _mashSeed2[2];
-
-  var c = 1;
-
-  var random = function random() {
-    var t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
-
-    s0 = s1;
-    s1 = s2;
-    return s2 = t - (c = t | 0);
-  };
-
-  random.uint32 = function () {
-    return random() * 0x100000000;
-  }; // 2^32
-
-
-  random.fract53 = function () {
-    return random() + (random() * 0x200000 | 0) * 1.1102230246251565e-16;
-  }; // 2^-53
-
-
-  random.algorithm = "Alea";
-  random.seed = seed;
-  random.version = "0.9";
-  return random;
-}
-/**
- * Turn arbitrary data into values [[AleaImplementation]] can use to generate
- * random numbers.
- *
- * @param seed - Arbitrary data that will be used as the seed.
- *
- * @returns Three numbers to use as initial values for [[AleaImplementation]].
- */
-
-
-function mashSeed() {
-  var mash = Mash();
-  var s0 = mash(" ");
-  var s1 = mash(" ");
-  var s2 = mash(" ");
-
-  for (var i = 0; i < arguments.length; i++) {
-    s0 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
-
-    if (s0 < 0) {
-      s0 += 1;
-    }
-
-    s1 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
-
-    if (s1 < 0) {
-      s1 += 1;
-    }
-
-    s2 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
-
-    if (s2 < 0) {
-      s2 += 1;
-    }
-  }
-
-  return [s0, s1, s2];
-}
-/**
- * Create a new mash function.
- *
- * @returns A nonpure function that takes arbitrary [[Mashable]] data and turns
- * them into numbers.
- */
-
-
-function Mash() {
-  var n = 0xefc8249d;
-  return function (data) {
-    var string = data.toString();
-
-    for (var i = 0; i < string.length; i++) {
-      n += string.charCodeAt(i);
-      var h = 0.02519603282416938 * n;
-      n = h >>> 0;
-      h -= n;
-      h *= n;
-      n = h >>> 0;
-      h -= n;
-      n += h * 0x100000000; // 2^32
-    }
-
-    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
-  };
-} // utility functions
-// parse ASP.Net Date pattern,
-// for example '/Date(1198908717056)/' or '/Date(1198908717056-0700)/'
-// code from http://momentjs.com/
-
-
-var ASPDateRegex = /^\/?Date\((-?\d+)/i; // Color REs
-
-var fullHexRE = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
-var shortHexRE = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-var rgbRE = /^rgb\( *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *\)$/i;
-var rgbaRE = /^rgba\( *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *([01]|0?\.\d+) *\)$/i;
-/**
- * Test whether given object is a number.
- *
- * @param value - Input value of unknown type.
- *
- * @returns True if number, false otherwise.
- */
-
-function isNumber(value) {
-  return value instanceof Number || typeof value === "number";
-}
-/**
- * Remove everything in the DOM object.
- *
- * @param DOMobject - Node whose child nodes will be recursively deleted.
- */
-
-
-function recursiveDOMDelete(DOMobject) {
-  if (DOMobject) {
-    while (DOMobject.hasChildNodes() === true) {
-      var child = DOMobject.firstChild;
-
-      if (child) {
-        recursiveDOMDelete(child);
-        DOMobject.removeChild(child);
-      }
-    }
-  }
-}
-/**
- * Test whether given object is a string.
- *
- * @param value - Input value of unknown type.
- *
- * @returns True if string, false otherwise.
- */
-
-
-function isString(value) {
-  return value instanceof String || typeof value === "string";
-}
-/**
- * Test whether given object is a object (not primitive or null).
- *
- * @param value - Input value of unknown type.
- *
- * @returns True if not null object, false otherwise.
- */
-
-
-function isObject$1(value) {
-  return _typeof_1(value) === "object" && value !== null;
-}
-/**
- * Test whether given object is a Date, or a String containing a Date.
- *
- * @param value - Input value of unknown type.
- *
- * @returns True if Date instance or string date representation, false otherwise.
- */
-
-
-function isDate(value) {
-  if (value instanceof Date) {
-    return true;
-  } else if (isString(value)) {
-    // test whether this string contains a date
-    var match = ASPDateRegex.exec(value);
-
-    if (match) {
-      return true;
-    } else if (!isNaN(Date.parse(value))) {
-      return true;
-    }
-  }
-
-  return false;
-}
-/**
- * Copy property from b to a if property present in a.
- * If property in b explicitly set to null, delete it if `allowDeletion` set.
- *
- * Internal helper routine, should not be exported. Not added to `exports` for that reason.
- *
- * @param a - Target object.
- * @param b - Source object.
- * @param prop - Name of property to copy from b to a.
- * @param allowDeletion - If true, delete property in a if explicitly set to null in b.
- */
-
-
-function copyOrDelete(a, b, prop, allowDeletion) {
-  var doDeletion = false;
-
-  if (allowDeletion === true) {
-    doDeletion = b[prop] === null && a[prop] !== undefined;
-  }
-
-  if (doDeletion) {
-    delete a[prop];
-  } else {
-    a[prop] = b[prop]; // Remember, this is a reference copy!
-  }
-}
-/**
- * Fill an object with a possibly partially defined other object.
- *
- * Only copies values for the properties already present in a.
- * That means an object is not created on a property if only the b object has it.
- *
- * @param a - The object that will have it's properties updated.
- * @param b - The object with property updates.
- * @param allowDeletion - If true, delete properties in a that are explicitly set to null in b.
- */
-
-
-function fillIfDefined(a, b) {
-  var allowDeletion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-  // NOTE: iteration of properties of a
-  // NOTE: prototype properties iterated over as well
-  for (var prop in a) {
-    if (b[prop] !== undefined) {
-      if (b[prop] === null || _typeof_1(b[prop]) !== "object") {
-        // Note: typeof null === 'object'
-        copyOrDelete(a, b, prop, allowDeletion);
-      } else {
-        var aProp = a[prop];
-        var bProp = b[prop];
-
-        if (isObject$1(aProp) && isObject$1(bProp)) {
-          fillIfDefined(aProp, bProp, allowDeletion);
-        }
-      }
-    }
-  }
-}
-/**
- * Copy the values of all of the enumerable own properties from one or more source objects to a
- * target object. Returns the target object.
- *
- * @param target - The target object to copy to.
- * @param source - The source object from which to copy properties.
- *
- * @returns The target object.
- */
-
-
-var extend = assign$2;
-/**
- * Extend object a with selected properties of object b or a series of objects.
- *
- * @remarks
- * Only properties with defined values are copied.
- *
- * @param props - Properties to be copied to a.
- * @param a - The target.
- * @param others - The sources.
- *
- * @returns Argument a.
- */
-
-function selectiveExtend(props, a) {
-  if (!isArray$5(props)) {
-    throw new Error("Array with property names expected as first argument");
-  }
-
-  for (var _len4 = arguments.length, others = new Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
-    others[_key4 - 2] = arguments[_key4];
-  }
-
-  for (var _i2 = 0, _others = others; _i2 < _others.length; _i2++) {
-    var other = _others[_i2];
-
-    for (var p = 0; p < props.length; p++) {
-      var prop = props[p];
-
-      if (other && Object.prototype.hasOwnProperty.call(other, prop)) {
-        a[prop] = other[prop];
-      }
-    }
-  }
-
-  return a;
-}
-/**
- * Extend object a with selected properties of object b.
- * Only properties with defined values are copied.
- *
- * @remarks
- * Previous version of this routine implied that multiple source objects could
- * be used; however, the implementation was **wrong**. Since multiple (\>1)
- * sources weren't used anywhere in the `vis.js` code, this has been removed
- *
- * @param props - Names of first-level properties to copy over.
- * @param a - Target object.
- * @param b - Source object.
- * @param allowDeletion - If true, delete property in a if explicitly set to null in b.
- *
- * @returns Argument a.
- */
-
-
-function selectiveDeepExtend(props, a, b) {
-  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  // TODO: add support for Arrays to deepExtend
-  if (isArray$5(b)) {
-    throw new TypeError("Arrays are not supported by deepExtend");
-  }
-
-  for (var p = 0; p < props.length; p++) {
-    var prop = props[p];
-
-    if (Object.prototype.hasOwnProperty.call(b, prop)) {
-      if (b[prop] && b[prop].constructor === Object) {
-        if (a[prop] === undefined) {
-          a[prop] = {};
-        }
-
-        if (a[prop].constructor === Object) {
-          deepExtend(a[prop], b[prop], false, allowDeletion);
-        } else {
-          copyOrDelete(a, b, prop, allowDeletion);
-        }
-      } else if (isArray$5(b[prop])) {
-        throw new TypeError("Arrays are not supported by deepExtend");
-      } else {
-        copyOrDelete(a, b, prop, allowDeletion);
-      }
-    }
-  }
-
-  return a;
-}
-/**
- * Extend object `a` with properties of object `b`, ignoring properties which
- * are explicitly specified to be excluded.
- *
- * @remarks
- * The properties of `b` are considered for copying. Properties which are
- * themselves objects are are also extended. Only properties with defined
- * values are copied.
- *
- * @param propsToExclude - Names of properties which should *not* be copied.
- * @param a - Object to extend.
- * @param b - Object to take properties from for extension.
- * @param allowDeletion - If true, delete properties in a that are explicitly
- * set to null in b.
- *
- * @returns Argument a.
- */
-
-
-function selectiveNotDeepExtend(propsToExclude, a, b) {
-  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  // TODO: add support for Arrays to deepExtend
-  // NOTE: array properties have an else-below; apparently, there is a problem here.
-  if (isArray$5(b)) {
-    throw new TypeError("Arrays are not supported by deepExtend");
-  }
-
-  for (var prop in b) {
-    if (!Object.prototype.hasOwnProperty.call(b, prop)) {
-      continue;
-    } // Handle local properties only
-
-
-    if (indexOf$3(propsToExclude).call(propsToExclude, prop) !== -1) {
-      continue;
-    } // In exclusion list, skip
-
-
-    if (b[prop] && b[prop].constructor === Object) {
-      if (a[prop] === undefined) {
-        a[prop] = {};
-      }
-
-      if (a[prop].constructor === Object) {
-        deepExtend(a[prop], b[prop]); // NOTE: allowDeletion not propagated!
-      } else {
-        copyOrDelete(a, b, prop, allowDeletion);
-      }
-    } else if (isArray$5(b[prop])) {
-      a[prop] = [];
-
-      for (var i = 0; i < b[prop].length; i++) {
-        a[prop].push(b[prop][i]);
-      }
-    } else {
-      copyOrDelete(a, b, prop, allowDeletion);
-    }
-  }
-
-  return a;
-}
-/**
- * Deep extend an object a with the properties of object b.
- *
- * @param a - Target object.
- * @param b - Source object.
- * @param protoExtend - If true, the prototype values will also be extended.
- * (That is the options objects that inherit from others will also get the
- * inherited options).
- * @param allowDeletion - If true, the values of fields that are null will be deleted.
- *
- * @returns Argument a.
- */
-
-
-function deepExtend(a, b) {
-  var protoExtend = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  for (var prop in b) {
-    if (Object.prototype.hasOwnProperty.call(b, prop) || protoExtend === true) {
-      if (_typeof_1(b[prop]) === "object" && b[prop] !== null && getPrototypeOf$2(b[prop]) === Object.prototype) {
-        if (a[prop] === undefined) {
-          a[prop] = deepExtend({}, b[prop], protoExtend); // NOTE: allowDeletion not propagated!
-        } else if (_typeof_1(a[prop]) === "object" && a[prop] !== null && getPrototypeOf$2(a[prop]) === Object.prototype) {
-          deepExtend(a[prop], b[prop], protoExtend); // NOTE: allowDeletion not propagated!
-        } else {
-          copyOrDelete(a, b, prop, allowDeletion);
-        }
-      } else if (isArray$5(b[prop])) {
-        var _context3;
-
-        a[prop] = slice$5(_context3 = b[prop]).call(_context3);
-      } else {
-        copyOrDelete(a, b, prop, allowDeletion);
-      }
-    }
-  }
-
-  return a;
-}
-/**
- * Test whether all elements in two arrays are equal.
- *
- * @param a - First array.
- * @param b - Second array.
- *
- * @returns True if both arrays have the same length and same elements (1 = '1').
- */
-
-
-function equalArray(a, b) {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  for (var i = 0, len = a.length; i < len; i++) {
-    if (a[i] != b[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-/**
- * Get the type of an object, for example exports.getType([]) returns 'Array'.
- *
- * @param object - Input value of unknown type.
- *
- * @returns Detected type.
- */
-
-
-function getType(object) {
-  var type = _typeof_1(object);
-
-  if (type === "object") {
-    if (object === null) {
-      return "null";
-    }
-
-    if (object instanceof Boolean) {
-      return "Boolean";
-    }
-
-    if (object instanceof Number) {
-      return "Number";
-    }
-
-    if (object instanceof String) {
-      return "String";
-    }
-
-    if (isArray$5(object)) {
-      return "Array";
-    }
-
-    if (object instanceof Date) {
-      return "Date";
-    }
-
-    return "Object";
-  }
-
-  if (type === "number") {
-    return "Number";
-  }
-
-  if (type === "boolean") {
-    return "Boolean";
-  }
-
-  if (type === "string") {
-    return "String";
-  }
-
-  if (type === undefined) {
-    return "undefined";
-  }
-
-  return type;
-}
-/**
- * Used to extend an array and copy it. This is used to propagate paths recursively.
- *
- * @param arr - First part.
- * @param newValue - The value to be aadded into the array.
- *
- * @returns A new array with all items from arr and newValue (which is last).
- */
-
-
-function copyAndExtendArray(arr, newValue) {
-  var _context4;
-
-  return concat$2(_context4 = []).call(_context4, toConsumableArray(arr), [newValue]);
-}
-/**
- * Used to extend an array and copy it. This is used to propagate paths recursively.
- *
- * @param arr - The array to be copied.
- *
- * @returns Shallow copy of arr.
- */
-
-
-function copyArray(arr) {
-  return slice$5(arr).call(arr);
-}
-/**
- * Retrieve the absolute left value of a DOM element.
- *
- * @param elem - A dom element, for example a div.
- *
- * @returns The absolute left position of this element in the browser page.
- */
-
-
-function getAbsoluteLeft(elem) {
-  return elem.getBoundingClientRect().left;
-}
-/**
- * Retrieve the absolute right value of a DOM element.
- *
- * @param elem - A dom element, for example a div.
- *
- * @returns The absolute right position of this element in the browser page.
- */
-
-
-function getAbsoluteRight(elem) {
-  return elem.getBoundingClientRect().right;
-}
-/**
- * Retrieve the absolute top value of a DOM element.
- *
- * @param elem - A dom element, for example a div.
- *
- * @returns The absolute top position of this element in the browser page.
- */
-
-
-function getAbsoluteTop(elem) {
-  return elem.getBoundingClientRect().top;
-}
-/**
- * Add a className to the given elements style.
- *
- * @param elem - The element to which the classes will be added.
- * @param classNames - Space separated list of classes.
- */
-
-
-function addClassName(elem, classNames) {
-  var classes = elem.className.split(" ");
-  var newClasses = classNames.split(" ");
-  classes = concat$2(classes).call(classes, filter$2(newClasses).call(newClasses, function (className) {
-    return indexOf$3(classes).call(classes, className) < 0;
-  }));
-  elem.className = classes.join(" ");
-}
-/**
- * Remove a className from the given elements style.
- *
- * @param elem - The element from which the classes will be removed.
- * @param classNames - Space separated list of classes.
- */
-
-
-function removeClassName(elem, classNames) {
-  var classes = elem.className.split(" ");
-  var oldClasses = classNames.split(" ");
-  classes = filter$2(classes).call(classes, function (className) {
-    return indexOf$3(oldClasses).call(oldClasses, className) < 0;
-  });
-  elem.className = classes.join(" ");
-}
-/**
- * For each method for both arrays and objects.
- * In case of an array, the built-in Array.forEach() is applied (**No, it's not!**).
- * In case of an Object, the method loops over all properties of the object.
- *
- * @param object - An Object or Array to be iterated over.
- * @param callback - Array.forEach-like callback.
- */
-
-
-function forEach$3(object, callback) {
-  if (isArray$5(object)) {
-    // array
-    var len = object.length;
-
-    for (var i = 0; i < len; i++) {
-      callback(object[i], i, object);
-    }
-  } else {
-    // object
-    for (var key in object) {
-      if (Object.prototype.hasOwnProperty.call(object, key)) {
-        callback(object[key], key, object);
-      }
-    }
-  }
-}
-/**
- * Convert an object into an array: all objects properties are put into the array. The resulting array is unordered.
- *
- * @param o - Object that contains the properties and methods.
- *
- * @returns An array of unordered values.
- */
-
-
-var toArray = values$2;
-/**
- * Update a property in an object.
- *
- * @param object - The object whose property will be updated.
- * @param key - Name of the property to be updated.
- * @param value - The new value to be assigned.
- *
- * @returns Whether the value was updated (true) or already strictly the same in the original object (false).
- */
-
-function updateProperty(object, key, value) {
-  if (object[key] !== value) {
-    object[key] = value;
-    return true;
-  } else {
-    return false;
-  }
-}
-/**
- * Throttle the given function to be only executed once per animation frame.
- *
- * @param fn - The original function.
- *
- * @returns The throttled function.
- */
-
-
-function throttle(fn) {
-  var scheduled = false;
-  return function () {
-    if (!scheduled) {
-      scheduled = true;
-      requestAnimationFrame(function () {
-        scheduled = false;
-        fn();
-      });
-    }
-  };
-}
-/**
- * Add and event listener. Works for all browsers.
- *
- * @param element - The element to bind the event listener to.
- * @param action - Same as Element.addEventListener(action, —, —).
- * @param listener - Same as Element.addEventListener(—, listener, —).
- * @param useCapture - Same as Element.addEventListener(—, —, useCapture).
- */
-
-
-function addEventListener(element, action, listener, useCapture) {
-  if (element.addEventListener) {
-    var _context5;
-
-    if (useCapture === undefined) {
-      useCapture = false;
-    }
-
-    if (action === "mousewheel" && indexOf$3(_context5 = navigator.userAgent).call(_context5, "Firefox") >= 0) {
-      action = "DOMMouseScroll"; // For Firefox
-    }
-
-    element.addEventListener(action, listener, useCapture);
-  } else {
-    // @TODO: IE types? Does anyone care?
-    element.attachEvent("on" + action, listener); // IE browsers
-  }
-}
-/**
- * Remove an event listener from an element.
- *
- * @param element - The element to bind the event listener to.
- * @param action - Same as Element.removeEventListener(action, —, —).
- * @param listener - Same as Element.removeEventListener(—, listener, —).
- * @param useCapture - Same as Element.removeEventListener(—, —, useCapture).
- */
-
-
-function removeEventListener(element, action, listener, useCapture) {
-  if (element.removeEventListener) {
-    var _context6;
-
-    // non-IE browsers
-    if (useCapture === undefined) {
-      useCapture = false;
-    }
-
-    if (action === "mousewheel" && indexOf$3(_context6 = navigator.userAgent).call(_context6, "Firefox") >= 0) {
-      action = "DOMMouseScroll"; // For Firefox
-    }
-
-    element.removeEventListener(action, listener, useCapture);
-  } else {
-    // @TODO: IE types? Does anyone care?
-    element.detachEvent("on" + action, listener); // IE browsers
-  }
-}
-/**
- * Cancels the event's default action if it is cancelable, without stopping further propagation of the event.
- *
- * @param event - The event whose default action should be prevented.
- */
-
-
-function preventDefault(event) {
-  if (!event) {
-    event = window.event;
-  }
-
-  if (!event) ;else if (event.preventDefault) {
-    event.preventDefault(); // non-IE browsers
-  } else {
-    // @TODO: IE types? Does anyone care?
-    event.returnValue = false; // IE browsers
-  }
-}
-/**
- * Get HTML element which is the target of the event.
- *
- * @param event - The event.
- *
- * @returns The element or null if not obtainable.
- */
-
-
-function getTarget() {
-  var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.event;
-  // code from http://www.quirksmode.org/js/events_properties.html
-  // @TODO: EventTarget can be almost anything, is it okay to return only Elements?
-  var target = null;
-  if (!event) ;else if (event.target) {
-    target = event.target;
-  } else if (event.srcElement) {
-    target = event.srcElement;
-  }
-
-  if (!(target instanceof Element)) {
-    return null;
-  }
-
-  if (target.nodeType != null && target.nodeType == 3) {
-    // defeat Safari bug
-    target = target.parentNode;
-
-    if (!(target instanceof Element)) {
-      return null;
-    }
-  }
-
-  return target;
-}
-/**
- * Check if given element contains given parent somewhere in the DOM tree.
- *
- * @param element - The element to be tested.
- * @param parent - The ancestor (not necessarily parent) of the element.
- *
- * @returns True if parent is an ancestor of the element, false otherwise.
- */
-
-
-function hasParent(element, parent) {
-  var elem = element;
-
-  while (elem) {
-    if (elem === parent) {
-      return true;
-    } else if (elem.parentNode) {
-      elem = elem.parentNode;
-    } else {
-      return false;
-    }
-  }
-
-  return false;
-}
-
-var option = {
-  /**
-   * Convert a value into a boolean.
-   *
-   * @param value - Value to be converted intoboolean, a function will be executed as `(() => unknown)`.
-   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
-   *
-   * @returns Corresponding boolean value, if none then the default value, if none then null.
-   */
-  asBoolean: function asBoolean(value, defaultValue) {
-    if (typeof value == "function") {
-      value = value();
-    }
-
-    if (value != null) {
-      return value != false;
-    }
-
-    return defaultValue || null;
-  },
-
-  /**
-   * Convert a value into a number.
-   *
-   * @param value - Value to be converted intonumber, a function will be executed as `(() => unknown)`.
-   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
-   *
-   * @returns Corresponding **boxed** number value, if none then the default value, if none then null.
-   */
-  asNumber: function asNumber(value, defaultValue) {
-    if (typeof value == "function") {
-      value = value();
-    }
-
-    if (value != null) {
-      return Number(value) || defaultValue || null;
-    }
-
-    return defaultValue || null;
-  },
-
-  /**
-   * Convert a value into a string.
-   *
-   * @param value - Value to be converted intostring, a function will be executed as `(() => unknown)`.
-   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
-   *
-   * @returns Corresponding **boxed** string value, if none then the default value, if none then null.
-   */
-  asString: function asString(value, defaultValue) {
-    if (typeof value == "function") {
-      value = value();
-    }
-
-    if (value != null) {
-      return String(value);
-    }
-
-    return defaultValue || null;
-  },
-
-  /**
-   * Convert a value into a size.
-   *
-   * @param value - Value to be converted intosize, a function will be executed as `(() => unknown)`.
-   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
-   *
-   * @returns Corresponding string value (number + 'px'), if none then the default value, if none then null.
-   */
-  asSize: function asSize(value, defaultValue) {
-    if (typeof value == "function") {
-      value = value();
-    }
-
-    if (isString(value)) {
-      return value;
-    } else if (isNumber(value)) {
-      return value + "px";
-    } else {
-      return defaultValue || null;
-    }
-  },
-
-  /**
-   * Convert a value into a DOM Element.
-   *
-   * @param value - Value to be converted into DOM Element, a function will be executed as `(() => unknown)`.
-   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
-   *
-   * @returns The DOM Element, if none then the default value, if none then null.
-   */
-  asElement: function asElement(value, defaultValue) {
-    if (typeof value == "function") {
-      value = value();
-    }
-
-    return value || defaultValue || null;
-  }
-};
-/**
- * Convert hex color string into RGB color object.
- *
- * @remarks
- * {@link http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb}
- *
- * @param hex - Hex color string (3 or 6 digits, with or without #).
- *
- * @returns RGB color object.
- */
-
-function hexToRGB(hex) {
-  var result;
-
-  switch (hex.length) {
-    case 3:
-    case 4:
-      result = shortHexRE.exec(hex);
-      return result ? {
-        r: _parseInt$2(result[1] + result[1], 16),
-        g: _parseInt$2(result[2] + result[2], 16),
-        b: _parseInt$2(result[3] + result[3], 16)
-      } : null;
-
-    case 6:
-    case 7:
-      result = fullHexRE.exec(hex);
-      return result ? {
-        r: _parseInt$2(result[1], 16),
-        g: _parseInt$2(result[2], 16),
-        b: _parseInt$2(result[3], 16)
-      } : null;
-
-    default:
-      return null;
-  }
-}
-/**
- * This function takes string color in hex or RGB format and adds the opacity, RGBA is passed through unchanged.
- *
- * @param color - The color string (hex, RGB, RGBA).
- * @param opacity - The new opacity.
- *
- * @returns RGBA string, for example 'rgba(255, 0, 127, 0.3)'.
- */
-
-
-function overrideOpacity(color, opacity) {
-  if (indexOf$3(color).call(color, "rgba") !== -1) {
-    return color;
-  } else if (indexOf$3(color).call(color, "rgb") !== -1) {
-    var rgb = color.substr(indexOf$3(color).call(color, "(") + 1).replace(")", "").split(",");
-    return "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "," + opacity + ")";
-  } else {
-    var _rgb = hexToRGB(color);
-
-    if (_rgb == null) {
-      return color;
-    } else {
-      return "rgba(" + _rgb.r + "," + _rgb.g + "," + _rgb.b + "," + opacity + ")";
-    }
-  }
-}
-/**
- * Convert RGB \<0, 255\> into hex color string.
- *
- * @param red - Red channel.
- * @param green - Green channel.
- * @param blue - Blue channel.
- *
- * @returns Hex color string (for example: '#0acdc0').
- */
-
-
-function RGBToHex(red, green, blue) {
-  var _context7;
-
-  return "#" + slice$5(_context7 = ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16)).call(_context7, 1);
-}
-/**
- * Parse a color property into an object with border, background, and highlight colors.
- *
- * @param inputColor - Shorthand color string or input color object.
- * @param defaultColor - Full color object to fill in missing values in inputColor.
- *
- * @returns Color object.
- */
-
-
-function parseColor(inputColor, defaultColor) {
-  if (isString(inputColor)) {
-    var colorStr = inputColor;
-
-    if (isValidRGB(colorStr)) {
-      var _context8;
-
-      var rgb = map$2(_context8 = colorStr.substr(4).substr(0, colorStr.length - 5).split(",")).call(_context8, function (value) {
-        return _parseInt$2(value);
-      });
-
-      colorStr = RGBToHex(rgb[0], rgb[1], rgb[2]);
-    }
-
-    if (isValidHex(colorStr) === true) {
-      var hsv = hexToHSV(colorStr);
-      var lighterColorHSV = {
-        h: hsv.h,
-        s: hsv.s * 0.8,
-        v: Math.min(1, hsv.v * 1.02)
-      };
-      var darkerColorHSV = {
-        h: hsv.h,
-        s: Math.min(1, hsv.s * 1.25),
-        v: hsv.v * 0.8
-      };
-      var darkerColorHex = HSVToHex(darkerColorHSV.h, darkerColorHSV.s, darkerColorHSV.v);
-      var lighterColorHex = HSVToHex(lighterColorHSV.h, lighterColorHSV.s, lighterColorHSV.v);
-      return {
-        background: colorStr,
-        border: darkerColorHex,
-        highlight: {
-          background: lighterColorHex,
-          border: darkerColorHex
-        },
-        hover: {
-          background: lighterColorHex,
-          border: darkerColorHex
-        }
-      };
-    } else {
-      return {
-        background: colorStr,
-        border: colorStr,
-        highlight: {
-          background: colorStr,
-          border: colorStr
-        },
-        hover: {
-          background: colorStr,
-          border: colorStr
-        }
-      };
-    }
-  } else {
-    if (defaultColor) {
-      var color = {
-        background: inputColor.background || defaultColor.background,
-        border: inputColor.border || defaultColor.border,
-        highlight: isString(inputColor.highlight) ? {
-          border: inputColor.highlight,
-          background: inputColor.highlight
-        } : {
-          background: inputColor.highlight && inputColor.highlight.background || defaultColor.highlight.background,
-          border: inputColor.highlight && inputColor.highlight.border || defaultColor.highlight.border
-        },
-        hover: isString(inputColor.hover) ? {
-          border: inputColor.hover,
-          background: inputColor.hover
-        } : {
-          border: inputColor.hover && inputColor.hover.border || defaultColor.hover.border,
-          background: inputColor.hover && inputColor.hover.background || defaultColor.hover.background
-        }
-      };
-      return color;
-    } else {
-      var _color = {
-        background: inputColor.background || undefined,
-        border: inputColor.border || undefined,
-        highlight: isString(inputColor.highlight) ? {
-          border: inputColor.highlight,
-          background: inputColor.highlight
-        } : {
-          background: inputColor.highlight && inputColor.highlight.background || undefined,
-          border: inputColor.highlight && inputColor.highlight.border || undefined
-        },
-        hover: isString(inputColor.hover) ? {
-          border: inputColor.hover,
-          background: inputColor.hover
-        } : {
-          border: inputColor.hover && inputColor.hover.border || undefined,
-          background: inputColor.hover && inputColor.hover.background || undefined
-        }
-      };
-      return _color;
-    }
-  }
-}
-/**
- * Convert RGB \<0, 255\> into HSV object.
- *
- * @remarks
- * {@link http://www.javascripter.net/faq/rgb2hsv.htm}
- *
- * @param red - Red channel.
- * @param green - Green channel.
- * @param blue - Blue channel.
- *
- * @returns HSV color object.
- */
-
-
-function RGBToHSV(red, green, blue) {
-  red = red / 255;
-  green = green / 255;
-  blue = blue / 255;
-  var minRGB = Math.min(red, Math.min(green, blue));
-  var maxRGB = Math.max(red, Math.max(green, blue)); // Black-gray-white
-
-  if (minRGB === maxRGB) {
-    return {
-      h: 0,
-      s: 0,
-      v: minRGB
-    };
-  } // Colors other than black-gray-white:
-
-
-  var d = red === minRGB ? green - blue : blue === minRGB ? red - green : blue - red;
-  var h = red === minRGB ? 3 : blue === minRGB ? 1 : 5;
-  var hue = 60 * (h - d / (maxRGB - minRGB)) / 360;
-  var saturation = (maxRGB - minRGB) / maxRGB;
-  var value = maxRGB;
-  return {
-    h: hue,
-    s: saturation,
-    v: value
-  };
-}
-
-var cssUtil = {
-  // split a string with css styles into an object with key/values
-  split: function split(cssText) {
-    var _context9;
-
-    var styles = {};
-
-    forEach$2(_context9 = cssText.split(";")).call(_context9, function (style) {
-      if (trim$2(style).call(style) != "") {
-        var _context10, _context11;
-
-        var parts = style.split(":");
-
-        var key = trim$2(_context10 = parts[0]).call(_context10);
-
-        var value = trim$2(_context11 = parts[1]).call(_context11);
-
-        styles[key] = value;
-      }
-    });
-
-    return styles;
-  },
-  // build a css text string from an object with key/values
-  join: function join(styles) {
-    var _context12;
-
-    return map$2(_context12 = keys$3(styles)).call(_context12, function (key) {
-      return key + ": " + styles[key];
-    }).join("; ");
-  }
-};
-/**
- * Append a string with css styles to an element.
- *
- * @param element - The element that will receive new styles.
- * @param cssText - The styles to be appended.
- */
-
-function addCssText(element, cssText) {
-  var currentStyles = cssUtil.split(element.style.cssText);
-  var newStyles = cssUtil.split(cssText);
-
-  var styles = _objectSpread(_objectSpread({}, currentStyles), newStyles);
-
-  element.style.cssText = cssUtil.join(styles);
-}
-/**
- * Remove a string with css styles from an element.
- *
- * @param element - The element from which styles should be removed.
- * @param cssText - The styles to be removed.
- */
-
-
-function removeCssText(element, cssText) {
-  var styles = cssUtil.split(element.style.cssText);
-  var removeStyles = cssUtil.split(cssText);
-
-  for (var key in removeStyles) {
-    if (Object.prototype.hasOwnProperty.call(removeStyles, key)) {
-      delete styles[key];
-    }
-  }
-
-  element.style.cssText = cssUtil.join(styles);
-}
-/**
- * Convert HSV \<0, 1\> into RGB color object.
- *
- * @remarks
- * {@link https://gist.github.com/mjijackson/5311256}
- *
- * @param h - Hue.
- * @param s - Saturation.
- * @param v - Value.
- *
- * @returns RGB color object.
- */
-
-
-function HSVToRGB(h, s, v) {
-  var r;
-  var g;
-  var b;
-  var i = Math.floor(h * 6);
-  var f = h * 6 - i;
-  var p = v * (1 - s);
-  var q = v * (1 - f * s);
-  var t = v * (1 - (1 - f) * s);
-
-  switch (i % 6) {
-    case 0:
-      r = v, g = t, b = p;
-      break;
-
-    case 1:
-      r = q, g = v, b = p;
-      break;
-
-    case 2:
-      r = p, g = v, b = t;
-      break;
-
-    case 3:
-      r = p, g = q, b = v;
-      break;
-
-    case 4:
-      r = t, g = p, b = v;
-      break;
-
-    case 5:
-      r = v, g = p, b = q;
-      break;
-  }
-
-  return {
-    r: Math.floor(r * 255),
-    g: Math.floor(g * 255),
-    b: Math.floor(b * 255)
-  };
-}
-/**
- * Convert HSV \<0, 1\> into hex color string.
- *
- * @param h - Hue.
- * @param s - Saturation.
- * @param v - Value.
- *
- * @returns Hex color string.
- */
-
-
-function HSVToHex(h, s, v) {
-  var rgb = HSVToRGB(h, s, v);
-  return RGBToHex(rgb.r, rgb.g, rgb.b);
-}
-/**
- * Convert hex color string into HSV \<0, 1\>.
- *
- * @param hex - Hex color string.
- *
- * @returns HSV color object.
- */
-
-
-function hexToHSV(hex) {
-  var rgb = hexToRGB(hex);
-
-  if (!rgb) {
-    throw new TypeError("'".concat(hex, "' is not a valid color."));
-  }
-
-  return RGBToHSV(rgb.r, rgb.g, rgb.b);
-}
-/**
- * Validate hex color string.
- *
- * @param hex - Unknown string that may contain a color.
- *
- * @returns True if the string is valid, false otherwise.
- */
-
-
-function isValidHex(hex) {
-  var isOk = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
-  return isOk;
-}
-/**
- * Validate RGB color string.
- *
- * @param rgb - Unknown string that may contain a color.
- *
- * @returns True if the string is valid, false otherwise.
- */
-
-
-function isValidRGB(rgb) {
-  return rgbRE.test(rgb);
-}
-/**
- * Validate RGBA color string.
- *
- * @param rgba - Unknown string that may contain a color.
- *
- * @returns True if the string is valid, false otherwise.
- */
-
-
-function isValidRGBA(rgba) {
-  return rgbaRE.test(rgba);
-}
-/**
- * This recursively redirects the prototype of JSON objects to the referenceObject.
- * This is used for default options.
- *
- * @param fields - Names of properties to be bridged.
- * @param referenceObject - The original object.
- *
- * @returns A new object inheriting from the referenceObject.
- */
-
-
-function selectiveBridgeObject(fields, referenceObject) {
-  if (referenceObject !== null && _typeof_1(referenceObject) === "object") {
-    // !!! typeof null === 'object'
-    var objectTo = create$2(referenceObject);
-
-    for (var i = 0; i < fields.length; i++) {
-      if (Object.prototype.hasOwnProperty.call(referenceObject, fields[i])) {
-        if (_typeof_1(referenceObject[fields[i]]) == "object") {
-          objectTo[fields[i]] = bridgeObject(referenceObject[fields[i]]);
-        }
-      }
-    }
-
-    return objectTo;
-  } else {
-    return null;
-  }
-}
-/**
- * This recursively redirects the prototype of JSON objects to the referenceObject.
- * This is used for default options.
- *
- * @param referenceObject - The original object.
- *
- * @returns The Element if the referenceObject is an Element, or a new object inheriting from the referenceObject.
- */
-
-
-function bridgeObject(referenceObject) {
-  if (referenceObject === null || _typeof_1(referenceObject) !== "object") {
-    return null;
-  }
-
-  if (referenceObject instanceof Element) {
-    // Avoid bridging DOM objects
-    return referenceObject;
-  }
-
-  var objectTo = create$2(referenceObject);
-
-  for (var i in referenceObject) {
-    if (Object.prototype.hasOwnProperty.call(referenceObject, i)) {
-      if (_typeof_1(referenceObject[i]) == "object") {
-        objectTo[i] = bridgeObject(referenceObject[i]);
-      }
-    }
-  }
-
-  return objectTo;
-}
-/**
- * This method provides a stable sort implementation, very fast for presorted data.
- *
- * @param a - The array to be sorted (in-place).
- * @param compare - An order comparator.
- *
- * @returns The argument a.
- */
-
-
-function insertSort(a, compare) {
-  for (var i = 0; i < a.length; i++) {
-    var k = a[i];
-    var j = void 0;
-
-    for (j = i; j > 0 && compare(k, a[j - 1]) < 0; j--) {
-      a[j] = a[j - 1];
-    }
-
-    a[j] = k;
-  }
-
-  return a;
-}
-/**
- * This is used to set the options of subobjects in the options object.
- *
- * A requirement of these subobjects is that they have an 'enabled' element
- * which is optional for the user but mandatory for the program.
- *
- * The added value here of the merge is that option 'enabled' is set as required.
- *
- * @param mergeTarget - Either this.options or the options used for the groups.
- * @param options - Options.
- * @param option - Option key in the options argument.
- * @param globalOptions - Global options, passed in to determine value of option 'enabled'.
- */
-
-
-function mergeOptions(mergeTarget, options, option) {
-  var globalOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-  // Local helpers
-  var isPresent = function isPresent(obj) {
-    return obj !== null && obj !== undefined;
-  };
-
-  var isObject = function isObject(obj) {
-    return obj !== null && _typeof_1(obj) === "object";
-  }; // https://stackoverflow.com/a/34491287/1223531
-
-
-  var isEmpty = function isEmpty(obj) {
-    for (var x in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, x)) {
-        return false;
-      }
-    }
-
-    return true;
-  }; // Guards
-
-
-  if (!isObject(mergeTarget)) {
-    throw new Error("Parameter mergeTarget must be an object");
-  }
-
-  if (!isObject(options)) {
-    throw new Error("Parameter options must be an object");
-  }
-
-  if (!isPresent(option)) {
-    throw new Error("Parameter option must have a value");
-  }
-
-  if (!isObject(globalOptions)) {
-    throw new Error("Parameter globalOptions must be an object");
-  } //
-  // Actual merge routine, separated from main logic
-  // Only a single level of options is merged. Deeper levels are ref'd. This may actually be an issue.
-  //
-
-
-  var doMerge = function doMerge(target, options, option) {
-    if (!isObject(target[option])) {
-      target[option] = {};
-    }
-
-    var src = options[option];
-    var dst = target[option];
-
-    for (var prop in src) {
-      if (Object.prototype.hasOwnProperty.call(src, prop)) {
-        dst[prop] = src[prop];
-      }
-    }
-  }; // Local initialization
-
-
-  var srcOption = options[option];
-  var globalPassed = isObject(globalOptions) && !isEmpty(globalOptions);
-  var globalOption = globalPassed ? globalOptions[option] : undefined;
-  var globalEnabled = globalOption ? globalOption.enabled : undefined; /////////////////////////////////////////
-  // Main routine
-  /////////////////////////////////////////
-
-  if (srcOption === undefined) {
-    return; // Nothing to do
-  }
-
-  if (typeof srcOption === "boolean") {
-    if (!isObject(mergeTarget[option])) {
-      mergeTarget[option] = {};
-    }
-
-    mergeTarget[option].enabled = srcOption;
-    return;
-  }
-
-  if (srcOption === null && !isObject(mergeTarget[option])) {
-    // If possible, explicit copy from globals
-    if (isPresent(globalOption)) {
-      mergeTarget[option] = create$2(globalOption);
-    } else {
-      return; // Nothing to do
-    }
-  }
-
-  if (!isObject(srcOption)) {
-    return;
-  } //
-  // Ensure that 'enabled' is properly set. It is required internally
-  // Note that the value from options will always overwrite the existing value
-  //
-
-
-  var enabled = true; // default value
-
-  if (srcOption.enabled !== undefined) {
-    enabled = srcOption.enabled;
-  } else {
-    // Take from globals, if present
-    if (globalEnabled !== undefined) {
-      enabled = globalOption.enabled;
-    }
-  }
-
-  doMerge(mergeTarget, options, option);
-  mergeTarget[option].enabled = enabled;
-}
-/**
- * This function does a binary search for a visible item in a sorted list. If we find a visible item, the code that uses
- * this function will then iterate in both directions over this sorted list to find all visible items.
- *
- * @param orderedItems - Items ordered by start.
- * @param comparator - -1 is lower, 0 is equal, 1 is higher.
- * @param field - Property name on an item (That is item[field]).
- * @param field2 - Second property name on an item (That is item[field][field2]).
- *
- * @returns Index of the found item or -1 if nothing was found.
- */
-
-
-function binarySearchCustom(orderedItems, comparator, field, field2) {
-  var maxIterations = 10000;
-  var iteration = 0;
-  var low = 0;
-  var high = orderedItems.length - 1;
-
-  while (low <= high && iteration < maxIterations) {
-    var middle = Math.floor((low + high) / 2);
-    var item = orderedItems[middle];
-    var value = field2 === undefined ? item[field] : item[field][field2];
-    var searchResult = comparator(value);
-
-    if (searchResult == 0) {
-      // jihaa, found a visible item!
-      return middle;
-    } else if (searchResult == -1) {
-      // it is too small --> increase low
-      low = middle + 1;
-    } else {
-      // it is too big --> decrease high
-      high = middle - 1;
-    }
-
-    iteration++;
-  }
-
-  return -1;
-}
-/**
- * This function does a binary search for a specific value in a sorted array.
- * If it does not exist but is in between of two values, we return either the
- * one before or the one after, depending on user input If it is found, we
- * return the index, else -1.
- *
- * @param orderedItems - Sorted array.
- * @param target - The searched value.
- * @param field - Name of the property in items to be searched.
- * @param sidePreference - If the target is between two values, should the index of the before or the after be returned?
- * @param comparator - An optional comparator, returning -1, 0, 1 for \<, ===, \>.
- *
- * @returns The index of found value or -1 if nothing was found.
- */
-
-
-function binarySearchValue(orderedItems, target, field, sidePreference, comparator) {
-  var maxIterations = 10000;
-  var iteration = 0;
-  var low = 0;
-  var high = orderedItems.length - 1;
-  var prevValue;
-  var value;
-  var nextValue;
-  var middle;
-  comparator = comparator != undefined ? comparator : function (a, b) {
-    return a == b ? 0 : a < b ? -1 : 1;
-  };
-
-  while (low <= high && iteration < maxIterations) {
-    // get a new guess
-    middle = Math.floor(0.5 * (high + low));
-    prevValue = orderedItems[Math.max(0, middle - 1)][field];
-    value = orderedItems[middle][field];
-    nextValue = orderedItems[Math.min(orderedItems.length - 1, middle + 1)][field];
-
-    if (comparator(value, target) == 0) {
-      // we found the target
-      return middle;
-    } else if (comparator(prevValue, target) < 0 && comparator(value, target) > 0) {
-      // target is in between of the previous and the current
-      return sidePreference == "before" ? Math.max(0, middle - 1) : middle;
-    } else if (comparator(value, target) < 0 && comparator(nextValue, target) > 0) {
-      // target is in between of the current and the next
-      return sidePreference == "before" ? middle : Math.min(orderedItems.length - 1, middle + 1);
-    } else {
-      // didnt find the target, we need to change our boundaries.
-      if (comparator(value, target) < 0) {
-        // it is too small --> increase low
-        low = middle + 1;
-      } else {
-        // it is too big --> decrease high
-        high = middle - 1;
-      }
-    }
-
-    iteration++;
-  } // didnt find anything. Return -1.
-
-
-  return -1;
-}
-/*
- * Easing Functions.
- * Only considering the t value for the range [0, 1] => [0, 1].
- *
- * Inspiration: from http://gizma.com/easing/
- * https://gist.github.com/gre/1650294
- */
-
-
-var easingFunctions = {
-  /**
-   * Provides no easing and no acceleration.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  linear: function linear(t) {
-    return t;
-  },
-
-  /**
-   * Accelerate from zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInQuad: function easeInQuad(t) {
-    return t * t;
-  },
-
-  /**
-   * Decelerate to zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeOutQuad: function easeOutQuad(t) {
-    return t * (2 - t);
-  },
-
-  /**
-   * Accelerate until halfway, then decelerate.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInOutQuad: function easeInOutQuad(t) {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-  },
-
-  /**
-   * Accelerate from zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInCubic: function easeInCubic(t) {
-    return t * t * t;
-  },
-
-  /**
-   * Decelerate to zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeOutCubic: function easeOutCubic(t) {
-    return --t * t * t + 1;
-  },
-
-  /**
-   * Accelerate until halfway, then decelerate.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInOutCubic: function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-  },
-
-  /**
-   * Accelerate from zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInQuart: function easeInQuart(t) {
-    return t * t * t * t;
-  },
-
-  /**
-   * Decelerate to zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeOutQuart: function easeOutQuart(t) {
-    return 1 - --t * t * t * t;
-  },
-
-  /**
-   * Accelerate until halfway, then decelerate.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInOutQuart: function easeInOutQuart(t) {
-    return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
-  },
-
-  /**
-   * Accelerate from zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInQuint: function easeInQuint(t) {
-    return t * t * t * t * t;
-  },
-
-  /**
-   * Decelerate to zero velocity.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeOutQuint: function easeOutQuint(t) {
-    return 1 + --t * t * t * t * t;
-  },
-
-  /**
-   * Accelerate until halfway, then decelerate.
-   *
-   * @param t - Time.
-   *
-   * @returns Value at time t.
-   */
-  easeInOutQuint: function easeInOutQuint(t) {
-    return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
-  }
-};
-/**
- * Experimentaly compute the width of the scrollbar for this browser.
- *
- * @returns The width in pixels.
- */
-
-function getScrollBarWidth() {
-  var inner = document.createElement("p");
-  inner.style.width = "100%";
-  inner.style.height = "200px";
-  var outer = document.createElement("div");
-  outer.style.position = "absolute";
-  outer.style.top = "0px";
-  outer.style.left = "0px";
-  outer.style.visibility = "hidden";
-  outer.style.width = "200px";
-  outer.style.height = "150px";
-  outer.style.overflow = "hidden";
-  outer.appendChild(inner);
-  document.body.appendChild(outer);
-  var w1 = inner.offsetWidth;
-  outer.style.overflow = "scroll";
-  var w2 = inner.offsetWidth;
-
-  if (w1 == w2) {
-    w2 = outer.clientWidth;
-  }
-
-  document.body.removeChild(outer);
-  return w1 - w2;
-} // @TODO: This doesn't work properly.
-// It works only for single property objects,
-// otherwise it combines all of the types in a union.
-// export function topMost<K1 extends string, V1> (
-//   pile: Record<K1, undefined | V1>[],
-//   accessors: K1 | [K1]
-// ): undefined | V1
-// export function topMost<K1 extends string, K2 extends string, V1, V2> (
-//   pile: Record<K1, undefined | V1 | Record<K2, undefined | V2>>[],
-//   accessors: [K1, K2]
-// ): undefined | V1 | V2
-// export function topMost<K1 extends string, K2 extends string, K3 extends string, V1, V2, V3> (
-//   pile: Record<K1, undefined | V1 | Record<K2, undefined | V2 | Record<K3, undefined | V3>>>[],
-//   accessors: [K1, K2, K3]
-// ): undefined | V1 | V2 | V3
-
-/**
- * Get the top most property value from a pile of objects.
- *
- * @param pile - Array of objects, no required format.
- * @param accessors - Array of property names.
- * For example `object['foo']['bar']` → `['foo', 'bar']`.
- *
- * @returns Value of the property with given accessors path from the first pile item where it's not undefined.
- */
-
-
-function topMost(pile, accessors) {
-  var candidate;
-
-  if (!isArray$5(accessors)) {
-    accessors = [accessors];
-  }
-
-  var _iterator2 = _createForOfIteratorHelper(pile),
-      _step2;
-
-  try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-      var member = _step2.value;
-
-      if (member) {
-        candidate = member[accessors[0]];
-
-        for (var i = 1; i < accessors.length; i++) {
-          if (candidate) {
-            candidate = candidate[accessors[i]];
-          }
-        }
-
-        if (typeof candidate !== "undefined") {
-          break;
-        }
-      }
-    }
-  } catch (err) {
-    _iterator2.e(err);
-  } finally {
-    _iterator2.f();
-  }
-
-  return candidate;
-}
-
-var index = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	Alea: Alea,
-	DELETE: DELETE,
-	HSVToHex: HSVToHex,
-	HSVToRGB: HSVToRGB,
-	RGBToHSV: RGBToHSV,
-	RGBToHex: RGBToHex,
-	addClassName: addClassName,
-	addCssText: addCssText,
-	addEventListener: addEventListener,
-	binarySearchCustom: binarySearchCustom,
-	binarySearchValue: binarySearchValue,
-	bridgeObject: bridgeObject,
-	copyAndExtendArray: copyAndExtendArray,
-	copyArray: copyArray,
-	deepExtend: deepExtend,
-	deepObjectAssign: deepObjectAssign,
-	easingFunctions: easingFunctions,
-	equalArray: equalArray,
-	extend: extend,
-	fillIfDefined: fillIfDefined,
-	forEach: forEach$3,
-	getAbsoluteLeft: getAbsoluteLeft,
-	getAbsoluteRight: getAbsoluteRight,
-	getAbsoluteTop: getAbsoluteTop,
-	getScrollBarWidth: getScrollBarWidth,
-	getTarget: getTarget,
-	getType: getType,
-	hasParent: hasParent,
-	hexToHSV: hexToHSV,
-	hexToRGB: hexToRGB,
-	insertSort: insertSort,
-	isDate: isDate,
-	isNumber: isNumber,
-	isObject: isObject$1,
-	isString: isString,
-	isValidHex: isValidHex,
-	isValidRGB: isValidRGB,
-	isValidRGBA: isValidRGBA,
-	mergeOptions: mergeOptions,
-	option: option,
-	overrideOpacity: overrideOpacity,
-	parseColor: parseColor,
-	preventDefault: preventDefault,
-	pureDeepObjectAssign: pureDeepObjectAssign,
-	recursiveDOMDelete: recursiveDOMDelete,
-	removeClassName: removeClassName,
-	removeCssText: removeCssText,
-	removeEventListener: removeEventListener,
-	selectiveBridgeObject: selectiveBridgeObject,
-	selectiveDeepExtend: selectiveDeepExtend,
-	selectiveExtend: selectiveExtend,
-	selectiveNotDeepExtend: selectiveNotDeepExtend,
-	throttle: throttle,
-	toArray: toArray,
-	topMost: topMost,
-	updateProperty: updateProperty
-});
-
-var HAS_SPECIES_SUPPORT$3 = arrayMethodHasSpeciesSupport('splice');
-var USES_TO_LENGTH$5 = arrayMethodUsesToLength('splice', {
-  ACCESSORS: true,
-  0: 0,
-  1: 2
-});
-var max$2 = Math.max;
-var min$2 = Math.min;
-var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
-var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded'; // `Array.prototype.splice` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.splice
-// with adding support of @@species
-
-_export({
-  target: 'Array',
-  proto: true,
-  forced: !HAS_SPECIES_SUPPORT$3 || !USES_TO_LENGTH$5
-}, {
-  splice: function splice(start, deleteCount
-  /* , ...items */
-  ) {
-    var O = toObject(this);
-    var len = toLength(O.length);
-    var actualStart = toAbsoluteIndex(start, len);
-    var argumentsLength = arguments.length;
-    var insertCount, actualDeleteCount, A, k, from, to;
-
-    if (argumentsLength === 0) {
-      insertCount = actualDeleteCount = 0;
-    } else if (argumentsLength === 1) {
-      insertCount = 0;
-      actualDeleteCount = len - actualStart;
-    } else {
-      insertCount = argumentsLength - 2;
-      actualDeleteCount = min$2(max$2(toInteger(deleteCount), 0), len - actualStart);
-    }
-
-    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
-      throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
-    }
-
-    A = arraySpeciesCreate(O, actualDeleteCount);
-
-    for (k = 0; k < actualDeleteCount; k++) {
-      from = actualStart + k;
-      if (from in O) createProperty(A, k, O[from]);
-    }
-
-    A.length = actualDeleteCount;
-
-    if (insertCount < actualDeleteCount) {
-      for (k = actualStart; k < len - actualDeleteCount; k++) {
-        from = k + actualDeleteCount;
-        to = k + insertCount;
-        if (from in O) O[to] = O[from];else delete O[to];
-      }
-
-      for (k = len; k > len - actualDeleteCount + insertCount; k--) delete O[k - 1];
-    } else if (insertCount > actualDeleteCount) {
-      for (k = len - actualDeleteCount; k > actualStart; k--) {
-        from = k + actualDeleteCount - 1;
-        to = k + insertCount - 1;
-        if (from in O) O[to] = O[from];else delete O[to];
-      }
-    }
-
-    for (k = 0; k < insertCount; k++) {
-      O[k + actualStart] = arguments[k + 2];
-    }
-
-    O.length = len - actualDeleteCount + insertCount;
-    return A;
-  }
-});
-
-var splice = entryVirtual('Array').splice;
-
-var ArrayPrototype$7 = Array.prototype;
-
-var splice_1 = function (it) {
-  var own = it.splice;
-  return it === ArrayPrototype$7 || it instanceof Array && own === ArrayPrototype$7.splice ? splice : own;
-};
-
-var splice$1 = splice_1;
-
-var splice$2 = splice$1;
-
-var $includes = arrayIncludes.includes;
-var USES_TO_LENGTH$6 = arrayMethodUsesToLength('indexOf', {
-  ACCESSORS: true,
-  1: 0
-}); // `Array.prototype.includes` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.includes
-
-_export({
-  target: 'Array',
-  proto: true,
-  forced: !USES_TO_LENGTH$6
-}, {
-  includes: function includes(el
-  /* , fromIndex = 0 */
-  ) {
-    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
-  }
-}); // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-
-var includes = entryVirtual('Array').includes;
-
-var MATCH = wellKnownSymbol('match'); // `IsRegExp` abstract operation
-// https://tc39.github.io/ecma262/#sec-isregexp
-
-var isRegexp = function (it) {
-  var isRegExp;
-  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
-};
-
-var notARegexp = function (it) {
-  if (isRegexp(it)) {
-    throw TypeError("The method doesn't accept regular expressions");
-  }
-
-  return it;
-};
-
-var MATCH$1 = wellKnownSymbol('match');
-
-var correctIsRegexpLogic = function (METHOD_NAME) {
-  var regexp = /./;
-
-  try {
-    '/./'[METHOD_NAME](regexp);
-  } catch (e) {
-    try {
-      regexp[MATCH$1] = false;
-      return '/./'[METHOD_NAME](regexp);
-    } catch (f) {
-      /* empty */
-    }
-  }
-
-  return false;
-};
-
-// https://tc39.github.io/ecma262/#sec-string.prototype.includes
-
-
-_export({
-  target: 'String',
-  proto: true,
-  forced: !correctIsRegexpLogic('includes')
-}, {
-  includes: function includes(searchString
-  /* , position = 0 */
-  ) {
-    return !!~String(requireObjectCoercible(this)).indexOf(notARegexp(searchString), arguments.length > 1 ? arguments[1] : undefined);
-  }
-});
-
-var includes$1 = entryVirtual('String').includes;
-
-var ArrayPrototype$8 = Array.prototype;
-var StringPrototype$1 = String.prototype;
-
-var includes$2 = function (it) {
-  var own = it.includes;
-  if (it === ArrayPrototype$8 || it instanceof Array && own === ArrayPrototype$8.includes) return includes;
-
-  if (typeof it === 'string' || it === StringPrototype$1 || it instanceof String && own === StringPrototype$1.includes) {
-    return includes$1;
-  }
-
-  return own;
-};
-
-var includes$3 = includes$2;
-
-var includes$4 = includes$3;
-
-/* eslint-disable max-statements */
-
-/* eslint-disable no-prototype-builtins */
-
-/* eslint-disable no-unused-vars */
-
-/* eslint-disable no-var */
-
-/**
- * Parse a text source containing data in DOT language into a JSON object.
- * The object contains two lists: one with nodes and one with edges.
- *
- * DOT language reference: http://www.graphviz.org/doc/info/lang.html
- *
- * DOT language attributes: http://graphviz.org/content/attrs
- *
- * @param {string} data     Text containing a graph in DOT-notation
- * @return {Object} graph   An object containing two parameters:
- *                          {Object[]} nodes
- *                          {Object[]} edges
- *
- * -------------------------------------------
- * TODO
- * ====
- *
- * For label handling, this is an incomplete implementation. From docs (quote #3015):
- *
- * > the escape sequences "\n", "\l" and "\r" divide the label into lines, centered,
- * > left-justified, and right-justified, respectively.
- *
- * Source: http://www.graphviz.org/content/attrs#kescString
- *
- * > As another aid for readability, dot allows double-quoted strings to span multiple physical
- * > lines using the standard C convention of a backslash immediately preceding a newline
- * > character
- * > In addition, double-quoted strings can be concatenated using a '+' operator.
- * > As HTML strings can contain newline characters, which are used solely for formatting,
- * > the language does not allow escaped newlines or concatenation operators to be used
- * > within them.
- *
- * - Currently, only '\\n' is handled
- * - Note that text explicitly says 'labels'; the dot parser currently handles escape
- *   sequences in **all** strings.
- */
-function parseDOT(data) {
-  dot = data;
-  return parseGraph();
-} // mapping of attributes from DOT (the keys) to vis.js (the values)
-
-var NODE_ATTR_MAPPING = {
-  'fontsize': 'font.size',
-  'fontcolor': 'font.color',
-  'labelfontcolor': 'font.color',
-  'fontname': 'font.face',
-  'color': ['color.border', 'color.background'],
-  'fillcolor': 'color.background',
-  'tooltip': 'title',
-  'labeltooltip': 'title'
-};
-
-var EDGE_ATTR_MAPPING = create$2(NODE_ATTR_MAPPING);
-
-EDGE_ATTR_MAPPING.color = 'color.color';
-EDGE_ATTR_MAPPING.style = 'dashes'; // token types enumeration
-
-var TOKENTYPE = {
-  NULL: 0,
-  DELIMITER: 1,
-  IDENTIFIER: 2,
-  UNKNOWN: 3
-}; // map with all delimiters
-
-var DELIMITERS = {
-  '{': true,
-  '}': true,
-  '[': true,
-  ']': true,
-  ';': true,
-  '=': true,
-  ',': true,
-  '->': true,
-  '--': true
-};
-var dot = ''; // current dot file
-
-var index$1 = 0; // current index in dot file
-
-var c = ''; // current token character in expr
-
-var token = ''; // current token
-
-var tokenType = TOKENTYPE.NULL; // type of the token
-
-/**
- * Get the first character from the dot file.
- * The character is stored into the char c. If the end of the dot file is
- * reached, the function puts an empty string in c.
- */
-
-function first() {
-  index$1 = 0;
-  c = dot.charAt(0);
-}
-/**
- * Get the next character from the dot file.
- * The character is stored into the char c. If the end of the dot file is
- * reached, the function puts an empty string in c.
- */
-
-
-function next() {
-  index$1++;
-  c = dot.charAt(index$1);
-}
-/**
- * Preview the next character from the dot file.
- * @return {string} cNext
- */
-
-
-function nextPreview() {
-  return dot.charAt(index$1 + 1);
-}
-
-var regexAlphaNumeric = /[a-zA-Z_0-9.:#]/;
-/**
- * Test whether given character is alphabetic or numeric
- * @param {string} c
- * @return {Boolean} isAlphaNumeric
- */
-
-function isAlphaNumeric(c) {
-  return regexAlphaNumeric.test(c);
-}
-/**
- * Merge all options of object b into object b
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- */
-
-
-function merge(a, b) {
-  if (!a) {
-    a = {};
-  }
-
-  if (b) {
-    for (var name in b) {
-      if (b.hasOwnProperty(name)) {
-        a[name] = b[name];
-      }
-    }
-  }
-
-  return a;
-}
-/**
- * Set a value in an object, where the provided parameter name can be a
- * path with nested parameters. For example:
- *
- *     var obj = {a: 2};
- *     setValue(obj, 'b.c', 3);     // obj = {a: 2, b: {c: 3}}
- *
- * @param {Object} obj
- * @param {string} path  A parameter name or dot-separated parameter path,
- *                      like "color.highlight.border".
- * @param {*} value
- */
-
-
-function setValue(obj, path, value) {
-  var keys = path.split('.');
-  var o = obj;
-
-  while (keys.length) {
-    var key = keys.shift();
-
-    if (keys.length) {
-      // this isn't the end point
-      if (!o[key]) {
-        o[key] = {};
-      }
-
-      o = o[key];
-    } else {
-      // this is the end point
-      o[key] = value;
-    }
-  }
-}
-/**
- * Add a node to a graph object. If there is already a node with
- * the same id, their attributes will be merged.
- * @param {Object} graph
- * @param {Object} node
- */
-
-
-function addNode(graph, node) {
-  var i, len;
-  var current = null; // find root graph (in case of subgraph)
-
-  var graphs = [graph]; // list with all graphs from current graph to root graph
-
-  var root = graph;
-
-  while (root.parent) {
-    graphs.push(root.parent);
-    root = root.parent;
-  } // find existing node (at root level) by its id
-
-
-  if (root.nodes) {
-    for (i = 0, len = root.nodes.length; i < len; i++) {
-      if (node.id === root.nodes[i].id) {
-        current = root.nodes[i];
-        break;
-      }
-    }
-  }
-
-  if (!current) {
-    // this is a new node
-    current = {
-      id: node.id
-    };
-
-    if (graph.node) {
-      // clone default attributes
-      current.attr = merge(current.attr, graph.node);
-    }
-  } // add node to this (sub)graph and all its parent graphs
-
-
-  for (i = graphs.length - 1; i >= 0; i--) {
-    var _context;
-
-    var g = graphs[i];
-
-    if (!g.nodes) {
-      g.nodes = [];
-    }
-
-    if (indexOf$3(_context = g.nodes).call(_context, current) === -1) {
-      g.nodes.push(current);
-    }
-  } // merge attributes
-
-
-  if (node.attr) {
-    current.attr = merge(current.attr, node.attr);
-  }
-}
-/**
- * Add an edge to a graph object
- * @param {Object} graph
- * @param {Object} edge
- */
-
-
-function addEdge(graph, edge) {
-  if (!graph.edges) {
-    graph.edges = [];
-  }
-
-  graph.edges.push(edge);
-
-  if (graph.edge) {
-    var attr = merge({}, graph.edge); // clone default attributes
-
-    edge.attr = merge(attr, edge.attr); // merge attributes
-  }
-}
-/**
- * Create an edge to a graph object
- * @param {Object} graph
- * @param {string | number | Object} from
- * @param {string | number | Object} to
- * @param {string} type
- * @param {Object | null} attr
- * @return {Object} edge
- */
-
-
-function createEdge(graph, from, to, type, attr) {
-  var edge = {
-    from: from,
-    to: to,
-    type: type
-  };
-
-  if (graph.edge) {
-    edge.attr = merge({}, graph.edge); // clone default attributes
-  }
-
-  edge.attr = merge(edge.attr || {}, attr); // merge attributes
-  // Move arrows attribute from attr to edge temporally created in
-  // parseAttributeList().
-
-  if (attr != null) {
-    if (attr.hasOwnProperty('arrows') && attr['arrows'] != null) {
-      edge['arrows'] = {
-        to: {
-          enabled: true,
-          type: attr.arrows.type
-        }
-      };
-      attr['arrows'] = null;
-    }
-  }
-
-  return edge;
-}
-/**
- * Get next token in the current dot file.
- * The token and token type are available as token and tokenType
- */
-
-
-function getToken() {
-  tokenType = TOKENTYPE.NULL;
-  token = ''; // skip over whitespaces
-
-  while (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-    // space, tab, enter
-    next();
-  }
-
-  do {
-    var isComment = false; // skip comment
-
-    if (c === '#') {
-      // find the previous non-space character
-      var i = index$1 - 1;
-
-      while (dot.charAt(i) === ' ' || dot.charAt(i) === '\t') {
-        i--;
-      }
-
-      if (dot.charAt(i) === '\n' || dot.charAt(i) === '') {
-        // the # is at the start of a line, this is indeed a line comment
-        while (c != '' && c != '\n') {
-          next();
-        }
-
-        isComment = true;
-      }
-    }
-
-    if (c === '/' && nextPreview() === '/') {
-      // skip line comment
-      while (c != '' && c != '\n') {
-        next();
-      }
-
-      isComment = true;
-    }
-
-    if (c === '/' && nextPreview() === '*') {
-      // skip block comment
-      while (c != '') {
-        if (c === '*' && nextPreview() === '/') {
-          // end of block comment found. skip these last two characters
-          next();
-          next();
-          break;
-        } else {
-          next();
-        }
-      }
-
-      isComment = true;
-    } // skip over whitespaces
-
-
-    while (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-      // space, tab, enter
-      next();
-    }
-  } while (isComment); // check for end of dot file
-
-
-  if (c === '') {
-    // token is still empty
-    tokenType = TOKENTYPE.DELIMITER;
-    return;
-  } // check for delimiters consisting of 2 characters
-
-
-  var c2 = c + nextPreview();
-
-  if (DELIMITERS[c2]) {
-    tokenType = TOKENTYPE.DELIMITER;
-    token = c2;
-    next();
-    next();
-    return;
-  } // check for delimiters consisting of 1 character
-
-
-  if (DELIMITERS[c]) {
-    tokenType = TOKENTYPE.DELIMITER;
-    token = c;
-    next();
-    return;
-  } // check for an identifier (number or string)
-  // TODO: more precise parsing of numbers/strings (and the port separator ':')
-
-
-  if (isAlphaNumeric(c) || c === '-') {
-    token += c;
-    next();
-
-    while (isAlphaNumeric(c)) {
-      token += c;
-      next();
-    }
-
-    if (token === 'false') {
-      token = false; // convert to boolean
-    } else if (token === 'true') {
-      token = true; // convert to boolean
-    } else if (!isNaN(Number(token))) {
-      token = Number(token); // convert to number
-    }
-
-    tokenType = TOKENTYPE.IDENTIFIER;
-    return;
-  } // check for a string enclosed by double quotes
-
-
-  if (c === '"') {
-    next();
-
-    while (c != '' && (c != '"' || c === '"' && nextPreview() === '"')) {
-      if (c === '"') {
-        // skip the escape character
-        token += c;
-        next();
-      } else if (c === '\\' && nextPreview() === 'n') {
-        // Honor a newline escape sequence
-        token += '\n';
-        next();
-      } else {
-        token += c;
-      }
-
-      next();
-    }
-
-    if (c != '"') {
-      throw newSyntaxError('End of string " expected');
-    }
-
-    next();
-    tokenType = TOKENTYPE.IDENTIFIER;
-    return;
-  } // something unknown is found, wrong characters, a syntax error
-
-
-  tokenType = TOKENTYPE.UNKNOWN;
-
-  while (c != '') {
-    token += c;
-    next();
-  }
-
-  throw new SyntaxError('Syntax error in part "' + chop(token, 30) + '"');
-}
-/**
- * Parse a graph.
- * @returns {Object} graph
- */
-
-
-function parseGraph() {
-  var graph = {};
-  first();
-  getToken(); // optional strict keyword
-
-  if (token === 'strict') {
-    graph.strict = true;
-    getToken();
-  } // graph or digraph keyword
-
-
-  if (token === 'graph' || token === 'digraph') {
-    graph.type = token;
-    getToken();
-  } // optional graph id
-
-
-  if (tokenType === TOKENTYPE.IDENTIFIER) {
-    graph.id = token;
-    getToken();
-  } // open angle bracket
-
-
-  if (token != '{') {
-    throw newSyntaxError('Angle bracket { expected');
-  }
-
-  getToken(); // statements
-
-  parseStatements(graph); // close angle bracket
-
-  if (token != '}') {
-    throw newSyntaxError('Angle bracket } expected');
-  }
-
-  getToken(); // end of file
-
-  if (token !== '') {
-    throw newSyntaxError('End of file expected');
-  }
-
-  getToken(); // remove temporary default options
-
-  delete graph.node;
-  delete graph.edge;
-  delete graph.graph;
-  return graph;
-}
-/**
- * Parse a list with statements.
- * @param {Object} graph
- */
-
-
-function parseStatements(graph) {
-  while (token !== '' && token != '}') {
-    parseStatement(graph);
-
-    if (token === ';') {
-      getToken();
-    }
-  }
-}
-/**
- * Parse a single statement. Can be a an attribute statement, node
- * statement, a series of node statements and edge statements, or a
- * parameter.
- * @param {Object} graph
- */
-
-
-function parseStatement(graph) {
-  // parse subgraph
-  var subgraph = parseSubgraph(graph);
-
-  if (subgraph) {
-    // edge statements
-    parseEdge(graph, subgraph);
-    return;
-  } // parse an attribute statement
-
-
-  var attr = parseAttributeStatement(graph);
-
-  if (attr) {
-    return;
-  } // parse node
-
-
-  if (tokenType != TOKENTYPE.IDENTIFIER) {
-    throw newSyntaxError('Identifier expected');
-  }
-
-  var id = token; // id can be a string or a number
-
-  getToken();
-
-  if (token === '=') {
-    // id statement
-    getToken();
-
-    if (tokenType != TOKENTYPE.IDENTIFIER) {
-      throw newSyntaxError('Identifier expected');
-    }
-
-    graph[id] = token;
-    getToken(); // TODO: implement comma separated list with "a_list: ID=ID [','] [a_list] "
-  } else {
-    parseNodeStatement(graph, id);
-  }
-}
-/**
- * Parse a subgraph
- * @param {Object} graph    parent graph object
- * @return {Object | null} subgraph
- */
-
-
-function parseSubgraph(graph) {
-  var subgraph = null; // optional subgraph keyword
-
-  if (token === 'subgraph') {
-    subgraph = {};
-    subgraph.type = 'subgraph';
-    getToken(); // optional graph id
-
-    if (tokenType === TOKENTYPE.IDENTIFIER) {
-      subgraph.id = token;
-      getToken();
-    }
-  } // open angle bracket
-
-
-  if (token === '{') {
-    getToken();
-
-    if (!subgraph) {
-      subgraph = {};
-    }
-
-    subgraph.parent = graph;
-    subgraph.node = graph.node;
-    subgraph.edge = graph.edge;
-    subgraph.graph = graph.graph; // statements
-
-    parseStatements(subgraph); // close angle bracket
-
-    if (token != '}') {
-      throw newSyntaxError('Angle bracket } expected');
-    }
-
-    getToken(); // remove temporary default options
-
-    delete subgraph.node;
-    delete subgraph.edge;
-    delete subgraph.graph;
-    delete subgraph.parent; // register at the parent graph
-
-    if (!graph.subgraphs) {
-      graph.subgraphs = [];
-    }
-
-    graph.subgraphs.push(subgraph);
-  }
-
-  return subgraph;
-}
-/**
- * parse an attribute statement like "node [shape=circle fontSize=16]".
- * Available keywords are 'node', 'edge', 'graph'.
- * The previous list with default attributes will be replaced
- * @param {Object} graph
- * @returns {String | null} keyword Returns the name of the parsed attribute
- *                                  (node, edge, graph), or null if nothing
- *                                  is parsed.
- */
-
-
-function parseAttributeStatement(graph) {
-  // attribute statements
-  if (token === 'node') {
-    getToken(); // node attributes
-
-    graph.node = parseAttributeList();
-    return 'node';
-  } else if (token === 'edge') {
-    getToken(); // edge attributes
-
-    graph.edge = parseAttributeList();
-    return 'edge';
-  } else if (token === 'graph') {
-    getToken(); // graph attributes
-
-    graph.graph = parseAttributeList();
-    return 'graph';
-  }
-
-  return null;
-}
-/**
- * parse a node statement
- * @param {Object} graph
- * @param {string | number} id
- */
-
-
-function parseNodeStatement(graph, id) {
-  // node statement
-  var node = {
-    id: id
-  };
-  var attr = parseAttributeList();
-
-  if (attr) {
-    node.attr = attr;
-  }
-
-  addNode(graph, node); // edge statements
-
-  parseEdge(graph, id);
-}
-/**
- * Parse an edge or a series of edges
- * @param {Object} graph
- * @param {string | number} from        Id of the from node
- */
-
-
-function parseEdge(graph, from) {
-  while (token === '->' || token === '--') {
-    var to;
-    var type = token;
-    getToken();
-    var subgraph = parseSubgraph(graph);
-
-    if (subgraph) {
-      to = subgraph;
-    } else {
-      if (tokenType != TOKENTYPE.IDENTIFIER) {
-        throw newSyntaxError('Identifier or subgraph expected');
-      }
-
-      to = token;
-      addNode(graph, {
-        id: to
-      });
-      getToken();
-    } // parse edge attributes
-
-
-    var attr = parseAttributeList(); // create edge
-
-    var edge = createEdge(graph, from, to, type, attr);
-    addEdge(graph, edge);
-    from = to;
-  }
-}
-/**
- * Parse a set with attributes,
- * for example [label="1.000", shape=solid]
- * @return {Object | null} attr
- */
-
-
-function parseAttributeList() {
-  var i;
-  var attr = null; // edge styles of dot and vis
-
-  var edgeStyles = {
-    'dashed': true,
-    'solid': false,
-    'dotted': [1, 5]
-  };
-  /**
-   * Define arrow types.
-   * vis currently supports types defined in 'arrowTypes'.
-   * Details of arrow shapes are described in
-   * http://www.graphviz.org/content/arrow-shapes
-   */
-
-  var arrowTypes = {
-    dot: 'circle',
-    box: 'box',
-    crow: 'crow',
-    curve: 'curve',
-    icurve: 'inv_curve',
-    normal: 'triangle',
-    inv: 'inv_triangle',
-    diamond: 'diamond',
-    tee: 'bar',
-    vee: 'vee'
-  };
-  /**
-   * 'attr_list' contains attributes for checking if some of them are affected
-   * later. For instance, both of 'arrowhead' and 'dir' (edge style defined
-   * in DOT) make changes to 'arrows' attribute in vis.
-   */
-
-  var attr_list = new Array();
-  var attr_names = new Array(); // used for checking the case.
-  // parse attributes
-
-  while (token === '[') {
-    getToken();
-    attr = {};
-
-    while (token !== '' && token != ']') {
-      if (tokenType != TOKENTYPE.IDENTIFIER) {
-        throw newSyntaxError('Attribute name expected');
-      }
-
-      var name = token;
-      getToken();
-
-      if (token != '=') {
-        throw newSyntaxError('Equal sign = expected');
-      }
-
-      getToken();
-
-      if (tokenType != TOKENTYPE.IDENTIFIER) {
-        throw newSyntaxError('Attribute value expected');
-      }
-
-      var value = token; // convert from dot style to vis
-
-      if (name === 'style') {
-        value = edgeStyles[value];
-      }
-
-      var arrowType;
-
-      if (name === 'arrowhead') {
-        arrowType = arrowTypes[value];
-        name = 'arrows';
-        value = {
-          'to': {
-            'enabled': true,
-            'type': arrowType
-          }
-        };
-      }
-
-      if (name === 'arrowtail') {
-        arrowType = arrowTypes[value];
-        name = 'arrows';
-        value = {
-          'from': {
-            'enabled': true,
-            'type': arrowType
-          }
-        };
-      }
-
-      attr_list.push({
-        'attr': attr,
-        'name': name,
-        'value': value
-      });
-      attr_names.push(name);
-      getToken();
-
-      if (token == ',') {
-        getToken();
-      }
-    }
-
-    if (token != ']') {
-      throw newSyntaxError('Bracket ] expected');
-    }
-
-    getToken();
-  }
-  /**
-   * As explained in [1], graphviz has limitations for combination of
-   * arrow[head|tail] and dir. If attribute list includes 'dir',
-   * following cases just be supported.
-   *   1. both or none + arrowhead, arrowtail
-   *   2. forward + arrowhead (arrowtail is not affedted)
-   *   3. back + arrowtail (arrowhead is not affected)
-   * [1] https://www.graphviz.org/doc/info/attrs.html#h:undir_note
-   */
-
-
-  if (includes$4(attr_names).call(attr_names, 'dir')) {
-    var idx = {}; // get index of 'arrows' and 'dir'
-
-    idx.arrows = {};
-
-    for (i = 0; i < attr_list.length; i++) {
-      if (attr_list[i].name === 'arrows') {
-        if (attr_list[i].value.to != null) {
-          idx.arrows.to = i;
-        } else if (attr_list[i].value.from != null) {
-          idx.arrows.from = i;
-        } else {
-          throw newSyntaxError('Invalid value of arrows');
-        }
-      } else if (attr_list[i].name === 'dir') {
-        idx.dir = i;
-      }
-    } // first, add default arrow shape if it is not assigned to avoid error
-
-
-    var dir_type = attr_list[idx.dir].value;
-
-    if (!includes$4(attr_names).call(attr_names, 'arrows')) {
-      if (dir_type === 'both') {
-        attr_list.push({
-          'attr': attr_list[idx.dir].attr,
-          'name': 'arrows',
-          'value': {
-            to: {
-              enabled: true
-            }
-          }
-        });
-        idx.arrows.to = attr_list.length - 1;
-        attr_list.push({
-          'attr': attr_list[idx.dir].attr,
-          'name': 'arrows',
-          'value': {
-            from: {
-              enabled: true
-            }
-          }
-        });
-        idx.arrows.from = attr_list.length - 1;
-      } else if (dir_type === 'forward') {
-        attr_list.push({
-          'attr': attr_list[idx.dir].attr,
-          'name': 'arrows',
-          'value': {
-            to: {
-              enabled: true
-            }
-          }
-        });
-        idx.arrows.to = attr_list.length - 1;
-      } else if (dir_type === 'back') {
-        attr_list.push({
-          'attr': attr_list[idx.dir].attr,
-          'name': 'arrows',
-          'value': {
-            from: {
-              enabled: true
-            }
-          }
-        });
-        idx.arrows.from = attr_list.length - 1;
-      } else if (dir_type === 'none') {
-        attr_list.push({
-          'attr': attr_list[idx.dir].attr,
-          'name': 'arrows',
-          'value': ''
-        });
-        idx.arrows.to = attr_list.length - 1;
-      } else {
-        throw newSyntaxError('Invalid dir type "' + dir_type + '"');
-      }
-    }
-
-    var from_type;
-    var to_type; // update 'arrows' attribute from 'dir'.
-
-    if (dir_type === 'both') {
-      // both of shapes of 'from' and 'to' are given
-      if (idx.arrows.to && idx.arrows.from) {
-        to_type = attr_list[idx.arrows.to].value.to.type;
-        from_type = attr_list[idx.arrows.from].value.from.type;
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.to].attr,
-          'name': attr_list[idx.arrows.to].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        };
-
-        splice$2(attr_list).call(attr_list, idx.arrows.from, 1); // shape of 'to' is assigned and use default to 'from'
-
-      } else if (idx.arrows.to) {
-        to_type = attr_list[idx.arrows.to].value.to.type;
-        from_type = 'arrow';
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.to].attr,
-          'name': attr_list[idx.arrows.to].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        }; // only shape of 'from' is assigned and use default for 'to'
-      } else if (idx.arrows.from) {
-        to_type = 'arrow';
-        from_type = attr_list[idx.arrows.from].value.from.type;
-        attr_list[idx.arrows.from] = {
-          'attr': attr_list[idx.arrows.from].attr,
-          'name': attr_list[idx.arrows.from].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        };
-      }
-    } else if (dir_type === 'back') {
-      // given both of shapes, but use only 'from'
-      if (idx.arrows.to && idx.arrows.from) {
-        to_type = '';
-        from_type = attr_list[idx.arrows.from].value.from.type;
-        attr_list[idx.arrows.from] = {
-          'attr': attr_list[idx.arrows.from].attr,
-          'name': attr_list[idx.arrows.from].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        }; // given shape of 'to', but does not use it
-      } else if (idx.arrows.to) {
-        to_type = '';
-        from_type = 'arrow';
-        idx.arrows.from = idx.arrows.to;
-        attr_list[idx.arrows.from] = {
-          'attr': attr_list[idx.arrows.from].attr,
-          'name': attr_list[idx.arrows.from].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        }; // assign given 'from' shape
-      } else if (idx.arrows.from) {
-        to_type = '';
-        from_type = attr_list[idx.arrows.from].value.from.type;
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.from].attr,
-          'name': attr_list[idx.arrows.from].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        };
-      }
-
-      attr_list[idx.arrows.from] = {
-        'attr': attr_list[idx.arrows.from].attr,
-        'name': attr_list[idx.arrows.from].name,
-        'value': {
-          from: {
-            enabled: true,
-            type: attr_list[idx.arrows.from].value.from.type
-          }
-        }
-      };
-    } else if (dir_type === 'none') {
-      var idx_arrow;
-
-      if (idx.arrows.to) {
-        idx_arrow = idx.arrows.to;
-      } else {
-        idx_arrow = idx.arrows.from;
-      }
-
-      attr_list[idx_arrow] = {
-        'attr': attr_list[idx_arrow].attr,
-        'name': attr_list[idx_arrow].name,
-        'value': ''
-      };
-    } else if (dir_type === 'forward') {
-      // given both of shapes, but use only 'to'
-      if (idx.arrows.to && idx.arrows.from) {
-        to_type = attr_list[idx.arrows.to].value.to.type;
-        from_type = '';
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.to].attr,
-          'name': attr_list[idx.arrows.to].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        }; // assign given 'to' shape
-      } else if (idx.arrows.to) {
-        to_type = attr_list[idx.arrows.to].value.to.type;
-        from_type = '';
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.to].attr,
-          'name': attr_list[idx.arrows.to].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        }; // given shape of 'from', but does not use it
-      } else if (idx.arrows.from) {
-        to_type = 'arrow';
-        from_type = '';
-        idx.arrows.to = idx.arrows.from;
-        attr_list[idx.arrows.to] = {
-          'attr': attr_list[idx.arrows.to].attr,
-          'name': attr_list[idx.arrows.to].name,
-          'value': {
-            to: {
-              enabled: true,
-              type: to_type
-            },
-            from: {
-              enabled: true,
-              type: from_type
-            }
-          }
-        };
-      }
-
-      attr_list[idx.arrows.to] = {
-        'attr': attr_list[idx.arrows.to].attr,
-        'name': attr_list[idx.arrows.to].name,
-        'value': {
-          to: {
-            enabled: true,
-            type: attr_list[idx.arrows.to].value.to.type
-          }
-        }
-      };
-    } else {
-      throw newSyntaxError('Invalid dir type "' + dir_type + '"');
-    } // remove 'dir' attribute no need anymore
-
-
-    splice$2(attr_list).call(attr_list, idx.dir, 1);
-  } // parse 'penwidth'
-
-
-  var nof_attr_list;
-
-  if (includes$4(attr_names).call(attr_names, 'penwidth')) {
-    var tmp_attr_list = [];
-    nof_attr_list = attr_list.length;
-
-    for (i = 0; i < nof_attr_list; i++) {
-      // exclude 'width' from attr_list if 'penwidth' exists
-      if (attr_list[i].name !== 'width') {
-        if (attr_list[i].name === 'penwidth') {
-          attr_list[i].name = 'width';
-        }
-
-        tmp_attr_list.push(attr_list[i]);
-      }
-    }
-
-    attr_list = tmp_attr_list;
-  }
-
-  nof_attr_list = attr_list.length;
-
-  for (i = 0; i < nof_attr_list; i++) {
-    setValue(attr_list[i].attr, attr_list[i].name, attr_list[i].value);
-  }
-
-  return attr;
-}
-/**
- * Create a syntax error with extra information on current token and index.
- * @param {string} message
- * @returns {SyntaxError} err
- */
-
-
-function newSyntaxError(message) {
-  return new SyntaxError(message + ', got "' + chop(token, 30) + '" (char ' + index$1 + ')');
-}
-/**
- * Chop off text after a maximum length
- * @param {string} text
- * @param {number} maxLength
- * @returns {String}
- */
-
-
-function chop(text, maxLength) {
-  return text.length <= maxLength ? text : text.substr(0, 27) + '...';
-}
-/**
- * Execute a function fn for each pair of elements in two arrays
- * @param {Array | *} array1
- * @param {Array | *} array2
- * @param {function} fn
- */
-
-
-function forEach2(array1, array2, fn) {
-  if (isArray$5(array1)) {
-    forEach$2(array1).call(array1, function (elem1) {
-      if (isArray$5(array2)) {
-        forEach$2(array2).call(array2, function (elem2) {
-          fn(elem1, elem2);
-        });
-      } else {
-        fn(elem1, array2);
-      }
-    });
-  } else {
-    if (isArray$5(array2)) {
-      forEach$2(array2).call(array2, function (elem2) {
-        fn(array1, elem2);
-      });
-    } else {
-      fn(array1, array2);
-    }
-  }
-}
-/**
- * Set a nested property on an object
- * When nested objects are missing, they will be created.
- * For example setProp({}, 'font.color', 'red') will return {font: {color: 'red'}}
- * @param {Object} object
- * @param {string} path   A dot separated string like 'font.color'
- * @param {*} value       Value for the property
- * @return {Object} Returns the original object, allows for chaining.
- */
-
-
-function setProp(object, path, value) {
-  var names = path.split('.');
-  var prop = names.pop(); // traverse over the nested objects
-
-  var obj = object;
-
-  for (var i = 0; i < names.length; i++) {
-    var name = names[i];
-
-    if (!(name in obj)) {
-      obj[name] = {};
-    }
-
-    obj = obj[name];
-  } // set the property value
-
-
-  obj[prop] = value;
-  return object;
-}
-/**
- * Convert an object with DOT attributes to their vis.js equivalents.
- * @param {Object} attr     Object with DOT attributes
- * @param {Object} mapping
- * @return {Object}         Returns an object with vis.js attributes
- */
-
-
-function convertAttr(attr, mapping) {
-  var converted = {};
-
-  for (var prop in attr) {
-    if (attr.hasOwnProperty(prop)) {
-      var visProp = mapping[prop];
-
-      if (isArray$5(visProp)) {
-        forEach$2(visProp).call(visProp, function (visPropI) {
-          setProp(converted, visPropI, attr[prop]);
-        });
-      } else if (typeof visProp === 'string') {
-        setProp(converted, visProp, attr[prop]);
-      } else {
-        setProp(converted, prop, attr[prop]);
-      }
-    }
-  }
-
-  return converted;
-}
-/**
- * Convert a string containing a graph in DOT language into a map containing
- * with nodes and edges in the format of graph.
- * @param {string} data         Text containing a graph in DOT-notation
- * @return {Object} graphData
- */
-
-
-function DOTToGraph(data) {
-  // parse the DOT file
-  var dotData = parseDOT(data);
-  var graphData = {
-    nodes: [],
-    edges: [],
-    options: {}
-  }; // copy the nodes
-
-  if (dotData.nodes) {
-    var _context2;
-
-    forEach$2(_context2 = dotData.nodes).call(_context2, function (dotNode) {
-      var graphNode = {
-        id: dotNode.id,
-        label: String(dotNode.label || dotNode.id)
-      };
-      merge(graphNode, convertAttr(dotNode.attr, NODE_ATTR_MAPPING));
-
-      if (graphNode.image) {
-        graphNode.shape = 'image';
-      }
-
-      graphData.nodes.push(graphNode);
-    });
-  } // copy the edges
-
-
-  if (dotData.edges) {
-    var _context3;
-
-    /**
-     * Convert an edge in DOT format to an edge with VisGraph format
-     * @param {Object} dotEdge
-     * @returns {Object} graphEdge
-     */
-    var convertEdge = function convertEdge(dotEdge) {
-      var graphEdge = {
-        from: dotEdge.from,
-        to: dotEdge.to
-      };
-      merge(graphEdge, convertAttr(dotEdge.attr, EDGE_ATTR_MAPPING)); // Add arrows attribute to default styled arrow.
-      // The reason why default style is not added in parseAttributeList() is
-      // because only default is cleared before here.
-
-      if (graphEdge.arrows == null && dotEdge.type === '->') {
-        graphEdge.arrows = 'to';
-      }
-
-      return graphEdge;
-    };
-
-    forEach$2(_context3 = dotData.edges).call(_context3, function (dotEdge) {
-      var from, to;
-
-      if (dotEdge.from instanceof Object) {
-        from = dotEdge.from.nodes;
-      } else {
-        from = {
-          id: dotEdge.from
-        };
-      }
-
-      if (dotEdge.to instanceof Object) {
-        to = dotEdge.to.nodes;
-      } else {
-        to = {
-          id: dotEdge.to
-        };
-      }
-
-      if (dotEdge.from instanceof Object && dotEdge.from.edges) {
-        var _context4;
-
-        forEach$2(_context4 = dotEdge.from.edges).call(_context4, function (subEdge) {
-          var graphEdge = convertEdge(subEdge);
-          graphData.edges.push(graphEdge);
-        });
-      }
-
-      forEach2(from, to, function (from, to) {
-        var subEdge = createEdge(graphData, from.id, to.id, dotEdge.type, dotEdge.attr);
-        var graphEdge = convertEdge(subEdge);
-        graphData.edges.push(graphEdge);
-      });
-
-      if (dotEdge.to instanceof Object && dotEdge.to.edges) {
-        var _context5;
-
-        forEach$2(_context5 = dotEdge.to.edges).call(_context5, function (subEdge) {
-          var graphEdge = convertEdge(subEdge);
-          graphData.edges.push(graphEdge);
-        });
-      }
-    });
-  } // copy the options
-
-
-  if (dotData.attr) {
-    graphData.options = dotData.attr;
-  }
-
-  return graphData;
-}
-
-var dotparser = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	parseDOT: parseDOT,
-	DOTToGraph: DOTToGraph
-});
-
-/**
- * Convert Gephi to Vis.
- *
- * @param gephiJSON - The parsed JSON data in Gephi format.
- * @param optionsObj - Additional options.
- *
- * @returns The converted data ready to be used in Vis.
- */
-function parseGephi(gephiJSON, optionsObj) {
-  var _context;
-
-  var options = {
-    edges: {
-      inheritColor: false
-    },
-    nodes: {
-      fixed: false,
-      parseColor: false
-    }
-  };
-
-  if (optionsObj != null) {
-    if (optionsObj.fixed != null) {
-      options.nodes.fixed = optionsObj.fixed;
-    }
-
-    if (optionsObj.parseColor != null) {
-      options.nodes.parseColor = optionsObj.parseColor;
-    }
-
-    if (optionsObj.inheritColor != null) {
-      options.edges.inheritColor = optionsObj.inheritColor;
-    }
-  }
-
-  var gEdges = gephiJSON.edges;
-
-  var vEdges = map$2(gEdges).call(gEdges, function (gEdge) {
-    var vEdge = {
-      from: gEdge.source,
-      id: gEdge.id,
-      to: gEdge.target
-    };
-
-    if (gEdge.attributes != null) {
-      vEdge.attributes = gEdge.attributes;
-    }
-
-    if (gEdge.label != null) {
-      vEdge.label = gEdge.label;
-    }
-
-    if (gEdge.attributes != null && gEdge.attributes.title != null) {
-      vEdge.title = gEdge.attributes.title;
-    }
-
-    if (gEdge.type === "Directed") {
-      vEdge.arrows = "to";
-    } // edge['value'] = gEdge.attributes != null ? gEdge.attributes.Weight : undefined;
-    // edge['width'] = edge['value'] != null ? undefined : edgegEdge.size;
-
-
-    if (gEdge.color && options.edges.inheritColor === false) {
-      vEdge.color = gEdge.color;
-    }
-
-    return vEdge;
-  });
-
-  var vNodes = map$2(_context = gephiJSON.nodes).call(_context, function (gNode) {
-    var vNode = {
-      id: gNode.id,
-      fixed: options.nodes.fixed && gNode.x != null && gNode.y != null
-    };
-
-    if (gNode.attributes != null) {
-      vNode.attributes = gNode.attributes;
-    }
-
-    if (gNode.label != null) {
-      vNode.label = gNode.label;
-    }
-
-    if (gNode.size != null) {
-      vNode.size = gNode.size;
-    }
-
-    if (gNode.attributes != null && gNode.attributes.title != null) {
-      vNode.title = gNode.attributes.title;
-    }
-
-    if (gNode.title != null) {
-      vNode.title = gNode.title;
-    }
-
-    if (gNode.x != null) {
-      vNode.x = gNode.x;
-    }
-
-    if (gNode.y != null) {
-      vNode.y = gNode.y;
-    }
-
-    if (gNode.color != null) {
-      if (options.nodes.parseColor === true) {
-        vNode.color = gNode.color;
-      } else {
-        vNode.color = {
-          background: gNode.color,
-          border: gNode.color,
-          highlight: {
-            background: gNode.color,
-            border: gNode.color
-          },
-          hover: {
-            background: gNode.color,
-            border: gNode.color
-          }
-        };
-      }
-    }
-
-    return vNode;
-  });
-
-  return {
-    nodes: vNodes,
-    edges: vEdges
-  };
-}
-
-var gephiParser = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	parseGephi: parseGephi
-});
-
-var keycharm = createCommonjsModule(function (module, exports) {
-  /**
-   * Created by Alex on 11/6/2014.
-   */
-  // https://github.com/umdjs/umd/blob/master/returnExports.js#L40-L60
-  // if the module has no dependencies, the above pattern can be simplified to
-
-  (function (root, factory) {
-    {
-      // Node. Does not work with strict CommonJS, but
-      // only CommonJS-like environments that support module.exports,
-      // like Node.
-      module.exports = factory();
-    }
-  })(commonjsGlobal, function () {
-    function keycharm(options) {
-      var preventDefault = options && options.preventDefault || false;
-      var container = options && options.container || window;
-      var _exportFunctions = {};
-      var _bound = {
-        keydown: {},
-        keyup: {}
-      };
-      var _keys = {};
-      var i; // a - z
-
-      for (i = 97; i <= 122; i++) {
-        _keys[String.fromCharCode(i)] = {
-          code: 65 + (i - 97),
-          shift: false
-        };
-      } // A - Z
-
-
-      for (i = 65; i <= 90; i++) {
-        _keys[String.fromCharCode(i)] = {
-          code: i,
-          shift: true
-        };
-      } // 0 - 9
-
-
-      for (i = 0; i <= 9; i++) {
-        _keys['' + i] = {
-          code: 48 + i,
-          shift: false
-        };
-      } // F1 - F12
-
-
-      for (i = 1; i <= 12; i++) {
-        _keys['F' + i] = {
-          code: 111 + i,
-          shift: false
-        };
-      } // num0 - num9
-
-
-      for (i = 0; i <= 9; i++) {
-        _keys['num' + i] = {
-          code: 96 + i,
-          shift: false
-        };
-      } // numpad misc
-
-
-      _keys['num*'] = {
-        code: 106,
-        shift: false
-      };
-      _keys['num+'] = {
-        code: 107,
-        shift: false
-      };
-      _keys['num-'] = {
-        code: 109,
-        shift: false
-      };
-      _keys['num/'] = {
-        code: 111,
-        shift: false
-      };
-      _keys['num.'] = {
-        code: 110,
-        shift: false
-      }; // arrows
-
-      _keys['left'] = {
-        code: 37,
-        shift: false
-      };
-      _keys['up'] = {
-        code: 38,
-        shift: false
-      };
-      _keys['right'] = {
-        code: 39,
-        shift: false
-      };
-      _keys['down'] = {
-        code: 40,
-        shift: false
-      }; // extra keys
-
-      _keys['space'] = {
-        code: 32,
-        shift: false
-      };
-      _keys['enter'] = {
-        code: 13,
-        shift: false
-      };
-      _keys['shift'] = {
-        code: 16,
-        shift: undefined
-      };
-      _keys['esc'] = {
-        code: 27,
-        shift: false
-      };
-      _keys['backspace'] = {
-        code: 8,
-        shift: false
-      };
-      _keys['tab'] = {
-        code: 9,
-        shift: false
-      };
-      _keys['ctrl'] = {
-        code: 17,
-        shift: false
-      };
-      _keys['alt'] = {
-        code: 18,
-        shift: false
-      };
-      _keys['delete'] = {
-        code: 46,
-        shift: false
-      };
-      _keys['pageup'] = {
-        code: 33,
-        shift: false
-      };
-      _keys['pagedown'] = {
-        code: 34,
-        shift: false
-      }; // symbols
-
-      _keys['='] = {
-        code: 187,
-        shift: false
-      };
-      _keys['-'] = {
-        code: 189,
-        shift: false
-      };
-      _keys[']'] = {
-        code: 221,
-        shift: false
-      };
-      _keys['['] = {
-        code: 219,
-        shift: false
-      };
-
-      var down = function (event) {
-        handleEvent(event, 'keydown');
-      };
-
-      var up = function (event) {
-        handleEvent(event, 'keyup');
-      }; // handle the actualy bound key with the event
-
-
-      var handleEvent = function (event, type) {
-        if (_bound[type][event.keyCode] !== undefined) {
-          var bound = _bound[type][event.keyCode];
-
-          for (var i = 0; i < bound.length; i++) {
-            if (bound[i].shift === undefined) {
-              bound[i].fn(event);
-            } else if (bound[i].shift == true && event.shiftKey == true) {
-              bound[i].fn(event);
-            } else if (bound[i].shift == false && event.shiftKey == false) {
-              bound[i].fn(event);
-            }
-          }
-
-          if (preventDefault == true) {
-            event.preventDefault();
-          }
-        }
-      }; // bind a key to a callback
-
-
-      _exportFunctions.bind = function (key, callback, type) {
-        if (type === undefined) {
-          type = 'keydown';
-        }
-
-        if (_keys[key] === undefined) {
-          throw new Error("unsupported key: " + key);
-        }
-
-        if (_bound[type][_keys[key].code] === undefined) {
-          _bound[type][_keys[key].code] = [];
-        }
-
-        _bound[type][_keys[key].code].push({
-          fn: callback,
-          shift: _keys[key].shift
-        });
-      }; // bind all keys to a call back (demo purposes)
-
-
-      _exportFunctions.bindAll = function (callback, type) {
-        if (type === undefined) {
-          type = 'keydown';
-        }
-
-        for (var key in _keys) {
-          if (_keys.hasOwnProperty(key)) {
-            _exportFunctions.bind(key, callback, type);
-          }
-        }
-      }; // get the key label from an event
-
-
-      _exportFunctions.getKey = function (event) {
-        for (var key in _keys) {
-          if (_keys.hasOwnProperty(key)) {
-            if (event.shiftKey == true && _keys[key].shift == true && event.keyCode == _keys[key].code) {
-              return key;
-            } else if (event.shiftKey == false && _keys[key].shift == false && event.keyCode == _keys[key].code) {
-              return key;
-            } else if (event.keyCode == _keys[key].code && key == 'shift') {
-              return key;
-            }
-          }
-        }
-
-        return "unknown key, currently not supported";
-      }; // unbind either a specific callback from a key or all of them (by leaving callback undefined)
-
-
-      _exportFunctions.unbind = function (key, callback, type) {
-        if (type === undefined) {
-          type = 'keydown';
-        }
-
-        if (_keys[key] === undefined) {
-          throw new Error("unsupported key: " + key);
-        }
-
-        if (callback !== undefined) {
-          var newBindings = [];
-          var bound = _bound[type][_keys[key].code];
-
-          if (bound !== undefined) {
-            for (var i = 0; i < bound.length; i++) {
-              if (!(bound[i].fn == callback && bound[i].shift == _keys[key].shift)) {
-                newBindings.push(_bound[type][_keys[key].code][i]);
-              }
-            }
-          }
-
-          _bound[type][_keys[key].code] = newBindings;
-        } else {
-          _bound[type][_keys[key].code] = [];
-        }
-      }; // reset all bound variables.
-
-
-      _exportFunctions.reset = function () {
-        _bound = {
-          keydown: {},
-          keyup: {}
-        };
-      }; // unbind all listeners and reset all variables.
-
-
-      _exportFunctions.destroy = function () {
-        _bound = {
-          keydown: {},
-          keyup: {}
-        };
-        container.removeEventListener('keydown', down, true);
-        container.removeEventListener('keyup', up, true);
-      }; // create listeners.
-
-
-      container.addEventListener('keydown', down, true);
-      container.addEventListener('keyup', up, true); // return the public functions.
-
-      return _exportFunctions;
-    }
-
-    return keycharm;
-  });
-});
-
-var keycharm$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': keycharm,
-	__moduleExports: keycharm
-});
 
 /*! Hammer.JS - v2.0.17-rc - 2019-12-16
  * http://naver.github.io/egjs
@@ -7948,7 +4120,7 @@ var TouchAction = /*#__PURE__*/function () {
  */
 
 
-function hasParent$1(node, parent) {
+function hasParent(node, parent) {
   while (node) {
     if (node === parent) {
       return true;
@@ -8237,7 +4409,7 @@ function computeInputData(manager, input) {
     srcEventTarget = srcEvent.target;
   }
 
-  if (hasParent$1(srcEventTarget, target)) {
+  if (hasParent(srcEventTarget, target)) {
     target = srcEventTarget;
   }
 
@@ -8517,7 +4689,7 @@ var PointerEventInput = /*#__PURE__*/function (_Input) {
  */
 
 
-function toArray$1(obj) {
+function toArray(obj) {
   return Array.prototype.slice.call(obj, 0);
 }
 /**
@@ -8608,7 +4780,7 @@ var TouchInput = /*#__PURE__*/function (_Input) {
 }(Input);
 
 function getTouches(ev, type) {
-  var allTouches = toArray$1(ev.touches);
+  var allTouches = toArray(ev.touches);
   var targetIds = this.targetIds; // when there is only one touch, the process can be simplified
 
   if (type & (INPUT_START | INPUT_MOVE) && allTouches.length === 1) {
@@ -8618,12 +4790,12 @@ function getTouches(ev, type) {
 
   var i;
   var targetTouches;
-  var changedTouches = toArray$1(ev.changedTouches);
+  var changedTouches = toArray(ev.changedTouches);
   var changedTargetTouches = [];
   var target = this.target; // get target touches from touches
 
   targetTouches = allTouches.filter(function (touch) {
-    return hasParent$1(touch.target, target);
+    return hasParent(touch.target, target);
   }); // collect touches
 
   if (type === INPUT_START) {
@@ -10323,8 +6495,8 @@ var SingleTouchInput = /*#__PURE__*/function (_Input) {
 }(Input);
 
 function normalizeSingleTouches(ev, type) {
-  var all = toArray$1(ev.touches);
-  var changed = toArray$1(ev.changedTouches);
+  var all = toArray(ev.touches);
+  var changed = toArray(ev.changedTouches);
 
   if (type & (INPUT_END | INPUT_CANCEL)) {
     all = uniqueArray(all.concat(changed), 'identifier', true);
@@ -10367,7 +6539,7 @@ function deprecate(method, name, message) {
  */
 
 
-var extend$1 = deprecate(function (dest, src, merge) {
+var extend = deprecate(function (dest, src, merge) {
   var keys = Object.keys(src);
   var i = 0;
 
@@ -10390,8 +6562,8 @@ var extend$1 = deprecate(function (dest, src, merge) {
  * @returns {Object} dest
  */
 
-var merge$1 = deprecate(function (dest, src) {
-  return extend$1(dest, src, true);
+var merge = deprecate(function (dest, src) {
+  return extend(dest, src, true);
 }, 'merge', 'Use `assign`.');
 /**
  * @private
@@ -10491,19 +6663,19 @@ var Hammer = /*#__PURE__*/function () {
   Hammer.on = addEventListeners;
   Hammer.off = removeEventListeners;
   Hammer.each = each;
-  Hammer.merge = merge$1;
-  Hammer.extend = extend$1;
+  Hammer.merge = merge;
+  Hammer.extend = extend;
   Hammer.bindFn = bindFn;
   Hammer.assign = assign$1$1;
   Hammer.inherit = inherit;
   Hammer.bindFn = bindFn;
   Hammer.prefixed = prefixed;
-  Hammer.toArray = toArray$1;
+  Hammer.toArray = toArray;
   Hammer.inArray = inArray;
   Hammer.uniqueArray = uniqueArray;
   Hammer.splitStr = splitStr;
   Hammer.boolOrFn = boolOrFn;
-  Hammer.hasParent = hasParent$1;
+  Hammer.hasParent = hasParent;
   Hammer.addEventListeners = addEventListeners;
   Hammer.removeEventListeners = removeEventListeners;
   Hammer.defaults = assign$1$1({}, defaults, {
@@ -10512,6 +6684,273 @@ var Hammer = /*#__PURE__*/function () {
   return Hammer;
 }(); //  style loader but by script tag, not by the loader.
 
+function ownKeys$4(object, enumerableOnly) { var keys = keys$3(object); if (getOwnPropertySymbols$2) { var symbols = getOwnPropertySymbols$2(object); if (enumerableOnly) symbols = filter$2(symbols).call(symbols, function (sym) { return getOwnPropertyDescriptor$3(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { var _context22; forEach$2(_context22 = ownKeys$4(Object(source), true)).call(_context22, function (key) { defineProperty$7(target, key, source[key]); }); } else if (getOwnPropertyDescriptors$2) { defineProperties$1(target, getOwnPropertyDescriptors$2(source)); } else { var _context23; forEach$2(_context23 = ownKeys$4(Object(source))).call(_context23, function (key) { defineProperty$2(target, key, getOwnPropertyDescriptor$3(source, key)); }); } } return target; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$1(o, minLen) { var _context21; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = slice$6(_context21 = Object.prototype.toString.call(o)).call(_context21, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+/**
+ * Use this symbol to delete properies in deepObjectAssign.
+ */
+
+var DELETE = symbol$4("DELETE");
+/**
+ * Pure version of deepObjectAssign, it doesn't modify any of it's arguments.
+ *
+ * @param base - The base object that fullfils the whole interface T.
+ * @param updates - Updates that may change or delete props.
+ *
+ * @returns A brand new instance with all the supplied objects deeply merged.
+ */
+
+
+function pureDeepObjectAssign(base) {
+  var _context;
+
+  for (var _len = arguments.length, updates = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    updates[_key - 1] = arguments[_key];
+  }
+
+  return deepObjectAssign.apply(void 0, concat$2(_context = [{}, base]).call(_context, updates));
+}
+/**
+ * Deep version of object assign with additional deleting by the DELETE symbol.
+ *
+ * @param values - Objects to be deeply merged.
+ *
+ * @returns The first object from values.
+ */
+
+
+function deepObjectAssign() {
+  var merged = deepObjectAssignNonentry.apply(void 0, arguments);
+  stripDelete(merged);
+  return merged;
+}
+/**
+ * Deep version of object assign with additional deleting by the DELETE symbol.
+ *
+ * @remarks
+ * This doesn't strip the DELETE symbols so they may end up in the final object.
+ *
+ * @param values - Objects to be deeply merged.
+ *
+ * @returns The first object from values.
+ */
+
+
+function deepObjectAssignNonentry() {
+  for (var _len2 = arguments.length, values = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    values[_key2] = arguments[_key2];
+  }
+
+  if (values.length < 2) {
+    return values[0];
+  } else if (values.length > 2) {
+    var _context2;
+
+    return deepObjectAssignNonentry.apply(void 0, concat$2(_context2 = [deepObjectAssign(values[0], values[1])]).call(_context2, toConsumableArray(slice$6(values).call(values, 2))));
+  }
+
+  var a = values[0];
+  var b = values[1];
+
+  var _iterator = _createForOfIteratorHelper(ownKeys$3(b)),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var prop = _step.value;
+      if (!Object.prototype.propertyIsEnumerable.call(b, prop)) ;else if (b[prop] === DELETE) {
+        delete a[prop];
+      } else if (a[prop] !== null && b[prop] !== null && _typeof_1(a[prop]) === "object" && _typeof_1(b[prop]) === "object" && !isArray$5(a[prop]) && !isArray$5(b[prop])) {
+        a[prop] = deepObjectAssignNonentry(a[prop], b[prop]);
+      } else {
+        a[prop] = clone(b[prop]);
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  return a;
+}
+/**
+ * Deep clone given object or array. In case of primitive simply return.
+ *
+ * @param a - Anything.
+ *
+ * @returns Deep cloned object/array or unchanged a.
+ */
+
+
+function clone(a) {
+  if (isArray$5(a)) {
+    return map$2(a).call(a, function (value) {
+      return clone(value);
+    });
+  } else if (_typeof_1(a) === "object" && a !== null) {
+    return deepObjectAssignNonentry({}, a);
+  } else {
+    return a;
+  }
+}
+/**
+ * Strip DELETE from given object.
+ *
+ * @param a - Object which may contain DELETE but won't after this is executed.
+ */
+
+
+function stripDelete(a) {
+  for (var _i = 0, _Object$keys = keys$3(a); _i < _Object$keys.length; _i++) {
+    var prop = _Object$keys[_i];
+
+    if (a[prop] === DELETE) {
+      delete a[prop];
+    } else if (_typeof_1(a[prop]) === "object" && a[prop] !== null) {
+      stripDelete(a[prop]);
+    }
+  }
+}
+/**
+ * Seedable, fast and reasonably good (not crypto but more than okay for our
+ * needs) random number generator.
+ *
+ * @remarks
+ * Adapted from {@link https://web.archive.org/web/20110429100736/http://baagoe.com:80/en/RandomMusings/javascript}.
+ * Original algorithm created by Johannes Baagøe \<baagoe\@baagoe.com\> in 2010.
+ */
+
+/**
+ * Create a seeded pseudo random generator based on Alea by Johannes Baagøe.
+ *
+ * @param seed - All supplied arguments will be used as a seed. In case nothing
+ * is supplied the current time will be used to seed the generator.
+ *
+ * @returns A ready to use seeded generator.
+ */
+
+
+function Alea() {
+  for (var _len3 = arguments.length, seed = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    seed[_key3] = arguments[_key3];
+  }
+
+  return AleaImplementation(seed.length ? seed : [now$2()]);
+}
+/**
+ * An implementation of [[Alea]] without user input validation.
+ *
+ * @param seed - The data that will be used to seed the generator.
+ *
+ * @returns A ready to use seeded generator.
+ */
+
+
+function AleaImplementation(seed) {
+  var _mashSeed = mashSeed(seed),
+      _mashSeed2 = slicedToArray(_mashSeed, 3),
+      s0 = _mashSeed2[0],
+      s1 = _mashSeed2[1],
+      s2 = _mashSeed2[2];
+
+  var c = 1;
+
+  var random = function random() {
+    var t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
+
+    s0 = s1;
+    s1 = s2;
+    return s2 = t - (c = t | 0);
+  };
+
+  random.uint32 = function () {
+    return random() * 0x100000000;
+  }; // 2^32
+
+
+  random.fract53 = function () {
+    return random() + (random() * 0x200000 | 0) * 1.1102230246251565e-16;
+  }; // 2^-53
+
+
+  random.algorithm = "Alea";
+  random.seed = seed;
+  random.version = "0.9";
+  return random;
+}
+/**
+ * Turn arbitrary data into values [[AleaImplementation]] can use to generate
+ * random numbers.
+ *
+ * @param seed - Arbitrary data that will be used as the seed.
+ *
+ * @returns Three numbers to use as initial values for [[AleaImplementation]].
+ */
+
+
+function mashSeed() {
+  var mash = Mash();
+  var s0 = mash(" ");
+  var s1 = mash(" ");
+  var s2 = mash(" ");
+
+  for (var i = 0; i < arguments.length; i++) {
+    s0 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
+
+    if (s0 < 0) {
+      s0 += 1;
+    }
+
+    s1 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
+
+    if (s1 < 0) {
+      s1 += 1;
+    }
+
+    s2 -= mash(i < 0 || arguments.length <= i ? undefined : arguments[i]);
+
+    if (s2 < 0) {
+      s2 += 1;
+    }
+  }
+
+  return [s0, s1, s2];
+}
+/**
+ * Create a new mash function.
+ *
+ * @returns A nonpure function that takes arbitrary [[Mashable]] data and turns
+ * them into numbers.
+ */
+
+
+function Mash() {
+  var n = 0xefc8249d;
+  return function (data) {
+    var string = data.toString();
+
+    for (var i = 0; i < string.length; i++) {
+      n += string.charCodeAt(i);
+      var h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  };
+}
 /**
  * Setup a mock hammer.js object, for unit testing.
  *
@@ -10519,6 +6958,7 @@ var Hammer = /*#__PURE__*/function () {
  *
  * @returns {{on: noop, off: noop, destroy: noop, emit: noop, get: get}}
  */
+
 
 function hammerMock() {
   var noop = function noop() {};
@@ -10528,8 +6968,7 @@ function hammerMock() {
     off: noop,
     destroy: noop,
     emit: noop,
-    get: function get(m) {
-      //eslint-disable-line no-unused-vars
+    get: function get() {
       return {
         set: noop
       };
@@ -10541,12 +6980,6 @@ var Hammer$1 = typeof window !== "undefined" ? window.Hammer || Hammer : functio
   // hammer.js is only available in a browser, not in node.js. Replacing it with a mock object.
   return hammerMock();
 };
-
-var hammer = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': Hammer$1
-});
-
 /**
  * Turn an element into an clickToUse element.
  * When not active, the element has a transparent overlay. When the overlay is
@@ -10554,51 +6987,70 @@ var hammer = /*#__PURE__*/Object.freeze({
  * When active, the element is displayed with a blue border around it, and
  * the interactive contents of the element can be used. When clicked outside
  * the element, the elements mode is changed to inactive.
+ *
  * @param {Element} container
- * @constructor Activator
+ * @class Activator
  */
 
 function Activator(container) {
-  var _context,
-      _this = this,
-      _context2;
+  var _this = this,
+      _context3;
 
+  this._cleanupQueue = [];
   this.active = false;
-  this.dom = {
-    container: container
+  this._dom = {
+    container: container,
+    overlay: document.createElement("div")
   };
-  this.dom.overlay = document.createElement('div');
-  this.dom.overlay.className = 'vis-overlay';
-  this.dom.container.appendChild(this.dom.overlay);
-  this.hammer = Hammer$1(this.dom.overlay);
-  this.hammer.on('tap', bind$2(_context = this._onTapOverlay).call(_context, this)); // block all touch events (except tap)
 
-  var events = ['tap', 'doubletap', 'press', 'pinch', 'pan', 'panstart', 'panmove', 'panend'];
+  this._dom.overlay.classList.add("vis-overlay");
+
+  this._dom.container.appendChild(this._dom.overlay);
+
+  this._cleanupQueue.push(function () {
+    _this._dom.overlay.parentNode.removeChild(_this._dom.overlay);
+  });
+
+  var hammer = Hammer$1(this._dom.overlay);
+  hammer.on("tap", bind$2(_context3 = this._onTapOverlay).call(_context3, this));
+
+  this._cleanupQueue.push(function () {
+    hammer.destroy(); // FIXME: cleaning up hammer instances doesn't work (Timeline not removed
+    // from memory)
+  }); // block all touch events (except tap)
+
+
+  var events = ["tap", "doubletap", "press", "pinch", "pan", "panstart", "panmove", "panend"];
 
   forEach$2(events).call(events, function (event) {
-    _this.hammer.on(event, function (event) {
+    hammer.on(event, function (event) {
       event.srcEvent.stopPropagation();
     });
   }); // attach a click event to the window, in order to deactivate when clicking outside the timeline
 
 
   if (document && document.body) {
-    this.onClick = function (event) {
+    this._onClick = function (event) {
       if (!_hasParent(event.target, container)) {
         _this.deactivate();
       }
     };
 
-    document.body.addEventListener('click', this.onClick);
-  }
+    document.body.addEventListener("click", this._onClick);
 
-  if (this.keycharm !== undefined) {
-    this.keycharm.destroy();
-  }
+    this._cleanupQueue.push(function () {
+      document.body.removeEventListener("click", _this._onClick);
+    });
+  } // prepare escape key listener for deactivating when active
 
-  this.keycharm = keycharm(); // keycharm listener only bounded when active)
 
-  this.escListener = bind$2(_context2 = this.deactivate).call(_context2, this);
+  this._escListener = function (event) {
+    if ("key" in event ? event.key === "Escape" : event.keyCode === 27
+    /* the keyCode is for IE11 */
+    ) {
+        _this.deactivate();
+      }
+  };
 } // turn into an event emitter
 
 
@@ -10610,23 +7062,23 @@ Activator.current = null;
  */
 
 Activator.prototype.destroy = function () {
-  this.deactivate(); // remove dom
+  var _context4, _context5;
 
-  this.dom.overlay.parentNode.removeChild(this.dom.overlay); // remove global event listener
+  this.deactivate();
 
-  if (this.onClick) {
-    document.body.removeEventListener('click', this.onClick);
-  } // remove keycharm
+  var _iterator2 = _createForOfIteratorHelper(reverse$2(_context4 = splice$2(_context5 = this._cleanupQueue).call(_context5, 0)).call(_context4)),
+      _step2;
 
-
-  if (this.keycharm !== undefined) {
-    this.keycharm.destroy();
+  try {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var callback = _step2.value;
+      callback();
+    }
+  } catch (err) {
+    _iterator2.e(err);
+  } finally {
+    _iterator2.f();
   }
-
-  this.keycharm = null; // cleanup hammer instances
-
-  this.hammer.destroy();
-  this.hammer = null; // FIXME: cleaning up hammer instances doesn't work (Timeline not removed from memory)
 };
 /**
  * Activate the element
@@ -10635,8 +7087,6 @@ Activator.prototype.destroy = function () {
 
 
 Activator.prototype.activate = function () {
-  var _context3;
-
   // we allow only one active activator at a time
   if (Activator.current) {
     Activator.current.deactivate();
@@ -10644,13 +7094,15 @@ Activator.prototype.activate = function () {
 
   Activator.current = this;
   this.active = true;
-  this.dom.overlay.style.display = 'none';
-  addClassName(this.dom.container, 'vis-active');
-  this.emit('change');
-  this.emit('activate'); // ugly hack: bind ESC after emitting the events, as the Network rebinds all
+  this._dom.overlay.style.display = "none";
+
+  this._dom.container.classList.add("vis-active");
+
+  this.emit("change");
+  this.emit("activate"); // ugly hack: bind ESC after emitting the events, as the Network rebinds all
   // keyboard events on a 'change' event
 
-  bind$2(_context3 = this.keycharm).call(_context3, 'esc', this.escListener);
+  document.body.addEventListener("keydown", this._escListener);
 };
 /**
  * Deactivate the element
@@ -10660,14 +7112,17 @@ Activator.prototype.activate = function () {
 
 Activator.prototype.deactivate = function () {
   this.active = false;
-  this.dom.overlay.style.display = 'block';
-  removeClassName(this.dom.container, 'vis-active');
-  this.keycharm.unbind('esc', this.escListener);
-  this.emit('change');
-  this.emit('deactivate');
+  this._dom.overlay.style.display = "block";
+
+  this._dom.container.classList.remove("vis-active");
+
+  document.body.removeEventListener("keydown", this._escListener);
+  this.emit("change");
+  this.emit("deactivate");
 };
 /**
  * Handle a tap event: activate the container
+ *
  * @param {Event}  event   The event
  * @private
  */
@@ -10681,6 +7136,7 @@ Activator.prototype._onTapOverlay = function (event) {
 /**
  * Test whether the element has the requested parent element somewhere in
  * its chain of parent nodes.
+ *
  * @param {HTMLElement} element
  * @param {HTMLElement} parent
  * @returns {boolean} Returns true when the parent is found somewhere in the
@@ -10699,7 +7155,5746 @@ function _hasParent(element, parent) {
   }
 
   return false;
+} // utility functions
+// parse ASP.Net Date pattern,
+// for example '/Date(1198908717056)/' or '/Date(1198908717056-0700)/'
+// code from http://momentjs.com/
+
+
+var ASPDateRegex = /^\/?Date\((-?\d+)/i; // Color REs
+
+var fullHexRE = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
+var shortHexRE = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+var rgbRE = /^rgb\( *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *\)$/i;
+var rgbaRE = /^rgba\( *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *(1?\d{1,2}|2[0-4]\d|25[0-5]) *, *([01]|0?\.\d+) *\)$/i;
+/**
+ * Test whether given object is a number.
+ *
+ * @param value - Input value of unknown type.
+ *
+ * @returns True if number, false otherwise.
+ */
+
+function isNumber(value) {
+  return value instanceof Number || typeof value === "number";
 }
+/**
+ * Remove everything in the DOM object.
+ *
+ * @param DOMobject - Node whose child nodes will be recursively deleted.
+ */
+
+
+function recursiveDOMDelete(DOMobject) {
+  if (DOMobject) {
+    while (DOMobject.hasChildNodes() === true) {
+      var child = DOMobject.firstChild;
+
+      if (child) {
+        recursiveDOMDelete(child);
+        DOMobject.removeChild(child);
+      }
+    }
+  }
+}
+/**
+ * Test whether given object is a string.
+ *
+ * @param value - Input value of unknown type.
+ *
+ * @returns True if string, false otherwise.
+ */
+
+
+function isString(value) {
+  return value instanceof String || typeof value === "string";
+}
+/**
+ * Test whether given object is a object (not primitive or null).
+ *
+ * @param value - Input value of unknown type.
+ *
+ * @returns True if not null object, false otherwise.
+ */
+
+
+function isObject$1(value) {
+  return _typeof_1(value) === "object" && value !== null;
+}
+/**
+ * Test whether given object is a Date, or a String containing a Date.
+ *
+ * @param value - Input value of unknown type.
+ *
+ * @returns True if Date instance or string date representation, false otherwise.
+ */
+
+
+function isDate(value) {
+  if (value instanceof Date) {
+    return true;
+  } else if (isString(value)) {
+    // test whether this string contains a date
+    var match = ASPDateRegex.exec(value);
+
+    if (match) {
+      return true;
+    } else if (!isNaN(Date.parse(value))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+/**
+ * Copy property from b to a if property present in a.
+ * If property in b explicitly set to null, delete it if `allowDeletion` set.
+ *
+ * Internal helper routine, should not be exported. Not added to `exports` for that reason.
+ *
+ * @param a - Target object.
+ * @param b - Source object.
+ * @param prop - Name of property to copy from b to a.
+ * @param allowDeletion - If true, delete property in a if explicitly set to null in b.
+ */
+
+
+function copyOrDelete(a, b, prop, allowDeletion) {
+  var doDeletion = false;
+
+  if (allowDeletion === true) {
+    doDeletion = b[prop] === null && a[prop] !== undefined;
+  }
+
+  if (doDeletion) {
+    delete a[prop];
+  } else {
+    a[prop] = b[prop]; // Remember, this is a reference copy!
+  }
+}
+/**
+ * Fill an object with a possibly partially defined other object.
+ *
+ * Only copies values for the properties already present in a.
+ * That means an object is not created on a property if only the b object has it.
+ *
+ * @param a - The object that will have it's properties updated.
+ * @param b - The object with property updates.
+ * @param allowDeletion - If true, delete properties in a that are explicitly set to null in b.
+ */
+
+
+function fillIfDefined(a, b) {
+  var allowDeletion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+  // NOTE: iteration of properties of a
+  // NOTE: prototype properties iterated over as well
+  for (var prop in a) {
+    if (b[prop] !== undefined) {
+      if (b[prop] === null || _typeof_1(b[prop]) !== "object") {
+        // Note: typeof null === 'object'
+        copyOrDelete(a, b, prop, allowDeletion);
+      } else {
+        var aProp = a[prop];
+        var bProp = b[prop];
+
+        if (isObject$1(aProp) && isObject$1(bProp)) {
+          fillIfDefined(aProp, bProp, allowDeletion);
+        }
+      }
+    }
+  }
+}
+/**
+ * Copy the values of all of the enumerable own properties from one or more source objects to a
+ * target object. Returns the target object.
+ *
+ * @param target - The target object to copy to.
+ * @param source - The source object from which to copy properties.
+ *
+ * @returns The target object.
+ */
+
+
+var extend$1 = assign$2;
+/**
+ * Extend object a with selected properties of object b or a series of objects.
+ *
+ * @remarks
+ * Only properties with defined values are copied.
+ *
+ * @param props - Properties to be copied to a.
+ * @param a - The target.
+ * @param others - The sources.
+ *
+ * @returns Argument a.
+ */
+
+function selectiveExtend(props, a) {
+  if (!isArray$5(props)) {
+    throw new Error("Array with property names expected as first argument");
+  }
+
+  for (var _len4 = arguments.length, others = new Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
+    others[_key4 - 2] = arguments[_key4];
+  }
+
+  for (var _i2 = 0, _others = others; _i2 < _others.length; _i2++) {
+    var other = _others[_i2];
+
+    for (var p = 0; p < props.length; p++) {
+      var prop = props[p];
+
+      if (other && Object.prototype.hasOwnProperty.call(other, prop)) {
+        a[prop] = other[prop];
+      }
+    }
+  }
+
+  return a;
+}
+/**
+ * Extend object a with selected properties of object b.
+ * Only properties with defined values are copied.
+ *
+ * @remarks
+ * Previous version of this routine implied that multiple source objects could
+ * be used; however, the implementation was **wrong**. Since multiple (\>1)
+ * sources weren't used anywhere in the `vis.js` code, this has been removed
+ *
+ * @param props - Names of first-level properties to copy over.
+ * @param a - Target object.
+ * @param b - Source object.
+ * @param allowDeletion - If true, delete property in a if explicitly set to null in b.
+ *
+ * @returns Argument a.
+ */
+
+
+function selectiveDeepExtend(props, a, b) {
+  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  // TODO: add support for Arrays to deepExtend
+  if (isArray$5(b)) {
+    throw new TypeError("Arrays are not supported by deepExtend");
+  }
+
+  for (var p = 0; p < props.length; p++) {
+    var prop = props[p];
+
+    if (Object.prototype.hasOwnProperty.call(b, prop)) {
+      if (b[prop] && b[prop].constructor === Object) {
+        if (a[prop] === undefined) {
+          a[prop] = {};
+        }
+
+        if (a[prop].constructor === Object) {
+          deepExtend(a[prop], b[prop], false, allowDeletion);
+        } else {
+          copyOrDelete(a, b, prop, allowDeletion);
+        }
+      } else if (isArray$5(b[prop])) {
+        throw new TypeError("Arrays are not supported by deepExtend");
+      } else {
+        copyOrDelete(a, b, prop, allowDeletion);
+      }
+    }
+  }
+
+  return a;
+}
+/**
+ * Extend object `a` with properties of object `b`, ignoring properties which
+ * are explicitly specified to be excluded.
+ *
+ * @remarks
+ * The properties of `b` are considered for copying. Properties which are
+ * themselves objects are are also extended. Only properties with defined
+ * values are copied.
+ *
+ * @param propsToExclude - Names of properties which should *not* be copied.
+ * @param a - Object to extend.
+ * @param b - Object to take properties from for extension.
+ * @param allowDeletion - If true, delete properties in a that are explicitly
+ * set to null in b.
+ *
+ * @returns Argument a.
+ */
+
+
+function selectiveNotDeepExtend(propsToExclude, a, b) {
+  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  // TODO: add support for Arrays to deepExtend
+  // NOTE: array properties have an else-below; apparently, there is a problem here.
+  if (isArray$5(b)) {
+    throw new TypeError("Arrays are not supported by deepExtend");
+  }
+
+  for (var prop in b) {
+    if (!Object.prototype.hasOwnProperty.call(b, prop)) {
+      continue;
+    } // Handle local properties only
+
+
+    if (includes$4(propsToExclude).call(propsToExclude, prop)) {
+      continue;
+    } // In exclusion list, skip
+
+
+    if (b[prop] && b[prop].constructor === Object) {
+      if (a[prop] === undefined) {
+        a[prop] = {};
+      }
+
+      if (a[prop].constructor === Object) {
+        deepExtend(a[prop], b[prop]); // NOTE: allowDeletion not propagated!
+      } else {
+        copyOrDelete(a, b, prop, allowDeletion);
+      }
+    } else if (isArray$5(b[prop])) {
+      a[prop] = [];
+
+      for (var i = 0; i < b[prop].length; i++) {
+        a[prop].push(b[prop][i]);
+      }
+    } else {
+      copyOrDelete(a, b, prop, allowDeletion);
+    }
+  }
+
+  return a;
+}
+/**
+ * Deep extend an object a with the properties of object b.
+ *
+ * @param a - Target object.
+ * @param b - Source object.
+ * @param protoExtend - If true, the prototype values will also be extended.
+ * (That is the options objects that inherit from others will also get the
+ * inherited options).
+ * @param allowDeletion - If true, the values of fields that are null will be deleted.
+ *
+ * @returns Argument a.
+ */
+
+
+function deepExtend(a, b) {
+  var protoExtend = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var allowDeletion = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  for (var prop in b) {
+    if (Object.prototype.hasOwnProperty.call(b, prop) || protoExtend === true) {
+      if (_typeof_1(b[prop]) === "object" && b[prop] !== null && getPrototypeOf$2(b[prop]) === Object.prototype) {
+        if (a[prop] === undefined) {
+          a[prop] = deepExtend({}, b[prop], protoExtend); // NOTE: allowDeletion not propagated!
+        } else if (_typeof_1(a[prop]) === "object" && a[prop] !== null && getPrototypeOf$2(a[prop]) === Object.prototype) {
+          deepExtend(a[prop], b[prop], protoExtend); // NOTE: allowDeletion not propagated!
+        } else {
+          copyOrDelete(a, b, prop, allowDeletion);
+        }
+      } else if (isArray$5(b[prop])) {
+        var _context6;
+
+        a[prop] = slice$6(_context6 = b[prop]).call(_context6);
+      } else {
+        copyOrDelete(a, b, prop, allowDeletion);
+      }
+    }
+  }
+
+  return a;
+}
+/**
+ * Test whether all elements in two arrays are equal.
+ *
+ * @param a - First array.
+ * @param b - Second array.
+ *
+ * @returns True if both arrays have the same length and same elements (1 = '1').
+ */
+
+
+function equalArray(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (var i = 0, len = a.length; i < len; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+/**
+ * Get the type of an object, for example exports.getType([]) returns 'Array'.
+ *
+ * @param object - Input value of unknown type.
+ *
+ * @returns Detected type.
+ */
+
+
+function getType(object) {
+  var type = _typeof_1(object);
+
+  if (type === "object") {
+    if (object === null) {
+      return "null";
+    }
+
+    if (object instanceof Boolean) {
+      return "Boolean";
+    }
+
+    if (object instanceof Number) {
+      return "Number";
+    }
+
+    if (object instanceof String) {
+      return "String";
+    }
+
+    if (isArray$5(object)) {
+      return "Array";
+    }
+
+    if (object instanceof Date) {
+      return "Date";
+    }
+
+    return "Object";
+  }
+
+  if (type === "number") {
+    return "Number";
+  }
+
+  if (type === "boolean") {
+    return "Boolean";
+  }
+
+  if (type === "string") {
+    return "String";
+  }
+
+  if (type === undefined) {
+    return "undefined";
+  }
+
+  return type;
+}
+/**
+ * Used to extend an array and copy it. This is used to propagate paths recursively.
+ *
+ * @param arr - First part.
+ * @param newValue - The value to be aadded into the array.
+ *
+ * @returns A new array with all items from arr and newValue (which is last).
+ */
+
+
+function copyAndExtendArray(arr, newValue) {
+  var _context7;
+
+  return concat$2(_context7 = []).call(_context7, toConsumableArray(arr), [newValue]);
+}
+/**
+ * Used to extend an array and copy it. This is used to propagate paths recursively.
+ *
+ * @param arr - The array to be copied.
+ *
+ * @returns Shallow copy of arr.
+ */
+
+
+function copyArray(arr) {
+  return slice$6(arr).call(arr);
+}
+/**
+ * Retrieve the absolute left value of a DOM element.
+ *
+ * @param elem - A dom element, for example a div.
+ *
+ * @returns The absolute left position of this element in the browser page.
+ */
+
+
+function getAbsoluteLeft(elem) {
+  return elem.getBoundingClientRect().left;
+}
+/**
+ * Retrieve the absolute right value of a DOM element.
+ *
+ * @param elem - A dom element, for example a div.
+ *
+ * @returns The absolute right position of this element in the browser page.
+ */
+
+
+function getAbsoluteRight(elem) {
+  return elem.getBoundingClientRect().right;
+}
+/**
+ * Retrieve the absolute top value of a DOM element.
+ *
+ * @param elem - A dom element, for example a div.
+ *
+ * @returns The absolute top position of this element in the browser page.
+ */
+
+
+function getAbsoluteTop(elem) {
+  return elem.getBoundingClientRect().top;
+}
+/**
+ * Add a className to the given elements style.
+ *
+ * @param elem - The element to which the classes will be added.
+ * @param classNames - Space separated list of classes.
+ */
+
+
+function addClassName(elem, classNames) {
+  var classes = elem.className.split(" ");
+  var newClasses = classNames.split(" ");
+  classes = concat$2(classes).call(classes, filter$2(newClasses).call(newClasses, function (className) {
+    return !includes$4(classes).call(classes, className);
+  }));
+  elem.className = classes.join(" ");
+}
+/**
+ * Remove a className from the given elements style.
+ *
+ * @param elem - The element from which the classes will be removed.
+ * @param classNames - Space separated list of classes.
+ */
+
+
+function removeClassName(elem, classNames) {
+  var classes = elem.className.split(" ");
+  var oldClasses = classNames.split(" ");
+  classes = filter$2(classes).call(classes, function (className) {
+    return !includes$4(oldClasses).call(oldClasses, className);
+  });
+  elem.className = classes.join(" ");
+}
+/**
+ * For each method for both arrays and objects.
+ * In case of an array, the built-in Array.forEach() is applied (**No, it's not!**).
+ * In case of an Object, the method loops over all properties of the object.
+ *
+ * @param object - An Object or Array to be iterated over.
+ * @param callback - Array.forEach-like callback.
+ */
+
+
+function forEach$3(object, callback) {
+  if (isArray$5(object)) {
+    // array
+    var len = object.length;
+
+    for (var i = 0; i < len; i++) {
+      callback(object[i], i, object);
+    }
+  } else {
+    // object
+    for (var key in object) {
+      if (Object.prototype.hasOwnProperty.call(object, key)) {
+        callback(object[key], key, object);
+      }
+    }
+  }
+}
+/**
+ * Convert an object into an array: all objects properties are put into the array. The resulting array is unordered.
+ *
+ * @param o - Object that contains the properties and methods.
+ *
+ * @returns An array of unordered values.
+ */
+
+
+var toArray$1 = values$2;
+/**
+ * Update a property in an object.
+ *
+ * @param object - The object whose property will be updated.
+ * @param key - Name of the property to be updated.
+ * @param value - The new value to be assigned.
+ *
+ * @returns Whether the value was updated (true) or already strictly the same in the original object (false).
+ */
+
+function updateProperty(object, key, value) {
+  if (object[key] !== value) {
+    object[key] = value;
+    return true;
+  } else {
+    return false;
+  }
+}
+/**
+ * Throttle the given function to be only executed once per animation frame.
+ *
+ * @param fn - The original function.
+ *
+ * @returns The throttled function.
+ */
+
+
+function throttle(fn) {
+  var scheduled = false;
+  return function () {
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        fn();
+      });
+    }
+  };
+}
+/**
+ * Add and event listener. Works for all browsers.
+ *
+ * @param element - The element to bind the event listener to.
+ * @param action - Same as Element.addEventListener(action, —, —).
+ * @param listener - Same as Element.addEventListener(—, listener, —).
+ * @param useCapture - Same as Element.addEventListener(—, —, useCapture).
+ */
+
+
+function addEventListener(element, action, listener, useCapture) {
+  if (element.addEventListener) {
+    var _context8;
+
+    if (useCapture === undefined) {
+      useCapture = false;
+    }
+
+    if (action === "mousewheel" && includes$4(_context8 = navigator.userAgent).call(_context8, "Firefox")) {
+      action = "DOMMouseScroll"; // For Firefox
+    }
+
+    element.addEventListener(action, listener, useCapture);
+  } else {
+    // @TODO: IE types? Does anyone care?
+    element.attachEvent("on" + action, listener); // IE browsers
+  }
+}
+/**
+ * Remove an event listener from an element.
+ *
+ * @param element - The element to bind the event listener to.
+ * @param action - Same as Element.removeEventListener(action, —, —).
+ * @param listener - Same as Element.removeEventListener(—, listener, —).
+ * @param useCapture - Same as Element.removeEventListener(—, —, useCapture).
+ */
+
+
+function removeEventListener(element, action, listener, useCapture) {
+  if (element.removeEventListener) {
+    var _context9;
+
+    // non-IE browsers
+    if (useCapture === undefined) {
+      useCapture = false;
+    }
+
+    if (action === "mousewheel" && includes$4(_context9 = navigator.userAgent).call(_context9, "Firefox")) {
+      action = "DOMMouseScroll"; // For Firefox
+    }
+
+    element.removeEventListener(action, listener, useCapture);
+  } else {
+    // @TODO: IE types? Does anyone care?
+    element.detachEvent("on" + action, listener); // IE browsers
+  }
+}
+/**
+ * Cancels the event's default action if it is cancelable, without stopping further propagation of the event.
+ *
+ * @param event - The event whose default action should be prevented.
+ */
+
+
+function preventDefault(event) {
+  if (!event) {
+    event = window.event;
+  }
+
+  if (!event) ;else if (event.preventDefault) {
+    event.preventDefault(); // non-IE browsers
+  } else {
+    // @TODO: IE types? Does anyone care?
+    event.returnValue = false; // IE browsers
+  }
+}
+/**
+ * Get HTML element which is the target of the event.
+ *
+ * @param event - The event.
+ *
+ * @returns The element or null if not obtainable.
+ */
+
+
+function getTarget() {
+  var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.event;
+  // code from http://www.quirksmode.org/js/events_properties.html
+  // @TODO: EventTarget can be almost anything, is it okay to return only Elements?
+  var target = null;
+  if (!event) ;else if (event.target) {
+    target = event.target;
+  } else if (event.srcElement) {
+    target = event.srcElement;
+  }
+
+  if (!(target instanceof Element)) {
+    return null;
+  }
+
+  if (target.nodeType != null && target.nodeType == 3) {
+    // defeat Safari bug
+    target = target.parentNode;
+
+    if (!(target instanceof Element)) {
+      return null;
+    }
+  }
+
+  return target;
+}
+/**
+ * Check if given element contains given parent somewhere in the DOM tree.
+ *
+ * @param element - The element to be tested.
+ * @param parent - The ancestor (not necessarily parent) of the element.
+ *
+ * @returns True if parent is an ancestor of the element, false otherwise.
+ */
+
+
+function hasParent$1(element, parent) {
+  var elem = element;
+
+  while (elem) {
+    if (elem === parent) {
+      return true;
+    } else if (elem.parentNode) {
+      elem = elem.parentNode;
+    } else {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+var option = {
+  /**
+   * Convert a value into a boolean.
+   *
+   * @param value - Value to be converted intoboolean, a function will be executed as `(() => unknown)`.
+   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
+   *
+   * @returns Corresponding boolean value, if none then the default value, if none then null.
+   */
+  asBoolean: function asBoolean(value, defaultValue) {
+    if (typeof value == "function") {
+      value = value();
+    }
+
+    if (value != null) {
+      return value != false;
+    }
+
+    return defaultValue || null;
+  },
+
+  /**
+   * Convert a value into a number.
+   *
+   * @param value - Value to be converted intonumber, a function will be executed as `(() => unknown)`.
+   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
+   *
+   * @returns Corresponding **boxed** number value, if none then the default value, if none then null.
+   */
+  asNumber: function asNumber(value, defaultValue) {
+    if (typeof value == "function") {
+      value = value();
+    }
+
+    if (value != null) {
+      return Number(value) || defaultValue || null;
+    }
+
+    return defaultValue || null;
+  },
+
+  /**
+   * Convert a value into a string.
+   *
+   * @param value - Value to be converted intostring, a function will be executed as `(() => unknown)`.
+   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
+   *
+   * @returns Corresponding **boxed** string value, if none then the default value, if none then null.
+   */
+  asString: function asString(value, defaultValue) {
+    if (typeof value == "function") {
+      value = value();
+    }
+
+    if (value != null) {
+      return String(value);
+    }
+
+    return defaultValue || null;
+  },
+
+  /**
+   * Convert a value into a size.
+   *
+   * @param value - Value to be converted intosize, a function will be executed as `(() => unknown)`.
+   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
+   *
+   * @returns Corresponding string value (number + 'px'), if none then the default value, if none then null.
+   */
+  asSize: function asSize(value, defaultValue) {
+    if (typeof value == "function") {
+      value = value();
+    }
+
+    if (isString(value)) {
+      return value;
+    } else if (isNumber(value)) {
+      return value + "px";
+    } else {
+      return defaultValue || null;
+    }
+  },
+
+  /**
+   * Convert a value into a DOM Element.
+   *
+   * @param value - Value to be converted into DOM Element, a function will be executed as `(() => unknown)`.
+   * @param defaultValue - If the value or the return value of the function == null then this will be returned.
+   *
+   * @returns The DOM Element, if none then the default value, if none then null.
+   */
+  asElement: function asElement(value, defaultValue) {
+    if (typeof value == "function") {
+      value = value();
+    }
+
+    return value || defaultValue || null;
+  }
+};
+/**
+ * Convert hex color string into RGB color object.
+ *
+ * @remarks
+ * {@link http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb}
+ *
+ * @param hex - Hex color string (3 or 6 digits, with or without #).
+ *
+ * @returns RGB color object.
+ */
+
+function hexToRGB(hex) {
+  var result;
+
+  switch (hex.length) {
+    case 3:
+    case 4:
+      result = shortHexRE.exec(hex);
+      return result ? {
+        r: _parseInt$2(result[1] + result[1], 16),
+        g: _parseInt$2(result[2] + result[2], 16),
+        b: _parseInt$2(result[3] + result[3], 16)
+      } : null;
+
+    case 6:
+    case 7:
+      result = fullHexRE.exec(hex);
+      return result ? {
+        r: _parseInt$2(result[1], 16),
+        g: _parseInt$2(result[2], 16),
+        b: _parseInt$2(result[3], 16)
+      } : null;
+
+    default:
+      return null;
+  }
+}
+/**
+ * This function takes string color in hex or RGB format and adds the opacity, RGBA is passed through unchanged.
+ *
+ * @param color - The color string (hex, RGB, RGBA).
+ * @param opacity - The new opacity.
+ *
+ * @returns RGBA string, for example 'rgba(255, 0, 127, 0.3)'.
+ */
+
+
+function overrideOpacity(color, opacity) {
+  if (includes$4(color).call(color, "rgba")) {
+    return color;
+  } else if (includes$4(color).call(color, "rgb")) {
+    var rgb = color.substr(indexOf$3(color).call(color, "(") + 1).replace(")", "").split(",");
+    return "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "," + opacity + ")";
+  } else {
+    var _rgb = hexToRGB(color);
+
+    if (_rgb == null) {
+      return color;
+    } else {
+      return "rgba(" + _rgb.r + "," + _rgb.g + "," + _rgb.b + "," + opacity + ")";
+    }
+  }
+}
+/**
+ * Convert RGB \<0, 255\> into hex color string.
+ *
+ * @param red - Red channel.
+ * @param green - Green channel.
+ * @param blue - Blue channel.
+ *
+ * @returns Hex color string (for example: '#0acdc0').
+ */
+
+
+function RGBToHex(red, green, blue) {
+  var _context10;
+
+  return "#" + slice$6(_context10 = ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16)).call(_context10, 1);
+}
+/**
+ * Parse a color property into an object with border, background, and highlight colors.
+ *
+ * @param inputColor - Shorthand color string or input color object.
+ * @param defaultColor - Full color object to fill in missing values in inputColor.
+ *
+ * @returns Color object.
+ */
+
+
+function parseColor(inputColor, defaultColor) {
+  if (isString(inputColor)) {
+    var colorStr = inputColor;
+
+    if (isValidRGB(colorStr)) {
+      var _context11;
+
+      var rgb = map$2(_context11 = colorStr.substr(4).substr(0, colorStr.length - 5).split(",")).call(_context11, function (value) {
+        return _parseInt$2(value);
+      });
+
+      colorStr = RGBToHex(rgb[0], rgb[1], rgb[2]);
+    }
+
+    if (isValidHex(colorStr) === true) {
+      var hsv = hexToHSV(colorStr);
+      var lighterColorHSV = {
+        h: hsv.h,
+        s: hsv.s * 0.8,
+        v: Math.min(1, hsv.v * 1.02)
+      };
+      var darkerColorHSV = {
+        h: hsv.h,
+        s: Math.min(1, hsv.s * 1.25),
+        v: hsv.v * 0.8
+      };
+      var darkerColorHex = HSVToHex(darkerColorHSV.h, darkerColorHSV.s, darkerColorHSV.v);
+      var lighterColorHex = HSVToHex(lighterColorHSV.h, lighterColorHSV.s, lighterColorHSV.v);
+      return {
+        background: colorStr,
+        border: darkerColorHex,
+        highlight: {
+          background: lighterColorHex,
+          border: darkerColorHex
+        },
+        hover: {
+          background: lighterColorHex,
+          border: darkerColorHex
+        }
+      };
+    } else {
+      return {
+        background: colorStr,
+        border: colorStr,
+        highlight: {
+          background: colorStr,
+          border: colorStr
+        },
+        hover: {
+          background: colorStr,
+          border: colorStr
+        }
+      };
+    }
+  } else {
+    if (defaultColor) {
+      var color = {
+        background: inputColor.background || defaultColor.background,
+        border: inputColor.border || defaultColor.border,
+        highlight: isString(inputColor.highlight) ? {
+          border: inputColor.highlight,
+          background: inputColor.highlight
+        } : {
+          background: inputColor.highlight && inputColor.highlight.background || defaultColor.highlight.background,
+          border: inputColor.highlight && inputColor.highlight.border || defaultColor.highlight.border
+        },
+        hover: isString(inputColor.hover) ? {
+          border: inputColor.hover,
+          background: inputColor.hover
+        } : {
+          border: inputColor.hover && inputColor.hover.border || defaultColor.hover.border,
+          background: inputColor.hover && inputColor.hover.background || defaultColor.hover.background
+        }
+      };
+      return color;
+    } else {
+      var _color = {
+        background: inputColor.background || undefined,
+        border: inputColor.border || undefined,
+        highlight: isString(inputColor.highlight) ? {
+          border: inputColor.highlight,
+          background: inputColor.highlight
+        } : {
+          background: inputColor.highlight && inputColor.highlight.background || undefined,
+          border: inputColor.highlight && inputColor.highlight.border || undefined
+        },
+        hover: isString(inputColor.hover) ? {
+          border: inputColor.hover,
+          background: inputColor.hover
+        } : {
+          border: inputColor.hover && inputColor.hover.border || undefined,
+          background: inputColor.hover && inputColor.hover.background || undefined
+        }
+      };
+      return _color;
+    }
+  }
+}
+/**
+ * Convert RGB \<0, 255\> into HSV object.
+ *
+ * @remarks
+ * {@link http://www.javascripter.net/faq/rgb2hsv.htm}
+ *
+ * @param red - Red channel.
+ * @param green - Green channel.
+ * @param blue - Blue channel.
+ *
+ * @returns HSV color object.
+ */
+
+
+function RGBToHSV(red, green, blue) {
+  red = red / 255;
+  green = green / 255;
+  blue = blue / 255;
+  var minRGB = Math.min(red, Math.min(green, blue));
+  var maxRGB = Math.max(red, Math.max(green, blue)); // Black-gray-white
+
+  if (minRGB === maxRGB) {
+    return {
+      h: 0,
+      s: 0,
+      v: minRGB
+    };
+  } // Colors other than black-gray-white:
+
+
+  var d = red === minRGB ? green - blue : blue === minRGB ? red - green : blue - red;
+  var h = red === minRGB ? 3 : blue === minRGB ? 1 : 5;
+  var hue = 60 * (h - d / (maxRGB - minRGB)) / 360;
+  var saturation = (maxRGB - minRGB) / maxRGB;
+  var value = maxRGB;
+  return {
+    h: hue,
+    s: saturation,
+    v: value
+  };
+}
+
+var cssUtil = {
+  // split a string with css styles into an object with key/values
+  split: function split(cssText) {
+    var _context12;
+
+    var styles = {};
+
+    forEach$2(_context12 = cssText.split(";")).call(_context12, function (style) {
+      if (trim$2(style).call(style) != "") {
+        var _context13, _context14;
+
+        var parts = style.split(":");
+
+        var key = trim$2(_context13 = parts[0]).call(_context13);
+
+        var value = trim$2(_context14 = parts[1]).call(_context14);
+
+        styles[key] = value;
+      }
+    });
+
+    return styles;
+  },
+  // build a css text string from an object with key/values
+  join: function join(styles) {
+    var _context15;
+
+    return map$2(_context15 = keys$3(styles)).call(_context15, function (key) {
+      return key + ": " + styles[key];
+    }).join("; ");
+  }
+};
+/**
+ * Append a string with css styles to an element.
+ *
+ * @param element - The element that will receive new styles.
+ * @param cssText - The styles to be appended.
+ */
+
+function addCssText(element, cssText) {
+  var currentStyles = cssUtil.split(element.style.cssText);
+  var newStyles = cssUtil.split(cssText);
+
+  var styles = _objectSpread(_objectSpread({}, currentStyles), newStyles);
+
+  element.style.cssText = cssUtil.join(styles);
+}
+/**
+ * Remove a string with css styles from an element.
+ *
+ * @param element - The element from which styles should be removed.
+ * @param cssText - The styles to be removed.
+ */
+
+
+function removeCssText(element, cssText) {
+  var styles = cssUtil.split(element.style.cssText);
+  var removeStyles = cssUtil.split(cssText);
+
+  for (var key in removeStyles) {
+    if (Object.prototype.hasOwnProperty.call(removeStyles, key)) {
+      delete styles[key];
+    }
+  }
+
+  element.style.cssText = cssUtil.join(styles);
+}
+/**
+ * Convert HSV \<0, 1\> into RGB color object.
+ *
+ * @remarks
+ * {@link https://gist.github.com/mjijackson/5311256}
+ *
+ * @param h - Hue.
+ * @param s - Saturation.
+ * @param v - Value.
+ *
+ * @returns RGB color object.
+ */
+
+
+function HSVToRGB(h, s, v) {
+  var r;
+  var g;
+  var b;
+  var i = Math.floor(h * 6);
+  var f = h * 6 - i;
+  var p = v * (1 - s);
+  var q = v * (1 - f * s);
+  var t = v * (1 - (1 - f) * s);
+
+  switch (i % 6) {
+    case 0:
+      r = v, g = t, b = p;
+      break;
+
+    case 1:
+      r = q, g = v, b = p;
+      break;
+
+    case 2:
+      r = p, g = v, b = t;
+      break;
+
+    case 3:
+      r = p, g = q, b = v;
+      break;
+
+    case 4:
+      r = t, g = p, b = v;
+      break;
+
+    case 5:
+      r = v, g = p, b = q;
+      break;
+  }
+
+  return {
+    r: Math.floor(r * 255),
+    g: Math.floor(g * 255),
+    b: Math.floor(b * 255)
+  };
+}
+/**
+ * Convert HSV \<0, 1\> into hex color string.
+ *
+ * @param h - Hue.
+ * @param s - Saturation.
+ * @param v - Value.
+ *
+ * @returns Hex color string.
+ */
+
+
+function HSVToHex(h, s, v) {
+  var rgb = HSVToRGB(h, s, v);
+  return RGBToHex(rgb.r, rgb.g, rgb.b);
+}
+/**
+ * Convert hex color string into HSV \<0, 1\>.
+ *
+ * @param hex - Hex color string.
+ *
+ * @returns HSV color object.
+ */
+
+
+function hexToHSV(hex) {
+  var rgb = hexToRGB(hex);
+
+  if (!rgb) {
+    throw new TypeError("'".concat(hex, "' is not a valid color."));
+  }
+
+  return RGBToHSV(rgb.r, rgb.g, rgb.b);
+}
+/**
+ * Validate hex color string.
+ *
+ * @param hex - Unknown string that may contain a color.
+ *
+ * @returns True if the string is valid, false otherwise.
+ */
+
+
+function isValidHex(hex) {
+  var isOk = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
+  return isOk;
+}
+/**
+ * Validate RGB color string.
+ *
+ * @param rgb - Unknown string that may contain a color.
+ *
+ * @returns True if the string is valid, false otherwise.
+ */
+
+
+function isValidRGB(rgb) {
+  return rgbRE.test(rgb);
+}
+/**
+ * Validate RGBA color string.
+ *
+ * @param rgba - Unknown string that may contain a color.
+ *
+ * @returns True if the string is valid, false otherwise.
+ */
+
+
+function isValidRGBA(rgba) {
+  return rgbaRE.test(rgba);
+}
+/**
+ * This recursively redirects the prototype of JSON objects to the referenceObject.
+ * This is used for default options.
+ *
+ * @param fields - Names of properties to be bridged.
+ * @param referenceObject - The original object.
+ *
+ * @returns A new object inheriting from the referenceObject.
+ */
+
+
+function selectiveBridgeObject(fields, referenceObject) {
+  if (referenceObject !== null && _typeof_1(referenceObject) === "object") {
+    // !!! typeof null === 'object'
+    var objectTo = create$2(referenceObject);
+
+    for (var i = 0; i < fields.length; i++) {
+      if (Object.prototype.hasOwnProperty.call(referenceObject, fields[i])) {
+        if (_typeof_1(referenceObject[fields[i]]) == "object") {
+          objectTo[fields[i]] = bridgeObject(referenceObject[fields[i]]);
+        }
+      }
+    }
+
+    return objectTo;
+  } else {
+    return null;
+  }
+}
+/**
+ * This recursively redirects the prototype of JSON objects to the referenceObject.
+ * This is used for default options.
+ *
+ * @param referenceObject - The original object.
+ *
+ * @returns The Element if the referenceObject is an Element, or a new object inheriting from the referenceObject.
+ */
+
+
+function bridgeObject(referenceObject) {
+  if (referenceObject === null || _typeof_1(referenceObject) !== "object") {
+    return null;
+  }
+
+  if (referenceObject instanceof Element) {
+    // Avoid bridging DOM objects
+    return referenceObject;
+  }
+
+  var objectTo = create$2(referenceObject);
+
+  for (var i in referenceObject) {
+    if (Object.prototype.hasOwnProperty.call(referenceObject, i)) {
+      if (_typeof_1(referenceObject[i]) == "object") {
+        objectTo[i] = bridgeObject(referenceObject[i]);
+      }
+    }
+  }
+
+  return objectTo;
+}
+/**
+ * This method provides a stable sort implementation, very fast for presorted data.
+ *
+ * @param a - The array to be sorted (in-place).
+ * @param compare - An order comparator.
+ *
+ * @returns The argument a.
+ */
+
+
+function insertSort(a, compare) {
+  for (var i = 0; i < a.length; i++) {
+    var k = a[i];
+    var j = void 0;
+
+    for (j = i; j > 0 && compare(k, a[j - 1]) < 0; j--) {
+      a[j] = a[j - 1];
+    }
+
+    a[j] = k;
+  }
+
+  return a;
+}
+/**
+ * This is used to set the options of subobjects in the options object.
+ *
+ * A requirement of these subobjects is that they have an 'enabled' element
+ * which is optional for the user but mandatory for the program.
+ *
+ * The added value here of the merge is that option 'enabled' is set as required.
+ *
+ * @param mergeTarget - Either this.options or the options used for the groups.
+ * @param options - Options.
+ * @param option - Option key in the options argument.
+ * @param globalOptions - Global options, passed in to determine value of option 'enabled'.
+ */
+
+
+function mergeOptions(mergeTarget, options, option) {
+  var globalOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  // Local helpers
+  var isPresent = function isPresent(obj) {
+    return obj !== null && obj !== undefined;
+  };
+
+  var isObject = function isObject(obj) {
+    return obj !== null && _typeof_1(obj) === "object";
+  }; // https://stackoverflow.com/a/34491287/1223531
+
+
+  var isEmpty = function isEmpty(obj) {
+    for (var x in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, x)) {
+        return false;
+      }
+    }
+
+    return true;
+  }; // Guards
+
+
+  if (!isObject(mergeTarget)) {
+    throw new Error("Parameter mergeTarget must be an object");
+  }
+
+  if (!isObject(options)) {
+    throw new Error("Parameter options must be an object");
+  }
+
+  if (!isPresent(option)) {
+    throw new Error("Parameter option must have a value");
+  }
+
+  if (!isObject(globalOptions)) {
+    throw new Error("Parameter globalOptions must be an object");
+  } //
+  // Actual merge routine, separated from main logic
+  // Only a single level of options is merged. Deeper levels are ref'd. This may actually be an issue.
+  //
+
+
+  var doMerge = function doMerge(target, options, option) {
+    if (!isObject(target[option])) {
+      target[option] = {};
+    }
+
+    var src = options[option];
+    var dst = target[option];
+
+    for (var prop in src) {
+      if (Object.prototype.hasOwnProperty.call(src, prop)) {
+        dst[prop] = src[prop];
+      }
+    }
+  }; // Local initialization
+
+
+  var srcOption = options[option];
+  var globalPassed = isObject(globalOptions) && !isEmpty(globalOptions);
+  var globalOption = globalPassed ? globalOptions[option] : undefined;
+  var globalEnabled = globalOption ? globalOption.enabled : undefined; /////////////////////////////////////////
+  // Main routine
+  /////////////////////////////////////////
+
+  if (srcOption === undefined) {
+    return; // Nothing to do
+  }
+
+  if (typeof srcOption === "boolean") {
+    if (!isObject(mergeTarget[option])) {
+      mergeTarget[option] = {};
+    }
+
+    mergeTarget[option].enabled = srcOption;
+    return;
+  }
+
+  if (srcOption === null && !isObject(mergeTarget[option])) {
+    // If possible, explicit copy from globals
+    if (isPresent(globalOption)) {
+      mergeTarget[option] = create$2(globalOption);
+    } else {
+      return; // Nothing to do
+    }
+  }
+
+  if (!isObject(srcOption)) {
+    return;
+  } //
+  // Ensure that 'enabled' is properly set. It is required internally
+  // Note that the value from options will always overwrite the existing value
+  //
+
+
+  var enabled = true; // default value
+
+  if (srcOption.enabled !== undefined) {
+    enabled = srcOption.enabled;
+  } else {
+    // Take from globals, if present
+    if (globalEnabled !== undefined) {
+      enabled = globalOption.enabled;
+    }
+  }
+
+  doMerge(mergeTarget, options, option);
+  mergeTarget[option].enabled = enabled;
+}
+/**
+ * This function does a binary search for a visible item in a sorted list. If we find a visible item, the code that uses
+ * this function will then iterate in both directions over this sorted list to find all visible items.
+ *
+ * @param orderedItems - Items ordered by start.
+ * @param comparator - -1 is lower, 0 is equal, 1 is higher.
+ * @param field - Property name on an item (That is item[field]).
+ * @param field2 - Second property name on an item (That is item[field][field2]).
+ *
+ * @returns Index of the found item or -1 if nothing was found.
+ */
+
+
+function binarySearchCustom(orderedItems, comparator, field, field2) {
+  var maxIterations = 10000;
+  var iteration = 0;
+  var low = 0;
+  var high = orderedItems.length - 1;
+
+  while (low <= high && iteration < maxIterations) {
+    var middle = Math.floor((low + high) / 2);
+    var item = orderedItems[middle];
+    var value = field2 === undefined ? item[field] : item[field][field2];
+    var searchResult = comparator(value);
+
+    if (searchResult == 0) {
+      // jihaa, found a visible item!
+      return middle;
+    } else if (searchResult == -1) {
+      // it is too small --> increase low
+      low = middle + 1;
+    } else {
+      // it is too big --> decrease high
+      high = middle - 1;
+    }
+
+    iteration++;
+  }
+
+  return -1;
+}
+/**
+ * This function does a binary search for a specific value in a sorted array.
+ * If it does not exist but is in between of two values, we return either the
+ * one before or the one after, depending on user input If it is found, we
+ * return the index, else -1.
+ *
+ * @param orderedItems - Sorted array.
+ * @param target - The searched value.
+ * @param field - Name of the property in items to be searched.
+ * @param sidePreference - If the target is between two values, should the index of the before or the after be returned?
+ * @param comparator - An optional comparator, returning -1, 0, 1 for \<, ===, \>.
+ *
+ * @returns The index of found value or -1 if nothing was found.
+ */
+
+
+function binarySearchValue(orderedItems, target, field, sidePreference, comparator) {
+  var maxIterations = 10000;
+  var iteration = 0;
+  var low = 0;
+  var high = orderedItems.length - 1;
+  var prevValue;
+  var value;
+  var nextValue;
+  var middle;
+  comparator = comparator != undefined ? comparator : function (a, b) {
+    return a == b ? 0 : a < b ? -1 : 1;
+  };
+
+  while (low <= high && iteration < maxIterations) {
+    // get a new guess
+    middle = Math.floor(0.5 * (high + low));
+    prevValue = orderedItems[Math.max(0, middle - 1)][field];
+    value = orderedItems[middle][field];
+    nextValue = orderedItems[Math.min(orderedItems.length - 1, middle + 1)][field];
+
+    if (comparator(value, target) == 0) {
+      // we found the target
+      return middle;
+    } else if (comparator(prevValue, target) < 0 && comparator(value, target) > 0) {
+      // target is in between of the previous and the current
+      return sidePreference == "before" ? Math.max(0, middle - 1) : middle;
+    } else if (comparator(value, target) < 0 && comparator(nextValue, target) > 0) {
+      // target is in between of the current and the next
+      return sidePreference == "before" ? middle : Math.min(orderedItems.length - 1, middle + 1);
+    } else {
+      // didnt find the target, we need to change our boundaries.
+      if (comparator(value, target) < 0) {
+        // it is too small --> increase low
+        low = middle + 1;
+      } else {
+        // it is too big --> decrease high
+        high = middle - 1;
+      }
+    }
+
+    iteration++;
+  } // didnt find anything. Return -1.
+
+
+  return -1;
+}
+/*
+ * Easing Functions.
+ * Only considering the t value for the range [0, 1] => [0, 1].
+ *
+ * Inspiration: from http://gizma.com/easing/
+ * https://gist.github.com/gre/1650294
+ */
+
+
+var easingFunctions = {
+  /**
+   * Provides no easing and no acceleration.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  linear: function linear(t) {
+    return t;
+  },
+
+  /**
+   * Accelerate from zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInQuad: function easeInQuad(t) {
+    return t * t;
+  },
+
+  /**
+   * Decelerate to zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeOutQuad: function easeOutQuad(t) {
+    return t * (2 - t);
+  },
+
+  /**
+   * Accelerate until halfway, then decelerate.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInOutQuad: function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  },
+
+  /**
+   * Accelerate from zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInCubic: function easeInCubic(t) {
+    return t * t * t;
+  },
+
+  /**
+   * Decelerate to zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeOutCubic: function easeOutCubic(t) {
+    return --t * t * t + 1;
+  },
+
+  /**
+   * Accelerate until halfway, then decelerate.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInOutCubic: function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  },
+
+  /**
+   * Accelerate from zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInQuart: function easeInQuart(t) {
+    return t * t * t * t;
+  },
+
+  /**
+   * Decelerate to zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeOutQuart: function easeOutQuart(t) {
+    return 1 - --t * t * t * t;
+  },
+
+  /**
+   * Accelerate until halfway, then decelerate.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInOutQuart: function easeInOutQuart(t) {
+    return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+  },
+
+  /**
+   * Accelerate from zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInQuint: function easeInQuint(t) {
+    return t * t * t * t * t;
+  },
+
+  /**
+   * Decelerate to zero velocity.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeOutQuint: function easeOutQuint(t) {
+    return 1 + --t * t * t * t * t;
+  },
+
+  /**
+   * Accelerate until halfway, then decelerate.
+   *
+   * @param t - Time.
+   *
+   * @returns Value at time t.
+   */
+  easeInOutQuint: function easeInOutQuint(t) {
+    return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+  }
+};
+/**
+ * Experimentaly compute the width of the scrollbar for this browser.
+ *
+ * @returns The width in pixels.
+ */
+
+function getScrollBarWidth() {
+  var inner = document.createElement("p");
+  inner.style.width = "100%";
+  inner.style.height = "200px";
+  var outer = document.createElement("div");
+  outer.style.position = "absolute";
+  outer.style.top = "0px";
+  outer.style.left = "0px";
+  outer.style.visibility = "hidden";
+  outer.style.width = "200px";
+  outer.style.height = "150px";
+  outer.style.overflow = "hidden";
+  outer.appendChild(inner);
+  document.body.appendChild(outer);
+  var w1 = inner.offsetWidth;
+  outer.style.overflow = "scroll";
+  var w2 = inner.offsetWidth;
+
+  if (w1 == w2) {
+    w2 = outer.clientWidth;
+  }
+
+  document.body.removeChild(outer);
+  return w1 - w2;
+} // @TODO: This doesn't work properly.
+// It works only for single property objects,
+// otherwise it combines all of the types in a union.
+// export function topMost<K1 extends string, V1> (
+//   pile: Record<K1, undefined | V1>[],
+//   accessors: K1 | [K1]
+// ): undefined | V1
+// export function topMost<K1 extends string, K2 extends string, V1, V2> (
+//   pile: Record<K1, undefined | V1 | Record<K2, undefined | V2>>[],
+//   accessors: [K1, K2]
+// ): undefined | V1 | V2
+// export function topMost<K1 extends string, K2 extends string, K3 extends string, V1, V2, V3> (
+//   pile: Record<K1, undefined | V1 | Record<K2, undefined | V2 | Record<K3, undefined | V3>>>[],
+//   accessors: [K1, K2, K3]
+// ): undefined | V1 | V2 | V3
+
+/**
+ * Get the top most property value from a pile of objects.
+ *
+ * @param pile - Array of objects, no required format.
+ * @param accessors - Array of property names.
+ * For example `object['foo']['bar']` → `['foo', 'bar']`.
+ *
+ * @returns Value of the property with given accessors path from the first pile item where it's not undefined.
+ */
+
+
+function topMost(pile, accessors) {
+  var candidate;
+
+  if (!isArray$5(accessors)) {
+    accessors = [accessors];
+  }
+
+  var _iterator3 = _createForOfIteratorHelper(pile),
+      _step3;
+
+  try {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+      var member = _step3.value;
+
+      if (member) {
+        candidate = member[accessors[0]];
+
+        for (var i = 1; i < accessors.length; i++) {
+          if (candidate) {
+            candidate = candidate[accessors[i]];
+          }
+        }
+
+        if (typeof candidate !== "undefined") {
+          break;
+        }
+      }
+    }
+  } catch (err) {
+    _iterator3.e(err);
+  } finally {
+    _iterator3.f();
+  }
+
+  return candidate;
+}
+
+var htmlColors = {
+  black: "#000000",
+  navy: "#000080",
+  darkblue: "#00008B",
+  mediumblue: "#0000CD",
+  blue: "#0000FF",
+  darkgreen: "#006400",
+  green: "#008000",
+  teal: "#008080",
+  darkcyan: "#008B8B",
+  deepskyblue: "#00BFFF",
+  darkturquoise: "#00CED1",
+  mediumspringgreen: "#00FA9A",
+  lime: "#00FF00",
+  springgreen: "#00FF7F",
+  aqua: "#00FFFF",
+  cyan: "#00FFFF",
+  midnightblue: "#191970",
+  dodgerblue: "#1E90FF",
+  lightseagreen: "#20B2AA",
+  forestgreen: "#228B22",
+  seagreen: "#2E8B57",
+  darkslategray: "#2F4F4F",
+  limegreen: "#32CD32",
+  mediumseagreen: "#3CB371",
+  turquoise: "#40E0D0",
+  royalblue: "#4169E1",
+  steelblue: "#4682B4",
+  darkslateblue: "#483D8B",
+  mediumturquoise: "#48D1CC",
+  indigo: "#4B0082",
+  darkolivegreen: "#556B2F",
+  cadetblue: "#5F9EA0",
+  cornflowerblue: "#6495ED",
+  mediumaquamarine: "#66CDAA",
+  dimgray: "#696969",
+  slateblue: "#6A5ACD",
+  olivedrab: "#6B8E23",
+  slategray: "#708090",
+  lightslategray: "#778899",
+  mediumslateblue: "#7B68EE",
+  lawngreen: "#7CFC00",
+  chartreuse: "#7FFF00",
+  aquamarine: "#7FFFD4",
+  maroon: "#800000",
+  purple: "#800080",
+  olive: "#808000",
+  gray: "#808080",
+  skyblue: "#87CEEB",
+  lightskyblue: "#87CEFA",
+  blueviolet: "#8A2BE2",
+  darkred: "#8B0000",
+  darkmagenta: "#8B008B",
+  saddlebrown: "#8B4513",
+  darkseagreen: "#8FBC8F",
+  lightgreen: "#90EE90",
+  mediumpurple: "#9370D8",
+  darkviolet: "#9400D3",
+  palegreen: "#98FB98",
+  darkorchid: "#9932CC",
+  yellowgreen: "#9ACD32",
+  sienna: "#A0522D",
+  brown: "#A52A2A",
+  darkgray: "#A9A9A9",
+  lightblue: "#ADD8E6",
+  greenyellow: "#ADFF2F",
+  paleturquoise: "#AFEEEE",
+  lightsteelblue: "#B0C4DE",
+  powderblue: "#B0E0E6",
+  firebrick: "#B22222",
+  darkgoldenrod: "#B8860B",
+  mediumorchid: "#BA55D3",
+  rosybrown: "#BC8F8F",
+  darkkhaki: "#BDB76B",
+  silver: "#C0C0C0",
+  mediumvioletred: "#C71585",
+  indianred: "#CD5C5C",
+  peru: "#CD853F",
+  chocolate: "#D2691E",
+  tan: "#D2B48C",
+  lightgrey: "#D3D3D3",
+  palevioletred: "#D87093",
+  thistle: "#D8BFD8",
+  orchid: "#DA70D6",
+  goldenrod: "#DAA520",
+  crimson: "#DC143C",
+  gainsboro: "#DCDCDC",
+  plum: "#DDA0DD",
+  burlywood: "#DEB887",
+  lightcyan: "#E0FFFF",
+  lavender: "#E6E6FA",
+  darksalmon: "#E9967A",
+  violet: "#EE82EE",
+  palegoldenrod: "#EEE8AA",
+  lightcoral: "#F08080",
+  khaki: "#F0E68C",
+  aliceblue: "#F0F8FF",
+  honeydew: "#F0FFF0",
+  azure: "#F0FFFF",
+  sandybrown: "#F4A460",
+  wheat: "#F5DEB3",
+  beige: "#F5F5DC",
+  whitesmoke: "#F5F5F5",
+  mintcream: "#F5FFFA",
+  ghostwhite: "#F8F8FF",
+  salmon: "#FA8072",
+  antiquewhite: "#FAEBD7",
+  linen: "#FAF0E6",
+  lightgoldenrodyellow: "#FAFAD2",
+  oldlace: "#FDF5E6",
+  red: "#FF0000",
+  fuchsia: "#FF00FF",
+  magenta: "#FF00FF",
+  deeppink: "#FF1493",
+  orangered: "#FF4500",
+  tomato: "#FF6347",
+  hotpink: "#FF69B4",
+  coral: "#FF7F50",
+  darkorange: "#FF8C00",
+  lightsalmon: "#FFA07A",
+  orange: "#FFA500",
+  lightpink: "#FFB6C1",
+  pink: "#FFC0CB",
+  gold: "#FFD700",
+  peachpuff: "#FFDAB9",
+  navajowhite: "#FFDEAD",
+  moccasin: "#FFE4B5",
+  bisque: "#FFE4C4",
+  mistyrose: "#FFE4E1",
+  blanchedalmond: "#FFEBCD",
+  papayawhip: "#FFEFD5",
+  lavenderblush: "#FFF0F5",
+  seashell: "#FFF5EE",
+  cornsilk: "#FFF8DC",
+  lemonchiffon: "#FFFACD",
+  floralwhite: "#FFFAF0",
+  snow: "#FFFAFA",
+  yellow: "#FFFF00",
+  lightyellow: "#FFFFE0",
+  ivory: "#FFFFF0",
+  white: "#FFFFFF"
+};
+/**
+ * @param {number} [pixelRatio=1]
+ */
+
+var ColorPicker = /*#__PURE__*/function () {
+  /**
+   * @param {number} [pixelRatio=1]
+   */
+  function ColorPicker() {
+    var pixelRatio = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+
+    classCallCheck(this, ColorPicker);
+
+    this.pixelRatio = pixelRatio;
+    this.generated = false;
+    this.centerCoordinates = {
+      x: 289 / 2,
+      y: 289 / 2
+    };
+    this.r = 289 * 0.49;
+    this.color = {
+      r: 255,
+      g: 255,
+      b: 255,
+      a: 1.0
+    };
+    this.hueCircle = undefined;
+    this.initialColor = {
+      r: 255,
+      g: 255,
+      b: 255,
+      a: 1.0
+    };
+    this.previousColor = undefined;
+    this.applied = false; // bound by
+
+    this.updateCallback = function () {};
+
+    this.closeCallback = function () {}; // create all DOM elements
+
+
+    this._create();
+  }
+  /**
+   * this inserts the colorPicker into a div from the DOM
+   *
+   * @param {Element} container
+   */
+
+
+  createClass(ColorPicker, [{
+    key: "insertTo",
+    value: function insertTo(container) {
+      if (this.hammer !== undefined) {
+        this.hammer.destroy();
+        this.hammer = undefined;
+      }
+
+      this.container = container;
+      this.container.appendChild(this.frame);
+
+      this._bindHammer();
+
+      this._setSize();
+    }
+    /**
+     * the callback is executed on apply and save. Bind it to the application
+     *
+     * @param {Function} callback
+     */
+
+  }, {
+    key: "setUpdateCallback",
+    value: function setUpdateCallback(callback) {
+      if (typeof callback === "function") {
+        this.updateCallback = callback;
+      } else {
+        throw new Error("Function attempted to set as colorPicker update callback is not a function.");
+      }
+    }
+    /**
+     * the callback is executed on apply and save. Bind it to the application
+     *
+     * @param {Function} callback
+     */
+
+  }, {
+    key: "setCloseCallback",
+    value: function setCloseCallback(callback) {
+      if (typeof callback === "function") {
+        this.closeCallback = callback;
+      } else {
+        throw new Error("Function attempted to set as colorPicker closing callback is not a function.");
+      }
+    }
+    /**
+     *
+     * @param {string} color
+     * @returns {string}
+     * @private
+     */
+
+  }, {
+    key: "_isColorString",
+    value: function _isColorString(color) {
+      if (typeof color === "string") {
+        return htmlColors[color];
+      }
+    }
+    /**
+     * Set the color of the colorPicker
+     * Supported formats:
+     * 'red'                   --> HTML color string
+     * '#ffffff'               --> hex string
+     * 'rgb(255,255,255)'      --> rgb string
+     * 'rgba(255,255,255,1.0)' --> rgba string
+     * {r:255,g:255,b:255}     --> rgb object
+     * {r:255,g:255,b:255,a:1.0} --> rgba object
+     *
+     * @param {string | object} color
+     * @param {boolean} [setInitial=true]
+     */
+
+  }, {
+    key: "setColor",
+    value: function setColor(color) {
+      var setInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (color === "none") {
+        return;
+      }
+
+      var rgba; // if a html color shorthand is used, convert to hex
+
+      var htmlColor = this._isColorString(color);
+
+      if (htmlColor !== undefined) {
+        color = htmlColor;
+      } // check format
+
+
+      if (isString(color) === true) {
+        if (isValidRGB(color) === true) {
+          var rgbaArray = color.substr(4).substr(0, color.length - 5).split(",");
+          rgba = {
+            r: rgbaArray[0],
+            g: rgbaArray[1],
+            b: rgbaArray[2],
+            a: 1.0
+          };
+        } else if (isValidRGBA(color) === true) {
+          var _rgbaArray = color.substr(5).substr(0, color.length - 6).split(",");
+
+          rgba = {
+            r: _rgbaArray[0],
+            g: _rgbaArray[1],
+            b: _rgbaArray[2],
+            a: _rgbaArray[3]
+          };
+        } else if (isValidHex(color) === true) {
+          var rgbObj = hexToRGB(color);
+          rgba = {
+            r: rgbObj.r,
+            g: rgbObj.g,
+            b: rgbObj.b,
+            a: 1.0
+          };
+        }
+      } else {
+        if (color instanceof Object) {
+          if (color.r !== undefined && color.g !== undefined && color.b !== undefined) {
+            var alpha = color.a !== undefined ? color.a : "1.0";
+            rgba = {
+              r: color.r,
+              g: color.g,
+              b: color.b,
+              a: alpha
+            };
+          }
+        }
+      } // set color
+
+
+      if (rgba === undefined) {
+        throw new Error("Unknown color passed to the colorPicker. Supported are strings: rgb, hex, rgba. Object: rgb ({r:r,g:g,b:b,[a:a]}). Supplied: " + stringify$2(color));
+      } else {
+        this._setColor(rgba, setInitial);
+      }
+    }
+    /**
+     * this shows the color picker.
+     * The hue circle is constructed once and stored.
+     */
+
+  }, {
+    key: "show",
+    value: function show() {
+      if (this.closeCallback !== undefined) {
+        this.closeCallback();
+        this.closeCallback = undefined;
+      }
+
+      this.applied = false;
+      this.frame.style.display = "block";
+
+      this._generateHueCircle();
+    } // ------------------------------------------ PRIVATE ----------------------------- //
+
+    /**
+     * Hide the picker. Is called by the cancel button.
+     * Optional boolean to store the previous color for easy access later on.
+     *
+     * @param {boolean} [storePrevious=true]
+     * @private
+     */
+
+  }, {
+    key: "_hide",
+    value: function _hide() {
+      var _this2 = this;
+
+      var storePrevious = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+      // store the previous color for next time;
+      if (storePrevious === true) {
+        this.previousColor = assign$2({}, this.color);
+      }
+
+      if (this.applied === true) {
+        this.updateCallback(this.initialColor);
+      }
+
+      this.frame.style.display = "none"; // call the closing callback, restoring the onclick method.
+      // this is in a setTimeout because it will trigger the show again before the click is done.
+
+      setTimeout$2(function () {
+        if (_this2.closeCallback !== undefined) {
+          _this2.closeCallback();
+
+          _this2.closeCallback = undefined;
+        }
+      }, 0);
+    }
+    /**
+     * bound to the save button. Saves and hides.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_save",
+    value: function _save() {
+      this.updateCallback(this.color);
+      this.applied = false;
+
+      this._hide();
+    }
+    /**
+     * Bound to apply button. Saves but does not close. Is undone by the cancel button.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_apply",
+    value: function _apply() {
+      this.applied = true;
+      this.updateCallback(this.color);
+
+      this._updatePicker(this.color);
+    }
+    /**
+     * load the color from the previous session.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_loadLast",
+    value: function _loadLast() {
+      if (this.previousColor !== undefined) {
+        this.setColor(this.previousColor, false);
+      } else {
+        alert("There is no last color to load...");
+      }
+    }
+    /**
+     * set the color, place the picker
+     *
+     * @param {object} rgba
+     * @param {boolean} [setInitial=true]
+     * @private
+     */
+
+  }, {
+    key: "_setColor",
+    value: function _setColor(rgba) {
+      var setInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      // store the initial color
+      if (setInitial === true) {
+        this.initialColor = assign$2({}, rgba);
+      }
+
+      this.color = rgba;
+      var hsv = RGBToHSV(rgba.r, rgba.g, rgba.b);
+      var angleConvert = 2 * Math.PI;
+      var radius = this.r * hsv.s;
+      var x = this.centerCoordinates.x + radius * Math.sin(angleConvert * hsv.h);
+      var y = this.centerCoordinates.y + radius * Math.cos(angleConvert * hsv.h);
+      this.colorPickerSelector.style.left = x - 0.5 * this.colorPickerSelector.clientWidth + "px";
+      this.colorPickerSelector.style.top = y - 0.5 * this.colorPickerSelector.clientHeight + "px";
+
+      this._updatePicker(rgba);
+    }
+    /**
+     * bound to opacity control
+     *
+     * @param {number} value
+     * @private
+     */
+
+  }, {
+    key: "_setOpacity",
+    value: function _setOpacity(value) {
+      this.color.a = value / 100;
+
+      this._updatePicker(this.color);
+    }
+    /**
+     * bound to brightness control
+     *
+     * @param {number} value
+     * @private
+     */
+
+  }, {
+    key: "_setBrightness",
+    value: function _setBrightness(value) {
+      var hsv = RGBToHSV(this.color.r, this.color.g, this.color.b);
+      hsv.v = value / 100;
+      var rgba = HSVToRGB(hsv.h, hsv.s, hsv.v);
+      rgba["a"] = this.color.a;
+      this.color = rgba;
+
+      this._updatePicker();
+    }
+    /**
+     * update the color picker. A black circle overlays the hue circle to mimic the brightness decreasing.
+     *
+     * @param {object} rgba
+     * @private
+     */
+
+  }, {
+    key: "_updatePicker",
+    value: function _updatePicker() {
+      var rgba = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.color;
+      var hsv = RGBToHSV(rgba.r, rgba.g, rgba.b);
+      var ctx = this.colorPickerCanvas.getContext("2d");
+
+      if (this.pixelRation === undefined) {
+        this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
+      }
+
+      ctx.setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0); // clear the canvas
+
+      var w = this.colorPickerCanvas.clientWidth;
+      var h = this.colorPickerCanvas.clientHeight;
+      ctx.clearRect(0, 0, w, h);
+      ctx.putImageData(this.hueCircle, 0, 0);
+      ctx.fillStyle = "rgba(0,0,0," + (1 - hsv.v) + ")";
+      ctx.circle(this.centerCoordinates.x, this.centerCoordinates.y, this.r);
+
+      fill$2(ctx).call(ctx);
+
+      this.brightnessRange.value = 100 * hsv.v;
+      this.opacityRange.value = 100 * rgba.a;
+      this.initialColorDiv.style.backgroundColor = "rgba(" + this.initialColor.r + "," + this.initialColor.g + "," + this.initialColor.b + "," + this.initialColor.a + ")";
+      this.newColorDiv.style.backgroundColor = "rgba(" + this.color.r + "," + this.color.g + "," + this.color.b + "," + this.color.a + ")";
+    }
+    /**
+     * used by create to set the size of the canvas.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_setSize",
+    value: function _setSize() {
+      this.colorPickerCanvas.style.width = "100%";
+      this.colorPickerCanvas.style.height = "100%";
+      this.colorPickerCanvas.width = 289 * this.pixelRatio;
+      this.colorPickerCanvas.height = 289 * this.pixelRatio;
+    }
+    /**
+     * create all dom elements
+     * TODO: cleanup, lots of similar dom elements
+     *
+     * @private
+     */
+
+  }, {
+    key: "_create",
+    value: function _create() {
+      var _context16, _context17, _context18, _context19;
+
+      this.frame = document.createElement("div");
+      this.frame.className = "vis-color-picker";
+      this.colorPickerDiv = document.createElement("div");
+      this.colorPickerSelector = document.createElement("div");
+      this.colorPickerSelector.className = "vis-selector";
+      this.colorPickerDiv.appendChild(this.colorPickerSelector);
+      this.colorPickerCanvas = document.createElement("canvas");
+      this.colorPickerDiv.appendChild(this.colorPickerCanvas);
+
+      if (!this.colorPickerCanvas.getContext) {
+        var noCanvas = document.createElement("DIV");
+        noCanvas.style.color = "red";
+        noCanvas.style.fontWeight = "bold";
+        noCanvas.style.padding = "10px";
+        noCanvas.innerText = "Error: your browser does not support HTML canvas";
+        this.colorPickerCanvas.appendChild(noCanvas);
+      } else {
+        var ctx = this.colorPickerCanvas.getContext("2d");
+        this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
+        this.colorPickerCanvas.getContext("2d").setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0);
+      }
+
+      this.colorPickerDiv.className = "vis-color";
+      this.opacityDiv = document.createElement("div");
+      this.opacityDiv.className = "vis-opacity";
+      this.brightnessDiv = document.createElement("div");
+      this.brightnessDiv.className = "vis-brightness";
+      this.arrowDiv = document.createElement("div");
+      this.arrowDiv.className = "vis-arrow";
+      this.opacityRange = document.createElement("input");
+
+      try {
+        this.opacityRange.type = "range"; // Not supported on IE9
+
+        this.opacityRange.min = "0";
+        this.opacityRange.max = "100";
+      } catch (err) {// TODO: Add some error handling.
+      }
+
+      this.opacityRange.value = "100";
+      this.opacityRange.className = "vis-range";
+      this.brightnessRange = document.createElement("input");
+
+      try {
+        this.brightnessRange.type = "range"; // Not supported on IE9
+
+        this.brightnessRange.min = "0";
+        this.brightnessRange.max = "100";
+      } catch (err) {// TODO: Add some error handling.
+      }
+
+      this.brightnessRange.value = "100";
+      this.brightnessRange.className = "vis-range";
+      this.opacityDiv.appendChild(this.opacityRange);
+      this.brightnessDiv.appendChild(this.brightnessRange);
+      var me = this;
+
+      this.opacityRange.onchange = function () {
+        me._setOpacity(this.value);
+      };
+
+      this.opacityRange.oninput = function () {
+        me._setOpacity(this.value);
+      };
+
+      this.brightnessRange.onchange = function () {
+        me._setBrightness(this.value);
+      };
+
+      this.brightnessRange.oninput = function () {
+        me._setBrightness(this.value);
+      };
+
+      this.brightnessLabel = document.createElement("div");
+      this.brightnessLabel.className = "vis-label vis-brightness";
+      this.brightnessLabel.innerText = "brightness:";
+      this.opacityLabel = document.createElement("div");
+      this.opacityLabel.className = "vis-label vis-opacity";
+      this.opacityLabel.innerText = "opacity:";
+      this.newColorDiv = document.createElement("div");
+      this.newColorDiv.className = "vis-new-color";
+      this.newColorDiv.innerText = "new";
+      this.initialColorDiv = document.createElement("div");
+      this.initialColorDiv.className = "vis-initial-color";
+      this.initialColorDiv.innerText = "initial";
+      this.cancelButton = document.createElement("div");
+      this.cancelButton.className = "vis-button vis-cancel";
+      this.cancelButton.innerText = "cancel";
+      this.cancelButton.onclick = bind$2(_context16 = this._hide).call(_context16, this, false);
+      this.applyButton = document.createElement("div");
+      this.applyButton.className = "vis-button vis-apply";
+      this.applyButton.innerText = "apply";
+      this.applyButton.onclick = bind$2(_context17 = this._apply).call(_context17, this);
+      this.saveButton = document.createElement("div");
+      this.saveButton.className = "vis-button vis-save";
+      this.saveButton.innerText = "save";
+      this.saveButton.onclick = bind$2(_context18 = this._save).call(_context18, this);
+      this.loadButton = document.createElement("div");
+      this.loadButton.className = "vis-button vis-load";
+      this.loadButton.innerText = "load last";
+      this.loadButton.onclick = bind$2(_context19 = this._loadLast).call(_context19, this);
+      this.frame.appendChild(this.colorPickerDiv);
+      this.frame.appendChild(this.arrowDiv);
+      this.frame.appendChild(this.brightnessLabel);
+      this.frame.appendChild(this.brightnessDiv);
+      this.frame.appendChild(this.opacityLabel);
+      this.frame.appendChild(this.opacityDiv);
+      this.frame.appendChild(this.newColorDiv);
+      this.frame.appendChild(this.initialColorDiv);
+      this.frame.appendChild(this.cancelButton);
+      this.frame.appendChild(this.applyButton);
+      this.frame.appendChild(this.saveButton);
+      this.frame.appendChild(this.loadButton);
+    }
+    /**
+     * bind hammer to the color picker
+     *
+     * @private
+     */
+
+  }, {
+    key: "_bindHammer",
+    value: function _bindHammer() {
+      var _this3 = this;
+
+      this.drag = {};
+      this.pinch = {};
+      this.hammer = new Hammer$1(this.colorPickerCanvas);
+      this.hammer.get("pinch").set({
+        enable: true
+      });
+      this.hammer.on("hammer.input", function (event) {
+        if (event.isFirst) {
+          _this3._moveSelector(event);
+        }
+      });
+      this.hammer.on("tap", function (event) {
+        _this3._moveSelector(event);
+      });
+      this.hammer.on("panstart", function (event) {
+        _this3._moveSelector(event);
+      });
+      this.hammer.on("panmove", function (event) {
+        _this3._moveSelector(event);
+      });
+      this.hammer.on("panend", function (event) {
+        _this3._moveSelector(event);
+      });
+    }
+    /**
+     * generate the hue circle. This is relatively heavy (200ms) and is done only once on the first time it is shown.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_generateHueCircle",
+    value: function _generateHueCircle() {
+      if (this.generated === false) {
+        var ctx = this.colorPickerCanvas.getContext("2d");
+
+        if (this.pixelRation === undefined) {
+          this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
+        }
+
+        ctx.setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0); // clear the canvas
+
+        var w = this.colorPickerCanvas.clientWidth;
+        var h = this.colorPickerCanvas.clientHeight;
+        ctx.clearRect(0, 0, w, h); // draw hue circle
+
+        var x, y, hue, sat;
+        this.centerCoordinates = {
+          x: w * 0.5,
+          y: h * 0.5
+        };
+        this.r = 0.49 * w;
+        var angleConvert = 2 * Math.PI / 360;
+        var hfac = 1 / 360;
+        var sfac = 1 / this.r;
+        var rgb;
+
+        for (hue = 0; hue < 360; hue++) {
+          for (sat = 0; sat < this.r; sat++) {
+            x = this.centerCoordinates.x + sat * Math.sin(angleConvert * hue);
+            y = this.centerCoordinates.y + sat * Math.cos(angleConvert * hue);
+            rgb = HSVToRGB(hue * hfac, sat * sfac, 1);
+            ctx.fillStyle = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+            ctx.fillRect(x - 0.5, y - 0.5, 2, 2);
+          }
+        }
+
+        ctx.strokeStyle = "rgba(0,0,0,1)";
+        ctx.circle(this.centerCoordinates.x, this.centerCoordinates.y, this.r);
+        ctx.stroke();
+        this.hueCircle = ctx.getImageData(0, 0, w, h);
+      }
+
+      this.generated = true;
+    }
+    /**
+     * move the selector. This is called by hammer functions.
+     *
+     * @param {Event}  event   The event
+     * @private
+     */
+
+  }, {
+    key: "_moveSelector",
+    value: function _moveSelector(event) {
+      var rect = this.colorPickerDiv.getBoundingClientRect();
+      var left = event.center.x - rect.left;
+      var top = event.center.y - rect.top;
+      var centerY = 0.5 * this.colorPickerDiv.clientHeight;
+      var centerX = 0.5 * this.colorPickerDiv.clientWidth;
+      var x = left - centerX;
+      var y = top - centerY;
+      var angle = Math.atan2(x, y);
+      var radius = 0.98 * Math.min(Math.sqrt(x * x + y * y), centerX);
+      var newTop = Math.cos(angle) * radius + centerY;
+      var newLeft = Math.sin(angle) * radius + centerX;
+      this.colorPickerSelector.style.top = newTop - 0.5 * this.colorPickerSelector.clientHeight + "px";
+      this.colorPickerSelector.style.left = newLeft - 0.5 * this.colorPickerSelector.clientWidth + "px"; // set color
+
+      var h = angle / (2 * Math.PI);
+      h = h < 0 ? h + 1 : h;
+      var s = radius / this.r;
+      var hsv = RGBToHSV(this.color.r, this.color.g, this.color.b);
+      hsv.h = h;
+      hsv.s = s;
+      var rgba = HSVToRGB(hsv.h, hsv.s, hsv.v);
+      rgba["a"] = this.color.a;
+      this.color = rgba; // update previews
+
+      this.initialColorDiv.style.backgroundColor = "rgba(" + this.initialColor.r + "," + this.initialColor.g + "," + this.initialColor.b + "," + this.initialColor.a + ")";
+      this.newColorDiv.style.backgroundColor = "rgba(" + this.color.r + "," + this.color.g + "," + this.color.b + "," + this.color.a + ")";
+    }
+  }]);
+
+  return ColorPicker;
+}();
+/**
+ * Wrap given text (last argument) in HTML elements (all preceding arguments).
+ *
+ * @param {...any} rest - List of tag names followed by inner text.
+ *
+ * @returns An element or a text node.
+ */
+
+
+function wrapInTag() {
+  for (var _len5 = arguments.length, rest = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+    rest[_key5] = arguments[_key5];
+  }
+
+  if (rest.length < 1) {
+    throw new TypeError("Invalid arguments.");
+  } else if (rest.length === 1) {
+    return document.createTextNode(rest[0]);
+  } else {
+    var element = document.createElement(rest[0]);
+    element.appendChild(wrapInTag.apply(void 0, toConsumableArray(slice$6(rest).call(rest, 1))));
+    return element;
+  }
+}
+/**
+ * The way this works is for all properties of this.possible options, you can supply the property name in any form to list the options.
+ * Boolean options are recognised as Boolean
+ * Number options should be written as array: [default value, min value, max value, stepsize]
+ * Colors should be written as array: ['color', '#ffffff']
+ * Strings with should be written as array: [option1, option2, option3, ..]
+ *
+ * The options are matched with their counterparts in each of the modules and the values used in the configuration are
+ */
+
+
+var Configurator = /*#__PURE__*/function () {
+  /**
+   * @param {object} parentModule        | the location where parentModule.setOptions() can be called
+   * @param {object} defaultContainer    | the default container of the module
+   * @param {object} configureOptions    | the fully configured and predefined options set found in allOptions.js
+   * @param {number} pixelRatio          | canvas pixel ratio
+   * @param {Function} hideOption        | custom logic to dynamically hide options
+   */
+  function Configurator(parentModule, defaultContainer, configureOptions) {
+    var pixelRatio = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+    var hideOption = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function () {
+      return false;
+    };
+
+    classCallCheck(this, Configurator);
+
+    this.parent = parentModule;
+    this.changedOptions = [];
+    this.container = defaultContainer;
+    this.allowCreation = false;
+    this.hideOption = hideOption;
+    this.options = {};
+    this.initialized = false;
+    this.popupCounter = 0;
+    this.defaultOptions = {
+      enabled: false,
+      filter: true,
+      container: undefined,
+      showButton: true
+    };
+
+    assign$2(this.options, this.defaultOptions);
+
+    this.configureOptions = configureOptions;
+    this.moduleOptions = {};
+    this.domElements = [];
+    this.popupDiv = {};
+    this.popupLimit = 5;
+    this.popupHistory = {};
+    this.colorPicker = new ColorPicker(pixelRatio);
+    this.wrapper = undefined;
+  }
+  /**
+   * refresh all options.
+   * Because all modules parse their options by themselves, we just use their options. We copy them here.
+   *
+   * @param {object} options
+   */
+
+
+  createClass(Configurator, [{
+    key: "setOptions",
+    value: function setOptions(options) {
+      if (options !== undefined) {
+        // reset the popup history because the indices may have been changed.
+        this.popupHistory = {};
+
+        this._removePopup();
+
+        var enabled = true;
+
+        if (typeof options === "string") {
+          this.options.filter = options;
+        } else if (isArray$5(options)) {
+          this.options.filter = options.join();
+        } else if (_typeof_1(options) === "object") {
+          if (options == null) {
+            throw new TypeError("options cannot be null");
+          }
+
+          if (options.container !== undefined) {
+            this.options.container = options.container;
+          }
+
+          if (filter$2(options) !== undefined) {
+            this.options.filter = filter$2(options);
+          }
+
+          if (options.showButton !== undefined) {
+            this.options.showButton = options.showButton;
+          }
+
+          if (options.enabled !== undefined) {
+            enabled = options.enabled;
+          }
+        } else if (typeof options === "boolean") {
+          this.options.filter = true;
+          enabled = options;
+        } else if (typeof options === "function") {
+          this.options.filter = options;
+          enabled = true;
+        }
+
+        if (filter$2(this.options) === false) {
+          enabled = false;
+        }
+
+        this.options.enabled = enabled;
+      }
+
+      this._clean();
+    }
+    /**
+     *
+     * @param {object} moduleOptions
+     */
+
+  }, {
+    key: "setModuleOptions",
+    value: function setModuleOptions(moduleOptions) {
+      this.moduleOptions = moduleOptions;
+
+      if (this.options.enabled === true) {
+        this._clean();
+
+        if (this.options.container !== undefined) {
+          this.container = this.options.container;
+        }
+
+        this._create();
+      }
+    }
+    /**
+     * Create all DOM elements
+     *
+     * @private
+     */
+
+  }, {
+    key: "_create",
+    value: function _create() {
+      this._clean();
+
+      this.changedOptions = [];
+
+      var filter = filter$2(this.options);
+
+      var counter = 0;
+      var show = false;
+
+      for (var _option in this.configureOptions) {
+        if (Object.prototype.hasOwnProperty.call(this.configureOptions, _option)) {
+          this.allowCreation = false;
+          show = false;
+
+          if (typeof filter === "function") {
+            show = filter(_option, []);
+            show = show || this._handleObject(this.configureOptions[_option], [_option], true);
+          } else if (filter === true || indexOf$3(filter).call(filter, _option) !== -1) {
+            show = true;
+          }
+
+          if (show !== false) {
+            this.allowCreation = true; // linebreak between categories
+
+            if (counter > 0) {
+              this._makeItem([]);
+            } // a header for the category
+
+
+            this._makeHeader(_option); // get the sub options
+
+
+            this._handleObject(this.configureOptions[_option], [_option]);
+          }
+
+          counter++;
+        }
+      }
+
+      this._makeButton();
+
+      this._push(); //~ this.colorPicker.insertTo(this.container);
+
+    }
+    /**
+     * draw all DOM elements on the screen
+     *
+     * @private
+     */
+
+  }, {
+    key: "_push",
+    value: function _push() {
+      this.wrapper = document.createElement("div");
+      this.wrapper.className = "vis-configuration-wrapper";
+      this.container.appendChild(this.wrapper);
+
+      for (var i = 0; i < this.domElements.length; i++) {
+        this.wrapper.appendChild(this.domElements[i]);
+      }
+
+      this._showPopupIfNeeded();
+    }
+    /**
+     * delete all DOM elements
+     *
+     * @private
+     */
+
+  }, {
+    key: "_clean",
+    value: function _clean() {
+      for (var i = 0; i < this.domElements.length; i++) {
+        this.wrapper.removeChild(this.domElements[i]);
+      }
+
+      if (this.wrapper !== undefined) {
+        this.container.removeChild(this.wrapper);
+        this.wrapper = undefined;
+      }
+
+      this.domElements = [];
+
+      this._removePopup();
+    }
+    /**
+     * get the value from the actualOptions if it exists
+     *
+     * @param {Array} path    | where to look for the actual option
+     * @returns {*}
+     * @private
+     */
+
+  }, {
+    key: "_getValue",
+    value: function _getValue(path) {
+      var base = this.moduleOptions;
+
+      for (var i = 0; i < path.length; i++) {
+        if (base[path[i]] !== undefined) {
+          base = base[path[i]];
+        } else {
+          base = undefined;
+          break;
+        }
+      }
+
+      return base;
+    }
+    /**
+     * all option elements are wrapped in an item
+     *
+     * @param {Array} path    | where to look for the actual option
+     * @param {Array.<Element>} domElements
+     * @returns {number}
+     * @private
+     */
+
+  }, {
+    key: "_makeItem",
+    value: function _makeItem(path) {
+      if (this.allowCreation === true) {
+        var item = document.createElement("div");
+        item.className = "vis-configuration vis-config-item vis-config-s" + path.length;
+
+        for (var _len6 = arguments.length, domElements = new Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+          domElements[_key6 - 1] = arguments[_key6];
+        }
+
+        forEach$2(domElements).call(domElements, function (element) {
+          item.appendChild(element);
+        });
+
+        this.domElements.push(item);
+        return this.domElements.length;
+      }
+
+      return 0;
+    }
+    /**
+     * header for major subjects
+     *
+     * @param {string} name
+     * @private
+     */
+
+  }, {
+    key: "_makeHeader",
+    value: function _makeHeader(name) {
+      var div = document.createElement("div");
+      div.className = "vis-configuration vis-config-header";
+      div.innerText = name;
+
+      this._makeItem([], div);
+    }
+    /**
+     * make a label, if it is an object label, it gets different styling.
+     *
+     * @param {string} name
+     * @param {Array} path    | where to look for the actual option
+     * @param {string} objectLabel
+     * @returns {HTMLElement}
+     * @private
+     */
+
+  }, {
+    key: "_makeLabel",
+    value: function _makeLabel(name, path) {
+      var objectLabel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var div = document.createElement("div");
+      div.className = "vis-configuration vis-config-label vis-config-s" + path.length;
+
+      if (objectLabel === true) {
+        while (div.firstChild) {
+          div.removeChild(div.firstChild);
+        }
+
+        div.appendChild(wrapInTag("i", "b", name));
+      } else {
+        div.innerText = name + ":";
+      }
+
+      return div;
+    }
+    /**
+     * make a dropdown list for multiple possible string optoins
+     *
+     * @param {Array.<number>} arr
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_makeDropdown",
+    value: function _makeDropdown(arr, value, path) {
+      var select = document.createElement("select");
+      select.className = "vis-configuration vis-config-select";
+      var selectedValue = 0;
+
+      if (value !== undefined) {
+        if (indexOf$3(arr).call(arr, value) !== -1) {
+          selectedValue = indexOf$3(arr).call(arr, value);
+        }
+      }
+
+      for (var i = 0; i < arr.length; i++) {
+        var _option2 = document.createElement("option");
+
+        _option2.value = arr[i];
+
+        if (i === selectedValue) {
+          _option2.selected = "selected";
+        }
+
+        _option2.innerText = arr[i];
+        select.appendChild(_option2);
+      }
+
+      var me = this;
+
+      select.onchange = function () {
+        me._update(this.value, path);
+      };
+
+      var label = this._makeLabel(path[path.length - 1], path);
+
+      this._makeItem(path, label, select);
+    }
+    /**
+     * make a range object for numeric options
+     *
+     * @param {Array.<number>} arr
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_makeRange",
+    value: function _makeRange(arr, value, path) {
+      var defaultValue = arr[0];
+      var min = arr[1];
+      var max = arr[2];
+      var step = arr[3];
+      var range = document.createElement("input");
+      range.className = "vis-configuration vis-config-range";
+
+      try {
+        range.type = "range"; // not supported on IE9
+
+        range.min = min;
+        range.max = max;
+      } catch (err) {// TODO: Add some error handling.
+      }
+
+      range.step = step; // set up the popup settings in case they are needed.
+
+      var popupString = "";
+      var popupValue = 0;
+
+      if (value !== undefined) {
+        var factor = 1.2;
+
+        if (value < 0 && value * factor < min) {
+          range.min = Math.ceil(value * factor);
+          popupValue = range.min;
+          popupString = "range increased";
+        } else if (value / factor < min) {
+          range.min = Math.ceil(value / factor);
+          popupValue = range.min;
+          popupString = "range increased";
+        }
+
+        if (value * factor > max && max !== 1) {
+          range.max = Math.ceil(value * factor);
+          popupValue = range.max;
+          popupString = "range increased";
+        }
+
+        range.value = value;
+      } else {
+        range.value = defaultValue;
+      }
+
+      var input = document.createElement("input");
+      input.className = "vis-configuration vis-config-rangeinput";
+      input.value = range.value;
+      var me = this;
+
+      range.onchange = function () {
+        input.value = this.value;
+
+        me._update(Number(this.value), path);
+      };
+
+      range.oninput = function () {
+        input.value = this.value;
+      };
+
+      var label = this._makeLabel(path[path.length - 1], path);
+
+      var itemIndex = this._makeItem(path, label, range, input); // if a popup is needed AND it has not been shown for this value, show it.
+
+
+      if (popupString !== "" && this.popupHistory[itemIndex] !== popupValue) {
+        this.popupHistory[itemIndex] = popupValue;
+
+        this._setupPopup(popupString, itemIndex);
+      }
+    }
+    /**
+     * make a button object
+     *
+     * @private
+     */
+
+  }, {
+    key: "_makeButton",
+    value: function _makeButton() {
+      var _this4 = this;
+
+      if (this.options.showButton === true) {
+        var generateButton = document.createElement("div");
+        generateButton.className = "vis-configuration vis-config-button";
+        generateButton.innerText = "generate options";
+
+        generateButton.onclick = function () {
+          _this4._printOptions();
+        };
+
+        generateButton.onmouseover = function () {
+          generateButton.className = "vis-configuration vis-config-button hover";
+        };
+
+        generateButton.onmouseout = function () {
+          generateButton.className = "vis-configuration vis-config-button";
+        };
+
+        this.optionsContainer = document.createElement("div");
+        this.optionsContainer.className = "vis-configuration vis-config-option-container";
+        this.domElements.push(this.optionsContainer);
+        this.domElements.push(generateButton);
+      }
+    }
+    /**
+     * prepare the popup
+     *
+     * @param {string} string
+     * @param {number} index
+     * @private
+     */
+
+  }, {
+    key: "_setupPopup",
+    value: function _setupPopup(string, index) {
+      var _this5 = this;
+
+      if (this.initialized === true && this.allowCreation === true && this.popupCounter < this.popupLimit) {
+        var div = document.createElement("div");
+        div.id = "vis-configuration-popup";
+        div.className = "vis-configuration-popup";
+        div.innerText = string;
+
+        div.onclick = function () {
+          _this5._removePopup();
+        };
+
+        this.popupCounter += 1;
+        this.popupDiv = {
+          html: div,
+          index: index
+        };
+      }
+    }
+    /**
+     * remove the popup from the dom
+     *
+     * @private
+     */
+
+  }, {
+    key: "_removePopup",
+    value: function _removePopup() {
+      if (this.popupDiv.html !== undefined) {
+        this.popupDiv.html.parentNode.removeChild(this.popupDiv.html);
+        clearTimeout(this.popupDiv.hideTimeout);
+        clearTimeout(this.popupDiv.deleteTimeout);
+        this.popupDiv = {};
+      }
+    }
+    /**
+     * Show the popup if it is needed.
+     *
+     * @private
+     */
+
+  }, {
+    key: "_showPopupIfNeeded",
+    value: function _showPopupIfNeeded() {
+      var _this6 = this;
+
+      if (this.popupDiv.html !== undefined) {
+        var correspondingElement = this.domElements[this.popupDiv.index];
+        var rect = correspondingElement.getBoundingClientRect();
+        this.popupDiv.html.style.left = rect.left + "px";
+        this.popupDiv.html.style.top = rect.top - 30 + "px"; // 30 is the height;
+
+        document.body.appendChild(this.popupDiv.html);
+        this.popupDiv.hideTimeout = setTimeout$2(function () {
+          _this6.popupDiv.html.style.opacity = 0;
+        }, 1500);
+        this.popupDiv.deleteTimeout = setTimeout$2(function () {
+          _this6._removePopup();
+        }, 1800);
+      }
+    }
+    /**
+     * make a checkbox for boolean options.
+     *
+     * @param {number} defaultValue
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_makeCheckbox",
+    value: function _makeCheckbox(defaultValue, value, path) {
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "vis-configuration vis-config-checkbox";
+      checkbox.checked = defaultValue;
+
+      if (value !== undefined) {
+        checkbox.checked = value;
+
+        if (value !== defaultValue) {
+          if (_typeof_1(defaultValue) === "object") {
+            if (value !== defaultValue.enabled) {
+              this.changedOptions.push({
+                path: path,
+                value: value
+              });
+            }
+          } else {
+            this.changedOptions.push({
+              path: path,
+              value: value
+            });
+          }
+        }
+      }
+
+      var me = this;
+
+      checkbox.onchange = function () {
+        me._update(this.checked, path);
+      };
+
+      var label = this._makeLabel(path[path.length - 1], path);
+
+      this._makeItem(path, label, checkbox);
+    }
+    /**
+     * make a text input field for string options.
+     *
+     * @param {number} defaultValue
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_makeTextInput",
+    value: function _makeTextInput(defaultValue, value, path) {
+      var checkbox = document.createElement("input");
+      checkbox.type = "text";
+      checkbox.className = "vis-configuration vis-config-text";
+      checkbox.value = value;
+
+      if (value !== defaultValue) {
+        this.changedOptions.push({
+          path: path,
+          value: value
+        });
+      }
+
+      var me = this;
+
+      checkbox.onchange = function () {
+        me._update(this.value, path);
+      };
+
+      var label = this._makeLabel(path[path.length - 1], path);
+
+      this._makeItem(path, label, checkbox);
+    }
+    /**
+     * make a color field with a color picker for color fields
+     *
+     * @param {Array.<number>} arr
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_makeColorField",
+    value: function _makeColorField(arr, value, path) {
+      var _this7 = this;
+
+      var defaultColor = arr[1];
+      var div = document.createElement("div");
+      value = value === undefined ? defaultColor : value;
+
+      if (value !== "none") {
+        div.className = "vis-configuration vis-config-colorBlock";
+        div.style.backgroundColor = value;
+      } else {
+        div.className = "vis-configuration vis-config-colorBlock none";
+      }
+
+      value = value === undefined ? defaultColor : value;
+
+      div.onclick = function () {
+        _this7._showColorPicker(value, div, path);
+      };
+
+      var label = this._makeLabel(path[path.length - 1], path);
+
+      this._makeItem(path, label, div);
+    }
+    /**
+     * used by the color buttons to call the color picker.
+     *
+     * @param {number} value
+     * @param {HTMLElement} div
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_showColorPicker",
+    value: function _showColorPicker(value, div, path) {
+      var _this8 = this;
+
+      // clear the callback from this div
+      div.onclick = function () {};
+
+      this.colorPicker.insertTo(div);
+      this.colorPicker.show();
+      this.colorPicker.setColor(value);
+      this.colorPicker.setUpdateCallback(function (color) {
+        var colorString = "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")";
+        div.style.backgroundColor = colorString;
+
+        _this8._update(colorString, path);
+      }); // on close of the colorpicker, restore the callback.
+
+      this.colorPicker.setCloseCallback(function () {
+        div.onclick = function () {
+          _this8._showColorPicker(value, div, path);
+        };
+      });
+    }
+    /**
+     * parse an object and draw the correct items
+     *
+     * @param {object} obj
+     * @param {Array} [path=[]]    | where to look for the actual option
+     * @param {boolean} [checkOnly=false]
+     * @returns {boolean}
+     * @private
+     */
+
+  }, {
+    key: "_handleObject",
+    value: function _handleObject(obj) {
+      var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      var checkOnly = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var show = false;
+
+      var filter = filter$2(this.options);
+
+      var visibleInSet = false;
+
+      for (var subObj in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, subObj)) {
+          show = true;
+          var item = obj[subObj];
+          var newPath = copyAndExtendArray(path, subObj);
+
+          if (typeof filter === "function") {
+            show = filter(subObj, path); // if needed we must go deeper into the object.
+
+            if (show === false) {
+              if (!isArray$5(item) && typeof item !== "string" && typeof item !== "boolean" && item instanceof Object) {
+                this.allowCreation = false;
+                show = this._handleObject(item, newPath, true);
+                this.allowCreation = checkOnly === false;
+              }
+            }
+          }
+
+          if (show !== false) {
+            visibleInSet = true;
+
+            var value = this._getValue(newPath);
+
+            if (isArray$5(item)) {
+              this._handleArray(item, value, newPath);
+            } else if (typeof item === "string") {
+              this._makeTextInput(item, value, newPath);
+            } else if (typeof item === "boolean") {
+              this._makeCheckbox(item, value, newPath);
+            } else if (item instanceof Object) {
+              // skip the options that are not enabled
+              if (!this.hideOption(path, subObj, this.moduleOptions)) {
+                // initially collapse options with an disabled enabled option.
+                if (item.enabled !== undefined) {
+                  var enabledPath = copyAndExtendArray(newPath, "enabled");
+
+                  var enabledValue = this._getValue(enabledPath);
+
+                  if (enabledValue === true) {
+                    var label = this._makeLabel(subObj, newPath, true);
+
+                    this._makeItem(newPath, label);
+
+                    visibleInSet = this._handleObject(item, newPath) || visibleInSet;
+                  } else {
+                    this._makeCheckbox(item, enabledValue, newPath);
+                  }
+                } else {
+                  var _label = this._makeLabel(subObj, newPath, true);
+
+                  this._makeItem(newPath, _label);
+
+                  visibleInSet = this._handleObject(item, newPath) || visibleInSet;
+                }
+              }
+            } else {
+              console.error("dont know how to handle", item, subObj, newPath);
+            }
+          }
+        }
+      }
+
+      return visibleInSet;
+    }
+    /**
+     * handle the array type of option
+     *
+     * @param {Array.<number>} arr
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_handleArray",
+    value: function _handleArray(arr, value, path) {
+      if (typeof arr[0] === "string" && arr[0] === "color") {
+        this._makeColorField(arr, value, path);
+
+        if (arr[1] !== value) {
+          this.changedOptions.push({
+            path: path,
+            value: value
+          });
+        }
+      } else if (typeof arr[0] === "string") {
+        this._makeDropdown(arr, value, path);
+
+        if (arr[0] !== value) {
+          this.changedOptions.push({
+            path: path,
+            value: value
+          });
+        }
+      } else if (typeof arr[0] === "number") {
+        this._makeRange(arr, value, path);
+
+        if (arr[0] !== value) {
+          this.changedOptions.push({
+            path: path,
+            value: Number(value)
+          });
+        }
+      }
+    }
+    /**
+     * called to update the network with the new settings.
+     *
+     * @param {number} value
+     * @param {Array} path    | where to look for the actual option
+     * @private
+     */
+
+  }, {
+    key: "_update",
+    value: function _update(value, path) {
+      var options = this._constructOptions(value, path);
+
+      if (this.parent.body && this.parent.body.emitter && this.parent.body.emitter.emit) {
+        this.parent.body.emitter.emit("configChange", options);
+      }
+
+      this.initialized = true;
+      this.parent.setOptions(options);
+    }
+    /**
+     *
+     * @param {string | boolean} value
+     * @param {Array.<string>} path
+     * @param {{}} optionsObj
+     * @returns {{}}
+     * @private
+     */
+
+  }, {
+    key: "_constructOptions",
+    value: function _constructOptions(value, path) {
+      var optionsObj = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var pointer = optionsObj; // when dropdown boxes can be string or boolean, we typecast it into correct types
+
+      value = value === "true" ? true : value;
+      value = value === "false" ? false : value;
+
+      for (var i = 0; i < path.length; i++) {
+        if (path[i] !== "global") {
+          if (pointer[path[i]] === undefined) {
+            pointer[path[i]] = {};
+          }
+
+          if (i !== path.length - 1) {
+            pointer = pointer[path[i]];
+          } else {
+            pointer[path[i]] = value;
+          }
+        }
+      }
+
+      return optionsObj;
+    }
+    /**
+     * @private
+     */
+
+  }, {
+    key: "_printOptions",
+    value: function _printOptions() {
+      var options = this.getOptions();
+
+      while (this.optionsContainer.firstChild) {
+        this.optionsContainer.removeChild(this.optionsContainer.firstChild);
+      }
+
+      this.optionsContainer.appendChild(wrapInTag("pre", "const options = " + stringify$2(options, null, 2)));
+    }
+    /**
+     *
+     * @returns {{}} options
+     */
+
+  }, {
+    key: "getOptions",
+    value: function getOptions() {
+      var options = {};
+
+      for (var i = 0; i < this.changedOptions.length; i++) {
+        this._constructOptions(this.changedOptions[i].value, this.changedOptions[i].path, options);
+      }
+
+      return options;
+    }
+  }]);
+
+  return Configurator;
+}();
+/**
+ * Popup is a class to create a popup window with some text
+ */
+
+
+var Popup = /*#__PURE__*/function () {
+  /**
+   * @param {Element} container       The container object.
+   * @param {string}  overflowMethod  How the popup should act to overflowing ('flip' or 'cap')
+   */
+  function Popup(container, overflowMethod) {
+    classCallCheck(this, Popup);
+
+    this.container = container;
+    this.overflowMethod = overflowMethod || "cap";
+    this.x = 0;
+    this.y = 0;
+    this.padding = 5;
+    this.hidden = false; // create the frame
+
+    this.frame = document.createElement("div");
+    this.frame.className = "vis-tooltip";
+    this.container.appendChild(this.frame);
+  }
+  /**
+   * @param {number} x   Horizontal position of the popup window
+   * @param {number} y   Vertical position of the popup window
+   */
+
+
+  createClass(Popup, [{
+    key: "setPosition",
+    value: function setPosition(x, y) {
+      this.x = _parseInt$2(x);
+      this.y = _parseInt$2(y);
+    }
+    /**
+     * Set the content for the popup window. This can be HTML code or text.
+     *
+     * @param {string | Element} content
+     */
+
+  }, {
+    key: "setText",
+    value: function setText(content) {
+      if (content instanceof Element) {
+        while (this.frame.firstChild) {
+          this.frame.removeChild(this.frame.firstChild);
+        }
+
+        this.frame.appendChild(content);
+      } else {
+        // String containing literal text, element has to be used for HTML due to
+        // XSS risks associated with innerHTML (i.e. prevent XSS by accident).
+        this.frame.innerText = content;
+      }
+    }
+    /**
+     * Show the popup window
+     *
+     * @param {boolean} [doShow]    Show or hide the window
+     */
+
+  }, {
+    key: "show",
+    value: function show(doShow) {
+      if (doShow === undefined) {
+        doShow = true;
+      }
+
+      if (doShow === true) {
+        var height = this.frame.clientHeight;
+        var width = this.frame.clientWidth;
+        var maxHeight = this.frame.parentNode.clientHeight;
+        var maxWidth = this.frame.parentNode.clientWidth;
+        var left = 0,
+            top = 0;
+
+        if (this.overflowMethod == "flip") {
+          var isLeft = false,
+              isTop = true; // Where around the position it's located
+
+          if (this.y - height < this.padding) {
+            isTop = false;
+          }
+
+          if (this.x + width > maxWidth - this.padding) {
+            isLeft = true;
+          }
+
+          if (isLeft) {
+            left = this.x - width;
+          } else {
+            left = this.x;
+          }
+
+          if (isTop) {
+            top = this.y - height;
+          } else {
+            top = this.y;
+          }
+        } else {
+          top = this.y - height;
+
+          if (top + height + this.padding > maxHeight) {
+            top = maxHeight - height - this.padding;
+          }
+
+          if (top < this.padding) {
+            top = this.padding;
+          }
+
+          left = this.x;
+
+          if (left + width + this.padding > maxWidth) {
+            left = maxWidth - width - this.padding;
+          }
+
+          if (left < this.padding) {
+            left = this.padding;
+          }
+        }
+
+        this.frame.style.left = left + "px";
+        this.frame.style.top = top + "px";
+        this.frame.style.visibility = "visible";
+        this.hidden = false;
+      } else {
+        this.hide();
+      }
+    }
+    /**
+     * Hide the popup window
+     */
+
+  }, {
+    key: "hide",
+    value: function hide() {
+      this.hidden = true;
+      this.frame.style.left = "0";
+      this.frame.style.top = "0";
+      this.frame.style.visibility = "hidden";
+    }
+    /**
+     * Remove the popup window
+     */
+
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.frame.parentNode.removeChild(this.frame); // Remove element from DOM
+    }
+  }]);
+
+  return Popup;
+}();
+
+var errorFound = false;
+var allOptions;
+var VALIDATOR_PRINT_STYLE = "background: #FFeeee; color: #dd0000";
+/**
+ *  Used to validate options.
+ */
+
+var Validator = /*#__PURE__*/function () {
+  function Validator() {
+    classCallCheck(this, Validator);
+  }
+
+  createClass(Validator, null, [{
+    key: "validate",
+
+    /**
+     * Main function to be called
+     *
+     * @param {object} options
+     * @param {object} referenceOptions
+     * @param {object} subObject
+     * @returns {boolean}
+     * @static
+     */
+    value: function validate(options, referenceOptions, subObject) {
+      errorFound = false;
+      allOptions = referenceOptions;
+      var usedOptions = referenceOptions;
+
+      if (subObject !== undefined) {
+        usedOptions = referenceOptions[subObject];
+      }
+
+      Validator.parse(options, usedOptions, []);
+      return errorFound;
+    }
+    /**
+     * Will traverse an object recursively and check every value
+     *
+     * @param {object} options
+     * @param {object} referenceOptions
+     * @param {Array} path    | where to look for the actual option
+     * @static
+     */
+
+  }, {
+    key: "parse",
+    value: function parse(options, referenceOptions, path) {
+      for (var _option3 in options) {
+        if (Object.prototype.hasOwnProperty.call(options, _option3)) {
+          Validator.check(_option3, options, referenceOptions, path);
+        }
+      }
+    }
+    /**
+     * Check every value. If the value is an object, call the parse function on that object.
+     *
+     * @param {string} option
+     * @param {object} options
+     * @param {object} referenceOptions
+     * @param {Array} path    | where to look for the actual option
+     * @static
+     */
+
+  }, {
+    key: "check",
+    value: function check(option, options, referenceOptions, path) {
+      if (referenceOptions[option] === undefined && referenceOptions.__any__ === undefined) {
+        Validator.getSuggestion(option, referenceOptions, path);
+        return;
+      }
+
+      var referenceOption = option;
+      var is_object = true;
+
+      if (referenceOptions[option] === undefined && referenceOptions.__any__ !== undefined) {
+        // NOTE: This only triggers if the __any__ is in the top level of the options object.
+        //       THAT'S A REALLY BAD PLACE TO ALLOW IT!!!!
+        // TODO: Examine if needed, remove if possible
+        // __any__ is a wildcard. Any value is accepted and will be further analysed by reference.
+        referenceOption = "__any__"; // if the any-subgroup is not a predefined object in the configurator,
+        // we do not look deeper into the object.
+
+        is_object = Validator.getType(options[option]) === "object";
+      }
+
+      var refOptionObj = referenceOptions[referenceOption];
+
+      if (is_object && refOptionObj.__type__ !== undefined) {
+        refOptionObj = refOptionObj.__type__;
+      }
+
+      Validator.checkFields(option, options, referenceOptions, referenceOption, refOptionObj, path);
+    }
+    /**
+     *
+     * @param {string}  option           | the option property
+     * @param {object}  options          | The supplied options object
+     * @param {object}  referenceOptions | The reference options containing all options and their allowed formats
+     * @param {string}  referenceOption  | Usually this is the same as option, except when handling an __any__ tag.
+     * @param {string}  refOptionObj     | This is the type object from the reference options
+     * @param {Array}   path             | where in the object is the option
+     * @static
+     */
+
+  }, {
+    key: "checkFields",
+    value: function checkFields(option, options, referenceOptions, referenceOption, refOptionObj, path) {
+      var log = function log(message) {
+        console.error("%c" + message + Validator.printLocation(path, option), VALIDATOR_PRINT_STYLE);
+      };
+
+      var optionType = Validator.getType(options[option]);
+      var refOptionType = refOptionObj[optionType];
+
+      if (refOptionType !== undefined) {
+        // if the type is correct, we check if it is supposed to be one of a few select values
+        if (Validator.getType(refOptionType) === "array" && indexOf$3(refOptionType).call(refOptionType, options[option]) === -1) {
+          log('Invalid option detected in "' + option + '".' + " Allowed values are:" + Validator.print(refOptionType) + ' not "' + options[option] + '". ');
+          errorFound = true;
+        } else if (optionType === "object" && referenceOption !== "__any__") {
+          path = copyAndExtendArray(path, option);
+          Validator.parse(options[option], referenceOptions[referenceOption], path);
+        }
+      } else if (refOptionObj["any"] === undefined) {
+        // type of the field is incorrect and the field cannot be any
+        log('Invalid type received for "' + option + '". Expected: ' + Validator.print(keys$3(refOptionObj)) + ". Received [" + optionType + '] "' + options[option] + '"');
+        errorFound = true;
+      }
+    }
+    /**
+     *
+     * @param {object | boolean | number | string | Array.<number> | Date | Node | Moment | undefined | null} object
+     * @returns {string}
+     * @static
+     */
+
+  }, {
+    key: "getType",
+    value: function getType(object) {
+      var type = _typeof_1(object);
+
+      if (type === "object") {
+        if (object === null) {
+          return "null";
+        }
+
+        if (object instanceof Boolean) {
+          return "boolean";
+        }
+
+        if (object instanceof Number) {
+          return "number";
+        }
+
+        if (object instanceof String) {
+          return "string";
+        }
+
+        if (isArray$5(object)) {
+          return "array";
+        }
+
+        if (object instanceof Date) {
+          return "date";
+        }
+
+        if (object.nodeType !== undefined) {
+          return "dom";
+        }
+
+        if (object._isAMomentObject === true) {
+          return "moment";
+        }
+
+        return "object";
+      } else if (type === "number") {
+        return "number";
+      } else if (type === "boolean") {
+        return "boolean";
+      } else if (type === "string") {
+        return "string";
+      } else if (type === undefined) {
+        return "undefined";
+      }
+
+      return type;
+    }
+    /**
+     * @param {string} option
+     * @param {object} options
+     * @param {Array.<string>} path
+     * @static
+     */
+
+  }, {
+    key: "getSuggestion",
+    value: function getSuggestion(option, options, path) {
+      var localSearch = Validator.findInOptions(option, options, path, false);
+      var globalSearch = Validator.findInOptions(option, allOptions, [], true);
+      var localSearchThreshold = 8;
+      var globalSearchThreshold = 4;
+      var msg;
+
+      if (localSearch.indexMatch !== undefined) {
+        msg = " in " + Validator.printLocation(localSearch.path, option, "") + 'Perhaps it was incomplete? Did you mean: "' + localSearch.indexMatch + '"?\n\n';
+      } else if (globalSearch.distance <= globalSearchThreshold && localSearch.distance > globalSearch.distance) {
+        msg = " in " + Validator.printLocation(localSearch.path, option, "") + "Perhaps it was misplaced? Matching option found at: " + Validator.printLocation(globalSearch.path, globalSearch.closestMatch, "");
+      } else if (localSearch.distance <= localSearchThreshold) {
+        msg = '. Did you mean "' + localSearch.closestMatch + '"?' + Validator.printLocation(localSearch.path, option);
+      } else {
+        msg = ". Did you mean one of these: " + Validator.print(keys$3(options)) + Validator.printLocation(path, option);
+      }
+
+      console.error('%cUnknown option detected: "' + option + '"' + msg, VALIDATOR_PRINT_STYLE);
+      errorFound = true;
+    }
+    /**
+     * traverse the options in search for a match.
+     *
+     * @param {string} option
+     * @param {object} options
+     * @param {Array} path    | where to look for the actual option
+     * @param {boolean} [recursive=false]
+     * @returns {{closestMatch: string, path: Array, distance: number}}
+     * @static
+     */
+
+  }, {
+    key: "findInOptions",
+    value: function findInOptions(option, options, path) {
+      var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var min = 1e9;
+      var closestMatch = "";
+      var closestMatchPath = [];
+      var lowerCaseOption = option.toLowerCase();
+      var indexMatch = undefined;
+
+      for (var op in options) {
+        var distance = void 0;
+
+        if (options[op].__type__ !== undefined && recursive === true) {
+          var result = Validator.findInOptions(option, options[op], copyAndExtendArray(path, op));
+
+          if (min > result.distance) {
+            closestMatch = result.closestMatch;
+            closestMatchPath = result.path;
+            min = result.distance;
+            indexMatch = result.indexMatch;
+          }
+        } else {
+          var _context20;
+
+          if (indexOf$3(_context20 = op.toLowerCase()).call(_context20, lowerCaseOption) !== -1) {
+            indexMatch = op;
+          }
+
+          distance = Validator.levenshteinDistance(option, op);
+
+          if (min > distance) {
+            closestMatch = op;
+            closestMatchPath = copyArray(path);
+            min = distance;
+          }
+        }
+      }
+
+      return {
+        closestMatch: closestMatch,
+        path: closestMatchPath,
+        distance: min,
+        indexMatch: indexMatch
+      };
+    }
+    /**
+     * @param {Array.<string>} path
+     * @param {object} option
+     * @param {string} prefix
+     * @returns {string}
+     * @static
+     */
+
+  }, {
+    key: "printLocation",
+    value: function printLocation(path, option) {
+      var prefix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Problem value found at: \n";
+      var str = "\n\n" + prefix + "options = {\n";
+
+      for (var i = 0; i < path.length; i++) {
+        for (var j = 0; j < i + 1; j++) {
+          str += "  ";
+        }
+
+        str += path[i] + ": {\n";
+      }
+
+      for (var _j = 0; _j < path.length + 1; _j++) {
+        str += "  ";
+      }
+
+      str += option + "\n";
+
+      for (var _i3 = 0; _i3 < path.length + 1; _i3++) {
+        for (var _j2 = 0; _j2 < path.length - _i3; _j2++) {
+          str += "  ";
+        }
+
+        str += "}\n";
+      }
+
+      return str + "\n\n";
+    }
+    /**
+     * @param {object} options
+     * @returns {string}
+     * @static
+     */
+
+  }, {
+    key: "print",
+    value: function print(options) {
+      return stringify$2(options).replace(/(")|(\[)|(\])|(,"__type__")/g, "").replace(/(,)/g, ", ");
+    }
+    /**
+     *  Compute the edit distance between the two given strings
+     * http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
+     *
+     * Copyright (c) 2011 Andrei Mackenzie
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+     *
+     * @param {string} a
+     * @param {string} b
+     * @returns {Array.<Array.<number>>}}
+     * @static
+     */
+
+  }, {
+    key: "levenshteinDistance",
+    value: function levenshteinDistance(a, b) {
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      var matrix = []; // increment along the first column of each row
+
+      var i;
+
+      for (i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      } // increment each column in the first row
+
+
+      var j;
+
+      for (j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      } // Fill in the rest of the matrix
+
+
+      for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) == a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
+            Math.min(matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j] + 1)); // deletion
+          }
+        }
+      }
+
+      return matrix[b.length][a.length];
+    }
+  }]);
+
+  return Validator;
+}();
+
+var Activator$1 = Activator;
+var ColorPicker$1 = ColorPicker;
+var Configurator$1 = Configurator;
+var Hammer$1$1 = Hammer$1;
+var Popup$1 = Popup;
+var VALIDATOR_PRINT_STYLE$1 = VALIDATOR_PRINT_STYLE;
+var Validator$1 = Validator;
+
+var index = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	Activator: Activator$1,
+	Alea: Alea,
+	ColorPicker: ColorPicker$1,
+	Configurator: Configurator$1,
+	DELETE: DELETE,
+	HSVToHex: HSVToHex,
+	HSVToRGB: HSVToRGB,
+	Hammer: Hammer$1$1,
+	Popup: Popup$1,
+	RGBToHSV: RGBToHSV,
+	RGBToHex: RGBToHex,
+	VALIDATOR_PRINT_STYLE: VALIDATOR_PRINT_STYLE$1,
+	Validator: Validator$1,
+	addClassName: addClassName,
+	addCssText: addCssText,
+	addEventListener: addEventListener,
+	binarySearchCustom: binarySearchCustom,
+	binarySearchValue: binarySearchValue,
+	bridgeObject: bridgeObject,
+	copyAndExtendArray: copyAndExtendArray,
+	copyArray: copyArray,
+	deepExtend: deepExtend,
+	deepObjectAssign: deepObjectAssign,
+	easingFunctions: easingFunctions,
+	equalArray: equalArray,
+	extend: extend$1,
+	fillIfDefined: fillIfDefined,
+	forEach: forEach$3,
+	getAbsoluteLeft: getAbsoluteLeft,
+	getAbsoluteRight: getAbsoluteRight,
+	getAbsoluteTop: getAbsoluteTop,
+	getScrollBarWidth: getScrollBarWidth,
+	getTarget: getTarget,
+	getType: getType,
+	hasParent: hasParent$1,
+	hexToHSV: hexToHSV,
+	hexToRGB: hexToRGB,
+	insertSort: insertSort,
+	isDate: isDate,
+	isNumber: isNumber,
+	isObject: isObject$1,
+	isString: isString,
+	isValidHex: isValidHex,
+	isValidRGB: isValidRGB,
+	isValidRGBA: isValidRGBA,
+	mergeOptions: mergeOptions,
+	option: option,
+	overrideOpacity: overrideOpacity,
+	parseColor: parseColor,
+	preventDefault: preventDefault,
+	pureDeepObjectAssign: pureDeepObjectAssign,
+	recursiveDOMDelete: recursiveDOMDelete,
+	removeClassName: removeClassName,
+	removeCssText: removeCssText,
+	removeEventListener: removeEventListener,
+	selectiveBridgeObject: selectiveBridgeObject,
+	selectiveDeepExtend: selectiveDeepExtend,
+	selectiveExtend: selectiveExtend,
+	selectiveNotDeepExtend: selectiveNotDeepExtend,
+	throttle: throttle,
+	toArray: toArray$1,
+	topMost: topMost,
+	updateProperty: updateProperty
+});
+
+/* eslint-disable no-prototype-builtins */
+
+/* eslint-disable no-unused-vars */
+
+/* eslint-disable no-var */
+
+/**
+ * Parse a text source containing data in DOT language into a JSON object.
+ * The object contains two lists: one with nodes and one with edges.
+ *
+ * DOT language reference: http://www.graphviz.org/doc/info/lang.html
+ *
+ * DOT language attributes: http://graphviz.org/content/attrs
+ *
+ * @param {string} data     Text containing a graph in DOT-notation
+ * @returns {object} graph   An object containing two parameters:
+ *                          {Object[]} nodes
+ *                          {Object[]} edges
+ *
+ * -------------------------------------------
+ * TODO
+ * ====
+ *
+ * For label handling, this is an incomplete implementation. From docs (quote #3015):
+ *
+ * > the escape sequences "\n", "\l" and "\r" divide the label into lines, centered,
+ * > left-justified, and right-justified, respectively.
+ *
+ * Source: http://www.graphviz.org/content/attrs#kescString
+ *
+ * > As another aid for readability, dot allows double-quoted strings to span multiple physical
+ * > lines using the standard C convention of a backslash immediately preceding a newline
+ * > character
+ * > In addition, double-quoted strings can be concatenated using a '+' operator.
+ * > As HTML strings can contain newline characters, which are used solely for formatting,
+ * > the language does not allow escaped newlines or concatenation operators to be used
+ * > within them.
+ *
+ * - Currently, only '\\n' is handled
+ * - Note that text explicitly says 'labels'; the dot parser currently handles escape
+ *   sequences in **all** strings.
+ */
+function parseDOT(data) {
+  dot = data;
+  return parseGraph();
+} // mapping of attributes from DOT (the keys) to vis.js (the values)
+
+var NODE_ATTR_MAPPING = {
+  fontsize: "font.size",
+  fontcolor: "font.color",
+  labelfontcolor: "font.color",
+  fontname: "font.face",
+  color: ["color.border", "color.background"],
+  fillcolor: "color.background",
+  tooltip: "title",
+  labeltooltip: "title"
+};
+
+var EDGE_ATTR_MAPPING = create$2(NODE_ATTR_MAPPING);
+
+EDGE_ATTR_MAPPING.color = "color.color";
+EDGE_ATTR_MAPPING.style = "dashes"; // token types enumeration
+
+var TOKENTYPE = {
+  NULL: 0,
+  DELIMITER: 1,
+  IDENTIFIER: 2,
+  UNKNOWN: 3
+}; // map with all delimiters
+
+var DELIMITERS = {
+  "{": true,
+  "}": true,
+  "[": true,
+  "]": true,
+  ";": true,
+  "=": true,
+  ",": true,
+  "->": true,
+  "--": true
+};
+var dot = ""; // current dot file
+
+var index$1 = 0; // current index in dot file
+
+var c = ""; // current token character in expr
+
+var token = ""; // current token
+
+var tokenType = TOKENTYPE.NULL; // type of the token
+
+/**
+ * Get the first character from the dot file.
+ * The character is stored into the char c. If the end of the dot file is
+ * reached, the function puts an empty string in c.
+ */
+
+function first() {
+  index$1 = 0;
+  c = dot.charAt(0);
+}
+/**
+ * Get the next character from the dot file.
+ * The character is stored into the char c. If the end of the dot file is
+ * reached, the function puts an empty string in c.
+ */
+
+
+function next() {
+  index$1++;
+  c = dot.charAt(index$1);
+}
+/**
+ * Preview the next character from the dot file.
+ *
+ * @returns {string} cNext
+ */
+
+
+function nextPreview() {
+  return dot.charAt(index$1 + 1);
+}
+
+var regexAlphaNumeric = /[a-zA-Z_0-9.:#]/;
+/**
+ * Test whether given character is alphabetic or numeric
+ *
+ * @param {string} c
+ * @returns {boolean} isAlphaNumeric
+ */
+
+function isAlphaNumeric(c) {
+  return regexAlphaNumeric.test(c);
+}
+/**
+ * Merge all options of object b into object b
+ *
+ * @param {object} a
+ * @param {object} b
+ * @returns {object} a
+ */
+
+
+function merge$1(a, b) {
+  if (!a) {
+    a = {};
+  }
+
+  if (b) {
+    for (var name in b) {
+      if (b.hasOwnProperty(name)) {
+        a[name] = b[name];
+      }
+    }
+  }
+
+  return a;
+}
+/**
+ * Set a value in an object, where the provided parameter name can be a
+ * path with nested parameters. For example:
+ *
+ *     var obj = {a: 2};
+ *     setValue(obj, 'b.c', 3);     // obj = {a: 2, b: {c: 3}}
+ *
+ * @param {object} obj
+ * @param {string} path  A parameter name or dot-separated parameter path,
+ *                      like "color.highlight.border".
+ * @param {*} value
+ */
+
+
+function setValue(obj, path, value) {
+  var keys = path.split(".");
+  var o = obj;
+
+  while (keys.length) {
+    var key = keys.shift();
+
+    if (keys.length) {
+      // this isn't the end point
+      if (!o[key]) {
+        o[key] = {};
+      }
+
+      o = o[key];
+    } else {
+      // this is the end point
+      o[key] = value;
+    }
+  }
+}
+/**
+ * Add a node to a graph object. If there is already a node with
+ * the same id, their attributes will be merged.
+ *
+ * @param {object} graph
+ * @param {object} node
+ */
+
+
+function addNode(graph, node) {
+  var i, len;
+  var current = null; // find root graph (in case of subgraph)
+
+  var graphs = [graph]; // list with all graphs from current graph to root graph
+
+  var root = graph;
+
+  while (root.parent) {
+    graphs.push(root.parent);
+    root = root.parent;
+  } // find existing node (at root level) by its id
+
+
+  if (root.nodes) {
+    for (i = 0, len = root.nodes.length; i < len; i++) {
+      if (node.id === root.nodes[i].id) {
+        current = root.nodes[i];
+        break;
+      }
+    }
+  }
+
+  if (!current) {
+    // this is a new node
+    current = {
+      id: node.id
+    };
+
+    if (graph.node) {
+      // clone default attributes
+      current.attr = merge$1(current.attr, graph.node);
+    }
+  } // add node to this (sub)graph and all its parent graphs
+
+
+  for (i = graphs.length - 1; i >= 0; i--) {
+    var _context;
+
+    var g = graphs[i];
+
+    if (!g.nodes) {
+      g.nodes = [];
+    }
+
+    if (indexOf$3(_context = g.nodes).call(_context, current) === -1) {
+      g.nodes.push(current);
+    }
+  } // merge attributes
+
+
+  if (node.attr) {
+    current.attr = merge$1(current.attr, node.attr);
+  }
+}
+/**
+ * Add an edge to a graph object
+ *
+ * @param {object} graph
+ * @param {object} edge
+ */
+
+
+function addEdge(graph, edge) {
+  if (!graph.edges) {
+    graph.edges = [];
+  }
+
+  graph.edges.push(edge);
+
+  if (graph.edge) {
+    var attr = merge$1({}, graph.edge); // clone default attributes
+
+    edge.attr = merge$1(attr, edge.attr); // merge attributes
+  }
+}
+/**
+ * Create an edge to a graph object
+ *
+ * @param {object} graph
+ * @param {string | number | object} from
+ * @param {string | number | object} to
+ * @param {string} type
+ * @param {object | null} attr
+ * @returns {object} edge
+ */
+
+
+function createEdge(graph, from, to, type, attr) {
+  var edge = {
+    from: from,
+    to: to,
+    type: type
+  };
+
+  if (graph.edge) {
+    edge.attr = merge$1({}, graph.edge); // clone default attributes
+  }
+
+  edge.attr = merge$1(edge.attr || {}, attr); // merge attributes
+  // Move arrows attribute from attr to edge temporally created in
+  // parseAttributeList().
+
+  if (attr != null) {
+    if (attr.hasOwnProperty("arrows") && attr["arrows"] != null) {
+      edge["arrows"] = {
+        to: {
+          enabled: true,
+          type: attr.arrows.type
+        }
+      };
+      attr["arrows"] = null;
+    }
+  }
+
+  return edge;
+}
+/**
+ * Get next token in the current dot file.
+ * The token and token type are available as token and tokenType
+ */
+
+
+function getToken() {
+  tokenType = TOKENTYPE.NULL;
+  token = ""; // skip over whitespaces
+
+  while (c === " " || c === "\t" || c === "\n" || c === "\r") {
+    // space, tab, enter
+    next();
+  }
+
+  do {
+    var isComment = false; // skip comment
+
+    if (c === "#") {
+      // find the previous non-space character
+      var i = index$1 - 1;
+
+      while (dot.charAt(i) === " " || dot.charAt(i) === "\t") {
+        i--;
+      }
+
+      if (dot.charAt(i) === "\n" || dot.charAt(i) === "") {
+        // the # is at the start of a line, this is indeed a line comment
+        while (c != "" && c != "\n") {
+          next();
+        }
+
+        isComment = true;
+      }
+    }
+
+    if (c === "/" && nextPreview() === "/") {
+      // skip line comment
+      while (c != "" && c != "\n") {
+        next();
+      }
+
+      isComment = true;
+    }
+
+    if (c === "/" && nextPreview() === "*") {
+      // skip block comment
+      while (c != "") {
+        if (c === "*" && nextPreview() === "/") {
+          // end of block comment found. skip these last two characters
+          next();
+          next();
+          break;
+        } else {
+          next();
+        }
+      }
+
+      isComment = true;
+    } // skip over whitespaces
+
+
+    while (c === " " || c === "\t" || c === "\n" || c === "\r") {
+      // space, tab, enter
+      next();
+    }
+  } while (isComment); // check for end of dot file
+
+
+  if (c === "") {
+    // token is still empty
+    tokenType = TOKENTYPE.DELIMITER;
+    return;
+  } // check for delimiters consisting of 2 characters
+
+
+  var c2 = c + nextPreview();
+
+  if (DELIMITERS[c2]) {
+    tokenType = TOKENTYPE.DELIMITER;
+    token = c2;
+    next();
+    next();
+    return;
+  } // check for delimiters consisting of 1 character
+
+
+  if (DELIMITERS[c]) {
+    tokenType = TOKENTYPE.DELIMITER;
+    token = c;
+    next();
+    return;
+  } // check for an identifier (number or string)
+  // TODO: more precise parsing of numbers/strings (and the port separator ':')
+
+
+  if (isAlphaNumeric(c) || c === "-") {
+    token += c;
+    next();
+
+    while (isAlphaNumeric(c)) {
+      token += c;
+      next();
+    }
+
+    if (token === "false") {
+      token = false; // convert to boolean
+    } else if (token === "true") {
+      token = true; // convert to boolean
+    } else if (!isNaN(Number(token))) {
+      token = Number(token); // convert to number
+    }
+
+    tokenType = TOKENTYPE.IDENTIFIER;
+    return;
+  } // check for a string enclosed by double quotes
+
+
+  if (c === '"') {
+    next();
+
+    while (c != "" && (c != '"' || c === '"' && nextPreview() === '"')) {
+      if (c === '"') {
+        // skip the escape character
+        token += c;
+        next();
+      } else if (c === "\\" && nextPreview() === "n") {
+        // Honor a newline escape sequence
+        token += "\n";
+        next();
+      } else {
+        token += c;
+      }
+
+      next();
+    }
+
+    if (c != '"') {
+      throw newSyntaxError('End of string " expected');
+    }
+
+    next();
+    tokenType = TOKENTYPE.IDENTIFIER;
+    return;
+  } // something unknown is found, wrong characters, a syntax error
+
+
+  tokenType = TOKENTYPE.UNKNOWN;
+
+  while (c != "") {
+    token += c;
+    next();
+  }
+
+  throw new SyntaxError('Syntax error in part "' + chop(token, 30) + '"');
+}
+/**
+ * Parse a graph.
+ *
+ * @returns {object} graph
+ */
+
+
+function parseGraph() {
+  var graph = {};
+  first();
+  getToken(); // optional strict keyword
+
+  if (token === "strict") {
+    graph.strict = true;
+    getToken();
+  } // graph or digraph keyword
+
+
+  if (token === "graph" || token === "digraph") {
+    graph.type = token;
+    getToken();
+  } // optional graph id
+
+
+  if (tokenType === TOKENTYPE.IDENTIFIER) {
+    graph.id = token;
+    getToken();
+  } // open angle bracket
+
+
+  if (token != "{") {
+    throw newSyntaxError("Angle bracket { expected");
+  }
+
+  getToken(); // statements
+
+  parseStatements(graph); // close angle bracket
+
+  if (token != "}") {
+    throw newSyntaxError("Angle bracket } expected");
+  }
+
+  getToken(); // end of file
+
+  if (token !== "") {
+    throw newSyntaxError("End of file expected");
+  }
+
+  getToken(); // remove temporary default options
+
+  delete graph.node;
+  delete graph.edge;
+  delete graph.graph;
+  return graph;
+}
+/**
+ * Parse a list with statements.
+ *
+ * @param {object} graph
+ */
+
+
+function parseStatements(graph) {
+  while (token !== "" && token != "}") {
+    parseStatement(graph);
+
+    if (token === ";") {
+      getToken();
+    }
+  }
+}
+/**
+ * Parse a single statement. Can be a an attribute statement, node
+ * statement, a series of node statements and edge statements, or a
+ * parameter.
+ *
+ * @param {object} graph
+ */
+
+
+function parseStatement(graph) {
+  // parse subgraph
+  var subgraph = parseSubgraph(graph);
+
+  if (subgraph) {
+    // edge statements
+    parseEdge(graph, subgraph);
+    return;
+  } // parse an attribute statement
+
+
+  var attr = parseAttributeStatement(graph);
+
+  if (attr) {
+    return;
+  } // parse node
+
+
+  if (tokenType != TOKENTYPE.IDENTIFIER) {
+    throw newSyntaxError("Identifier expected");
+  }
+
+  var id = token; // id can be a string or a number
+
+  getToken();
+
+  if (token === "=") {
+    // id statement
+    getToken();
+
+    if (tokenType != TOKENTYPE.IDENTIFIER) {
+      throw newSyntaxError("Identifier expected");
+    }
+
+    graph[id] = token;
+    getToken(); // TODO: implement comma separated list with "a_list: ID=ID [','] [a_list] "
+  } else {
+    parseNodeStatement(graph, id);
+  }
+}
+/**
+ * Parse a subgraph
+ *
+ * @param {object} graph    parent graph object
+ * @returns {object | null} subgraph
+ */
+
+
+function parseSubgraph(graph) {
+  var subgraph = null; // optional subgraph keyword
+
+  if (token === "subgraph") {
+    subgraph = {};
+    subgraph.type = "subgraph";
+    getToken(); // optional graph id
+
+    if (tokenType === TOKENTYPE.IDENTIFIER) {
+      subgraph.id = token;
+      getToken();
+    }
+  } // open angle bracket
+
+
+  if (token === "{") {
+    getToken();
+
+    if (!subgraph) {
+      subgraph = {};
+    }
+
+    subgraph.parent = graph;
+    subgraph.node = graph.node;
+    subgraph.edge = graph.edge;
+    subgraph.graph = graph.graph; // statements
+
+    parseStatements(subgraph); // close angle bracket
+
+    if (token != "}") {
+      throw newSyntaxError("Angle bracket } expected");
+    }
+
+    getToken(); // remove temporary default options
+
+    delete subgraph.node;
+    delete subgraph.edge;
+    delete subgraph.graph;
+    delete subgraph.parent; // register at the parent graph
+
+    if (!graph.subgraphs) {
+      graph.subgraphs = [];
+    }
+
+    graph.subgraphs.push(subgraph);
+  }
+
+  return subgraph;
+}
+/**
+ * parse an attribute statement like "node [shape=circle fontSize=16]".
+ * Available keywords are 'node', 'edge', 'graph'.
+ * The previous list with default attributes will be replaced
+ *
+ * @param {object} graph
+ * @returns {string | null} keyword Returns the name of the parsed attribute
+ *                                  (node, edge, graph), or null if nothing
+ *                                  is parsed.
+ */
+
+
+function parseAttributeStatement(graph) {
+  // attribute statements
+  if (token === "node") {
+    getToken(); // node attributes
+
+    graph.node = parseAttributeList();
+    return "node";
+  } else if (token === "edge") {
+    getToken(); // edge attributes
+
+    graph.edge = parseAttributeList();
+    return "edge";
+  } else if (token === "graph") {
+    getToken(); // graph attributes
+
+    graph.graph = parseAttributeList();
+    return "graph";
+  }
+
+  return null;
+}
+/**
+ * parse a node statement
+ *
+ * @param {object} graph
+ * @param {string | number} id
+ */
+
+
+function parseNodeStatement(graph, id) {
+  // node statement
+  var node = {
+    id: id
+  };
+  var attr = parseAttributeList();
+
+  if (attr) {
+    node.attr = attr;
+  }
+
+  addNode(graph, node); // edge statements
+
+  parseEdge(graph, id);
+}
+/**
+ * Parse an edge or a series of edges
+ *
+ * @param {object} graph
+ * @param {string | number} from        Id of the from node
+ */
+
+
+function parseEdge(graph, from) {
+  while (token === "->" || token === "--") {
+    var to;
+    var type = token;
+    getToken();
+    var subgraph = parseSubgraph(graph);
+
+    if (subgraph) {
+      to = subgraph;
+    } else {
+      if (tokenType != TOKENTYPE.IDENTIFIER) {
+        throw newSyntaxError("Identifier or subgraph expected");
+      }
+
+      to = token;
+      addNode(graph, {
+        id: to
+      });
+      getToken();
+    } // parse edge attributes
+
+
+    var attr = parseAttributeList(); // create edge
+
+    var edge = createEdge(graph, from, to, type, attr);
+    addEdge(graph, edge);
+    from = to;
+  }
+}
+/**
+ * Parse a set with attributes,
+ * for example [label="1.000", shape=solid]
+ *
+ * @returns {object | null} attr
+ */
+
+
+function parseAttributeList() {
+  var i;
+  var attr = null; // edge styles of dot and vis
+
+  var edgeStyles = {
+    dashed: true,
+    solid: false,
+    dotted: [1, 5]
+  };
+  /**
+   * Define arrow types.
+   * vis currently supports types defined in 'arrowTypes'.
+   * Details of arrow shapes are described in
+   * http://www.graphviz.org/content/arrow-shapes
+   */
+
+  var arrowTypes = {
+    dot: "circle",
+    box: "box",
+    crow: "crow",
+    curve: "curve",
+    icurve: "inv_curve",
+    normal: "triangle",
+    inv: "inv_triangle",
+    diamond: "diamond",
+    tee: "bar",
+    vee: "vee"
+  };
+  /**
+   * 'attr_list' contains attributes for checking if some of them are affected
+   * later. For instance, both of 'arrowhead' and 'dir' (edge style defined
+   * in DOT) make changes to 'arrows' attribute in vis.
+   */
+
+  var attr_list = new Array();
+  var attr_names = new Array(); // used for checking the case.
+  // parse attributes
+
+  while (token === "[") {
+    getToken();
+    attr = {};
+
+    while (token !== "" && token != "]") {
+      if (tokenType != TOKENTYPE.IDENTIFIER) {
+        throw newSyntaxError("Attribute name expected");
+      }
+
+      var name = token;
+      getToken();
+
+      if (token != "=") {
+        throw newSyntaxError("Equal sign = expected");
+      }
+
+      getToken();
+
+      if (tokenType != TOKENTYPE.IDENTIFIER) {
+        throw newSyntaxError("Attribute value expected");
+      }
+
+      var value = token; // convert from dot style to vis
+
+      if (name === "style") {
+        value = edgeStyles[value];
+      }
+
+      var arrowType;
+
+      if (name === "arrowhead") {
+        arrowType = arrowTypes[value];
+        name = "arrows";
+        value = {
+          to: {
+            enabled: true,
+            type: arrowType
+          }
+        };
+      }
+
+      if (name === "arrowtail") {
+        arrowType = arrowTypes[value];
+        name = "arrows";
+        value = {
+          from: {
+            enabled: true,
+            type: arrowType
+          }
+        };
+      }
+
+      attr_list.push({
+        attr: attr,
+        name: name,
+        value: value
+      });
+      attr_names.push(name);
+      getToken();
+
+      if (token == ",") {
+        getToken();
+      }
+    }
+
+    if (token != "]") {
+      throw newSyntaxError("Bracket ] expected");
+    }
+
+    getToken();
+  }
+  /**
+   * As explained in [1], graphviz has limitations for combination of
+   * arrow[head|tail] and dir. If attribute list includes 'dir',
+   * following cases just be supported.
+   *   1. both or none + arrowhead, arrowtail
+   *   2. forward + arrowhead (arrowtail is not affedted)
+   *   3. back + arrowtail (arrowhead is not affected)
+   * [1] https://www.graphviz.org/doc/info/attrs.html#h:undir_note
+   */
+
+
+  if (includes$4(attr_names).call(attr_names, "dir")) {
+    var idx = {}; // get index of 'arrows' and 'dir'
+
+    idx.arrows = {};
+
+    for (i = 0; i < attr_list.length; i++) {
+      if (attr_list[i].name === "arrows") {
+        if (attr_list[i].value.to != null) {
+          idx.arrows.to = i;
+        } else if (attr_list[i].value.from != null) {
+          idx.arrows.from = i;
+        } else {
+          throw newSyntaxError("Invalid value of arrows");
+        }
+      } else if (attr_list[i].name === "dir") {
+        idx.dir = i;
+      }
+    } // first, add default arrow shape if it is not assigned to avoid error
+
+
+    var dir_type = attr_list[idx.dir].value;
+
+    if (!includes$4(attr_names).call(attr_names, "arrows")) {
+      if (dir_type === "both") {
+        attr_list.push({
+          attr: attr_list[idx.dir].attr,
+          name: "arrows",
+          value: {
+            to: {
+              enabled: true
+            }
+          }
+        });
+        idx.arrows.to = attr_list.length - 1;
+        attr_list.push({
+          attr: attr_list[idx.dir].attr,
+          name: "arrows",
+          value: {
+            from: {
+              enabled: true
+            }
+          }
+        });
+        idx.arrows.from = attr_list.length - 1;
+      } else if (dir_type === "forward") {
+        attr_list.push({
+          attr: attr_list[idx.dir].attr,
+          name: "arrows",
+          value: {
+            to: {
+              enabled: true
+            }
+          }
+        });
+        idx.arrows.to = attr_list.length - 1;
+      } else if (dir_type === "back") {
+        attr_list.push({
+          attr: attr_list[idx.dir].attr,
+          name: "arrows",
+          value: {
+            from: {
+              enabled: true
+            }
+          }
+        });
+        idx.arrows.from = attr_list.length - 1;
+      } else if (dir_type === "none") {
+        attr_list.push({
+          attr: attr_list[idx.dir].attr,
+          name: "arrows",
+          value: ""
+        });
+        idx.arrows.to = attr_list.length - 1;
+      } else {
+        throw newSyntaxError('Invalid dir type "' + dir_type + '"');
+      }
+    }
+
+    var from_type;
+    var to_type; // update 'arrows' attribute from 'dir'.
+
+    if (dir_type === "both") {
+      // both of shapes of 'from' and 'to' are given
+      if (idx.arrows.to && idx.arrows.from) {
+        to_type = attr_list[idx.arrows.to].value.to.type;
+        from_type = attr_list[idx.arrows.from].value.from.type;
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.to].attr,
+          name: attr_list[idx.arrows.to].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        };
+
+        splice$2(attr_list).call(attr_list, idx.arrows.from, 1); // shape of 'to' is assigned and use default to 'from'
+
+      } else if (idx.arrows.to) {
+        to_type = attr_list[idx.arrows.to].value.to.type;
+        from_type = "arrow";
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.to].attr,
+          name: attr_list[idx.arrows.to].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        }; // only shape of 'from' is assigned and use default for 'to'
+      } else if (idx.arrows.from) {
+        to_type = "arrow";
+        from_type = attr_list[idx.arrows.from].value.from.type;
+        attr_list[idx.arrows.from] = {
+          attr: attr_list[idx.arrows.from].attr,
+          name: attr_list[idx.arrows.from].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        };
+      }
+    } else if (dir_type === "back") {
+      // given both of shapes, but use only 'from'
+      if (idx.arrows.to && idx.arrows.from) {
+        to_type = "";
+        from_type = attr_list[idx.arrows.from].value.from.type;
+        attr_list[idx.arrows.from] = {
+          attr: attr_list[idx.arrows.from].attr,
+          name: attr_list[idx.arrows.from].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        }; // given shape of 'to', but does not use it
+      } else if (idx.arrows.to) {
+        to_type = "";
+        from_type = "arrow";
+        idx.arrows.from = idx.arrows.to;
+        attr_list[idx.arrows.from] = {
+          attr: attr_list[idx.arrows.from].attr,
+          name: attr_list[idx.arrows.from].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        }; // assign given 'from' shape
+      } else if (idx.arrows.from) {
+        to_type = "";
+        from_type = attr_list[idx.arrows.from].value.from.type;
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.from].attr,
+          name: attr_list[idx.arrows.from].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        };
+      }
+
+      attr_list[idx.arrows.from] = {
+        attr: attr_list[idx.arrows.from].attr,
+        name: attr_list[idx.arrows.from].name,
+        value: {
+          from: {
+            enabled: true,
+            type: attr_list[idx.arrows.from].value.from.type
+          }
+        }
+      };
+    } else if (dir_type === "none") {
+      var idx_arrow;
+
+      if (idx.arrows.to) {
+        idx_arrow = idx.arrows.to;
+      } else {
+        idx_arrow = idx.arrows.from;
+      }
+
+      attr_list[idx_arrow] = {
+        attr: attr_list[idx_arrow].attr,
+        name: attr_list[idx_arrow].name,
+        value: ""
+      };
+    } else if (dir_type === "forward") {
+      // given both of shapes, but use only 'to'
+      if (idx.arrows.to && idx.arrows.from) {
+        to_type = attr_list[idx.arrows.to].value.to.type;
+        from_type = "";
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.to].attr,
+          name: attr_list[idx.arrows.to].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        }; // assign given 'to' shape
+      } else if (idx.arrows.to) {
+        to_type = attr_list[idx.arrows.to].value.to.type;
+        from_type = "";
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.to].attr,
+          name: attr_list[idx.arrows.to].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        }; // given shape of 'from', but does not use it
+      } else if (idx.arrows.from) {
+        to_type = "arrow";
+        from_type = "";
+        idx.arrows.to = idx.arrows.from;
+        attr_list[idx.arrows.to] = {
+          attr: attr_list[idx.arrows.to].attr,
+          name: attr_list[idx.arrows.to].name,
+          value: {
+            to: {
+              enabled: true,
+              type: to_type
+            },
+            from: {
+              enabled: true,
+              type: from_type
+            }
+          }
+        };
+      }
+
+      attr_list[idx.arrows.to] = {
+        attr: attr_list[idx.arrows.to].attr,
+        name: attr_list[idx.arrows.to].name,
+        value: {
+          to: {
+            enabled: true,
+            type: attr_list[idx.arrows.to].value.to.type
+          }
+        }
+      };
+    } else {
+      throw newSyntaxError('Invalid dir type "' + dir_type + '"');
+    } // remove 'dir' attribute no need anymore
+
+
+    splice$2(attr_list).call(attr_list, idx.dir, 1);
+  } // parse 'penwidth'
+
+
+  var nof_attr_list;
+
+  if (includes$4(attr_names).call(attr_names, "penwidth")) {
+    var tmp_attr_list = [];
+    nof_attr_list = attr_list.length;
+
+    for (i = 0; i < nof_attr_list; i++) {
+      // exclude 'width' from attr_list if 'penwidth' exists
+      if (attr_list[i].name !== "width") {
+        if (attr_list[i].name === "penwidth") {
+          attr_list[i].name = "width";
+        }
+
+        tmp_attr_list.push(attr_list[i]);
+      }
+    }
+
+    attr_list = tmp_attr_list;
+  }
+
+  nof_attr_list = attr_list.length;
+
+  for (i = 0; i < nof_attr_list; i++) {
+    setValue(attr_list[i].attr, attr_list[i].name, attr_list[i].value);
+  }
+
+  return attr;
+}
+/**
+ * Create a syntax error with extra information on current token and index.
+ *
+ * @param {string} message
+ * @returns {SyntaxError} err
+ */
+
+
+function newSyntaxError(message) {
+  return new SyntaxError(message + ', got "' + chop(token, 30) + '" (char ' + index$1 + ")");
+}
+/**
+ * Chop off text after a maximum length
+ *
+ * @param {string} text
+ * @param {number} maxLength
+ * @returns {string}
+ */
+
+
+function chop(text, maxLength) {
+  return text.length <= maxLength ? text : text.substr(0, 27) + "...";
+}
+/**
+ * Execute a function fn for each pair of elements in two arrays
+ *
+ * @param {Array | *} array1
+ * @param {Array | *} array2
+ * @param {Function} fn
+ */
+
+
+function forEach2(array1, array2, fn) {
+  if (isArray$5(array1)) {
+    forEach$2(array1).call(array1, function (elem1) {
+      if (isArray$5(array2)) {
+        forEach$2(array2).call(array2, function (elem2) {
+          fn(elem1, elem2);
+        });
+      } else {
+        fn(elem1, array2);
+      }
+    });
+  } else {
+    if (isArray$5(array2)) {
+      forEach$2(array2).call(array2, function (elem2) {
+        fn(array1, elem2);
+      });
+    } else {
+      fn(array1, array2);
+    }
+  }
+}
+/**
+ * Set a nested property on an object
+ * When nested objects are missing, they will be created.
+ * For example setProp({}, 'font.color', 'red') will return {font: {color: 'red'}}
+ *
+ * @param {object} object
+ * @param {string} path   A dot separated string like 'font.color'
+ * @param {*} value       Value for the property
+ * @returns {object} Returns the original object, allows for chaining.
+ */
+
+
+function setProp(object, path, value) {
+  var names = path.split(".");
+  var prop = names.pop(); // traverse over the nested objects
+
+  var obj = object;
+
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+
+    if (!(name in obj)) {
+      obj[name] = {};
+    }
+
+    obj = obj[name];
+  } // set the property value
+
+
+  obj[prop] = value;
+  return object;
+}
+/**
+ * Convert an object with DOT attributes to their vis.js equivalents.
+ *
+ * @param {object} attr     Object with DOT attributes
+ * @param {object} mapping
+ * @returns {object}         Returns an object with vis.js attributes
+ */
+
+
+function convertAttr(attr, mapping) {
+  var converted = {};
+
+  for (var prop in attr) {
+    if (attr.hasOwnProperty(prop)) {
+      var visProp = mapping[prop];
+
+      if (isArray$5(visProp)) {
+        forEach$2(visProp).call(visProp, function (visPropI) {
+          setProp(converted, visPropI, attr[prop]);
+        });
+      } else if (typeof visProp === "string") {
+        setProp(converted, visProp, attr[prop]);
+      } else {
+        setProp(converted, prop, attr[prop]);
+      }
+    }
+  }
+
+  return converted;
+}
+/**
+ * Convert a string containing a graph in DOT language into a map containing
+ * with nodes and edges in the format of graph.
+ *
+ * @param {string} data         Text containing a graph in DOT-notation
+ * @returns {object} graphData
+ */
+
+
+function DOTToGraph(data) {
+  // parse the DOT file
+  var dotData = parseDOT(data);
+  var graphData = {
+    nodes: [],
+    edges: [],
+    options: {}
+  }; // copy the nodes
+
+  if (dotData.nodes) {
+    var _context2;
+
+    forEach$2(_context2 = dotData.nodes).call(_context2, function (dotNode) {
+      var graphNode = {
+        id: dotNode.id,
+        label: String(dotNode.label || dotNode.id)
+      };
+      merge$1(graphNode, convertAttr(dotNode.attr, NODE_ATTR_MAPPING));
+
+      if (graphNode.image) {
+        graphNode.shape = "image";
+      }
+
+      graphData.nodes.push(graphNode);
+    });
+  } // copy the edges
+
+
+  if (dotData.edges) {
+    var _context3;
+
+    /**
+     * Convert an edge in DOT format to an edge with VisGraph format
+     *
+     * @param {object} dotEdge
+     * @returns {object} graphEdge
+     */
+    var convertEdge = function convertEdge(dotEdge) {
+      var graphEdge = {
+        from: dotEdge.from,
+        to: dotEdge.to
+      };
+      merge$1(graphEdge, convertAttr(dotEdge.attr, EDGE_ATTR_MAPPING)); // Add arrows attribute to default styled arrow.
+      // The reason why default style is not added in parseAttributeList() is
+      // because only default is cleared before here.
+
+      if (graphEdge.arrows == null && dotEdge.type === "->") {
+        graphEdge.arrows = "to";
+      }
+
+      return graphEdge;
+    };
+
+    forEach$2(_context3 = dotData.edges).call(_context3, function (dotEdge) {
+      var from, to;
+
+      if (dotEdge.from instanceof Object) {
+        from = dotEdge.from.nodes;
+      } else {
+        from = {
+          id: dotEdge.from
+        };
+      }
+
+      if (dotEdge.to instanceof Object) {
+        to = dotEdge.to.nodes;
+      } else {
+        to = {
+          id: dotEdge.to
+        };
+      }
+
+      if (dotEdge.from instanceof Object && dotEdge.from.edges) {
+        var _context4;
+
+        forEach$2(_context4 = dotEdge.from.edges).call(_context4, function (subEdge) {
+          var graphEdge = convertEdge(subEdge);
+          graphData.edges.push(graphEdge);
+        });
+      }
+
+      forEach2(from, to, function (from, to) {
+        var subEdge = createEdge(graphData, from.id, to.id, dotEdge.type, dotEdge.attr);
+        var graphEdge = convertEdge(subEdge);
+        graphData.edges.push(graphEdge);
+      });
+
+      if (dotEdge.to instanceof Object && dotEdge.to.edges) {
+        var _context5;
+
+        forEach$2(_context5 = dotEdge.to.edges).call(_context5, function (subEdge) {
+          var graphEdge = convertEdge(subEdge);
+          graphData.edges.push(graphEdge);
+        });
+      }
+    });
+  } // copy the options
+
+
+  if (dotData.attr) {
+    graphData.options = dotData.attr;
+  }
+
+  return graphData;
+}
+/* eslint-enable no-var */
+
+/* eslint-enable no-unused-vars */
+
+/* eslint-enable no-prototype-builtins */
+
+var dotparser = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	parseDOT: parseDOT,
+	DOTToGraph: DOTToGraph
+});
+
+/**
+ * Convert Gephi to Vis.
+ *
+ * @param gephiJSON - The parsed JSON data in Gephi format.
+ * @param optionsObj - Additional options.
+ *
+ * @returns The converted data ready to be used in Vis.
+ */
+function parseGephi(gephiJSON, optionsObj) {
+  var _context;
+
+  var options = {
+    edges: {
+      inheritColor: false
+    },
+    nodes: {
+      fixed: false,
+      parseColor: false
+    }
+  };
+
+  if (optionsObj != null) {
+    if (optionsObj.fixed != null) {
+      options.nodes.fixed = optionsObj.fixed;
+    }
+
+    if (optionsObj.parseColor != null) {
+      options.nodes.parseColor = optionsObj.parseColor;
+    }
+
+    if (optionsObj.inheritColor != null) {
+      options.edges.inheritColor = optionsObj.inheritColor;
+    }
+  }
+
+  var gEdges = gephiJSON.edges;
+
+  var vEdges = map$2(gEdges).call(gEdges, function (gEdge) {
+    var vEdge = {
+      from: gEdge.source,
+      id: gEdge.id,
+      to: gEdge.target
+    };
+
+    if (gEdge.attributes != null) {
+      vEdge.attributes = gEdge.attributes;
+    }
+
+    if (gEdge.label != null) {
+      vEdge.label = gEdge.label;
+    }
+
+    if (gEdge.attributes != null && gEdge.attributes.title != null) {
+      vEdge.title = gEdge.attributes.title;
+    }
+
+    if (gEdge.type === "Directed") {
+      vEdge.arrows = "to";
+    } // edge['value'] = gEdge.attributes != null ? gEdge.attributes.Weight : undefined;
+    // edge['width'] = edge['value'] != null ? undefined : edgegEdge.size;
+
+
+    if (gEdge.color && options.edges.inheritColor === false) {
+      vEdge.color = gEdge.color;
+    }
+
+    return vEdge;
+  });
+
+  var vNodes = map$2(_context = gephiJSON.nodes).call(_context, function (gNode) {
+    var vNode = {
+      id: gNode.id,
+      fixed: options.nodes.fixed && gNode.x != null && gNode.y != null
+    };
+
+    if (gNode.attributes != null) {
+      vNode.attributes = gNode.attributes;
+    }
+
+    if (gNode.label != null) {
+      vNode.label = gNode.label;
+    }
+
+    if (gNode.size != null) {
+      vNode.size = gNode.size;
+    }
+
+    if (gNode.attributes != null && gNode.attributes.title != null) {
+      vNode.title = gNode.attributes.title;
+    }
+
+    if (gNode.title != null) {
+      vNode.title = gNode.title;
+    }
+
+    if (gNode.x != null) {
+      vNode.x = gNode.x;
+    }
+
+    if (gNode.y != null) {
+      vNode.y = gNode.y;
+    }
+
+    if (gNode.color != null) {
+      if (options.nodes.parseColor === true) {
+        vNode.color = gNode.color;
+      } else {
+        vNode.color = {
+          background: gNode.color,
+          border: gNode.color,
+          highlight: {
+            background: gNode.color,
+            border: gNode.color
+          },
+          hover: {
+            background: gNode.color,
+            border: gNode.color
+          }
+        };
+      }
+    }
+
+    return vNode;
+  });
+
+  return {
+    nodes: vNodes,
+    edges: vEdges
+  };
+}
+
+var gephiParser = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	parseGephi: parseGephi
+});
 
 // English
 var en = {
@@ -10707,6 +12902,7 @@ var en = {
   addEdge: "Add Edge",
   addNode: "Add Node",
   back: "Back",
+  close: "Close",
   createEdgeError: "Cannot link edges to a cluster.",
   del: "Delete selected",
   deleteClusterError: "Clusters cannot be deleted.",
@@ -10723,6 +12919,7 @@ var de = {
   addEdge: "Kante hinzuf\xFCgen",
   addNode: "Knoten hinzuf\xFCgen",
   back: "Zur\xFCck",
+  close: "Schließen",
   createEdgeError: "Es ist nicht m\xF6glich, Kanten mit Clustern zu verbinden.",
   del: "L\xF6sche Auswahl",
   deleteClusterError: "Cluster k\xF6nnen nicht gel\xF6scht werden.",
@@ -10739,6 +12936,7 @@ var es = {
   addEdge: "A\xF1adir arista",
   addNode: "A\xF1adir nodo",
   back: "Atr\xE1s",
+  close: "Cerrar",
   createEdgeError: "No se puede conectar una arista a un grupo.",
   del: "Eliminar selecci\xF3n",
   deleteClusterError: "No es posible eliminar grupos.",
@@ -10755,6 +12953,7 @@ var it = {
   addEdge: "Aggiungi un vertice",
   addNode: "Aggiungi un nodo",
   back: "Indietro",
+  close: "Chiudere",
   createEdgeError: "Non si possono collegare vertici ad un cluster",
   del: "Cancella la selezione",
   deleteClusterError: "I cluster non possono essere cancellati",
@@ -10771,6 +12970,7 @@ var nl = {
   addEdge: "Link toevoegen",
   addNode: "Node toevoegen",
   back: "Terug",
+  close: "Sluiten",
   createEdgeError: "Kan geen link maken naar een cluster.",
   del: "Selectie verwijderen",
   deleteClusterError: "Clusters kunnen niet worden verwijderd.",
@@ -10787,6 +12987,7 @@ var pt = {
   addEdge: "Adicionar aresta",
   addNode: "Adicionar nó",
   back: "Voltar",
+  close: "Fechar",
   createEdgeError: "Não foi possível linkar arestas a um cluster.",
   del: "Remover selecionado",
   deleteClusterError: "Clusters não puderam ser removidos.",
@@ -10803,6 +13004,7 @@ var ru = {
   addEdge: "Добавить ребро",
   addNode: "Добавить узел",
   back: "Назад",
+  close: "Закрывать",
   createEdgeError: "Невозможно соединить ребра в кластер.",
   del: "Удалить выбранное",
   deleteClusterError: "Кластеры не могут быть удалены",
@@ -10819,6 +13021,7 @@ var cn = {
   addEdge: "添加连接线",
   addNode: "添加节点",
   back: "返回",
+  close: "關閉",
   createEdgeError: "无法将连接线连接到群集。",
   del: "删除选定",
   deleteClusterError: "无法删除群集。",
@@ -10835,6 +13038,7 @@ var uk = {
   addEdge: "Додати край",
   addNode: "Додати вузол",
   back: "Назад",
+  close: "Закрити",
   createEdgeError: "Не можливо об'єднати краї в групу.",
   del: "Видалити обране",
   deleteClusterError: "Групи не можуть бути видалені.",
@@ -10851,6 +13055,7 @@ var fr = {
   addEdge: "Ajouter un lien",
   addNode: "Ajouter un nœud",
   back: "Retour",
+  close: "Fermer",
   createEdgeError: "Impossible de créer un lien vers un cluster.",
   del: "Effacer la sélection",
   deleteClusterError: "Les clusters ne peuvent pas être effacés.",
@@ -10867,6 +13072,7 @@ var cs = {
   addEdge: "Přidat hranu",
   addNode: "Přidat vrchol",
   back: "Zpět",
+  close: "Zavřít",
   createEdgeError: "Nelze připojit hranu ke shluku.",
   del: "Smazat výběr",
   deleteClusterError: "Nelze mazat shluky.",
@@ -10904,7 +13110,7 @@ var locales = /*#__PURE__*/Object.freeze({
  */
 function normalizeLanguageCode(locales, rawCode) {
   try {
-    var _rawCode$split = rawCode.split(/[-_ \/]/, 2),
+    var _rawCode$split = rawCode.split(/[-_ /]/, 2),
         _rawCode$split2 = slicedToArray(_rawCode$split, 2),
         rawLanguage = _rawCode$split2[0],
         rawCountry = _rawCode$split2[1];
@@ -10943,33 +13149,6 @@ function normalizeLanguageCode(locales, rawCode) {
   }
 }
 
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var classCallCheck = _classCallCheck;
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-
-    defineProperty$6(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-var createClass = _createClass;
-
 /**
  * Associates a canvas to a given image, containing a number of renderings
  * of the image at various sizes.
@@ -10988,11 +13167,10 @@ var CachedImage = /*#__PURE__*/function () {
   function CachedImage() {
     classCallCheck(this, CachedImage);
 
-    // eslint-disable-line no-unused-vars
     this.NUM_ITERATIONS = 4; // Number of items in the coordinates array
 
     this.image = new Image();
-    this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement("canvas");
   }
   /**
    * Called when the image has been successfully loaded.
@@ -11028,7 +13206,7 @@ var CachedImage = /*#__PURE__*/function () {
       this._fillMipMap();
     }
     /**
-     * @return {Boolean} true if init() has been called, false otherwise.
+     * @returns {boolean} true if init() has been called, false otherwise.
      */
 
   }, {
@@ -11057,7 +13235,7 @@ var CachedImage = /*#__PURE__*/function () {
   }, {
     key: "_fillMipMap",
     value: function _fillMipMap() {
-      var ctx = this.canvas.getContext('2d'); // First zoom-level comes from the image
+      var ctx = this.canvas.getContext("2d"); // First zoom-level comes from the image
 
       var to = this.coordinates[0];
       ctx.drawImage(this.image, to[0], to[1], to[2], to[3]); // The rest are copy actions internal to the canvas/context
@@ -11118,6 +13296,7 @@ var CachedImage = /*#__PURE__*/function () {
 
 /**
  * This callback is a callback that accepts an Image.
+ *
  * @callback ImageCallback
  * @param {Image} image
  */
@@ -11181,7 +13360,7 @@ var Images = /*#__PURE__*/function () {
     /**
      * @param {string} url          Url of the image
      * @param {string} brokenUrl    Url of an image to use if the url image is not found
-     * @return {Image} img          The image object
+     * @returns {Image} img          The image object
      */
 
   }, {
@@ -11223,6 +13402,7 @@ var Images = /*#__PURE__*/function () {
      * IE11 fix -- thanks dponch!
      *
      * Local helper function
+     *
      * @param {vis.Image} imageToCache
      * @private
      */
@@ -11242,6 +13422,443 @@ var Images = /*#__PURE__*/function () {
   return Images;
 }();
 
+var freezing = !fails(function () {
+  return Object.isExtensible(Object.preventExtensions({}));
+});
+
+var internalMetadata = createCommonjsModule(function (module) {
+  var defineProperty = objectDefineProperty.f;
+  var METADATA = uid('meta');
+  var id = 0;
+
+  var isExtensible = Object.isExtensible || function () {
+    return true;
+  };
+
+  var setMetadata = function (it) {
+    defineProperty(it, METADATA, {
+      value: {
+        objectID: 'O' + ++id,
+        // object ID
+        weakData: {} // weak collections IDs
+
+      }
+    });
+  };
+
+  var fastKey = function (it, create) {
+    // return a primitive with prefix
+    if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+
+    if (!has(it, METADATA)) {
+      // can't set metadata to uncaught frozen object
+      if (!isExtensible(it)) return 'F'; // not necessary to add metadata
+
+      if (!create) return 'E'; // add missing metadata
+
+      setMetadata(it); // return object ID
+    }
+
+    return it[METADATA].objectID;
+  };
+
+  var getWeakData = function (it, create) {
+    if (!has(it, METADATA)) {
+      // can't set metadata to uncaught frozen object
+      if (!isExtensible(it)) return true; // not necessary to add metadata
+
+      if (!create) return false; // add missing metadata
+
+      setMetadata(it); // return the store of weak collections IDs
+    }
+
+    return it[METADATA].weakData;
+  }; // add metadata on freeze-family methods calling
+
+
+  var onFreeze = function (it) {
+    if (freezing && meta.REQUIRED && isExtensible(it) && !has(it, METADATA)) setMetadata(it);
+    return it;
+  };
+
+  var meta = module.exports = {
+    REQUIRED: false,
+    fastKey: fastKey,
+    getWeakData: getWeakData,
+    onFreeze: onFreeze
+  };
+  hiddenKeys[METADATA] = true;
+});
+var internalMetadata_1 = internalMetadata.REQUIRED;
+var internalMetadata_2 = internalMetadata.fastKey;
+var internalMetadata_3 = internalMetadata.getWeakData;
+var internalMetadata_4 = internalMetadata.onFreeze;
+
+var Result = function (stopped, result) {
+  this.stopped = stopped;
+  this.result = result;
+};
+
+var iterate = function (iterable, unboundFunction, options) {
+  var that = options && options.that;
+  var AS_ENTRIES = !!(options && options.AS_ENTRIES);
+  var IS_ITERATOR = !!(options && options.IS_ITERATOR);
+  var INTERRUPTED = !!(options && options.INTERRUPTED);
+  var fn = functionBindContext(unboundFunction, that, 1 + AS_ENTRIES + INTERRUPTED);
+  var iterator, iterFn, index, length, result, next, step;
+
+  var stop = function (condition) {
+    if (iterator) iteratorClose(iterator);
+    return new Result(true, condition);
+  };
+
+  var callFn = function (value) {
+    if (AS_ENTRIES) {
+      anObject(value);
+      return INTERRUPTED ? fn(value[0], value[1], stop) : fn(value[0], value[1]);
+    }
+
+    return INTERRUPTED ? fn(value, stop) : fn(value);
+  };
+
+  if (IS_ITERATOR) {
+    iterator = iterable;
+  } else {
+    iterFn = getIteratorMethod(iterable);
+    if (typeof iterFn != 'function') throw TypeError('Target is not iterable'); // optimisation for array iterators
+
+    if (isArrayIteratorMethod(iterFn)) {
+      for (index = 0, length = toLength(iterable.length); length > index; index++) {
+        result = callFn(iterable[index]);
+        if (result && result instanceof Result) return result;
+      }
+
+      return new Result(false);
+    }
+
+    iterator = iterFn.call(iterable);
+  }
+
+  next = iterator.next;
+
+  while (!(step = next.call(iterator)).done) {
+    try {
+      result = callFn(step.value);
+    } catch (error) {
+      iteratorClose(iterator);
+      throw error;
+    }
+
+    if (typeof result == 'object' && result && result instanceof Result) return result;
+  }
+
+  return new Result(false);
+};
+
+var anInstance = function (it, Constructor, name) {
+  if (!(it instanceof Constructor)) {
+    throw TypeError('Incorrect ' + (name ? name + ' ' : '') + 'invocation');
+  }
+
+  return it;
+};
+
+var defineProperty$9 = objectDefineProperty.f;
+var forEach$4 = arrayIteration.forEach;
+var setInternalState$3 = internalState.set;
+var internalStateGetterFor = internalState.getterFor;
+
+var collection = function (CONSTRUCTOR_NAME, wrapper, common) {
+  var IS_MAP = CONSTRUCTOR_NAME.indexOf('Map') !== -1;
+  var IS_WEAK = CONSTRUCTOR_NAME.indexOf('Weak') !== -1;
+  var ADDER = IS_MAP ? 'set' : 'add';
+  var NativeConstructor = global_1[CONSTRUCTOR_NAME];
+  var NativePrototype = NativeConstructor && NativeConstructor.prototype;
+  var exported = {};
+  var Constructor;
+
+  if (!descriptors || typeof NativeConstructor != 'function' || !(IS_WEAK || NativePrototype.forEach && !fails(function () {
+    new NativeConstructor().entries().next();
+  }))) {
+    // create collection constructor
+    Constructor = common.getConstructor(wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER);
+    internalMetadata.REQUIRED = true;
+  } else {
+    Constructor = wrapper(function (target, iterable) {
+      setInternalState$3(anInstance(target, Constructor, CONSTRUCTOR_NAME), {
+        type: CONSTRUCTOR_NAME,
+        collection: new NativeConstructor()
+      });
+      if (iterable != undefined) iterate(iterable, target[ADDER], {
+        that: target,
+        AS_ENTRIES: IS_MAP
+      });
+    });
+    var getInternalState = internalStateGetterFor(CONSTRUCTOR_NAME);
+    forEach$4(['add', 'clear', 'delete', 'forEach', 'get', 'has', 'set', 'keys', 'values', 'entries'], function (KEY) {
+      var IS_ADDER = KEY == 'add' || KEY == 'set';
+
+      if (KEY in NativePrototype && !(IS_WEAK && KEY == 'clear')) {
+        createNonEnumerableProperty(Constructor.prototype, KEY, function (a, b) {
+          var collection = getInternalState(this).collection;
+          if (!IS_ADDER && IS_WEAK && !isObject(a)) return KEY == 'get' ? undefined : false;
+          var result = collection[KEY](a === 0 ? 0 : a, b);
+          return IS_ADDER ? this : result;
+        });
+      }
+    });
+    IS_WEAK || defineProperty$9(Constructor.prototype, 'size', {
+      configurable: true,
+      get: function () {
+        return getInternalState(this).collection.size;
+      }
+    });
+  }
+
+  setToStringTag(Constructor, CONSTRUCTOR_NAME, false, true);
+  exported[CONSTRUCTOR_NAME] = Constructor;
+  _export({
+    global: true,
+    forced: true
+  }, exported);
+  if (!IS_WEAK) common.setStrong(Constructor, CONSTRUCTOR_NAME, IS_MAP);
+  return Constructor;
+};
+
+var redefineAll = function (target, src, options) {
+  for (var key in src) {
+    if (options && options.unsafe && target[key]) target[key] = src[key];else redefine(target, key, src[key], options);
+  }
+
+  return target;
+};
+
+var SPECIES$3 = wellKnownSymbol('species');
+
+var setSpecies = function (CONSTRUCTOR_NAME) {
+  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
+  var defineProperty = objectDefineProperty.f;
+
+  if (descriptors && Constructor && !Constructor[SPECIES$3]) {
+    defineProperty(Constructor, SPECIES$3, {
+      configurable: true,
+      get: function () {
+        return this;
+      }
+    });
+  }
+};
+
+var defineProperty$a = objectDefineProperty.f;
+var fastKey = internalMetadata.fastKey;
+var setInternalState$4 = internalState.set;
+var internalStateGetterFor$1 = internalState.getterFor;
+var collectionStrong = {
+  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, CONSTRUCTOR_NAME);
+      setInternalState$4(that, {
+        type: CONSTRUCTOR_NAME,
+        index: objectCreate(null),
+        first: undefined,
+        last: undefined,
+        size: 0
+      });
+      if (!descriptors) that.size = 0;
+      if (iterable != undefined) iterate(iterable, that[ADDER], {
+        that: that,
+        AS_ENTRIES: IS_MAP
+      });
+    });
+    var getInternalState = internalStateGetterFor$1(CONSTRUCTOR_NAME);
+
+    var define = function (that, key, value) {
+      var state = getInternalState(that);
+      var entry = getEntry(that, key);
+      var previous, index; // change existing entry
+
+      if (entry) {
+        entry.value = value; // create new entry
+      } else {
+        state.last = entry = {
+          index: index = fastKey(key, true),
+          key: key,
+          value: value,
+          previous: previous = state.last,
+          next: undefined,
+          removed: false
+        };
+        if (!state.first) state.first = entry;
+        if (previous) previous.next = entry;
+        if (descriptors) state.size++;else that.size++; // add to index
+
+        if (index !== 'F') state.index[index] = entry;
+      }
+
+      return that;
+    };
+
+    var getEntry = function (that, key) {
+      var state = getInternalState(that); // fast case
+
+      var index = fastKey(key);
+      var entry;
+      if (index !== 'F') return state.index[index]; // frozen object case
+
+      for (entry = state.first; entry; entry = entry.next) {
+        if (entry.key == key) return entry;
+      }
+    };
+
+    redefineAll(C.prototype, {
+      // 23.1.3.1 Map.prototype.clear()
+      // 23.2.3.2 Set.prototype.clear()
+      clear: function clear() {
+        var that = this;
+        var state = getInternalState(that);
+        var data = state.index;
+        var entry = state.first;
+
+        while (entry) {
+          entry.removed = true;
+          if (entry.previous) entry.previous = entry.previous.next = undefined;
+          delete data[entry.index];
+          entry = entry.next;
+        }
+
+        state.first = state.last = undefined;
+        if (descriptors) state.size = 0;else that.size = 0;
+      },
+      // 23.1.3.3 Map.prototype.delete(key)
+      // 23.2.3.4 Set.prototype.delete(value)
+      'delete': function (key) {
+        var that = this;
+        var state = getInternalState(that);
+        var entry = getEntry(that, key);
+
+        if (entry) {
+          var next = entry.next;
+          var prev = entry.previous;
+          delete state.index[entry.index];
+          entry.removed = true;
+          if (prev) prev.next = next;
+          if (next) next.previous = prev;
+          if (state.first == entry) state.first = next;
+          if (state.last == entry) state.last = prev;
+          if (descriptors) state.size--;else that.size--;
+        }
+
+        return !!entry;
+      },
+      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
+      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
+      forEach: function forEach(callbackfn
+      /* , that = undefined */
+      ) {
+        var state = getInternalState(this);
+        var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+        var entry;
+
+        while (entry = entry ? entry.next : state.first) {
+          boundFunction(entry.value, entry.key, this); // revert to the last existing entry
+
+          while (entry && entry.removed) entry = entry.previous;
+        }
+      },
+      // 23.1.3.7 Map.prototype.has(key)
+      // 23.2.3.7 Set.prototype.has(value)
+      has: function has(key) {
+        return !!getEntry(this, key);
+      }
+    });
+    redefineAll(C.prototype, IS_MAP ? {
+      // 23.1.3.6 Map.prototype.get(key)
+      get: function get(key) {
+        var entry = getEntry(this, key);
+        return entry && entry.value;
+      },
+      // 23.1.3.9 Map.prototype.set(key, value)
+      set: function set(key, value) {
+        return define(this, key === 0 ? 0 : key, value);
+      }
+    } : {
+      // 23.2.3.1 Set.prototype.add(value)
+      add: function add(value) {
+        return define(this, value = value === 0 ? 0 : value, value);
+      }
+    });
+    if (descriptors) defineProperty$a(C.prototype, 'size', {
+      get: function () {
+        return getInternalState(this).size;
+      }
+    });
+    return C;
+  },
+  setStrong: function (C, CONSTRUCTOR_NAME, IS_MAP) {
+    var ITERATOR_NAME = CONSTRUCTOR_NAME + ' Iterator';
+    var getInternalCollectionState = internalStateGetterFor$1(CONSTRUCTOR_NAME);
+    var getInternalIteratorState = internalStateGetterFor$1(ITERATOR_NAME); // add .keys, .values, .entries, [@@iterator]
+    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
+
+    defineIterator(C, CONSTRUCTOR_NAME, function (iterated, kind) {
+      setInternalState$4(this, {
+        type: ITERATOR_NAME,
+        target: iterated,
+        state: getInternalCollectionState(iterated),
+        kind: kind,
+        last: undefined
+      });
+    }, function () {
+      var state = getInternalIteratorState(this);
+      var kind = state.kind;
+      var entry = state.last; // revert to the last existing entry
+
+      while (entry && entry.removed) entry = entry.previous; // get next entry
+
+
+      if (!state.target || !(state.last = entry = entry ? entry.next : state.state.first)) {
+        // or finish the iteration
+        state.target = undefined;
+        return {
+          value: undefined,
+          done: true
+        };
+      } // return step by kind
+
+
+      if (kind == 'keys') return {
+        value: entry.key,
+        done: false
+      };
+      if (kind == 'values') return {
+        value: entry.value,
+        done: false
+      };
+      return {
+        value: [entry.key, entry.value],
+        done: false
+      };
+    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true); // add [@@species], 23.1.2.2, 23.2.2.2
+
+    setSpecies(CONSTRUCTOR_NAME);
+  }
+};
+
+// https://tc39.github.io/ecma262/#sec-map-objects
+
+
+var es_map = collection('Map', function (init) {
+  return function Map() {
+    return init(this, arguments.length ? arguments[0] : undefined);
+  };
+}, collectionStrong);
+
+var map$3 = path.Map;
+
+var map$4 = map$3;
+
+var map$5 = map$4;
+
 /**
  * This class can store groups and options specific for groups.
  */
@@ -11253,10 +13870,9 @@ var Groups = /*#__PURE__*/function () {
     classCallCheck(this, Groups);
 
     this.clear();
-    this.defaultIndex = 0;
-    this.groupsArray = [];
-    this.groupIndex = 0;
-    this.defaultGroups = [{
+    this._defaultIndex = 0;
+    this._groupIndex = 0;
+    this._defaultGroups = [{
       border: "#2B7CE9",
       background: "#97C2FC",
       highlight: {
@@ -11506,14 +14122,14 @@ var Groups = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
   createClass(Groups, [{
     key: "setOptions",
     value: function setOptions(options) {
-      var optionFields = ['useDefaultGroups'];
+      var optionFields = ["useDefaultGroups"];
 
       if (options !== undefined) {
         for (var groupName in options) {
@@ -11533,8 +14149,8 @@ var Groups = /*#__PURE__*/function () {
   }, {
     key: "clear",
     value: function clear() {
-      this.groups = {};
-      this.groupsArray = [];
+      this._groups = new map$5();
+      this._groupNames = [];
     }
     /**
      * Get group options of a groupname.
@@ -11542,90 +14158,68 @@ var Groups = /*#__PURE__*/function () {
      *
      * @param {*}       groupname     Can be a number, string, Date, etc.
      * @param {boolean} [shouldCreate=true] If true, create a new group
-     * @return {Object} The found or created group
+     * @returns {object} The found or created group
      */
 
   }, {
     key: "get",
     value: function get(groupname) {
       var shouldCreate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      var group = this.groups[groupname];
+
+      var group = this._groups.get(groupname);
 
       if (group === undefined && shouldCreate) {
-        if (this.options.useDefaultGroups === false && this.groupsArray.length > 0) {
+        if (this.options.useDefaultGroups === false && this._groupNames.length > 0) {
           // create new group
-          var index = this.groupIndex % this.groupsArray.length;
-          this.groupIndex++;
+          var index = this._groupIndex % this._groupNames.length;
+          ++this._groupIndex;
           group = {};
-          group.color = this.groups[this.groupsArray[index]];
-          this.groups[groupname] = group;
+          group.color = this._groups.get(this._groupNames[index]);
+
+          this._groups.set(groupname, group);
         } else {
           // create new group
-          var _index = this.defaultIndex % this.defaultGroups.length;
+          var _index = this._defaultIndex % this._defaultGroups.length;
 
-          this.defaultIndex++;
+          this._defaultIndex++;
           group = {};
-          group.color = this.defaultGroups[_index];
-          this.groups[groupname] = group;
+          group.color = this._defaultGroups[_index];
+
+          this._groups.set(groupname, group);
         }
       }
 
       return group;
     }
     /**
-     * Add a custom group style
-     * @param {string} groupName
-     * @param {Object} style       An object containing borderColor,
-     *                             backgroundColor, etc.
-     * @return {Object} group      The created group object
+     * Add custom group style.
+     *
+     * @param {string} groupName - The name of the group, a new group will be
+     * created if a group with the same name doesn't exist, otherwise the old
+     * groups style will be overwritten.
+     * @param {object} style - An object containing borderColor, backgroundColor,
+     * etc.
+     * @returns {object} The created group object.
      */
 
   }, {
     key: "add",
     value: function add(groupName, style) {
-      this.groups[groupName] = style;
-      this.groupsArray.push(groupName);
+      // Only push group name once to prevent duplicates which would consume more
+      // RAM and also skew the distribution towards more often updated groups,
+      // neither of which is desirable.
+      if (!this._groups.has(groupName)) {
+        this._groupNames.push(groupName);
+      }
+
+      this._groups.set(groupName, style);
+
       return style;
     }
   }]);
 
   return Groups;
 }();
-
-var slice$6 = [].slice;
-var MSIE = /MSIE .\./.test(engineUserAgent); // <- dirty ie9- check
-
-var wrap$1 = function (scheduler) {
-  return function (handler, timeout
-  /* , ...arguments */
-  ) {
-    var boundArgs = arguments.length > 2;
-    var args = boundArgs ? slice$6.call(arguments, 2) : undefined;
-    return scheduler(boundArgs ? function () {
-      // eslint-disable-next-line no-new-func
-      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
-    } : handler, timeout);
-  };
-}; // ie9- setTimeout & setInterval additional parameters fix
-// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
-
-
-_export({
-  global: true,
-  bind: true,
-  forced: MSIE
-}, {
-  // `setTimeout` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-  setTimeout: wrap$1(global_1.setTimeout),
-  // `setInterval` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-  setInterval: wrap$1(global_1.setInterval)
-});
-
-var setTimeout$1 = path.setTimeout;
-
-var setTimeout$2 = setTimeout$1;
 
 var $some = arrayIteration.some;
 var STRICT_METHOD$2 = arrayMethodIsStrict('some');
@@ -11646,11 +14240,11 @@ _export({
 
 var some = entryVirtual('Array').some;
 
-var ArrayPrototype$9 = Array.prototype;
+var ArrayPrototype$b = Array.prototype;
 
 var some_1 = function (it) {
   var own = it.some;
-  return it === ArrayPrototype$9 || it instanceof Array && own === ArrayPrototype$9.some ? some : own;
+  return it === ArrayPrototype$b || it instanceof Array && own === ArrayPrototype$b.some ? some : own;
 };
 
 var some$1 = some_1;
@@ -11726,12 +14320,12 @@ var ARGS_BUG = !fails(function () {
     /* empty */
   });
 });
-var FORCED$3 = NEW_TARGET_BUG || ARGS_BUG;
+var FORCED$4 = NEW_TARGET_BUG || ARGS_BUG;
 _export({
   target: 'Reflect',
   stat: true,
-  forced: FORCED$3,
-  sham: FORCED$3
+  forced: FORCED$4,
+  sham: FORCED$4
 }, {
   construct: function construct(Target, args
   /* , newTarget */
@@ -11784,7 +14378,7 @@ var entries = entryVirtual('Array').entries;
 
 var entries$1 = entries;
 
-var ArrayPrototype$a = Array.prototype;
+var ArrayPrototype$c = Array.prototype;
 var DOMIterables$1 = {
   DOMTokenList: true,
   NodeList: true
@@ -11792,64 +14386,17 @@ var DOMIterables$1 = {
 
 var entries_1 = function (it) {
   var own = it.entries;
-  return it === ArrayPrototype$a || it instanceof Array && own === ArrayPrototype$a.entries // eslint-disable-next-line no-prototype-builtins
+  return it === ArrayPrototype$c || it instanceof Array && own === ArrayPrototype$c.entries // eslint-disable-next-line no-prototype-builtins
   || DOMIterables$1.hasOwnProperty(classof(it)) ? entries$1 : own;
 };
 
 var entries$2 = entries_1;
 
-var $stringify$1 = getBuiltIn('JSON', 'stringify');
-var re = /[\uD800-\uDFFF]/g;
-var low = /^[\uD800-\uDBFF]$/;
-var hi = /^[\uDC00-\uDFFF]$/;
-
-var fix = function (match, offset, string) {
-  var prev = string.charAt(offset - 1);
-  var next = string.charAt(offset + 1);
-
-  if (low.test(match) && !hi.test(next) || hi.test(match) && !low.test(prev)) {
-    return '\\u' + match.charCodeAt(0).toString(16);
-  }
-
-  return match;
-};
-
-var FORCED$4 = fails(function () {
-  return $stringify$1('\uDF06\uD834') !== '"\\udf06\\ud834"' || $stringify$1('\uDEAD') !== '"\\udead"';
-});
-
-if ($stringify$1) {
-  // https://github.com/tc39/proposal-well-formed-stringify
-  _export({
-    target: 'JSON',
-    stat: true,
-    forced: FORCED$4
-  }, {
-    // eslint-disable-next-line no-unused-vars
-    stringify: function stringify(it, replacer, space) {
-      var result = $stringify$1.apply(null, arguments);
-      return typeof result == 'string' ? result.replace(re, fix) : result;
-    }
-  });
-}
-
-if (!path.JSON) path.JSON = {
-  stringify: JSON.stringify
-}; // eslint-disable-next-line no-unused-vars
-
-var stringify = function stringify(it, replacer, space) {
-  return path.JSON.stringify.apply(null, arguments);
-};
-
-var stringify$1 = stringify;
-
-var stringify$2 = stringify$1;
-
 var values$3 = entryVirtual('Array').values;
 
 var values$4 = values$3;
 
-var ArrayPrototype$b = Array.prototype;
+var ArrayPrototype$d = Array.prototype;
 var DOMIterables$2 = {
   DOMTokenList: true,
   NodeList: true
@@ -11857,7 +14404,7 @@ var DOMIterables$2 = {
 
 var values_1 = function (it) {
   var own = it.values;
-  return it === ArrayPrototype$b || it instanceof Array && own === ArrayPrototype$b.values // eslint-disable-next-line no-prototype-builtins
+  return it === ArrayPrototype$d || it instanceof Array && own === ArrayPrototype$d.values // eslint-disable-next-line no-prototype-builtins
   || DOMIterables$2.hasOwnProperty(classof(it)) ? values$4 : own;
 };
 
@@ -11867,7 +14414,7 @@ var keys$4 = entryVirtual('Array').keys;
 
 var keys$5 = keys$4;
 
-var ArrayPrototype$c = Array.prototype;
+var ArrayPrototype$e = Array.prototype;
 var DOMIterables$3 = {
   DOMTokenList: true,
   NodeList: true
@@ -11875,7 +14422,7 @@ var DOMIterables$3 = {
 
 var keys_1 = function (it) {
   var own = it.keys;
-  return it === ArrayPrototype$c || it instanceof Array && own === ArrayPrototype$c.keys // eslint-disable-next-line no-prototype-builtins
+  return it === ArrayPrototype$e || it instanceof Array && own === ArrayPrototype$e.keys // eslint-disable-next-line no-prototype-builtins
   || DOMIterables$3.hasOwnProperty(classof(it)) ? keys$5 : own;
 };
 
@@ -11955,15 +14502,15 @@ var getPrototypeOf$5 = createCommonjsModule(function (module) {
   module.exports = _getPrototypeOf;
 });
 
-var test$1 = [];
-var nativeSort = test$1.sort; // IE8-
+var test$2 = [];
+var nativeSort = test$2.sort; // IE8-
 
 var FAILS_ON_UNDEFINED = fails(function () {
-  test$1.sort(undefined);
+  test$2.sort(undefined);
 }); // V8 bug
 
 var FAILS_ON_NULL = fails(function () {
-  test$1.sort(null);
+  test$2.sort(null);
 }); // Old WebKit
 
 var STRICT_METHOD$3 = arrayMethodIsStrict('sort');
@@ -11982,414 +14529,16 @@ _export({
 
 var sort = entryVirtual('Array').sort;
 
-var ArrayPrototype$d = Array.prototype;
+var ArrayPrototype$f = Array.prototype;
 
 var sort_1 = function (it) {
   var own = it.sort;
-  return it === ArrayPrototype$d || it instanceof Array && own === ArrayPrototype$d.sort ? sort : own;
+  return it === ArrayPrototype$f || it instanceof Array && own === ArrayPrototype$f.sort ? sort : own;
 };
 
 var sort$1 = sort_1;
 
 var sort$2 = sort$1;
-
-var freezing = !fails(function () {
-  return Object.isExtensible(Object.preventExtensions({}));
-});
-
-var internalMetadata = createCommonjsModule(function (module) {
-  var defineProperty = objectDefineProperty.f;
-  var METADATA = uid('meta');
-  var id = 0;
-
-  var isExtensible = Object.isExtensible || function () {
-    return true;
-  };
-
-  var setMetadata = function (it) {
-    defineProperty(it, METADATA, {
-      value: {
-        objectID: 'O' + ++id,
-        // object ID
-        weakData: {} // weak collections IDs
-
-      }
-    });
-  };
-
-  var fastKey = function (it, create) {
-    // return a primitive with prefix
-    if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-
-    if (!has(it, METADATA)) {
-      // can't set metadata to uncaught frozen object
-      if (!isExtensible(it)) return 'F'; // not necessary to add metadata
-
-      if (!create) return 'E'; // add missing metadata
-
-      setMetadata(it); // return object ID
-    }
-
-    return it[METADATA].objectID;
-  };
-
-  var getWeakData = function (it, create) {
-    if (!has(it, METADATA)) {
-      // can't set metadata to uncaught frozen object
-      if (!isExtensible(it)) return true; // not necessary to add metadata
-
-      if (!create) return false; // add missing metadata
-
-      setMetadata(it); // return the store of weak collections IDs
-    }
-
-    return it[METADATA].weakData;
-  }; // add metadata on freeze-family methods calling
-
-
-  var onFreeze = function (it) {
-    if (freezing && meta.REQUIRED && isExtensible(it) && !has(it, METADATA)) setMetadata(it);
-    return it;
-  };
-
-  var meta = module.exports = {
-    REQUIRED: false,
-    fastKey: fastKey,
-    getWeakData: getWeakData,
-    onFreeze: onFreeze
-  };
-  hiddenKeys[METADATA] = true;
-});
-var internalMetadata_1 = internalMetadata.REQUIRED;
-var internalMetadata_2 = internalMetadata.fastKey;
-var internalMetadata_3 = internalMetadata.getWeakData;
-var internalMetadata_4 = internalMetadata.onFreeze;
-
-var iterate_1 = createCommonjsModule(function (module) {
-  var Result = function (stopped, result) {
-    this.stopped = stopped;
-    this.result = result;
-  };
-
-  var iterate = module.exports = function (iterable, fn, that, AS_ENTRIES, IS_ITERATOR) {
-    var boundFunction = functionBindContext(fn, that, AS_ENTRIES ? 2 : 1);
-    var iterator, iterFn, index, length, result, next, step;
-
-    if (IS_ITERATOR) {
-      iterator = iterable;
-    } else {
-      iterFn = getIteratorMethod(iterable);
-      if (typeof iterFn != 'function') throw TypeError('Target is not iterable'); // optimisation for array iterators
-
-      if (isArrayIteratorMethod(iterFn)) {
-        for (index = 0, length = toLength(iterable.length); length > index; index++) {
-          result = AS_ENTRIES ? boundFunction(anObject(step = iterable[index])[0], step[1]) : boundFunction(iterable[index]);
-          if (result && result instanceof Result) return result;
-        }
-
-        return new Result(false);
-      }
-
-      iterator = iterFn.call(iterable);
-    }
-
-    next = iterator.next;
-
-    while (!(step = next.call(iterator)).done) {
-      result = callWithSafeIterationClosing(iterator, boundFunction, step.value, AS_ENTRIES);
-      if (typeof result == 'object' && result && result instanceof Result) return result;
-    }
-
-    return new Result(false);
-  };
-
-  iterate.stop = function (result) {
-    return new Result(true, result);
-  };
-});
-
-var anInstance = function (it, Constructor, name) {
-  if (!(it instanceof Constructor)) {
-    throw TypeError('Incorrect ' + (name ? name + ' ' : '') + 'invocation');
-  }
-
-  return it;
-};
-
-var defineProperty$9 = objectDefineProperty.f;
-var forEach$4 = arrayIteration.forEach;
-var setInternalState$3 = internalState.set;
-var internalStateGetterFor = internalState.getterFor;
-
-var collection = function (CONSTRUCTOR_NAME, wrapper, common) {
-  var IS_MAP = CONSTRUCTOR_NAME.indexOf('Map') !== -1;
-  var IS_WEAK = CONSTRUCTOR_NAME.indexOf('Weak') !== -1;
-  var ADDER = IS_MAP ? 'set' : 'add';
-  var NativeConstructor = global_1[CONSTRUCTOR_NAME];
-  var NativePrototype = NativeConstructor && NativeConstructor.prototype;
-  var exported = {};
-  var Constructor;
-
-  if (!descriptors || typeof NativeConstructor != 'function' || !(IS_WEAK || NativePrototype.forEach && !fails(function () {
-    new NativeConstructor().entries().next();
-  }))) {
-    // create collection constructor
-    Constructor = common.getConstructor(wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER);
-    internalMetadata.REQUIRED = true;
-  } else {
-    Constructor = wrapper(function (target, iterable) {
-      setInternalState$3(anInstance(target, Constructor, CONSTRUCTOR_NAME), {
-        type: CONSTRUCTOR_NAME,
-        collection: new NativeConstructor()
-      });
-      if (iterable != undefined) iterate_1(iterable, target[ADDER], target, IS_MAP);
-    });
-    var getInternalState = internalStateGetterFor(CONSTRUCTOR_NAME);
-    forEach$4(['add', 'clear', 'delete', 'forEach', 'get', 'has', 'set', 'keys', 'values', 'entries'], function (KEY) {
-      var IS_ADDER = KEY == 'add' || KEY == 'set';
-
-      if (KEY in NativePrototype && !(IS_WEAK && KEY == 'clear')) {
-        createNonEnumerableProperty(Constructor.prototype, KEY, function (a, b) {
-          var collection = getInternalState(this).collection;
-          if (!IS_ADDER && IS_WEAK && !isObject(a)) return KEY == 'get' ? undefined : false;
-          var result = collection[KEY](a === 0 ? 0 : a, b);
-          return IS_ADDER ? this : result;
-        });
-      }
-    });
-    IS_WEAK || defineProperty$9(Constructor.prototype, 'size', {
-      configurable: true,
-      get: function () {
-        return getInternalState(this).collection.size;
-      }
-    });
-  }
-
-  setToStringTag(Constructor, CONSTRUCTOR_NAME, false, true);
-  exported[CONSTRUCTOR_NAME] = Constructor;
-  _export({
-    global: true,
-    forced: true
-  }, exported);
-  if (!IS_WEAK) common.setStrong(Constructor, CONSTRUCTOR_NAME, IS_MAP);
-  return Constructor;
-};
-
-var redefineAll = function (target, src, options) {
-  for (var key in src) {
-    if (options && options.unsafe && target[key]) target[key] = src[key];else redefine(target, key, src[key], options);
-  }
-
-  return target;
-};
-
-var SPECIES$3 = wellKnownSymbol('species');
-
-var setSpecies = function (CONSTRUCTOR_NAME) {
-  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
-  var defineProperty = objectDefineProperty.f;
-
-  if (descriptors && Constructor && !Constructor[SPECIES$3]) {
-    defineProperty(Constructor, SPECIES$3, {
-      configurable: true,
-      get: function () {
-        return this;
-      }
-    });
-  }
-};
-
-var defineProperty$a = objectDefineProperty.f;
-var fastKey = internalMetadata.fastKey;
-var setInternalState$4 = internalState.set;
-var internalStateGetterFor$1 = internalState.getterFor;
-var collectionStrong = {
-  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
-    var C = wrapper(function (that, iterable) {
-      anInstance(that, C, CONSTRUCTOR_NAME);
-      setInternalState$4(that, {
-        type: CONSTRUCTOR_NAME,
-        index: objectCreate(null),
-        first: undefined,
-        last: undefined,
-        size: 0
-      });
-      if (!descriptors) that.size = 0;
-      if (iterable != undefined) iterate_1(iterable, that[ADDER], that, IS_MAP);
-    });
-    var getInternalState = internalStateGetterFor$1(CONSTRUCTOR_NAME);
-
-    var define = function (that, key, value) {
-      var state = getInternalState(that);
-      var entry = getEntry(that, key);
-      var previous, index; // change existing entry
-
-      if (entry) {
-        entry.value = value; // create new entry
-      } else {
-        state.last = entry = {
-          index: index = fastKey(key, true),
-          key: key,
-          value: value,
-          previous: previous = state.last,
-          next: undefined,
-          removed: false
-        };
-        if (!state.first) state.first = entry;
-        if (previous) previous.next = entry;
-        if (descriptors) state.size++;else that.size++; // add to index
-
-        if (index !== 'F') state.index[index] = entry;
-      }
-
-      return that;
-    };
-
-    var getEntry = function (that, key) {
-      var state = getInternalState(that); // fast case
-
-      var index = fastKey(key);
-      var entry;
-      if (index !== 'F') return state.index[index]; // frozen object case
-
-      for (entry = state.first; entry; entry = entry.next) {
-        if (entry.key == key) return entry;
-      }
-    };
-
-    redefineAll(C.prototype, {
-      // 23.1.3.1 Map.prototype.clear()
-      // 23.2.3.2 Set.prototype.clear()
-      clear: function clear() {
-        var that = this;
-        var state = getInternalState(that);
-        var data = state.index;
-        var entry = state.first;
-
-        while (entry) {
-          entry.removed = true;
-          if (entry.previous) entry.previous = entry.previous.next = undefined;
-          delete data[entry.index];
-          entry = entry.next;
-        }
-
-        state.first = state.last = undefined;
-        if (descriptors) state.size = 0;else that.size = 0;
-      },
-      // 23.1.3.3 Map.prototype.delete(key)
-      // 23.2.3.4 Set.prototype.delete(value)
-      'delete': function (key) {
-        var that = this;
-        var state = getInternalState(that);
-        var entry = getEntry(that, key);
-
-        if (entry) {
-          var next = entry.next;
-          var prev = entry.previous;
-          delete state.index[entry.index];
-          entry.removed = true;
-          if (prev) prev.next = next;
-          if (next) next.previous = prev;
-          if (state.first == entry) state.first = next;
-          if (state.last == entry) state.last = prev;
-          if (descriptors) state.size--;else that.size--;
-        }
-
-        return !!entry;
-      },
-      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
-      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn
-      /* , that = undefined */
-      ) {
-        var state = getInternalState(this);
-        var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
-        var entry;
-
-        while (entry = entry ? entry.next : state.first) {
-          boundFunction(entry.value, entry.key, this); // revert to the last existing entry
-
-          while (entry && entry.removed) entry = entry.previous;
-        }
-      },
-      // 23.1.3.7 Map.prototype.has(key)
-      // 23.2.3.7 Set.prototype.has(value)
-      has: function has(key) {
-        return !!getEntry(this, key);
-      }
-    });
-    redefineAll(C.prototype, IS_MAP ? {
-      // 23.1.3.6 Map.prototype.get(key)
-      get: function get(key) {
-        var entry = getEntry(this, key);
-        return entry && entry.value;
-      },
-      // 23.1.3.9 Map.prototype.set(key, value)
-      set: function set(key, value) {
-        return define(this, key === 0 ? 0 : key, value);
-      }
-    } : {
-      // 23.2.3.1 Set.prototype.add(value)
-      add: function add(value) {
-        return define(this, value = value === 0 ? 0 : value, value);
-      }
-    });
-    if (descriptors) defineProperty$a(C.prototype, 'size', {
-      get: function () {
-        return getInternalState(this).size;
-      }
-    });
-    return C;
-  },
-  setStrong: function (C, CONSTRUCTOR_NAME, IS_MAP) {
-    var ITERATOR_NAME = CONSTRUCTOR_NAME + ' Iterator';
-    var getInternalCollectionState = internalStateGetterFor$1(CONSTRUCTOR_NAME);
-    var getInternalIteratorState = internalStateGetterFor$1(ITERATOR_NAME); // add .keys, .values, .entries, [@@iterator]
-    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
-
-    defineIterator(C, CONSTRUCTOR_NAME, function (iterated, kind) {
-      setInternalState$4(this, {
-        type: ITERATOR_NAME,
-        target: iterated,
-        state: getInternalCollectionState(iterated),
-        kind: kind,
-        last: undefined
-      });
-    }, function () {
-      var state = getInternalIteratorState(this);
-      var kind = state.kind;
-      var entry = state.last; // revert to the last existing entry
-
-      while (entry && entry.removed) entry = entry.previous; // get next entry
-
-
-      if (!state.target || !(state.last = entry = entry ? entry.next : state.state.first)) {
-        // or finish the iteration
-        state.target = undefined;
-        return {
-          value: undefined,
-          done: true
-        };
-      } // return step by kind
-
-
-      if (kind == 'keys') return {
-        value: entry.key,
-        done: false
-      };
-      if (kind == 'values') return {
-        value: entry.value,
-        done: false
-      };
-      return {
-        value: [entry.key, entry.value],
-        done: false
-      };
-    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true); // add [@@species], 23.1.2.2, 23.2.2.2
-
-    setSpecies(CONSTRUCTOR_NAME);
-  }
-};
 
 // https://tc39.github.io/ecma262/#sec-set-objects
 
@@ -12405,21 +14554,6 @@ var set$1 = path.Set;
 var set$2 = set$1;
 
 var set$3 = set$2;
-
-// https://tc39.github.io/ecma262/#sec-map-objects
-
-
-var es_map = collection('Map', function (init) {
-  return function Map() {
-    return init(this, arguments.length ? arguments[0] : undefined);
-  };
-}, collectionStrong);
-
-var map$3 = path.Map;
-
-var map$4 = map$3;
-
-var map$5 = map$4;
 
 var runtime_1 = createCommonjsModule(function (module) {
   /**
@@ -13204,11 +15338,11 @@ _export({
 
 var flatMap = entryVirtual('Array').flatMap;
 
-var ArrayPrototype$e = Array.prototype;
+var ArrayPrototype$g = Array.prototype;
 
 var flatMap_1 = function (it) {
   var own = it.flatMap;
-  return it === ArrayPrototype$e || it instanceof Array && own === ArrayPrototype$e.flatMap ? flatMap : own;
+  return it === ArrayPrototype$g || it instanceof Array && own === ArrayPrototype$g.flatMap ? flatMap : own;
 };
 
 var flatMap$1 = flatMap_1;
@@ -13254,17 +15388,22 @@ var arrayReduce = {
   right: createMethod$5(true)
 };
 
+var engineIsNode = classofRaw(global_1.process) == 'process';
+
 var $reduce = arrayReduce.left;
 var STRICT_METHOD$4 = arrayMethodIsStrict('reduce');
 var USES_TO_LENGTH$8 = arrayMethodUsesToLength('reduce', {
   1: 0
-}); // `Array.prototype.reduce` method
+}); // Chrome 80-82 has a critical bug
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+
+var CHROME_BUG = !engineIsNode && engineV8Version > 79 && engineV8Version < 83; // `Array.prototype.reduce` method
 // https://tc39.github.io/ecma262/#sec-array.prototype.reduce
 
 _export({
   target: 'Array',
   proto: true,
-  forced: !STRICT_METHOD$4 || !USES_TO_LENGTH$8
+  forced: !STRICT_METHOD$4 || !USES_TO_LENGTH$8 || CHROME_BUG
 }, {
   reduce: function reduce(callbackfn
   /* , initialValue */
@@ -13275,11 +15414,11 @@ _export({
 
 var reduce = entryVirtual('Array').reduce;
 
-var ArrayPrototype$f = Array.prototype;
+var ArrayPrototype$h = Array.prototype;
 
 var reduce_1 = function (it) {
   var own = it.reduce;
-  return it === ArrayPrototype$f || it instanceof Array && own === ArrayPrototype$f.reduce ? reduce : own;
+  return it === ArrayPrototype$h || it instanceof Array && own === ArrayPrototype$h.reduce ? reduce : own;
 };
 
 var reduce$1 = reduce_1;
@@ -13289,13 +15428,18 @@ var reduce$2 = reduce$1;
 // Unique ID creation requires a high quality random # generator. In the browser we therefore
 // require the crypto API and do not support built-in fallback to lower quality random number
 // generators (like Math.random()).
-// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
-// find the complete implementation of crypto (msCrypto) on IE11.
-var getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+var getRandomValues;
 var rnds8 = new Uint8Array(16);
 function rng() {
+  // lazy load so that environments that need to polyfill have a chance to do so
   if (!getRandomValues) {
-    throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
+    // find the complete implementation of crypto (msCrypto) on IE11.
+    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+
+    if (!getRandomValues) {
+      throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+    }
   }
 
   return getRandomValues(rnds8);
@@ -13365,11 +15509,9 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !co
 
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$2(o, minLen) { var _context19; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = slice$5(_context19 = Object.prototype.toString.call(o)).call(_context19, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _unsupportedIterableToArray$2(o, minLen) { var _context19; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = slice$6(_context19 = Object.prototype.toString.call(o)).call(_context19, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-/* eslint @typescript-eslint/member-ordering: ["error", { "classes": ["field", "constructor", "method"] }] */
-
 /**
  * Create new data pipe.
  *
@@ -13412,10 +15554,10 @@ function createNewDataPipeFrom(from) {
  * Internal implementation of the pipe. This should be accessible only through
  * `createNewDataPipeFrom` from the outside.
  *
- * @typeparam SI - Source item type.
- * @typeparam SP - Source item type's id property name.
- * @typeparam TI - Target item type.
- * @typeparam TP - Target item type's id property name.
+ * @typeParam SI - Source item type.
+ * @typeParam SP - Source item type's id property name.
+ * @typeParam TI - Target item type.
+ * @typeParam TP - Target item type's id property name.
  */
 
 
@@ -13446,7 +15588,7 @@ var SimpleDataPipe = /*#__PURE__*/function () {
       update: bind$2(_context3 = this._update).call(_context3, this)
     };
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(SimpleDataPipe, [{
@@ -13456,7 +15598,7 @@ var SimpleDataPipe = /*#__PURE__*/function () {
 
       return this;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "start",
@@ -13469,7 +15611,7 @@ var SimpleDataPipe = /*#__PURE__*/function () {
 
       return this;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "stop",
@@ -13555,8 +15697,8 @@ var SimpleDataPipe = /*#__PURE__*/function () {
  * Internal implementation of the pipe factory. This should be accessible
  * only through `createNewDataPipeFrom` from the outside.
  *
- * @typeparam TI - Target item type.
- * @typeparam TP - Target item type's id property name.
+ * @typeParam TI - Target item type.
+ * @typeParam TP - Target item type's id property name.
  */
 
 
@@ -13603,8 +15745,8 @@ var DataPipeUnderConstruction = /*#__PURE__*/function () {
      * @param callback - A mapping function that takes a source item and returns
      * corresponding mapped item.
      *
-     * @typeparam TI - Target item type.
-     * @typeparam TP - Target item type's id property name.
+     * @typeParam TI - Target item type.
+     * @typeParam TP - Target item type's id property name.
      *
      * @returns This factory for further configuration.
      */
@@ -13624,8 +15766,8 @@ var DataPipeUnderConstruction = /*#__PURE__*/function () {
      * @param callback - A mapping function that takes a source item and returns
      * an array of corresponding mapped items.
      *
-     * @typeparam TI - Target item type.
-     * @typeparam TP - Target item type's id property name.
+     * @typeParam TI - Target item type.
+     * @typeParam TP - Target item type's id property name.
      *
      * @returns This factory for further configuration.
      */
@@ -13669,8 +15811,6 @@ var DataPipeUnderConstruction = /*#__PURE__*/function () {
 function isId(value) {
   return typeof value === "string" || typeof value === "number";
 }
-/* eslint @typescript-eslint/member-ordering: ["error", { "classes": ["field", "constructor", "method"] }] */
-
 /**
  * A queue.
  *
@@ -13763,7 +15903,7 @@ var Queue = /*#__PURE__*/function () {
   }, {
     key: "replace",
     value: function replace(object, method) {
-      /* eslint-disable-next-line @typescript-eslint/no-this-alias */
+      /* eslint-disable-next-line @typescript-eslint/no-this-alias -- Function this is necessary in the function bellow, so class this has to be saved into a variable here. */
       var me = this;
       var original = object[method];
 
@@ -13883,8 +16023,6 @@ var Queue = /*#__PURE__*/function () {
 
   return Queue;
 }();
-/* eslint-disable @typescript-eslint/member-ordering */
-
 /**
  * [[DataSet]] code that can be reused in [[DataView]] or other similar implementations of [[DataInterface]].
  *
@@ -13983,7 +16121,7 @@ var DataSetPart = /*#__PURE__*/function () {
  * That means that the stream is evaluated at the time of iteration, conversion to another data type or when [[cache]] is called, not when the [[DataStream]] was created.
  * Multiple invocations of for example [[toItemArray]] may yield different results (if the data source like for example [[DataSet]] gets modified).
  *
- * @typeparam Item - The item type this stream is going to work with.
+ * @typeParam Item - The item type this stream is going to work with.
  */
 
 
@@ -13991,12 +16129,12 @@ var DataStream = /*#__PURE__*/function () {
   /**
    * Create a new data stream.
    *
-   * @param _pairs - The id, item pairs.
+   * @param pairs - The id, item pairs.
    */
-  function DataStream(_pairs) {
+  function DataStream(pairs) {
     classCallCheck(this, DataStream);
 
-    this._pairs = _pairs;
+    this._pairs = pairs;
   }
   /**
    * Return an iterable of key, value pairs for every entry in the stream.
@@ -14373,7 +16511,7 @@ var DataStream = /*#__PURE__*/function () {
      *
      * @param callback - The function that picks and possibly converts the property.
      *
-     * @typeparam T - The type of the distinct value.
+     * @typeParam T - The type of the distinct value.
      *
      * @returns A set of all distinct properties.
      */
@@ -14502,7 +16640,7 @@ var DataStream = /*#__PURE__*/function () {
      *
      * @param callback - The function that does the conversion.
      *
-     * @typeparam Mapped - The type of the item after mapping.
+     * @typeParam Mapped - The type of the item after mapping.
      *
      * @returns A new data stream with the mapped items.
      */
@@ -14642,7 +16780,7 @@ var DataStream = /*#__PURE__*/function () {
      * @param callback - The function that does the reduction.
      * @param accumulator - The initial value of the accumulator.
      *
-     * @typeparam T - The type of the accumulated value.
+     * @typeParam T - The type of the accumulated value.
      *
      * @returns The reduced value.
      */
@@ -14702,8 +16840,6 @@ var DataStream = /*#__PURE__*/function () {
 
   return DataStream;
 }();
-/* eslint @typescript-eslint/member-ordering: ["error", { "classes": ["field", "constructor", "method"] }] */
-
 /**
  * Add an id to given item if it doesn't have one already.
  *
@@ -14805,7 +16941,8 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
 
     classCallCheck(this, DataSet);
 
-    _this3 = _super.call(this); // correctly read optional arguments
+    _this3 = _super.call(this);
+    _this3._queue = null; // correctly read optional arguments
 
     if (data && !isArray$5(data)) {
       options = data;
@@ -14828,15 +16965,17 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
 
     return _this3;
   }
-  /**
-   * Set new options.
-   *
-   * @param options - The new options.
-   */
+  /** @inheritDoc */
 
 
   createClass(DataSet, [{
     key: "setOptions",
+
+    /**
+     * Set new options.
+     *
+     * @param options - The new options.
+     */
     value: function setOptions(options) {
       if (options && options.queue !== undefined) {
         if (options.queue === false) {
@@ -14844,7 +16983,7 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
           if (this._queue) {
             this._queue.destroy();
 
-            delete this._queue;
+            this._queue = null;
           }
         } else {
           // create queue and update its options
@@ -15140,7 +17279,7 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
         return [];
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "get",
@@ -15250,15 +17389,17 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
         return result;
       } else {
         if (id != null) {
+          var _item;
+
           // a single item
-          return item !== null && item !== void 0 ? item : null;
+          return (_item = item) !== null && _item !== void 0 ? _item : null;
         } else {
           // just return our array
           return items;
         }
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getIds",
@@ -15299,10 +17440,10 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
           for (var _i5 = 0, _len6 = itemIds.length; _i5 < _len6; _i5++) {
             var _id3 = itemIds[_i5];
 
-            var _item = this._data.get(_id3);
+            var _item2 = this._data.get(_id3);
 
-            if (_item != null && filter(_item)) {
-              ids.push(_item[this._idProp]);
+            if (_item2 != null && filter(_item2)) {
+              ids.push(_item2[this._idProp]);
             }
           }
         }
@@ -15328,10 +17469,10 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
           for (var _i8 = 0, _len9 = itemIds.length; _i8 < _len9; _i8++) {
             var _id5 = itemIds[_i8];
 
-            var _item2 = data.get(_id5);
+            var _item3 = data.get(_id5);
 
-            if (_item2 != null) {
-              ids.push(_item2[this._idProp]);
+            if (_item3 != null) {
+              ids.push(_item3[this._idProp]);
             }
           }
         }
@@ -15339,14 +17480,14 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
 
       return ids;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getDataSet",
     value: function getDataSet() {
       return this;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "forEach",
@@ -15371,15 +17512,15 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
         for (var _i9 = 0, _len10 = itemIds.length; _i9 < _len10; _i9++) {
           var _id6 = itemIds[_i9];
 
-          var _item3 = this._data.get(_id6);
+          var _item4 = this._data.get(_id6);
 
-          if (_item3 != null && (!filter || filter(_item3))) {
-            callback(_item3, _id6);
+          if (_item4 != null && (!filter || filter(_item4))) {
+            callback(_item4, _id6);
           }
         }
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "map",
@@ -15759,7 +17900,7 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
 
       return id;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "stream",
@@ -15828,6 +17969,11 @@ var DataSet = /*#__PURE__*/function (_DataSetPart) {
 
         return new DataStream(defineProperty$7({}, iterator$4, bind$2(_context27 = entries$2(this._data)).call(_context27, this._data)));
       }
+    }
+  }, {
+    key: "idProp",
+    get: function get() {
+      return this._idProp;
     }
   }]);
 
@@ -15899,7 +18045,7 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
     classCallCheck(this, DataView);
 
     _this7 = _super2.call(this);
-    /** @inheritdoc */
+    /** @inheritDoc */
 
     _this7.length = 0;
     _this7._ids = new set$3(); // ids of the items currently in memory (just contains a boolean true)
@@ -15910,24 +18056,26 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
     _this7.setData(data);
 
     return _this7;
-  } // TODO: implement a function .config() to dynamically update things like configured filter
-  // and trigger changes accordingly
-
-  /**
-   * Set a data source for the view.
-   *
-   * @param data - The instance containing data (directly or indirectly).
-   *
-   * @remarks
-   * Note that when the data view is bound to a data set it won't be garbage
-   * collected unless the data set is too. Use `dataView.setData(null)` or
-   * `dataView.dispose()` to enable garbage collection before you lose the last
-   * reference.
-   */
+  }
+  /** @inheritDoc */
 
 
   createClass(DataView, [{
     key: "setData",
+    // TODO: implement a function .config() to dynamically update things like configured filter
+    // and trigger changes accordingly
+
+    /**
+     * Set a data source for the view.
+     *
+     * @param data - The instance containing data (directly or indirectly).
+     *
+     * @remarks
+     * Note that when the data view is bound to a data set it won't be garbage
+     * collected unless the data set is too. Use `dataView.setData(null)` or
+     * `dataView.dispose()` to enable garbage collection before you lose the last
+     * reference.
+     */
     value: function setData(data) {
       if (this._data) {
         // unsubscribe from current dataset
@@ -16044,7 +18192,7 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         });
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "get",
@@ -16084,7 +18232,7 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         return this._data.get(ids, viewOptions);
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getIds",
@@ -16115,7 +18263,7 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         return [];
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "forEach",
@@ -16147,7 +18295,7 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         });
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "map",
@@ -16181,14 +18329,14 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         return [];
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getDataSet",
     value: function getDataSet() {
       return this._data.getDataSet();
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "stream",
@@ -16209,15 +18357,14 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
   }, {
     key: "dispose",
     value: function dispose() {
-      var _a;
+      var _this$_data;
 
-      if ((_a = this._data) === null || _a === void 0 ? void 0 : _a.off) {
+      if ((_this$_data = this._data) !== null && _this$_data !== void 0 && _this$_data.off) {
         this._data.off("*", this._listener);
       }
 
       var message = "This data view has already been disposed of.";
-
-      defineProperty$2(this, "_data", {
+      var replacement = {
         get: function get() {
           throw new Error(message);
         },
@@ -16225,7 +18372,22 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
           throw new Error(message);
         },
         configurable: false
-      });
+      };
+
+      var _iterator14 = _createForOfIteratorHelper$1(ownKeys$3(DataView.prototype)),
+          _step14;
+
+      try {
+        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+          var key = _step14.value;
+
+          defineProperty$2(this, key, replacement);
+        }
+      } catch (err) {
+        _iterator14.e(err);
+      } finally {
+        _iterator14.f();
+      }
     }
     /**
      * Event listener. Will propagate all events from the connected data set to the subscribers of the DataView, but will filter the items and only trigger when there are changes in the filtered data set.
@@ -16272,9 +18434,9 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
           for (var _i11 = 0, _len12 = ids.length; _i11 < _len12; _i11++) {
             var _id8 = ids[_i11];
 
-            var _item4 = this.get(_id8);
+            var _item5 = this.get(_id8);
 
-            if (_item4) {
+            if (_item5) {
               if (this._ids.has(_id8)) {
                 updatedIds.push(_id8);
                 updatedItems.push(params.data[_i11]);
@@ -16335,10 +18497,41 @@ var DataView = /*#__PURE__*/function (_DataSetPart2) {
         }, senderId);
       }
     }
+  }, {
+    key: "idProp",
+    get: function get() {
+      return this.getDataSet().idProp;
+    }
   }]);
 
   return DataView;
 }(DataSetPart);
+/**
+ * Check that given value is compatible with Vis Data Set interface.
+ *
+ * @param idProp - The expected property to contain item id.
+ * @param v - The value to be tested.
+ *
+ * @returns True if all expected values and methods match, false otherwise.
+ */
+
+
+function isDataSetLike(idProp, v) {
+  return _typeof_1(v) === "object" && v !== null && idProp === v.idProp && typeof v.add === "function" && typeof v.clear === "function" && typeof v.distinct === "function" && typeof forEach$2(v) === "function" && typeof v.get === "function" && typeof v.getDataSet === "function" && typeof v.getIds === "function" && typeof v.length === "number" && typeof map$2(v) === "function" && typeof v.max === "function" && typeof v.min === "function" && typeof v.off === "function" && typeof v.on === "function" && typeof v.remove === "function" && typeof v.setOptions === "function" && typeof v.stream === "function" && typeof v.update === "function" && typeof v.updateOnly === "function";
+}
+/**
+ * Check that given value is compatible with Vis Data View interface.
+ *
+ * @param idProp - The expected property to contain item id.
+ * @param v - The value to be tested.
+ *
+ * @returns True if all expected values and methods match, false otherwise.
+ */
+
+
+function isDataViewLike(idProp, v) {
+  return _typeof_1(v) === "object" && v !== null && idProp === v.idProp && typeof forEach$2(v) === "function" && typeof v.get === "function" && typeof v.getDataSet === "function" && typeof v.getIds === "function" && typeof v.length === "number" && typeof map$2(v) === "function" && typeof v.off === "function" && typeof v.on === "function" && typeof v.stream === "function" && isDataSetLike(idProp, v.getDataSet());
+}
 
 var index$2 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
@@ -16347,7 +18540,9 @@ var index$2 = /*#__PURE__*/Object.freeze({
 	DataStream: DataStream,
 	DataView: DataView,
 	Queue: Queue,
-	createNewDataPipeFrom: createNewDataPipeFrom
+	createNewDataPipeFrom: createNewDataPipeFrom,
+	isDataSetLike: isDataSetLike,
+	isDataViewLike: isDataViewLike
 });
 
 var nativeGetOwnPropertyNames$2 = objectGetOwnPropertyNamesExternal.f;
@@ -16422,27 +18617,27 @@ var _parseFloat$2 = _parseFloat$1;
  *       should be able to get rid of this method.
  *
  * @param {string}  subOption  option within object 'chosen' to consider; either 'node', 'edge' or 'label'
- * @param {Object}  pile       array of options objects to consider
+ * @param {object}  pile       array of options objects to consider
  *
- * @return {boolean|function}  value for passed subOption of 'chosen' to use
+ * @returns {boolean | Function}  value for passed subOption of 'chosen' to use
  */
 
 function choosify(subOption, pile) {
   // allowed values for subOption
-  var allowed = ['node', 'edge', 'label'];
+  var allowed = ["node", "edge", "label"];
   var value = true;
-  var chosen = topMost(pile, 'chosen');
+  var chosen = topMost(pile, "chosen");
 
-  if (typeof chosen === 'boolean') {
+  if (typeof chosen === "boolean") {
     value = chosen;
-  } else if (_typeof_1(chosen) === 'object') {
+  } else if (_typeof_1(chosen) === "object") {
     if (indexOf$3(allowed).call(allowed, subOption) === -1) {
-      throw new Error('choosify: subOption \'' + subOption + '\' should be one of ' + "'" + allowed.join("', '") + "'");
+      throw new Error("choosify: subOption '" + subOption + "' should be one of " + "'" + allowed.join("', '") + "'");
     }
 
-    var chosenEdge = topMost(pile, ['chosen', subOption]);
+    var chosenEdge = topMost(pile, ["chosen", subOption]);
 
-    if (typeof chosenEdge === 'boolean' || typeof chosenEdge === 'function') {
+    if (typeof chosenEdge === "boolean" || typeof chosenEdge === "function") {
       value = chosenEdge;
     }
   }
@@ -16501,17 +18696,17 @@ function pointInRect(rect, point, rotationPoint) {
 
 function isValidLabel(text) {
   // Note that this is quite strict: types that *might* be converted to string are disallowed
-  return typeof text === 'string' && text !== '';
+  return typeof text === "string" && text !== "";
 }
 /**
  * Returns x, y of self reference circle based on provided angle
  *
- * @param {Object} ctx
+ * @param {object} ctx
  * @param {number} angle
  * @param {number} radius
  * @param {VisNode} node
  *
- * @returns {Object} x and y coordinates
+ * @returns {object} x and y coordinates
  */
 
 function getSelfRefCoordinates(ctx, angle, radius, node) {
@@ -16555,10 +18750,11 @@ function getSelfRefCoordinates(ctx, angle, radius, node) {
 
 /**
  * Callback to determine text dimensions, using the parent label settings.
+ *
  * @callback MeasureText
  * @param {text} text
  * @param {text} mod
- * @return {Object} { width, values} width in pixels and font attributes
+ * @returns {object} { width, values} width in pixels and font attributes
  */
 
 /**
@@ -16592,7 +18788,7 @@ var LabelAccumulator = /*#__PURE__*/function () {
   createClass(LabelAccumulator, [{
     key: "_add",
     value: function _add(l, text) {
-      var mod = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'normal';
+      var mod = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "normal";
 
       if (this.lines[l] === undefined) {
         this.lines[l] = {
@@ -16650,7 +18846,7 @@ var LabelAccumulator = /*#__PURE__*/function () {
   }, {
     key: "append",
     value: function append(text) {
-      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'normal';
+      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "normal";
 
       this._add(this.current, text, mod);
     }
@@ -16664,7 +18860,7 @@ var LabelAccumulator = /*#__PURE__*/function () {
   }, {
     key: "newLine",
     value: function newLine(text) {
-      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'normal';
+      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "normal";
 
       this._add(this.current, text, mod);
 
@@ -16808,22 +19004,22 @@ var LabelAccumulator = /*#__PURE__*/function () {
 
 var tagPattern = {
   // HTML
-  '<b>': /<b>/,
-  '<i>': /<i>/,
-  '<code>': /<code>/,
-  '</b>': /<\/b>/,
-  '</i>': /<\/i>/,
-  '</code>': /<\/code>/,
+  "<b>": /<b>/,
+  "<i>": /<i>/,
+  "<code>": /<code>/,
+  "</b>": /<\/b>/,
+  "</i>": /<\/i>/,
+  "</code>": /<\/code>/,
   // Markdown
-  '*': /\*/,
+  "*": /\*/,
   // bold
-  '_': /\_/,
+  _: /_/,
   // ital
-  '`': /`/,
+  "`": /`/,
   // mono
-  'afterBold': /[^\*]/,
-  'afterItal': /[^_]/,
-  'afterMono': /[^`]/
+  afterBold: /[^*]/,
+  afterItal: /[^_]/,
+  afterMono: /[^`]/
 };
 /**
  * Internal helper class for parsing the markup tags for HTML and Markdown.
@@ -16862,7 +19058,7 @@ var MarkupAccumulator = /*#__PURE__*/function () {
   createClass(MarkupAccumulator, [{
     key: "mod",
     value: function mod() {
-      return this.modStack.length === 0 ? 'normal' : this.modStack[0];
+      return this.modStack.length === 0 ? "normal" : this.modStack[0];
     }
     /**
      * Return the mod label currently active
@@ -16874,13 +19070,13 @@ var MarkupAccumulator = /*#__PURE__*/function () {
   }, {
     key: "modName",
     value: function modName() {
-      if (this.modStack.length === 0) return 'normal';else if (this.modStack[0] === 'mono') return 'mono';else {
+      if (this.modStack.length === 0) return "normal";else if (this.modStack[0] === "mono") return "mono";else {
         if (this.bold && this.ital) {
-          return 'boldital';
+          return "boldital";
         } else if (this.bold) {
-          return 'bold';
+          return "bold";
         } else if (this.ital) {
-          return 'ital';
+          return "ital";
         }
       }
     }
@@ -17027,7 +19223,7 @@ var MarkupAccumulator = /*#__PURE__*/function () {
     value: function parseEndTag(tagName, tag, nextTag) {
       var checkTag = this.mod() === tagName;
 
-      if (tagName === 'mono') {
+      if (tagName === "mono") {
         // special handling for 'mono'
         checkTag = checkTag && this.mono;
       } else {
@@ -17133,9 +19329,9 @@ var LabelSplitter = /*#__PURE__*/function () {
     /**
      * Callback to determine text width; passed to LabelAccumulator instance
      *
-     * @param  {String} text string to determine width of
-     * @param  {String} mod  font type to use for this text
-     * @return {Object} { width, values} width in pixels and font attributes
+     * @param  {string} text string to determine width of
+     * @param  {string} mod  font type to use for this text
+     * @returns {object} { width, values} width in pixels and font attributes
      */
 
     var textWidth = function textWidth(text, mod) {
@@ -17146,7 +19342,7 @@ var LabelSplitter = /*#__PURE__*/function () {
 
       var width = 0;
 
-      if (text !== '') {
+      if (text !== "") {
         var measure = _this.ctx.measureText(text);
 
         width = measure.width;
@@ -17188,13 +19384,13 @@ var LabelSplitter = /*#__PURE__*/function () {
 
       var font = this.parent.fontOptions; // Normalize the end-of-line's to a single representation - order important
 
-      text = text.replace(/\r\n/g, '\n'); // Dos EOL's
+      text = text.replace(/\r\n/g, "\n"); // Dos EOL's
 
-      text = text.replace(/\r/g, '\n'); // Mac EOL's
+      text = text.replace(/\r/g, "\n"); // Mac EOL's
       // Note that at this point, there can be no \r's in the text.
       // This is used later on splitStringIntoLines() to split multifont texts.
 
-      var nlLines = String(text).split('\n');
+      var nlLines = String(text).split("\n");
       var lineCount = nlLines.length;
 
       if (font.multi) {
@@ -17256,12 +19452,12 @@ var LabelSplitter = /*#__PURE__*/function () {
   }, {
     key: "decodeMarkupSystem",
     value: function decodeMarkupSystem(markupSystem) {
-      var system = 'none';
+      var system = "none";
 
-      if (markupSystem === 'markdown' || markupSystem === 'md') {
-        system = 'markdown';
-      } else if (markupSystem === true || markupSystem === 'html') {
-        system = 'html';
+      if (markupSystem === "markdown" || markupSystem === "md") {
+        system = "markdown";
+      } else if (markupSystem === true || markupSystem === "html") {
+        system = "html";
       }
 
       return system;
@@ -17279,7 +19475,7 @@ var LabelSplitter = /*#__PURE__*/function () {
 
       var parseEntities = function parseEntities(ch) {
         if (/&/.test(ch)) {
-          var parsed = s.replace(s.text, '&lt;', '<') || s.replace(s.text, '&amp;', '&');
+          var parsed = s.replace(s.text, "&lt;", "<") || s.replace(s.text, "&amp;", "&");
 
           if (!parsed) {
             s.add("&");
@@ -17293,7 +19489,7 @@ var LabelSplitter = /*#__PURE__*/function () {
 
       while (s.position < s.text.length) {
         var ch = s.text.charAt(s.position);
-        var parsed = s.parseWS(ch) || /</.test(ch) && (s.parseStartTag('bold', '<b>') || s.parseStartTag('ital', '<i>') || s.parseStartTag('mono', '<code>') || s.parseEndTag('bold', '</b>') || s.parseEndTag('ital', '</i>') || s.parseEndTag('mono', '</code>')) || parseEntities(ch);
+        var parsed = s.parseWS(ch) || /</.test(ch) && (s.parseStartTag("bold", "<b>") || s.parseStartTag("ital", "<i>") || s.parseStartTag("mono", "<code>") || s.parseEndTag("bold", "</b>") || s.parseEndTag("ital", "</i>") || s.parseEndTag("mono", "</code>")) || parseEntities(ch);
 
         if (!parsed) {
           s.add(ch);
@@ -17341,7 +19537,7 @@ var LabelSplitter = /*#__PURE__*/function () {
 
       while (s.position < s.text.length) {
         var ch = s.text.charAt(s.position);
-        var parsed = s.parseWS(ch) || parseOverride(ch) || (beginable || s.spacing) && (s.parseStartTag('bold', '*') || s.parseStartTag('ital', '_') || s.parseStartTag('mono', '`')) || s.parseEndTag('bold', '*', 'afterBold') || s.parseEndTag('ital', '_', 'afterItal') || s.parseEndTag('mono', '`', 'afterMono');
+        var parsed = s.parseWS(ch) || parseOverride(ch) || (beginable || s.spacing) && (s.parseStartTag("bold", "*") || s.parseStartTag("ital", "_") || s.parseStartTag("mono", "`")) || s.parseEndTag("bold", "*", "afterBold") || s.parseEndTag("ital", "_", "afterItal") || s.parseEndTag("mono", "`", "afterMono");
 
         if (!parsed) {
           s.add(ch);
@@ -17368,14 +19564,14 @@ var LabelSplitter = /*#__PURE__*/function () {
     value: function splitBlocks(text, markupSystem) {
       var system = this.decodeMarkupSystem(markupSystem);
 
-      if (system === 'none') {
+      if (system === "none") {
         return [{
           text: text,
-          mod: 'normal'
+          mod: "normal"
         }];
-      } else if (system === 'markdown') {
+      } else if (system === "markdown") {
         return this.splitMarkdownBlocks(text);
-      } else if (system === 'html') {
+      } else if (system === "html") {
         return this.splitHtmlBlocks(text);
       }
     }
@@ -17396,18 +19592,18 @@ var LabelSplitter = /*#__PURE__*/function () {
      * current max width.
      *
      * @param {Array} words  Array of strings signifying a text lines
-     * @return {number}      index of first item in string making string go over max
+     * @returns {number}      index of first item in string making string go over max
      * @private
      */
 
   }, {
     key: "getLongestFit",
     value: function getLongestFit(words) {
-      var text = '';
+      var text = "";
       var w = 0;
 
       while (w < words.length) {
-        var pre = text === '' ? '' : ' ';
+        var pre = text === "" ? "" : " ";
         var newText = text + pre + words[w];
         if (this.overMaxWidth(newText)) break;
         text = newText;
@@ -17421,7 +19617,7 @@ var LabelSplitter = /*#__PURE__*/function () {
      * current max width.
      *
      * @param {Array} words Array of strings signifying a text lines
-     * @return {number} index of first item in string making string go over max
+     * @returns {number} index of first item in string making string go over max
      */
 
   }, {
@@ -17430,7 +19626,7 @@ var LabelSplitter = /*#__PURE__*/function () {
       var w = 0;
 
       while (w < words.length) {
-        if (this.overMaxWidth(slice$5(words).call(words, 0, w))) break;
+        if (this.overMaxWidth(slice$6(words).call(words, 0, w))) break;
         w++;
       }
 
@@ -17454,16 +19650,16 @@ var LabelSplitter = /*#__PURE__*/function () {
   }, {
     key: "splitStringIntoLines",
     value: function splitStringIntoLines(str) {
-      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'normal';
+      var mod = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "normal";
       var appendLast = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       // Set the canvas context font, based upon the current selected/hover state
       // and the provided mod, so the text measurement performed by getLongestFit
       // will be accurate - and not just use the font of whoever last used the canvas.
       this.parent.getFormattingValues(this.ctx, this.selected, this.hover, mod); // Still-present spaces are relevant, retain them
 
-      str = str.replace(/^( +)/g, '$1\r');
-      str = str.replace(/([^\r][^ ]*)( +)/g, '$1\r$2\r');
-      var words = str.split('\r');
+      str = str.replace(/^( +)/g, "$1\r");
+      str = str.replace(/([^\r][^ ]*)( +)/g, "$1\r$2\r");
+      var words = str.split("\r");
 
       while (words.length > 0) {
         var w = this.getLongestFit(words);
@@ -17473,20 +19669,20 @@ var LabelSplitter = /*#__PURE__*/function () {
           var word = words[0]; // Break the word to the largest part that fits the line
 
           var x = this.getLongestFitWord(word);
-          this.lines.newLine(slice$5(word).call(word, 0, x), mod); // Adjust the word, so that the rest will be done next iteration
+          this.lines.newLine(slice$6(word).call(word, 0, x), mod); // Adjust the word, so that the rest will be done next iteration
 
-          words[0] = slice$5(word).call(word, x);
+          words[0] = slice$6(word).call(word, x);
         } else {
           // skip any space that is replaced by a newline
           var newW = w;
 
-          if (words[w - 1] === ' ') {
+          if (words[w - 1] === " ") {
             w--;
-          } else if (words[newW] === ' ') {
+          } else if (words[newW] === " ") {
             newW++;
           }
 
-          var text = slice$5(words).call(words, 0, w).join("");
+          var text = slice$6(words).call(words, 0, w).join("");
 
           if (w == words.length && appendLast) {
             this.lines.append(text, mod);
@@ -17495,7 +19691,7 @@ var LabelSplitter = /*#__PURE__*/function () {
           } // Adjust the word, so that the rest will be done next iteration
 
 
-          words = slice$5(words).call(words, newW);
+          words = slice$6(words).call(words, newW);
         }
       }
     }
@@ -17506,18 +19702,19 @@ var LabelSplitter = /*#__PURE__*/function () {
 
 /**
  * List of special styles for multi-fonts
+ *
  * @private
  */
 
-var multiFontStyle = ['bold', 'ital', 'boldital', 'mono'];
+var multiFontStyle = ["bold", "ital", "boldital", "mono"];
 /**
  * A Label to be used for Nodes or Edges.
  */
 
 var Label = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
-   * @param {Object} options
+   * @param {object} body
+   * @param {object} options
    * @param {boolean} [edgelabel=false]
    */
   function Label(body, options) {
@@ -17541,7 +19738,7 @@ var Label = /*#__PURE__*/function () {
     this.isEdgeLabel = edgelabel;
   }
   /**
-   * @param {Object} options the options of the parent Node-instance
+   * @param {object} options the options of the parent Node-instance
    */
 
 
@@ -17561,9 +19758,9 @@ var Label = /*#__PURE__*/function () {
 
       if (options.font !== undefined && options.font !== null) {
         // font options can be deleted at various levels
-        if (typeof options.font === 'string') {
+        if (typeof options.font === "string") {
           this.baseSize = this.fontOptions.size;
-        } else if (_typeof_1(options.font) === 'object') {
+        } else if (_typeof_1(options.font) === "object") {
           var size = options.font.size;
 
           if (size !== undefined) {
@@ -17578,7 +19775,7 @@ var Label = /*#__PURE__*/function () {
      * Member fontOptions serves as an accumulator for the current font options.
      * As such, it needs to be completely separated from the node options.
      *
-     * @param {Object} newFontOptions the new font options to process
+     * @param {object} newFontOptions the new font options to process
      * @private
      */
 
@@ -17600,7 +19797,7 @@ var Label = /*#__PURE__*/function () {
 
 
       forEach$3(newFontOptions, function (prop, n) {
-        if (prop !== undefined && prop !== null && _typeof_1(prop) !== 'object') {
+        if (prop !== undefined && prop !== null && _typeof_1(prop) !== "object") {
           _this.fontOptions[n] = prop;
         }
       });
@@ -17611,9 +19808,9 @@ var Label = /*#__PURE__*/function () {
      * Note that following is not done here and have to be done after the call:
      * - Not all font options are set (vadjust, mod)
      *
-     * @param {Object} outOptions  out-parameter, object in which to store the parse results (if any)
-     * @param {Object} inOptions  font options to parse
-     * @return {boolean} true if font parsed as string, false otherwise
+     * @param {object} outOptions  out-parameter, object in which to store the parse results (if any)
+     * @param {object} inOptions  font options to parse
+     * @returns {boolean} true if font parsed as string, false otherwise
      * @static
      */
 
@@ -17637,42 +19834,42 @@ var Label = /*#__PURE__*/function () {
         minWdt: -1,
         constrainHeight: false,
         minHgt: -1,
-        valign: 'middle'
+        valign: "middle"
       };
-      var widthConstraint = topMost(pile, 'widthConstraint');
+      var widthConstraint = topMost(pile, "widthConstraint");
 
-      if (typeof widthConstraint === 'number') {
+      if (typeof widthConstraint === "number") {
         fontOptions.maxWdt = Number(widthConstraint);
         fontOptions.minWdt = Number(widthConstraint);
-      } else if (_typeof_1(widthConstraint) === 'object') {
-        var widthConstraintMaximum = topMost(pile, ['widthConstraint', 'maximum']);
+      } else if (_typeof_1(widthConstraint) === "object") {
+        var widthConstraintMaximum = topMost(pile, ["widthConstraint", "maximum"]);
 
-        if (typeof widthConstraintMaximum === 'number') {
+        if (typeof widthConstraintMaximum === "number") {
           fontOptions.maxWdt = Number(widthConstraintMaximum);
         }
 
-        var widthConstraintMinimum = topMost(pile, ['widthConstraint', 'minimum']);
+        var widthConstraintMinimum = topMost(pile, ["widthConstraint", "minimum"]);
 
-        if (typeof widthConstraintMinimum === 'number') {
+        if (typeof widthConstraintMinimum === "number") {
           fontOptions.minWdt = Number(widthConstraintMinimum);
         }
       }
 
-      var heightConstraint = topMost(pile, 'heightConstraint');
+      var heightConstraint = topMost(pile, "heightConstraint");
 
-      if (typeof heightConstraint === 'number') {
+      if (typeof heightConstraint === "number") {
         fontOptions.minHgt = Number(heightConstraint);
-      } else if (_typeof_1(heightConstraint) === 'object') {
-        var heightConstraintMinimum = topMost(pile, ['heightConstraint', 'minimum']);
+      } else if (_typeof_1(heightConstraint) === "object") {
+        var heightConstraintMinimum = topMost(pile, ["heightConstraint", "minimum"]);
 
-        if (typeof heightConstraintMinimum === 'number') {
+        if (typeof heightConstraintMinimum === "number") {
           fontOptions.minHgt = Number(heightConstraintMinimum);
         }
 
-        var heightConstraintValign = topMost(pile, ['heightConstraint', 'valign']);
+        var heightConstraintValign = topMost(pile, ["heightConstraint", "valign"]);
 
-        if (typeof heightConstraintValign === 'string') {
-          if (heightConstraintValign === 'top' || heightConstraintValign === 'bottom') {
+        if (typeof heightConstraintValign === "string") {
+          if (heightConstraintValign === "top" || heightConstraintValign === "bottom") {
             fontOptions.valign = heightConstraintValign;
           }
         }
@@ -17683,7 +19880,7 @@ var Label = /*#__PURE__*/function () {
     /**
      * Set options and update internal state
      *
-     * @param {Object} options  options to set
+     * @param {object} options  options to set
      * @param {Array}  pile     array of option objects to consider for option 'chosen'
      */
 
@@ -17693,7 +19890,7 @@ var Label = /*#__PURE__*/function () {
       this.setOptions(options, true);
       this.propagateFonts(pile);
       deepExtend(this.fontOptions, this.constrain(pile));
-      this.fontOptions.chooser = choosify('label', pile);
+      this.fontOptions.chooser = choosify("label", pile);
     }
     /**
      * When margins are set in an element, adjust sizes is called to remove them
@@ -17869,7 +20066,7 @@ var Label = /*#__PURE__*/function () {
     key: "getFontOptions",
     value: function getFontOptions(pile, multiName) {
       var result = {};
-      var optionNames = ['color', 'size', 'face', 'mod', 'vadjust']; // List of allowed options per multi-font
+      var optionNames = ["color", "size", "face", "mod", "vadjust"]; // List of allowed options per multi-font
 
       for (var i = 0; i < optionNames.length; ++i) {
         var mod = optionNames[i];
@@ -17920,6 +20117,7 @@ var Label = /*#__PURE__*/function () {
     }
     /**
      * Main function. This is called from anything that wants to draw a label.
+     *
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} x
      * @param {number} y
@@ -17931,7 +20129,7 @@ var Label = /*#__PURE__*/function () {
   }, {
     key: "draw",
     value: function draw(ctx, x, y, selected, hover) {
-      var baseline = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'middle';
+      var baseline = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "middle";
       // if no label, return
       if (this.elementOptions.label === undefined) return; // check if we have to render the label
 
@@ -17952,6 +20150,7 @@ var Label = /*#__PURE__*/function () {
     }
     /**
      * Draws the label background
+     *
      * @param {CanvasRenderingContext2D} ctx
      * @private
      */
@@ -17978,7 +20177,7 @@ var Label = /*#__PURE__*/function () {
   }, {
     key: "_drawText",
     value: function _drawText(ctx, x, y) {
-      var baseline = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'middle';
+      var baseline = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "middle";
       var viewFontSize = arguments.length > 4 ? arguments[4] : undefined;
 
       var _this$_setAlignment = this._setAlignment(ctx, x, y, baseline);
@@ -17987,15 +20186,15 @@ var Label = /*#__PURE__*/function () {
 
       x = _this$_setAlignment2[0];
       y = _this$_setAlignment2[1];
-      ctx.textAlign = 'left';
+      ctx.textAlign = "left";
       x = x - this.size.width / 2; // Shift label 1/2-distance to the left
 
       if (this.fontOptions.valign && this.size.height > this.size.labelHeight) {
-        if (this.fontOptions.valign === 'top') {
+        if (this.fontOptions.valign === "top") {
           y -= (this.size.height - this.size.labelHeight) / 2;
         }
 
-        if (this.fontOptions.valign === 'bottom') {
+        if (this.fontOptions.valign === "bottom") {
           y += (this.size.height - this.size.labelHeight) / 2;
         }
       } // draw the text
@@ -18007,9 +20206,9 @@ var Label = /*#__PURE__*/function () {
         if (line && line.blocks) {
           var width = 0;
 
-          if (this.isEdgeLabel || this.fontOptions.align === 'center') {
+          if (this.isEdgeLabel || this.fontOptions.align === "center") {
             width += (this.size.width - line.width) / 2;
-          } else if (this.fontOptions.align === 'right') {
+          } else if (this.fontOptions.align === "right") {
             width += this.size.width - line.width;
           }
 
@@ -18025,7 +20224,7 @@ var Label = /*#__PURE__*/function () {
             if (block.strokeWidth > 0) {
               ctx.lineWidth = block.strokeWidth;
               ctx.strokeStyle = strokeColor;
-              ctx.lineJoin = 'round';
+              ctx.lineJoin = "round";
             }
 
             ctx.fillStyle = fontColor;
@@ -18057,19 +20256,19 @@ var Label = /*#__PURE__*/function () {
     value: function _setAlignment(ctx, x, y, baseline) {
       // check for label alignment (for edges)
       // TODO: make alignment for nodes
-      if (this.isEdgeLabel && this.fontOptions.align !== 'horizontal' && this.pointToSelf === false) {
+      if (this.isEdgeLabel && this.fontOptions.align !== "horizontal" && this.pointToSelf === false) {
         x = 0;
         y = 0;
         var lineMargin = 2;
 
-        if (this.fontOptions.align === 'top') {
-          ctx.textBaseline = 'alphabetic';
+        if (this.fontOptions.align === "top") {
+          ctx.textBaseline = "alphabetic";
           y -= 2 * lineMargin; // distance from edge, required because we use alphabetic. Alphabetic has less difference between browsers
-        } else if (this.fontOptions.align === 'bottom') {
-          ctx.textBaseline = 'hanging';
+        } else if (this.fontOptions.align === "bottom") {
+          ctx.textBaseline = "hanging";
           y += 2 * lineMargin; // distance from edge, required because we use hanging. Hanging has less difference between browsers
         } else {
-          ctx.textBaseline = 'middle';
+          ctx.textBaseline = "middle";
         }
       } else {
         ctx.textBaseline = baseline;
@@ -18091,8 +20290,8 @@ var Label = /*#__PURE__*/function () {
   }, {
     key: "_getColor",
     value: function _getColor(color, viewFontSize, initialStrokeColor) {
-      var fontColor = color || '#000000';
-      var strokeColor = initialStrokeColor || '#ffffff';
+      var fontColor = color || "#000000";
+      var strokeColor = initialStrokeColor || "#ffffff";
 
       if (viewFontSize <= this.elementOptions.scaling.label.drawThreshold) {
         var opacity = Math.max(0, Math.min(1, 1 - (this.elementOptions.scaling.label.drawThreshold - viewFontSize)));
@@ -18127,7 +20326,7 @@ var Label = /*#__PURE__*/function () {
     /**
      * Get the current dimensions of the label
      *
-     * @return {rect}
+     * @returns {rect}
      */
 
   }, {
@@ -18142,17 +20341,17 @@ var Label = /*#__PURE__*/function () {
         var x2 = -this.size.width * 0.5;
 
         switch (this.fontOptions.align) {
-          case 'middle':
+          case "middle":
             x = x2;
             y = -this.size.height * 0.5;
             break;
 
-          case 'top':
+          case "top":
             x = x2;
             y = -(this.size.height + lineMargin);
             break;
 
-          case 'bottom':
+          case "bottom":
             x = x2;
             y = lineMargin;
             break;
@@ -18182,7 +20381,7 @@ var Label = /*#__PURE__*/function () {
     value: function calculateLabelSize(ctx, selected, hover) {
       var x = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
       var y = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-      var baseline = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'middle';
+      var baseline = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "middle";
 
       this._processLabel(ctx, selected, hover);
 
@@ -18211,7 +20410,7 @@ var Label = /*#__PURE__*/function () {
     value: function getFormattingValues(ctx, selected, hover, mod) {
       var getValue = function getValue(fontOptions, mod, option) {
         if (mod === "normal") {
-          if (option === 'mod') return "";
+          if (option === "mod") return "";
           return fontOptions[option];
         }
 
@@ -18225,20 +20424,20 @@ var Label = /*#__PURE__*/function () {
       };
 
       var values = {
-        color: getValue(this.fontOptions, mod, 'color'),
-        size: getValue(this.fontOptions, mod, 'size'),
-        face: getValue(this.fontOptions, mod, 'face'),
-        mod: getValue(this.fontOptions, mod, 'mod'),
-        vadjust: getValue(this.fontOptions, mod, 'vadjust'),
+        color: getValue(this.fontOptions, mod, "color"),
+        size: getValue(this.fontOptions, mod, "size"),
+        face: getValue(this.fontOptions, mod, "face"),
+        mod: getValue(this.fontOptions, mod, "mod"),
+        vadjust: getValue(this.fontOptions, mod, "vadjust"),
         strokeWidth: this.fontOptions.strokeWidth,
         strokeColor: this.fontOptions.strokeColor
       };
 
       if (selected || hover) {
         if (mod === "normal" && this.fontOptions.chooser === true && this.elementOptions.labelHighlightBold) {
-          values.mod = 'bold';
+          values.mod = "bold";
         } else {
-          if (typeof this.fontOptions.chooser === 'function') {
+          if (typeof this.fontOptions.chooser === "function") {
             this.fontOptions.chooser(values, this.elementOptions.id, selected, hover);
           }
         }
@@ -18288,6 +20487,7 @@ var Label = /*#__PURE__*/function () {
     }
     /**
      * This explodes the label string into lines and sets the width, height and number of lines.
+     *
      * @param {CanvasRenderingContext2D} ctx
      * @param {boolean} selected
      * @param {boolean} hover
@@ -18322,7 +20522,7 @@ var Label = /*#__PURE__*/function () {
     /**
      * Check if this label is visible
      *
-     * @return {boolean} true if this label will be show, false otherwise
+     * @returns {boolean} true if this label will be show, false otherwise
      */
 
   }, {
@@ -18343,9 +20543,9 @@ var Label = /*#__PURE__*/function () {
   }], [{
     key: "parseFontString",
     value: function parseFontString(outOptions, inOptions) {
-      if (!inOptions || typeof inOptions !== 'string') return false;
+      if (!inOptions || typeof inOptions !== "string") return false;
       var newOptionsArray = inOptions.split(" ");
-      outOptions.size = +newOptionsArray[0].replace("px", '');
+      outOptions.size = +newOptionsArray[0].replace("px", "");
       outOptions.face = newOptionsArray[1];
       outOptions.color = newOptionsArray[2];
       return true;
@@ -18355,53 +20555,13 @@ var Label = /*#__PURE__*/function () {
   return Label;
 }();
 
-// https://tc39.github.io/ecma262/#sec-array.prototype.fill
-
-
-var arrayFill = function fill(value
-/* , start = 0, end = @length */
-) {
-  var O = toObject(this);
-  var length = toLength(O.length);
-  var argumentsLength = arguments.length;
-  var index = toAbsoluteIndex(argumentsLength > 1 ? arguments[1] : undefined, length);
-  var end = argumentsLength > 2 ? arguments[2] : undefined;
-  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
-
-  while (endPos > index) O[index++] = value;
-
-  return O;
-};
-
-// https://tc39.github.io/ecma262/#sec-array.prototype.fill
-
-_export({
-  target: 'Array',
-  proto: true
-}, {
-  fill: arrayFill
-}); // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
-
-var fill = entryVirtual('Array').fill;
-
-var ArrayPrototype$g = Array.prototype;
-
-var fill_1 = function (it) {
-  var own = it.fill;
-  return it === ArrayPrototype$g || it instanceof Array && own === ArrayPrototype$g.fill ? fill : own;
-};
-
-var fill$1 = fill_1;
-
-var fill$2 = fill$1;
-
 /**
  * The Base class for all Nodes.
  */
 var NodeBase = /*#__PURE__*/function () {
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function NodeBase(options, body, labelModule) {
@@ -18426,7 +20586,7 @@ var NodeBase = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -18447,7 +20607,7 @@ var NodeBase = /*#__PURE__*/function () {
       this.margin = {};
 
       if (this.options.margin) {
-        if (_typeof_1(this.options.margin) == 'object') {
+        if (_typeof_1(this.options.margin) == "object") {
           this.margin.top = this.options.margin.top;
           this.margin.right = this.options.margin.right;
           this.margin.bottom = this.options.margin.bottom;
@@ -18507,7 +20667,7 @@ var NodeBase = /*#__PURE__*/function () {
     key: "disableShadow",
     value: function disableShadow(ctx, values) {
       if (values.shadow) {
-        ctx.shadowColor = 'rgba(0,0,0,0)';
+        ctx.shadowColor = "rgba(0,0,0,0)";
         ctx.shadowBlur = 0;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -18741,7 +20901,7 @@ function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !
 /**
  * A Box Node/Cluster shape.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var Box = /*#__PURE__*/function (_NodeBase) {
@@ -18750,8 +20910,8 @@ var Box = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$1(Box);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Box(options, body, labelModule) {
@@ -18864,7 +21024,7 @@ function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !
  *       Rename this to ImageBase
  *       Consolidate common code in Image and CircleImage to base class
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var CircleImageBase = /*#__PURE__*/function (_NodeBase) {
@@ -18873,8 +21033,8 @@ var CircleImageBase = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$2(CircleImageBase);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function CircleImageBase(options, body, labelModule) {
@@ -18889,9 +21049,9 @@ var CircleImageBase = /*#__PURE__*/function (_NodeBase) {
   }
   /**
    *
-   * @param {Object} options
-   * @param {Object} [imageObj]
-   * @param {Object} [imageObjAlt]
+   * @param {object} options
+   * @param {object} [imageObj]
+   * @param {object} [imageObjAlt]
    */
 
 
@@ -18968,7 +21128,7 @@ var CircleImageBase = /*#__PURE__*/function (_NodeBase) {
       if (this.options.imagePadding) {
         var optImgPadding = this.options.imagePadding;
 
-        if (_typeof_1(optImgPadding) == 'object') {
+        if (_typeof_1(optImgPadding) == "object") {
           imgPadding.top = optImgPadding.top;
           imgPadding.right = optImgPadding.right;
           imgPadding.bottom = optImgPadding.bottom;
@@ -19099,7 +21259,7 @@ var CircleImageBase = /*#__PURE__*/function (_NodeBase) {
         this.labelOffset = offset;
       }
 
-      this.labelModule.draw(ctx, x, yLabel, selected, hover, 'hanging');
+      this.labelModule.draw(ctx, x, yLabel, selected, hover, "hanging");
     }
   }]);
 
@@ -19112,7 +21272,7 @@ function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !
 /**
  * A Circle Node/Cluster shape.
  *
- * @extends CircleImageBase
+ * @augments CircleImageBase
  */
 
 var Circle = /*#__PURE__*/function (_CircleImageBase) {
@@ -19121,8 +21281,8 @@ var Circle = /*#__PURE__*/function (_CircleImageBase) {
   var _super = _createSuper$3(Circle);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Circle(options, body, labelModule) {
@@ -19199,14 +21359,12 @@ var Circle = /*#__PURE__*/function (_CircleImageBase) {
     /**
      *
      * @param {CanvasRenderingContext2D} ctx
-     * @param {number} angle - Unused
      * @returns {number}
      */
 
   }, {
     key: "distanceToBorder",
-    value: function distanceToBorder(ctx, angle) {
-      // eslint-disable-line no-unused-vars
+    value: function distanceToBorder(ctx) {
       if (ctx) {
         this.resize(ctx);
       }
@@ -19224,7 +21382,7 @@ function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !
 /**
  * A CircularImage Node/Cluster shape.
  *
- * @extends CircleImageBase
+ * @augments CircleImageBase
  */
 
 var CircularImage = /*#__PURE__*/function (_CircleImageBase) {
@@ -19233,8 +21391,8 @@ var CircularImage = /*#__PURE__*/function (_CircleImageBase) {
   var _super = _createSuper$4(CircularImage);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    * @param {Image} imageObj
    * @param {Image} imageObjAlt
@@ -19296,7 +21454,7 @@ var CircularImage = /*#__PURE__*/function (_CircleImageBase) {
       var labelX = x,
           labelY = y;
 
-      if (this.options.shapeProperties.coordinateOrigin === 'top-left') {
+      if (this.options.shapeProperties.coordinateOrigin === "top-left") {
         this.left = x;
         this.top = y;
         labelX += this.width / 2;
@@ -19333,7 +21491,7 @@ var CircularImage = /*#__PURE__*/function (_CircleImageBase) {
   }, {
     key: "updateBoundingBox",
     value: function updateBoundingBox(x, y) {
-      if (this.options.shapeProperties.coordinateOrigin === 'top-left') {
+      if (this.options.shapeProperties.coordinateOrigin === "top-left") {
         this.boundingBox.top = y;
         this.boundingBox.left = x;
         this.boundingBox.right = x + this.options.size * 2;
@@ -19353,14 +21511,12 @@ var CircularImage = /*#__PURE__*/function (_CircleImageBase) {
     /**
      *
      * @param {CanvasRenderingContext2D} ctx
-     * @param {number} angle - Unused
      * @returns {number}
      */
 
   }, {
     key: "distanceToBorder",
-    value: function distanceToBorder(ctx, angle) {
-      // eslint-disable-line no-unused-vars
+    value: function distanceToBorder(ctx) {
       if (ctx) {
         this.resize(ctx);
       }
@@ -19378,7 +21534,7 @@ function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !
 /**
  * Base class for constructing Node/Cluster Shapes.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var ShapeBase = /*#__PURE__*/function (_NodeBase) {
@@ -19387,8 +21543,8 @@ var ShapeBase = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$5(ShapeBase);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function ShapeBase(options, body, labelModule) {
@@ -19401,7 +21557,7 @@ var ShapeBase = /*#__PURE__*/function (_NodeBase) {
    * @param {CanvasRenderingContext2D} ctx
    * @param {boolean} [selected]
    * @param {boolean} [hover]
-   * @param {Object} [values={size: this.options.size}]
+   * @param {object} [values={size: this.options.size}]
    */
 
 
@@ -19436,7 +21592,7 @@ var ShapeBase = /*#__PURE__*/function (_NodeBase) {
      * @param {ArrowOptions} values
      * @private
      *
-     * @returns {Object} Callbacks to draw later on higher layers.
+     * @returns {object} Callbacks to draw later on higher layers.
      */
 
   }, {
@@ -19466,11 +21622,11 @@ var ShapeBase = /*#__PURE__*/function (_NodeBase) {
           if (_this.options.label !== undefined) {
             // Need to call following here in order to ensure value for
             // `this.labelModule.size.height`.
-            _this.labelModule.calculateLabelSize(ctx, selected, hover, x, y, 'hanging');
+            _this.labelModule.calculateLabelSize(ctx, selected, hover, x, y, "hanging");
 
             var yLabel = y + 0.5 * _this.height + 0.5 * _this.labelModule.size.height;
 
-            _this.labelModule.draw(ctx, x, yLabel, selected, hover, 'hanging');
+            _this.labelModule.draw(ctx, x, yLabel, selected, hover, "hanging");
           }
 
           _this.updateBoundingBox(x, y);
@@ -19512,7 +21668,7 @@ function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !
 /**
  * A CustomShape Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var CustomShape = /*#__PURE__*/function (_ShapeBase) {
@@ -19521,11 +21677,12 @@ var CustomShape = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$6(CustomShape);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
-   * @param {function} ctxRenderer
-    */
+   * @param {Function} ctxRenderer
+   
+   */
   function CustomShape(options, body, labelModule, ctxRenderer) {
     var _this;
 
@@ -19544,7 +21701,7 @@ var CustomShape = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on different layers.
+   * @returns {object} Callbacks to draw later on different layers.
    */
 
 
@@ -19558,6 +21715,7 @@ var CustomShape = /*#__PURE__*/function (_ShapeBase) {
       ctx.save();
       var drawLater = this.ctxRenderer({
         ctx: ctx,
+        id: this.options.id,
         x: x,
         y: y,
         state: {
@@ -19615,7 +21773,7 @@ function _isNativeReflectConstruct$7() { if (typeof Reflect === "undefined" || !
 /**
  * A Database Node/Cluster shape.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var Database = /*#__PURE__*/function (_NodeBase) {
@@ -19624,8 +21782,8 @@ var Database = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$7(Database);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Database(options, body, labelModule) {
@@ -19703,7 +21861,7 @@ function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !
 /**
  * A Diamond Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Diamond = /*#__PURE__*/function (_ShapeBase) {
@@ -19712,8 +21870,8 @@ var Diamond = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$8(Diamond);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Diamond(options, body, labelModule) {
@@ -19730,14 +21888,14 @@ var Diamond = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Diamond, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'diamond', 4, x, y, selected, hover, values);
+      return this._drawShape(ctx, "diamond", 4, x, y, selected, hover, values);
     }
     /**
      *
@@ -19762,7 +21920,7 @@ function _isNativeReflectConstruct$9() { if (typeof Reflect === "undefined" || !
 /**
  * A Dot Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Dot = /*#__PURE__*/function (_ShapeBase) {
@@ -19771,8 +21929,8 @@ var Dot = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$9(Dot);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Dot(options, body, labelModule) {
@@ -19789,26 +21947,24 @@ var Dot = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Dot, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'circle', 2, x, y, selected, hover, values);
+      return this._drawShape(ctx, "circle", 2, x, y, selected, hover, values);
     }
     /**
      *
      * @param {CanvasRenderingContext2D} ctx
-     * @param {number} angle
      * @returns {number}
      */
 
   }, {
     key: "distanceToBorder",
-    value: function distanceToBorder(ctx, angle) {
-      // eslint-disable-line no-unused-vars
+    value: function distanceToBorder(ctx) {
       if (ctx) {
         this.resize(ctx);
       }
@@ -19826,7 +21982,7 @@ function _isNativeReflectConstruct$a() { if (typeof Reflect === "undefined" || !
 /**
  * Am Ellipse Node/Cluster shape.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var Ellipse = /*#__PURE__*/function (_NodeBase) {
@@ -19835,8 +21991,8 @@ var Ellipse = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$a(Ellipse);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Ellipse(options, body, labelModule) {
@@ -19918,7 +22074,7 @@ function _isNativeReflectConstruct$b() { if (typeof Reflect === "undefined" || !
 /**
  * An icon replacement for the default Node shape.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var Icon = /*#__PURE__*/function (_NodeBase) {
@@ -19927,8 +22083,8 @@ var Icon = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$b(Icon);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Icon(options, body, labelModule) {
@@ -19972,7 +22128,7 @@ var Icon = /*#__PURE__*/function (_NodeBase) {
      * @param {boolean} hover
      * @param {ArrowOptions} values
      *
-     * @returns {Object} Callbacks to draw later on higher layers.
+     * @returns {object} Callbacks to draw later on higher layers.
      */
 
   }, {
@@ -20049,7 +22205,7 @@ var Icon = /*#__PURE__*/function (_NodeBase) {
 
         this.disableShadow(ctx, values);
       } else {
-        console.error('When using the icon shape, you need to define the code in the icon options object. This can be done per node or globally.');
+        console.error("When using the icon shape, you need to define the code in the icon options object. This can be done per node or globally.");
       }
     }
     /**
@@ -20075,7 +22231,7 @@ function _isNativeReflectConstruct$c() { if (typeof Reflect === "undefined" || !
 /**
  * An image-based replacement for the default Node shape.
  *
- * @extends CircleImageBase
+ * @augments CircleImageBase
  */
 
 var Image$1 = /*#__PURE__*/function (_CircleImageBase) {
@@ -20084,8 +22240,8 @@ var Image$1 = /*#__PURE__*/function (_CircleImageBase) {
   var _super = _createSuper$c(Image);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    * @param {Image} imageObj
    * @param {Image} imageObjAlt
@@ -20146,7 +22302,7 @@ var Image$1 = /*#__PURE__*/function (_CircleImageBase) {
       var labelX = x,
           labelY = y;
 
-      if (this.options.shapeProperties.coordinateOrigin === 'top-left') {
+      if (this.options.shapeProperties.coordinateOrigin === "top-left") {
         this.left = x;
         this.top = y;
         labelX += this.width / 2;
@@ -20201,7 +22357,7 @@ var Image$1 = /*#__PURE__*/function (_CircleImageBase) {
     value: function updateBoundingBox(x, y) {
       this.resize();
 
-      if (this.options.shapeProperties.coordinateOrigin === 'top-left') {
+      if (this.options.shapeProperties.coordinateOrigin === "top-left") {
         this.left = x;
         this.top = y;
       } else {
@@ -20243,7 +22399,7 @@ function _isNativeReflectConstruct$d() { if (typeof Reflect === "undefined" || !
 /**
  * A Square Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Square = /*#__PURE__*/function (_ShapeBase) {
@@ -20252,8 +22408,8 @@ var Square = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$d(Square);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Square(options, body, labelModule) {
@@ -20270,14 +22426,14 @@ var Square = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Square, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'square', 2, x, y, selected, hover, values);
+      return this._drawShape(ctx, "square", 2, x, y, selected, hover, values);
     }
     /**
      *
@@ -20302,7 +22458,7 @@ function _isNativeReflectConstruct$e() { if (typeof Reflect === "undefined" || !
 /**
  * A Hexagon Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Hexagon = /*#__PURE__*/function (_ShapeBase) {
@@ -20311,8 +22467,8 @@ var Hexagon = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$e(Hexagon);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Hexagon(options, body, labelModule) {
@@ -20329,14 +22485,14 @@ var Hexagon = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Hexagon, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'hexagon', 4, x, y, selected, hover, values);
+      return this._drawShape(ctx, "hexagon", 4, x, y, selected, hover, values);
     }
     /**
      *
@@ -20361,7 +22517,7 @@ function _isNativeReflectConstruct$f() { if (typeof Reflect === "undefined" || !
 /**
  * A Star Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Star = /*#__PURE__*/function (_ShapeBase) {
@@ -20370,8 +22526,8 @@ var Star = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$f(Star);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Star(options, body, labelModule) {
@@ -20388,14 +22544,14 @@ var Star = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Star, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'star', 4, x, y, selected, hover, values);
+      return this._drawShape(ctx, "star", 4, x, y, selected, hover, values);
     }
     /**
      *
@@ -20420,7 +22576,7 @@ function _isNativeReflectConstruct$g() { if (typeof Reflect === "undefined" || !
 /**
  * A text-based replacement for the default Node shape.
  *
- * @extends NodeBase
+ * @augments NodeBase
  */
 
 var Text = /*#__PURE__*/function (_NodeBase) {
@@ -20429,8 +22585,8 @@ var Text = /*#__PURE__*/function (_NodeBase) {
   var _super = _createSuper$g(Text);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Text(options, body, labelModule) {
@@ -20508,7 +22664,7 @@ function _isNativeReflectConstruct$h() { if (typeof Reflect === "undefined" || !
 /**
  * A Triangle Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var Triangle = /*#__PURE__*/function (_ShapeBase) {
@@ -20517,8 +22673,8 @@ var Triangle = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$h(Triangle);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function Triangle(options, body, labelModule) {
@@ -20535,14 +22691,14 @@ var Triangle = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(Triangle, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'triangle', 3, x, y, selected, hover, values);
+      return this._drawShape(ctx, "triangle", 3, x, y, selected, hover, values);
     }
     /**
      *
@@ -20567,7 +22723,7 @@ function _isNativeReflectConstruct$i() { if (typeof Reflect === "undefined" || !
 /**
  * A downward facing Triangle Node/Cluster shape.
  *
- * @extends ShapeBase
+ * @augments ShapeBase
  */
 
 var TriangleDown = /*#__PURE__*/function (_ShapeBase) {
@@ -20576,8 +22732,8 @@ var TriangleDown = /*#__PURE__*/function (_ShapeBase) {
   var _super = _createSuper$i(TriangleDown);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Label} labelModule
    */
   function TriangleDown(options, body, labelModule) {
@@ -20594,14 +22750,14 @@ var TriangleDown = /*#__PURE__*/function (_ShapeBase) {
    * @param {boolean} hover
    * @param {ArrowOptions} values
    *
-   * @returns {Object} Callbacks to draw later on higher layers.
+   * @returns {object} Callbacks to draw later on higher layers.
    */
 
 
   createClass(TriangleDown, [{
     key: "draw",
     value: function draw(ctx, x, y, selected, hover, values) {
-      return this._drawShape(ctx, 'triangleDown', 3, x, y, selected, hover, values);
+      return this._drawShape(ctx, "triangleDown", 3, x, y, selected, hover, values);
     }
     /**
      *
@@ -20619,387 +22775,6 @@ var TriangleDown = /*#__PURE__*/function (_ShapeBase) {
 
   return TriangleDown;
 }(ShapeBase);
-
-var errorFound = false;
-var allOptions;
-var printStyle = 'background: #FFeeee; color: #dd0000';
-/**
- *  Used to validate options.
- */
-
-var Validator = /*#__PURE__*/function () {
-  /**
-   * @ignore
-   */
-  function Validator() {
-    classCallCheck(this, Validator);
-  }
-  /**
-   * Main function to be called
-   * @param {Object} options
-   * @param {Object} referenceOptions
-   * @param {Object} subObject
-   * @returns {boolean}
-   * @static
-   */
-
-
-  createClass(Validator, null, [{
-    key: "validate",
-    value: function validate(options, referenceOptions, subObject) {
-      errorFound = false;
-      allOptions = referenceOptions;
-      var usedOptions = referenceOptions;
-
-      if (subObject !== undefined) {
-        usedOptions = referenceOptions[subObject];
-      }
-
-      Validator.parse(options, usedOptions, []);
-      return errorFound;
-    }
-    /**
-     * Will traverse an object recursively and check every value
-     * @param {Object} options
-     * @param {Object} referenceOptions
-     * @param {array} path    | where to look for the actual option
-     * @static
-     */
-
-  }, {
-    key: "parse",
-    value: function parse(options, referenceOptions, path) {
-      for (var option in options) {
-        if (Object.prototype.hasOwnProperty.call(options, option)) {
-          Validator.check(option, options, referenceOptions, path);
-        }
-      }
-    }
-    /**
-     * Check every value. If the value is an object, call the parse function on that object.
-     * @param {string} option
-     * @param {Object} options
-     * @param {Object} referenceOptions
-     * @param {array} path    | where to look for the actual option
-     * @static
-     */
-
-  }, {
-    key: "check",
-    value: function check(option, options, referenceOptions, path) {
-      if (referenceOptions[option] === undefined && referenceOptions.__any__ === undefined) {
-        Validator.getSuggestion(option, referenceOptions, path);
-        return;
-      }
-
-      var referenceOption = option;
-      var is_object = true;
-
-      if (referenceOptions[option] === undefined && referenceOptions.__any__ !== undefined) {
-        // NOTE: This only triggers if the __any__ is in the top level of the options object.
-        //       THAT'S A REALLY BAD PLACE TO ALLOW IT!!!!
-        // TODO: Examine if needed, remove if possible
-        // __any__ is a wildcard. Any value is accepted and will be further analysed by reference.
-        referenceOption = '__any__'; // if the any-subgroup is not a predefined object in the configurator,
-        // we do not look deeper into the object.
-
-        is_object = Validator.getType(options[option]) === 'object';
-      }
-
-      var refOptionObj = referenceOptions[referenceOption];
-
-      if (is_object && refOptionObj.__type__ !== undefined) {
-        refOptionObj = refOptionObj.__type__;
-      }
-
-      Validator.checkFields(option, options, referenceOptions, referenceOption, refOptionObj, path);
-    }
-    /**
-     *
-     * @param {string}  option           | the option property
-     * @param {Object}  options          | The supplied options object
-     * @param {Object}  referenceOptions | The reference options containing all options and their allowed formats
-     * @param {string}  referenceOption  | Usually this is the same as option, except when handling an __any__ tag.
-     * @param {string}  refOptionObj     | This is the type object from the reference options
-     * @param {Array}   path             | where in the object is the option
-     * @static
-     */
-
-  }, {
-    key: "checkFields",
-    value: function checkFields(option, options, referenceOptions, referenceOption, refOptionObj, path) {
-      var log = function log(message) {
-        console.log('%c' + message + Validator.printLocation(path, option), printStyle);
-      };
-
-      var optionType = Validator.getType(options[option]);
-      var refOptionType = refOptionObj[optionType];
-
-      if (refOptionType !== undefined) {
-        // if the type is correct, we check if it is supposed to be one of a few select values
-        if (Validator.getType(refOptionType) === 'array' && indexOf$3(refOptionType).call(refOptionType, options[option]) === -1) {
-          log('Invalid option detected in "' + option + '".' + ' Allowed values are:' + Validator.print(refOptionType) + ' not "' + options[option] + '". ');
-          errorFound = true;
-        } else if (optionType === 'object' && referenceOption !== "__any__") {
-          path = copyAndExtendArray(path, option);
-          Validator.parse(options[option], referenceOptions[referenceOption], path);
-        }
-      } else if (refOptionObj['any'] === undefined) {
-        // type of the field is incorrect and the field cannot be any
-        log('Invalid type received for "' + option + '". Expected: ' + Validator.print(keys$3(refOptionObj)) + '. Received [' + optionType + '] "' + options[option] + '"');
-        errorFound = true;
-      }
-    }
-    /**
-     *
-     * @param {Object|boolean|number|string|Array.<number>|Date|Node|Moment|undefined|null} object
-     * @returns {string}
-     * @static
-     */
-
-  }, {
-    key: "getType",
-    value: function getType(object) {
-      var type = _typeof_1(object);
-
-      if (type === 'object') {
-        if (object === null) {
-          return 'null';
-        }
-
-        if (object instanceof Boolean) {
-          return 'boolean';
-        }
-
-        if (object instanceof Number) {
-          return 'number';
-        }
-
-        if (object instanceof String) {
-          return 'string';
-        }
-
-        if (isArray$5(object)) {
-          return 'array';
-        }
-
-        if (object instanceof Date) {
-          return 'date';
-        }
-
-        if (object.nodeType !== undefined) {
-          return 'dom';
-        }
-
-        if (object._isAMomentObject === true) {
-          return 'moment';
-        }
-
-        return 'object';
-      } else if (type === 'number') {
-        return 'number';
-      } else if (type === 'boolean') {
-        return 'boolean';
-      } else if (type === 'string') {
-        return 'string';
-      } else if (type === undefined) {
-        return 'undefined';
-      }
-
-      return type;
-    }
-    /**
-     * @param {string} option
-     * @param {Object} options
-     * @param {Array.<string>} path
-     * @static
-     */
-
-  }, {
-    key: "getSuggestion",
-    value: function getSuggestion(option, options, path) {
-      var localSearch = Validator.findInOptions(option, options, path, false);
-      var globalSearch = Validator.findInOptions(option, allOptions, [], true);
-      var localSearchThreshold = 8;
-      var globalSearchThreshold = 4;
-      var msg;
-
-      if (localSearch.indexMatch !== undefined) {
-        msg = ' in ' + Validator.printLocation(localSearch.path, option, '') + 'Perhaps it was incomplete? Did you mean: "' + localSearch.indexMatch + '"?\n\n';
-      } else if (globalSearch.distance <= globalSearchThreshold && localSearch.distance > globalSearch.distance) {
-        msg = ' in ' + Validator.printLocation(localSearch.path, option, '') + 'Perhaps it was misplaced? Matching option found at: ' + Validator.printLocation(globalSearch.path, globalSearch.closestMatch, '');
-      } else if (localSearch.distance <= localSearchThreshold) {
-        msg = '. Did you mean "' + localSearch.closestMatch + '"?' + Validator.printLocation(localSearch.path, option);
-      } else {
-        msg = '. Did you mean one of these: ' + Validator.print(keys$3(options)) + Validator.printLocation(path, option);
-      }
-
-      console.log('%cUnknown option detected: "' + option + '"' + msg, printStyle);
-      errorFound = true;
-    }
-    /**
-     * traverse the options in search for a match.
-     * @param {string} option
-     * @param {Object} options
-     * @param {Array} path    | where to look for the actual option
-     * @param {boolean} [recursive=false]
-     * @returns {{closestMatch: string, path: Array, distance: number}}
-     * @static
-     */
-
-  }, {
-    key: "findInOptions",
-    value: function findInOptions(option, options, path) {
-      var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-      var min = 1e9;
-      var closestMatch = '';
-      var closestMatchPath = [];
-      var lowerCaseOption = option.toLowerCase();
-      var indexMatch = undefined;
-
-      for (var op in options) {
-        // eslint-disable-line guard-for-in
-        var distance = void 0;
-
-        if (options[op].__type__ !== undefined && recursive === true) {
-          var result = Validator.findInOptions(option, options[op], copyAndExtendArray(path, op));
-
-          if (min > result.distance) {
-            closestMatch = result.closestMatch;
-            closestMatchPath = result.path;
-            min = result.distance;
-            indexMatch = result.indexMatch;
-          }
-        } else {
-          var _context;
-
-          if (indexOf$3(_context = op.toLowerCase()).call(_context, lowerCaseOption) !== -1) {
-            indexMatch = op;
-          }
-
-          distance = Validator.levenshteinDistance(option, op);
-
-          if (min > distance) {
-            closestMatch = op;
-            closestMatchPath = copyArray(path);
-            min = distance;
-          }
-        }
-      }
-
-      return {
-        closestMatch: closestMatch,
-        path: closestMatchPath,
-        distance: min,
-        indexMatch: indexMatch
-      };
-    }
-    /**
-     * @param {Array.<string>} path
-     * @param {Object} option
-     * @param {string} prefix
-     * @returns {String}
-     * @static
-     */
-
-  }, {
-    key: "printLocation",
-    value: function printLocation(path, option) {
-      var prefix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'Problem value found at: \n';
-      var str = '\n\n' + prefix + 'options = {\n';
-
-      for (var i = 0; i < path.length; i++) {
-        for (var j = 0; j < i + 1; j++) {
-          str += '  ';
-        }
-
-        str += path[i] + ': {\n';
-      }
-
-      for (var _j = 0; _j < path.length + 1; _j++) {
-        str += '  ';
-      }
-
-      str += option + '\n';
-
-      for (var _i = 0; _i < path.length + 1; _i++) {
-        for (var _j2 = 0; _j2 < path.length - _i; _j2++) {
-          str += '  ';
-        }
-
-        str += '}\n';
-      }
-
-      return str + '\n\n';
-    }
-    /**
-     * @param {Object} options
-     * @returns {String}
-     * @static
-     */
-
-  }, {
-    key: "print",
-    value: function print(options) {
-      return stringify$2(options).replace(/(\")|(\[)|(\])|(,"__type__")/g, "").replace(/(\,)/g, ', ');
-    }
-    /**
-     *  Compute the edit distance between the two given strings
-     * http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
-     *
-     * Copyright (c) 2011 Andrei Mackenzie
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-     *
-     * @param {string} a
-     * @param {string} b
-     * @returns {Array.<Array.<number>>}}
-     * @static
-     */
-
-  }, {
-    key: "levenshteinDistance",
-    value: function levenshteinDistance(a, b) {
-      if (a.length === 0) return b.length;
-      if (b.length === 0) return a.length;
-      var matrix = []; // increment along the first column of each row
-
-      var i;
-
-      for (i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-      } // increment each column in the first row
-
-
-      var j;
-
-      for (j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-      } // Fill in the rest of the matrix
-
-
-      for (i = 1; i <= b.length; i++) {
-        for (j = 1; j <= a.length; j++) {
-          if (b.charAt(i - 1) == a.charAt(j - 1)) {
-            matrix[i][j] = matrix[i - 1][j - 1];
-          } else {
-            matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
-            Math.min(matrix[i][j - 1] + 1, // insertion
-            matrix[i - 1][j] + 1)); // deletion
-          }
-        }
-      }
-
-      return matrix[b.length][a.length];
-    }
-  }]);
-
-  return Validator;
-}();
 
 function ownKeys$7(object, enumerableOnly) { var keys = keys$3(object); if (getOwnPropertySymbols$2) { var symbols = getOwnPropertySymbols$2(object); if (enumerableOnly) symbols = filter$2(symbols).call(symbols, function (sym) { return getOwnPropertyDescriptor$3(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -21022,11 +22797,11 @@ var Node = /*#__PURE__*/function () {
    *                              {string} title  A title text, can be HTML
    *                              {anytype} group A group name or number
    *
-   * @param {Object} body               Shared state of current network instance
+   * @param {object} body               Shared state of current network instance
    * @param {Network.Images} imagelist  A list with images. Only needed when the node has an image
    * @param {Groups} grouplist          A list with groups. Needed for retrieving group options
-   * @param {Object} globalOptions      Current global node options; these serve as defaults for the node instance
-   * @param {Object} defaultOptions     Global default options for nodes; note that this is also the prototype
+   * @param {object} globalOptions      Current global node options; these serve as defaults for the node instance
+   * @param {object} defaultOptions     Global default options for nodes; note that this is also the prototype
    *                                    for parameter `globalOptions`.
    */
   function Node(options, body, imagelist, grouplist, globalOptions, defaultOptions) {
@@ -21058,6 +22833,7 @@ var Node = /*#__PURE__*/function () {
   }
   /**
    * Attach a edge to the node
+   *
    * @param {Edge} edge
    */
 
@@ -21093,7 +22869,7 @@ var Node = /*#__PURE__*/function () {
     /**
      * Set or overwrite options for the node
      *
-     * @param {Object} options an object with options
+     * @param {object} options an object with options
      * @returns {null|boolean}
      */
 
@@ -21110,7 +22886,7 @@ var Node = /*#__PURE__*/function () {
       // This is not the only problem with current options handling.
 
 
-      if (typeof options.color !== 'undefined') {
+      if (typeof options.color !== "undefined") {
         this._localColor = options.color;
       } // basic options
 
@@ -21157,7 +22933,7 @@ var Node = /*#__PURE__*/function () {
 
       Node.parseOptions(this.options, options, true, this.globalOptions, this.grouplist);
       var pile = [options, this.options, this.defaultOptions];
-      this.chooser = choosify('node', pile);
+      this.chooser = choosify("node", pile);
 
       this._load_images();
 
@@ -21182,7 +22958,7 @@ var Node = /*#__PURE__*/function () {
   }, {
     key: "_load_images",
     value: function _load_images() {
-      if (this.options.shape === 'circularImage' || this.options.shape === 'image') {
+      if (this.options.shape === "circularImage" || this.options.shape === "image") {
         if (this.options.image === undefined) {
           throw new Error("Option image must be defined for node type '" + this.options.shape + "'");
         }
@@ -21196,7 +22972,7 @@ var Node = /*#__PURE__*/function () {
         throw new Error("Internal Error: No images provided");
       }
 
-      if (typeof this.options.image === 'string') {
+      if (typeof this.options.image === "string") {
         this.imageObj = this.imagelist.load(this.options.image, this.options.brokenImage, this.id);
       } else {
         if (this.options.image.unselected === undefined) {
@@ -21215,7 +22991,7 @@ var Node = /*#__PURE__*/function () {
     /**
      * Check that opacity is only between 0 and 1
      *
-     * @param {Number} opacity
+     * @param {number} opacity
      * @returns {boolean}
      */
 
@@ -21245,7 +23021,12 @@ var Node = /*#__PURE__*/function () {
       if (this.selected || this.hover) {
         if (this.chooser === true) {
           if (this.selected) {
-            values.borderWidth *= 2;
+            if (this.options.borderWidthSelected != null) {
+              values.borderWidth = this.options.borderWidthSelected;
+            } else {
+              values.borderWidth *= 2;
+            }
+
             values.color = this.options.color.highlight.background;
             values.borderColor = this.options.color.highlight.border;
             values.shadow = this.options.shadow.enabled;
@@ -21254,7 +23035,7 @@ var Node = /*#__PURE__*/function () {
             values.borderColor = this.options.color.hover.border;
             values.shadow = this.options.shadow.enabled;
           }
-        } else if (typeof this.chooser === 'function') {
+        } else if (typeof this.chooser === "function") {
           this.chooser(values, this.options.id, this.selected, this.hover);
 
           if (values.shadow === false) {
@@ -21278,14 +23059,14 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
     key: "updateLabelModule",
     value: function updateLabelModule(options) {
       if (this.options.label === undefined || this.options.label === null) {
-        this.options.label = '';
+        this.options.label = "";
       }
 
       Node.updateGroupOptions(this.options, _objectSpread$3(_objectSpread$3({}, options), {}, {
@@ -21327,67 +23108,67 @@ var Node = /*#__PURE__*/function () {
       } else {
         // choose draw method depending on the shape
         switch (this.options.shape) {
-          case 'box':
+          case "box":
             this.shape = new Box(this.options, this.body, this.labelModule);
             break;
 
-          case 'circle':
+          case "circle":
             this.shape = new Circle(this.options, this.body, this.labelModule);
             break;
 
-          case 'circularImage':
+          case "circularImage":
             this.shape = new CircularImage(this.options, this.body, this.labelModule, this.imageObj, this.imageObjAlt);
             break;
 
-          case 'custom':
+          case "custom":
             this.shape = new CustomShape(this.options, this.body, this.labelModule, this.options.ctxRenderer);
             break;
 
-          case 'database':
+          case "database":
             this.shape = new Database(this.options, this.body, this.labelModule);
             break;
 
-          case 'diamond':
+          case "diamond":
             this.shape = new Diamond(this.options, this.body, this.labelModule);
             break;
 
-          case 'dot':
+          case "dot":
             this.shape = new Dot(this.options, this.body, this.labelModule);
             break;
 
-          case 'ellipse':
+          case "ellipse":
             this.shape = new Ellipse(this.options, this.body, this.labelModule);
             break;
 
-          case 'icon':
+          case "icon":
             this.shape = new Icon(this.options, this.body, this.labelModule);
             break;
 
-          case 'image':
+          case "image":
             this.shape = new Image$1(this.options, this.body, this.labelModule, this.imageObj, this.imageObjAlt);
             break;
 
-          case 'square':
+          case "square":
             this.shape = new Square(this.options, this.body, this.labelModule);
             break;
 
-          case 'hexagon':
+          case "hexagon":
             this.shape = new Hexagon(this.options, this.body, this.labelModule);
             break;
 
-          case 'star':
+          case "star":
             this.shape = new Star(this.options, this.body, this.labelModule);
             break;
 
-          case 'text':
+          case "text":
             this.shape = new Text(this.options, this.body, this.labelModule);
             break;
 
-          case 'triangle':
+          case "triangle":
             this.shape = new Triangle(this.options, this.body, this.labelModule);
             break;
 
-          case 'triangleDown':
+          case "triangleDown":
             this.shape = new TriangleDown(this.options, this.body, this.labelModule);
             break;
 
@@ -21430,7 +23211,8 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * get the title of this node.
-     * @return {string} title    The title of the node, or undefined when no title
+     *
+     * @returns {string} title    The title of the node, or undefined when no title
      *                           has been set.
      */
 
@@ -21441,6 +23223,7 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Calculate the distance to the border of the Node
+     *
      * @param {CanvasRenderingContext2D}   ctx
      * @param {number} angle        Angle in radians
      * @returns {number} distance   Distance to the border in pixels
@@ -21453,7 +23236,8 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Check if this node has a fixed x and y position
-     * @return {boolean}      true if fixed, false if not
+     *
+     * @returns {boolean}      true if fixed, false if not
      */
 
   }, {
@@ -21463,7 +23247,8 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * check if this node is selecte
-     * @return {boolean} selected   True if node is selected, else false
+     *
+     * @returns {boolean} selected   True if node is selected, else false
      */
 
   }, {
@@ -21473,7 +23258,8 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Retrieve the value of the node. Can be undefined
-     * @return {number} value
+     *
+     * @returns {number} value
      */
 
   }, {
@@ -21484,7 +23270,7 @@ var Node = /*#__PURE__*/function () {
     /**
      * Get the current dimensions of the label
      *
-     * @return {rect}
+     * @returns {rect}
      */
 
   }, {
@@ -21495,6 +23281,7 @@ var Node = /*#__PURE__*/function () {
     /**
      * Adjust the value range of the node. The node will adjust it's size
      * based on its value.
+     *
      * @param {number} min
      * @param {number} max
      * @param {number} total
@@ -21523,9 +23310,10 @@ var Node = /*#__PURE__*/function () {
     /**
      * Draw this node in the given canvas
      * The 2d context of a HTML canvas can be retrieved by canvas.getContext("2d");
+     *
      * @param {CanvasRenderingContext2D}   ctx
      *
-     * @returns {Object} Callbacks to draw later on higher layers.
+     * @returns {object} Callbacks to draw later on higher layers.
      */
 
   }, {
@@ -21536,6 +23324,7 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Update the bounding box of the shape
+     *
      * @param {CanvasRenderingContext2D}   ctx
      */
 
@@ -21547,6 +23336,7 @@ var Node = /*#__PURE__*/function () {
     /**
      * Recalculate the size of this node in the given canvas
      * The 2d context of a HTML canvas can be retrieved by canvas.getContext("2d");
+     *
      * @param {CanvasRenderingContext2D}   ctx
      */
 
@@ -21588,8 +23378,9 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Check if this object is overlapping with the provided object
-     * @param {Object} obj   an object with parameters left, top, right, bottom
-     * @return {boolean}     True if location is located on node
+     *
+     * @param {object} obj   an object with parameters left, top, right, bottom
+     * @returns {boolean}     True if location is located on node
      */
 
   }, {
@@ -21599,8 +23390,9 @@ var Node = /*#__PURE__*/function () {
     }
     /**
      * Check if this object is overlapping with the provided object
-     * @param {Object} obj   an object with parameters left, top, right, bottom
-     * @return {boolean}     True if location is located on node
+     *
+     * @param {object} obj   an object with parameters left, top, right, bottom
+     * @returns {boolean}     True if location is located on node
      */
 
   }, {
@@ -21609,14 +23401,14 @@ var Node = /*#__PURE__*/function () {
       return this.shape.boundingBox.left < obj.right && this.shape.boundingBox.right > obj.left && this.shape.boundingBox.top < obj.bottom && this.shape.boundingBox.bottom > obj.top;
     }
     /**
-    * Check valid values for mass
-    *
-    * The mass may not be negative or zero. If it is, reset to 1
-    *
-    * @param {object} options
-    * @param {Node.id} id
+     * Check valid values for mass
+     *
+     * The mass may not be negative or zero. If it is, reset to 1
+     *
+     * @param {object} options
+     * @param {Node.id} id
      * @static
-    */
+     */
 
   }], [{
     key: "checkOpacity",
@@ -21626,14 +23418,14 @@ var Node = /*#__PURE__*/function () {
     /**
      * Check that origin is 'center' or 'top-left'
      *
-     * @param {String} origin
+     * @param {string} origin
      * @returns {boolean}
      */
 
   }, {
     key: "checkCoordinateOrigin",
     value: function checkCoordinateOrigin(origin) {
-      return origin === undefined || origin === 'center' || origin === 'top-left';
+      return origin === undefined || origin === "center" || origin === "top-left";
     }
     /**
      * Copy group option values into the node options.
@@ -21643,9 +23435,9 @@ var Node = /*#__PURE__*/function () {
      *
      * This method must also be called also if the global node options have changed and the group options did not.
      *
-     * @param {Object} parentOptions
-     * @param {Object} newOptions  new values for the options, currently only passed in for check
-     * @param {Object} groupList
+     * @param {object} parentOptions
+     * @param {object} newOptions  new values for the options, currently only passed in for check
+     * @param {object} groupList
      */
 
   }, {
@@ -21661,7 +23453,7 @@ var Node = /*#__PURE__*/function () {
         throw new Error("updateGroupOptions: group values in options don't match.");
       }
 
-      var hasGroup = typeof group === 'number' || typeof group === 'string' && group != '';
+      var hasGroup = typeof group === "number" || typeof group === "string" && group != "";
       if (!hasGroup) return; // current node has no group, no need to merge
 
       var groupObj = groupList.get(group);
@@ -21679,7 +23471,7 @@ var Node = /*#__PURE__*/function () {
       }); // Always skip merging group font options into parent; these are required to be distinct for labels
 
 
-      skipProperties.push('font');
+      skipProperties.push("font");
       selectiveNotDeepExtend(skipProperties, parentOptions, groupObj); // the color object needs to be completely defined.
       // Since groups can partially overwrite the colors, we parse it again, just in case.
 
@@ -21689,11 +23481,11 @@ var Node = /*#__PURE__*/function () {
      * This process all possible shorthands in the new options and makes sure that the parentOptions are fully defined.
      * Static so it can also be used by the handler.
      *
-     * @param {Object} parentOptions
-     * @param {Object} newOptions
+     * @param {object} parentOptions
+     * @param {object} newOptions
      * @param {boolean} [allowDeletion=false]
-     * @param {Object} [globalOptions={}]
-     * @param {Object} [groupList]
+     * @param {object} [globalOptions={}]
+     * @param {object} [groupList]
      * @static
      */
 
@@ -21703,7 +23495,7 @@ var Node = /*#__PURE__*/function () {
       var allowDeletion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       var globalOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
       var groupList = arguments.length > 4 ? arguments[4] : undefined;
-      var fields = ['color', 'fixed', 'shadow'];
+      var fields = ["color", "fixed", "shadow"];
       selectiveNotDeepExtend(fields, parentOptions, newOptions, allowDeletion);
       Node.checkMass(newOptions);
 
@@ -21726,7 +23518,7 @@ var Node = /*#__PURE__*/function () {
       } // merge the shadow options into the parent.
 
 
-      mergeOptions(parentOptions, newOptions, 'shadow', globalOptions); // individual shape newOptions
+      mergeOptions(parentOptions, newOptions, "shadow", globalOptions); // individual shape newOptions
 
       if (newOptions.color !== undefined && newOptions.color !== null) {
         var parsedColor = parseColor(newOptions.color);
@@ -21737,15 +23529,15 @@ var Node = /*#__PURE__*/function () {
 
 
       if (newOptions.fixed !== undefined && newOptions.fixed !== null) {
-        if (typeof newOptions.fixed === 'boolean') {
+        if (typeof newOptions.fixed === "boolean") {
           parentOptions.fixed.x = newOptions.fixed;
           parentOptions.fixed.y = newOptions.fixed;
         } else {
-          if (newOptions.fixed.x !== undefined && typeof newOptions.fixed.x === 'boolean') {
+          if (newOptions.fixed.x !== undefined && typeof newOptions.fixed.x === "boolean") {
             parentOptions.fixed.x = newOptions.fixed.x;
           }
 
-          if (newOptions.fixed.y !== undefined && typeof newOptions.fixed.y === 'boolean') {
+          if (newOptions.fixed.y !== undefined && typeof newOptions.fixed.y === "boolean") {
             parentOptions.fixed.y = newOptions.fixed.y;
           }
         }
@@ -21758,20 +23550,20 @@ var Node = /*#__PURE__*/function () {
       Node.updateGroupOptions(parentOptions, newOptions, groupList); // handle the scaling options, specifically the label part
 
       if (newOptions.scaling !== undefined) {
-        mergeOptions(parentOptions.scaling, newOptions.scaling, 'label', globalOptions.scaling);
+        mergeOptions(parentOptions.scaling, newOptions.scaling, "label", globalOptions.scaling);
       }
     }
   }, {
     key: "checkMass",
     value: function checkMass(options, id) {
       if (options.mass !== undefined && options.mass <= 0) {
-        var strId = '';
+        var strId = "";
 
         if (id !== undefined) {
-          strId = ' in node id: ' + id;
+          strId = " in node id: " + id;
         }
 
-        console.log('%cNegative or zero mass disallowed' + strId + ', setting mass to 1.', printStyle);
+        console.error("%cNegative or zero mass disallowed" + strId + ", setting mass to 1.", VALIDATOR_PRINT_STYLE$1);
         options.mass = 1;
       }
     }
@@ -21782,7 +23574,7 @@ var Node = /*#__PURE__*/function () {
 
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$3(o, minLen) { var _context4; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = slice$5(_context4 = Object.prototype.toString.call(o)).call(_context4, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+function _unsupportedIterableToArray$3(o, minLen) { var _context4; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = slice$6(_context4 = Object.prototype.toString.call(o)).call(_context4, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
@@ -21791,7 +23583,7 @@ function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) le
 
 var NodesHandler = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Images} images
    * @param {Array.<Group>} groups
    * @param {LayoutEngine} layoutEngine
@@ -21821,18 +23613,18 @@ var NodesHandler = /*#__PURE__*/function () {
     };
     this.defaultOptions = {
       borderWidth: 1,
-      borderWidthSelected: 2,
+      borderWidthSelected: undefined,
       brokenImage: undefined,
       color: {
-        border: '#2B7CE9',
-        background: '#97C2FC',
+        border: "#2B7CE9",
+        background: "#97C2FC",
         highlight: {
-          border: '#2B7CE9',
-          background: '#D2E5FF'
+          border: "#2B7CE9",
+          background: "#D2E5FF"
         },
         hover: {
-          border: '#2B7CE9',
-          background: '#D2E5FF'
+          border: "#2B7CE9",
+          background: "#D2E5FF"
         }
       },
       opacity: undefined,
@@ -21842,44 +23634,44 @@ var NodesHandler = /*#__PURE__*/function () {
         y: false
       },
       font: {
-        color: '#343434',
+        color: "#343434",
         size: 14,
         // px
-        face: 'arial',
-        background: 'none',
+        face: "arial",
+        background: "none",
         strokeWidth: 0,
         // px
-        strokeColor: '#ffffff',
-        align: 'center',
+        strokeColor: "#ffffff",
+        align: "center",
         vadjust: 0,
         multi: false,
         bold: {
-          mod: 'bold'
+          mod: "bold"
         },
         boldital: {
-          mod: 'bold italic'
+          mod: "bold italic"
         },
         ital: {
-          mod: 'italic'
+          mod: "italic"
         },
         mono: {
-          mod: '',
+          mod: "",
           size: 15,
           // px
-          face: 'monospace',
+          face: "monospace",
           vadjust: 2
         }
       },
       group: undefined,
       hidden: false,
       icon: {
-        face: 'FontAwesome',
+        face: "FontAwesome",
         //'FontAwesome',
         code: undefined,
         //'\uf007',
         size: 50,
         //50,
-        color: '#2B7CE9' //'#aa00ff'
+        color: "#2B7CE9" //'#aa00ff'
 
       },
       image: undefined,
@@ -21923,12 +23715,12 @@ var NodesHandler = /*#__PURE__*/function () {
       },
       shadow: {
         enabled: false,
-        color: 'rgba(0,0,0,0.5)',
+        color: "rgba(0,0,0,0.5)",
         size: 10,
         x: 5,
         y: 5
       },
-      shape: 'ellipse',
+      shape: "ellipse",
       shapeProperties: {
         borderDashes: false,
         // only for borders
@@ -21940,7 +23732,7 @@ var NodesHandler = /*#__PURE__*/function () {
         // only for image and circularImage shapes
         useBorderWithImage: false,
         // only for image shape
-        coordinateOrigin: 'center' // only for image and circularImage shapes
+        coordinateOrigin: "center" // only for image and circularImage shapes
 
       },
       size: 25,
@@ -21951,7 +23743,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }; // Protect from idiocy
 
     if (this.defaultOptions.mass <= 0) {
-      throw 'Internal error: mass in defaultOptions of NodesHandler may not be zero or negative';
+      throw "Internal error: mass in defaultOptions of NodesHandler may not be zero or negative";
     }
 
     this.options = bridgeObject(this.defaultOptions);
@@ -21970,9 +23762,9 @@ var NodesHandler = /*#__PURE__*/function () {
           _this2 = this;
 
       // refresh the nodes. Used when reverting from hierarchical layout
-      this.body.emitter.on('refreshNodes', bind$2(_context2 = this.refresh).call(_context2, this));
-      this.body.emitter.on('refresh', bind$2(_context3 = this.refresh).call(_context3, this));
-      this.body.emitter.on('destroy', function () {
+      this.body.emitter.on("refreshNodes", bind$2(_context2 = this.refresh).call(_context2, this));
+      this.body.emitter.on("refresh", bind$2(_context3 = this.refresh).call(_context3, this));
+      this.body.emitter.on("destroy", function () {
         forEach$3(_this2.nodesListeners, function (callback, event) {
           if (_this2.body.data.nodes) _this2.body.data.nodes.off(event, callback);
         });
@@ -21985,7 +23777,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
@@ -22034,14 +23826,15 @@ var NodesHandler = /*#__PURE__*/function () {
 
 
         if (options.hidden !== undefined || options.physics !== undefined) {
-          this.body.emitter.emit('_dataChanged');
+          this.body.emitter.emit("_dataChanged");
         }
       }
     }
     /**
      * Set a data set with nodes for the network
+     *
      * @param {Array | DataSet | DataView} nodes         The data containing the nodes.
-     * @param {boolean} [doNotEmit=false]
+     * @param {boolean} [doNotEmit=false] - Suppress data changed event.
      * @private
      */
 
@@ -22051,7 +23844,7 @@ var NodesHandler = /*#__PURE__*/function () {
       var doNotEmit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var oldNodesData = this.body.data.nodes;
 
-      if (nodes instanceof DataSet || nodes instanceof DataView) {
+      if (isDataViewLike("id", nodes)) {
         this.body.data.nodes = nodes;
       } else if (isArray$5(nodes)) {
         this.body.data.nodes = new DataSet();
@@ -22059,7 +23852,7 @@ var NodesHandler = /*#__PURE__*/function () {
       } else if (!nodes) {
         this.body.data.nodes = new DataSet();
       } else {
-        throw new TypeError('Array or DataSet expected');
+        throw new TypeError("Array or DataSet expected");
       }
 
       if (oldNodesData) {
@@ -22089,6 +23882,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Add nodes
+     *
      * @param {number[] | string[]} ids
      * @param {boolean} [doNotEmit=false]
      * @private
@@ -22117,6 +23911,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Update existing nodes, or create them when not yet existing
+     *
      * @param {number[] | string[]} ids id's of changed nodes
      * @param {Array} changedData array with changed data
      * @param {Array|undefined} oldData optional; array with previous data
@@ -22165,6 +23960,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Remove existing nodes. If nodes do not exist, the method will just ignore it.
+     *
      * @param {number[] | string[]} ids
      * @private
      */
@@ -22183,7 +23979,8 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * create a node
-     * @param {Object} properties
+     *
+     * @param {object} properties
      * @param {class} [constructorClass=Node.default]
      * @returns {*}
      */
@@ -22225,7 +24022,8 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Returns the positions of the nodes.
-     * @param {Array.<Node.id>|String} [ids]  --> optional, can be array of nodeIds, can be string
+     *
+     * @param {Array.<Node.id> | string} [ids]  --> optional, can be array of nodeIds, can be string
      * @returns {{}}
      */
 
@@ -22331,6 +24129,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * get the bounding box of a node.
+     *
      * @param {Node.id} nodeId
      * @returns {j|*}
      */
@@ -22344,6 +24143,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Get the Ids of nodes connected to this node.
+     *
      * @param {Node.id} nodeId
      * @param {'to'|'from'|undefined} direction values 'from' and 'to' select respectively parent and child nodes only.
      *                                          Any other value returns both parent and child nodes.
@@ -22362,13 +24162,13 @@ var NodesHandler = /*#__PURE__*/function () {
         for (var i = 0; i < node.edges.length; i++) {
           var edge = node.edges[i];
 
-          if (direction !== 'to' && edge.toId == node.id) {
+          if (direction !== "to" && edge.toId == node.id) {
             // these are double equals since ids can be numeric or string
             if (nodeObj[edge.fromId] === undefined) {
               nodeList.push(edge.fromId);
               nodeObj[edge.fromId] = true;
             }
-          } else if (direction !== 'from' && edge.fromId == node.id) {
+          } else if (direction !== "from" && edge.fromId == node.id) {
             // these are double equals since ids can be numeric or string
             if (nodeObj[edge.toId] === undefined) {
               nodeList.push(edge.toId);
@@ -22382,6 +24182,7 @@ var NodesHandler = /*#__PURE__*/function () {
     }
     /**
      * Get the ids of the edges connected to this node.
+     *
      * @param {Node.id} nodeId
      * @returns {*}
      */
@@ -22398,7 +24199,7 @@ var NodesHandler = /*#__PURE__*/function () {
           edgeList.push(node.edges[i].id);
         }
       } else {
-        console.log("NodeId provided for getConnectedEdges does not exist. Provided: ", nodeId);
+        console.error("NodeId provided for getConnectedEdges does not exist. Provided: ", nodeId);
       }
 
       return edgeList;
@@ -22424,7 +24225,7 @@ var NodesHandler = /*#__PURE__*/function () {
           _this4.body.emitter.emit("startSimulation");
         }, 0);
       } else {
-        console.log("Node id supplied to moveNode does not exist. Provided: ", nodeId);
+        console.error("Node id supplied to moveNode does not exist. Provided: ", nodeId);
       }
     }
   }]);
@@ -23247,7 +25048,7 @@ var EdgeBase = /*#__PURE__*/function () {
     this.fromPoint = this.from;
     this.toPoint = this.to;
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(EdgeBase, [{
@@ -23256,7 +25057,7 @@ var EdgeBase = /*#__PURE__*/function () {
       this.from = this._body.nodes[this.options.from];
       this.to = this._body.nodes[this.options.to];
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "cleanup",
@@ -23277,7 +25078,7 @@ var EdgeBase = /*#__PURE__*/function () {
       this.to = this._body.nodes[this.options.to];
       this.id = this.options.id;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "drawLine",
@@ -23399,7 +25200,7 @@ var EdgeBase = /*#__PURE__*/function () {
         return this._findBorderPositionCircle(node, ctx, options);
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "findBorderPositions",
@@ -23412,7 +25213,7 @@ var EdgeBase = /*#__PURE__*/function () {
       } else {
         var _context;
 
-        var _this$_getCircleData$ = slice$5(_context = this._getCircleData(ctx)).call(_context, 0, 2),
+        var _this$_getCircleData$ = slice$6(_context = this._getCircleData(ctx)).call(_context, 0, 2),
             _this$_getCircleData$2 = slicedToArray(_this$_getCircleData$, 2),
             x = _this$_getCircleData$2[0],
             y = _this$_getCircleData$2[1];
@@ -23668,7 +25469,7 @@ var EdgeBase = /*#__PURE__*/function () {
       this.disableShadow(ctx, values);
     }
     /**
-     * @inheritdoc
+     * @inheritDoc
      *
      * @remarks
      * http://stackoverflow.com/questions/849211/shortest-distancae-between-a-point-and-a-line-segment
@@ -23729,7 +25530,7 @@ var EdgeBase = /*#__PURE__*/function () {
 
       return Math.sqrt(dx * dx + dy * dy);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getArrowData",
@@ -23852,7 +25653,7 @@ var EdgeBase = /*#__PURE__*/function () {
         type: type
       };
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "drawArrowHead",
@@ -24146,7 +25947,7 @@ var BezierEdgeBase = /*#__PURE__*/function (_EdgeBase) {
       ctx.stroke();
       this.disableShadow(ctx, values);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getViaNode",
@@ -24166,7 +25967,7 @@ function _isNativeReflectConstruct$l() { if (typeof Reflect === "undefined" || !
  * curves in paths between nodes. The Dynamic piece refers to how the curve
  * reacts to physics changes.
  *
- * @extends BezierEdgeBase
+ * @augments BezierEdgeBase
  */
 
 var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
@@ -24199,7 +26000,7 @@ var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
 
     return _this;
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(BezierEdgeDynamic, [{
@@ -24230,7 +26031,7 @@ var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
         this.positionBezierNode();
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "connect",
@@ -24255,7 +26056,7 @@ var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
         }
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "cleanup",
@@ -24315,28 +26116,28 @@ var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
         this.via.y = 0;
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_line",
     value: function _line(ctx, values, viaNode) {
       this._bezierCurve(ctx, values, viaNode);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_getViaCoordinates",
     value: function _getViaCoordinates() {
       return this.via;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getViaNode",
     value: function getViaNode() {
       return this.via;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPoint",
@@ -24362,14 +26163,14 @@ var BezierEdgeDynamic = /*#__PURE__*/function (_BezierEdgeBase) {
         };
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_findBorderPosition",
     value: function _findBorderPosition(nearNode, ctx) {
       return this._findBorderPositionBezier(nearNode, ctx, this.via);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_getDistanceToEdge",
@@ -24406,7 +26207,7 @@ var BezierEdgeStatic = /*#__PURE__*/function (_BezierEdgeBase) {
 
     return _super.call(this, options, body, labelModule);
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(BezierEdgeStatic, [{
@@ -24414,7 +26215,7 @@ var BezierEdgeStatic = /*#__PURE__*/function (_BezierEdgeBase) {
     value: function _line(ctx, values, viaNode) {
       this._bezierCurve(ctx, values, viaNode);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getViaNode",
@@ -24590,7 +26391,7 @@ var BezierEdgeStatic = /*#__PURE__*/function (_BezierEdgeBase) {
         };
       }
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_findBorderPosition",
@@ -24598,7 +26399,7 @@ var BezierEdgeStatic = /*#__PURE__*/function (_BezierEdgeBase) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       return this._findBorderPositionBezier(nearNode, ctx, options.via);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_getDistanceToEdge",
@@ -24607,7 +26408,7 @@ var BezierEdgeStatic = /*#__PURE__*/function (_BezierEdgeBase) {
       // x3,y3 is the point
       return this._getDistanceToBezierEdge(x1, y1, x2, y2, x3, y3, viaNode);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPoint",
@@ -24633,7 +26434,7 @@ function _isNativeReflectConstruct$n() { if (typeof Reflect === "undefined" || !
  * A Base Class for all Cubic Bezier Edges. Bezier curves are used to model
  * smooth gradual curves in paths between nodes.
  *
- * @extends BezierEdgeBase
+ * @augments BezierEdgeBase
  */
 
 var CubicBezierEdgeBase = /*#__PURE__*/function (_BezierEdgeBase) {
@@ -24732,7 +26533,7 @@ var CubicBezierEdge = /*#__PURE__*/function (_CubicBezierEdgeBase) {
 
     return _super.call(this, options, body, labelModule);
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(CubicBezierEdge, [{
@@ -24781,21 +26582,21 @@ var CubicBezierEdge = /*#__PURE__*/function (_CubicBezierEdgeBase) {
         y: y2
       }];
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getViaNode",
     value: function getViaNode() {
       return this._getViaCoordinates();
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_findBorderPosition",
     value: function _findBorderPosition(nearNode, ctx) {
       return this._findBorderPositionBezier(nearNode, ctx);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_getDistanceToEdge",
@@ -24808,7 +26609,7 @@ var CubicBezierEdge = /*#__PURE__*/function (_CubicBezierEdgeBase) {
       // x3,y3 is the point
       return this._getDistanceToBezierEdge2(x1, y1, x2, y2, x3, y3, via1, via2);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPoint",
@@ -24856,7 +26657,7 @@ var StraightEdge = /*#__PURE__*/function (_EdgeBase) {
 
     return _super.call(this, options, body, labelModule);
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(StraightEdge, [{
@@ -24871,14 +26672,14 @@ var StraightEdge = /*#__PURE__*/function (_EdgeBase) {
       ctx.stroke();
       this.disableShadow(ctx, values);
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getViaNode",
     value: function getViaNode() {
       return undefined;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPoint",
@@ -24888,7 +26689,7 @@ var StraightEdge = /*#__PURE__*/function (_EdgeBase) {
         y: (1 - position) * this.fromPoint.y + position * this.toPoint.y
       };
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_findBorderPosition",
@@ -24913,7 +26714,7 @@ var StraightEdge = /*#__PURE__*/function (_EdgeBase) {
         t: 0
       };
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "_getDistanceToEdge",
@@ -24932,11 +26733,11 @@ var StraightEdge = /*#__PURE__*/function (_EdgeBase) {
 
 var Edge = /*#__PURE__*/function () {
   /**
-   * @param {Object} options        values specific to this edge, must contain at least 'from' and 'to'
-   * @param {Object} body           shared state from Network instance
+   * @param {object} options        values specific to this edge, must contain at least 'from' and 'to'
+   * @param {object} body           shared state from Network instance
    * @param {Network.Images} imagelist  A list with images. Only needed when the edge has image arrows.
-   * @param {Object} globalOptions  options from the EdgesHandler instance
-   * @param {Object} defaultOptions default options from the EdgeHandler instance. Value and reference are constant
+   * @param {object} globalOptions  options from the EdgesHandler instance
+   * @param {object} defaultOptions default options from the EdgeHandler instance. Value and reference are constant
    */
   function Edge(options, body, imagelist, globalOptions, defaultOptions) {
     classCallCheck(this, Edge);
@@ -24974,7 +26775,8 @@ var Edge = /*#__PURE__*/function () {
   }
   /**
    * Set or overwrite options for the edge
-   * @param {Object} options  an object with options
+   *
+   * @param {object} options  an object with options
    * @returns {undefined|boolean} undefined if no options, true if layout affecting data changed, false otherwise.
    */
 
@@ -25011,7 +26813,7 @@ var Edge = /*#__PURE__*/function () {
       }
 
       var pile = [options, this.options, this.defaultOptions];
-      this.chooser = choosify('edge', pile); // update label Module
+      this.chooser = choosify("edge", pile); // update label Module
 
       this.updateLabelModule(options); // Update edge type, this if changed affects the layout.
 
@@ -25025,10 +26827,10 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} parentOptions
-     * @param {Object} newOptions
+     * @param {object} parentOptions
+     * @param {object} newOptions
      * @param {boolean} [allowDeletion=false]
-     * @param {Object} [globalOptions={}]
+     * @param {object} [globalOptions={}]
      * @param {boolean} [copyFromGlobals=false]
      */
 
@@ -25087,9 +26889,9 @@ var Edge = /*#__PURE__*/function () {
           if (this.selected) {
             var selectedWidth = this.options.selectionWidth;
 
-            if (typeof selectedWidth === 'function') {
+            if (typeof selectedWidth === "function") {
               values.width = selectedWidth(values.width);
-            } else if (typeof selectedWidth === 'number') {
+            } else if (typeof selectedWidth === "number") {
               values.width += selectedWidth;
             }
 
@@ -25099,9 +26901,9 @@ var Edge = /*#__PURE__*/function () {
           } else if (this.hover) {
             var hoverWidth = this.options.hoverWidth;
 
-            if (typeof hoverWidth === 'function') {
+            if (typeof hoverWidth === "function") {
               values.width = hoverWidth(values.width);
-            } else if (typeof hoverWidth === 'number') {
+            } else if (typeof hoverWidth === "number") {
               values.width += hoverWidth;
             }
 
@@ -25109,7 +26911,7 @@ var Edge = /*#__PURE__*/function () {
             values.color = this.options.color.hover;
             values.shadow = this.options.shadow.enabled;
           }
-        } else if (typeof this.chooser === 'function') {
+        } else if (typeof this.chooser === "function") {
           this.chooser(values, this.options.id, this.selected, this.hover);
 
           if (values.color !== undefined) {
@@ -25132,7 +26934,7 @@ var Edge = /*#__PURE__*/function () {
     /**
      * update the options in the label module
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
@@ -25148,6 +26950,7 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * update the edge type, set the options
+     *
      * @returns {boolean}
      */
 
@@ -25159,7 +26962,7 @@ var Edge = /*#__PURE__*/function () {
       var changeInType = true;
 
       if (this.edgeType !== undefined) {
-        if (this.edgeType instanceof BezierEdgeDynamic && smooth.enabled === true && smooth.type === 'dynamic' || this.edgeType instanceof CubicBezierEdge && smooth.enabled === true && smooth.type === 'cubicBezier' || this.edgeType instanceof BezierEdgeStatic && smooth.enabled === true && smooth.type !== 'dynamic' && smooth.type !== 'cubicBezier' || this.edgeType instanceof StraightEdge && smooth.type.enabled === false) {
+        if (this.edgeType instanceof BezierEdgeDynamic && smooth.enabled === true && smooth.type === "dynamic" || this.edgeType instanceof CubicBezierEdge && smooth.enabled === true && smooth.type === "cubicBezier" || this.edgeType instanceof BezierEdgeStatic && smooth.enabled === true && smooth.type !== "dynamic" && smooth.type !== "cubicBezier" || this.edgeType instanceof StraightEdge && smooth.type.enabled === false) {
           changeInType = false;
         }
 
@@ -25170,10 +26973,10 @@ var Edge = /*#__PURE__*/function () {
 
       if (changeInType === true) {
         if (smooth.enabled === true) {
-          if (smooth.type === 'dynamic') {
+          if (smooth.type === "dynamic") {
             dataChanged = true;
             this.edgeType = new BezierEdgeDynamic(this.options, this.body, this.labelModule);
-          } else if (smooth.type === 'cubicBezier') {
+          } else if (smooth.type === "cubicBezier") {
             this.edgeType = new CubicBezierEdge(this.options, this.body, this.labelModule);
           } else {
             this.edgeType = new BezierEdgeStatic(this.options, this.body, this.labelModule);
@@ -25236,7 +27039,8 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * get the title of this edge.
-     * @return {string} title    The title of the edge, or undefined when no title
+     *
+     * @returns {string} title    The title of the edge, or undefined when no title
      *                           has been set.
      */
 
@@ -25247,7 +27051,8 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * check if this node is selecte
-     * @return {boolean} selected   True if node is selected, else false
+     *
+     * @returns {boolean} selected   True if node is selected, else false
      */
 
   }, {
@@ -25257,7 +27062,8 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * Retrieve the value of the edge. Can be undefined
-     * @return {number} value
+     *
+     * @returns {number} value
      */
 
   }, {
@@ -25268,6 +27074,7 @@ var Edge = /*#__PURE__*/function () {
     /**
      * Adjust the value range of the edge. The edge will adjust it's width
      * based on its value.
+     *
      * @param {number} min
      * @param {number} max
      * @param {number} total
@@ -25303,13 +27110,13 @@ var Edge = /*#__PURE__*/function () {
   }, {
     key: "_setInteractionWidths",
     value: function _setInteractionWidths() {
-      if (typeof this.options.hoverWidth === 'function') {
+      if (typeof this.options.hoverWidth === "function") {
         this.edgeType.hoverWidth = this.options.hoverWidth(this.options.width);
       } else {
         this.edgeType.hoverWidth = this.options.hoverWidth + this.options.width;
       }
 
-      if (typeof this.options.selectionWidth === 'function') {
+      if (typeof this.options.selectionWidth === "function") {
         this.edgeType.selectionWidth = this.options.selectionWidth(this.options.width);
       } else {
         this.edgeType.selectionWidth = this.options.selectionWidth + this.options.width;
@@ -25319,6 +27126,7 @@ var Edge = /*#__PURE__*/function () {
      * Redraw a edge
      * Draw this edge in the given canvas
      * The 2d context of a HTML canvas can be retrieved by canvas.getContext("2d");
+     *
      * @param {CanvasRenderingContext2D}   ctx
      */
 
@@ -25338,11 +27146,12 @@ var Edge = /*#__PURE__*/function () {
       this.drawLabel(ctx, viaNode);
     }
     /**
-    * Redraw arrows
-    * Draw this arrows in the given canvas
-    * The 2d context of a HTML canvas can be retrieved by canvas.getContext("2d");
-    * @param {CanvasRenderingContext2D}   ctx
-    */
+     * Redraw arrows
+     * Draw this arrows in the given canvas
+     * The 2d context of a HTML canvas can be retrieved by canvas.getContext("2d");
+     *
+     * @param {CanvasRenderingContext2D}   ctx
+     */
 
   }, {
     key: "drawArrows",
@@ -25458,12 +27267,12 @@ var Edge = /*#__PURE__*/function () {
 
           this.labelModule.draw(ctx, point.x, point.y, this.selected, this.hover);
           /*
-                  // Useful debug code: draw a border around the label
-                  // This should **not** be enabled in production!
-                  var size = this.labelModule.getSize();; // ;; intentional so lint catches it
-                  ctx.strokeStyle = "#ff0000";
-                  ctx.strokeRect(size.left, size.top, size.width, size.height);
-                  // End  debug code
+          // Useful debug code: draw a border around the label
+          // This should **not** be enabled in production!
+          var size = this.labelModule.getSize();; // ;; intentional so lint catches it
+          ctx.strokeStyle = "#ff0000";
+          ctx.strokeRect(size.left, size.top, size.width, size.height);
+          // End  debug code
           */
 
           ctx.restore();
@@ -25516,8 +27325,9 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * Check if this object is overlapping with the provided object
-     * @param {Object} obj   an object with parameters left, top
-     * @return {boolean}     True if location is located on the edge
+     *
+     * @param {object} obj   an object with parameters left, top
+     * @returns {boolean}     True if location is located on the edge
      */
 
   }, {
@@ -25583,11 +27393,12 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * Get a point on a circle
+     *
      * @param {number} x
      * @param {number} y
      * @param {number} radius
      * @param {number} angle
-     * @return {Object} point
+     * @returns {object} point
      * @private
      */
 
@@ -25619,6 +27430,7 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * cleans all required things on delete
+     *
      * @returns {*}
      */
 
@@ -25640,6 +27452,7 @@ var Edge = /*#__PURE__*/function () {
     }
     /**
      * Check if both connecting nodes exist
+     *
      * @returns {boolean}
      */
 
@@ -25654,7 +27467,7 @@ var Edge = /*#__PURE__*/function () {
       var allowDeletion = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       var globalOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
       var copyFromGlobals = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-      var fields = ['endPointOffset', 'arrowStrikethrough', 'id', 'from', 'hidden', 'hoverWidth', 'labelHighlightBold', 'length', 'line', 'opacity', 'physics', 'scaling', 'selectionWidth', 'selfReferenceSize', 'selfReference', 'to', 'title', 'value', 'width', 'font', 'chosen', 'widthConstraint']; // only deep extend the items in the field array. These do not have shorthand.
+      var fields = ["endPointOffset", "arrowStrikethrough", "id", "from", "hidden", "hoverWidth", "labelHighlightBold", "length", "line", "opacity", "physics", "scaling", "selectionWidth", "selfReferenceSize", "selfReference", "to", "title", "value", "width", "font", "chosen", "widthConstraint"]; // only deep extend the items in the field array. These do not have shorthand.
 
       selectiveDeepExtend(fields, parentOptions, newOptions, allowDeletion); // Only use endPointOffset values (from and to) if it's valid values
 
@@ -25663,7 +27476,7 @@ var Edge = /*#__PURE__*/function () {
           parentOptions.endPointOffset.from = newOptions.endPointOffset.from;
         } else {
           parentOptions.endPointOffset.from = globalOptions.endPointOffset.from !== undefined ? globalOptions.endPointOffset.from : 0;
-          console.error('endPointOffset.from is not a valid number');
+          console.error("endPointOffset.from is not a valid number");
         }
       }
 
@@ -25672,7 +27485,7 @@ var Edge = /*#__PURE__*/function () {
           parentOptions.endPointOffset.to = newOptions.endPointOffset.to;
         } else {
           parentOptions.endPointOffset.to = globalOptions.endPointOffset.to !== undefined ? globalOptions.endPointOffset.to : 0;
-          console.error('endPointOffset.to is not a valid number');
+          console.error("endPointOffset.to is not a valid number");
         }
       } // Only copy label if it's a legal value.
 
@@ -25683,9 +27496,9 @@ var Edge = /*#__PURE__*/function () {
         parentOptions.label = undefined;
       }
 
-      mergeOptions(parentOptions, newOptions, 'smooth', globalOptions);
-      mergeOptions(parentOptions, newOptions, 'shadow', globalOptions);
-      mergeOptions(parentOptions, newOptions, 'background', globalOptions);
+      mergeOptions(parentOptions, newOptions, "smooth", globalOptions);
+      mergeOptions(parentOptions, newOptions, "shadow", globalOptions);
+      mergeOptions(parentOptions, newOptions, "background", globalOptions);
 
       if (newOptions.dashes !== undefined && newOptions.dashes !== null) {
         parentOptions.dashes = newOptions.dashes;
@@ -25703,22 +27516,22 @@ var Edge = /*#__PURE__*/function () {
           parentOptions.scaling.max = newOptions.scaling.max;
         }
 
-        mergeOptions(parentOptions.scaling, newOptions.scaling, 'label', globalOptions.scaling);
+        mergeOptions(parentOptions.scaling, newOptions.scaling, "label", globalOptions.scaling);
       } else if (allowDeletion === true && newOptions.scaling === null) {
         parentOptions.scaling = create$2(globalOptions.scaling); // this sets the pointer of the option back to the global option.
       } // handle multiple input cases for arrows
 
 
       if (newOptions.arrows !== undefined && newOptions.arrows !== null) {
-        if (typeof newOptions.arrows === 'string') {
+        if (typeof newOptions.arrows === "string") {
           var arrows = newOptions.arrows.toLowerCase();
           parentOptions.arrows.to.enabled = indexOf$3(arrows).call(arrows, "to") != -1;
           parentOptions.arrows.middle.enabled = indexOf$3(arrows).call(arrows, "middle") != -1;
           parentOptions.arrows.from.enabled = indexOf$3(arrows).call(arrows, "from") != -1;
-        } else if (_typeof_1(newOptions.arrows) === 'object') {
-          mergeOptions(parentOptions.arrows, newOptions.arrows, 'to', globalOptions.arrows);
-          mergeOptions(parentOptions.arrows, newOptions.arrows, 'middle', globalOptions.arrows);
-          mergeOptions(parentOptions.arrows, newOptions.arrows, 'from', globalOptions.arrows);
+        } else if (_typeof_1(newOptions.arrows) === "object") {
+          mergeOptions(parentOptions.arrows, newOptions.arrows, "to", globalOptions.arrows);
+          mergeOptions(parentOptions.arrows, newOptions.arrows, "middle", globalOptions.arrows);
+          mergeOptions(parentOptions.arrows, newOptions.arrows, "from", globalOptions.arrows);
         } else {
           throw new Error("The arrow newOptions can only be an object or a string. Refer to the documentation. You used:" + stringify$2(newOptions.arrows));
         }
@@ -25787,7 +27600,7 @@ var Edge = /*#__PURE__*/function () {
             toColor.inherit = false;
           } else {
             if (toColor.inherit === undefined) {
-              toColor.inherit = 'from'; // Set default
+              toColor.inherit = "from"; // Set default
             }
           }
         }
@@ -25800,7 +27613,7 @@ var Edge = /*#__PURE__*/function () {
       }
 
       if (Object.prototype.hasOwnProperty.call(newOptions, "selfReferenceSize")) {
-        console.log('The selfReferenceSize property has been deprecated. Please use selfReference property instead. The selfReference can be set like thise selfReference:{size:30, angle:Math.PI / 4}');
+        console.warn("The selfReferenceSize property has been deprecated. Please use selfReference property instead. The selfReference can be set like thise selfReference:{size:30, angle:Math.PI / 4}");
         parentOptions.selfReference.size = newOptions.selfReferenceSize;
       }
     }
@@ -25815,7 +27628,7 @@ var Edge = /*#__PURE__*/function () {
 
 var EdgesHandler = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Array.<Image>} images
    * @param {Array.<Group>} groups
    */
@@ -25847,18 +27660,18 @@ var EdgesHandler = /*#__PURE__*/function () {
         to: {
           enabled: false,
           scaleFactor: 1,
-          type: 'arrow'
+          type: "arrow"
         },
         // boolean / {arrowScaleFactor:1} / {enabled: false, arrowScaleFactor:1}
         middle: {
           enabled: false,
           scaleFactor: 1,
-          type: 'arrow'
+          type: "arrow"
         },
         from: {
           enabled: false,
           scaleFactor: 1,
-          type: 'arrow'
+          type: "arrow"
         }
       },
       endPointOffset: {
@@ -25867,39 +27680,39 @@ var EdgesHandler = /*#__PURE__*/function () {
       },
       arrowStrikethrough: true,
       color: {
-        color: '#848484',
-        highlight: '#848484',
-        hover: '#848484',
-        inherit: 'from',
+        color: "#848484",
+        highlight: "#848484",
+        hover: "#848484",
+        inherit: "from",
         opacity: 1.0
       },
       dashes: false,
       font: {
-        color: '#343434',
+        color: "#343434",
         size: 14,
         // px
-        face: 'arial',
-        background: 'none',
+        face: "arial",
+        background: "none",
         strokeWidth: 2,
         // px
-        strokeColor: '#ffffff',
-        align: 'horizontal',
+        strokeColor: "#ffffff",
+        align: "horizontal",
         multi: false,
         vadjust: 0,
         bold: {
-          mod: 'bold'
+          mod: "bold"
         },
         boldital: {
-          mod: 'bold italic'
+          mod: "bold italic"
         },
         ital: {
-          mod: 'italic'
+          mod: "italic"
         },
         mono: {
-          mod: '',
+          mod: "",
           size: 15,
           // px
-          face: 'courier new',
+          face: "courier new",
           vadjust: 2
         }
       },
@@ -25936,21 +27749,21 @@ var EdgesHandler = /*#__PURE__*/function () {
       },
       shadow: {
         enabled: false,
-        color: 'rgba(0,0,0,0.5)',
+        color: "rgba(0,0,0,0.5)",
         size: 10,
         x: 5,
         y: 5
       },
       background: {
         enabled: false,
-        color: 'rgba(111,111,111,1)',
+        color: "rgba(111,111,111,1)",
         size: 10,
         dashes: false
       },
       smooth: {
         enabled: true,
         type: "dynamic",
-        forceDirection: 'none',
+        forceDirection: "none",
         roundness: 0.5
       },
       title: undefined,
@@ -25976,8 +27789,8 @@ var EdgesHandler = /*#__PURE__*/function () {
       this.body.emitter.on("_forceDisableDynamicCurves", function (type) {
         var emit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-        if (type === 'dynamic') {
-          type = 'continuous';
+        if (type === "dynamic") {
+          type = "continuous";
         }
 
         var dataChanged = false;
@@ -25994,7 +27807,7 @@ var EdgesHandler = /*#__PURE__*/function () {
               var smoothOptions = edgeData.smooth;
 
               if (smoothOptions !== undefined) {
-                if (smoothOptions.enabled === true && smoothOptions.type === 'dynamic') {
+                if (smoothOptions.enabled === true && smoothOptions.type === "dynamic") {
                   if (type === undefined) {
                     edge.setOptions({
                       smooth: false
@@ -26045,7 +27858,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
@@ -26076,14 +27889,15 @@ var EdgesHandler = /*#__PURE__*/function () {
 
 
         if (options.hidden !== undefined || options.physics !== undefined || dataChanged === true) {
-          this.body.emitter.emit('_dataChanged');
+          this.body.emitter.emit("_dataChanged");
         }
       }
     }
     /**
      * Load edges by reading the data table
+     *
      * @param {Array | DataSet | DataView} edges    The data containing the edges.
-     * @param {boolean} [doNotEmit=false]
+     * @param {boolean} [doNotEmit=false] - Suppress data changed event.
      * @private
      */
 
@@ -26095,7 +27909,7 @@ var EdgesHandler = /*#__PURE__*/function () {
       var doNotEmit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var oldEdgesData = this.body.data.edges;
 
-      if (edges instanceof DataSet || edges instanceof DataView) {
+      if (isDataViewLike("id", edges)) {
         this.body.data.edges = edges;
       } else if (isArray$5(edges)) {
         this.body.data.edges = new DataSet();
@@ -26103,7 +27917,7 @@ var EdgesHandler = /*#__PURE__*/function () {
       } else if (!edges) {
         this.body.data.edges = new DataSet();
       } else {
-        throw new TypeError('Array or DataSet expected');
+        throw new TypeError("Array or DataSet expected");
       } // TODO: is this null or undefined or false?
 
 
@@ -26127,7 +27941,7 @@ var EdgesHandler = /*#__PURE__*/function () {
         this.add(ids, true);
       }
 
-      this.body.emitter.emit('_adjustEdgesForHierarchicalLayout');
+      this.body.emitter.emit("_adjustEdgesForHierarchicalLayout");
 
       if (doNotEmit === false) {
         this.body.emitter.emit("_dataChanged");
@@ -26135,6 +27949,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * Add edges
+     *
      * @param {number[] | string[]} ids
      * @param {boolean} [doNotEmit=false]
      * @private
@@ -26156,12 +27971,12 @@ var EdgesHandler = /*#__PURE__*/function () {
         }
 
         var data = edgesData.get(id, {
-          "showInternalIds": true
+          showInternalIds: true
         });
         edges[id] = this.create(data);
       }
 
-      this.body.emitter.emit('_adjustEdgesForHierarchicalLayout');
+      this.body.emitter.emit("_adjustEdgesForHierarchicalLayout");
 
       if (doNotEmit === false) {
         this.body.emitter.emit("_dataChanged");
@@ -26169,6 +27984,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * Update existing edges, or create them when not yet existing
+     *
      * @param {number[] | string[]} ids
      * @private
      */
@@ -26199,7 +28015,7 @@ var EdgesHandler = /*#__PURE__*/function () {
       }
 
       if (dataChanged === true) {
-        this.body.emitter.emit('_adjustEdgesForHierarchicalLayout');
+        this.body.emitter.emit("_adjustEdgesForHierarchicalLayout");
         this.body.emitter.emit("_dataChanged");
       } else {
         this.body.emitter.emit("_dataUpdated");
@@ -26207,6 +28023,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * Remove existing edges. Non existing ids will be ignored
+     *
      * @param {number[] | string[]} ids
      * @param {boolean} [emit=true]
      * @private
@@ -26250,7 +28067,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} properties
+     * @param {object} properties
      * @returns {Edge}
      */
 
@@ -26261,6 +28078,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * Reconnect all edges
+     *
      * @private
      */
 
@@ -26325,6 +28143,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * Scan for missing nodes and remove corresponding edges, if any.
+     *
      * @private
      */
 
@@ -26350,6 +28169,7 @@ var EdgesHandler = /*#__PURE__*/function () {
     }
     /**
      * add all edges from dataset that are not in the cached state
+     *
      * @private
      */
 
@@ -26386,9 +28206,9 @@ var EdgesHandler = /*#__PURE__*/function () {
 
 var BarnesHutSolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function BarnesHutSolver(body, physicsBody, options) {
     classCallCheck(this, BarnesHutSolver);
@@ -26402,7 +28222,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -26446,7 +28266,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
       }
     }
     /**
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {Node} node
      * @private
      */
@@ -26466,7 +28286,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
      * This function traverses the barnesHutTree. It checks when it can approximate distant nodes with their center of mass.
      * If a region contains a single node, we check if it is not itself, then we apply the force.
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {Node} node
      * @private
      */
@@ -26506,7 +28326,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
      * @param {number} dx
      * @param {number} dy
      * @param {Node} node
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @private
      */
 
@@ -26633,7 +28453,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
     /**
      * this updates the mass of a branch. this is increased by adding a node.
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {Node} node
      * @private
      */
@@ -26655,7 +28475,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
     /**
      * determine in which branch the node will be placed.
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {Node} node
      * @param {boolean} skipMassUpdate
      * @private
@@ -26693,7 +28513,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
     /**
      * actually place the node in a region (or branch)
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {Node} node
      * @param {'NW'| 'NE' | 'SW' | 'SE'} region
      * @private
@@ -26740,7 +28560,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
      * this function splits a branch into 4 sub branches. If the branch contained a node, we place it in the subbranch
      * after the split is complete.
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @private
      */
 
@@ -26777,7 +28597,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
      * Specifically, this inserts a single new segment.
      * It fills the children section of the parentBranch
      *
-     * @param {Object} parentBranch
+     * @param {object} parentBranch
      * @param {'NW'| 'NE' | 'SW' | 'SE'} region
      * @private
      */
@@ -26861,7 +28681,7 @@ var BarnesHutSolver = /*#__PURE__*/function () {
     /**
      * This function is for debugging purposes. It draws the branches recursively.
      *
-     * @param {Object} branch
+     * @param {object} branch
      * @param {CanvasRenderingContext2D} ctx
      * @param {string} color
      * @private
@@ -26919,9 +28739,9 @@ var BarnesHutSolver = /*#__PURE__*/function () {
 
 var RepulsionSolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function RepulsionSolver(body, physicsBody, options) {
     classCallCheck(this, RepulsionSolver);
@@ -26933,7 +28753,7 @@ var RepulsionSolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -27005,9 +28825,9 @@ var RepulsionSolver = /*#__PURE__*/function () {
  */
 var HierarchicalRepulsionSolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function HierarchicalRepulsionSolver(body, physicsBody, options) {
     classCallCheck(this, HierarchicalRepulsionSolver);
@@ -27018,7 +28838,7 @@ var HierarchicalRepulsionSolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -27090,9 +28910,9 @@ var HierarchicalRepulsionSolver = /*#__PURE__*/function () {
  */
 var SpringSolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function SpringSolver(body, physicsBody, options) {
     classCallCheck(this, SpringSolver);
@@ -27103,7 +28923,7 @@ var SpringSolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -27192,9 +29012,9 @@ var SpringSolver = /*#__PURE__*/function () {
  */
 var HierarchicalSpringSolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function HierarchicalSpringSolver(body, physicsBody, options) {
     classCallCheck(this, HierarchicalSpringSolver);
@@ -27205,7 +29025,7 @@ var HierarchicalSpringSolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -27317,9 +29137,9 @@ var HierarchicalSpringSolver = /*#__PURE__*/function () {
  */
 var CentralGravitySolver = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function CentralGravitySolver(body, physicsBody, options) {
     classCallCheck(this, CentralGravitySolver);
@@ -27330,7 +29150,7 @@ var CentralGravitySolver = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -27363,10 +29183,11 @@ var CentralGravitySolver = /*#__PURE__*/function () {
     }
     /**
      * Calculate the forces based on the distance.
+     *
      * @param {number} distance
      * @param {number} dx
      * @param {number} dy
-     * @param {Object<Node.id, vis.Node>} forces
+     * @param {object<Node.id, vis.Node>} forces
      * @param {Node} node
      * @private
      */
@@ -27387,7 +29208,7 @@ function _createSuper$q(Derived) { var hasNativeReflectConstruct = _isNativeRefl
 
 function _isNativeReflectConstruct$q() { if (typeof Reflect === "undefined" || !construct$3) return false; if (construct$3.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(construct$3(Date, [], function () {})); return true; } catch (e) { return false; } }
 /**
- * @extends BarnesHutSolver
+ * @augments BarnesHutSolver
  */
 
 var ForceAtlas2BasedRepulsionSolver = /*#__PURE__*/function (_BarnesHutSolver) {
@@ -27396,9 +29217,9 @@ var ForceAtlas2BasedRepulsionSolver = /*#__PURE__*/function (_BarnesHutSolver) {
   var _super = _createSuper$q(ForceAtlas2BasedRepulsionSolver);
 
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function ForceAtlas2BasedRepulsionSolver(body, physicsBody, options) {
     var _this;
@@ -27416,7 +29237,7 @@ var ForceAtlas2BasedRepulsionSolver = /*#__PURE__*/function (_BarnesHutSolver) {
    * @param {number} dx
    * @param {number} dy
    * @param {Node} node
-   * @param {Object} parentBranch
+   * @param {object} parentBranch
    * @private
    */
 
@@ -27451,7 +29272,7 @@ function _createSuper$r(Derived) { var hasNativeReflectConstruct = _isNativeRefl
 
 function _isNativeReflectConstruct$r() { if (typeof Reflect === "undefined" || !construct$3) return false; if (construct$3.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(construct$3(Date, [], function () {})); return true; } catch (e) { return false; } }
 /**
- * @extends CentralGravitySolver
+ * @augments CentralGravitySolver
  */
 
 var ForceAtlas2BasedCentralGravitySolver = /*#__PURE__*/function (_CentralGravitySolver) {
@@ -27460,9 +29281,9 @@ var ForceAtlas2BasedCentralGravitySolver = /*#__PURE__*/function (_CentralGravit
   var _super = _createSuper$r(ForceAtlas2BasedCentralGravitySolver);
 
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {{physicsNodeIndices: Array, physicsEdgeIndices: Array, forces: {}, velocities: {}}} physicsBody
-   * @param {Object} options
+   * @param {object} options
    */
   function ForceAtlas2BasedCentralGravitySolver(body, physicsBody, options) {
     classCallCheck(this, ForceAtlas2BasedCentralGravitySolver);
@@ -27475,7 +29296,7 @@ var ForceAtlas2BasedCentralGravitySolver = /*#__PURE__*/function (_CentralGravit
    * @param {number} distance
    * @param {number} dx
    * @param {number} dy
-   * @param {Object<Node.id, Node>} forces
+   * @param {object<Node.id, Node>} forces
    * @param {Node} node
    * @private
    */
@@ -27502,7 +29323,7 @@ var ForceAtlas2BasedCentralGravitySolver = /*#__PURE__*/function (_CentralGravit
 
 var PhysicsEngine = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    */
   function PhysicsEngine(body) {
     classCallCheck(this, PhysicsEngine);
@@ -27571,7 +29392,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
       maxVelocity: 50,
       minVelocity: 0.75,
       // px/s
-      solver: 'barnesHut',
+      solver: "barnesHut",
       stabilization: {
         enabled: true,
         iterations: 1000,
@@ -27604,38 +29425,38 @@ var PhysicsEngine = /*#__PURE__*/function () {
     value: function bindEventListeners() {
       var _this = this;
 
-      this.body.emitter.on('initPhysics', function () {
+      this.body.emitter.on("initPhysics", function () {
         _this.initPhysics();
       });
-      this.body.emitter.on('_layoutFailed', function () {
+      this.body.emitter.on("_layoutFailed", function () {
         _this.layoutFailed = true;
       });
-      this.body.emitter.on('resetPhysics', function () {
+      this.body.emitter.on("resetPhysics", function () {
         _this.stopSimulation();
 
         _this.ready = false;
       });
-      this.body.emitter.on('disablePhysics', function () {
+      this.body.emitter.on("disablePhysics", function () {
         _this.physicsEnabled = false;
 
         _this.stopSimulation();
       });
-      this.body.emitter.on('restorePhysics', function () {
+      this.body.emitter.on("restorePhysics", function () {
         _this.setOptions(_this.options);
 
         if (_this.ready === true) {
           _this.startSimulation();
         }
       });
-      this.body.emitter.on('startSimulation', function () {
+      this.body.emitter.on("startSimulation", function () {
         if (_this.ready === true) {
           _this.startSimulation();
         }
       });
-      this.body.emitter.on('stopSimulation', function () {
+      this.body.emitter.on("stopSimulation", function () {
         _this.stopSimulation();
       });
-      this.body.emitter.on('destroy', function () {
+      this.body.emitter.on("destroy", function () {
         _this.stopSimulation(false);
 
         _this.body.emitter.off();
@@ -27648,7 +29469,8 @@ var PhysicsEngine = /*#__PURE__*/function () {
     }
     /**
      * set the physics options
-     * @param {Object} options
+     *
+     * @param {object} options
      */
 
   }, {
@@ -27665,8 +29487,8 @@ var PhysicsEngine = /*#__PURE__*/function () {
           this.startSimulation();
         } else {
           this.physicsEnabled = true;
-          selectiveNotDeepExtend(['stabilization'], this.options, options);
-          mergeOptions(this.options, options, 'stabilization');
+          selectiveNotDeepExtend(["stabilization"], this.options, options);
+          mergeOptions(this.options, options, "stabilization");
 
           if (options.enabled === undefined) {
             this.options.enabled = true;
@@ -27680,11 +29502,11 @@ var PhysicsEngine = /*#__PURE__*/function () {
           var wind = this.options.wind;
 
           if (wind) {
-            if (typeof wind.x !== 'number' || isNan$2(wind.x)) {
+            if (typeof wind.x !== "number" || isNan$2(wind.x)) {
               wind.x = 0;
             }
 
-            if (typeof wind.y !== 'number' || isNan$2(wind.y)) {
+            if (typeof wind.y !== "number" || isNan$2(wind.y)) {
               wind.y = 0;
             }
           } // set the timestep
@@ -27705,17 +29527,17 @@ var PhysicsEngine = /*#__PURE__*/function () {
     value: function init() {
       var options;
 
-      if (this.options.solver === 'forceAtlas2Based') {
+      if (this.options.solver === "forceAtlas2Based") {
         options = this.options.forceAtlas2Based;
         this.nodesSolver = new ForceAtlas2BasedRepulsionSolver(this.body, this.physicsBody, options);
         this.edgesSolver = new SpringSolver(this.body, this.physicsBody, options);
         this.gravitySolver = new ForceAtlas2BasedCentralGravitySolver(this.body, this.physicsBody, options);
-      } else if (this.options.solver === 'repulsion') {
+      } else if (this.options.solver === "repulsion") {
         options = this.options.repulsion;
         this.nodesSolver = new RepulsionSolver(this.body, this.physicsBody, options);
         this.edgesSolver = new SpringSolver(this.body, this.physicsBody, options);
         this.gravitySolver = new CentralGravitySolver(this.body, this.physicsBody, options);
-      } else if (this.options.solver === 'hierarchicalRepulsion') {
+      } else if (this.options.solver === "hierarchicalRepulsion") {
         options = this.options.hierarchicalRepulsion;
         this.nodesSolver = new HierarchicalRepulsionSolver(this.body, this.physicsBody, options);
         this.edgesSolver = new HierarchicalSpringSolver(this.body, this.physicsBody, options);
@@ -27743,13 +29565,13 @@ var PhysicsEngine = /*#__PURE__*/function () {
         } else {
           this.stabilized = false;
           this.ready = true;
-          this.body.emitter.emit('fit', {}, this.layoutFailed); // if the layout failed, we use the approximation for the zoom
+          this.body.emitter.emit("fit", {}, this.layoutFailed); // if the layout failed, we use the approximation for the zoom
 
           this.startSimulation();
         }
       } else {
         this.ready = true;
-        this.body.emitter.emit('fit');
+        this.body.emitter.emit("fit");
       }
     }
     /**
@@ -27770,15 +29592,16 @@ var PhysicsEngine = /*#__PURE__*/function () {
           var _context;
 
           this.viewFunction = bind$2(_context = this.simulationStep).call(_context, this);
-          this.body.emitter.on('initRedraw', this.viewFunction);
-          this.body.emitter.emit('_startRendering');
+          this.body.emitter.on("initRedraw", this.viewFunction);
+          this.body.emitter.emit("_startRendering");
         }
       } else {
-        this.body.emitter.emit('_redraw');
+        this.body.emitter.emit("_redraw");
       }
     }
     /**
      * Stop the simulation, force stabilization.
+     *
      * @param {boolean} [emit=true]
      */
 
@@ -27793,11 +29616,11 @@ var PhysicsEngine = /*#__PURE__*/function () {
       }
 
       if (this.viewFunction !== undefined) {
-        this.body.emitter.off('initRedraw', this.viewFunction);
+        this.body.emitter.off("initRedraw", this.viewFunction);
         this.viewFunction = undefined;
 
         if (emit === true) {
-          this.body.emitter.emit('_stopRendering');
+          this.body.emitter.emit("_stopRendering");
         }
       }
     }
@@ -27841,7 +29664,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
 
       if (this.stabilizationIterations > 1 || this.startedStabilization === true) {
         setTimeout$2(function () {
-          _this2.body.emitter.emit('stabilized', {
+          _this2.body.emitter.emit("stabilized", {
             iterations: amountOfIterations
           });
 
@@ -27852,6 +29675,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
     }
     /**
      * Calculate the forces for one physics iteration and move the nodes.
+     *
      * @private
      */
 
@@ -27867,6 +29691,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
      * Make dynamic adjustments to the timestep, based on current state.
      *
      * Helper function for physicsTick().
+     *
      * @private
      */
 
@@ -28217,9 +30042,9 @@ var PhysicsEngine = /*#__PURE__*/function () {
 
       var iterations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.options.stabilization.iterations;
 
-      if (typeof iterations !== 'number') {
+      if (typeof iterations !== "number") {
         iterations = this.options.stabilization.iterations;
-        console.log('The stabilize method needs a numeric amount of iterations. Switching to default: ', iterations);
+        console.error("The stabilize method needs a numeric amount of iterations. Switching to default: ", iterations);
       }
 
       if (this.physicsBody.physicsNodeIndices.length === 0) {
@@ -28235,7 +30060,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
 
       this.stabilized = false; // block redraw requests
 
-      this.body.emitter.emit('_blockRedraw');
+      this.body.emitter.emit("_blockRedraw");
       this.targetIterations = iterations; // start the stabilization
 
       if (this.options.stabilization.onlyDynamicEdges === true) {
@@ -28259,12 +30084,13 @@ var PhysicsEngine = /*#__PURE__*/function () {
     key: "_startStabilizing",
     value: function _startStabilizing() {
       if (this.startedStabilization === true) return false;
-      this.body.emitter.emit('startStabilizing');
+      this.body.emitter.emit("startStabilizing");
       this.startedStabilization = true;
       return true;
     }
     /**
      * One batch of stabilization
+     *
      * @private
      */
 
@@ -28278,7 +30104,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
       };
 
       var sendProgress = function sendProgress() {
-        _this4.body.emitter.emit('stabilizationProgress', {
+        _this4.body.emitter.emit("stabilizationProgress", {
           iterations: _this4.stabilizationIterations,
           total: _this4.targetIterations
         });
@@ -28307,24 +30133,25 @@ var PhysicsEngine = /*#__PURE__*/function () {
     }
     /**
      * Wrap up the stabilization, fit and emit the events.
+     *
      * @private
      */
 
   }, {
     key: "_finalizeStabilization",
     value: function _finalizeStabilization() {
-      this.body.emitter.emit('_allowRedraw');
+      this.body.emitter.emit("_allowRedraw");
 
       if (this.options.stabilization.fit === true) {
-        this.body.emitter.emit('fit');
+        this.body.emitter.emit("fit");
       }
 
       if (this.options.stabilization.onlyDynamicEdges === true) {
         this._restoreFrozenNodes();
       }
 
-      this.body.emitter.emit('stabilizationIterationsDone');
-      this.body.emitter.emit('_requestRedraw');
+      this.body.emitter.emit("stabilizationIterationsDone");
+      this.body.emitter.emit("_requestRedraw");
 
       if (this.stabilized === true) {
         this._emitStabilized();
@@ -28370,7 +30197,7 @@ var PhysicsEngine = /*#__PURE__*/function () {
         var angle = Math.atan2(force.y, force.x);
         ctx.fillStyle = color;
         EndPoints.draw(ctx, {
-          type: 'arrow',
+          type: "arrow",
           point: point,
           angle: angle,
           length: arrowSize
@@ -28383,37 +30210,6 @@ var PhysicsEngine = /*#__PURE__*/function () {
 
   return PhysicsEngine;
 }();
-
-var nativeReverse = [].reverse;
-var test$2 = [1, 2]; // `Array.prototype.reverse` method
-// https://tc39.github.io/ecma262/#sec-array.prototype.reverse
-// fix for Safari 12.0 bug
-// https://bugs.webkit.org/show_bug.cgi?id=188794
-
-_export({
-  target: 'Array',
-  proto: true,
-  forced: String(test$2) === String(test$2.reverse())
-}, {
-  reverse: function reverse() {
-    // eslint-disable-next-line no-self-assign
-    if (isArray(this)) this.length = this.length;
-    return nativeReverse.call(this);
-  }
-});
-
-var reverse = entryVirtual('Array').reverse;
-
-var ArrayPrototype$h = Array.prototype;
-
-var reverse_1 = function (it) {
-  var own = it.reverse;
-  return it === ArrayPrototype$h || it instanceof Array && own === ArrayPrototype$h.reverse ? reverse : own;
-};
-
-var reverse$1 = reverse_1;
-
-var reverse$2 = reverse$1;
 
 /**
  * Utility Class
@@ -28551,6 +30347,7 @@ var NetworkUtil = /*#__PURE__*/function () {
     }
     /**
      * This returns a clone of the options or options of the edge or node to be used for construction of new edges or check functions for new nodes.
+     *
      * @param {vis.Item} item
      * @param {'node'|undefined} type
      * @returns {{}}
@@ -28562,7 +30359,7 @@ var NetworkUtil = /*#__PURE__*/function () {
     value: function cloneOptions(item, type) {
       var clonedOptions = {};
 
-      if (type === undefined || type === 'node') {
+      if (type === undefined || type === "node") {
         deepExtend(clonedOptions, item.options, true);
         clonedOptions.x = item.x;
         clonedOptions.y = item.y;
@@ -28585,7 +30382,7 @@ function _isNativeReflectConstruct$s() { if (typeof Reflect === "undefined" || !
  * A Cluster is a special Node that allows a group of Nodes positioned closely together
  * to be represented by a single Cluster Node.
  *
- * @extends Node
+ * @augments Node
  */
 
 var Cluster = /*#__PURE__*/function (_Node) {
@@ -28594,12 +30391,12 @@ var Cluster = /*#__PURE__*/function (_Node) {
   var _super = _createSuper$s(Cluster);
 
   /**
-   * @param {Object} options
-   * @param {Object} body
+   * @param {object} options
+   * @param {object} body
    * @param {Array.<HTMLImageElement>}imagelist
    * @param {Array} grouplist
-   * @param {Object} globalOptions
-   * @param {Object} defaultOptions     Global default options for nodes
+   * @param {object} globalOptions
+   * @param {object} defaultOptions     Global default options for nodes
    */
   function Cluster(options, body, imagelist, grouplist, globalOptions, defaultOptions) {
     var _this;
@@ -28629,11 +30426,11 @@ var Cluster = /*#__PURE__*/function (_Node) {
       var childCluster = this.body.nodes[childClusterId];
 
       if (this.containedNodes[childClusterId] === undefined) {
-        throw new Error('node with id: ' + childClusterId + ' not in current cluster');
+        throw new Error("node with id: " + childClusterId + " not in current cluster");
       }
 
       if (!childCluster.isCluster) {
-        throw new Error('node with id: ' + childClusterId + ' is not a cluster');
+        throw new Error("node with id: " + childClusterId + " is not a cluster");
       } // Disconnect child cluster from current cluster
 
 
@@ -28682,7 +30479,7 @@ var Cluster = /*#__PURE__*/function (_Node) {
 
 var ClusterEngine = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    */
   function ClusterEngine(body) {
     var _this = this;
@@ -28699,16 +30496,16 @@ var ClusterEngine = /*#__PURE__*/function () {
 
     assign$2(this.options, this.defaultOptions);
 
-    this.body.emitter.on('_resetData', function () {
+    this.body.emitter.on("_resetData", function () {
       _this.clusteredNodes = {};
       _this.clusteredEdges = {};
     });
   }
   /**
-  *
-  * @param {number} hubsize
-  * @param {Object} options
-  */
+   *
+   * @param {number} hubsize
+   * @param {object} options
+   */
 
 
   createClass(ClusterEngine, [{
@@ -28735,11 +30532,12 @@ var ClusterEngine = /*#__PURE__*/function () {
         this.clusterByConnection(nodesToCluster[_i], options, true);
       }
 
-      this.body.emitter.emit('_dataChanged');
+      this.body.emitter.emit("_dataChanged");
     }
     /**
      * loop over all nodes, check if they adhere to the condition and cluster if needed.
-     * @param {Object} options
+     *
+     * @param {object} options
      * @param {boolean} [refreshData=true]
      */
 
@@ -28776,8 +30574,9 @@ var ClusterEngine = /*#__PURE__*/function () {
     }
     /**
      * Cluster all nodes in the network that have only X edges
+     *
      * @param {number} edgeCount
-     * @param {Object} options
+     * @param {object} options
      * @param {boolean} [refreshData=true]
      */
 
@@ -28849,7 +30648,8 @@ var ClusterEngine = /*#__PURE__*/function () {
             if (keys$3(childNodesObj).length > 0 && keys$3(childEdgesObj).length > 0 && gatheringSuccessful === true) {
               /**
                * Search for cluster data that contains any of the node id's
-               * @returns {Boolean} true if no joinCondition, otherwise return value of joinCondition
+               *
+               * @returns {boolean} true if no joinCondition, otherwise return value of joinCondition
                */
               var findClusterData = function findClusterData() {
                 for (var n = 0; n < clusters.length; ++n) {
@@ -28903,12 +30703,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       }
 
       if (refreshData === true) {
-        this.body.emitter.emit('_dataChanged');
+        this.body.emitter.emit("_dataChanged");
       }
     }
     /**
      * Cluster all nodes in the network that have only 1 edge
-     * @param {Object} options
+     *
+     * @param {object} options
      * @param {boolean} [refreshData=true]
      */
 
@@ -28920,7 +30721,8 @@ var ClusterEngine = /*#__PURE__*/function () {
     }
     /**
      * Cluster all nodes in the network that have only 2 edge
-     * @param {Object} options
+     *
+     * @param {object} options
      * @param {boolean} [refreshData=true]
      */
 
@@ -28931,11 +30733,12 @@ var ClusterEngine = /*#__PURE__*/function () {
       this.clusterByEdgeCount(2, options, refreshData);
     }
     /**
-    * suck all connected nodes of a node into the node.
-    * @param {Node.id} nodeId
-    * @param {Object} options
-    * @param {boolean} [refreshData=true]
-    */
+     * suck all connected nodes of a node into the node.
+     *
+     * @param {Node.id} nodeId
+     * @param {object} options
+     * @param {boolean} [refreshData=true]
+     */
 
   }, {
     key: "clusterByConnection",
@@ -29025,15 +30828,15 @@ var ClusterEngine = /*#__PURE__*/function () {
       this._cluster(childNodesObj, childEdgesObj, options, refreshData);
     }
     /**
-    * This function creates the edges that will be attached to the cluster
-    * It looks for edges that are connected to the nodes from the "outside' of the cluster.
-    *
-    * @param {{Node.id: vis.Node}} childNodesObj
-    * @param {{vis.Edge.id: vis.Edge}} childEdgesObj
-    * @param {Object} clusterNodeProperties
-    * @param {Object} clusterEdgeProperties
-    * @private
-    */
+     * This function creates the edges that will be attached to the cluster
+     * It looks for edges that are connected to the nodes from the "outside' of the cluster.
+     *
+     * @param {{Node.id: vis.Node}} childNodesObj
+     * @param {{vis.Edge.id: vis.Edge}} childEdgesObj
+     * @param {object} clusterNodeProperties
+     * @param {object} clusterEdgeProperties
+     * @private
+     */
 
   }, {
     key: "_createClusterEdges",
@@ -29093,6 +30896,7 @@ var ClusterEngine = /*#__PURE__*/function () {
       var newEdges = [];
       /**
        * Find a cluster edge which matches the given created edge.
+       *
        * @param {vis.Edge} createdEdge
        * @returns {vis.Edge}
        */
@@ -29136,12 +30940,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       }
     }
     /**
-    * This function checks the options that can be supplied to the different cluster functions
-    * for certain fields and inserts defaults if needed
-    * @param {Object} options
-    * @returns {*}
-    * @private
-    */
+     * This function checks the options that can be supplied to the different cluster functions
+     * for certain fields and inserts defaults if needed
+     *
+     * @param {object} options
+     * @returns {*}
+     * @private
+     */
 
   }, {
     key: "_checkOptions",
@@ -29159,13 +30964,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       return options;
     }
     /**
-    *
-    * @param {Object}    childNodesObj         | object with node objects, id as keys, same as childNodes except it also contains a source node
-    * @param {Object}    childEdgesObj         | object with edge objects, id as keys
-    * @param {Array}     options               | object with {clusterNodeProperties, clusterEdgeProperties, processProperties}
-    * @param {boolean}   refreshData | when true, do not wrap up
-    * @private
-    */
+     *
+     * @param {object}    childNodesObj         | object with node objects, id as keys, same as childNodes except it also contains a source node
+     * @param {object}    childEdgesObj         | object with edge objects, id as keys
+     * @param {Array}     options               | object with {clusterNodeProperties, clusterEdgeProperties, processProperties}
+     * @param {boolean}   refreshData | when true, do not wrap up
+     * @private
+     */
 
   }, {
     key: "_cluster",
@@ -29216,7 +31021,7 @@ var ClusterEngine = /*#__PURE__*/function () {
           if (Object.prototype.hasOwnProperty.call(childEdgesObj, edgeId)) {
             // these cluster edges will be removed on creation of the cluster.
             if (edgeId.substr(0, 12) !== "clusterEdge:") {
-              var _clonedOptions = NetworkUtil.cloneOptions(childEdgesObj[edgeId], 'edge');
+              var _clonedOptions = NetworkUtil.cloneOptions(childEdgesObj[edgeId], "edge");
 
               childEdgesOptions.push(_clonedOptions);
             }
@@ -29232,13 +31037,13 @@ var ClusterEngine = /*#__PURE__*/function () {
 
 
       if (clusterNodeProperties.id === undefined) {
-        clusterNodeProperties.id = 'cluster:' + v4();
+        clusterNodeProperties.id = "cluster:" + v4();
       }
 
       var clusterId = clusterNodeProperties.id;
 
       if (clusterNodeProperties.label === undefined) {
-        clusterNodeProperties.label = 'cluster';
+        clusterNodeProperties.label = "cluster";
       } // give the clusterNode a position if it does not have one.
 
 
@@ -29275,7 +31080,7 @@ var ClusterEngine = /*#__PURE__*/function () {
       clusterNodeProperties.id = undefined; // wrap up
 
       if (refreshData === true) {
-        this.body.emitter.emit('_dataChanged');
+        this.body.emitter.emit("_dataChanged");
       }
     }
     /**
@@ -29312,10 +31117,11 @@ var ClusterEngine = /*#__PURE__*/function () {
       }
     }
     /**
-    * Check if a node is a cluster.
-    * @param {Node.id} nodeId
-    * @returns {*}
-    */
+     * Check if a node is a cluster.
+     *
+     * @param {Node.id} nodeId
+     * @returns {*}
+     */
 
   }, {
     key: "isCluster",
@@ -29323,16 +31129,17 @@ var ClusterEngine = /*#__PURE__*/function () {
       if (this.body.nodes[nodeId] !== undefined) {
         return this.body.nodes[nodeId].isCluster === true;
       } else {
-        console.log("Node does not exist.");
+        console.error("Node does not exist.");
         return false;
       }
     }
     /**
-    * get the position of the cluster node based on what's inside
-    * @param {object} childNodesObj    | object with node objects, id as keys
-    * @returns {{x: number, y: number}}
-    * @private
-    */
+     * get the position of the cluster node based on what's inside
+     *
+     * @param {object} childNodesObj    | object with node objects, id as keys
+     * @returns {{x: number, y: number}}
+     * @private
+     */
 
   }, {
     key: "_getClusterPosition",
@@ -29360,8 +31167,9 @@ var ClusterEngine = /*#__PURE__*/function () {
     }
     /**
      * Open a cluster by calling this function.
+     *
      * @param {vis.Edge.id}  clusterNodeId | the ID of the cluster node
-     * @param {Object} options
+     * @param {object} options
      * @param {boolean} refreshData | wrap up afterwards if not true
      */
 
@@ -29400,7 +31208,7 @@ var ClusterEngine = /*#__PURE__*/function () {
         delete this.body.nodes[clusterNodeId];
 
         if (refreshData === true) {
-          this.body.emitter.emit('_dataChanged');
+          this.body.emitter.emit("_dataChanged");
         }
 
         return;
@@ -29410,7 +31218,7 @@ var ClusterEngine = /*#__PURE__*/function () {
       var containedNodes = clusterNode.containedNodes;
       var containedEdges = clusterNode.containedEdges; // allow the user to position the nodes after release.
 
-      if (options !== undefined && options.releaseFunction !== undefined && typeof options.releaseFunction === 'function') {
+      if (options !== undefined && options.releaseFunction !== undefined && typeof options.releaseFunction === "function") {
         var positions = {};
         var clusterPosition = {
           x: clusterNode.x,
@@ -29529,7 +31337,7 @@ var ClusterEngine = /*#__PURE__*/function () {
       delete this.body.nodes[clusterNodeId];
 
       if (refreshData === true) {
-        this.body.emitter.emit('_dataChanged');
+        this.body.emitter.emit("_dataChanged");
       }
     }
     /**
@@ -29556,13 +31364,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       return nodesArray;
     }
     /**
-    * Get the stack clusterId's that a certain node resides in. cluster A -> cluster B -> cluster C -> node
-    *
-    * If a node can't be found in the chain, return an empty array.
-    *
-    * @param {string|number} nodeId
-    * @returns {Array}
-    */
+     * Get the stack clusterId's that a certain node resides in. cluster A -> cluster B -> cluster C -> node
+     *
+     * If a node can't be found in the chain, return an empty array.
+     *
+     * @param {string|number} nodeId
+     * @returns {Array}
+     */
 
   }, {
     key: "findNode",
@@ -29589,10 +31397,11 @@ var ClusterEngine = /*#__PURE__*/function () {
       return stack;
     }
     /**
-    * Using a clustered nodeId, update with the new options
-    * @param {Node.id} clusteredNodeId
-    * @param {object} newOptions
-    */
+     * Using a clustered nodeId, update with the new options
+     *
+     * @param {Node.id} clusteredNodeId
+     * @param {object} newOptions
+     */
 
   }, {
     key: "updateClusteredNode",
@@ -29610,13 +31419,14 @@ var ClusterEngine = /*#__PURE__*/function () {
       }
 
       this.body.nodes[clusteredNodeId].setOptions(newOptions);
-      this.body.emitter.emit('_dataChanged');
+      this.body.emitter.emit("_dataChanged");
     }
     /**
-    * Using a base edgeId, update all related clustered edges with the new options
-    * @param {vis.Edge.id} startEdgeId
-    * @param {object} newOptions
-    */
+     * Using a base edgeId, update all related clustered edges with the new options
+     *
+     * @param {vis.Edge.id} startEdgeId
+     * @param {object} newOptions
+     */
 
   }, {
     key: "updateEdge",
@@ -29640,13 +31450,14 @@ var ClusterEngine = /*#__PURE__*/function () {
         edge.setOptions(newOptions);
       }
 
-      this.body.emitter.emit('_dataChanged');
+      this.body.emitter.emit("_dataChanged");
     }
     /**
-    * Get a stack of clusterEdgeId's (+base edgeid) that a base edge is the same as. cluster edge C -> cluster edge B -> cluster edge A -> base edge(edgeId)
-    * @param {vis.Edge.id} edgeId
-    * @returns {Array.<vis.Edge.id>}
-    */
+     * Get a stack of clusterEdgeId's (+base edgeid) that a base edge is the same as. cluster edge C -> cluster edge B -> cluster edge A -> base edge(edgeId)
+     *
+     * @param {vis.Edge.id} edgeId
+     * @returns {Array.<vis.Edge.id>}
+     */
 
   }, {
     key: "getClusteredEdges",
@@ -29666,12 +31477,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       return stack;
     }
     /**
-    * Get the base edge id of clusterEdgeId. cluster edge (clusteredEdgeId) -> cluster edge B -> cluster edge C -> base edge
-    * @param {vis.Edge.id} clusteredEdgeId
-    * @returns {vis.Edge.id} baseEdgeId
-    *
-    * TODO: deprecate in 5.0.0. Method getBaseEdges() is the correct one to use.
-    */
+     * Get the base edge id of clusterEdgeId. cluster edge (clusteredEdgeId) -> cluster edge B -> cluster edge C -> base edge
+     *
+     * @param {vis.Edge.id} clusteredEdgeId
+     * @returns {vis.Edge.id} baseEdgeId
+     *
+     * TODO: deprecate in 5.0.0. Method getBaseEdges() is the correct one to use.
+     */
 
   }, {
     key: "getBaseEdge",
@@ -29727,12 +31539,13 @@ var ClusterEngine = /*#__PURE__*/function () {
       return foundIds;
     }
     /**
-    * Get the Id the node is connected to
-    * @param {vis.Edge} edge
-    * @param {Node.id} nodeId
-    * @returns {*}
-    * @private
-    */
+     * Get the Id the node is connected to
+     *
+     * @param {vis.Edge} edge
+     * @param {Node.id} nodeId
+     * @returns {*}
+     * @private
+     */
 
   }, {
     key: "_getConnectedId",
@@ -29746,12 +31559,12 @@ var ClusterEngine = /*#__PURE__*/function () {
       }
     }
     /**
-    * We determine how many connections denote an important hub.
-    * We take the mean + 2*std as the important hub size. (Assuming a normal distribution of data, ~2.2%)
-    *
-    * @returns {number}
-    * @private
-    */
+     * We determine how many connections denote an important hub.
+     * We take the mean + 2*std as the important hub size. (Assuming a normal distribution of data, ~2.2%)
+     *
+     * @returns {number}
+     * @private
+     */
 
   }, {
     key: "_getHubSize",
@@ -29791,8 +31604,8 @@ var ClusterEngine = /*#__PURE__*/function () {
      * @param {Node.id} fromId
      * @param {Node.id} toId
      * @param {vis.Edge} baseEdge
-     * @param {Object} clusterEdgeProperties
-     * @param {Object} extraOptions
+     * @param {object} clusterEdgeProperties
+     * @param {object} extraOptions
      * @returns {Edge} newly created clustered edge
      * @private
      */
@@ -29801,13 +31614,13 @@ var ClusterEngine = /*#__PURE__*/function () {
     key: "_createClusteredEdge",
     value: function _createClusteredEdge(fromId, toId, baseEdge, clusterEdgeProperties, extraOptions) {
       // copy the options of the edge we will replace
-      var clonedOptions = NetworkUtil.cloneOptions(baseEdge, 'edge'); // make sure the properties of clusterEdges are superimposed on it
+      var clonedOptions = NetworkUtil.cloneOptions(baseEdge, "edge"); // make sure the properties of clusterEdges are superimposed on it
 
       deepExtend(clonedOptions, clusterEdgeProperties); // set up the edge
 
       clonedOptions.from = fromId;
       clonedOptions.to = toId;
-      clonedOptions.id = 'clusterEdge:' + v4(); // apply the edge specific options to it if specified
+      clonedOptions.id = "clusterEdge:" + v4(); // apply the edge specific options to it if specified
 
       if (extraOptions !== undefined) {
         deepExtend(clonedOptions, extraOptions);
@@ -29823,10 +31636,10 @@ var ClusterEngine = /*#__PURE__*/function () {
     /**
      * Add the passed child nodes and edges to the given cluster node.
      *
-     * @param {Object|Node} childNodes  hash of nodes or single node to add in cluster
-     * @param {Object|Edge} childEdges  hash of edges or single edge to take into account when clustering
+     * @param {object | Node} childNodes  hash of nodes or single node to add in cluster
+     * @param {object | Edge} childEdges  hash of edges or single edge to take into account when clustering
      * @param {Node} clusterNode  cluster node to add nodes and edges to
-     * @param {Object} [clusterEdgeProperties]
+     * @param {object} [clusterEdgeProperties]
      * @private
      */
 
@@ -29918,7 +31731,7 @@ var ClusterEngine = /*#__PURE__*/function () {
      * Done like this because Array.filter() is not fully supported by all IE's.
      *
      * @param {Array} arr
-     * @param {function} callback
+     * @param {Function} callback
      * @returns {Array}
      * @private
      */
@@ -30147,7 +31960,7 @@ var ClusterEngine = /*#__PURE__*/function () {
      * Determine if node with given id is part of a cluster.
      *
      * @param {Node.id} nodeId
-     * @return {boolean} true if part of a cluster.
+     * @returns {boolean} true if part of a cluster.
      */
 
   }, {
@@ -30163,7 +31976,7 @@ var ClusterEngine = /*#__PURE__*/function () {
      * - any of its connecting nodes is in a cluster
      *
      * @param {vis.Edge.id} edgeId
-     * @return {boolean} true if part of a cluster.
+     * @returns {boolean} true if part of a cluster.
      */
 
   }, {
@@ -30178,7 +31991,7 @@ var ClusterEngine = /*#__PURE__*/function () {
 
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$4(o, minLen) { var _context4; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = slice$5(_context4 = Object.prototype.toString.call(o)).call(_context4, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+function _unsupportedIterableToArray$4(o, minLen) { var _context4; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = slice$6(_context4 = Object.prototype.toString.call(o)).call(_context4, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
 
 function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
@@ -30227,7 +32040,7 @@ function _initRequestAnimationFrame() {
 
 var CanvasRenderer = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    */
   function CanvasRenderer(body, canvas) {
@@ -30313,7 +32126,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
         _this.renderingActive = _this.renderRequests > 0;
         _this.renderTimer = undefined;
       });
-      this.body.emitter.on('destroy', function () {
+      this.body.emitter.on("destroy", function () {
         _this.renderRequests = 0;
         _this.allowRedraw = false;
         _this.renderingActive = false;
@@ -30329,14 +32142,14 @@ var CanvasRenderer = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
     key: "setOptions",
     value: function setOptions(options) {
       if (options !== undefined) {
-        var fields = ['hideEdgesOnDrag', 'hideEdgesOnZoom', 'hideNodesOnDrag'];
+        var fields = ["hideEdgesOnDrag", "hideEdgesOnZoom", "hideNodesOnDrag"];
         selectiveDeepExtend(fields, this.options, options);
       }
     }
@@ -30345,9 +32158,9 @@ var CanvasRenderer = /*#__PURE__*/function () {
      *
      * Calls the callback when the next frame can or will be drawn.
      *
-     * @param {function} callback
+     * @param {Function} callback
      * @param {number} delay - timeout case only, wait this number of milliseconds
-     * @returns {function|undefined}
+     * @returns {Function | undefined}
      * @private
      */
 
@@ -30365,7 +32178,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
       // This is not something that will happen in normal operation, but we still need
       // to take it into account.
       //
-      if (typeof window === 'undefined') return; // Doing `if (window === undefined)` does not work here!
+      if (typeof window === "undefined") return; // Doing `if (window === undefined)` does not work here!
 
       var timer;
       var myWindow = window; // Grab a reference to reduce the possibility that 'window' is reset
@@ -30431,12 +32244,13 @@ var CanvasRenderer = /*#__PURE__*/function () {
   }, {
     key: "redraw",
     value: function redraw() {
-      this.body.emitter.emit('setSize');
+      this.body.emitter.emit("setSize");
 
       this._redraw();
     }
     /**
      * Redraw the network with the current data
+     *
      * @private
      */
 
@@ -30455,6 +32269,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
     }
     /**
      * Redraw the network with the current data
+     *
      * @param {boolean} [hidden=false] | Used to get the first estimate of the node sizes.
      *                                   Only the nodes are drawn after which they are quickly drawn over.
      * @private
@@ -30571,7 +32386,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
      * @param {boolean} [alwaysShow]
      * @private
      *
-     * @returns {Object} Callbacks to draw later on higher layers.
+     * @returns {object} Callbacks to draw later on higher layers.
      */
 
   }, {
@@ -30671,6 +32486,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
     }
     /**
      * Redraw all edges
+     *
      * @param {CanvasRenderingContext2D} ctx  2D context of a HTML canvas
      * @private
      */
@@ -30691,6 +32507,7 @@ var CanvasRenderer = /*#__PURE__*/function () {
     }
     /**
      * Redraw all arrows
+     *
      * @param {CanvasRenderingContext2D} ctx  2D context of a HTML canvas
      * @private
      */
@@ -30712,22 +32529,23 @@ var CanvasRenderer = /*#__PURE__*/function () {
     /**
      * Determine if the browser requires a setTimeout or a requestAnimationFrame. This was required because
      * some implementations (safari and IE9) did not support requestAnimationFrame
+     *
      * @private
      */
 
   }, {
     key: "_determineBrowserMethod",
     value: function _determineBrowserMethod() {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         var browserType = navigator.userAgent.toLowerCase();
         this.requiresTimeout = false;
 
-        if (indexOf$3(browserType).call(browserType, 'msie 9.0') != -1) {
+        if (indexOf$3(browserType).call(browserType, "msie 9.0") != -1) {
           // IE 9
           this.requiresTimeout = true;
-        } else if (indexOf$3(browserType).call(browserType, 'safari') != -1) {
+        } else if (indexOf$3(browserType).call(browserType, "safari") != -1) {
           // safari
-          if (indexOf$3(browserType).call(browserType, 'chrome') <= -1) {
+          if (indexOf$3(browserType).call(browserType, "chrome") <= -1) {
             this.requiresTimeout = true;
           }
         }
@@ -30736,10 +32554,11 @@ var CanvasRenderer = /*#__PURE__*/function () {
       }
     }
     /**
-    * Redraw selection box
-    * @param {CanvasRenderingContext2D} ctx  2D context of a HTML canvas
-    * @private
-    */
+     * Redraw selection box
+     *
+     * @param {CanvasRenderingContext2D} ctx  2D context of a HTML canvas
+     * @private
+     */
 
   }, {
     key: "_drawSelectionBox",
@@ -30768,8 +32587,9 @@ var setInterval$1 = setInterval;
 
 /**
  * Register a touch event, taking place before a gesture
+ *
  * @param {Hammer} hammer       A hammer instance
- * @param {function} callback   Callback, called as callback(event)
+ * @param {Function} callback   Callback, called as callback(event)
  */
 function onTouch(hammer, callback) {
   callback.inputHandler = function (event) {
@@ -30778,12 +32598,13 @@ function onTouch(hammer, callback) {
     }
   };
 
-  hammer.on('hammer.input', callback.inputHandler);
+  hammer.on("hammer.input", callback.inputHandler);
 }
 /**
  * Register a release event, taking place after a gesture
+ *
  * @param {Hammer} hammer       A hammer instance
- * @param {function} callback   Callback, called as callback(event)
+ * @param {Function} callback   Callback, called as callback(event)
  * @returns {*}
  */
 
@@ -30794,7 +32615,7 @@ function onRelease(hammer, callback) {
     }
   };
 
-  return hammer.on('hammer.input', callback.inputHandler);
+  return hammer.on("hammer.input", callback.inputHandler);
 }
 
 /**
@@ -30806,25 +32627,22 @@ function onRelease(hammer, callback) {
 
 var Canvas = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    */
   function Canvas(body) {
-    var _context;
-
     classCallCheck(this, Canvas);
 
     this.body = body;
     this.pixelRatio = 1;
-    this.resizeTimer = undefined;
-    this.resizeFunction = bind$2(_context = this._onResize).call(_context, this);
     this.cameraState = {};
     this.initialized = false;
     this.canvasViewCenter = {};
+    this._cleanupCallbacks = [];
     this.options = {};
     this.defaultOptions = {
       autoResize: true,
-      height: '100%',
-      width: '100%'
+      height: "100%",
+      width: "100%"
     };
 
     assign$2(this.options, this.defaultOptions);
@@ -30840,7 +32658,7 @@ var Canvas = /*#__PURE__*/function () {
     key: "bindEventListeners",
     value: function bindEventListeners() {
       var _this = this,
-          _context2;
+          _context;
 
       // bind the events
       this.body.emitter.once("resize", function (obj) {
@@ -30852,7 +32670,7 @@ var Canvas = /*#__PURE__*/function () {
           _this.body.view.translation.y = obj.height * 0.5;
         }
       });
-      this.body.emitter.on("setSize", bind$2(_context2 = this.setSize).call(_context2, this));
+      this.body.emitter.on("setSize", bind$2(_context = this.setSize).call(_context, this));
       this.body.emitter.on("destroy", function () {
         _this.hammerFrame.destroy();
 
@@ -30862,7 +32680,7 @@ var Canvas = /*#__PURE__*/function () {
       });
     }
     /**
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
@@ -30871,25 +32689,54 @@ var Canvas = /*#__PURE__*/function () {
       var _this2 = this;
 
       if (options !== undefined) {
-        var fields = ['width', 'height', 'autoResize'];
+        var fields = ["width", "height", "autoResize"];
         selectiveDeepExtend(fields, this.options, options);
-      }
+      } // Automatically adapt to changing size of the container element.
+
+
+      this._cleanUp();
 
       if (this.options.autoResize === true) {
-        var _context3;
+        var _context2;
 
-        // automatically adapt to a changing size of the browser.
-        this._cleanUp();
+        if (window.ResizeObserver) {
+          // decent browsers, immediate reactions
+          var observer = new ResizeObserver(function () {
+            var changed = _this2.setSize();
 
-        this.resizeTimer = setInterval$1(function () {
-          var changed = _this2.setSize();
+            if (changed === true) {
+              _this2.body.emitter.emit("_requestRedraw");
+            }
+          });
+          var frame = this.frame;
+          observer.observe(frame);
 
-          if (changed === true) {
-            _this2.body.emitter.emit("_requestRedraw");
-          }
-        }, 1000);
-        this.resizeFunction = bind$2(_context3 = this._onResize).call(_context3, this);
-        addEventListener(window, 'resize', this.resizeFunction);
+          this._cleanupCallbacks.push(function () {
+            observer.unobserve(frame);
+          });
+        } else {
+          // IE11, continous polling
+          var resizeTimer = setInterval$1(function () {
+            var changed = _this2.setSize();
+
+            if (changed === true) {
+              _this2.body.emitter.emit("_requestRedraw");
+            }
+          }, 1000);
+
+          this._cleanupCallbacks.push(function () {
+            clearInterval(resizeTimer);
+          });
+        } // Automatically adapt to changing size of the browser.
+
+
+        var resizeFunction = bind$2(_context2 = this._onResize).call(_context2, this);
+
+        addEventListener(window, "resize", resizeFunction);
+
+        this._cleanupCallbacks.push(function () {
+          removeEventListener(window, "resize", resizeFunction);
+        });
       }
     }
     /**
@@ -30899,13 +32746,15 @@ var Canvas = /*#__PURE__*/function () {
   }, {
     key: "_cleanUp",
     value: function _cleanUp() {
-      // automatically adapt to a changing size of the browser.
-      if (this.resizeTimer !== undefined) {
-        clearInterval(this.resizeTimer);
-      }
+      var _context3, _context4, _context5;
 
-      removeEventListener(window, 'resize', this.resizeFunction);
-      this.resizeFunction = undefined;
+      forEach$2(_context3 = reverse$2(_context4 = splice$2(_context5 = this._cleanupCallbacks).call(_context5, 0)).call(_context4)).call(_context3, function (callback) {
+        try {
+          callback();
+        } catch (error) {
+          console.error(error);
+        }
+      });
     }
     /**
      * @private
@@ -30941,6 +32790,7 @@ var Canvas = /*#__PURE__*/function () {
     }
     /**
      * Set the cameraState
+     *
      * @private
      */
 
@@ -30985,17 +32835,17 @@ var Canvas = /*#__PURE__*/function () {
   }, {
     key: "_prepareValue",
     value: function _prepareValue(value) {
-      if (typeof value === 'number') {
-        return value + 'px';
-      } else if (typeof value === 'string') {
-        if (indexOf$3(value).call(value, '%') !== -1 || indexOf$3(value).call(value, 'px') !== -1) {
+      if (typeof value === "number") {
+        return value + "px";
+      } else if (typeof value === "string") {
+        if (indexOf$3(value).call(value, "%") !== -1 || indexOf$3(value).call(value, "px") !== -1) {
           return value;
-        } else if (indexOf$3(value).call(value, '%') === -1) {
-          return value + 'px';
+        } else if (indexOf$3(value).call(value, "%") === -1) {
+          return value + "px";
         }
       }
 
-      throw new Error('Could not use the value supplied for width or height:' + value);
+      throw new Error("Could not use the value supplied for width or height:" + value);
     }
     /**
      * Create the HTML
@@ -31009,23 +32859,23 @@ var Canvas = /*#__PURE__*/function () {
         this.body.container.removeChild(this.body.container.firstChild);
       }
 
-      this.frame = document.createElement('div');
-      this.frame.className = 'vis-network';
-      this.frame.style.position = 'relative';
-      this.frame.style.overflow = 'hidden';
-      this.frame.tabIndex = 900; // tab index is required for keycharm to bind keystrokes to the div instead of the window
+      this.frame = document.createElement("div");
+      this.frame.className = "vis-network";
+      this.frame.style.position = "relative";
+      this.frame.style.overflow = "hidden";
+      this.frame.tabIndex = 0; // tab index is required for keycharm to bind keystrokes to the div instead of the window
       //////////////////////////////////////////////////////////////////
 
       this.frame.canvas = document.createElement("canvas");
-      this.frame.canvas.style.position = 'relative';
+      this.frame.canvas.style.position = "relative";
       this.frame.appendChild(this.frame.canvas);
 
       if (!this.frame.canvas.getContext) {
-        var noCanvas = document.createElement('DIV');
-        noCanvas.style.color = 'red';
-        noCanvas.style.fontWeight = 'bold';
-        noCanvas.style.padding = '10px';
-        noCanvas.innerHTML = 'Error: your browser does not support HTML canvas';
+        var noCanvas = document.createElement("DIV");
+        noCanvas.style.color = "red";
+        noCanvas.style.fontWeight = "bold";
+        noCanvas.style.padding = "10px";
+        noCanvas.innerText = "Error: your browser does not support HTML canvas";
         this.frame.canvas.appendChild(noCanvas);
       } else {
         this._setPixelRatio();
@@ -31045,6 +32895,7 @@ var Canvas = /*#__PURE__*/function () {
     }
     /**
      * This function binds hammer, it can be repeated over and over due to the uniqueness check.
+     *
      * @private
      */
 
@@ -31060,56 +32911,57 @@ var Canvas = /*#__PURE__*/function () {
       this.drag = {};
       this.pinch = {}; // init hammer
 
-      this.hammer = new Hammer$1(this.frame.canvas);
-      this.hammer.get('pinch').set({
+      this.hammer = new Hammer$1$1(this.frame.canvas);
+      this.hammer.get("pinch").set({
         enable: true
       }); // enable to get better response, todo: test on mobile.
 
-      this.hammer.get('pan').set({
+      this.hammer.get("pan").set({
         threshold: 5,
-        direction: Hammer$1.DIRECTION_ALL
+        direction: Hammer$1$1.DIRECTION_ALL
       });
       onTouch(this.hammer, function (event) {
         _this3.body.eventListeners.onTouch(event);
       });
-      this.hammer.on('tap', function (event) {
+      this.hammer.on("tap", function (event) {
         _this3.body.eventListeners.onTap(event);
       });
-      this.hammer.on('doubletap', function (event) {
+      this.hammer.on("doubletap", function (event) {
         _this3.body.eventListeners.onDoubleTap(event);
       });
-      this.hammer.on('press', function (event) {
+      this.hammer.on("press", function (event) {
         _this3.body.eventListeners.onHold(event);
       });
-      this.hammer.on('panstart', function (event) {
+      this.hammer.on("panstart", function (event) {
         _this3.body.eventListeners.onDragStart(event);
       });
-      this.hammer.on('panmove', function (event) {
+      this.hammer.on("panmove", function (event) {
         _this3.body.eventListeners.onDrag(event);
       });
-      this.hammer.on('panend', function (event) {
+      this.hammer.on("panend", function (event) {
         _this3.body.eventListeners.onDragEnd(event);
       });
-      this.hammer.on('pinch', function (event) {
+      this.hammer.on("pinch", function (event) {
         _this3.body.eventListeners.onPinch(event);
       }); // TODO: neatly cleanup these handlers when re-creating the Canvas, IF these are done with hammer, event.stopPropagation will not work?
 
-      this.frame.canvas.addEventListener('wheel', function (event) {
+      this.frame.canvas.addEventListener("wheel", function (event) {
         _this3.body.eventListeners.onMouseWheel(event);
       });
-      this.frame.canvas.addEventListener('mousemove', function (event) {
+      this.frame.canvas.addEventListener("mousemove", function (event) {
         _this3.body.eventListeners.onMouseMove(event);
       });
-      this.frame.canvas.addEventListener('contextmenu', function (event) {
+      this.frame.canvas.addEventListener("contextmenu", function (event) {
         _this3.body.eventListeners.onContext(event);
       });
-      this.hammerFrame = new Hammer$1(this.frame);
+      this.hammerFrame = new Hammer$1$1(this.frame);
       onRelease(this.hammerFrame, function (event) {
         _this3.body.eventListeners.onRelease(event);
       });
     }
     /**
      * Set a new size for the network
+     *
      * @param {string} width   Width in pixels or percentage (for example '800px'
      *                         or '50%')
      * @param {string} height  Height in pixels or percentage  (for example '400px'
@@ -31148,8 +33000,8 @@ var Canvas = /*#__PURE__*/function () {
 
         this.frame.style.width = width;
         this.frame.style.height = height;
-        this.frame.canvas.style.width = '100%';
-        this.frame.canvas.style.height = '100%';
+        this.frame.canvas.style.width = "100%";
+        this.frame.canvas.style.height = "100%";
         this.frame.canvas.width = Math.round(this.frame.canvas.clientWidth * this.pixelRatio);
         this.frame.canvas.height = Math.round(this.frame.canvas.clientHeight * this.pixelRatio);
         this.options.width = width;
@@ -31181,7 +33033,7 @@ var Canvas = /*#__PURE__*/function () {
       }
 
       if (emitEvent === true) {
-        this.body.emitter.emit('resize', {
+        this.body.emitter.emit("resize", {
           width: Math.round(this.frame.canvas.width / this.pixelRatio),
           height: Math.round(this.frame.canvas.height / this.pixelRatio),
           oldWidth: Math.round(oldWidth / this.pixelRatio),
@@ -31223,7 +33075,7 @@ var Canvas = /*#__PURE__*/function () {
 
       var numerator = 1;
 
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         // (window !== undefined) doesn't work here!
         // Protection during unit tests, where 'window' can be missing
         numerator = window.devicePixelRatio || 1;
@@ -31261,6 +33113,7 @@ var Canvas = /*#__PURE__*/function () {
     /**
      * Convert the X coordinate in DOM-space (coordinate point in browser relative to the container div) to
      * the X coordinate in canvas-space (the simulation sandbox, which the camera looks upon)
+     *
      * @param {number} x
      * @returns {number}
      * @private
@@ -31274,6 +33127,7 @@ var Canvas = /*#__PURE__*/function () {
     /**
      * Convert the X coordinate in canvas-space (the simulation sandbox, which the camera looks upon) to
      * the X coordinate in DOM-space (coordinate point in browser relative to the container div)
+     *
      * @param {number} x
      * @returns {number}
      * @private
@@ -31287,6 +33141,7 @@ var Canvas = /*#__PURE__*/function () {
     /**
      * Convert the Y coordinate in DOM-space (coordinate point in browser relative to the container div) to
      * the Y coordinate in canvas-space (the simulation sandbox, which the camera looks upon)
+     *
      * @param {number} y
      * @returns {number}
      * @private
@@ -31300,6 +33155,7 @@ var Canvas = /*#__PURE__*/function () {
     /**
      * Convert the Y coordinate in canvas-space (the simulation sandbox, which the camera looks upon) to
      * the Y coordinate in DOM-space (coordinate point in browser relative to the container div)
+     *
      * @param {number} y
      * @returns {number}
      * @private
@@ -31343,12 +33199,47 @@ var Canvas = /*#__PURE__*/function () {
 }();
 
 /**
+ * Validate the fit options, replace missing optional values by defaults etc.
+ *
+ * @param rawOptions - The raw options.
+ * @param allNodeIds - All node ids that will be used if nodes are omitted in
+ * the raw options.
+ *
+ * @returns Options with everything filled in and validated.
+ */
+function normalizeFitOptions(rawOptions, allNodeIds) {
+  var options = assign$2({
+    nodes: allNodeIds,
+    minZoomLevel: Number.MIN_VALUE,
+    maxZoomLevel: 1
+  }, rawOptions !== null && rawOptions !== void 0 ? rawOptions : {});
+
+  if (!isArray$5(options.nodes)) {
+    throw new TypeError("Nodes has to be an array of ids.");
+  }
+
+  if (options.nodes.length === 0) {
+    options.nodes = allNodeIds;
+  }
+
+  if (!(typeof options.minZoomLevel === "number" && options.minZoomLevel > 0)) {
+    throw new TypeError("Min zoom level has to be a number higher than zero.");
+  }
+
+  if (!(typeof options.maxZoomLevel === "number" && options.minZoomLevel <= options.maxZoomLevel)) {
+    throw new TypeError("Max zoom level has to be a number higher than min zoom level.");
+  }
+
+  return options;
+}
+
+/**
  * The view
  */
 
 var View = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    */
   function View(body, canvas) {
@@ -31379,7 +33270,7 @@ var View = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} [options={}]
+   * @param {object} [options={}]
    */
 
 
@@ -31391,27 +33282,20 @@ var View = /*#__PURE__*/function () {
     }
     /**
      * This function zooms out to fit all data on screen based on amount of nodes
-     * @param {Object} [options={{nodes=Array}}]
+     *
+     * @param {object} [options={{nodes=Array}}]
      * @param {boolean} [initialZoom=false]  | zoom based on fitted formula or range, true = fitted, default = false;
      */
 
   }, {
     key: "fit",
-    value: function fit() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        nodes: []
-      };
+    value: function fit(options) {
       var initialZoom = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var range;
-      var zoomLevel;
-      options = assign$2({}, options);
-
-      if (options.nodes === undefined || options.nodes.length === 0) {
-        options.nodes = this.body.nodeIndices;
-      }
-
+      options = normalizeFitOptions(options, this.body.nodeIndices);
       var canvasWidth = this.canvas.frame.canvas.clientWidth;
       var canvasHeight = this.canvas.frame.canvas.clientHeight;
+      var range;
+      var zoomLevel;
 
       if (canvasWidth === 0 || canvasHeight === 0) {
         // There's no point in trying to fit into zero sized canvas. This could
@@ -31457,10 +33341,10 @@ var View = /*#__PURE__*/function () {
         zoomLevel = xZoomLevel <= yZoomLevel ? xZoomLevel : yZoomLevel;
       }
 
-      if (zoomLevel > 1.0) {
-        zoomLevel = 1.0;
-      } else if (zoomLevel === 0) {
-        zoomLevel = 1.0;
+      if (zoomLevel > options.maxZoomLevel) {
+        zoomLevel = options.maxZoomLevel;
+      } else if (zoomLevel < options.minZoomLevel) {
+        zoomLevel = options.minZoomLevel;
       }
 
       var center = NetworkUtil.findCenter(range);
@@ -31493,12 +33377,12 @@ var View = /*#__PURE__*/function () {
         options.lockedOnNode = nodeId;
         this.moveTo(options);
       } else {
-        console.log("Node: " + nodeId + " cannot be found.");
+        console.error("Node: " + nodeId + " cannot be found.");
       }
     }
     /**
      *
-     * @param {Object} options  |  options.offset   = {x:number, y:number}   // offset from the center in DOM pixels
+     * @param {object} options  |  options.offset   = {x:number, y:number}   // offset from the center in DOM pixels
      *                          |  options.scale    = number                 // scale to move to
      *                          |  options.position = {x:number, y:number}   // position to move to
      *                          |  options.animation = {duration:number, easingFunction:String} || Boolean   // position to move to
@@ -31608,7 +33492,7 @@ var View = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} options  |  options.offset   = {x:number, y:number}   // offset from the center in DOM pixels
+     * @param {object} options  |  options.offset   = {x:number, y:number}   // offset from the center in DOM pixels
      *                          |  options.time     = number                 // animation time in milliseconds
      *                          |  options.scale    = number                 // scale to animate to
      *                          |  options.position = {x:number, y:number}   // position to animate to
@@ -31684,6 +33568,7 @@ var View = /*#__PURE__*/function () {
     }
     /**
      * used to animate smoothly by hijacking the redraw function.
+     *
      * @private
      */
 
@@ -31784,12 +33669,303 @@ var View = /*#__PURE__*/function () {
 }();
 
 /**
+ * Created by Alex on 11/6/2014.
+ */
+function keycharm(options) {
+  var preventDefault = options && options.preventDefault || false;
+  var container = options && options.container || window;
+  var _exportFunctions = {};
+  var _bound = {
+    keydown: {},
+    keyup: {}
+  };
+  var _keys = {};
+  var i; // a - z
+
+  for (i = 97; i <= 122; i++) {
+    _keys[String.fromCharCode(i)] = {
+      code: 65 + (i - 97),
+      shift: false
+    };
+  } // A - Z
+
+
+  for (i = 65; i <= 90; i++) {
+    _keys[String.fromCharCode(i)] = {
+      code: i,
+      shift: true
+    };
+  } // 0 - 9
+
+
+  for (i = 0; i <= 9; i++) {
+    _keys['' + i] = {
+      code: 48 + i,
+      shift: false
+    };
+  } // F1 - F12
+
+
+  for (i = 1; i <= 12; i++) {
+    _keys['F' + i] = {
+      code: 111 + i,
+      shift: false
+    };
+  } // num0 - num9
+
+
+  for (i = 0; i <= 9; i++) {
+    _keys['num' + i] = {
+      code: 96 + i,
+      shift: false
+    };
+  } // numpad misc
+
+
+  _keys['num*'] = {
+    code: 106,
+    shift: false
+  };
+  _keys['num+'] = {
+    code: 107,
+    shift: false
+  };
+  _keys['num-'] = {
+    code: 109,
+    shift: false
+  };
+  _keys['num/'] = {
+    code: 111,
+    shift: false
+  };
+  _keys['num.'] = {
+    code: 110,
+    shift: false
+  }; // arrows
+
+  _keys['left'] = {
+    code: 37,
+    shift: false
+  };
+  _keys['up'] = {
+    code: 38,
+    shift: false
+  };
+  _keys['right'] = {
+    code: 39,
+    shift: false
+  };
+  _keys['down'] = {
+    code: 40,
+    shift: false
+  }; // extra keys
+
+  _keys['space'] = {
+    code: 32,
+    shift: false
+  };
+  _keys['enter'] = {
+    code: 13,
+    shift: false
+  };
+  _keys['shift'] = {
+    code: 16,
+    shift: undefined
+  };
+  _keys['esc'] = {
+    code: 27,
+    shift: false
+  };
+  _keys['backspace'] = {
+    code: 8,
+    shift: false
+  };
+  _keys['tab'] = {
+    code: 9,
+    shift: false
+  };
+  _keys['ctrl'] = {
+    code: 17,
+    shift: false
+  };
+  _keys['alt'] = {
+    code: 18,
+    shift: false
+  };
+  _keys['delete'] = {
+    code: 46,
+    shift: false
+  };
+  _keys['pageup'] = {
+    code: 33,
+    shift: false
+  };
+  _keys['pagedown'] = {
+    code: 34,
+    shift: false
+  }; // symbols
+
+  _keys['='] = {
+    code: 187,
+    shift: false
+  };
+  _keys['-'] = {
+    code: 189,
+    shift: false
+  };
+  _keys[']'] = {
+    code: 221,
+    shift: false
+  };
+  _keys['['] = {
+    code: 219,
+    shift: false
+  };
+
+  var down = function (event) {
+    handleEvent(event, 'keydown');
+  };
+
+  var up = function (event) {
+    handleEvent(event, 'keyup');
+  }; // handle the actualy bound key with the event
+
+
+  var handleEvent = function (event, type) {
+    if (_bound[type][event.keyCode] !== undefined) {
+      var bound = _bound[type][event.keyCode];
+
+      for (var i = 0; i < bound.length; i++) {
+        if (bound[i].shift === undefined) {
+          bound[i].fn(event);
+        } else if (bound[i].shift == true && event.shiftKey == true) {
+          bound[i].fn(event);
+        } else if (bound[i].shift == false && event.shiftKey == false) {
+          bound[i].fn(event);
+        }
+      }
+
+      if (preventDefault == true) {
+        event.preventDefault();
+      }
+    }
+  }; // bind a key to a callback
+
+
+  _exportFunctions.bind = function (key, callback, type) {
+    if (type === undefined) {
+      type = 'keydown';
+    }
+
+    if (_keys[key] === undefined) {
+      throw new Error("unsupported key: " + key);
+    }
+
+    if (_bound[type][_keys[key].code] === undefined) {
+      _bound[type][_keys[key].code] = [];
+    }
+
+    _bound[type][_keys[key].code].push({
+      fn: callback,
+      shift: _keys[key].shift
+    });
+  }; // bind all keys to a call back (demo purposes)
+
+
+  _exportFunctions.bindAll = function (callback, type) {
+    if (type === undefined) {
+      type = 'keydown';
+    }
+
+    for (var key in _keys) {
+      if (_keys.hasOwnProperty(key)) {
+        _exportFunctions.bind(key, callback, type);
+      }
+    }
+  }; // get the key label from an event
+
+
+  _exportFunctions.getKey = function (event) {
+    for (var key in _keys) {
+      if (_keys.hasOwnProperty(key)) {
+        if (event.shiftKey == true && _keys[key].shift == true && event.keyCode == _keys[key].code) {
+          return key;
+        } else if (event.shiftKey == false && _keys[key].shift == false && event.keyCode == _keys[key].code) {
+          return key;
+        } else if (event.keyCode == _keys[key].code && key == 'shift') {
+          return key;
+        }
+      }
+    }
+
+    return "unknown key, currently not supported";
+  }; // unbind either a specific callback from a key or all of them (by leaving callback undefined)
+
+
+  _exportFunctions.unbind = function (key, callback, type) {
+    if (type === undefined) {
+      type = 'keydown';
+    }
+
+    if (_keys[key] === undefined) {
+      throw new Error("unsupported key: " + key);
+    }
+
+    if (callback !== undefined) {
+      var newBindings = [];
+      var bound = _bound[type][_keys[key].code];
+
+      if (bound !== undefined) {
+        for (var i = 0; i < bound.length; i++) {
+          if (!(bound[i].fn == callback && bound[i].shift == _keys[key].shift)) {
+            newBindings.push(_bound[type][_keys[key].code][i]);
+          }
+        }
+      }
+
+      _bound[type][_keys[key].code] = newBindings;
+    } else {
+      _bound[type][_keys[key].code] = [];
+    }
+  }; // reset all bound variables.
+
+
+  _exportFunctions.reset = function () {
+    _bound = {
+      keydown: {},
+      keyup: {}
+    };
+  }; // unbind all listeners and reset all variables.
+
+
+  _exportFunctions.destroy = function () {
+    _bound = {
+      keydown: {},
+      keyup: {}
+    };
+    container.removeEventListener('keydown', down, true);
+    container.removeEventListener('keyup', up, true);
+  }; // create listeners.
+
+
+  container.addEventListener('keydown', down, true);
+  container.addEventListener('keyup', up, true); // return the public functions.
+
+  return _exportFunctions;
+}
+
+var keycharm$1 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	'default': keycharm
+});
+
+/**
  * Navigation Handler
  */
 
 var NavigationHandler = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    */
   function NavigationHandler(body, canvas) {
@@ -31823,7 +33999,7 @@ var NavigationHandler = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} options
+   * @param {object} options
    */
 
 
@@ -31869,8 +34045,8 @@ var NavigationHandler = /*#__PURE__*/function () {
       } // clean up previous navigation items
 
 
-      if (this.navigationDOM && this.navigationDOM['wrapper'] && this.navigationDOM['wrapper'].parentNode) {
-        this.navigationDOM['wrapper'].parentNode.removeChild(this.navigationDOM['wrapper']);
+      if (this.navigationDOM && this.navigationDOM["wrapper"] && this.navigationDOM["wrapper"].parentNode) {
+        this.navigationDOM["wrapper"].parentNode.removeChild(this.navigationDOM["wrapper"]);
       }
 
       this.iconsCreated = false;
@@ -31891,17 +34067,17 @@ var NavigationHandler = /*#__PURE__*/function () {
 
       this.cleanNavigation();
       this.navigationDOM = {};
-      var navigationDivs = ['up', 'down', 'left', 'right', 'zoomIn', 'zoomOut', 'zoomExtends'];
-      var navigationDivActions = ['_moveUp', '_moveDown', '_moveLeft', '_moveRight', '_zoomIn', '_zoomOut', '_fit'];
-      this.navigationDOM['wrapper'] = document.createElement('div');
-      this.navigationDOM['wrapper'].className = 'vis-navigation';
-      this.canvas.frame.appendChild(this.navigationDOM['wrapper']);
+      var navigationDivs = ["up", "down", "left", "right", "zoomIn", "zoomOut", "zoomExtends"];
+      var navigationDivActions = ["_moveUp", "_moveDown", "_moveLeft", "_moveRight", "_zoomIn", "_zoomOut", "_fit"];
+      this.navigationDOM["wrapper"] = document.createElement("div");
+      this.navigationDOM["wrapper"].className = "vis-navigation";
+      this.canvas.frame.appendChild(this.navigationDOM["wrapper"]);
 
       for (var i = 0; i < navigationDivs.length; i++) {
-        this.navigationDOM[navigationDivs[i]] = document.createElement('div');
-        this.navigationDOM[navigationDivs[i]].className = 'vis-button vis-' + navigationDivs[i];
-        this.navigationDOM['wrapper'].appendChild(this.navigationDOM[navigationDivs[i]]);
-        var hammer = new Hammer$1(this.navigationDOM[navigationDivs[i]]);
+        this.navigationDOM[navigationDivs[i]] = document.createElement("div");
+        this.navigationDOM[navigationDivs[i]].className = "vis-button vis-" + navigationDivs[i];
+        this.navigationDOM["wrapper"].appendChild(this.navigationDOM[navigationDivs[i]]);
+        var hammer = new Hammer$1$1(this.navigationDOM[navigationDivs[i]]);
 
         if (navigationDivActions[i] === "_fit") {
           var _context;
@@ -31918,7 +34094,7 @@ var NavigationHandler = /*#__PURE__*/function () {
       // the one the rest uses can be overloaded by the manipulation system.
 
 
-      var hammerFrame = new Hammer$1(this.canvas.frame);
+      var hammerFrame = new Hammer$1$1(this.canvas.frame);
       onRelease(hammerFrame, function () {
         _this2._stopMovement();
       });
@@ -32049,8 +34225,8 @@ var NavigationHandler = /*#__PURE__*/function () {
         x: tx,
         y: ty
       };
-      this.body.emitter.emit('zoom', {
-        direction: '+',
+      this.body.emitter.emit("zoom", {
+        direction: "+",
         scale: this.body.view.scale,
         pointer: null
       });
@@ -32074,8 +34250,8 @@ var NavigationHandler = /*#__PURE__*/function () {
         x: tx,
         y: ty
       };
-      this.body.emitter.emit('zoom', {
-        direction: '-',
+      this.body.emitter.emit("zoom", {
+        direction: "-",
         scale: this.body.view.scale,
         pointer: null
       });
@@ -32214,162 +34390,18 @@ var NavigationHandler = /*#__PURE__*/function () {
   return NavigationHandler;
 }();
 
-/**
- * Popup is a class to create a popup window with some text
- */
+function _createForOfIteratorHelper$4(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-var Popup = /*#__PURE__*/function () {
-  /**
-   * @param {Element} container       The container object.
-   * @param {string}  overflowMethod  How the popup should act to overflowing ('flip' or 'cap')
-   */
-  function Popup(container, overflowMethod) {
-    classCallCheck(this, Popup);
+function _unsupportedIterableToArray$5(o, minLen) { var _context15; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = slice$6(_context15 = Object.prototype.toString.call(o)).call(_context15, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
 
-    this.container = container;
-    this.overflowMethod = overflowMethod || 'cap';
-    this.x = 0;
-    this.y = 0;
-    this.padding = 5;
-    this.hidden = false; // create the frame
-
-    this.frame = document.createElement('div');
-    this.frame.className = 'vis-tooltip';
-    this.container.appendChild(this.frame);
-  }
-  /**
-   * @param {number} x   Horizontal position of the popup window
-   * @param {number} y   Vertical position of the popup window
-   */
-
-
-  createClass(Popup, [{
-    key: "setPosition",
-    value: function setPosition(x, y) {
-      this.x = _parseInt$2(x);
-      this.y = _parseInt$2(y);
-    }
-    /**
-     * Set the content for the popup window. This can be HTML code or text.
-     * @param {string | Element} content
-     */
-
-  }, {
-    key: "setText",
-    value: function setText(content) {
-      if (content instanceof Element) {
-        this.frame.innerHTML = '';
-        this.frame.appendChild(content);
-      } else {
-        this.frame.innerHTML = content; // string containing text or HTML
-      }
-    }
-    /**
-     * Show the popup window
-     * @param {boolean} [doShow]    Show or hide the window
-     */
-
-  }, {
-    key: "show",
-    value: function show(doShow) {
-      if (doShow === undefined) {
-        doShow = true;
-      }
-
-      if (doShow === true) {
-        var height = this.frame.clientHeight;
-        var width = this.frame.clientWidth;
-        var maxHeight = this.frame.parentNode.clientHeight;
-        var maxWidth = this.frame.parentNode.clientWidth;
-        var left = 0,
-            top = 0;
-
-        if (this.overflowMethod == 'flip') {
-          var isLeft = false,
-              isTop = true; // Where around the position it's located
-
-          if (this.y - height < this.padding) {
-            isTop = false;
-          }
-
-          if (this.x + width > maxWidth - this.padding) {
-            isLeft = true;
-          }
-
-          if (isLeft) {
-            left = this.x - width;
-          } else {
-            left = this.x;
-          }
-
-          if (isTop) {
-            top = this.y - height;
-          } else {
-            top = this.y;
-          }
-        } else {
-          top = this.y - height;
-
-          if (top + height + this.padding > maxHeight) {
-            top = maxHeight - height - this.padding;
-          }
-
-          if (top < this.padding) {
-            top = this.padding;
-          }
-
-          left = this.x;
-
-          if (left + width + this.padding > maxWidth) {
-            left = maxWidth - width - this.padding;
-          }
-
-          if (left < this.padding) {
-            left = this.padding;
-          }
-        }
-
-        this.frame.style.left = left + "px";
-        this.frame.style.top = top + "px";
-        this.frame.style.visibility = "visible";
-        this.hidden = false;
-      } else {
-        this.hide();
-      }
-    }
-    /**
-     * Hide the popup window
-     */
-
-  }, {
-    key: "hide",
-    value: function hide() {
-      this.hidden = true;
-      this.frame.style.left = "0";
-      this.frame.style.top = "0";
-      this.frame.style.visibility = "hidden";
-    }
-    /**
-     * Remove the popup window
-     */
-
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.frame.parentNode.removeChild(this.frame); // Remove element from DOM
-    }
-  }]);
-
-  return Popup;
-}();
-
+function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
  * Handler for interactions
  */
 
 var InteractionHandler = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    * @param {SelectionHandler} selectionHandler
    */
@@ -32436,14 +34468,14 @@ var InteractionHandler = /*#__PURE__*/function () {
     value: function bindEventListeners() {
       var _this = this;
 
-      this.body.emitter.on('destroy', function () {
+      this.body.emitter.on("destroy", function () {
         clearTimeout(_this.popupTimer);
         delete _this.body.functions.getPointer;
       });
     }
     /**
      *
-     * @param {Object} options
+     * @param {object} options
      */
 
   }, {
@@ -32451,10 +34483,10 @@ var InteractionHandler = /*#__PURE__*/function () {
     value: function setOptions(options) {
       if (options !== undefined) {
         // extend all but the values in fields
-        var fields = ['hideEdgesOnDrag', 'hideEdgesOnZoom', 'hideNodesOnDrag', 'keyboard', 'multiselect', 'selectable', 'selectConnectedEdges'];
+        var fields = ["hideEdgesOnDrag", "hideEdgesOnZoom", "hideNodesOnDrag", "keyboard", "multiselect", "selectable", "selectConnectedEdges"];
         selectiveNotDeepExtend(fields, this.options, options); // merge the keyboard options in.
 
-        mergeOptions(this.options, options, 'keyboard');
+        mergeOptions(this.options, options, "keyboard");
 
         if (options.tooltip) {
           assign$2(this.options.tooltip, options.tooltip);
@@ -32469,8 +34501,9 @@ var InteractionHandler = /*#__PURE__*/function () {
     }
     /**
      * Get the pointer location from a touch location
+     *
      * @param {{x: number, y: number}} touch
-     * @return {{x: number, y: number}} pointer
+     * @returns {{x: number, y: number}} pointer
      * @private
      */
 
@@ -32484,6 +34517,7 @@ var InteractionHandler = /*#__PURE__*/function () {
     }
     /**
      * On start of a touch gesture, store the pointer
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -32501,6 +34535,7 @@ var InteractionHandler = /*#__PURE__*/function () {
     }
     /**
      * handle tap/click event: select/unselect a node
+     *
      * @param {Event} event
      * @private
      */
@@ -32510,12 +34545,13 @@ var InteractionHandler = /*#__PURE__*/function () {
     value: function onTap(event) {
       var pointer = this.getPointer(event.center);
       var multiselect = this.selectionHandler.options.multiselect && (event.changedPointers[0].ctrlKey || event.changedPointers[0].metaKey);
-      this.checkSelectionChanges(pointer, event, multiselect);
-
-      this.selectionHandler._generateClickEvent('click', event, pointer);
+      this.checkSelectionChanges(pointer, multiselect);
+      this.selectionHandler.commitAndEmit(pointer, event);
+      this.selectionHandler.generateClickEvent("click", event, pointer);
     }
     /**
      * handle doubletap event
+     *
      * @param {Event} event
      * @private
      */
@@ -32524,11 +34560,11 @@ var InteractionHandler = /*#__PURE__*/function () {
     key: "onDoubleTap",
     value: function onDoubleTap(event) {
       var pointer = this.getPointer(event.center);
-
-      this.selectionHandler._generateClickEvent('doubleClick', event, pointer);
+      this.selectionHandler.generateClickEvent("doubleClick", event, pointer);
     }
     /**
      * handle long tap event: multi select nodes
+     *
      * @param {Event} event
      * @private
      */
@@ -32538,11 +34574,10 @@ var InteractionHandler = /*#__PURE__*/function () {
     value: function onHold(event) {
       var pointer = this.getPointer(event.center);
       var multiselect = this.selectionHandler.options.multiselect;
-      this.checkSelectionChanges(pointer, event, multiselect);
-
-      this.selectionHandler._generateClickEvent('click', event, pointer);
-
-      this.selectionHandler._generateClickEvent('hold', event, pointer);
+      this.checkSelectionChanges(pointer, multiselect);
+      this.selectionHandler.commitAndEmit(pointer, event);
+      this.selectionHandler.generateClickEvent("click", event, pointer);
+      this.selectionHandler.generateClickEvent("hold", event, pointer);
     }
     /**
      * handle the release of the screen
@@ -32556,9 +34591,7 @@ var InteractionHandler = /*#__PURE__*/function () {
     value: function onRelease(event) {
       if (new Date().valueOf() - this.touchTime > 10) {
         var pointer = this.getPointer(event.center);
-
-        this.selectionHandler._generateClickEvent('release', event, pointer); // to avoid double fireing of this event because we have two hammer instances. (on canvas and on frame)
-
+        this.selectionHandler.generateClickEvent("release", event, pointer); // to avoid double fireing of this event because we have two hammer instances. (on canvas and on frame)
 
         this.touchTime = new Date().valueOf();
       }
@@ -32575,72 +34608,24 @@ var InteractionHandler = /*#__PURE__*/function () {
         x: event.clientX,
         y: event.clientY
       });
-
-      this.selectionHandler._generateClickEvent('oncontext', event, pointer);
+      this.selectionHandler.generateClickEvent("oncontext", event, pointer);
     }
     /**
      * Select and deselect nodes depending current selection change.
      *
-     * For changing nodes, select/deselect events are fired.
-     *
-     * NOTE: For a given edge, if one connecting node is deselected and with the same
-     *       click the other node is selected, no events for the edge will fire.
-     *       It was selected and it will remain selected.
-     *
-     * TODO: This is all SelectionHandler calls; the method should be moved to there.
-     *
      * @param {{x: number, y: number}} pointer
-     * @param {Event} event
      * @param {boolean} [add=false]
      */
 
   }, {
     key: "checkSelectionChanges",
-    value: function checkSelectionChanges(pointer, event) {
-      var add = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var previousSelection = this.selectionHandler.getSelection();
-      var selected = false;
+    value: function checkSelectionChanges(pointer) {
+      var add = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       if (add === true) {
-        selected = this.selectionHandler.selectAdditionalOnPoint(pointer);
+        this.selectionHandler.selectAdditionalOnPoint(pointer);
       } else {
-        selected = this.selectionHandler.selectOnPoint(pointer);
-      }
-
-      var currentSelection = this.selectionHandler.getSelection(); // See NOTE in method comment for the reason to do it like this
-
-      var deselectedItems = this._determineDifference(previousSelection, currentSelection);
-
-      var selectedItems = this._determineDifference(currentSelection, previousSelection);
-
-      if (deselectedItems.edges.length > 0) {
-        this.selectionHandler._generateClickEvent('deselectEdge', event, pointer, previousSelection);
-
-        selected = true;
-      }
-
-      if (deselectedItems.nodes.length > 0) {
-        this.selectionHandler._generateClickEvent('deselectNode', event, pointer, previousSelection);
-
-        selected = true;
-      }
-
-      if (selectedItems.nodes.length > 0) {
-        this.selectionHandler._generateClickEvent('selectNode', event, pointer);
-
-        selected = true;
-      }
-
-      if (selectedItems.edges.length > 0) {
-        this.selectionHandler._generateClickEvent('selectEdge', event, pointer);
-
-        selected = true;
-      } // fire the select event if anything has been selected or deselected
-
-
-      if (selected === true) {
-        // select or unselect
-        this.selectionHandler._generateClickEvent('select', event, pointer);
+        this.selectionHandler.selectOnPoint(pointer);
       }
     }
     /**
@@ -32726,34 +34711,40 @@ var InteractionHandler = /*#__PURE__*/function () {
         } // after select to contain the node
 
 
-        this.selectionHandler._generateClickEvent('dragStart', event, this.drag.pointer);
+        this.selectionHandler.generateClickEvent("dragStart", event, this.drag.pointer); // create an array with the selected nodes and their original location and status
 
-        var selection = this.selectionHandler.selectionObj.nodes; // create an array with the selected nodes and their original location and status
+        var _iterator = _createForOfIteratorHelper$4(this.selectionHandler.getSelectedNodes()),
+            _step;
 
-        for (var nodeId in selection) {
-          if (Object.prototype.hasOwnProperty.call(selection, nodeId)) {
-            var object = selection[nodeId];
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var _node = _step.value;
             var s = {
-              id: object.id,
-              node: object,
+              id: _node.id,
+              node: _node,
               // store original x, y, xFixed and yFixed, make the node temporarily Fixed
-              x: object.x,
-              y: object.y,
-              xFixed: object.options.fixed.x,
-              yFixed: object.options.fixed.y
+              x: _node.x,
+              y: _node.y,
+              xFixed: _node.options.fixed.x,
+              yFixed: _node.options.fixed.y
             };
-            object.options.fixed.x = true;
-            object.options.fixed.y = true;
+            _node.options.fixed.x = true;
+            _node.options.fixed.y = true;
             this.drag.selection.push(s);
           }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
       } else {
         // fallback if no node is selected and thus the view is dragged.
-        this.selectionHandler._generateClickEvent('dragStart', event, this.drag.pointer, undefined, true);
+        this.selectionHandler.generateClickEvent("dragStart", event, this.drag.pointer, undefined, true);
       }
     }
     /**
      * handle drag event
+     *
      * @param {Event} event
      * @private
      */
@@ -32768,13 +34759,12 @@ var InteractionHandler = /*#__PURE__*/function () {
       } // remove the focus on node if it is focussed on by the focusOnNode
 
 
-      this.body.emitter.emit('unlockNode');
+      this.body.emitter.emit("unlockNode");
       var pointer = this.getPointer(event.center);
       var selection = this.drag.selection;
 
       if (selection && selection.length && this.options.dragNodes === true) {
-        this.selectionHandler._generateClickEvent('dragging', event, pointer); // calculate delta's and new location
-
+        this.selectionHandler.generateClickEvent("dragging", event, pointer); // calculate delta's and new location
 
         var deltaX = pointer.x - this.drag.pointer.x;
         var deltaY = pointer.y - this.drag.pointer.y; // update position of all selected nodes
@@ -32793,12 +34783,11 @@ var InteractionHandler = /*#__PURE__*/function () {
         }); // start the simulation of the physics
 
 
-        this.body.emitter.emit('startSimulation');
+        this.body.emitter.emit("startSimulation");
       } else {
         // create selection box
         if (event.srcEvent.shiftKey) {
-          this.selectionHandler._generateClickEvent('dragging', event, pointer, undefined, true); // if the drag was not started properly because the click started outside the network div, start it now.
-
+          this.selectionHandler.generateClickEvent("dragging", event, pointer, undefined, true); // if the drag was not started properly because the click started outside the network div, start it now.
 
           if (this.drag.pointer === undefined) {
             this.onDragStart(event);
@@ -32809,13 +34798,12 @@ var InteractionHandler = /*#__PURE__*/function () {
             x: this.canvas._XconvertDOMtoCanvas(pointer.x),
             y: this.canvas._YconvertDOMtoCanvas(pointer.y)
           };
-          this.body.emitter.emit('_requestRedraw');
+          this.body.emitter.emit("_requestRedraw");
         } // move the network
 
 
         if (this.options.dragView === true && !event.srcEvent.shiftKey) {
-          this.selectionHandler._generateClickEvent('dragging', event, pointer, undefined, true); // if the drag was not started properly because the click started outside the network div, start it now.
-
+          this.selectionHandler.generateClickEvent("dragging", event, pointer, undefined, true); // if the drag was not started properly because the click started outside the network div, start it now.
 
           if (this.drag.pointer === undefined) {
             this.onDragStart(event);
@@ -32828,12 +34816,13 @@ var InteractionHandler = /*#__PURE__*/function () {
             x: this.drag.translation.x + diffX,
             y: this.drag.translation.y + diffY
           };
-          this.body.emitter.emit('_requestRedraw');
+          this.body.emitter.emit("_requestRedraw");
         }
       }
     }
     /**
      * handle drag start event
+     *
      * @param {Event} event
      * @private
      */
@@ -32866,9 +34855,10 @@ var InteractionHandler = /*#__PURE__*/function () {
           return _this3.selectionHandler.selectObject(_this3.body.nodes[nodeId]);
         });
 
-        this.selectionHandler._generateClickEvent('dragEnd', event, this.getPointer(event.center), undefined, true);
-
-        this.body.emitter.emit('_requestRedraw');
+        var pointer = this.getPointer(event.center);
+        this.selectionHandler.commitAndEmit(pointer, event);
+        this.selectionHandler.generateClickEvent("dragEnd", event, this.getPointer(event.center), undefined, true);
+        this.body.emitter.emit("_requestRedraw");
       } else {
         var selection = this.drag.selection;
 
@@ -32879,18 +34869,17 @@ var InteractionHandler = /*#__PURE__*/function () {
             s.node.options.fixed.y = s.yFixed;
           });
 
-          this.selectionHandler._generateClickEvent('dragEnd', event, this.getPointer(event.center));
-
-          this.body.emitter.emit('startSimulation');
+          this.selectionHandler.generateClickEvent("dragEnd", event, this.getPointer(event.center));
+          this.body.emitter.emit("startSimulation");
         } else {
-          this.selectionHandler._generateClickEvent('dragEnd', event, this.getPointer(event.center), undefined, true);
-
-          this.body.emitter.emit('_requestRedraw');
+          this.selectionHandler.generateClickEvent("dragEnd", event, this.getPointer(event.center), undefined, true);
+          this.body.emitter.emit("_requestRedraw");
         }
       }
     }
     /**
      * Handle pinch event
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -32901,7 +34890,7 @@ var InteractionHandler = /*#__PURE__*/function () {
       var pointer = this.getPointer(event.center);
       this.drag.pinched = true;
 
-      if (this.pinch['scale'] === undefined) {
+      if (this.pinch["scale"] === undefined) {
         this.pinch.scale = 1;
       } // TODO: enabled moving while pinching?
 
@@ -32911,6 +34900,7 @@ var InteractionHandler = /*#__PURE__*/function () {
     }
     /**
      * Zoom the network in or out
+     *
      * @param {number} scale a number around 1, and between 0.01 and 10
      * @param {{x: number, y: number}} pointer    Position on screen
      * @private
@@ -32955,17 +34945,17 @@ var InteractionHandler = /*#__PURE__*/function () {
           this.drag.pointer.y = postScaleDragPointer.y;
         }
 
-        this.body.emitter.emit('_requestRedraw');
+        this.body.emitter.emit("_requestRedraw");
 
         if (scaleOld < scale) {
-          this.body.emitter.emit('zoom', {
-            direction: '+',
+          this.body.emitter.emit("zoom", {
+            direction: "+",
             scale: this.body.view.scale,
             pointer: pointer
           });
         } else {
-          this.body.emitter.emit('zoom', {
-            direction: '-',
+          this.body.emitter.emit("zoom", {
+            direction: "-",
             scale: this.body.view.scale,
             pointer: pointer
           });
@@ -32976,6 +34966,7 @@ var InteractionHandler = /*#__PURE__*/function () {
      * Event handler for mouse wheel event, used to zoom the timeline
      * See http://adomas.org/javascript-mouse-wheel/
      *     https://github.com/EightMedia/hammer.js/issues/256
+     *
      * @param {MouseEvent}  event
      * @private
      */
@@ -33006,6 +34997,7 @@ var InteractionHandler = /*#__PURE__*/function () {
     }
     /**
      * Mouse move handler for checking whether the title moves over a node with a title.
+     *
      * @param  {Event} event
      * @private
      */
@@ -33083,7 +35075,7 @@ var InteractionHandler = /*#__PURE__*/function () {
       };
       var previousPopupObjId = this.popupObj === undefined ? undefined : this.popupObj.id;
       var nodeUnderCursor = false;
-      var popupType = 'node'; // check if a node is under the cursor.
+      var popupType = "node"; // check if a node is under the cursor.
 
       if (this.popupObj === undefined) {
         // search the nodes for overlap, select the top one in case of multiple nodes
@@ -33131,7 +35123,7 @@ var InteractionHandler = /*#__PURE__*/function () {
 
         if (overlappingEdges.length > 0) {
           this.popupObj = edges[overlappingEdges[overlappingEdges.length - 1]];
-          popupType = 'edge';
+          popupType = "edge";
         }
       }
 
@@ -33139,7 +35131,7 @@ var InteractionHandler = /*#__PURE__*/function () {
         // show popup message window
         if (this.popupObj.id !== previousPopupObjId) {
           if (this.popup === undefined) {
-            this.popup = new Popup(this.canvas.frame);
+            this.popup = new Popup$1(this.canvas.frame);
           }
 
           this.popup.popupTargetType = popupType;
@@ -33150,18 +35142,19 @@ var InteractionHandler = /*#__PURE__*/function () {
           this.popup.setPosition(pointer.x + 3, pointer.y - 5);
           this.popup.setText(this.popupObj.getTitle());
           this.popup.show();
-          this.body.emitter.emit('showPopup', this.popupObj.id);
+          this.body.emitter.emit("showPopup", this.popupObj.id);
         }
       } else {
         if (this.popup !== undefined) {
           this.popup.hide();
-          this.body.emitter.emit('hidePopup');
+          this.body.emitter.emit("hidePopup");
         }
       }
     }
     /**
      * Check if the popup must be hidden, which is the case when the mouse is no
      * longer hovering on the object
+     *
      * @param {{x:number, y:number}} pointer
      * @private
      */
@@ -33173,7 +35166,7 @@ var InteractionHandler = /*#__PURE__*/function () {
 
       var stillOnObj = false;
 
-      if (this.popup.popupTargetType === 'node') {
+      if (this.popup.popupTargetType === "node") {
         if (this.body.nodes[this.popup.popupTargetId] !== undefined) {
           stillOnObj = this.body.nodes[this.popup.popupTargetId].isOverlappingWith(pointerObj); // if the mouse is still one the node, we have to check if it is not also on one that is drawn on top of it.
           // we initially only check stillOnObj because this is much faster.
@@ -33194,7 +35187,7 @@ var InteractionHandler = /*#__PURE__*/function () {
       if (stillOnObj === false) {
         this.popupObj = undefined;
         this.popup.hide();
-        this.body.emitter.emit('hidePopup');
+        this.body.emitter.emit("hidePopup");
       }
     }
   }]);
@@ -33202,13 +35195,462 @@ var InteractionHandler = /*#__PURE__*/function () {
   return InteractionHandler;
 }();
 
+var getWeakData = internalMetadata.getWeakData;
+var setInternalState$5 = internalState.set;
+var internalStateGetterFor$2 = internalState.getterFor;
+var find = arrayIteration.find;
+var findIndex = arrayIteration.findIndex;
+var id$1 = 0; // fallback for uncaught frozen keys
+
+var uncaughtFrozenStore = function (store) {
+  return store.frozen || (store.frozen = new UncaughtFrozenStore());
+};
+
+var UncaughtFrozenStore = function () {
+  this.entries = [];
+};
+
+var findUncaughtFrozen = function (store, key) {
+  return find(store.entries, function (it) {
+    return it[0] === key;
+  });
+};
+
+UncaughtFrozenStore.prototype = {
+  get: function (key) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) return entry[1];
+  },
+  has: function (key) {
+    return !!findUncaughtFrozen(this, key);
+  },
+  set: function (key, value) {
+    var entry = findUncaughtFrozen(this, key);
+    if (entry) entry[1] = value;else this.entries.push([key, value]);
+  },
+  'delete': function (key) {
+    var index = findIndex(this.entries, function (it) {
+      return it[0] === key;
+    });
+    if (~index) this.entries.splice(index, 1);
+    return !!~index;
+  }
+};
+var collectionWeak = {
+  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
+      anInstance(that, C, CONSTRUCTOR_NAME);
+      setInternalState$5(that, {
+        type: CONSTRUCTOR_NAME,
+        id: id$1++,
+        frozen: undefined
+      });
+      if (iterable != undefined) iterate(iterable, that[ADDER], {
+        that: that,
+        AS_ENTRIES: IS_MAP
+      });
+    });
+    var getInternalState = internalStateGetterFor$2(CONSTRUCTOR_NAME);
+
+    var define = function (that, key, value) {
+      var state = getInternalState(that);
+      var data = getWeakData(anObject(key), true);
+      if (data === true) uncaughtFrozenStore(state).set(key, value);else data[state.id] = value;
+      return that;
+    };
+
+    redefineAll(C.prototype, {
+      // 23.3.3.2 WeakMap.prototype.delete(key)
+      // 23.4.3.3 WeakSet.prototype.delete(value)
+      'delete': function (key) {
+        var state = getInternalState(this);
+        if (!isObject(key)) return false;
+        var data = getWeakData(key);
+        if (data === true) return uncaughtFrozenStore(state)['delete'](key);
+        return data && has(data, state.id) && delete data[state.id];
+      },
+      // 23.3.3.4 WeakMap.prototype.has(key)
+      // 23.4.3.4 WeakSet.prototype.has(value)
+      has: function has$1(key) {
+        var state = getInternalState(this);
+        if (!isObject(key)) return false;
+        var data = getWeakData(key);
+        if (data === true) return uncaughtFrozenStore(state).has(key);
+        return data && has(data, state.id);
+      }
+    });
+    redefineAll(C.prototype, IS_MAP ? {
+      // 23.3.3.3 WeakMap.prototype.get(key)
+      get: function get(key) {
+        var state = getInternalState(this);
+
+        if (isObject(key)) {
+          var data = getWeakData(key);
+          if (data === true) return uncaughtFrozenStore(state).get(key);
+          return data ? data[state.id] : undefined;
+        }
+      },
+      // 23.3.3.5 WeakMap.prototype.set(key, value)
+      set: function set(key, value) {
+        return define(this, key, value);
+      }
+    } : {
+      // 23.4.3.1 WeakSet.prototype.add(value)
+      add: function add(value) {
+        return define(this, value, true);
+      }
+    });
+    return C;
+  }
+};
+
+var es_weakMap = createCommonjsModule(function (module) {
+
+  var enforceIternalState = internalState.enforce;
+  var IS_IE11 = !global_1.ActiveXObject && 'ActiveXObject' in global_1;
+  var isExtensible = Object.isExtensible;
+  var InternalWeakMap;
+
+  var wrapper = function (init) {
+    return function WeakMap() {
+      return init(this, arguments.length ? arguments[0] : undefined);
+    };
+  }; // `WeakMap` constructor
+  // https://tc39.github.io/ecma262/#sec-weakmap-constructor
+
+
+  var $WeakMap = module.exports = collection('WeakMap', wrapper, collectionWeak); // IE11 WeakMap frozen keys fix
+  // We can't use feature detection because it crash some old IE builds
+  // https://github.com/zloirock/core-js/issues/485
+
+  if (nativeWeakMap && IS_IE11) {
+    InternalWeakMap = collectionWeak.getConstructor(wrapper, 'WeakMap', true);
+    internalMetadata.REQUIRED = true;
+    var WeakMapPrototype = $WeakMap.prototype;
+    var nativeDelete = WeakMapPrototype['delete'];
+    var nativeHas = WeakMapPrototype.has;
+    var nativeGet = WeakMapPrototype.get;
+    var nativeSet = WeakMapPrototype.set;
+    redefineAll(WeakMapPrototype, {
+      'delete': function (key) {
+        if (isObject(key) && !isExtensible(key)) {
+          var state = enforceIternalState(this);
+          if (!state.frozen) state.frozen = new InternalWeakMap();
+          return nativeDelete.call(this, key) || state.frozen['delete'](key);
+        }
+
+        return nativeDelete.call(this, key);
+      },
+      has: function has(key) {
+        if (isObject(key) && !isExtensible(key)) {
+          var state = enforceIternalState(this);
+          if (!state.frozen) state.frozen = new InternalWeakMap();
+          return nativeHas.call(this, key) || state.frozen.has(key);
+        }
+
+        return nativeHas.call(this, key);
+      },
+      get: function get(key) {
+        if (isObject(key) && !isExtensible(key)) {
+          var state = enforceIternalState(this);
+          if (!state.frozen) state.frozen = new InternalWeakMap();
+          return nativeHas.call(this, key) ? nativeGet.call(this, key) : state.frozen.get(key);
+        }
+
+        return nativeGet.call(this, key);
+      },
+      set: function set(key, value) {
+        if (isObject(key) && !isExtensible(key)) {
+          var state = enforceIternalState(this);
+          if (!state.frozen) state.frozen = new InternalWeakMap();
+          nativeHas.call(this, key) ? nativeSet.call(this, key, value) : state.frozen.set(key, value);
+        } else nativeSet.call(this, key, value);
+
+        return this;
+      }
+    });
+  }
+});
+
+var weakMap = path.WeakMap;
+
+var weakMap$1 = weakMap;
+
+var weakMap$2 = weakMap$1;
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+function __classPrivateFieldGet(receiver, privateMap) {
+  if (!privateMap.has(receiver)) {
+    throw new TypeError("attempted to get private field on non-instance");
+  }
+
+  return privateMap.get(receiver);
+}
+function __classPrivateFieldSet(receiver, privateMap, value) {
+  if (!privateMap.has(receiver)) {
+    throw new TypeError("attempted to set private field on non-instance");
+  }
+
+  privateMap.set(receiver, value);
+  return value;
+}
+
+function _createForOfIteratorHelper$5(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$6(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$6(o, minLen) { var _context2; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$6(o, minLen); var n = slice$6(_context2 = Object.prototype.toString.call(o)).call(_context2, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$6(o, minLen); }
+
+function _arrayLikeToArray$6(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var _previousSelection, _selection, _nodes, _edges, _commitHandler;
+/**
+ * @param prev
+ * @param next
+ */
+
+function diffSets(prev, next) {
+  var diff = new set$3();
+
+  var _iterator = _createForOfIteratorHelper$5(next),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var item = _step.value;
+
+      if (!prev.has(item)) {
+        diff.add(item);
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  return diff;
+}
+
+var SingleTypeSelectionAccumulator = /*#__PURE__*/function () {
+  function SingleTypeSelectionAccumulator() {
+    classCallCheck(this, SingleTypeSelectionAccumulator);
+
+    _previousSelection.set(this, new set$3());
+
+    _selection.set(this, new set$3());
+  }
+
+  createClass(SingleTypeSelectionAccumulator, [{
+    key: "add",
+    value: function add() {
+      for (var _len = arguments.length, items = new Array(_len), _key = 0; _key < _len; _key++) {
+        items[_key] = arguments[_key];
+      }
+
+      for (var _i = 0, _items = items; _i < _items.length; _i++) {
+        var item = _items[_i];
+
+        __classPrivateFieldGet(this, _selection).add(item);
+      }
+    }
+  }, {
+    key: "delete",
+    value: function _delete() {
+      for (var _len2 = arguments.length, items = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        items[_key2] = arguments[_key2];
+      }
+
+      for (var _i2 = 0, _items2 = items; _i2 < _items2.length; _i2++) {
+        var item = _items2[_i2];
+
+        __classPrivateFieldGet(this, _selection).delete(item);
+      }
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      __classPrivateFieldGet(this, _selection).clear();
+    }
+  }, {
+    key: "getSelection",
+    value: function getSelection() {
+      return toConsumableArray(__classPrivateFieldGet(this, _selection));
+    }
+  }, {
+    key: "getChanges",
+    value: function getChanges() {
+      return {
+        added: toConsumableArray(diffSets(__classPrivateFieldGet(this, _previousSelection), __classPrivateFieldGet(this, _selection))),
+        deleted: toConsumableArray(diffSets(__classPrivateFieldGet(this, _selection), __classPrivateFieldGet(this, _previousSelection))),
+        previous: toConsumableArray(new set$3(__classPrivateFieldGet(this, _previousSelection))),
+        current: toConsumableArray(new set$3(__classPrivateFieldGet(this, _selection)))
+      };
+    }
+  }, {
+    key: "commit",
+    value: function commit() {
+      var changes = this.getChanges();
+
+      __classPrivateFieldSet(this, _previousSelection, __classPrivateFieldGet(this, _selection));
+
+      __classPrivateFieldSet(this, _selection, new set$3(__classPrivateFieldGet(this, _previousSelection)));
+
+      var _iterator2 = _createForOfIteratorHelper$5(changes.added),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var item = _step2.value;
+          item.select();
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      var _iterator3 = _createForOfIteratorHelper$5(changes.deleted),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var _item = _step3.value;
+
+          _item.unselect();
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+
+      return changes;
+    }
+  }, {
+    key: "size",
+    get: function get() {
+      return __classPrivateFieldGet(this, _selection).size;
+    }
+  }]);
+
+  return SingleTypeSelectionAccumulator;
+}();
+
+_previousSelection = new weakMap$2(), _selection = new weakMap$2();
+var SelectionAccumulator = /*#__PURE__*/function () {
+  function SelectionAccumulator() {
+    var commitHandler = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+
+    classCallCheck(this, SelectionAccumulator);
+
+    _nodes.set(this, new SingleTypeSelectionAccumulator());
+
+    _edges.set(this, new SingleTypeSelectionAccumulator());
+
+    _commitHandler.set(this, void 0);
+
+    __classPrivateFieldSet(this, _commitHandler, commitHandler);
+  }
+
+  createClass(SelectionAccumulator, [{
+    key: "getNodes",
+    value: function getNodes() {
+      return __classPrivateFieldGet(this, _nodes).getSelection();
+    }
+  }, {
+    key: "getEdges",
+    value: function getEdges() {
+      return __classPrivateFieldGet(this, _edges).getSelection();
+    }
+  }, {
+    key: "addNodes",
+    value: function addNodes() {
+      var _classPrivateFieldGe;
+
+      (_classPrivateFieldGe = __classPrivateFieldGet(this, _nodes)).add.apply(_classPrivateFieldGe, arguments);
+    }
+  }, {
+    key: "addEdges",
+    value: function addEdges() {
+      var _classPrivateFieldGe2;
+
+      (_classPrivateFieldGe2 = __classPrivateFieldGet(this, _edges)).add.apply(_classPrivateFieldGe2, arguments);
+    }
+  }, {
+    key: "deleteNodes",
+    value: function deleteNodes(node) {
+      __classPrivateFieldGet(this, _nodes).delete(node);
+    }
+  }, {
+    key: "deleteEdges",
+    value: function deleteEdges(edge) {
+      __classPrivateFieldGet(this, _edges).delete(edge);
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      __classPrivateFieldGet(this, _nodes).clear();
+
+      __classPrivateFieldGet(this, _edges).clear();
+    }
+  }, {
+    key: "commit",
+    value: function commit() {
+      var _classPrivateFieldGe3, _context;
+
+      var summary = {
+        nodes: __classPrivateFieldGet(this, _nodes).commit(),
+        edges: __classPrivateFieldGet(this, _edges).commit()
+      };
+
+      for (var _len3 = arguments.length, rest = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        rest[_key3] = arguments[_key3];
+      }
+
+      (_classPrivateFieldGe3 = __classPrivateFieldGet(this, _commitHandler)).call.apply(_classPrivateFieldGe3, concat$2(_context = [this, summary]).call(_context, rest));
+
+      return summary;
+    }
+  }, {
+    key: "sizeNodes",
+    get: function get() {
+      return __classPrivateFieldGet(this, _nodes).size;
+    }
+  }, {
+    key: "sizeEdges",
+    get: function get() {
+      return __classPrivateFieldGet(this, _edges).size;
+    }
+  }]);
+
+  return SelectionAccumulator;
+}();
+_nodes = new weakMap$2(), _edges = new weakMap$2(), _commitHandler = new weakMap$2();
+
+function _createForOfIteratorHelper$6(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$7(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$7(o, minLen) { var _context3; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$7(o, minLen); var n = slice$6(_context3 = Object.prototype.toString.call(o)).call(_context3, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$7(o, minLen); }
+
+function _arrayLikeToArray$7(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
  * The handler for selections
  */
 
 var SelectionHandler = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    */
   function SelectionHandler(body, canvas) {
@@ -33218,10 +35660,7 @@ var SelectionHandler = /*#__PURE__*/function () {
 
     this.body = body;
     this.canvas = canvas;
-    this.selectionObj = {
-      nodes: [],
-      edges: []
-    };
+    this._selectionAccumulator = new SelectionAccumulator();
     this.hoverObj = {
       nodes: {},
       edges: {}
@@ -33242,7 +35681,7 @@ var SelectionHandler = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} [options]
+   * @param {object} [options]
    */
 
 
@@ -33250,7 +35689,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     key: "setOptions",
     value: function setOptions(options) {
       if (options !== undefined) {
-        var fields = ['multiselect', 'hoverConnectedEdges', 'selectable', 'selectConnectedEdges'];
+        var fields = ["multiselect", "hoverConnectedEdges", "selectable", "selectConnectedEdges"];
         selectiveDeepExtend(fields, this.options, options);
       }
     }
@@ -33322,14 +35761,14 @@ var SelectionHandler = /*#__PURE__*/function () {
     key: "_initBaseEvent",
     value: function _initBaseEvent(event, pointer) {
       var properties = {};
-      properties['pointer'] = {
+      properties["pointer"] = {
         DOM: {
           x: pointer.x,
           y: pointer.y
         },
         canvas: this.canvas.DOMtoCanvas(pointer)
       };
-      properties['event'] = event;
+      properties["event"] = event;
       return properties;
     }
     /**
@@ -33341,13 +35780,13 @@ var SelectionHandler = /*#__PURE__*/function () {
      * @param {string} eventType                          Name of event to send
      * @param {Event}  event
      * @param {{x: number, y: number}} pointer            Object with the x and y screen coordinates of the mouse
-     * @param {Object|undefined} oldSelection             If present, selection state before event occured
+     * @param {object | undefined} oldSelection             If present, selection state before event occured
      * @param {boolean|undefined} [emptySelection=false]  Indicate if selection data should be passed
      */
 
   }, {
-    key: "_generateClickEvent",
-    value: function _generateClickEvent(eventType, event, pointer, oldSelection) {
+    key: "generateClickEvent",
+    value: function generateClickEvent(eventType, event, pointer, oldSelection) {
       var emptySelection = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
       var properties = this._initBaseEvent(event, pointer);
@@ -33362,10 +35801,10 @@ var SelectionHandler = /*#__PURE__*/function () {
       }
 
       if (oldSelection !== undefined) {
-        properties['previousSelection'] = oldSelection;
+        properties["previousSelection"] = oldSelection;
       }
 
-      if (eventType == 'click') {
+      if (eventType == "click") {
         // For the time being, restrict this functionality to
         // just the click event.
         properties.items = this.getClickedItems(pointer);
@@ -33379,7 +35818,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} obj
+     * @param {object} obj
      * @param {boolean} [highlightEdges=this.options.selectConnectedEdges]
      * @returns {boolean}
      */
@@ -33392,13 +35831,15 @@ var SelectionHandler = /*#__PURE__*/function () {
       if (obj !== undefined) {
         if (obj instanceof Node) {
           if (highlightEdges === true) {
-            this._selectConnectedEdges(obj);
+            var _this$_selectionAccum;
+
+            (_this$_selectionAccum = this._selectionAccumulator).addEdges.apply(_this$_selectionAccum, toConsumableArray(obj.edges));
           }
+
+          this._selectionAccumulator.addNodes(obj);
+        } else {
+          this._selectionAccumulator.addEdges(obj);
         }
-
-        obj.select();
-
-        this._addToSelection(obj);
 
         return true;
       }
@@ -33407,7 +35848,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} obj
+     * @param {object} obj
      */
 
   }, {
@@ -33421,8 +35862,9 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      * retrieve all nodes overlapping with given object
-     * @param {Object} object  An object with parameters left, top, right, bottom
-     * @return {number[]}   An array with id's of the overlapping nodes
+     *
+     * @param {object} object  An object with parameters left, top, right, bottom
+     * @returns {number[]}   An array with id's of the overlapping nodes
      * @private
      */
 
@@ -33466,7 +35908,7 @@ var SelectionHandler = /*#__PURE__*/function () {
      *
      * @param {{x: number, y: number}} pointer
      * @param {boolean} [returnNode=true]
-     * @return {Node | undefined} node
+     * @returns {Node | undefined} node
      */
 
   }, {
@@ -33493,7 +35935,8 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      * retrieve all edges overlapping with given object, selector is around center
-     * @param {Object} object  An object with parameters left, top, right, bottom
+     *
+     * @param {object} object  An object with parameters left, top, right, bottom
      * @param {number[]} overlappingEdges An array with id's of the overlapping nodes
      * @private
      */
@@ -33513,8 +35956,9 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      * retrieve all nodes overlapping with given object
-     * @param {Object} object  An object with parameters left, top, right, bottom
-     * @return {number[]}   An array with id's of the overlapping nodes
+     *
+     * @param {object} object  An object with parameters left, top, right, bottom
+     * @returns {number[]}   An array with id's of the overlapping nodes
      * @private
      */
 
@@ -33532,7 +35976,7 @@ var SelectionHandler = /*#__PURE__*/function () {
      *
      * @param {{x: number, y: number}} pointer
      * @param {boolean} [returnEdge=true]
-     * @return {Edge | undefined} node
+     * @returns {Edge | undefined} node
      */
 
   }, {
@@ -33576,23 +36020,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     /**
      * Add object to the selection array.
      *
-     * @param {Object} obj
-     * @private
-     */
-
-  }, {
-    key: "_addToSelection",
-    value: function _addToSelection(obj) {
-      if (obj instanceof Node) {
-        this.selectionObj.nodes[obj.id] = obj;
-      } else {
-        this.selectionObj.edges[obj.id] = obj;
-      }
-    }
-    /**
-     * Add object to the selection array.
-     *
-     * @param {Object} obj
+     * @param {object} obj
      * @private
      */
 
@@ -33608,7 +36036,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     /**
      * Remove a single option from selection.
      *
-     * @param {Object} obj
+     * @param {object} obj
      * @private
      */
 
@@ -33616,199 +36044,47 @@ var SelectionHandler = /*#__PURE__*/function () {
     key: "_removeFromSelection",
     value: function _removeFromSelection(obj) {
       if (obj instanceof Node) {
-        delete this.selectionObj.nodes[obj.id];
+        var _this$_selectionAccum2;
 
-        this._unselectConnectedEdges(obj);
+        this._selectionAccumulator.deleteNodes(obj);
+
+        (_this$_selectionAccum2 = this._selectionAccumulator).deleteEdges.apply(_this$_selectionAccum2, toConsumableArray(obj.edges));
       } else {
-        delete this.selectionObj.edges[obj.id];
+        this._selectionAccumulator.deleteEdges(obj);
       }
     }
     /**
-     * Unselect all. The selectionObj is useful for this.
+     * Unselect all nodes and edges.
      */
 
   }, {
     key: "unselectAll",
     value: function unselectAll() {
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          this.selectionObj.nodes[nodeId].unselect();
-        }
-      }
+      this._selectionAccumulator.clear();
 
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          this.selectionObj.edges[edgeId].unselect();
-        }
-      }
-
-      this.selectionObj = {
-        nodes: {},
-        edges: {}
-      };
+      this._selectionAccumulator.commit();
     }
     /**
      * return the number of selected nodes
      *
      * @returns {number}
-     * @private
      */
 
   }, {
-    key: "_getSelectedNodeCount",
-    value: function _getSelectedNodeCount() {
-      var count = 0;
-
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          count += 1;
-        }
-      }
-
-      return count;
-    }
-    /**
-     * return the selected node
-     *
-     * @returns {number}
-     * @private
-     */
-
-  }, {
-    key: "_getSelectedNode",
-    value: function _getSelectedNode() {
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          return this.selectionObj.nodes[nodeId];
-        }
-      }
-
-      return undefined;
-    }
-    /**
-     * return the selected edge
-     *
-     * @returns {number}
-     * @private
-     */
-
-  }, {
-    key: "_getSelectedEdge",
-    value: function _getSelectedEdge() {
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          return this.selectionObj.edges[edgeId];
-        }
-      }
-
-      return undefined;
+    key: "getSelectedNodeCount",
+    value: function getSelectedNodeCount() {
+      return this._selectionAccumulator.sizeNodes;
     }
     /**
      * return the number of selected edges
      *
      * @returns {number}
-     * @private
      */
 
   }, {
-    key: "_getSelectedEdgeCount",
-    value: function _getSelectedEdgeCount() {
-      var count = 0;
-
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          count += 1;
-        }
-      }
-
-      return count;
-    }
-    /**
-     * return the number of selected objects.
-     *
-     * @returns {number}
-     * @private
-     */
-
-  }, {
-    key: "_getSelectedObjectCount",
-    value: function _getSelectedObjectCount() {
-      var count = 0;
-
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          count += 1;
-        }
-      }
-
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          count += 1;
-        }
-      }
-
-      return count;
-    }
-    /**
-     * Check if anything is selected
-     *
-     * @returns {boolean}
-     * @private
-     */
-
-  }, {
-    key: "_selectionIsEmpty",
-    value: function _selectionIsEmpty() {
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          return false;
-        }
-      }
-
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-    /**
-     * check if one of the selected nodes is a cluster.
-     *
-     * @returns {boolean}
-     * @private
-     */
-
-  }, {
-    key: "_clusterInSelection",
-    value: function _clusterInSelection() {
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          if (this.selectionObj.nodes[nodeId].clusterSize > 1) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-    /**
-     * select the edges connected to the node that is being selected
-     *
-     * @param {Node} node
-     * @private
-     */
-
-  }, {
-    key: "_selectConnectedEdges",
-    value: function _selectConnectedEdges(node) {
-      for (var i = 0; i < node.edges.length; i++) {
-        var edge = node.edges[i];
-        edge.select();
-
-        this._addToSelection(edge);
-      }
+    key: "getSelectedEdgeCount",
+    value: function getSelectedEdgeCount() {
+      return this._selectionAccumulator.sizeEdges;
     }
     /**
      * select the edges connected to the node that is being selected
@@ -33825,23 +36101,6 @@ var SelectionHandler = /*#__PURE__*/function () {
         edge.hover = true;
 
         this._addToHover(edge);
-      }
-    }
-    /**
-     * unselect the edges connected to the node that is being selected
-     *
-     * @param {Node} node
-     * @private
-     */
-
-  }, {
-    key: "_unselectConnectedEdges",
-    value: function _unselectConnectedEdges(node) {
-      for (var i = 0; i < node.edges.length; i++) {
-        var edge = node.edges[i];
-        edge.unselect();
-
-        this._removeFromSelection(edge);
       }
     }
     /**
@@ -33969,117 +36228,201 @@ var SelectionHandler = /*#__PURE__*/function () {
       }
 
       if (hoverChanged === true) {
-        this.body.emitter.emit('_requestRedraw');
+        this.body.emitter.emit("_requestRedraw");
       }
     }
     /**
+     * Select and deselect nodes depending current selection change.
      *
-     * retrieve the currently selected objects
-     * @return {{nodes: Array.<string>, edges: Array.<string>}} selection
+     * For changing nodes, select/deselect events are fired.
+     *
+     * NOTE: For a given edge, if one connecting node is deselected and with the
+     * same click the other node is selected, no events for the edge will fire. It
+     * was selected and it will remain selected.
+     *
+     * @param {{x: number, y: number}} pointer - The x and y coordinates of the
+     * click, tap, dragend… that triggered this.
+     * @param {UIEvent} event - The event that triggered this.
+     */
+
+  }, {
+    key: "commitAndEmit",
+    value: function commitAndEmit(pointer, event) {
+      var selected = false;
+
+      var selectionChanges = this._selectionAccumulator.commit();
+
+      var previousSelection = {
+        nodes: selectionChanges.nodes.previous,
+        edges: selectionChanges.edges.previous
+      };
+
+      if (selectionChanges.edges.deleted.length > 0) {
+        this.generateClickEvent("deselectEdge", event, pointer, previousSelection);
+        selected = true;
+      }
+
+      if (selectionChanges.nodes.deleted.length > 0) {
+        this.generateClickEvent("deselectNode", event, pointer, previousSelection);
+        selected = true;
+      }
+
+      if (selectionChanges.nodes.added.length > 0) {
+        this.generateClickEvent("selectNode", event, pointer);
+        selected = true;
+      }
+
+      if (selectionChanges.edges.added.length > 0) {
+        this.generateClickEvent("selectEdge", event, pointer);
+        selected = true;
+      } // fire the select event if anything has been selected or deselected
+
+
+      if (selected === true) {
+        // select or unselect
+        this.generateClickEvent("select", event, pointer);
+      }
+    }
+    /**
+     * Retrieve the currently selected node and edge ids.
+     *
+     * @returns {{nodes: Array.<string>, edges: Array.<string>}} Arrays with the
+     * ids of the selected nodes and edges.
      */
 
   }, {
     key: "getSelection",
     value: function getSelection() {
-      var nodeIds = this.getSelectedNodes();
-      var edgeIds = this.getSelectedEdges();
       return {
-        nodes: nodeIds,
-        edges: edgeIds
+        nodes: this.getSelectedNodeIds(),
+        edges: this.getSelectedEdgeIds()
       };
     }
     /**
+     * Retrieve the currently selected nodes.
      *
-     * retrieve the currently selected nodes
-     * @return {string[]} selection    An array with the ids of the
-     *                                            selected nodes.
+     * @returns {Array} An array with selected nodes.
      */
 
   }, {
     key: "getSelectedNodes",
     value: function getSelectedNodes() {
-      var idArray = [];
-
-      if (this.options.selectable === true) {
-        for (var nodeId in this.selectionObj.nodes) {
-          if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-            idArray.push(this.selectionObj.nodes[nodeId].id);
-          }
-        }
-      }
-
-      return idArray;
+      return this._selectionAccumulator.getNodes();
     }
     /**
+     * Retrieve the currently selected edges.
      *
-     * retrieve the currently selected edges
-     * @return {Array} selection    An array with the ids of the
-     *                                            selected nodes.
+     * @returns {Array} An array with selected edges.
      */
 
   }, {
     key: "getSelectedEdges",
     value: function getSelectedEdges() {
-      var idArray = [];
+      return this._selectionAccumulator.getEdges();
+    }
+    /**
+     * Retrieve the currently selected node ids.
+     *
+     * @returns {Array} An array with the ids of the selected nodes.
+     */
 
-      if (this.options.selectable === true) {
-        for (var edgeId in this.selectionObj.edges) {
-          if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-            idArray.push(this.selectionObj.edges[edgeId].id);
-          }
-        }
-      }
+  }, {
+    key: "getSelectedNodeIds",
+    value: function getSelectedNodeIds() {
+      var _context;
 
-      return idArray;
+      return map$2(_context = this._selectionAccumulator.getNodes()).call(_context, function (node) {
+        return node.id;
+      });
+    }
+    /**
+     * Retrieve the currently selected edge ids.
+     *
+     * @returns {Array} An array with the ids of the selected edges.
+     */
+
+  }, {
+    key: "getSelectedEdgeIds",
+    value: function getSelectedEdgeIds() {
+      var _context2;
+
+      return map$2(_context2 = this._selectionAccumulator.getEdges()).call(_context2, function (edge) {
+        return edge.id;
+      });
     }
     /**
      * Updates the current selection
+     *
      * @param {{nodes: Array.<string>, edges: Array.<string>}} selection
-     * @param {Object} options                                 Options
+     * @param {object} options                                 Options
      */
 
   }, {
     key: "setSelection",
     value: function setSelection(selection) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var i, id;
-      if (!selection || !selection.nodes && !selection.edges) throw 'Selection must be an object with nodes and/or edges properties'; // first unselect any selected node, if option is true or undefined
+
+      if (!selection || !selection.nodes && !selection.edges) {
+        throw new TypeError("Selection must be an object with nodes and/or edges properties");
+      } // first unselect any selected node, if option is true or undefined
+
 
       if (options.unselectAll || options.unselectAll === undefined) {
         this.unselectAll();
       }
 
       if (selection.nodes) {
-        for (i = 0; i < selection.nodes.length; i++) {
-          id = selection.nodes[i];
-          var node = this.body.nodes[id];
+        var _iterator = _createForOfIteratorHelper$6(selection.nodes),
+            _step;
 
-          if (!node) {
-            throw new RangeError('Node with id "' + id + '" not found');
-          } // don't select edges with it
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var id = _step.value;
+            var node = this.body.nodes[id];
+
+            if (!node) {
+              throw new RangeError('Node with id "' + id + '" not found');
+            } // don't select edges with it
 
 
-          this.selectObject(node, options.highlightEdges);
+            this.selectObject(node, options.highlightEdges);
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
       }
 
       if (selection.edges) {
-        for (i = 0; i < selection.edges.length; i++) {
-          id = selection.edges[i];
-          var edge = this.body.edges[id];
+        var _iterator2 = _createForOfIteratorHelper$6(selection.edges),
+            _step2;
 
-          if (!edge) {
-            throw new RangeError('Edge with id "' + id + '" not found');
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _id = _step2.value;
+            var edge = this.body.edges[_id];
+
+            if (!edge) {
+              throw new RangeError('Edge with id "' + _id + '" not found');
+            }
+
+            this.selectObject(edge);
           }
-
-          this.selectObject(edge);
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
         }
       }
 
-      this.body.emitter.emit('_requestRedraw');
+      this.body.emitter.emit("_requestRedraw");
+
+      this._selectionAccumulator.commit();
     }
     /**
      * select zero or more nodes with the option to highlight edges
+     *
      * @param {number[] | string[]} selection     An array with the ids of the
      *                                            selected nodes.
      * @param {boolean} [highlightEdges]
@@ -34089,7 +36432,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     key: "selectNodes",
     value: function selectNodes(selection) {
       var highlightEdges = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      if (!selection || selection.length === undefined) throw 'Selection must be an array with ids';
+      if (!selection || selection.length === undefined) throw "Selection must be an array with ids";
       this.setSelection({
         nodes: selection
       }, {
@@ -34098,6 +36441,7 @@ var SelectionHandler = /*#__PURE__*/function () {
     }
     /**
      * select zero or more edges
+     *
      * @param {number[] | string[]} selection     An array with the ids of the
      *                                            selected nodes.
      */
@@ -34105,32 +36449,29 @@ var SelectionHandler = /*#__PURE__*/function () {
   }, {
     key: "selectEdges",
     value: function selectEdges(selection) {
-      if (!selection || selection.length === undefined) throw 'Selection must be an array with ids';
+      if (!selection || selection.length === undefined) throw "Selection must be an array with ids";
       this.setSelection({
         edges: selection
       });
     }
     /**
      * Validate the selection: remove ids of nodes which no longer exist
+     *
      * @private
      */
 
   }, {
     key: "updateSelection",
     value: function updateSelection() {
-      for (var nodeId in this.selectionObj.nodes) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.nodes, nodeId)) {
-          if (!Object.prototype.hasOwnProperty.call(this.body.nodes, nodeId)) {
-            delete this.selectionObj.nodes[nodeId];
-          }
+      for (var node in this._selectionAccumulator.getNodes()) {
+        if (!Object.prototype.hasOwnProperty.call(this.body.nodes, node.id)) {
+          this._selectionAccumulator.deleteNodes(node);
         }
       }
 
-      for (var edgeId in this.selectionObj.edges) {
-        if (Object.prototype.hasOwnProperty.call(this.selectionObj.edges, edgeId)) {
-          if (!Object.prototype.hasOwnProperty.call(this.body.edges, edgeId)) {
-            delete this.selectionObj.edges[edgeId];
-          }
+      for (var edge in this._selectionAccumulator.getEdges()) {
+        if (!Object.prototype.hasOwnProperty.call(this.body.edges, edge.id)) {
+          this._selectionAccumulator.deleteEdges(edge);
         }
       }
     }
@@ -34220,7 +36561,7 @@ var timsort = createCommonjsModule(function (module, exports) {
    *
    ****/
   (function (global, factory) {
-    var mod; {
+    {
       factory(exports);
     }
   })(commonjsGlobal, function (exports) {
@@ -35040,7 +37381,9 @@ var DirectionInterface = /*#__PURE__*/function () {
   createClass(DirectionInterface, [{
     key: "abstract",
 
-    /** @ignore **/
+    /**
+     * @ignore
+     */
     value: function abstract() {
       throw new Error("Can't instantiate abstract class!");
     }
@@ -35062,7 +37405,7 @@ var DirectionInterface = /*#__PURE__*/function () {
      *
      * The value should be perpendicular to the actual direction of the layout.
      *
-     * @return {string} Direction, either 'vertical' or 'horizontal'
+     * @returns {string} Direction, either 'vertical' or 'horizontal'
      */
 
   }, {
@@ -35074,7 +37417,7 @@ var DirectionInterface = /*#__PURE__*/function () {
      * Return the value of the coordinate that is not fixed for this direction.
      *
      * @param {Node} node The node to read
-     * @return {number} Value of the unfixed coordinate
+     * @returns {number} Value of the unfixed coordinate
      */
 
   }, {
@@ -35105,7 +37448,7 @@ var DirectionInterface = /*#__PURE__*/function () {
      * only among themselves. In essence, it is a sub-network.
      *
      * @param {number} index The index number of a tree
-     * @return {number} the width of a tree in the view coordinates
+     * @returns {number} the width of a tree in the view coordinates
      */
 
   }, {
@@ -35170,7 +37513,7 @@ var DirectionInterface = /*#__PURE__*/function () {
  *
  * Coordinate `y` is fixed on levels, coordinate `x` is unfixed.
  *
- * @extends DirectionInterface
+ * @augments DirectionInterface
  * @private
  */
 
@@ -35183,7 +37526,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
   /**
    * Constructor
    *
-   * @param {Object} layout reference to the parent LayoutEngine instance.
+   * @param {object} layout reference to the parent LayoutEngine instance.
    */
   function VerticalStrategy(layout) {
     var _this;
@@ -35194,22 +37537,22 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
     _this.layout = layout;
     return _this;
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(VerticalStrategy, [{
     key: "curveType",
     value: function curveType() {
-      return 'horizontal';
+      return "horizontal";
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPosition",
     value: function getPosition(node) {
       return node.x;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "setPosition",
@@ -35222,7 +37565,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
 
       node.x = position;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getTreeSize",
@@ -35233,7 +37576,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
         max: res.max_x
       };
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "sort",
@@ -35242,7 +37585,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
         return a.x - b.x;
       });
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "fix",
@@ -35250,7 +37593,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
       node.y = this.layout.options.hierarchical.levelSeparation * level;
       node.options.fixed.y = true;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "shift",
@@ -35266,7 +37609,7 @@ var VerticalStrategy = /*#__PURE__*/function (_DirectionInterface) {
  *
  * Coordinate `x` is fixed on levels, coordinate `y` is unfixed.
  *
- * @extends DirectionInterface
+ * @augments DirectionInterface
  * @private
  */
 
@@ -35279,7 +37622,7 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
   /**
    * Constructor
    *
-   * @param {Object} layout reference to the parent LayoutEngine instance.
+   * @param {object} layout reference to the parent LayoutEngine instance.
    */
   function HorizontalStrategy(layout) {
     var _this2;
@@ -35290,22 +37633,22 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
     _this2.layout = layout;
     return _this2;
   }
-  /** @inheritdoc */
+  /** @inheritDoc */
 
 
   createClass(HorizontalStrategy, [{
     key: "curveType",
     value: function curveType() {
-      return 'vertical';
+      return "vertical";
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getPosition",
     value: function getPosition(node) {
       return node.y;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "setPosition",
@@ -35318,7 +37661,7 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
 
       node.y = position;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "getTreeSize",
@@ -35329,7 +37672,7 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
         max: res.max_y
       };
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "sort",
@@ -35338,7 +37681,7 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
         return a.y - b.y;
       });
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "fix",
@@ -35346,7 +37689,7 @@ var HorizontalStrategy = /*#__PURE__*/function (_DirectionInterface2) {
       node.x = this.layout.options.hierarchical.levelSeparation * level;
       node.options.fixed.x = true;
     }
-    /** @inheritdoc */
+    /** @inheritDoc */
 
   }, {
     key: "shift",
@@ -35388,11 +37731,11 @@ var every$1 = every_1;
 
 var every$2 = every$1;
 
-function _createForOfIteratorHelper$4(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper$7(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$8(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$5(o, minLen) { var _context9; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = slice$5(_context9 = Object.prototype.toString.call(o)).call(_context9, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
+function _unsupportedIterableToArray$8(o, minLen) { var _context9; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$8(o, minLen); var n = slice$6(_context9 = Object.prototype.toString.call(o)).call(_context9, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$8(o, minLen); }
 
-function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray$8(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 /**
  * Try to assign levels to nodes according to their positions in the cyclic “hierarchy”.
@@ -35512,7 +37855,7 @@ function fillLevelsByDirection(isEntryNode, shouldLevelBeReplaced, direction, no
   var edgeIdProp = direction + "Id";
   var newLevelDiff = direction === "to" ? 1 : -1;
 
-  var _iterator = _createForOfIteratorHelper$4(nodes),
+  var _iterator = _createForOfIteratorHelper$7(nodes),
       _step;
 
   try {
@@ -35701,6 +38044,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
     }
     /**
      * Return the number of separate trees in the current network.
+     *
      * @returns {number}
      */
 
@@ -35711,6 +38055,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
     }
     /**
      * Assign a tree id to a node
+     *
      * @param {Node} node
      * @param {string|number} treeId
      */
@@ -35744,6 +38089,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
      * get the maximum level of a branch.
      *
      * TODO: Never entered; find a test case to test this!
+     *
      * @param {Node.id} nodeId
      * @returns {number}
      */
@@ -35865,7 +38211,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
      *
      * @param {Node} node1
      * @param {Node} node2
-     * @return {boolean} true if the two nodes have a same ancestor node, false otherwise
+     * @returns {boolean} true if the two nodes have a same ancestor node, false otherwise
      */
 
   }, {
@@ -35893,7 +38239,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
      *
      * @param {Node} node1
      * @param {Node} node2
-     * @return {Boolean} true if this is so, false otherwise
+     * @returns {boolean} true if this is so, false otherwise
      */
 
   }, {
@@ -35953,7 +38299,7 @@ var HierarchicalStatus = /*#__PURE__*/function () {
 
 var LayoutEngine = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    */
   function LayoutEngine(body) {
     classCallCheck(this, LayoutEngine);
@@ -35980,9 +38326,9 @@ var LayoutEngine = /*#__PURE__*/function () {
         blockShifting: true,
         edgeMinimization: true,
         parentCentralization: true,
-        direction: 'UD',
+        direction: "UD",
         // UD, DU, LR, RL
-        sortMethod: 'hubsize' // hubsize, directed
+        sortMethod: "hubsize" // hubsize, directed
 
       }
     };
@@ -36001,16 +38347,16 @@ var LayoutEngine = /*#__PURE__*/function () {
     value: function bindEventListeners() {
       var _this2 = this;
 
-      this.body.emitter.on('_dataChanged', function () {
+      this.body.emitter.on("_dataChanged", function () {
         _this2.setupHierarchicalLayout();
       });
-      this.body.emitter.on('_dataLoaded', function () {
+      this.body.emitter.on("_dataLoaded", function () {
         _this2.layoutNetwork();
       });
-      this.body.emitter.on('_resetHierarchicalLayout', function () {
+      this.body.emitter.on("_resetHierarchicalLayout", function () {
         _this2.setupHierarchicalLayout();
       });
-      this.body.emitter.on('_adjustEdgesForHierarchicalLayout', function () {
+      this.body.emitter.on("_adjustEdgesForHierarchicalLayout", function () {
         if (_this2.options.hierarchical.enabled !== true) {
           return;
         } // get the type of static smooth curve in case it is required
@@ -36019,14 +38365,14 @@ var LayoutEngine = /*#__PURE__*/function () {
         var type = _this2.direction.curveType(); // force all edges into static smooth curves.
 
 
-        _this2.body.emitter.emit('_forceDisableDynamicCurves', type, false);
+        _this2.body.emitter.emit("_forceDisableDynamicCurves", type, false);
       });
     }
     /**
      *
-     * @param {Object} options
-     * @param {Object} allOptions
-     * @returns {Object}
+     * @param {object} options
+     * @param {object} allOptions
+     * @returns {object}
      */
 
   }, {
@@ -36036,7 +38382,7 @@ var LayoutEngine = /*#__PURE__*/function () {
         var hierarchical = this.options.hierarchical;
         var prevHierarchicalState = hierarchical.enabled;
         selectiveDeepExtend(["randomSeed", "improvedLayout", "clusterThreshold"], this.options, options);
-        mergeOptions(this.options, options, 'hierarchical');
+        mergeOptions(this.options, options, "hierarchical");
 
         if (options.randomSeed !== undefined) {
           this._resetRNG(options.randomSeed);
@@ -36045,11 +38391,11 @@ var LayoutEngine = /*#__PURE__*/function () {
         if (hierarchical.enabled === true) {
           if (prevHierarchicalState === true) {
             // refresh the overridden options for nodes and edges.
-            this.body.emitter.emit('refresh', true);
+            this.body.emitter.emit("refresh", true);
           } // make sure the level separation is the right way up
 
 
-          if (hierarchical.direction === 'RL' || hierarchical.direction === 'DU') {
+          if (hierarchical.direction === "RL" || hierarchical.direction === "DU") {
             if (hierarchical.levelSeparation > 0) {
               hierarchical.levelSeparation *= -1;
             }
@@ -36060,14 +38406,14 @@ var LayoutEngine = /*#__PURE__*/function () {
           }
 
           this.setDirectionStrategy();
-          this.body.emitter.emit('_resetHierarchicalLayout'); // because the hierarchical system needs it's own physics and smooth curve settings,
+          this.body.emitter.emit("_resetHierarchicalLayout"); // because the hierarchical system needs it's own physics and smooth curve settings,
           // we adapt the other options if needed.
 
           return this.adaptAllOptionsForHierarchicalLayout(allOptions);
         } else {
           if (prevHierarchicalState === true) {
             // refresh the overridden options for nodes and edges.
-            this.body.emitter.emit('refresh');
+            this.body.emitter.emit("refresh");
             return deepExtend(allOptions, this.optionsBackup);
           }
         }
@@ -36089,8 +38435,8 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      *
-     * @param {Object} allOptions
-     * @returns {Object}
+     * @param {object} allOptions
+     * @returns {object}
      */
 
   }, {
@@ -36102,18 +38448,18 @@ var LayoutEngine = /*#__PURE__*/function () {
         if (allOptions.physics === undefined || allOptions.physics === true) {
           allOptions.physics = {
             enabled: backupPhysics.enabled === undefined ? true : backupPhysics.enabled,
-            solver: 'hierarchicalRepulsion'
+            solver: "hierarchicalRepulsion"
           };
           backupPhysics.enabled = backupPhysics.enabled === undefined ? true : backupPhysics.enabled;
-          backupPhysics.solver = backupPhysics.solver || 'barnesHut';
-        } else if (_typeof_1(allOptions.physics) === 'object') {
+          backupPhysics.solver = backupPhysics.solver || "barnesHut";
+        } else if (_typeof_1(allOptions.physics) === "object") {
           backupPhysics.enabled = allOptions.physics.enabled === undefined ? true : allOptions.physics.enabled;
-          backupPhysics.solver = allOptions.physics.solver || 'barnesHut';
-          allOptions.physics.solver = 'hierarchicalRepulsion';
+          backupPhysics.solver = allOptions.physics.solver || "barnesHut";
+          allOptions.physics.solver = "hierarchicalRepulsion";
         } else if (allOptions.physics !== false) {
-          backupPhysics.solver = 'barnesHut';
+          backupPhysics.solver = "barnesHut";
           allOptions.physics = {
-            solver: 'hierarchicalRepulsion'
+            solver: "hierarchicalRepulsion"
           };
         } // get the type of static smooth curve in case it is required
 
@@ -36125,7 +38471,7 @@ var LayoutEngine = /*#__PURE__*/function () {
           this.optionsBackup.edges = {
             smooth: {
               enabled: true,
-              type: 'dynamic'
+              type: "dynamic"
             }
           };
           allOptions.edges = {
@@ -36135,12 +38481,12 @@ var LayoutEngine = /*#__PURE__*/function () {
           this.optionsBackup.edges = {
             smooth: {
               enabled: true,
-              type: 'dynamic'
+              type: "dynamic"
             }
           };
           allOptions.edges.smooth = false;
         } else {
-          if (typeof allOptions.edges.smooth === 'boolean') {
+          if (typeof allOptions.edges.smooth === "boolean") {
             this.optionsBackup.edges = {
               smooth: allOptions.edges.smooth
             };
@@ -36151,7 +38497,7 @@ var LayoutEngine = /*#__PURE__*/function () {
           } else {
             var smooth = allOptions.edges.smooth; // allow custom types except for dynamic
 
-            if (smooth.type !== undefined && smooth.type !== 'dynamic') {
+            if (smooth.type !== undefined && smooth.type !== "dynamic") {
               type = smooth.type;
             } // TODO: this is options merging; see if the standard routines can be used here.
 
@@ -36159,7 +38505,7 @@ var LayoutEngine = /*#__PURE__*/function () {
             this.optionsBackup.edges = {
               smooth: {
                 enabled: smooth.enabled === undefined ? true : smooth.enabled,
-                type: smooth.type === undefined ? 'dynamic' : smooth.type,
+                type: smooth.type === undefined ? "dynamic" : smooth.type,
                 roundness: smooth.roundness === undefined ? 0.5 : smooth.roundness,
                 forceDirection: smooth.forceDirection === undefined ? false : smooth.forceDirection
               }
@@ -36176,7 +38522,7 @@ var LayoutEngine = /*#__PURE__*/function () {
         // Only applies to edges that do not use the global options for smooth.
 
 
-        this.body.emitter.emit('_forceDisableDynamicCurves', type);
+        this.body.emitter.emit("_forceDisableDynamicCurves", type);
       }
 
       return allOptions;
@@ -36250,11 +38596,11 @@ var LayoutEngine = /*#__PURE__*/function () {
 
           var clusterOptions = {
             clusterNodeProperties: {
-              shape: 'ellipse',
+              shape: "ellipse",
               // Bugfix: avoid type 'image', no images supplied
-              label: '',
+              label: "",
               // avoid label handling
-              group: '',
+              group: "",
               // avoid group handling
               font: {
                 multi: false
@@ -36262,7 +38608,7 @@ var LayoutEngine = /*#__PURE__*/function () {
 
             },
             clusterEdgeProperties: {
-              label: '',
+              label: "",
               // avoid label handling
               font: {
                 multi: false
@@ -36343,6 +38689,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Move all the nodes towards to the center so gravitational pull wil not move the nodes away from view
+     *
      * @private
      */
 
@@ -36360,6 +38707,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Expands all clusters
+     *
      * @private
      */
 
@@ -36379,7 +38727,7 @@ var LayoutEngine = /*#__PURE__*/function () {
         }
 
         if (clustersPresent === true) {
-          this.body.emitter.emit('_dataChanged');
+          this.body.emitter.emit("_dataChanged");
         }
       }
     }
@@ -36426,17 +38774,17 @@ var LayoutEngine = /*#__PURE__*/function () {
 
 
         if (undefinedLevel === true && definedLevel === true) {
-          throw new Error('To use the hierarchical layout, nodes require either no predefined levels' + ' or levels have to be defined for all nodes.');
+          throw new Error("To use the hierarchical layout, nodes require either no predefined levels" + " or levels have to be defined for all nodes.");
         } else {
           // define levels if undefined by the users. Based on hubsize.
           if (undefinedLevel === true) {
             var sortMethod = this.options.hierarchical.sortMethod;
 
-            if (sortMethod === 'hubsize') {
+            if (sortMethod === "hubsize") {
               this._determineLevelsByHubsize();
-            } else if (sortMethod === 'directed') {
+            } else if (sortMethod === "directed") {
               this._determineLevelsDirected();
-            } else if (sortMethod === 'custom') {
+            } else if (sortMethod === "custom") {
               this._determineLevelsCustomCallback();
             }
           } // fallback for cases where there are nodes but no edges
@@ -36579,7 +38927,7 @@ var LayoutEngine = /*#__PURE__*/function () {
       /**
        * Condense elements. These can be nodes or branches depending on the callback.
        *
-       * @param {function} callback
+       * @param {Function} callback
        * @param {Array.<number>} levels
        * @param {*} centerParents
        */
@@ -36881,6 +39229,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     /**
      * This gives the space around the node. IF a map is supplied, it will only check against nodes NOT in the map.
      * This is used to only get the distances to nodes outside of a branch.
+     *
      * @param {Node} node
      * @param {{Node.id: vis.Node}} map
      * @returns {number[]}
@@ -36930,6 +39279,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * We use this method to center a parent node and check if it does not cross other nodes when it does.
+     *
      * @param {Node} node
      * @private
      */
@@ -36968,7 +39318,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     /**
      * This function places the nodes on the canvas based on the hierarchial distribution.
      *
-     * @param {Object} distribution | obtained by the function this._getDistribution()
+     * @param {object} distribution | obtained by the function this._getDistribution()
      * @private
      */
 
@@ -37075,6 +39425,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     /**
      * This method checks for overlap and if required shifts the branch. It also keeps records of positioned nodes.
      * Finally it will call _placeBranchNodes to place the branch nodes.
+     *
      * @param {Node} node
      * @param {number} level
      * @param {number} pos
@@ -37109,6 +39460,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     /**
      * Receives an array with node indices and returns an array with the actual node references.
      * Used for sorting based on node properties.
+     *
      * @param {Array.<Node.id>} idArray
      * @returns {Array.<Node>}
      */
@@ -37127,7 +39479,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     /**
      * This function get the distribution of levels based on hubsize
      *
-     * @returns {Object}
+     * @returns {object}
      * @private
      */
 
@@ -37259,9 +39611,9 @@ var LayoutEngine = /*#__PURE__*/function () {
       var _this7 = this;
 
       var minLevel = 100000; // TODO: this should come from options.
+      // eslint-disable-next-line no-unused-vars -- This should eventually be implemented with these parameters used.
 
-      var customCallback = function customCallback(nodeA, nodeB, edge) {// eslint-disable-line no-unused-vars
-      }; // TODO: perhaps move to HierarchicalStatus.
+      var customCallback = function customCallback(nodeA, nodeB, edge) {}; // TODO: perhaps move to HierarchicalStatus.
       //       But I currently don't see the point, this method is not used.
 
 
@@ -37272,7 +39624,7 @@ var LayoutEngine = /*#__PURE__*/function () {
           levelA = _this7.hierarchical.levels[nodeA.id] = minLevel;
         }
 
-        var diff = customCallback(NetworkUtil.cloneOptions(nodeA, 'node'), NetworkUtil.cloneOptions(nodeB, 'node'), NetworkUtil.cloneOptions(edge, 'edge'));
+        var diff = customCallback(NetworkUtil.cloneOptions(nodeA, "node"), NetworkUtil.cloneOptions(nodeB, "node"), NetworkUtil.cloneOptions(edge, "edge"));
         _this7.hierarchical.levels[nodeB.id] = levelA + diff;
       };
 
@@ -37307,6 +39659,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Update the bookkeeping of parent and child.
+     *
      * @private
      */
 
@@ -37327,7 +39680,8 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Crawl over the entire network and use a callback on each node couple that is connected to each other.
-     * @param {function} [callback=function(){}]          | will receive nodeA, nodeB and the connecting edge. A and B are distinct.
+     *
+     * @param {Function} [callback=function(){}]          | will receive nodeA, nodeB and the connecting edge. A and B are distinct.
      * @param {Node.id} startingNodeId
      * @private
      */
@@ -37398,6 +39752,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Shift a branch a certain distance
+     *
      * @param {Node.id} parentId
      * @param {number} diff
      * @private
@@ -37432,6 +39787,7 @@ var LayoutEngine = /*#__PURE__*/function () {
     }
     /**
      * Find a common parent between branches.
+     *
      * @param {Node.id} childA
      * @param {Node.id} childB
      * @returns {{foundParent, withChild}}
@@ -37503,7 +39859,7 @@ var LayoutEngine = /*#__PURE__*/function () {
   }, {
     key: "setDirectionStrategy",
     value: function setDirectionStrategy() {
-      var isVertical = this.options.hierarchical.direction === 'UD' || this.options.hierarchical.direction === 'DU';
+      var isVertical = this.options.hierarchical.direction === "UD" || this.options.hierarchical.direction === "DU";
 
       if (isVertical) {
         this.direction = new VerticalStrategy(this);
@@ -37515,8 +39871,9 @@ var LayoutEngine = /*#__PURE__*/function () {
      * Determine the center position of a branch from the passed list of child nodes
      *
      * This takes into account the positions of all the child nodes.
+     *
      * @param {Array.<Node|vis.Node.id>} childNodes  Array of either child nodes or node id's
-     * @return {number}
+     * @returns {number}
      * @private
      */
 
@@ -37548,6 +39905,11 @@ var LayoutEngine = /*#__PURE__*/function () {
   return LayoutEngine;
 }();
 
+function _createForOfIteratorHelper$8(o, allowArrayLike) { var it; if (typeof symbol$4 === "undefined" || getIteratorMethod$1(o) == null) { if (isArray$5(o) || (it = _unsupportedIterableToArray$9(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = getIterator$1(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$9(o, minLen) { var _context32; if (!o) return; if (typeof o === "string") return _arrayLikeToArray$9(o, minLen); var n = slice$6(_context32 = Object.prototype.toString.call(o)).call(_context32, 8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return from_1$2(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$9(o, minLen); }
+
+function _arrayLikeToArray$9(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
  * Clears the toolbar div element of children
  *
@@ -37556,7 +39918,7 @@ var LayoutEngine = /*#__PURE__*/function () {
 
 var ManipulationSystem = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {Canvas} canvas
    * @param {SelectionHandler} selectionHandler
    * @param {InteractionHandler} interactionHandler
@@ -37576,7 +39938,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
     this.manipulationDiv = undefined;
     this.editModeDiv = undefined;
     this.closeDiv = undefined;
-    this.manipulationHammers = [];
+    this._domEventListenerCleanupQueue = [];
     this.temporaryUIFunctions = {};
     this.temporaryEventFunctions = [];
     this.touchTime = 0;
@@ -37598,14 +39960,14 @@ var ManipulationSystem = /*#__PURE__*/function () {
       deleteNode: true,
       deleteEdge: true,
       controlNodeStyle: {
-        shape: 'dot',
+        shape: "dot",
         size: 6,
         color: {
-          background: '#ff0000',
-          border: '#3c3c3c',
+          background: "#ff0000",
+          border: "#3c3c3c",
           highlight: {
-            background: '#07f968',
-            border: '#3c3c3c'
+            background: "#07f968",
+            border: "#3c3c3c"
           }
         },
         borderWidth: 2,
@@ -37615,14 +39977,15 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
     assign$2(this.options, this.defaultOptions);
 
-    this.body.emitter.on('destroy', function () {
+    this.body.emitter.on("destroy", function () {
       _this._clean();
     });
-    this.body.emitter.on('_dataChanged', bind$2(_context = this._restore).call(_context, this));
-    this.body.emitter.on('_resetData', bind$2(_context2 = this._restore).call(_context2, this));
+    this.body.emitter.on("_dataChanged", bind$2(_context = this._restore).call(_context, this));
+    this.body.emitter.on("_resetData", bind$2(_context2 = this._restore).call(_context2, this));
   }
   /**
    * If something changes in the data during editing, switch back to the initial datamanipulation state and close all edit modes.
+   *
    * @private
    */
 
@@ -37641,9 +40004,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
     /**
      * Set the Options
      *
-     * @param {Object} options
-     * @param {Object} allOptions
-     * @param {Object} globalOptions
+     * @param {object} options
+     * @param {object} allOptions
+     * @param {object} globalOptions
      */
 
   }, {
@@ -37664,7 +40027,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
       }
 
       if (options !== undefined) {
-        if (typeof options === 'boolean') {
+        if (typeof options === "boolean") {
           this.options.enabled = options;
         } else {
           this.options.enabled = true;
@@ -37705,9 +40068,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
       this._clean();
 
       if (this.guiEnabled === true) {
-        this.manipulationDiv.style.display = 'block';
-        this.closeDiv.style.display = 'block';
-        this.editModeDiv.style.display = 'none';
+        this.manipulationDiv.style.display = "block";
+        this.closeDiv.style.display = "block";
+        this.editModeDiv.style.display = "none";
         this.showManipulatorToolbar();
       }
     }
@@ -37723,9 +40086,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
       this._clean();
 
       if (this.guiEnabled === true) {
-        this.manipulationDiv.style.display = 'none';
-        this.closeDiv.style.display = 'none';
-        this.editModeDiv.style.display = 'block';
+        this.manipulationDiv.style.display = "none";
+        this.closeDiv.style.display = "none";
+        this.editModeDiv.style.display = "block";
 
         this._createEditButton();
       }
@@ -37750,13 +40113,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         // a _restore will hide these menus
         this.editMode = true;
-        this.manipulationDiv.style.display = 'block';
-        this.closeDiv.style.display = 'block';
-
-        var selectedNodeCount = this.selectionHandler._getSelectedNodeCount();
-
-        var selectedEdgeCount = this.selectionHandler._getSelectedEdgeCount();
-
+        this.manipulationDiv.style.display = "block";
+        this.closeDiv.style.display = "block";
+        var selectedNodeCount = this.selectionHandler.getSelectedNodeCount();
+        var selectedEdgeCount = this.selectionHandler.getSelectedEdgeCount();
         var selectedTotalCount = selectedNodeCount + selectedEdgeCount;
         var locale = this.options.locales[this.options.locale];
         var needSeperator = false;
@@ -37777,7 +40137,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
           this._createAddEdgeButton(locale);
         }
 
-        if (selectedNodeCount === 1 && typeof this.options.editNode === 'function') {
+        if (selectedNodeCount === 1 && typeof this.options.editNode === "function") {
           if (needSeperator === true) {
             this._createSeperator(2);
           } else {
@@ -37813,14 +40173,14 @@ var ManipulationSystem = /*#__PURE__*/function () {
         } // bind the close button
 
 
-        this._bindHammerToDiv(this.closeDiv, bind$2(_context3 = this.toggleEditMode).call(_context3, this)); // refresh this bar based on what has been selected
+        this._bindElementEvents(this.closeDiv, bind$2(_context3 = this.toggleEditMode).call(_context3, this)); // refresh this bar based on what has been selected
 
 
-        this._temporaryBindEvent('select', bind$2(_context4 = this.showManipulatorToolbar).call(_context4, this));
+        this._temporaryBindEvent("select", bind$2(_context4 = this.showManipulatorToolbar).call(_context4, this));
       } // redraw to show any possible changes
 
 
-      this.body.emitter.emit('_redraw');
+      this.body.emitter.emit("_redraw");
     }
     /**
      * Create the toolbar for adding Nodes
@@ -37839,7 +40199,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       this._clean();
 
-      this.inMode = 'addNode';
+      this.inMode = "addNode";
 
       if (this.guiEnabled === true) {
         var _context5;
@@ -37851,13 +40211,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         this._createSeperator();
 
-        this._createDescription(locale['addDescription'] || this.options.locales['en']['addDescription']); // bind the close button
+        this._createDescription(locale["addDescription"] || this.options.locales["en"]["addDescription"]); // bind the close button
 
 
-        this._bindHammerToDiv(this.closeDiv, bind$2(_context5 = this.toggleEditMode).call(_context5, this));
+        this._bindElementEvents(this.closeDiv, bind$2(_context5 = this.toggleEditMode).call(_context5, this));
       }
 
-      this._temporaryBindEvent('click', bind$2(_context6 = this._performAddNode).call(_context6, this));
+      this._temporaryBindEvent("click", bind$2(_context6 = this._performAddNode).call(_context6, this));
     }
     /**
      * call the bound function to handle the editing of the node. The node has to be selected.
@@ -37876,12 +40236,12 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       this._clean();
 
-      var node = this.selectionHandler._getSelectedNode();
+      var node = this.selectionHandler.getSelectedNodes()[0];
 
       if (node !== undefined) {
-        this.inMode = 'editNode';
+        this.inMode = "editNode";
 
-        if (typeof this.options.editNode === 'function') {
+        if (typeof this.options.editNode === "function") {
           if (node.isCluster !== true) {
             var data = deepExtend({}, node.options, false);
             data.x = node.x;
@@ -37889,7 +40249,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
             if (this.options.editNode.length === 2) {
               this.options.editNode(data, function (finalizedData) {
-                if (finalizedData !== null && finalizedData !== undefined && _this2.inMode === 'editNode') {
+                if (finalizedData !== null && finalizedData !== undefined && _this2.inMode === "editNode") {
                   // if for whatever reason the mode has changes (due to dataset change) disregard the callback) {
                   _this2.body.data.nodes.getDataSet().update(finalizedData);
                 }
@@ -37897,13 +40257,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
                 _this2.showManipulatorToolbar();
               });
             } else {
-              throw new Error('The function for edit does not support two arguments (data, callback)');
+              throw new Error("The function for edit does not support two arguments (data, callback)");
             }
           } else {
-            alert(this.options.locales[this.options.locale]['editClusterError'] || this.options.locales['en']['editClusterError']);
+            alert(this.options.locales[this.options.locale]["editClusterError"] || this.options.locales["en"]["editClusterError"]);
           }
         } else {
-          throw new Error('No function has been configured to handle the editing of nodes.');
+          throw new Error("No function has been configured to handle the editing of nodes.");
         }
       } else {
         this.showManipulatorToolbar();
@@ -37926,7 +40286,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       this._clean();
 
-      this.inMode = 'addEdge';
+      this.inMode = "addEdge";
 
       if (this.guiEnabled === true) {
         var _context7;
@@ -37938,24 +40298,24 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         this._createSeperator();
 
-        this._createDescription(locale['edgeDescription'] || this.options.locales['en']['edgeDescription']); // bind the close button
+        this._createDescription(locale["edgeDescription"] || this.options.locales["en"]["edgeDescription"]); // bind the close button
 
 
-        this._bindHammerToDiv(this.closeDiv, bind$2(_context7 = this.toggleEditMode).call(_context7, this));
+        this._bindElementEvents(this.closeDiv, bind$2(_context7 = this.toggleEditMode).call(_context7, this));
       } // temporarily overload functions
 
 
-      this._temporaryBindUI('onTouch', bind$2(_context8 = this._handleConnect).call(_context8, this));
+      this._temporaryBindUI("onTouch", bind$2(_context8 = this._handleConnect).call(_context8, this));
 
-      this._temporaryBindUI('onDragEnd', bind$2(_context9 = this._finishConnect).call(_context9, this));
+      this._temporaryBindUI("onDragEnd", bind$2(_context9 = this._finishConnect).call(_context9, this));
 
-      this._temporaryBindUI('onDrag', bind$2(_context10 = this._dragControlNode).call(_context10, this));
+      this._temporaryBindUI("onDrag", bind$2(_context10 = this._dragControlNode).call(_context10, this));
 
-      this._temporaryBindUI('onRelease', bind$2(_context11 = this._finishConnect).call(_context11, this));
+      this._temporaryBindUI("onRelease", bind$2(_context11 = this._finishConnect).call(_context11, this));
 
-      this._temporaryBindUI('onDragStart', bind$2(_context12 = this._dragStartEdge).call(_context12, this));
+      this._temporaryBindUI("onDragStart", bind$2(_context12 = this._dragStartEdge).call(_context12, this));
 
-      this._temporaryBindUI('onHold', function () {});
+      this._temporaryBindUI("onHold", function () {});
     }
     /**
      * create the toolbar to edit edges
@@ -37972,10 +40332,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       this._clean();
 
-      this.inMode = 'editEdge';
+      this.inMode = "editEdge";
 
-      if (_typeof_1(this.options.editEdge) === 'object' && typeof this.options.editEdge.editWithoutDrag === "function") {
-        this.edgeBeingEditedId = this.selectionHandler.getSelectedEdges()[0];
+      if (_typeof_1(this.options.editEdge) === "object" && typeof this.options.editEdge.editWithoutDrag === "function") {
+        this.edgeBeingEditedId = this.selectionHandler.getSelectedEdgeIds()[0];
 
         if (this.edgeBeingEditedId !== undefined) {
           var edge = this.body.edges[this.edgeBeingEditedId];
@@ -37996,13 +40356,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         this._createSeperator();
 
-        this._createDescription(locale['editEdgeDescription'] || this.options.locales['en']['editEdgeDescription']); // bind the close button
+        this._createDescription(locale["editEdgeDescription"] || this.options.locales["en"]["editEdgeDescription"]); // bind the close button
 
 
-        this._bindHammerToDiv(this.closeDiv, bind$2(_context13 = this.toggleEditMode).call(_context13, this));
+        this._bindElementEvents(this.closeDiv, bind$2(_context13 = this.toggleEditMode).call(_context13, this));
       }
 
-      this.edgeBeingEditedId = this.selectionHandler.getSelectedEdges()[0];
+      this.edgeBeingEditedId = this.selectionHandler.getSelectedEdgeIds()[0];
 
       if (this.edgeBeingEditedId !== undefined) {
         var _context14, _context15, _context16, _context17;
@@ -38020,30 +40380,30 @@ var ManipulationSystem = /*#__PURE__*/function () {
         this.body.nodes[controlNodeTo.id] = controlNodeTo;
         this.body.nodeIndices.push(controlNodeTo.id); // temporarily overload UI functions, cleaned up automatically because of _temporaryBindUI
 
-        this._temporaryBindUI('onTouch', bind$2(_context14 = this._controlNodeTouch).call(_context14, this)); // used to get the position
+        this._temporaryBindUI("onTouch", bind$2(_context14 = this._controlNodeTouch).call(_context14, this)); // used to get the position
 
 
-        this._temporaryBindUI('onTap', function () {}); // disabled
+        this._temporaryBindUI("onTap", function () {}); // disabled
 
 
-        this._temporaryBindUI('onHold', function () {}); // disabled
+        this._temporaryBindUI("onHold", function () {}); // disabled
 
 
-        this._temporaryBindUI('onDragStart', bind$2(_context15 = this._controlNodeDragStart).call(_context15, this)); // used to select control node
+        this._temporaryBindUI("onDragStart", bind$2(_context15 = this._controlNodeDragStart).call(_context15, this)); // used to select control node
 
 
-        this._temporaryBindUI('onDrag', bind$2(_context16 = this._controlNodeDrag).call(_context16, this)); // used to drag control node
+        this._temporaryBindUI("onDrag", bind$2(_context16 = this._controlNodeDrag).call(_context16, this)); // used to drag control node
 
 
-        this._temporaryBindUI('onDragEnd', bind$2(_context17 = this._controlNodeDragEnd).call(_context17, this)); // used to connect or revert control nodes
+        this._temporaryBindUI("onDragEnd", bind$2(_context17 = this._controlNodeDragEnd).call(_context17, this)); // used to connect or revert control nodes
 
 
-        this._temporaryBindUI('onMouseMove', function () {}); // disabled
+        this._temporaryBindUI("onMouseMove", function () {}); // disabled
         // create function to position control nodes correctly on movement
         // automatically cleaned up because we use the temporary bind
 
 
-        this._temporaryBindEvent('beforeDrawing', function (ctx) {
+        this._temporaryBindEvent("beforeDrawing", function (ctx) {
           var positions = _edge.edgeType.findBorderPositions(ctx);
 
           if (controlNodeFrom.selected === false) {
@@ -38057,7 +40417,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
           }
         });
 
-        this.body.emitter.emit('_redraw');
+        this.body.emitter.emit("_redraw");
       } else {
         this.showManipulatorToolbar();
       }
@@ -38079,29 +40439,29 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       this._clean();
 
-      this.inMode = 'delete';
-      var selectedNodes = this.selectionHandler.getSelectedNodes();
-      var selectedEdges = this.selectionHandler.getSelectedEdges();
+      this.inMode = "delete";
+      var selectedNodes = this.selectionHandler.getSelectedNodeIds();
+      var selectedEdges = this.selectionHandler.getSelectedEdgeIds();
       var deleteFunction = undefined;
 
       if (selectedNodes.length > 0) {
         for (var i = 0; i < selectedNodes.length; i++) {
           if (this.body.nodes[selectedNodes[i]].isCluster === true) {
-            alert(this.options.locales[this.options.locale]['deleteClusterError'] || this.options.locales['en']['deleteClusterError']);
+            alert(this.options.locales[this.options.locale]["deleteClusterError"] || this.options.locales["en"]["deleteClusterError"]);
             return;
           }
         }
 
-        if (typeof this.options.deleteNode === 'function') {
+        if (typeof this.options.deleteNode === "function") {
           deleteFunction = this.options.deleteNode;
         }
       } else if (selectedEdges.length > 0) {
-        if (typeof this.options.deleteEdge === 'function') {
+        if (typeof this.options.deleteEdge === "function") {
           deleteFunction = this.options.deleteEdge;
         }
       }
 
-      if (typeof deleteFunction === 'function') {
+      if (typeof deleteFunction === "function") {
         var data = {
           nodes: selectedNodes,
           edges: selectedEdges
@@ -38109,34 +40469,35 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         if (deleteFunction.length === 2) {
           deleteFunction(data, function (finalizedData) {
-            if (finalizedData !== null && finalizedData !== undefined && _this3.inMode === 'delete') {
+            if (finalizedData !== null && finalizedData !== undefined && _this3.inMode === "delete") {
               // if for whatever reason the mode has changes (due to dataset change) disregard the callback) {
               _this3.body.data.edges.getDataSet().remove(finalizedData.edges);
 
               _this3.body.data.nodes.getDataSet().remove(finalizedData.nodes);
 
-              _this3.body.emitter.emit('startSimulation');
+              _this3.body.emitter.emit("startSimulation");
 
               _this3.showManipulatorToolbar();
             } else {
-              _this3.body.emitter.emit('startSimulation');
+              _this3.body.emitter.emit("startSimulation");
 
               _this3.showManipulatorToolbar();
             }
           });
         } else {
-          throw new Error('The function for delete does not support two arguments (data, callback)');
+          throw new Error("The function for delete does not support two arguments (data, callback)");
         }
       } else {
         this.body.data.edges.getDataSet().remove(selectedEdges);
         this.body.data.nodes.getDataSet().remove(selectedNodes);
-        this.body.emitter.emit('startSimulation');
+        this.body.emitter.emit("startSimulation");
         this.showManipulatorToolbar();
       }
     } //********************************************** PRIVATE ***************************************//
 
     /**
      * draw or remove the DOM
+     *
      * @private
      */
 
@@ -38163,6 +40524,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
     }
     /**
      * create the div overlays that contain the DOM
+     *
      * @private
      */
 
@@ -38171,13 +40533,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
     value: function _createWrappers() {
       // load the manipulator HTML elements. All styling done in css.
       if (this.manipulationDiv === undefined) {
-        this.manipulationDiv = document.createElement('div');
-        this.manipulationDiv.className = 'vis-manipulation';
+        this.manipulationDiv = document.createElement("div");
+        this.manipulationDiv.className = "vis-manipulation";
 
         if (this.editMode === true) {
-          this.manipulationDiv.style.display = 'block';
+          this.manipulationDiv.style.display = "block";
         } else {
-          this.manipulationDiv.style.display = 'none';
+          this.manipulationDiv.style.display = "none";
         }
 
         this.canvas.frame.appendChild(this.manipulationDiv);
@@ -38185,13 +40547,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
 
       if (this.editModeDiv === undefined) {
-        this.editModeDiv = document.createElement('div');
-        this.editModeDiv.className = 'vis-edit-mode';
+        this.editModeDiv = document.createElement("div");
+        this.editModeDiv.className = "vis-edit-mode";
 
         if (this.editMode === true) {
-          this.editModeDiv.style.display = 'none';
+          this.editModeDiv.style.display = "none";
         } else {
-          this.editModeDiv.style.display = 'block';
+          this.editModeDiv.style.display = "block";
         }
 
         this.canvas.frame.appendChild(this.editModeDiv);
@@ -38199,8 +40561,11 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
 
       if (this.closeDiv === undefined) {
-        this.closeDiv = document.createElement('div');
-        this.closeDiv.className = 'vis-close';
+        var _this$options$locales, _this$options$locales2;
+
+        this.closeDiv = document.createElement("button");
+        this.closeDiv.className = "vis-close";
+        this.closeDiv.setAttribute("aria-label", (_this$options$locales = (_this$options$locales2 = this.options.locales[this.options.locale]) === null || _this$options$locales2 === void 0 ? void 0 : _this$options$locales2["close"]) !== null && _this$options$locales !== void 0 ? _this$options$locales : this.options.locales["en"]["close"]);
         this.closeDiv.style.display = this.manipulationDiv.style.display;
         this.canvas.frame.appendChild(this.closeDiv);
       }
@@ -38218,7 +40583,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
     key: "_getNewTargetNode",
     value: function _getNewTargetNode(x, y) {
       var controlNodeStyle = deepExtend({}, this.options.controlNodeStyle);
-      controlNodeStyle.id = 'targetNode' + v4();
+      controlNodeStyle.id = "targetNode" + v4();
       controlNodeStyle.hidden = false;
       controlNodeStyle.physics = false;
       controlNodeStyle.x = x;
@@ -38252,14 +40617,15 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       var locale = this.options.locales[this.options.locale];
 
-      var button = this._createButton('editMode', 'vis-button vis-edit vis-edit-mode', locale['edit'] || this.options.locales['en']['edit']);
+      var button = this._createButton("editMode", "vis-edit vis-edit-mode", locale["edit"] || this.options.locales["en"]["edit"]);
 
       this.editModeDiv.appendChild(button); // bind a hammer listener to the button, calling the function toggleEditMode.
 
-      this._bindHammerToDiv(button, bind$2(_context18 = this.toggleEditMode).call(_context18, this));
+      this._bindElementEvents(button, bind$2(_context18 = this.toggleEditMode).call(_context18, this));
     }
     /**
      * this function cleans up after everything this module does. Temporary elements, functions and events are removed, physics restored, hammers removed.
+     *
      * @private
      */
 
@@ -38273,7 +40639,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
         recursiveDOMDelete(this.editModeDiv);
         recursiveDOMDelete(this.manipulationDiv); // removes all the bindings and overloads
 
-        this._cleanManipulatorHammers();
+        this._cleanupDOMEventListeners();
       } // remove temporary nodes and edges
 
 
@@ -38286,27 +40652,37 @@ var ManipulationSystem = /*#__PURE__*/function () {
       this._unbindTemporaryEvents(); // restore the physics if required
 
 
-      this.body.emitter.emit('restorePhysics');
+      this.body.emitter.emit("restorePhysics");
     }
     /**
      * Each dom element has it's own hammer. They are stored in this.manipulationHammers. This cleans them up.
+     *
      * @private
      */
 
   }, {
-    key: "_cleanManipulatorHammers",
-    value: function _cleanManipulatorHammers() {
-      // _clean hammer bindings
-      if (this.manipulationHammers.length != 0) {
-        for (var i = 0; i < this.manipulationHammers.length; i++) {
-          this.manipulationHammers[i].destroy();
-        }
+    key: "_cleanupDOMEventListeners",
+    value: function _cleanupDOMEventListeners() {
+      var _context19;
 
-        this.manipulationHammers = [];
+      // _clean DOM event listener bindings
+      var _iterator = _createForOfIteratorHelper$8(splice$2(_context19 = this._domEventListenerCleanupQueue).call(_context19, 0)),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var callback = _step.value;
+          callback();
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
       }
     }
     /**
      * Remove all DOM elements created by this module.
+     *
      * @private
      */
 
@@ -38340,6 +40716,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
     }
     /**
      * create a seperator line. the index is to differentiate in the manipulation dom
+     *
      * @param {number} [index=1]
      * @private
      */
@@ -38348,9 +40725,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
     key: "_createSeperator",
     value: function _createSeperator() {
       var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
-      this.manipulationDOM['seperatorLineDiv' + index] = document.createElement('div');
-      this.manipulationDOM['seperatorLineDiv' + index].className = 'vis-separator-line';
-      this.manipulationDiv.appendChild(this.manipulationDOM['seperatorLineDiv' + index]);
+      this.manipulationDOM["seperatorLineDiv" + index] = document.createElement("div");
+      this.manipulationDOM["seperatorLineDiv" + index].className = "vis-separator-line";
+      this.manipulationDiv.appendChild(this.manipulationDOM["seperatorLineDiv" + index]);
     } // ----------------------    DOM functions for buttons    --------------------------//
 
     /**
@@ -38362,13 +40739,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createAddNodeButton",
     value: function _createAddNodeButton(locale) {
-      var _context19;
+      var _context20;
 
-      var button = this._createButton('addNode', 'vis-button vis-add', locale['addNode'] || this.options.locales['en']['addNode']);
+      var button = this._createButton("addNode", "vis-add", locale["addNode"] || this.options.locales["en"]["addNode"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context19 = this.addNodeMode).call(_context19, this));
+      this._bindElementEvents(button, bind$2(_context20 = this.addNodeMode).call(_context20, this));
     }
     /**
      *
@@ -38379,13 +40756,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createAddEdgeButton",
     value: function _createAddEdgeButton(locale) {
-      var _context20;
+      var _context21;
 
-      var button = this._createButton('addEdge', 'vis-button vis-connect', locale['addEdge'] || this.options.locales['en']['addEdge']);
+      var button = this._createButton("addEdge", "vis-connect", locale["addEdge"] || this.options.locales["en"]["addEdge"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context20 = this.addEdgeMode).call(_context20, this));
+      this._bindElementEvents(button, bind$2(_context21 = this.addEdgeMode).call(_context21, this));
     }
     /**
      *
@@ -38396,13 +40773,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createEditNodeButton",
     value: function _createEditNodeButton(locale) {
-      var _context21;
+      var _context22;
 
-      var button = this._createButton('editNode', 'vis-button vis-edit', locale['editNode'] || this.options.locales['en']['editNode']);
+      var button = this._createButton("editNode", "vis-edit", locale["editNode"] || this.options.locales["en"]["editNode"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context21 = this.editNode).call(_context21, this));
+      this._bindElementEvents(button, bind$2(_context22 = this.editNode).call(_context22, this));
     }
     /**
      *
@@ -38413,13 +40790,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createEditEdgeButton",
     value: function _createEditEdgeButton(locale) {
-      var _context22;
+      var _context23;
 
-      var button = this._createButton('editEdge', 'vis-button vis-edit', locale['editEdge'] || this.options.locales['en']['editEdge']);
+      var button = this._createButton("editEdge", "vis-edit", locale["editEdge"] || this.options.locales["en"]["editEdge"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context22 = this.editEdgeMode).call(_context22, this));
+      this._bindElementEvents(button, bind$2(_context23 = this.editEdgeMode).call(_context23, this));
     }
     /**
      *
@@ -38430,21 +40807,21 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createDeleteButton",
     value: function _createDeleteButton(locale) {
-      var _context23;
+      var _context24;
 
       var deleteBtnClass;
 
       if (this.options.rtl) {
-        deleteBtnClass = 'vis-button vis-delete-rtl';
+        deleteBtnClass = "vis-delete-rtl";
       } else {
-        deleteBtnClass = 'vis-button vis-delete';
+        deleteBtnClass = "vis-delete";
       }
 
-      var button = this._createButton('delete', deleteBtnClass, locale['del'] || this.options.locales['en']['del']);
+      var button = this._createButton("delete", deleteBtnClass, locale["del"] || this.options.locales["en"]["del"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context23 = this.deleteSelected).call(_context23, this));
+      this._bindElementEvents(button, bind$2(_context24 = this.deleteSelected).call(_context24, this));
     }
     /**
      *
@@ -38455,13 +40832,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createBackButton",
     value: function _createBackButton(locale) {
-      var _context24;
+      var _context25;
 
-      var button = this._createButton('back', 'vis-button vis-back', locale['back'] || this.options.locales['en']['back']);
+      var button = this._createButton("back", "vis-back", locale["back"] || this.options.locales["en"]["back"]);
 
       this.manipulationDiv.appendChild(button);
 
-      this._bindHammerToDiv(button, bind$2(_context24 = this.showManipulatorToolbar).call(_context24, this));
+      this._bindElementEvents(button, bind$2(_context25 = this.showManipulatorToolbar).call(_context25, this));
     }
     /**
      *
@@ -38476,14 +40853,14 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createButton",
     value: function _createButton(id, className, label) {
-      var labelClassName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'vis-label';
-      this.manipulationDOM[id + 'Div'] = document.createElement('div');
-      this.manipulationDOM[id + 'Div'].className = className;
-      this.manipulationDOM[id + 'Label'] = document.createElement('div');
-      this.manipulationDOM[id + 'Label'].className = labelClassName;
-      this.manipulationDOM[id + 'Label'].innerHTML = label;
-      this.manipulationDOM[id + 'Div'].appendChild(this.manipulationDOM[id + 'Label']);
-      return this.manipulationDOM[id + 'Div'];
+      var labelClassName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "vis-label";
+      this.manipulationDOM[id + "Div"] = document.createElement("button");
+      this.manipulationDOM[id + "Div"].className = "vis-button " + className;
+      this.manipulationDOM[id + "Label"] = document.createElement("div");
+      this.manipulationDOM[id + "Label"].className = labelClassName;
+      this.manipulationDOM[id + "Label"].innerText = label;
+      this.manipulationDOM[id + "Div"].appendChild(this.manipulationDOM[id + "Label"]);
+      return this.manipulationDOM[id + "Div"];
     }
     /**
      *
@@ -38494,13 +40871,17 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_createDescription",
     value: function _createDescription(label) {
-      this.manipulationDiv.appendChild(this._createButton('description', 'vis-button vis-none', label));
+      this.manipulationDOM["descriptionLabel"] = document.createElement("div");
+      this.manipulationDOM["descriptionLabel"].className = "vis-none";
+      this.manipulationDOM["descriptionLabel"].innerText = label;
+      this.manipulationDiv.appendChild(this.manipulationDOM["descriptionLabel"]);
     } // -------------------------- End of DOM functions for buttons ------------------------------//
 
     /**
      * this binds an event until cleanup by the clean functions.
+     *
      * @param {Event}  event   The event
-     * @param {function} newFunction
+     * @param {Function} newFunction
      * @private
      */
 
@@ -38515,8 +40896,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
     }
     /**
      * this overrides an UI function until cleanup by the clean function
+     *
      * @param {string} UIfunctionName
-     * @param {function} newFunction
+     * @param {Function} newFunction
      * @private
      */
 
@@ -38527,7 +40909,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
         this.temporaryUIFunctions[UIfunctionName] = this.body.eventListeners[UIfunctionName];
         this.body.eventListeners[UIfunctionName] = newFunction;
       } else {
-        throw new Error('This UI function does not exist. Typo? You tried: ' + UIfunctionName + ' possible are: ' + stringify$2(keys$3(this.body.eventListeners)));
+        throw new Error("This UI function does not exist. Typo? You tried: " + UIfunctionName + " possible are: " + stringify$2(keys$3(this.body.eventListeners)));
       }
     }
     /**
@@ -38550,6 +40932,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
     }
     /**
      * Unbind the events created by _temporaryBindEvent
+     *
      * @private
      */
 
@@ -38568,18 +40951,39 @@ var ManipulationSystem = /*#__PURE__*/function () {
      * Bind an hammer instance to a DOM element.
      *
      * @param {Element} domElement
-     * @param {function} boundFunction
+     * @param {Function} boundFunction
      */
 
   }, {
-    key: "_bindHammerToDiv",
-    value: function _bindHammerToDiv(domElement, boundFunction) {
-      var hammer = new Hammer$1(domElement, {});
+    key: "_bindElementEvents",
+    value: function _bindElementEvents(domElement, boundFunction) {
+      // Bind touch events.
+      var hammer = new Hammer$1$1(domElement, {});
       onTouch(hammer, boundFunction);
-      this.manipulationHammers.push(hammer);
+
+      this._domEventListenerCleanupQueue.push(function () {
+        hammer.destroy();
+      }); // Bind keyboard events.
+
+
+      var keyupListener = function keyupListener(_ref) {
+        var keyCode = _ref.keyCode,
+            key = _ref.key;
+
+        if (key === "Enter" || key === " " || keyCode === 13 || keyCode === 32) {
+          boundFunction();
+        }
+      };
+
+      domElement.addEventListener("keyup", keyupListener, false);
+
+      this._domEventListenerCleanupQueue.push(function () {
+        domElement.removeEventListener("keyup", keyupListener, false);
+      });
     }
     /**
      * Neatly clean up temporary edges and nodes
+     *
      * @private
      */
 
@@ -38588,32 +40992,32 @@ var ManipulationSystem = /*#__PURE__*/function () {
     value: function _cleanupTemporaryNodesAndEdges() {
       // _clean temporary edges
       for (var i = 0; i < this.temporaryIds.edges.length; i++) {
-        var _context25;
+        var _context26;
 
         this.body.edges[this.temporaryIds.edges[i]].disconnect();
         delete this.body.edges[this.temporaryIds.edges[i]];
 
-        var indexTempEdge = indexOf$3(_context25 = this.body.edgeIndices).call(_context25, this.temporaryIds.edges[i]);
+        var indexTempEdge = indexOf$3(_context26 = this.body.edgeIndices).call(_context26, this.temporaryIds.edges[i]);
 
         if (indexTempEdge !== -1) {
-          var _context26;
+          var _context27;
 
-          splice$2(_context26 = this.body.edgeIndices).call(_context26, indexTempEdge, 1);
+          splice$2(_context27 = this.body.edgeIndices).call(_context27, indexTempEdge, 1);
         }
       } // _clean temporary nodes
 
 
       for (var _i = 0; _i < this.temporaryIds.nodes.length; _i++) {
-        var _context27;
+        var _context28;
 
         delete this.body.nodes[this.temporaryIds.nodes[_i]];
 
-        var indexTempNode = indexOf$3(_context27 = this.body.nodeIndices).call(_context27, this.temporaryIds.nodes[_i]);
+        var indexTempNode = indexOf$3(_context28 = this.body.nodeIndices).call(_context28, this.temporaryIds.nodes[_i]);
 
         if (indexTempNode !== -1) {
-          var _context28;
+          var _context29;
 
-          splice$2(_context28 = this.body.nodeIndices).call(_context28, indexTempNode, 1);
+          splice$2(_context29 = this.body.nodeIndices).call(_context29, indexTempNode, 1);
         }
       }
 
@@ -38625,6 +41029,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
     /**
      * the touch is used to get the position of the initial click
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -38638,14 +41043,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
     }
     /**
      * the drag start is used to mark one of the control nodes as selected.
-     * @param {Event}  event   The event
+     *
      * @private
      */
 
   }, {
     key: "_controlNodeDragStart",
-    value: function _controlNodeDragStart(event) {
-      // eslint-disable-line no-unused-vars
+    value: function _controlNodeDragStart() {
       var pointer = this.lastTouch;
 
       var pointerObj = this.selectionHandler._pointerToPositionObject(pointer);
@@ -38670,10 +41074,11 @@ var ManipulationSystem = /*#__PURE__*/function () {
         this.selectionHandler.selectObject(this.selectedControlNode);
       }
 
-      this.body.emitter.emit('_redraw');
+      this.body.emitter.emit("_redraw");
     }
     /**
      * dragging the control nodes or the canvas
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -38681,7 +41086,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
   }, {
     key: "_controlNodeDrag",
     value: function _controlNodeDrag(event) {
-      this.body.emitter.emit('disablePhysics');
+      this.body.emitter.emit("disablePhysics");
       var pointer = this.body.functions.getPointer(event.center);
       var pos = this.canvas.DOMtoCanvas(pointer);
 
@@ -38692,10 +41097,11 @@ var ManipulationSystem = /*#__PURE__*/function () {
         this.interactionHandler.onDrag(event);
       }
 
-      this.body.emitter.emit('_redraw');
+      this.body.emitter.emit("_redraw");
     }
     /**
      * connecting or restoring the control nodes.
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -38730,7 +41136,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       if (node !== undefined && this.selectedControlNode !== undefined) {
         if (node.isCluster === true) {
-          alert(this.options.locales[this.options.locale]['createEdgeError'] || this.options.locales['en']['createEdgeError']);
+          alert(this.options.locales[this.options.locale]["createEdgeError"] || this.options.locales["en"]["createEdgeError"]);
         } else {
           var from = this.body.nodes[this.temporaryIds.nodes[0]];
 
@@ -38742,10 +41148,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
         }
       } else {
         edge.updateEdgeType();
-        this.body.emitter.emit('restorePhysics');
+        this.body.emitter.emit("restorePhysics");
       }
 
-      this.body.emitter.emit('_redraw');
+      this.body.emitter.emit("_redraw");
     } // ------------------------------------ END OF EDIT EDGE FUNCTIONS -----------------------------------------//
     // ------------------------------------------- ADD EDGE FUNCTIONS -----------------------------------------//
 
@@ -38773,7 +41179,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
         if (node !== undefined) {
           if (node.isCluster === true) {
-            alert(this.options.locales[this.options.locale]['createEdgeError'] || this.options.locales['en']['createEdgeError']);
+            alert(this.options.locales[this.options.locale]["createEdgeError"] || this.options.locales["en"]["createEdgeError"]);
           } else {
             // create a node the temporary line can look at
             var targetNode = this._getNewTargetNode(node.x, node.y);
@@ -38782,13 +41188,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
             this.body.nodeIndices.push(targetNode.id); // create a temporary edge
 
             var connectionEdge = this.body.functions.createEdge({
-              id: 'connectionEdge' + v4(),
+              id: "connectionEdge" + v4(),
               from: node.id,
               to: targetNode.id,
               physics: false,
               smooth: {
                 enabled: true,
-                type: 'continuous',
+                type: "continuous",
                 roundness: 0.5
               }
             });
@@ -38828,10 +41234,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
       var node = undefined;
 
       for (var i = overlappingNodeIds.length - 1; i >= 0; i--) {
-        var _context29;
+        var _context30;
 
         // if the node id is NOT a temporary node, accept the node.
-        if (indexOf$3(_context29 = this.temporaryIds.nodes).call(_context29, overlappingNodeIds[i]) === -1) {
+        if (indexOf$3(_context30 = this.temporaryIds.nodes).call(_context30, overlappingNodeIds[i]) === -1) {
           node = this.body.nodes[overlappingNodeIds[i]];
           break;
         }
@@ -38841,21 +41247,21 @@ var ManipulationSystem = /*#__PURE__*/function () {
         from: connectFromId,
         to: node ? node.id : undefined
       };
-
-      this.selectionHandler._generateClickEvent('controlNodeDragging', event, pointer);
+      this.selectionHandler.generateClickEvent("controlNodeDragging", event, pointer);
 
       if (this.temporaryIds.nodes[0] !== undefined) {
         var targetNode = this.body.nodes[this.temporaryIds.nodes[0]]; // there is only one temp node in the add edge mode.
 
         targetNode.x = this.canvas._XconvertDOMtoCanvas(pointer.x);
         targetNode.y = this.canvas._YconvertDOMtoCanvas(pointer.y);
-        this.body.emitter.emit('_redraw');
+        this.body.emitter.emit("_redraw");
       } else {
         this.interactionHandler.onDrag(event);
       }
     }
     /**
      * Connect the new edge to the target if one exists, otherwise remove temp line
+     *
      * @param {Event}  event   The event
      * @private
      */
@@ -38880,10 +41286,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
       var node = undefined;
 
       for (var i = overlappingNodeIds.length - 1; i >= 0; i--) {
-        var _context30;
+        var _context31;
 
         // if the node id is NOT a temporary node, accept the node.
-        if (indexOf$3(_context30 = this.temporaryIds.nodes).call(_context30, overlappingNodeIds[i]) === -1) {
+        if (indexOf$3(_context31 = this.temporaryIds.nodes).call(_context31, overlappingNodeIds[i]) === -1) {
           node = this.body.nodes[overlappingNodeIds[i]];
           break;
         }
@@ -38895,7 +41301,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
 
       if (node !== undefined) {
         if (node.isCluster === true) {
-          alert(this.options.locales[this.options.locale]['createEdgeError'] || this.options.locales['en']['createEdgeError']);
+          alert(this.options.locales[this.options.locale]["createEdgeError"] || this.options.locales["en"]["createEdgeError"]);
         } else {
           if (this.body.nodes[connectFromId] !== undefined && this.body.nodes[node.id] !== undefined) {
             this._performAddEdge(connectFromId, node.id);
@@ -38907,11 +41313,9 @@ var ManipulationSystem = /*#__PURE__*/function () {
         from: connectFromId,
         to: node ? node.id : undefined
       };
+      this.selectionHandler.generateClickEvent("controlNodeDragEnd", event, pointer); // No need to do _generateclickevent('dragEnd') here, the regular dragEnd event fires.
 
-      this.selectionHandler._generateClickEvent('controlNodeDragEnd', event, pointer); // No need to do _generateclickevent('dragEnd') here, the regular dragEnd event fires.
-
-
-      this.body.emitter.emit('_redraw');
+      this.body.emitter.emit("_redraw");
     }
     /**
      *
@@ -38923,15 +41327,14 @@ var ManipulationSystem = /*#__PURE__*/function () {
     key: "_dragStartEdge",
     value: function _dragStartEdge(event) {
       var pointer = this.lastTouch;
-
-      this.selectionHandler._generateClickEvent('dragStart', event, pointer, undefined, true);
+      this.selectionHandler.generateClickEvent("dragStart", event, pointer, undefined, true);
     } // --------------------------------------- END OF ADD EDGE FUNCTIONS -------------------------------------//
     // ------------------------------ Performing all the actual data manipulation ------------------------//
 
     /**
      * Adds a node on the specified location
      *
-     * @param {Object} clickData
+     * @param {object} clickData
      * @private
      */
 
@@ -38944,13 +41347,13 @@ var ManipulationSystem = /*#__PURE__*/function () {
         id: v4(),
         x: clickData.pointer.canvas.x,
         y: clickData.pointer.canvas.y,
-        label: 'new'
+        label: "new"
       };
 
-      if (typeof this.options.addNode === 'function') {
+      if (typeof this.options.addNode === "function") {
         if (this.options.addNode.length === 2) {
           this.options.addNode(defaultData, function (finalizedData) {
-            if (finalizedData !== null && finalizedData !== undefined && _this4.inMode === 'addNode') {
+            if (finalizedData !== null && finalizedData !== undefined && _this4.inMode === "addNode") {
               // if for whatever reason the mode has changes (due to dataset change) disregard the callback
               _this4.body.data.nodes.getDataSet().add(finalizedData);
             }
@@ -38959,7 +41362,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
           });
         } else {
           this.showManipulatorToolbar();
-          throw new Error('The function for add does not support two arguments (data,callback)');
+          throw new Error("The function for add does not support two arguments (data,callback)");
         }
       } else {
         this.body.data.nodes.getDataSet().add(defaultData);
@@ -38984,10 +41387,10 @@ var ManipulationSystem = /*#__PURE__*/function () {
         to: targetNodeId
       };
 
-      if (typeof this.options.addEdge === 'function') {
+      if (typeof this.options.addEdge === "function") {
         if (this.options.addEdge.length === 2) {
           this.options.addEdge(defaultData, function (finalizedData) {
-            if (finalizedData !== null && finalizedData !== undefined && _this5.inMode === 'addEdge') {
+            if (finalizedData !== null && finalizedData !== undefined && _this5.inMode === "addEdge") {
               // if for whatever reason the mode has changes (due to dataset change) disregard the callback
               _this5.body.data.edges.getDataSet().add(finalizedData);
 
@@ -38997,7 +41400,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
             }
           });
         } else {
-          throw new Error('The function for connect does not support two arguments (data,callback)');
+          throw new Error("The function for connect does not support two arguments (data,callback)");
         }
       } else {
         this.body.data.edges.getDataSet().add(defaultData);
@@ -39026,18 +41429,18 @@ var ManipulationSystem = /*#__PURE__*/function () {
       };
       var eeFunct = this.options.editEdge;
 
-      if (_typeof_1(eeFunct) === 'object') {
+      if (_typeof_1(eeFunct) === "object") {
         eeFunct = eeFunct.editWithoutDrag;
       }
 
-      if (typeof eeFunct === 'function') {
+      if (typeof eeFunct === "function") {
         if (eeFunct.length === 2) {
           eeFunct(defaultData, function (finalizedData) {
-            if (finalizedData === null || finalizedData === undefined || _this6.inMode !== 'editEdge') {
+            if (finalizedData === null || finalizedData === undefined || _this6.inMode !== "editEdge") {
               // if for whatever reason the mode has changes (due to dataset change) disregard the callback) {
               _this6.body.edges[defaultData.id].updateEdgeType();
 
-              _this6.body.emitter.emit('_redraw');
+              _this6.body.emitter.emit("_redraw");
 
               _this6.showManipulatorToolbar();
             } else {
@@ -39049,7 +41452,7 @@ var ManipulationSystem = /*#__PURE__*/function () {
             }
           });
         } else {
-          throw new Error('The function for edit does not support two arguments (data, callback)');
+          throw new Error("The function for edit does not support two arguments (data, callback)");
         }
       } else {
         this.body.data.edges.getDataSet().update(defaultData);
@@ -39062,1678 +41465,6 @@ var ManipulationSystem = /*#__PURE__*/function () {
   return ManipulationSystem;
 }();
 
-var htmlColors = {
-  black: '#000000',
-  navy: '#000080',
-  darkblue: '#00008B',
-  mediumblue: '#0000CD',
-  blue: '#0000FF',
-  darkgreen: '#006400',
-  green: '#008000',
-  teal: '#008080',
-  darkcyan: '#008B8B',
-  deepskyblue: '#00BFFF',
-  darkturquoise: '#00CED1',
-  mediumspringgreen: '#00FA9A',
-  lime: '#00FF00',
-  springgreen: '#00FF7F',
-  aqua: '#00FFFF',
-  cyan: '#00FFFF',
-  midnightblue: '#191970',
-  dodgerblue: '#1E90FF',
-  lightseagreen: '#20B2AA',
-  forestgreen: '#228B22',
-  seagreen: '#2E8B57',
-  darkslategray: '#2F4F4F',
-  limegreen: '#32CD32',
-  mediumseagreen: '#3CB371',
-  turquoise: '#40E0D0',
-  royalblue: '#4169E1',
-  steelblue: '#4682B4',
-  darkslateblue: '#483D8B',
-  mediumturquoise: '#48D1CC',
-  indigo: '#4B0082',
-  darkolivegreen: '#556B2F',
-  cadetblue: '#5F9EA0',
-  cornflowerblue: '#6495ED',
-  mediumaquamarine: '#66CDAA',
-  dimgray: '#696969',
-  slateblue: '#6A5ACD',
-  olivedrab: '#6B8E23',
-  slategray: '#708090',
-  lightslategray: '#778899',
-  mediumslateblue: '#7B68EE',
-  lawngreen: '#7CFC00',
-  chartreuse: '#7FFF00',
-  aquamarine: '#7FFFD4',
-  maroon: '#800000',
-  purple: '#800080',
-  olive: '#808000',
-  gray: '#808080',
-  skyblue: '#87CEEB',
-  lightskyblue: '#87CEFA',
-  blueviolet: '#8A2BE2',
-  darkred: '#8B0000',
-  darkmagenta: '#8B008B',
-  saddlebrown: '#8B4513',
-  darkseagreen: '#8FBC8F',
-  lightgreen: '#90EE90',
-  mediumpurple: '#9370D8',
-  darkviolet: '#9400D3',
-  palegreen: '#98FB98',
-  darkorchid: '#9932CC',
-  yellowgreen: '#9ACD32',
-  sienna: '#A0522D',
-  brown: '#A52A2A',
-  darkgray: '#A9A9A9',
-  lightblue: '#ADD8E6',
-  greenyellow: '#ADFF2F',
-  paleturquoise: '#AFEEEE',
-  lightsteelblue: '#B0C4DE',
-  powderblue: '#B0E0E6',
-  firebrick: '#B22222',
-  darkgoldenrod: '#B8860B',
-  mediumorchid: '#BA55D3',
-  rosybrown: '#BC8F8F',
-  darkkhaki: '#BDB76B',
-  silver: '#C0C0C0',
-  mediumvioletred: '#C71585',
-  indianred: '#CD5C5C',
-  peru: '#CD853F',
-  chocolate: '#D2691E',
-  tan: '#D2B48C',
-  lightgrey: '#D3D3D3',
-  palevioletred: '#D87093',
-  thistle: '#D8BFD8',
-  orchid: '#DA70D6',
-  goldenrod: '#DAA520',
-  crimson: '#DC143C',
-  gainsboro: '#DCDCDC',
-  plum: '#DDA0DD',
-  burlywood: '#DEB887',
-  lightcyan: '#E0FFFF',
-  lavender: '#E6E6FA',
-  darksalmon: '#E9967A',
-  violet: '#EE82EE',
-  palegoldenrod: '#EEE8AA',
-  lightcoral: '#F08080',
-  khaki: '#F0E68C',
-  aliceblue: '#F0F8FF',
-  honeydew: '#F0FFF0',
-  azure: '#F0FFFF',
-  sandybrown: '#F4A460',
-  wheat: '#F5DEB3',
-  beige: '#F5F5DC',
-  whitesmoke: '#F5F5F5',
-  mintcream: '#F5FFFA',
-  ghostwhite: '#F8F8FF',
-  salmon: '#FA8072',
-  antiquewhite: '#FAEBD7',
-  linen: '#FAF0E6',
-  lightgoldenrodyellow: '#FAFAD2',
-  oldlace: '#FDF5E6',
-  red: '#FF0000',
-  fuchsia: '#FF00FF',
-  magenta: '#FF00FF',
-  deeppink: '#FF1493',
-  orangered: '#FF4500',
-  tomato: '#FF6347',
-  hotpink: '#FF69B4',
-  coral: '#FF7F50',
-  darkorange: '#FF8C00',
-  lightsalmon: '#FFA07A',
-  orange: '#FFA500',
-  lightpink: '#FFB6C1',
-  pink: '#FFC0CB',
-  gold: '#FFD700',
-  peachpuff: '#FFDAB9',
-  navajowhite: '#FFDEAD',
-  moccasin: '#FFE4B5',
-  bisque: '#FFE4C4',
-  mistyrose: '#FFE4E1',
-  blanchedalmond: '#FFEBCD',
-  papayawhip: '#FFEFD5',
-  lavenderblush: '#FFF0F5',
-  seashell: '#FFF5EE',
-  cornsilk: '#FFF8DC',
-  lemonchiffon: '#FFFACD',
-  floralwhite: '#FFFAF0',
-  snow: '#FFFAFA',
-  yellow: '#FFFF00',
-  lightyellow: '#FFFFE0',
-  ivory: '#FFFFF0',
-  white: '#FFFFFF'
-};
-/**
- * @param {number} [pixelRatio=1]
- */
-
-var ColorPicker = /*#__PURE__*/function () {
-  /**
-   * @param {number} [pixelRatio=1]
-   */
-  function ColorPicker() {
-    var pixelRatio = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
-
-    classCallCheck(this, ColorPicker);
-
-    this.pixelRatio = pixelRatio;
-    this.generated = false;
-    this.centerCoordinates = {
-      x: 289 / 2,
-      y: 289 / 2
-    };
-    this.r = 289 * 0.49;
-    this.color = {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1.0
-    };
-    this.hueCircle = undefined;
-    this.initialColor = {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1.0
-    };
-    this.previousColor = undefined;
-    this.applied = false; // bound by
-
-    this.updateCallback = function () {};
-
-    this.closeCallback = function () {}; // create all DOM elements
-
-
-    this._create();
-  }
-  /**
-   * this inserts the colorPicker into a div from the DOM
-   * @param {Element} container
-   */
-
-
-  createClass(ColorPicker, [{
-    key: "insertTo",
-    value: function insertTo(container) {
-      if (this.hammer !== undefined) {
-        this.hammer.destroy();
-        this.hammer = undefined;
-      }
-
-      this.container = container;
-      this.container.appendChild(this.frame);
-
-      this._bindHammer();
-
-      this._setSize();
-    }
-    /**
-     * the callback is executed on apply and save. Bind it to the application
-     * @param {function} callback
-     */
-
-  }, {
-    key: "setUpdateCallback",
-    value: function setUpdateCallback(callback) {
-      if (typeof callback === 'function') {
-        this.updateCallback = callback;
-      } else {
-        throw new Error("Function attempted to set as colorPicker update callback is not a function.");
-      }
-    }
-    /**
-     * the callback is executed on apply and save. Bind it to the application
-     * @param {function} callback
-     */
-
-  }, {
-    key: "setCloseCallback",
-    value: function setCloseCallback(callback) {
-      if (typeof callback === 'function') {
-        this.closeCallback = callback;
-      } else {
-        throw new Error("Function attempted to set as colorPicker closing callback is not a function.");
-      }
-    }
-    /**
-     *
-     * @param {string} color
-     * @returns {String}
-     * @private
-     */
-
-  }, {
-    key: "_isColorString",
-    value: function _isColorString(color) {
-      if (typeof color === 'string') {
-        return htmlColors[color];
-      }
-    }
-    /**
-     * Set the color of the colorPicker
-     * Supported formats:
-     * 'red'                   --> HTML color string
-     * '#ffffff'               --> hex string
-     * 'rgb(255,255,255)'      --> rgb string
-     * 'rgba(255,255,255,1.0)' --> rgba string
-     * {r:255,g:255,b:255}     --> rgb object
-     * {r:255,g:255,b:255,a:1.0} --> rgba object
-     * @param {string|Object} color
-     * @param {boolean} [setInitial=true]
-     */
-
-  }, {
-    key: "setColor",
-    value: function setColor(color) {
-      var setInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-      if (color === 'none') {
-        return;
-      }
-
-      var rgba; // if a html color shorthand is used, convert to hex
-
-      var htmlColor = this._isColorString(color);
-
-      if (htmlColor !== undefined) {
-        color = htmlColor;
-      } // check format
-
-
-      if (isString(color) === true) {
-        if (isValidRGB(color) === true) {
-          var rgbaArray = color.substr(4).substr(0, color.length - 5).split(',');
-          rgba = {
-            r: rgbaArray[0],
-            g: rgbaArray[1],
-            b: rgbaArray[2],
-            a: 1.0
-          };
-        } else if (isValidRGBA(color) === true) {
-          var _rgbaArray = color.substr(5).substr(0, color.length - 6).split(',');
-
-          rgba = {
-            r: _rgbaArray[0],
-            g: _rgbaArray[1],
-            b: _rgbaArray[2],
-            a: _rgbaArray[3]
-          };
-        } else if (isValidHex(color) === true) {
-          var rgbObj = hexToRGB(color);
-          rgba = {
-            r: rgbObj.r,
-            g: rgbObj.g,
-            b: rgbObj.b,
-            a: 1.0
-          };
-        }
-      } else {
-        if (color instanceof Object) {
-          if (color.r !== undefined && color.g !== undefined && color.b !== undefined) {
-            var alpha = color.a !== undefined ? color.a : '1.0';
-            rgba = {
-              r: color.r,
-              g: color.g,
-              b: color.b,
-              a: alpha
-            };
-          }
-        }
-      } // set color
-
-
-      if (rgba === undefined) {
-        throw new Error("Unknown color passed to the colorPicker. Supported are strings: rgb, hex, rgba. Object: rgb ({r:r,g:g,b:b,[a:a]}). Supplied: " + stringify$2(color));
-      } else {
-        this._setColor(rgba, setInitial);
-      }
-    }
-    /**
-     * this shows the color picker.
-     * The hue circle is constructed once and stored.
-     */
-
-  }, {
-    key: "show",
-    value: function show() {
-      if (this.closeCallback !== undefined) {
-        this.closeCallback();
-        this.closeCallback = undefined;
-      }
-
-      this.applied = false;
-      this.frame.style.display = 'block';
-
-      this._generateHueCircle();
-    } // ------------------------------------------ PRIVATE ----------------------------- //
-
-    /**
-     * Hide the picker. Is called by the cancel button.
-     * Optional boolean to store the previous color for easy access later on.
-     * @param {boolean} [storePrevious=true]
-     * @private
-     */
-
-  }, {
-    key: "_hide",
-    value: function _hide() {
-      var _this = this;
-
-      var storePrevious = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
-      // store the previous color for next time;
-      if (storePrevious === true) {
-        this.previousColor = assign$2({}, this.color);
-      }
-
-      if (this.applied === true) {
-        this.updateCallback(this.initialColor);
-      }
-
-      this.frame.style.display = 'none'; // call the closing callback, restoring the onclick method.
-      // this is in a setTimeout because it will trigger the show again before the click is done.
-
-      setTimeout$2(function () {
-        if (_this.closeCallback !== undefined) {
-          _this.closeCallback();
-
-          _this.closeCallback = undefined;
-        }
-      }, 0);
-    }
-    /**
-     * bound to the save button. Saves and hides.
-     * @private
-     */
-
-  }, {
-    key: "_save",
-    value: function _save() {
-      this.updateCallback(this.color);
-      this.applied = false;
-
-      this._hide();
-    }
-    /**
-     * Bound to apply button. Saves but does not close. Is undone by the cancel button.
-     * @private
-     */
-
-  }, {
-    key: "_apply",
-    value: function _apply() {
-      this.applied = true;
-      this.updateCallback(this.color);
-
-      this._updatePicker(this.color);
-    }
-    /**
-     * load the color from the previous session.
-     * @private
-     */
-
-  }, {
-    key: "_loadLast",
-    value: function _loadLast() {
-      if (this.previousColor !== undefined) {
-        this.setColor(this.previousColor, false);
-      } else {
-        alert("There is no last color to load...");
-      }
-    }
-    /**
-     * set the color, place the picker
-     * @param {Object} rgba
-     * @param {boolean} [setInitial=true]
-     * @private
-     */
-
-  }, {
-    key: "_setColor",
-    value: function _setColor(rgba) {
-      var setInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-      // store the initial color
-      if (setInitial === true) {
-        this.initialColor = assign$2({}, rgba);
-      }
-
-      this.color = rgba;
-      var hsv = RGBToHSV(rgba.r, rgba.g, rgba.b);
-      var angleConvert = 2 * Math.PI;
-      var radius = this.r * hsv.s;
-      var x = this.centerCoordinates.x + radius * Math.sin(angleConvert * hsv.h);
-      var y = this.centerCoordinates.y + radius * Math.cos(angleConvert * hsv.h);
-      this.colorPickerSelector.style.left = x - 0.5 * this.colorPickerSelector.clientWidth + 'px';
-      this.colorPickerSelector.style.top = y - 0.5 * this.colorPickerSelector.clientHeight + 'px';
-
-      this._updatePicker(rgba);
-    }
-    /**
-     * bound to opacity control
-     * @param {number} value
-     * @private
-     */
-
-  }, {
-    key: "_setOpacity",
-    value: function _setOpacity(value) {
-      this.color.a = value / 100;
-
-      this._updatePicker(this.color);
-    }
-    /**
-     * bound to brightness control
-     * @param {number} value
-     * @private
-     */
-
-  }, {
-    key: "_setBrightness",
-    value: function _setBrightness(value) {
-      var hsv = RGBToHSV(this.color.r, this.color.g, this.color.b);
-      hsv.v = value / 100;
-      var rgba = HSVToRGB(hsv.h, hsv.s, hsv.v);
-      rgba['a'] = this.color.a;
-      this.color = rgba;
-
-      this._updatePicker();
-    }
-    /**
-     * update the color picker. A black circle overlays the hue circle to mimic the brightness decreasing.
-     * @param {Object} rgba
-     * @private
-     */
-
-  }, {
-    key: "_updatePicker",
-    value: function _updatePicker() {
-      var rgba = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.color;
-      var hsv = RGBToHSV(rgba.r, rgba.g, rgba.b);
-      var ctx = this.colorPickerCanvas.getContext('2d');
-
-      if (this.pixelRation === undefined) {
-        this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
-      }
-
-      ctx.setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0); // clear the canvas
-
-      var w = this.colorPickerCanvas.clientWidth;
-      var h = this.colorPickerCanvas.clientHeight;
-      ctx.clearRect(0, 0, w, h);
-      ctx.putImageData(this.hueCircle, 0, 0);
-      ctx.fillStyle = 'rgba(0,0,0,' + (1 - hsv.v) + ')';
-      ctx.circle(this.centerCoordinates.x, this.centerCoordinates.y, this.r);
-
-      fill$2(ctx).call(ctx);
-
-      this.brightnessRange.value = 100 * hsv.v;
-      this.opacityRange.value = 100 * rgba.a;
-      this.initialColorDiv.style.backgroundColor = 'rgba(' + this.initialColor.r + ',' + this.initialColor.g + ',' + this.initialColor.b + ',' + this.initialColor.a + ')';
-      this.newColorDiv.style.backgroundColor = 'rgba(' + this.color.r + ',' + this.color.g + ',' + this.color.b + ',' + this.color.a + ')';
-    }
-    /**
-     * used by create to set the size of the canvas.
-     * @private
-     */
-
-  }, {
-    key: "_setSize",
-    value: function _setSize() {
-      this.colorPickerCanvas.style.width = '100%';
-      this.colorPickerCanvas.style.height = '100%';
-      this.colorPickerCanvas.width = 289 * this.pixelRatio;
-      this.colorPickerCanvas.height = 289 * this.pixelRatio;
-    }
-    /**
-     * create all dom elements
-     * TODO: cleanup, lots of similar dom elements
-     * @private
-     */
-
-  }, {
-    key: "_create",
-    value: function _create() {
-      var _context, _context2, _context3, _context4;
-
-      this.frame = document.createElement('div');
-      this.frame.className = 'vis-color-picker';
-      this.colorPickerDiv = document.createElement('div');
-      this.colorPickerSelector = document.createElement('div');
-      this.colorPickerSelector.className = 'vis-selector';
-      this.colorPickerDiv.appendChild(this.colorPickerSelector);
-      this.colorPickerCanvas = document.createElement('canvas');
-      this.colorPickerDiv.appendChild(this.colorPickerCanvas);
-
-      if (!this.colorPickerCanvas.getContext) {
-        var noCanvas = document.createElement('DIV');
-        noCanvas.style.color = 'red';
-        noCanvas.style.fontWeight = 'bold';
-        noCanvas.style.padding = '10px';
-        noCanvas.innerHTML = 'Error: your browser does not support HTML canvas';
-        this.colorPickerCanvas.appendChild(noCanvas);
-      } else {
-        var ctx = this.colorPickerCanvas.getContext("2d");
-        this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
-        this.colorPickerCanvas.getContext("2d").setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0);
-      }
-
-      this.colorPickerDiv.className = 'vis-color';
-      this.opacityDiv = document.createElement('div');
-      this.opacityDiv.className = 'vis-opacity';
-      this.brightnessDiv = document.createElement('div');
-      this.brightnessDiv.className = 'vis-brightness';
-      this.arrowDiv = document.createElement('div');
-      this.arrowDiv.className = 'vis-arrow';
-      this.opacityRange = document.createElement('input');
-
-      try {
-        this.opacityRange.type = 'range'; // Not supported on IE9
-
-        this.opacityRange.min = '0';
-        this.opacityRange.max = '100';
-      } // TODO: Add some error handling and remove this lint exception
-      catch (err) {} // eslint-disable-line no-empty
-
-
-      this.opacityRange.value = '100';
-      this.opacityRange.className = 'vis-range';
-      this.brightnessRange = document.createElement('input');
-
-      try {
-        this.brightnessRange.type = 'range'; // Not supported on IE9
-
-        this.brightnessRange.min = '0';
-        this.brightnessRange.max = '100';
-      } // TODO: Add some error handling and remove this lint exception
-      catch (err) {} // eslint-disable-line no-empty
-
-
-      this.brightnessRange.value = '100';
-      this.brightnessRange.className = 'vis-range';
-      this.opacityDiv.appendChild(this.opacityRange);
-      this.brightnessDiv.appendChild(this.brightnessRange);
-      var me = this;
-
-      this.opacityRange.onchange = function () {
-        me._setOpacity(this.value);
-      };
-
-      this.opacityRange.oninput = function () {
-        me._setOpacity(this.value);
-      };
-
-      this.brightnessRange.onchange = function () {
-        me._setBrightness(this.value);
-      };
-
-      this.brightnessRange.oninput = function () {
-        me._setBrightness(this.value);
-      };
-
-      this.brightnessLabel = document.createElement("div");
-      this.brightnessLabel.className = "vis-label vis-brightness";
-      this.brightnessLabel.innerHTML = 'brightness:';
-      this.opacityLabel = document.createElement("div");
-      this.opacityLabel.className = "vis-label vis-opacity";
-      this.opacityLabel.innerHTML = 'opacity:';
-      this.newColorDiv = document.createElement("div");
-      this.newColorDiv.className = "vis-new-color";
-      this.newColorDiv.innerHTML = 'new';
-      this.initialColorDiv = document.createElement("div");
-      this.initialColorDiv.className = "vis-initial-color";
-      this.initialColorDiv.innerHTML = 'initial';
-      this.cancelButton = document.createElement("div");
-      this.cancelButton.className = "vis-button vis-cancel";
-      this.cancelButton.innerHTML = 'cancel';
-      this.cancelButton.onclick = bind$2(_context = this._hide).call(_context, this, false);
-      this.applyButton = document.createElement("div");
-      this.applyButton.className = "vis-button vis-apply";
-      this.applyButton.innerHTML = 'apply';
-      this.applyButton.onclick = bind$2(_context2 = this._apply).call(_context2, this);
-      this.saveButton = document.createElement("div");
-      this.saveButton.className = "vis-button vis-save";
-      this.saveButton.innerHTML = 'save';
-      this.saveButton.onclick = bind$2(_context3 = this._save).call(_context3, this);
-      this.loadButton = document.createElement("div");
-      this.loadButton.className = "vis-button vis-load";
-      this.loadButton.innerHTML = 'load last';
-      this.loadButton.onclick = bind$2(_context4 = this._loadLast).call(_context4, this);
-      this.frame.appendChild(this.colorPickerDiv);
-      this.frame.appendChild(this.arrowDiv);
-      this.frame.appendChild(this.brightnessLabel);
-      this.frame.appendChild(this.brightnessDiv);
-      this.frame.appendChild(this.opacityLabel);
-      this.frame.appendChild(this.opacityDiv);
-      this.frame.appendChild(this.newColorDiv);
-      this.frame.appendChild(this.initialColorDiv);
-      this.frame.appendChild(this.cancelButton);
-      this.frame.appendChild(this.applyButton);
-      this.frame.appendChild(this.saveButton);
-      this.frame.appendChild(this.loadButton);
-    }
-    /**
-     * bind hammer to the color picker
-     * @private
-     */
-
-  }, {
-    key: "_bindHammer",
-    value: function _bindHammer() {
-      var _this2 = this;
-
-      this.drag = {};
-      this.pinch = {};
-      this.hammer = new Hammer$1(this.colorPickerCanvas);
-      this.hammer.get('pinch').set({
-        enable: true
-      });
-      onTouch(this.hammer, function (event) {
-        _this2._moveSelector(event);
-      });
-      this.hammer.on('tap', function (event) {
-        _this2._moveSelector(event);
-      });
-      this.hammer.on('panstart', function (event) {
-        _this2._moveSelector(event);
-      });
-      this.hammer.on('panmove', function (event) {
-        _this2._moveSelector(event);
-      });
-      this.hammer.on('panend', function (event) {
-        _this2._moveSelector(event);
-      });
-    }
-    /**
-     * generate the hue circle. This is relatively heavy (200ms) and is done only once on the first time it is shown.
-     * @private
-     */
-
-  }, {
-    key: "_generateHueCircle",
-    value: function _generateHueCircle() {
-      if (this.generated === false) {
-        var ctx = this.colorPickerCanvas.getContext('2d');
-
-        if (this.pixelRation === undefined) {
-          this.pixelRatio = (window.devicePixelRatio || 1) / (ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1);
-        }
-
-        ctx.setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0); // clear the canvas
-
-        var w = this.colorPickerCanvas.clientWidth;
-        var h = this.colorPickerCanvas.clientHeight;
-        ctx.clearRect(0, 0, w, h); // draw hue circle
-
-        var x, y, hue, sat;
-        this.centerCoordinates = {
-          x: w * 0.5,
-          y: h * 0.5
-        };
-        this.r = 0.49 * w;
-        var angleConvert = 2 * Math.PI / 360;
-        var hfac = 1 / 360;
-        var sfac = 1 / this.r;
-        var rgb;
-
-        for (hue = 0; hue < 360; hue++) {
-          for (sat = 0; sat < this.r; sat++) {
-            x = this.centerCoordinates.x + sat * Math.sin(angleConvert * hue);
-            y = this.centerCoordinates.y + sat * Math.cos(angleConvert * hue);
-            rgb = HSVToRGB(hue * hfac, sat * sfac, 1);
-            ctx.fillStyle = 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
-            ctx.fillRect(x - 0.5, y - 0.5, 2, 2);
-          }
-        }
-
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-        ctx.circle(this.centerCoordinates.x, this.centerCoordinates.y, this.r);
-        ctx.stroke();
-        this.hueCircle = ctx.getImageData(0, 0, w, h);
-      }
-
-      this.generated = true;
-    }
-    /**
-     * move the selector. This is called by hammer functions.
-     *
-     * @param {Event}  event   The event
-     * @private
-     */
-
-  }, {
-    key: "_moveSelector",
-    value: function _moveSelector(event) {
-      var rect = this.colorPickerDiv.getBoundingClientRect();
-      var left = event.center.x - rect.left;
-      var top = event.center.y - rect.top;
-      var centerY = 0.5 * this.colorPickerDiv.clientHeight;
-      var centerX = 0.5 * this.colorPickerDiv.clientWidth;
-      var x = left - centerX;
-      var y = top - centerY;
-      var angle = Math.atan2(x, y);
-      var radius = 0.98 * Math.min(Math.sqrt(x * x + y * y), centerX);
-      var newTop = Math.cos(angle) * radius + centerY;
-      var newLeft = Math.sin(angle) * radius + centerX;
-      this.colorPickerSelector.style.top = newTop - 0.5 * this.colorPickerSelector.clientHeight + 'px';
-      this.colorPickerSelector.style.left = newLeft - 0.5 * this.colorPickerSelector.clientWidth + 'px'; // set color
-
-      var h = angle / (2 * Math.PI);
-      h = h < 0 ? h + 1 : h;
-      var s = radius / this.r;
-      var hsv = RGBToHSV(this.color.r, this.color.g, this.color.b);
-      hsv.h = h;
-      hsv.s = s;
-      var rgba = HSVToRGB(hsv.h, hsv.s, hsv.v);
-      rgba['a'] = this.color.a;
-      this.color = rgba; // update previews
-
-      this.initialColorDiv.style.backgroundColor = 'rgba(' + this.initialColor.r + ',' + this.initialColor.g + ',' + this.initialColor.b + ',' + this.initialColor.a + ')';
-      this.newColorDiv.style.backgroundColor = 'rgba(' + this.color.r + ',' + this.color.g + ',' + this.color.b + ',' + this.color.a + ')';
-    }
-  }]);
-
-  return ColorPicker;
-}();
-
-/**
- * The way this works is for all properties of this.possible options, you can supply the property name in any form to list the options.
- * Boolean options are recognised as Boolean
- * Number options should be written as array: [default value, min value, max value, stepsize]
- * Colors should be written as array: ['color', '#ffffff']
- * Strings with should be written as array: [option1, option2, option3, ..]
- *
- * The options are matched with their counterparts in each of the modules and the values used in the configuration are
- */
-
-var Configurator = /*#__PURE__*/function () {
-  /**
-   * @param {Object} parentModule        | the location where parentModule.setOptions() can be called
-   * @param {Object} defaultContainer    | the default container of the module
-   * @param {Object} configureOptions    | the fully configured and predefined options set found in allOptions.js
-   * @param {number} pixelRatio          | canvas pixel ratio
-   */
-  function Configurator(parentModule, defaultContainer, configureOptions) {
-    var pixelRatio = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-
-    classCallCheck(this, Configurator);
-
-    this.parent = parentModule;
-    this.changedOptions = [];
-    this.container = defaultContainer;
-    this.allowCreation = false;
-    this.options = {};
-    this.initialized = false;
-    this.popupCounter = 0;
-    this.defaultOptions = {
-      enabled: false,
-      filter: true,
-      container: undefined,
-      showButton: true
-    };
-
-    assign$2(this.options, this.defaultOptions);
-
-    this.configureOptions = configureOptions;
-    this.moduleOptions = {};
-    this.domElements = [];
-    this.popupDiv = {};
-    this.popupLimit = 5;
-    this.popupHistory = {};
-    this.colorPicker = new ColorPicker(pixelRatio);
-    this.wrapper = undefined;
-  }
-  /**
-   * refresh all options.
-   * Because all modules parse their options by themselves, we just use their options. We copy them here.
-   *
-   * @param {Object} options
-   */
-
-
-  createClass(Configurator, [{
-    key: "setOptions",
-    value: function setOptions(options) {
-      if (options !== undefined) {
-        // reset the popup history because the indices may have been changed.
-        this.popupHistory = {};
-
-        this._removePopup();
-
-        var enabled = true;
-
-        if (typeof options === 'string') {
-          this.options.filter = options;
-        } else if (options instanceof Array) {
-          this.options.filter = options.join();
-        } else if (_typeof_1(options) === 'object') {
-          if (options == null) {
-            throw new TypeError('options cannot be null');
-          }
-
-          if (options.container !== undefined) {
-            this.options.container = options.container;
-          }
-
-          if (filter$2(options) !== undefined) {
-            this.options.filter = filter$2(options);
-          }
-
-          if (options.showButton !== undefined) {
-            this.options.showButton = options.showButton;
-          }
-
-          if (options.enabled !== undefined) {
-            enabled = options.enabled;
-          }
-        } else if (typeof options === 'boolean') {
-          this.options.filter = true;
-          enabled = options;
-        } else if (typeof options === 'function') {
-          this.options.filter = options;
-          enabled = true;
-        }
-
-        if (filter$2(this.options) === false) {
-          enabled = false;
-        }
-
-        this.options.enabled = enabled;
-      }
-
-      this._clean();
-    }
-    /**
-     *
-     * @param {Object} moduleOptions
-     */
-
-  }, {
-    key: "setModuleOptions",
-    value: function setModuleOptions(moduleOptions) {
-      this.moduleOptions = moduleOptions;
-
-      if (this.options.enabled === true) {
-        this._clean();
-
-        if (this.options.container !== undefined) {
-          this.container = this.options.container;
-        }
-
-        this._create();
-      }
-    }
-    /**
-     * Create all DOM elements
-     * @private
-     */
-
-  }, {
-    key: "_create",
-    value: function _create() {
-      this._clean();
-
-      this.changedOptions = [];
-
-      var filter = filter$2(this.options);
-
-      var counter = 0;
-      var show = false;
-
-      for (var option in this.configureOptions) {
-        if (Object.prototype.hasOwnProperty.call(this.configureOptions, option)) {
-          this.allowCreation = false;
-          show = false;
-
-          if (typeof filter === 'function') {
-            show = filter(option, []);
-            show = show || this._handleObject(this.configureOptions[option], [option], true);
-          } else if (filter === true || indexOf$3(filter).call(filter, option) !== -1) {
-            show = true;
-          }
-
-          if (show !== false) {
-            this.allowCreation = true; // linebreak between categories
-
-            if (counter > 0) {
-              this._makeItem([]);
-            } // a header for the category
-
-
-            this._makeHeader(option); // get the sub options
-
-
-            this._handleObject(this.configureOptions[option], [option]);
-          }
-
-          counter++;
-        }
-      }
-
-      this._makeButton();
-
-      this._push(); //~ this.colorPicker.insertTo(this.container);
-
-    }
-    /**
-     * draw all DOM elements on the screen
-     * @private
-     */
-
-  }, {
-    key: "_push",
-    value: function _push() {
-      this.wrapper = document.createElement('div');
-      this.wrapper.className = 'vis-configuration-wrapper';
-      this.container.appendChild(this.wrapper);
-
-      for (var i = 0; i < this.domElements.length; i++) {
-        this.wrapper.appendChild(this.domElements[i]);
-      }
-
-      this._showPopupIfNeeded();
-    }
-    /**
-     * delete all DOM elements
-     * @private
-     */
-
-  }, {
-    key: "_clean",
-    value: function _clean() {
-      for (var i = 0; i < this.domElements.length; i++) {
-        this.wrapper.removeChild(this.domElements[i]);
-      }
-
-      if (this.wrapper !== undefined) {
-        this.container.removeChild(this.wrapper);
-        this.wrapper = undefined;
-      }
-
-      this.domElements = [];
-
-      this._removePopup();
-    }
-    /**
-     * get the value from the actualOptions if it exists
-     * @param {array} path    | where to look for the actual option
-     * @returns {*}
-     * @private
-     */
-
-  }, {
-    key: "_getValue",
-    value: function _getValue(path) {
-      var base = this.moduleOptions;
-
-      for (var i = 0; i < path.length; i++) {
-        if (base[path[i]] !== undefined) {
-          base = base[path[i]];
-        } else {
-          base = undefined;
-          break;
-        }
-      }
-
-      return base;
-    }
-    /**
-     * all option elements are wrapped in an item
-     * @param {Array} path    | where to look for the actual option
-     * @param {Array.<Element>} domElements
-     * @returns {number}
-     * @private
-     */
-
-  }, {
-    key: "_makeItem",
-    value: function _makeItem(path) {
-      if (this.allowCreation === true) {
-        var item = document.createElement('div');
-        item.className = 'vis-configuration vis-config-item vis-config-s' + path.length;
-
-        for (var _len = arguments.length, domElements = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          domElements[_key - 1] = arguments[_key];
-        }
-
-        forEach$2(domElements).call(domElements, function (element) {
-          item.appendChild(element);
-        });
-
-        this.domElements.push(item);
-        return this.domElements.length;
-      }
-
-      return 0;
-    }
-    /**
-     * header for major subjects
-     * @param {string} name
-     * @private
-     */
-
-  }, {
-    key: "_makeHeader",
-    value: function _makeHeader(name) {
-      var div = document.createElement('div');
-      div.className = 'vis-configuration vis-config-header';
-      div.innerHTML = name;
-
-      this._makeItem([], div);
-    }
-    /**
-     * make a label, if it is an object label, it gets different styling.
-     * @param {string} name
-     * @param {array} path    | where to look for the actual option
-     * @param {string} objectLabel
-     * @returns {HTMLElement}
-     * @private
-     */
-
-  }, {
-    key: "_makeLabel",
-    value: function _makeLabel(name, path) {
-      var objectLabel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var div = document.createElement('div');
-      div.className = 'vis-configuration vis-config-label vis-config-s' + path.length;
-
-      if (objectLabel === true) {
-        div.innerHTML = '<i><b>' + name + ':</b></i>';
-      } else {
-        div.innerHTML = name + ':';
-      }
-
-      return div;
-    }
-    /**
-     * make a dropdown list for multiple possible string optoins
-     * @param {Array.<number>} arr
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_makeDropdown",
-    value: function _makeDropdown(arr, value, path) {
-      var select = document.createElement('select');
-      select.className = 'vis-configuration vis-config-select';
-      var selectedValue = 0;
-
-      if (value !== undefined) {
-        if (indexOf$3(arr).call(arr, value) !== -1) {
-          selectedValue = indexOf$3(arr).call(arr, value);
-        }
-      }
-
-      for (var i = 0; i < arr.length; i++) {
-        var option = document.createElement('option');
-        option.value = arr[i];
-
-        if (i === selectedValue) {
-          option.selected = 'selected';
-        }
-
-        option.innerHTML = arr[i];
-        select.appendChild(option);
-      }
-
-      var me = this;
-
-      select.onchange = function () {
-        me._update(this.value, path);
-      };
-
-      var label = this._makeLabel(path[path.length - 1], path);
-
-      this._makeItem(path, label, select);
-    }
-    /**
-     * make a range object for numeric options
-     * @param {Array.<number>} arr
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_makeRange",
-    value: function _makeRange(arr, value, path) {
-      var defaultValue = arr[0];
-      var min = arr[1];
-      var max = arr[2];
-      var step = arr[3];
-      var range = document.createElement('input');
-      range.className = 'vis-configuration vis-config-range';
-
-      try {
-        range.type = 'range'; // not supported on IE9
-
-        range.min = min;
-        range.max = max;
-      } // TODO: Add some error handling and remove this lint exception
-      catch (err) {} // eslint-disable-line no-empty
-
-
-      range.step = step; // set up the popup settings in case they are needed.
-
-      var popupString = '';
-      var popupValue = 0;
-
-      if (value !== undefined) {
-        var factor = 1.20;
-
-        if (value < 0 && value * factor < min) {
-          range.min = Math.ceil(value * factor);
-          popupValue = range.min;
-          popupString = 'range increased';
-        } else if (value / factor < min) {
-          range.min = Math.ceil(value / factor);
-          popupValue = range.min;
-          popupString = 'range increased';
-        }
-
-        if (value * factor > max && max !== 1) {
-          range.max = Math.ceil(value * factor);
-          popupValue = range.max;
-          popupString = 'range increased';
-        }
-
-        range.value = value;
-      } else {
-        range.value = defaultValue;
-      }
-
-      var input = document.createElement('input');
-      input.className = 'vis-configuration vis-config-rangeinput';
-      input.value = range.value;
-      var me = this;
-
-      range.onchange = function () {
-        input.value = this.value;
-
-        me._update(Number(this.value), path);
-      };
-
-      range.oninput = function () {
-        input.value = this.value;
-      };
-
-      var label = this._makeLabel(path[path.length - 1], path);
-
-      var itemIndex = this._makeItem(path, label, range, input); // if a popup is needed AND it has not been shown for this value, show it.
-
-
-      if (popupString !== '' && this.popupHistory[itemIndex] !== popupValue) {
-        this.popupHistory[itemIndex] = popupValue;
-
-        this._setupPopup(popupString, itemIndex);
-      }
-    }
-    /**
-     * make a button object
-     * @private
-     */
-
-  }, {
-    key: "_makeButton",
-    value: function _makeButton() {
-      var _this = this;
-
-      if (this.options.showButton === true) {
-        var generateButton = document.createElement('div');
-        generateButton.className = 'vis-configuration vis-config-button';
-        generateButton.innerHTML = 'generate options';
-
-        generateButton.onclick = function () {
-          _this._printOptions();
-        };
-
-        generateButton.onmouseover = function () {
-          generateButton.className = 'vis-configuration vis-config-button hover';
-        };
-
-        generateButton.onmouseout = function () {
-          generateButton.className = 'vis-configuration vis-config-button';
-        };
-
-        this.optionsContainer = document.createElement('div');
-        this.optionsContainer.className = 'vis-configuration vis-config-option-container';
-        this.domElements.push(this.optionsContainer);
-        this.domElements.push(generateButton);
-      }
-    }
-    /**
-     * prepare the popup
-     * @param {string} string
-     * @param {number} index
-     * @private
-     */
-
-  }, {
-    key: "_setupPopup",
-    value: function _setupPopup(string, index) {
-      var _this2 = this;
-
-      if (this.initialized === true && this.allowCreation === true && this.popupCounter < this.popupLimit) {
-        var div = document.createElement("div");
-        div.id = "vis-configuration-popup";
-        div.className = "vis-configuration-popup";
-        div.innerHTML = string;
-
-        div.onclick = function () {
-          _this2._removePopup();
-        };
-
-        this.popupCounter += 1;
-        this.popupDiv = {
-          html: div,
-          index: index
-        };
-      }
-    }
-    /**
-     * remove the popup from the dom
-     * @private
-     */
-
-  }, {
-    key: "_removePopup",
-    value: function _removePopup() {
-      if (this.popupDiv.html !== undefined) {
-        this.popupDiv.html.parentNode.removeChild(this.popupDiv.html);
-        clearTimeout(this.popupDiv.hideTimeout);
-        clearTimeout(this.popupDiv.deleteTimeout);
-        this.popupDiv = {};
-      }
-    }
-    /**
-     * Show the popup if it is needed.
-     * @private
-     */
-
-  }, {
-    key: "_showPopupIfNeeded",
-    value: function _showPopupIfNeeded() {
-      var _this3 = this;
-
-      if (this.popupDiv.html !== undefined) {
-        var correspondingElement = this.domElements[this.popupDiv.index];
-        var rect = correspondingElement.getBoundingClientRect();
-        this.popupDiv.html.style.left = rect.left + "px";
-        this.popupDiv.html.style.top = rect.top - 30 + "px"; // 30 is the height;
-
-        document.body.appendChild(this.popupDiv.html);
-        this.popupDiv.hideTimeout = setTimeout$2(function () {
-          _this3.popupDiv.html.style.opacity = 0;
-        }, 1500);
-        this.popupDiv.deleteTimeout = setTimeout$2(function () {
-          _this3._removePopup();
-        }, 1800);
-      }
-    }
-    /**
-     * make a checkbox for boolean options.
-     * @param {number} defaultValue
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_makeCheckbox",
-    value: function _makeCheckbox(defaultValue, value, path) {
-      var checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'vis-configuration vis-config-checkbox';
-      checkbox.checked = defaultValue;
-
-      if (value !== undefined) {
-        checkbox.checked = value;
-
-        if (value !== defaultValue) {
-          if (_typeof_1(defaultValue) === 'object') {
-            if (value !== defaultValue.enabled) {
-              this.changedOptions.push({
-                path: path,
-                value: value
-              });
-            }
-          } else {
-            this.changedOptions.push({
-              path: path,
-              value: value
-            });
-          }
-        }
-      }
-
-      var me = this;
-
-      checkbox.onchange = function () {
-        me._update(this.checked, path);
-      };
-
-      var label = this._makeLabel(path[path.length - 1], path);
-
-      this._makeItem(path, label, checkbox);
-    }
-    /**
-     * make a text input field for string options.
-     * @param {number} defaultValue
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_makeTextInput",
-    value: function _makeTextInput(defaultValue, value, path) {
-      var checkbox = document.createElement('input');
-      checkbox.type = 'text';
-      checkbox.className = 'vis-configuration vis-config-text';
-      checkbox.value = value;
-
-      if (value !== defaultValue) {
-        this.changedOptions.push({
-          path: path,
-          value: value
-        });
-      }
-
-      var me = this;
-
-      checkbox.onchange = function () {
-        me._update(this.value, path);
-      };
-
-      var label = this._makeLabel(path[path.length - 1], path);
-
-      this._makeItem(path, label, checkbox);
-    }
-    /**
-     * make a color field with a color picker for color fields
-     * @param {Array.<number>} arr
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_makeColorField",
-    value: function _makeColorField(arr, value, path) {
-      var _this4 = this;
-
-      var defaultColor = arr[1];
-      var div = document.createElement('div');
-      value = value === undefined ? defaultColor : value;
-
-      if (value !== 'none') {
-        div.className = 'vis-configuration vis-config-colorBlock';
-        div.style.backgroundColor = value;
-      } else {
-        div.className = 'vis-configuration vis-config-colorBlock none';
-      }
-
-      value = value === undefined ? defaultColor : value;
-
-      div.onclick = function () {
-        _this4._showColorPicker(value, div, path);
-      };
-
-      var label = this._makeLabel(path[path.length - 1], path);
-
-      this._makeItem(path, label, div);
-    }
-    /**
-     * used by the color buttons to call the color picker.
-     * @param {number} value
-     * @param {HTMLElement} div
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_showColorPicker",
-    value: function _showColorPicker(value, div, path) {
-      var _this5 = this;
-
-      // clear the callback from this div
-      div.onclick = function () {};
-
-      this.colorPicker.insertTo(div);
-      this.colorPicker.show();
-      this.colorPicker.setColor(value);
-      this.colorPicker.setUpdateCallback(function (color) {
-        var colorString = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
-        div.style.backgroundColor = colorString;
-
-        _this5._update(colorString, path);
-      }); // on close of the colorpicker, restore the callback.
-
-      this.colorPicker.setCloseCallback(function () {
-        div.onclick = function () {
-          _this5._showColorPicker(value, div, path);
-        };
-      });
-    }
-    /**
-     * parse an object and draw the correct items
-     * @param {Object} obj
-     * @param {array} [path=[]]    | where to look for the actual option
-     * @param {boolean} [checkOnly=false]
-     * @returns {boolean}
-     * @private
-     */
-
-  }, {
-    key: "_handleObject",
-    value: function _handleObject(obj) {
-      var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      var checkOnly = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      var show = false;
-
-      var filter = filter$2(this.options);
-
-      var visibleInSet = false;
-
-      for (var subObj in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, subObj)) {
-          show = true;
-          var item = obj[subObj];
-          var newPath = copyAndExtendArray(path, subObj);
-
-          if (typeof filter === 'function') {
-            show = filter(subObj, path); // if needed we must go deeper into the object.
-
-            if (show === false) {
-              if (!(item instanceof Array) && typeof item !== 'string' && typeof item !== 'boolean' && item instanceof Object) {
-                this.allowCreation = false;
-                show = this._handleObject(item, newPath, true);
-                this.allowCreation = checkOnly === false;
-              }
-            }
-          }
-
-          if (show !== false) {
-            visibleInSet = true;
-
-            var value = this._getValue(newPath);
-
-            if (item instanceof Array) {
-              this._handleArray(item, value, newPath);
-            } else if (typeof item === 'string') {
-              this._makeTextInput(item, value, newPath);
-            } else if (typeof item === 'boolean') {
-              this._makeCheckbox(item, value, newPath);
-            } else if (item instanceof Object) {
-              // collapse the physics options that are not enabled
-              var draw = true;
-
-              if (indexOf$3(path).call(path, 'physics') !== -1) {
-                if (this.moduleOptions.physics.solver !== subObj && subObj !== 'wind') {
-                  draw = false;
-                }
-              }
-
-              if (draw === true) {
-                // initially collapse options with an disabled enabled option.
-                if (item.enabled !== undefined) {
-                  var enabledPath = copyAndExtendArray(newPath, 'enabled');
-
-                  var enabledValue = this._getValue(enabledPath);
-
-                  if (enabledValue === true) {
-                    var label = this._makeLabel(subObj, newPath, true);
-
-                    this._makeItem(newPath, label);
-
-                    visibleInSet = this._handleObject(item, newPath) || visibleInSet;
-                  } else {
-                    this._makeCheckbox(item, enabledValue, newPath);
-                  }
-                } else {
-                  var _label = this._makeLabel(subObj, newPath, true);
-
-                  this._makeItem(newPath, _label);
-
-                  visibleInSet = this._handleObject(item, newPath) || visibleInSet;
-                }
-              }
-            } else {
-              console.error('dont know how to handle', item, subObj, newPath);
-            }
-          }
-        }
-      }
-
-      return visibleInSet;
-    }
-    /**
-     * handle the array type of option
-     * @param {Array.<number>} arr
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_handleArray",
-    value: function _handleArray(arr, value, path) {
-      if (typeof arr[0] === 'string' && arr[0] === 'color') {
-        this._makeColorField(arr, value, path);
-
-        if (arr[1] !== value) {
-          this.changedOptions.push({
-            path: path,
-            value: value
-          });
-        }
-      } else if (typeof arr[0] === 'string') {
-        this._makeDropdown(arr, value, path);
-
-        if (arr[0] !== value) {
-          this.changedOptions.push({
-            path: path,
-            value: value
-          });
-        }
-      } else if (typeof arr[0] === 'number') {
-        this._makeRange(arr, value, path);
-
-        if (arr[0] !== value) {
-          this.changedOptions.push({
-            path: path,
-            value: Number(value)
-          });
-        }
-      }
-    }
-    /**
-     * called to update the network with the new settings.
-     * @param {number} value
-     * @param {array} path    | where to look for the actual option
-     * @private
-     */
-
-  }, {
-    key: "_update",
-    value: function _update(value, path) {
-      var options = this._constructOptions(value, path);
-
-      if (this.parent.body && this.parent.body.emitter && this.parent.body.emitter.emit) {
-        this.parent.body.emitter.emit("configChange", options);
-      }
-
-      this.initialized = true;
-      this.parent.setOptions(options);
-    }
-    /**
-     *
-     * @param {string|Boolean} value
-     * @param {Array.<string>} path
-     * @param {{}} optionsObj
-     * @returns {{}}
-     * @private
-     */
-
-  }, {
-    key: "_constructOptions",
-    value: function _constructOptions(value, path) {
-      var optionsObj = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      var pointer = optionsObj; // when dropdown boxes can be string or boolean, we typecast it into correct types
-
-      value = value === 'true' ? true : value;
-      value = value === 'false' ? false : value;
-
-      for (var i = 0; i < path.length; i++) {
-        if (path[i] !== 'global') {
-          if (pointer[path[i]] === undefined) {
-            pointer[path[i]] = {};
-          }
-
-          if (i !== path.length - 1) {
-            pointer = pointer[path[i]];
-          } else {
-            pointer[path[i]] = value;
-          }
-        }
-      }
-
-      return optionsObj;
-    }
-    /**
-     * @private
-     */
-
-  }, {
-    key: "_printOptions",
-    value: function _printOptions() {
-      var options = this.getOptions();
-      this.optionsContainer.innerHTML = '<pre>var options = ' + stringify$2(options, null, 2) + '</pre>';
-    }
-    /**
-     *
-     * @returns {{}} options
-     */
-
-  }, {
-    key: "getOptions",
-    value: function getOptions() {
-      var options = {};
-
-      for (var i = 0; i < this.changedOptions.length; i++) {
-        this._constructOptions(this.changedOptions[i].value, this.changedOptions[i].path, options);
-      }
-
-      return options;
-    }
-  }]);
-
-  return Configurator;
-}();
-
 /**
  * This object contains all possible options. It will check if the types are correct, if required if the option is one
  * of the allowed values.
@@ -40741,16 +41472,448 @@ var Configurator = /*#__PURE__*/function () {
  * __any__ means that the name of the property does not matter.
  * __type__ is a required field for all objects and contains the allowed types of all objects
  */
-var string = 'string';
-var bool = 'boolean';
-var number = 'number';
-var array = 'array';
-var object = 'object'; // should only be in a __type__ property
+var string = "string";
+var bool = "boolean";
+var number = "number";
+var array = "array";
+var object = "object"; // should only be in a __type__ property
 
-var dom = 'dom';
-var any = 'any'; // List of endpoints
+var dom = "dom";
+var any = "any"; // List of endpoints
 
 var endPoints = ["arrow", "bar", "box", "circle", "crow", "curve", "diamond", "image", "inv_curve", "inv_triangle", "triangle", "vee"];
+/* eslint-disable @typescript-eslint/naming-convention -- The __*__ format is used to prevent collisions with actual option names. */
+
+var nodeOptions = {
+  borderWidth: {
+    number: number
+  },
+  borderWidthSelected: {
+    number: number,
+    undefined: "undefined"
+  },
+  brokenImage: {
+    string: string,
+    undefined: "undefined"
+  },
+  chosen: {
+    label: {
+      boolean: bool,
+      function: "function"
+    },
+    node: {
+      boolean: bool,
+      function: "function"
+    },
+    __type__: {
+      object: object,
+      boolean: bool
+    }
+  },
+  color: {
+    border: {
+      string: string
+    },
+    background: {
+      string: string
+    },
+    highlight: {
+      border: {
+        string: string
+      },
+      background: {
+        string: string
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    hover: {
+      border: {
+        string: string
+      },
+      background: {
+        string: string
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    __type__: {
+      object: object,
+      string: string
+    }
+  },
+  opacity: {
+    number: number,
+    undefined: "undefined"
+  },
+  fixed: {
+    x: {
+      boolean: bool
+    },
+    y: {
+      boolean: bool
+    },
+    __type__: {
+      object: object,
+      boolean: bool
+    }
+  },
+  font: {
+    align: {
+      string: string
+    },
+    color: {
+      string: string
+    },
+    size: {
+      number: number
+    },
+    face: {
+      string: string
+    },
+    background: {
+      string: string
+    },
+    strokeWidth: {
+      number: number
+    },
+    strokeColor: {
+      string: string
+    },
+    vadjust: {
+      number: number
+    },
+    multi: {
+      boolean: bool,
+      string: string
+    },
+    bold: {
+      color: {
+        string: string
+      },
+      size: {
+        number: number
+      },
+      face: {
+        string: string
+      },
+      mod: {
+        string: string
+      },
+      vadjust: {
+        number: number
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    boldital: {
+      color: {
+        string: string
+      },
+      size: {
+        number: number
+      },
+      face: {
+        string: string
+      },
+      mod: {
+        string: string
+      },
+      vadjust: {
+        number: number
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    ital: {
+      color: {
+        string: string
+      },
+      size: {
+        number: number
+      },
+      face: {
+        string: string
+      },
+      mod: {
+        string: string
+      },
+      vadjust: {
+        number: number
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    mono: {
+      color: {
+        string: string
+      },
+      size: {
+        number: number
+      },
+      face: {
+        string: string
+      },
+      mod: {
+        string: string
+      },
+      vadjust: {
+        number: number
+      },
+      __type__: {
+        object: object,
+        string: string
+      }
+    },
+    __type__: {
+      object: object,
+      string: string
+    }
+  },
+  group: {
+    string: string,
+    number: number,
+    undefined: "undefined"
+  },
+  heightConstraint: {
+    minimum: {
+      number: number
+    },
+    valign: {
+      string: string
+    },
+    __type__: {
+      object: object,
+      boolean: bool,
+      number: number
+    }
+  },
+  hidden: {
+    boolean: bool
+  },
+  icon: {
+    face: {
+      string: string
+    },
+    code: {
+      string: string
+    },
+    size: {
+      number: number
+    },
+    color: {
+      string: string
+    },
+    weight: {
+      string: string,
+      number: number
+    },
+    __type__: {
+      object: object
+    }
+  },
+  id: {
+    string: string,
+    number: number
+  },
+  image: {
+    selected: {
+      string: string,
+      undefined: "undefined"
+    },
+    unselected: {
+      string: string,
+      undefined: "undefined"
+    },
+    __type__: {
+      object: object,
+      string: string
+    }
+  },
+  imagePadding: {
+    top: {
+      number: number
+    },
+    right: {
+      number: number
+    },
+    bottom: {
+      number: number
+    },
+    left: {
+      number: number
+    },
+    __type__: {
+      object: object,
+      number: number
+    }
+  },
+  label: {
+    string: string,
+    undefined: "undefined"
+  },
+  labelHighlightBold: {
+    boolean: bool
+  },
+  level: {
+    number: number,
+    undefined: "undefined"
+  },
+  margin: {
+    top: {
+      number: number
+    },
+    right: {
+      number: number
+    },
+    bottom: {
+      number: number
+    },
+    left: {
+      number: number
+    },
+    __type__: {
+      object: object,
+      number: number
+    }
+  },
+  mass: {
+    number: number
+  },
+  physics: {
+    boolean: bool
+  },
+  scaling: {
+    min: {
+      number: number
+    },
+    max: {
+      number: number
+    },
+    label: {
+      enabled: {
+        boolean: bool
+      },
+      min: {
+        number: number
+      },
+      max: {
+        number: number
+      },
+      maxVisible: {
+        number: number
+      },
+      drawThreshold: {
+        number: number
+      },
+      __type__: {
+        object: object,
+        boolean: bool
+      }
+    },
+    customScalingFunction: {
+      function: "function"
+    },
+    __type__: {
+      object: object
+    }
+  },
+  shadow: {
+    enabled: {
+      boolean: bool
+    },
+    color: {
+      string: string
+    },
+    size: {
+      number: number
+    },
+    x: {
+      number: number
+    },
+    y: {
+      number: number
+    },
+    __type__: {
+      object: object,
+      boolean: bool
+    }
+  },
+  shape: {
+    string: ["custom", "ellipse", "circle", "database", "box", "text", "image", "circularImage", "diamond", "dot", "star", "triangle", "triangleDown", "square", "icon", "hexagon"]
+  },
+  ctxRenderer: {
+    function: "function"
+  },
+  shapeProperties: {
+    borderDashes: {
+      boolean: bool,
+      array: array
+    },
+    borderRadius: {
+      number: number
+    },
+    interpolation: {
+      boolean: bool
+    },
+    useImageSize: {
+      boolean: bool
+    },
+    useBorderWithImage: {
+      boolean: bool
+    },
+    coordinateOrigin: {
+      string: ["center", "top-left"]
+    },
+    __type__: {
+      object: object
+    }
+  },
+  size: {
+    number: number
+  },
+  title: {
+    string: string,
+    dom: dom,
+    undefined: "undefined"
+  },
+  value: {
+    number: number,
+    undefined: "undefined"
+  },
+  widthConstraint: {
+    minimum: {
+      number: number
+    },
+    maximum: {
+      number: number
+    },
+    __type__: {
+      object: object,
+      boolean: bool,
+      number: number
+    }
+  },
+  x: {
+    number: number
+  },
+  y: {
+    number: number
+  },
+  __type__: {
+    object: object
+  }
+};
 var allOptions$1 = {
   configure: {
     enabled: {
@@ -40760,7 +41923,7 @@ var allOptions$1 = {
       boolean: bool,
       string: string,
       array: array,
-      'function': 'function'
+      function: "function"
     },
     container: {
       dom: dom
@@ -40773,7 +41936,7 @@ var allOptions$1 = {
       boolean: bool,
       string: string,
       array: array,
-      'function': 'function'
+      function: "function"
     }
   },
   edges: {
@@ -40892,11 +42055,11 @@ var allOptions$1 = {
     chosen: {
       label: {
         boolean: bool,
-        'function': 'function'
+        function: "function"
       },
       edge: {
         boolean: bool,
-        'function': 'function'
+        function: "function"
       },
       __type__: {
         object: object,
@@ -40914,7 +42077,7 @@ var allOptions$1 = {
         string: string
       },
       inherit: {
-        string: ['from', 'to', 'both'],
+        string: ["from", "to", "both"],
         boolean: bool
       },
       opacity: {
@@ -40936,7 +42099,6 @@ var allOptions$1 = {
       size: {
         number: number
       },
-      // px
       face: {
         string: string
       },
@@ -40946,12 +42108,11 @@ var allOptions$1 = {
       strokeWidth: {
         number: number
       },
-      // px
       strokeColor: {
         string: string
       },
       align: {
-        string: ['horizontal', 'top', 'middle', 'bottom']
+        string: ["horizontal", "top", "middle", "bottom"]
       },
       vadjust: {
         number: number
@@ -40967,7 +42128,6 @@ var allOptions$1 = {
         size: {
           number: number
         },
-        // px
         face: {
           string: string
         },
@@ -40989,7 +42149,6 @@ var allOptions$1 = {
         size: {
           number: number
         },
-        // px
         face: {
           string: string
         },
@@ -41011,7 +42170,6 @@ var allOptions$1 = {
         size: {
           number: number
         },
-        // px
         face: {
           string: string
         },
@@ -41033,7 +42191,6 @@ var allOptions$1 = {
         size: {
           number: number
         },
-        // px
         face: {
           string: string
         },
@@ -41057,19 +42214,19 @@ var allOptions$1 = {
       boolean: bool
     },
     hoverWidth: {
-      'function': 'function',
+      function: "function",
       number: number
     },
     label: {
       string: string,
-      'undefined': 'undefined'
+      undefined: "undefined"
     },
     labelHighlightBold: {
       boolean: bool
     },
     length: {
       number: number,
-      'undefined': 'undefined'
+      undefined: "undefined"
     },
     physics: {
       boolean: bool
@@ -41103,14 +42260,14 @@ var allOptions$1 = {
         }
       },
       customScalingFunction: {
-        'function': 'function'
+        function: "function"
       },
       __type__: {
         object: object
       }
     },
     selectionWidth: {
-      'function': 'function',
+      function: "function",
       number: number
     },
     selfReferenceSize: {
@@ -41156,13 +42313,13 @@ var allOptions$1 = {
         boolean: bool
       },
       type: {
-        string: ['dynamic', 'continuous', 'discrete', 'diagonalCross', 'straightCross', 'horizontal', 'vertical', 'curvedCW', 'curvedCCW', 'cubicBezier']
+        string: ["dynamic", "continuous", "discrete", "diagonalCross", "straightCross", "horizontal", "vertical", "curvedCW", "curvedCCW", "cubicBezier"]
       },
       roundness: {
         number: number
       },
       forceDirection: {
-        string: ['horizontal', 'vertical', 'none'],
+        string: ["horizontal", "vertical", "none"],
         boolean: bool
       },
       __type__: {
@@ -41172,7 +42329,7 @@ var allOptions$1 = {
     },
     title: {
       string: string,
-      'undefined': 'undefined'
+      undefined: "undefined"
     },
     width: {
       number: number
@@ -41189,7 +42346,7 @@ var allOptions$1 = {
     },
     value: {
       number: number,
-      'undefined': 'undefined'
+      undefined: "undefined"
     },
     __type__: {
       object: object
@@ -41199,7 +42356,7 @@ var allOptions$1 = {
     useDefaultGroups: {
       boolean: bool
     },
-    __any__: 'get from nodes, will be overwritten below',
+    __any__: nodeOptions,
     __type__: {
       object: object
     }
@@ -41279,7 +42436,7 @@ var allOptions$1 = {
   },
   layout: {
     randomSeed: {
-      'undefined': 'undefined',
+      undefined: "undefined",
       number: number,
       string: string
     },
@@ -41312,17 +42469,14 @@ var allOptions$1 = {
         boolean: bool
       },
       direction: {
-        string: ['UD', 'DU', 'LR', 'RL']
+        string: ["UD", "DU", "LR", "RL"]
       },
-      // UD, DU, LR, RL
       sortMethod: {
-        string: ['hubsize', 'directed']
+        string: ["hubsize", "directed"]
       },
-      // hubsize, directed
       shakeTowards: {
-        string: ['leaves', 'roots']
+        string: ["leaves", "roots"]
       },
-      // leaves, roots
       __type__: {
         object: object,
         boolean: bool
@@ -41341,479 +42495,40 @@ var allOptions$1 = {
     },
     addNode: {
       boolean: bool,
-      'function': 'function'
+      function: "function"
     },
     addEdge: {
       boolean: bool,
-      'function': 'function'
+      function: "function"
     },
     editNode: {
-      'function': 'function'
+      function: "function"
     },
     editEdge: {
       editWithoutDrag: {
-        'function': 'function'
+        function: "function"
       },
       __type__: {
         object: object,
         boolean: bool,
-        'function': 'function'
+        function: "function"
       }
     },
     deleteNode: {
       boolean: bool,
-      'function': 'function'
+      function: "function"
     },
     deleteEdge: {
       boolean: bool,
-      'function': 'function'
+      function: "function"
     },
-    controlNodeStyle: 'get from nodes, will be overwritten below',
+    controlNodeStyle: nodeOptions,
     __type__: {
       object: object,
       boolean: bool
     }
   },
-  nodes: {
-    borderWidth: {
-      number: number
-    },
-    borderWidthSelected: {
-      number: number,
-      'undefined': 'undefined'
-    },
-    brokenImage: {
-      string: string,
-      'undefined': 'undefined'
-    },
-    chosen: {
-      label: {
-        boolean: bool,
-        'function': 'function'
-      },
-      node: {
-        boolean: bool,
-        'function': 'function'
-      },
-      __type__: {
-        object: object,
-        boolean: bool
-      }
-    },
-    color: {
-      border: {
-        string: string
-      },
-      background: {
-        string: string
-      },
-      highlight: {
-        border: {
-          string: string
-        },
-        background: {
-          string: string
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      hover: {
-        border: {
-          string: string
-        },
-        background: {
-          string: string
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      __type__: {
-        object: object,
-        string: string
-      }
-    },
-    opacity: {
-      number: number,
-      'undefined': 'undefined'
-    },
-    fixed: {
-      x: {
-        boolean: bool
-      },
-      y: {
-        boolean: bool
-      },
-      __type__: {
-        object: object,
-        boolean: bool
-      }
-    },
-    font: {
-      align: {
-        string: string
-      },
-      color: {
-        string: string
-      },
-      size: {
-        number: number
-      },
-      // px
-      face: {
-        string: string
-      },
-      background: {
-        string: string
-      },
-      strokeWidth: {
-        number: number
-      },
-      // px
-      strokeColor: {
-        string: string
-      },
-      vadjust: {
-        number: number
-      },
-      multi: {
-        boolean: bool,
-        string: string
-      },
-      bold: {
-        color: {
-          string: string
-        },
-        size: {
-          number: number
-        },
-        // px
-        face: {
-          string: string
-        },
-        mod: {
-          string: string
-        },
-        vadjust: {
-          number: number
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      boldital: {
-        color: {
-          string: string
-        },
-        size: {
-          number: number
-        },
-        // px
-        face: {
-          string: string
-        },
-        mod: {
-          string: string
-        },
-        vadjust: {
-          number: number
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      ital: {
-        color: {
-          string: string
-        },
-        size: {
-          number: number
-        },
-        // px
-        face: {
-          string: string
-        },
-        mod: {
-          string: string
-        },
-        vadjust: {
-          number: number
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      mono: {
-        color: {
-          string: string
-        },
-        size: {
-          number: number
-        },
-        // px
-        face: {
-          string: string
-        },
-        mod: {
-          string: string
-        },
-        vadjust: {
-          number: number
-        },
-        __type__: {
-          object: object,
-          string: string
-        }
-      },
-      __type__: {
-        object: object,
-        string: string
-      }
-    },
-    group: {
-      string: string,
-      number: number,
-      'undefined': 'undefined'
-    },
-    heightConstraint: {
-      minimum: {
-        number: number
-      },
-      valign: {
-        string: string
-      },
-      __type__: {
-        object: object,
-        boolean: bool,
-        number: number
-      }
-    },
-    hidden: {
-      boolean: bool
-    },
-    icon: {
-      face: {
-        string: string
-      },
-      code: {
-        string: string
-      },
-      //'\uf007',
-      size: {
-        number: number
-      },
-      //50,
-      color: {
-        string: string
-      },
-      weight: {
-        string: string,
-        number: number
-      },
-      __type__: {
-        object: object
-      }
-    },
-    id: {
-      string: string,
-      number: number
-    },
-    image: {
-      selected: {
-        string: string,
-        'undefined': 'undefined'
-      },
-      // --> URL
-      unselected: {
-        string: string,
-        'undefined': 'undefined'
-      },
-      // --> URL
-      __type__: {
-        object: object,
-        string: string
-      }
-    },
-    imagePadding: {
-      top: {
-        number: number
-      },
-      right: {
-        number: number
-      },
-      bottom: {
-        number: number
-      },
-      left: {
-        number: number
-      },
-      __type__: {
-        object: object,
-        number: number
-      }
-    },
-    label: {
-      string: string,
-      'undefined': 'undefined'
-    },
-    labelHighlightBold: {
-      boolean: bool
-    },
-    level: {
-      number: number,
-      'undefined': 'undefined'
-    },
-    margin: {
-      top: {
-        number: number
-      },
-      right: {
-        number: number
-      },
-      bottom: {
-        number: number
-      },
-      left: {
-        number: number
-      },
-      __type__: {
-        object: object,
-        number: number
-      }
-    },
-    mass: {
-      number: number
-    },
-    physics: {
-      boolean: bool
-    },
-    scaling: {
-      min: {
-        number: number
-      },
-      max: {
-        number: number
-      },
-      label: {
-        enabled: {
-          boolean: bool
-        },
-        min: {
-          number: number
-        },
-        max: {
-          number: number
-        },
-        maxVisible: {
-          number: number
-        },
-        drawThreshold: {
-          number: number
-        },
-        __type__: {
-          object: object,
-          boolean: bool
-        }
-      },
-      customScalingFunction: {
-        'function': 'function'
-      },
-      __type__: {
-        object: object
-      }
-    },
-    shadow: {
-      enabled: {
-        boolean: bool
-      },
-      color: {
-        string: string
-      },
-      size: {
-        number: number
-      },
-      x: {
-        number: number
-      },
-      y: {
-        number: number
-      },
-      __type__: {
-        object: object,
-        boolean: bool
-      }
-    },
-    shape: {
-      string: ['custom', 'ellipse', 'circle', 'database', 'box', 'text', 'image', 'circularImage', 'diamond', 'dot', 'star', 'triangle', 'triangleDown', 'square', 'icon', 'hexagon']
-    },
-    ctxRenderer: {
-      'function': 'function'
-    },
-    shapeProperties: {
-      borderDashes: {
-        boolean: bool,
-        array: array
-      },
-      borderRadius: {
-        number: number
-      },
-      interpolation: {
-        boolean: bool
-      },
-      useImageSize: {
-        boolean: bool
-      },
-      useBorderWithImage: {
-        boolean: bool
-      },
-      coordinateOrigin: {
-        string: ['center', 'top-left']
-      },
-      __type__: {
-        object: object
-      }
-    },
-    size: {
-      number: number
-    },
-    title: {
-      string: string,
-      dom: dom,
-      'undefined': 'undefined'
-    },
-    value: {
-      number: number,
-      'undefined': 'undefined'
-    },
-    widthConstraint: {
-      minimum: {
-        number: number
-      },
-      maximum: {
-        number: number
-      },
-      __type__: {
-        object: object,
-        boolean: bool,
-        number: number
-      }
-    },
-    x: {
-      number: number
-    },
-    y: {
-      number: number
-    },
-    __type__: {
-      object: object
-    }
-  },
+  nodes: nodeOptions,
   physics: {
     enabled: {
       boolean: bool
@@ -41919,9 +42634,8 @@ var allOptions$1 = {
     minVelocity: {
       number: number
     },
-    // px/s
     solver: {
-      string: ['barnesHut', 'repulsion', 'hierarchicalRepulsion', 'forceAtlas2Based']
+      string: ["barnesHut", "repulsion", "hierarchicalRepulsion", "forceAtlas2Based"]
     },
     stabilization: {
       enabled: {
@@ -41930,7 +42644,6 @@ var allOptions$1 = {
       iterations: {
         number: number
       },
-      // maximum number of iteration to stabilize
       updateInterval: {
         number: number
       },
@@ -41995,8 +42708,8 @@ var allOptions$1 = {
     object: object
   }
 };
-allOptions$1.groups.__any__ = allOptions$1.nodes;
-allOptions$1.manipulation.controlNodeStyle = allOptions$1.nodes;
+/* eslint-enable @typescript-eslint/naming-convention */
+
 /**
  * This provides ranges, initial values, steps and dropdown menu choices for the
  * configuration.
@@ -42027,15 +42740,15 @@ var configureOptions = {
     borderWidth: [1, 0, 10, 1],
     borderWidthSelected: [2, 0, 10, 1],
     color: {
-      border: ['color', '#2B7CE9'],
-      background: ['color', '#97C2FC'],
+      border: ["color", "#2B7CE9"],
+      background: ["color", "#97C2FC"],
       highlight: {
-        border: ['color', '#2B7CE9'],
-        background: ['color', '#D2E5FF']
+        border: ["color", "#2B7CE9"],
+        background: ["color", "#D2E5FF"]
       },
       hover: {
-        border: ['color', '#2B7CE9'],
-        background: ['color', '#D2E5FF']
+        border: ["color", "#2B7CE9"],
+        background: ["color", "#D2E5FF"]
       }
     },
     opacity: [0, 0, 1, 0.1],
@@ -42044,14 +42757,12 @@ var configureOptions = {
       y: false
     },
     font: {
-      color: ['color', '#343434'],
+      color: ["color", "#343434"],
       size: [14, 0, 100, 1],
-      // px
-      face: ['arial', 'verdana', 'tahoma'],
-      background: ['color', 'none'],
+      face: ["arial", "verdana", "tahoma"],
+      background: ["color", "none"],
       strokeWidth: [0, 0, 50, 1],
-      // px
-      strokeColor: ['color', '#ffffff']
+      strokeColor: ["color", "#ffffff"]
     },
     //group: 'string',
     hidden: false,
@@ -42077,12 +42788,12 @@ var configureOptions = {
     },
     shadow: {
       enabled: false,
-      color: 'rgba(0,0,0,0.5)',
+      color: "rgba(0,0,0,0.5)",
       size: [10, 0, 20, 1],
       x: [5, -30, 30, 1],
       y: [5, -30, 30, 1]
     },
-    shape: ['ellipse', 'box', 'circle', 'database', 'diamond', 'dot', 'square', 'star', 'text', 'triangle', 'triangleDown', 'hexagon'],
+    shape: ["ellipse", "box", "circle", "database", "diamond", "dot", "square", "star", "text", "triangle", "triangleDown", "hexagon"],
     shapeProperties: {
       borderDashes: false,
       borderRadius: [6, 0, 20, 1],
@@ -42096,17 +42807,17 @@ var configureOptions = {
       to: {
         enabled: false,
         scaleFactor: [1, 0, 3, 0.05],
-        type: 'arrow'
+        type: "arrow"
       },
       middle: {
         enabled: false,
         scaleFactor: [1, 0, 3, 0.05],
-        type: 'arrow'
+        type: "arrow"
       },
       from: {
         enabled: false,
         scaleFactor: [1, 0, 3, 0.05],
-        type: 'arrow'
+        type: "arrow"
       }
     },
     endPointOffset: {
@@ -42115,23 +42826,21 @@ var configureOptions = {
     },
     arrowStrikethrough: true,
     color: {
-      color: ['color', '#848484'],
-      highlight: ['color', '#848484'],
-      hover: ['color', '#848484'],
-      inherit: ['from', 'to', 'both', true, false],
+      color: ["color", "#848484"],
+      highlight: ["color", "#848484"],
+      hover: ["color", "#848484"],
+      inherit: ["from", "to", "both", true, false],
       opacity: [1, 0, 1, 0.05]
     },
     dashes: false,
     font: {
-      color: ['color', '#343434'],
+      color: ["color", "#343434"],
       size: [14, 0, 100, 1],
-      // px
-      face: ['arial', 'verdana', 'tahoma'],
-      background: ['color', 'none'],
+      face: ["arial", "verdana", "tahoma"],
+      background: ["color", "none"],
       strokeWidth: [2, 0, 50, 1],
-      // px
-      strokeColor: ['color', '#ffffff'],
-      align: ['horizontal', 'top', 'middle', 'bottom']
+      strokeColor: ["color", "#ffffff"],
+      align: ["horizontal", "top", "middle", "bottom"]
     },
     hidden: false,
     hoverWidth: [1.5, 0, 5, 0.1],
@@ -42157,15 +42866,15 @@ var configureOptions = {
     },
     shadow: {
       enabled: false,
-      color: 'rgba(0,0,0,0.5)',
+      color: "rgba(0,0,0,0.5)",
       size: [10, 0, 20, 1],
       x: [5, -30, 30, 1],
       y: [5, -30, 30, 1]
     },
     smooth: {
       enabled: true,
-      type: ['dynamic', 'continuous', 'discrete', 'diagonalCross', 'straightCross', 'horizontal', 'vertical', 'curvedCW', 'curvedCCW', 'cubicBezier'],
-      forceDirection: ['horizontal', 'vertical', 'none'],
+      type: ["dynamic", "continuous", "discrete", "diagonalCross", "straightCross", "horizontal", "vertical", "curvedCW", "curvedCCW", "cubicBezier"],
+      forceDirection: ["horizontal", "vertical", "none"],
       roundness: [0.5, 0, 1, 0.05]
     },
     width: [1, 0, 30, 1]
@@ -42181,12 +42890,9 @@ var configureOptions = {
       blockShifting: true,
       edgeMinimization: true,
       parentCentralization: true,
-      direction: ['UD', 'DU', 'LR', 'RL'],
-      // UD, DU, LR, RL
-      sortMethod: ['hubsize', 'directed'],
-      // hubsize, directed
-      shakeTowards: ['leaves', 'roots'] // leaves, roots
-
+      direction: ["UD", "DU", "LR", "RL"],
+      sortMethod: ["hubsize", "directed"],
+      shakeTowards: ["leaves", "roots"]
     }
   },
   interaction: {
@@ -42255,18 +42961,27 @@ var configureOptions = {
     },
     maxVelocity: [50, 0, 150, 1],
     minVelocity: [0.1, 0.01, 0.5, 0.01],
-    solver: ['barnesHut', 'forceAtlas2Based', 'repulsion', 'hierarchicalRepulsion'],
+    solver: ["barnesHut", "forceAtlas2Based", "repulsion", "hierarchicalRepulsion"],
     timestep: [0.5, 0.01, 1, 0.01],
     wind: {
       x: [0, -10, 10, 0.1],
       y: [0, -10, 10, 0.1]
-    } //adaptiveTimestep: true
-
+    }
   }
+};
+var configuratorHideOption = function configuratorHideOption(parentPath, optionName, options) {
+  var _context;
+
+  if (includes$4(parentPath).call(parentPath, "physics") && includes$4(_context = configureOptions.physics.solver).call(_context, optionName) && options.physics.solver !== optionName && optionName !== "wind") {
+    return true;
+  }
+
+  return false;
 };
 
 var allOptions$2 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
+	configuratorHideOption: configuratorHideOption,
 	allOptions: allOptions$1,
 	configureOptions: configureOptions
 });
@@ -42285,7 +43000,7 @@ var FloydWarshall = /*#__PURE__*/function () {
   }
   /**
    *
-   * @param {Object} body
+   * @param {object} body
    * @param {Array.<Node>} nodesArray
    * @param {Array.<Edge>} edgesArray
    * @returns {{}}
@@ -42356,7 +43071,7 @@ var FloydWarshall = /*#__PURE__*/function () {
 
 var KamadaKawai = /*#__PURE__*/function () {
   /**
-   * @param {Object} body
+   * @param {object} body
    * @param {number} edgeLength
    * @param {number} edgeStrength
    */
@@ -42370,7 +43085,8 @@ var KamadaKawai = /*#__PURE__*/function () {
   }
   /**
    * Not sure if needed but can be used to update the spring length and spring constant
-   * @param {Object} options
+   *
+   * @param {object} options
    */
 
 
@@ -42389,6 +43105,7 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      * Position the system
+     *
      * @param {Array.<Node>} nodesArray
      * @param {Array.<vis.Edge>} edgesArray
      * @param {boolean} [ignoreClusters=false]
@@ -42454,6 +43171,7 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      * get the node with the highest energy
+     *
      * @param {boolean} ignoreClusters
      * @returns {number[]}
      * @private
@@ -42472,7 +43190,7 @@ var KamadaKawai = /*#__PURE__*/function () {
       for (var nodeIdx = 0; nodeIdx < nodesArray.length; nodeIdx++) {
         var m = nodesArray[nodeIdx]; // by not evaluating nodes with predefined positions we should only move nodes that have no positions.
 
-        if (nodes[m].predefinedPosition === false || nodes[m].isCluster === true && ignoreClusters === true || nodes[m].options.fixed.x === true || nodes[m].options.fixed.y === true) {
+        if (nodes[m].predefinedPosition !== true || nodes[m].isCluster === true && ignoreClusters === true || nodes[m].options.fixed.x !== true || nodes[m].options.fixed.y !== true) {
           var _this$_getEnergy3 = this._getEnergy(m),
               _this$_getEnergy4 = slicedToArray(_this$_getEnergy3, 3),
               delta_m = _this$_getEnergy4[0],
@@ -42492,6 +43210,7 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      * calculate the energy of a single node
+     *
      * @param {Node.id} m
      * @returns {number[]}
      * @private
@@ -42510,6 +43229,7 @@ var KamadaKawai = /*#__PURE__*/function () {
     /**
      * move the node based on it's energy
      * the dx and dy are calculated from the linear system proposed by Kamada and Kawai
+     *
      * @param {number} m
      * @param {number} dE_dx
      * @param {number} dE_dy
@@ -42561,7 +43281,8 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      * Create the L matrix: edge length times shortest path
-     * @param {Object} D_matrix
+     *
+     * @param {object} D_matrix
      * @private
      */
 
@@ -42582,7 +43303,8 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      * Create the K matrix: spring constants times shortest path
-     * @param {Object} D_matrix
+     *
+     * @param {object} D_matrix
      * @private
      */
 
@@ -42603,6 +43325,7 @@ var KamadaKawai = /*#__PURE__*/function () {
     }
     /**
      *  Create matrix with all energies between nodes
+     *
      *  @private
      */
 
@@ -42700,11 +43423,11 @@ var KamadaKawai = /*#__PURE__*/function () {
  *
  * @param {Element} container   The DOM element in which the Network will
  *                                  be created. Normally a div element.
- * @param {Object} data         An object containing parameters
+ * @param {object} data         An object containing parameters
  *                              {Array} nodes
  *                              {Array} edges
- * @param {Object} options      Options
- * @constructor Network
+ * @param {object} options      Options
+ * @class Network
  */
 
 function Network(container, data, options) {
@@ -42715,13 +43438,13 @@ function Network(container, data, options) {
       _this = this;
 
   if (!(this instanceof Network)) {
-    throw new SyntaxError('Constructor must be called with the new operator');
+    throw new SyntaxError("Constructor must be called with the new operator");
   } // set constant values
 
 
   this.options = {};
   this.defaultOptions = {
-    locale: 'en',
+    locale: "en",
     locales: locales,
     clickToUse: false
   };
@@ -42847,7 +43570,8 @@ function Network(container, data, options) {
 componentEmitter(Network.prototype);
 /**
  * Set options
- * @param {Object} options
+ *
+ * @param {object} options
  */
 
 Network.prototype.setOptions = function (options) {
@@ -42858,14 +43582,14 @@ Network.prototype.setOptions = function (options) {
   }
 
   if (options !== undefined) {
-    var errorFound = Validator.validate(options, allOptions$1);
+    var errorFound = Validator$1.validate(options, allOptions$1);
 
     if (errorFound === true) {
-      console.log('%cErrors have been found in the supplied options object.', printStyle);
+      console.error("%cErrors have been found in the supplied options object.", VALIDATOR_PRINT_STYLE$1);
     } // copy the global fields over
 
 
-    var fields = ['locale', 'locales', 'clickToUse'];
+    var fields = ["locale", "locales", "clickToUse"];
     selectiveDeepExtend(fields, this.options, options); // normalize the locale or use English
 
     if (options.locale !== undefined) {
@@ -42896,9 +43620,9 @@ Network.prototype.setOptions = function (options) {
     //this.clustering.setOptions(options.clustering);
 
 
-    if ('configure' in options) {
+    if ("configure" in options) {
       if (!this.configurator) {
-        this.configurator = new Configurator(this, this.body.container, configureOptions, this.canvas.pixelRatio);
+        this.configurator = new Configurator$1(this, this.body.container, configureOptions, this.canvas.pixelRatio, configuratorHideOption);
       }
 
       this.configurator.setOptions(options.configure);
@@ -42934,8 +43658,8 @@ Network.prototype.setOptions = function (options) {
     if (options.clickToUse !== undefined) {
       if (options.clickToUse === true) {
         if (this.activator === undefined) {
-          this.activator = new Activator(this.canvas.frame);
-          this.activator.on('change', function () {
+          this.activator = new Activator$1(this.canvas.frame);
+          this.activator.on("change", function () {
             _this2.body.emitter.emit("activate");
           });
         }
@@ -42989,8 +43713,8 @@ Network.prototype._updateVisibleIndices = function () {
       var fromNode = nodes[edge.fromId];
       var toNode = nodes[edge.toId];
       var edgeNodesPresent = fromNode !== undefined && toNode !== undefined;
-      var isVisible = !this.clustering._isClusteredEdge(edgeId) && edge.options.hidden === false && edgeNodesPresent && fromNode.options.hidden === false // Also hidden if any of its connecting nodes are hidden
-      && toNode.options.hidden === false; // idem
+      var isVisible = !this.clustering._isClusteredEdge(edgeId) && edge.options.hidden === false && edgeNodesPresent && fromNode.options.hidden === false && // Also hidden if any of its connecting nodes are hidden
+      toNode.options.hidden === false; // idem
 
       if (isVisible) {
         this.body.edgeIndices.push(edge.id);
@@ -43033,7 +43757,7 @@ Network.prototype.bindEventListeners = function () {
 /**
  * Set nodes and edges, and optionally options as well.
  *
- * @param {Object} data              Object containing parameters:
+ * @param {object} data              Object containing parameters:
  *                                   {Array | DataSet | DataView} [nodes] Array with nodes
  *                                   {Array | DataSet | DataView} [edges] Array with edges
  *                                   {String} [dot] String containing data in DOT format
@@ -43057,14 +43781,14 @@ Network.prototype.setData = function (data) {
   this.setOptions(data && data.options); // set all data
 
   if (data && data.dot) {
-    console.log('The dot property has been deprecated. Please use the static convertDot method to convert DOT into vis.network format and use the normal data format with nodes and edges. This converter is used like this: var data = vis.network.convertDot(dotString);'); // parse DOT file
+    console.warn("The dot property has been deprecated. Please use the static convertDot method to convert DOT into vis.network format and use the normal data format with nodes and edges. This converter is used like this: var data = vis.network.convertDot(dotString);"); // parse DOT file
 
     var dotData = DOTToGraph(data.dot);
     this.setData(dotData);
     return;
   } else if (data && data.gephi) {
     // parse DOT file
-    console.log('The gephi property has been deprecated. Please use the static convertGephi method to convert gephi into vis.network format and use the normal data format with nodes and edges. This converter is used like this: var data = vis.network.convertGephi(gephiJson);');
+    console.warn("The gephi property has been deprecated. Please use the static convertGephi method to convert gephi into vis.network format and use the normal data format with nodes and edges. This converter is used like this: var data = vis.network.convertGephi(gephiJson);");
     var gephiData = parseGephi(data.gephi);
     this.setData(gephiData);
     return;
@@ -43125,7 +43849,8 @@ Network.prototype.destroy = function () {
 /**
  * Update the values of all object in the given array according to the current
  * value range of the objects in the array.
- * @param {Object} obj    An object containing a set of Edges or Nodes
+ *
+ * @param {object} obj    An object containing a set of Edges or Nodes
  *                        The objects must have a method getValue() and
  *                        setValueRange(min, max).
  * @private
@@ -43162,6 +43887,7 @@ Network.prototype._updateValueRange = function (obj) {
 };
 /**
  * Returns true when the Network is active.
+ *
  * @returns {boolean}
  */
 
@@ -43280,7 +44006,7 @@ Network.prototype.editNode = function () {
 };
 
 Network.prototype.editNodeMode = function () {
-  console.log("Deprecated: Please use editNode instead of editNodeMode.");
+  console.warn("Deprecated: Please use editNode instead of editNodeMode.");
   return this.manipulation.editNode.apply(this.manipulation, arguments);
 };
 
@@ -43349,11 +44075,11 @@ Network.prototype.setSelection = function () {
 };
 
 Network.prototype.getSelectedNodes = function () {
-  return this.selectionHandler.getSelectedNodes.apply(this.selectionHandler, arguments);
+  return this.selectionHandler.getSelectedNodeIds.apply(this.selectionHandler, arguments);
 };
 
 Network.prototype.getSelectedEdges = function () {
-  return this.selectionHandler.getSelectedEdges.apply(this.selectionHandler, arguments);
+  return this.selectionHandler.getSelectedEdgeIds.apply(this.selectionHandler, arguments);
 };
 
 Network.prototype.getNodeAt = function () {
@@ -43431,7 +44157,8 @@ Network.prototype.getOptionsFromConfigurator = function () {
 
 /**
  * this prepares the JSON container for allocating SVG elements
- * @param {Object} JSONcontainer
+ *
+ * @param {object} JSONcontainer
  * @private
  */
 function prepareElements(JSONcontainer) {
@@ -43447,7 +44174,7 @@ function prepareElements(JSONcontainer) {
  * this cleans up all the unused SVG elements. By asking for the parentNode, we only need to supply the JSON container from
  * which to remove the redundant elements.
  *
- * @param {Object} JSONcontainer
+ * @param {object} JSONcontainer
  * @private
  */
 
@@ -43467,7 +44194,8 @@ function cleanupElements(JSONcontainer) {
 }
 /**
  * Ensures that all elements are removed first up so they can be recreated cleanly
- * @param {Object} JSONcontainer
+ *
+ * @param {object} JSONcontainer
  */
 
 function resetElements(JSONcontainer) {
@@ -43480,8 +44208,8 @@ function resetElements(JSONcontainer) {
  * the JSON container and the SVG container have to be supplied so other svg containers (like the legend) can use this.
  *
  * @param {string} elementType
- * @param {Object} JSONcontainer
- * @param {Object} svgContainer
+ * @param {object} JSONcontainer
+ * @param {object} svgContainer
  * @returns {Element}
  * @private
  */
@@ -43497,12 +44225,12 @@ function getSVGElement(elementType, JSONcontainer, svgContainer) {
       JSONcontainer[elementType].redundant.shift();
     } else {
       // create a new element and add it to the SVG
-      element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
+      element = document.createElementNS("http://www.w3.org/2000/svg", elementType);
       svgContainer.appendChild(element);
     }
   } else {
     // create a new element and add it to the SVG, also create a new object in the svgElements to keep track of it.
-    element = document.createElementNS('http://www.w3.org/2000/svg', elementType);
+    element = document.createElementNS("http://www.w3.org/2000/svg", elementType);
     JSONcontainer[elementType] = {
       used: [],
       redundant: []
@@ -43518,7 +44246,7 @@ function getSVGElement(elementType, JSONcontainer, svgContainer) {
  * the JSON container and the SVG container have to be supplied so other svg containers (like the legend) can use this.
  *
  * @param {string} elementType
- * @param {Object} JSONcontainer
+ * @param {object} JSONcontainer
  * @param {Element} DOMContainer
  * @param {Element} insertBefore
  * @returns {*}
@@ -43568,23 +44296,24 @@ function getDOMElement(elementType, JSONcontainer, DOMContainer, insertBefore) {
  *
  * @param {number} x
  * @param {number} y
- * @param {Object} groupTemplate: A template containing the necessary information to draw the datapoint e.g., {style: 'circle', size: 5, className: 'className' }
- * @param {Object} JSONcontainer
- * @param {Object} svgContainer
- * @param {Object} labelObj
+ * @param {object} groupTemplate: A template containing the necessary information to draw the datapoint e.g., {style: 'circle', size: 5, className: 'className' }
+ * @param groupTemplate
+ * @param {object} JSONcontainer
+ * @param {object} svgContainer
+ * @param {object} labelObj
  * @returns {vis.PointItem}
  */
 
 function drawPoint(x, y, groupTemplate, JSONcontainer, svgContainer, labelObj) {
   var point;
 
-  if (groupTemplate.style == 'circle') {
-    point = getSVGElement('circle', JSONcontainer, svgContainer);
+  if (groupTemplate.style == "circle") {
+    point = getSVGElement("circle", JSONcontainer, svgContainer);
     point.setAttributeNS(null, "cx", x);
     point.setAttributeNS(null, "cy", y);
     point.setAttributeNS(null, "r", 0.5 * groupTemplate.size);
   } else {
-    point = getSVGElement('rect', JSONcontainer, svgContainer);
+    point = getSVGElement("rect", JSONcontainer, svgContainer);
     point.setAttributeNS(null, "x", x - 0.5 * groupTemplate.size);
     point.setAttributeNS(null, "y", y - 0.5 * groupTemplate.size);
     point.setAttributeNS(null, "width", groupTemplate.size);
@@ -43598,7 +44327,7 @@ function drawPoint(x, y, groupTemplate, JSONcontainer, svgContainer, labelObj) {
   point.setAttributeNS(null, "class", groupTemplate.className + " vis-point"); //handle label
 
   if (labelObj) {
-    var label = getSVGElement('text', JSONcontainer, svgContainer);
+    var label = getSVGElement("text", JSONcontainer, svgContainer);
 
     if (labelObj.xOffset) {
       x = x + labelObj.xOffset;
@@ -43630,8 +44359,8 @@ function drawPoint(x, y, groupTemplate, JSONcontainer, svgContainer, labelObj) {
  * @param {number} width
  * @param {number} height
  * @param {string} className
- * @param {Object} JSONcontainer
- * @param {Object} svgContainer
+ * @param {object} JSONcontainer
+ * @param {object} svgContainer
  * @param {string} style
  */
 
@@ -43642,7 +44371,7 @@ function drawBar(x, y, width, height, className, JSONcontainer, svgContainer, st
       y -= height;
     }
 
-    var rect = getSVGElement('rect', JSONcontainer, svgContainer);
+    var rect = getSVGElement("rect", JSONcontainer, svgContainer);
     rect.setAttributeNS(null, "x", x - 0.5 * width);
     rect.setAttributeNS(null, "y", y);
     rect.setAttributeNS(null, "width", width);
@@ -43682,7 +44411,7 @@ var indexLegacy = /*#__PURE__*/Object.freeze({
 	DOMutil: DOMutil,
 	util: index,
 	data: index$2,
-	Hammer: hammer,
+	Hammer: Hammer$1$1,
 	keycharm: keycharm$1,
 	DataSet: DataSet,
 	DataView: DataView,
@@ -43691,5 +44420,5 @@ var indexLegacy = /*#__PURE__*/Object.freeze({
 });
 
 export default indexLegacy;
-export { DOMutil, DataSet, DataView, hammer as Hammer, Network, Queue, index$2 as data, keycharm$1 as keycharm, network, index as util };
+export { DOMutil, DataSet, DataView, Hammer$1$1 as Hammer, Network, Queue, index$2 as data, keycharm$1 as keycharm, network, index as util };
 //# sourceMappingURL=vis-network.esm.js.map
