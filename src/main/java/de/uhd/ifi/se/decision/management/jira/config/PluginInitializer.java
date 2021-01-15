@@ -79,49 +79,47 @@ public class PluginInitializer {
 		return newIssueType;
 	}
 
-	public static void createLinkType(String linkTypeName) {
+	public static boolean createLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
 		if (types == null) {
-			return;
+			return false;
 		}
 		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
 		if (!type.isEmpty()) {
-			return;
+			return false;
 		}
 		LinkType linktype = LinkType.getLinkType(linkTypeName);
 		linkTypeManager.createIssueLinkType(linktype.getName(), linktype.getOutwardName(), linktype.getInwardName(),
 				linktype.getStyle());
+		return true;
 	}
 
-	public static void removeLinkType(String linkTypeName) {
+	public static boolean removeLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
 		if (types == null) {
-			return;
+			return false;
 		}
 		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
 		type.ifPresent(issueLinkType -> linkTypeManager.removeIssueLinkType(issueLinkType.getId()));
+		return true;
 	}
 
-	public static void addLinkTypeToScheme(String linkTypeName, String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+	public static boolean addLinkTypeToScheme(String linkTypeName, String projectKey) {
+		if (linkTypeName == null || projectKey == null) {
+			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		createLinkType(linkTypeName);
+		return createLinkType(linkTypeName);
 	}
 
-	public static void removeLinkTypeFromScheme(String linkTypeName, String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+	public static boolean removeLinkTypeFromScheme(String linkTypeName, String projectKey) {
+		if (linkTypeName == null || projectKey == null) {
+			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		removeLinkType(linkTypeName);
+		return removeLinkType(linkTypeName);
 	}
 
 	public static String getFileName(String issueTypeName) {
@@ -132,9 +130,9 @@ public class PluginInitializer {
 		return ComponentGetter.getUrlOfImageFolder() + getFileName(issueTypeName);
 	}
 
-	public static void addIssueTypeToScheme(IssueType jiraIssueType, String projectKey) {
+	public static boolean addIssueTypeToScheme(IssueType jiraIssueType, String projectKey) {
 		if (jiraIssueType == null || projectKey == null) {
-			return;
+			return false;
 		}
 
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
@@ -147,8 +145,8 @@ public class PluginInitializer {
 			final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
 			options.addOption(IssueFieldConstants.ISSUE_TYPE, jiraIssueType.getId());
 			issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-			return;
 		}
+		return true;
 	}
 
 	/**
@@ -210,11 +208,11 @@ public class PluginInitializer {
 		return jiraWorkflow;
 	}
 
-	public static void removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
+	public static boolean removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+		if (issueTypeName == null || issueTypes == null || projectKey == null) {
+			return false;
 		}
 
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
@@ -233,8 +231,8 @@ public class PluginInitializer {
 					}
 				}
 				issueTypeSchemeManager.update(configScheme, optionIds);
-				return;
 			}
 		}
+		return true;
 	}
 }

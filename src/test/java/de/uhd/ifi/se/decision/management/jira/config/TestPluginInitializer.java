@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -15,84 +18,100 @@ public class TestPluginInitializer extends TestSetUp {
 	}
 
 	@Test
+	public void testCreateIssueTypeAlreadyExisting() {
+		assertEquals("Decision", PluginInitializer.createIssueType("Decision").getName());
+	}
+
+	@Test
+	public void testCreateIssueTypeNew() {
+		assertEquals("Brand new issue type", PluginInitializer.createIssueType("Brand new issue type").getName());
+	}
+
+	@Test
 	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
-		PluginInitializer.addIssueTypeToScheme(null, null);
+		assertFalse(PluginInitializer.addIssueTypeToScheme(null, null));
 	}
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
-		PluginInitializer.addIssueTypeToScheme(null, "TEST");
+		assertFalse(PluginInitializer.addIssueTypeToScheme(null, "TEST"));
 	}
 
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
-		PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), null);
+		assertFalse(PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), null));
 	}
 
-	@Ignore
 	@Test
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
-		PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), "TEST");
+		assertTrue(PluginInitializer.addIssueTypeToScheme(JiraIssueTypes.getTestTypes().get(0), "TEST"));
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
-		PluginInitializer.removeIssueTypeFromScheme(null, null);
+		assertFalse(PluginInitializer.removeIssueTypeFromScheme(null, null));
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
-		PluginInitializer.removeIssueTypeFromScheme(null, "TEST");
+		assertFalse(PluginInitializer.removeIssueTypeFromScheme(null, "TEST"));
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
-		PluginInitializer.removeIssueTypeFromScheme("Decision", null);
+		assertFalse(PluginInitializer.removeIssueTypeFromScheme("Decision", null));
 	}
 
 	@Test
 	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
-		PluginInitializer.removeIssueTypeFromScheme("Decision", "TEST");
+		assertTrue(PluginInitializer.removeIssueTypeFromScheme("Decision", "TEST"));
 	}
 
 	@Test
 	public void testRemoveLinkTypeFromSchemeLinkTypeNullProjectKeyNull() {
-		PluginInitializer.removeLinkTypeFromScheme(null, null);
+		assertFalse(PluginInitializer.removeLinkTypeFromScheme(null, null));
 	}
 
 	@Test
 	public void testRemoveLinkTypeFromSchemeLinkTypeNullProjectKeyFilled() {
-		PluginInitializer.removeLinkTypeFromScheme(null, "TEST");
+		assertFalse(PluginInitializer.removeLinkTypeFromScheme(null, "TEST"));
 	}
 
 	@Test
 	public void testRemoveLinkTypeFromSchemeLinkTypeFilledProjectKeyNull() {
-		PluginInitializer.removeLinkTypeFromScheme("Decision", null);
+		assertFalse(PluginInitializer.removeLinkTypeFromScheme("Decision", null));
 	}
 
 	@Test
 	public void testRemoveLinkTypeFromSchemeLinkTypeFilledProjectKeyFilled() {
-		PluginInitializer.removeLinkTypeFromScheme("Decision", "TEST");
+		assertTrue(PluginInitializer.removeLinkTypeFromScheme("Decision", "TEST"));
 	}
 
 	@Test
 	public void testAddLinkTypeToSchemeLinkTypeNullProjectKeyNull() {
-		PluginInitializer.addLinkTypeToScheme(null, null);
+		assertFalse(PluginInitializer.addLinkTypeToScheme(null, null));
 	}
 
 	@Test
 	public void testAddLinkTypeToSchemeLinkTypeNullProjectKeyFilled() {
-		PluginInitializer.addLinkTypeToScheme(null, "TEST");
+		assertFalse(PluginInitializer.addLinkTypeToScheme(null, "TEST"));
 	}
 
 	@Test
 	public void testAddLinkTypeToSchemeLinkTypeFilledProjectKeyNull() {
-		PluginInitializer.addLinkTypeToScheme("Decision", null);
+		assertFalse(PluginInitializer.addLinkTypeToScheme("Decision", null));
 	}
 
 	@Test
 	public void testAddLinkTypeToSchemeLinkTypeFilledProjectKeyFilled() {
-		PluginInitializer.addLinkTypeToScheme("Decision", "TEST");
+		assertTrue(PluginInitializer.addLinkTypeToScheme("Decision", "TEST"));
+	}
+
+	@Test
+	public void testGetIconUrl() {
+		assertEquals(
+				"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png",
+				PluginInitializer.getIconUrl("decision"));
 	}
 
 }

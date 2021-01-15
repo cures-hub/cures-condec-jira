@@ -12,15 +12,16 @@ import com.atlassian.jira.mock.MockConstantsManager;
 public class MockIssueTypeManager implements IssueTypeManager {
 
 	private Collection<IssueType> types;
+	private ConstantsManager constantsManager;
 
 	public MockIssueTypeManager() {
 		super();
 		types = new ArrayList<>();
+		constantsManager = new MockConstantsManager();
 		addingAllIssueTypes();
 	}
 
 	public void addingAllIssueTypes() {
-		ConstantsManager constantsManager = new MockConstantsManager();
 		try {
 			constantsManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
 			constantsManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
@@ -53,12 +54,18 @@ public class MockIssueTypeManager implements IssueTypeManager {
 
 	@Override
 	public IssueType createIssueType(String arg0, String arg1, String arg2) {
-		return null;
+		return createIssueType(arg0, arg1, Long.parseLong(arg2));
 	}
 
 	@Override
-	public IssueType createIssueType(String arg0, String arg1, Long arg2) {
-		return null;
+	public IssueType createIssueType(String name, String description, Long id) {
+		IssueType newType = null;
+		try {
+			newType = constantsManager.insertIssueType(name, (long) 123, description, description, (long) 123);
+		} catch (CreateException e) {
+			System.err.println(e.getMessage());
+		}
+		return newType;
 	}
 
 	@Override
