@@ -1,19 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.mock.MockConstantsManager;
-import de.uhd.ifi.se.decision.management.jira.config.TestPluginInitializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class MockIssueTypeManager implements IssueTypeManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MockIssueTypeManager.class);
 
 	private Collection<IssueType> types;
 
@@ -24,13 +20,31 @@ public class MockIssueTypeManager implements IssueTypeManager {
 	}
 
 	public void addingAllIssueTypes() {
-		ConstantsManager constManager = new MockConstantsManager();
+		ConstantsManager constantsManager = new MockConstantsManager();
 		try {
-			TestPluginInitializer.addAllIssueTypesToConstantsManager(constManager);
+			constantsManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
+			constantsManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
 		} catch (CreateException e) {
-			LOGGER.error(e.getMessage());
+			System.err.println(e.getMessage());
 		}
-		types.addAll(constManager.getAllIssueTypeObjects());
+		types.addAll(constantsManager.getAllIssueTypeObjects());
+	}
+
+	public static void addAllIssueTypesToConstantsManager(ConstantsManager constantsManager) throws CreateException {
+
+		// Adding all Issue Types
+
 	}
 
 	public void addIssueType(Collection<IssueType> issueTypes) {

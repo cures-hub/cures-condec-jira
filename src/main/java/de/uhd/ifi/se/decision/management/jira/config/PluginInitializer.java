@@ -8,11 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.inject.Named;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.core.util.ClassLoaderUtils;
 import com.atlassian.jira.avatar.Avatar;
@@ -52,15 +49,8 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 /**
  * Handles plug-in initialization
  */
-@Named("PluginInitializer")
-public class PluginInitializer implements InitializingBean {
+public class PluginInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginInitializer.class);
-
-	@Override
-	public void afterPropertiesSet() {
-		createDecisionKnowledgeIssueTypes();
-		createDecisionKnowledgeLinkTypes();
-	}
 
 	public void createDecisionKnowledgeIssueTypes() {
 		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
