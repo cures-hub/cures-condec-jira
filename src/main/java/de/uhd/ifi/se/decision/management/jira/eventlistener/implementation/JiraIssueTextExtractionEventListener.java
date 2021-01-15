@@ -35,7 +35,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 	private String projectKey;
 	private IssueEvent issueEvent;
-	private ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments;
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextExtractionEventListener.class);
 
 	/**
@@ -44,15 +43,6 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	 * does not fire.
 	 */
 	public static boolean editLock;
-
-	public JiraIssueTextExtractionEventListener(
-			ClassificationManagerForJiraIssueText classificationManagerForJiraIssueComments) {
-		this.classificationManagerForJiraIssueComments = classificationManagerForJiraIssueComments;
-	}
-
-	public JiraIssueTextExtractionEventListener() {
-		this.classificationManagerForJiraIssueComments = new ClassificationManagerForJiraIssueText();
-	}
 
 	/**
 	 * @issue How to implement the handling of the concrete event?
@@ -115,7 +105,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 
 		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
-			classificationManagerForJiraIssueComments.classifyComment(issueEvent.getComment());
+			new ClassificationManagerForJiraIssueText(projectKey).classifyComment(issueEvent.getComment());
 		} else {
 			MutableComment comment = (MutableComment) ComponentAccessor.getCommentManager()
 					.getCommentById(issueEvent.getComment().getId());
@@ -147,7 +137,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 			// TODO This seems not to work for manual classified sentences. Check and fix
-			classificationManagerForJiraIssueComments.classifyDescription((MutableIssue) issueEvent.getIssue());
+			new ClassificationManagerForJiraIssueText(projectKey).classifyDescription(issueEvent.getIssue());
 		} else {
 			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
 		}
@@ -213,7 +203,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (positionOfTerminator > 0) {
 			positionOfTerminator += positionOfIcon;
 			textWithoutIcon = text.substring(0, positionOfTerminator) + type.getTag()
-					+ text.substring(positionOfTerminator);
+			+ text.substring(positionOfTerminator);
 		} else {
 			textWithoutIcon += type.getTag();
 		}

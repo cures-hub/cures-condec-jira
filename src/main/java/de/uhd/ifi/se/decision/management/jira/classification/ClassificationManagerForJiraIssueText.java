@@ -22,6 +22,13 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  */
 public class ClassificationManagerForJiraIssueText {
 
+	private JiraIssueTextPersistenceManager persistenceManager;
+
+	public ClassificationManagerForJiraIssueText(String projectKey) {
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+	}
+
 	/**
 	 * Splits the description and all comments of the Jira issue into sentences,
 	 * i.e. {@link PartOfJiraIssueText} objects and predicts whether each sentence
@@ -51,8 +58,6 @@ public class ClassificationManagerForJiraIssueText {
 	 *            Jira issue.
 	 */
 	public void classifyDescription(Issue issue) {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(issue.getProjectObject().getKey()).getJiraIssueTextManager();
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager
 				.updateElementsOfDescriptionInDatabase(issue);
 		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
@@ -70,8 +75,6 @@ public class ClassificationManagerForJiraIssueText {
 
 	public void classifyComment(Comment comment) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager
 				.updateElementsOfCommentInDatabase(comment);
 		sentences.addAll(sentencesOfComment);
@@ -177,7 +180,6 @@ public class ClassificationManagerForJiraIssueText {
 
 	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(
 			List<KnowledgeType> classificationResult, List<PartOfJiraIssueText> sentences) {
-		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager("");
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {

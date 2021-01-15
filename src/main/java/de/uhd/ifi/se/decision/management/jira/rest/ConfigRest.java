@@ -705,7 +705,8 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
+		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
+				projectKey);
 		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
 		}
