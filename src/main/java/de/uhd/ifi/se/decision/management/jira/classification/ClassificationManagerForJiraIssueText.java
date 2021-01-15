@@ -10,6 +10,7 @@ import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -184,9 +185,9 @@ public class ClassificationManagerForJiraIssueText {
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
-				// sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateKnowledgeElement(sentence, null);
+				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 				i++;
 			}
 		}
