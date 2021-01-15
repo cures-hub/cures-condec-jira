@@ -42,9 +42,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
+	private static ClassifierTrainer classifierTrainer;
+
 	public JiraIssueTextPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
+		classifierTrainer = new ClassifierTrainer(projectKey);
 	}
 
 	@Override
@@ -375,7 +378,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
-			new ClassifierTrainer(element.getProject().getProjectKey()).update(element);
+			classifierTrainer.update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
