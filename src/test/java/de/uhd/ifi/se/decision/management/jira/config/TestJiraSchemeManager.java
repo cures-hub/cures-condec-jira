@@ -4,8 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.issuetype.IssueType;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
@@ -75,6 +80,40 @@ public class TestJiraSchemeManager extends TestSetUp {
 		assertEquals(
 				"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png",
 				JiraSchemeManager.getIconUrl("decision"));
+	}
+
+	@Test
+	public void testGetJiraIssueTypesZero() {
+		assertEquals(6, JiraSchemeManager.getJiraIssueTypes(1).size());
+	}
+
+	@Test
+	public void testGetJiraIssueTypesByProjectKeyValid() {
+		assertEquals(6, jiraSchemeManager.getJiraIssueTypes().size());
+	}
+
+	@Test
+	public void testGetJiraIssueTypesOk() {
+		assertEquals(6, JiraSchemeManager.getJiraIssueTypes(1).size());
+	}
+
+	@Test
+	public void testGetJiraIssueTypeNameNull() {
+		assertEquals("", JiraSchemeManager.getJiraIssueTypeName(null));
+	}
+
+	@Test
+	public void testGetJiraIssueTypeNameEmpty() {
+		assertEquals("", JiraSchemeManager.getJiraIssueTypeName(""));
+	}
+
+	@Test
+	public void testGetJiraIssueTypeNameFilled() {
+		Collection<IssueType> issueTypes = JiraSchemeManager.getJiraIssueTypes(1);
+		for (IssueType type : issueTypes) {
+			IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(type.getId());
+			assertEquals(issueType.getName(), JiraSchemeManager.getJiraIssueTypeName(type.getId()));
+		}
 	}
 
 }

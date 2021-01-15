@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -243,5 +244,36 @@ public class JiraSchemeManager {
 			}
 		}
 		return true;
+	}
+
+	public Collection<IssueType> getJiraIssueTypes() {
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectObjByKey(projectKey);
+		return issueTypeSchemeManager.getIssueTypesForProject(project);
+	}
+
+	public static String getJiraIssueTypeName(String typeId) {
+		IssueType issueType = getJiraIssueType(typeId);
+		if (issueType == null) {
+			return "";
+		}
+		return issueType.getName();
+	}
+
+	public static IssueType getJiraIssueType(String typeId) {
+		if (typeId == null || typeId.isBlank()) {
+			return null;
+		}
+		IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(typeId);
+		return issueType;
+	}
+
+	public static Collection<IssueType> getJiraIssueTypes(long projectId) {
+		if (projectId <= 0) {
+			return new ArrayList<IssueType>();
+		}
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectObj(projectId);
+		return issueTypeSchemeManager.getIssueTypesForProject(project);
 	}
 }
