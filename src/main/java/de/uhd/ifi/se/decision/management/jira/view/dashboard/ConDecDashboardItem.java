@@ -18,7 +18,7 @@ import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.ContextProvider;
 import com.google.common.collect.Maps;
 
-import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
+import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -51,9 +51,9 @@ public class ConDecDashboardItem implements ContextProvider {
 			issueTypeId = request.getParameter("issueType");
 		}
 		newContext.put("projectKey", projectKey);
-		jiraIssueType = JiraIssueTypeGenerator.getJiraIssueType(issueTypeId);
+		jiraIssueType = JiraSchemeManager.getJiraIssueType(issueTypeId);
 		newContext.put("issueType", jiraIssueType);
-		newContext.put("jiraIssueTypes", JiraIssueTypeGenerator.getJiraIssueTypes(projectKey));
+		newContext.put("jiraIssueTypes", new JiraSchemeManager(projectKey).getJiraIssueTypes());
 		newContext.put("jiraBaseUrl", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL));
 
 		if (projectKey == null || projectKey.isBlank()) {

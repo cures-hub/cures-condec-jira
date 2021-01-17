@@ -33,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManag
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -121,14 +121,15 @@ public class ConfigRest {
 	}
 
 	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
+		JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
 				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
-				IssueType jiraIssueType = PluginInitializer.createIssueType(knowledgeType.toString());
-				PluginInitializer.addIssueTypeToScheme(jiraIssueType, projectKey);
+				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType.toString());
+				jiraSchemeManager.addIssueTypeToScheme(jiraIssueType);
 			} else {
-				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
+				jiraSchemeManager.removeIssueTypeFromScheme(knowledgeType.toString());
 			}
 		}
 	}
@@ -166,11 +167,12 @@ public class ConfigRest {
 		}
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
 		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 			if (isKnowledgeTypeEnabled) {
-				IssueType jiraIssueType = PluginInitializer.createIssueType(knowledgeType);
-				PluginInitializer.addIssueTypeToScheme(jiraIssueType, projectKey);
+				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType);
+				jiraSchemeManager.addIssueTypeToScheme(jiraIssueType);
 			} else {
-				PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
+				jiraSchemeManager.removeIssueTypeFromScheme(knowledgeType);
 			}
 		}
 		return Response.ok().build();
@@ -249,11 +251,12 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "The link type could not be enabled because it is null.")).build();
 		}
+		JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 		if (isLinkTypeEnabled) {
-			PluginInitializer.createLinkType(linkType);
-			PluginInitializer.addLinkTypeToScheme(linkType, projectKey);
+			JiraSchemeManager.createLinkType(linkType);
+			jiraSchemeManager.addLinkTypeToScheme(linkType);
 		} else {
-			PluginInitializer.removeLinkTypeFromScheme(linkType, projectKey);
+			jiraSchemeManager.removeLinkTypeFromScheme(linkType);
 		}
 		return Response.ok().build();
 	}
@@ -700,7 +703,8 @@ public class ConfigRest {
 				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText();
+		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
+				projectKey);
 		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
 		}

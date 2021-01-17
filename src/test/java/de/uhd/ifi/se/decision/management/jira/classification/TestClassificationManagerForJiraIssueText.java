@@ -29,7 +29,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
-		classificationManager = new ClassificationManagerForJiraIssueText();
+		classificationManager = new ClassificationManagerForJiraIssueText("TEST");
 		sentences = JiraIssues.getSentencesForCommentText(
 				"The quick brown fox jumps over the lazy dog. We expect this to be irrelevant. "
 						+ "How can we implement? The previous sentence should be much more relevant");

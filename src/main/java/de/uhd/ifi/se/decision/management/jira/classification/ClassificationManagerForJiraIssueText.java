@@ -10,6 +10,7 @@ import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -21,6 +22,13 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
  * elements with certain knowledge types (fine grained classification).
  */
 public class ClassificationManagerForJiraIssueText {
+
+	private JiraIssueTextPersistenceManager persistenceManager;
+
+	public ClassificationManagerForJiraIssueText(String projectKey) {
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
+	}
 
 	/**
 	 * Splits the description and all comments of the Jira issue into sentences,
@@ -51,8 +59,6 @@ public class ClassificationManagerForJiraIssueText {
 	 *            Jira issue.
 	 */
 	public void classifyDescription(Issue issue) {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(issue.getProjectObject().getKey()).getJiraIssueTextManager();
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager
 				.updateElementsOfDescriptionInDatabase(issue);
 		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
@@ -70,8 +76,6 @@ public class ClassificationManagerForJiraIssueText {
 
 	public void classifyComment(Comment comment) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(comment.getIssue().getProjectObject().getKey()).getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager
 				.updateElementsOfCommentInDatabase(comment);
 		sentences.addAll(sentencesOfComment);
@@ -177,14 +181,13 @@ public class ClassificationManagerForJiraIssueText {
 
 	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(
 			List<KnowledgeType> classificationResult, List<PartOfJiraIssueText> sentences) {
-		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager("");
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
-				// sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateKnowledgeElement(sentence, null);
+				AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 				i++;
 			}
 		}

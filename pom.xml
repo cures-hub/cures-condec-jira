@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uhd.ifi.se.decision</groupId>
 	<artifactId>management.jira</artifactId>
-	<version>2.2.8</version>
+	<version>2.2.9</version>
 	<organization>
 		<name>Software Engineering Research Group, Heidelberg University</name>
 		<url>https://github.com/cures-hub</url>
@@ -398,7 +398,7 @@
 	</profiles>
 
 	<properties>
-		<jira.version>8.14.0</jira.version>
+		<jira.version>8.14.1</jira.version>
 		<amps.version>8.2.0-2ef5d6e15</amps.version>
 		<ao.version>3.3.0</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>

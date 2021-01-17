@@ -4,21 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
-import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.core.util.ClassLoaderUtils;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarImpl;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.icon.IconType;
@@ -45,49 +39,22 @@ import com.opensymphony.workflow.loader.WorkflowDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescriptorProvider;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
- * Handles plug-in initialization
+ * Handles the creation and removal of Jira issues types, Jira link types, and
+ * workflows.
+ * 
+ * Adds and removes Jira issue types to the issue type scheme of a project.
+ * 
+ * Adds and removes Jira workflows to the workflow scheme of a project.
  */
-@Named("PluginInitializer")
-public class PluginInitializer implements InitializingBean {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PluginInitializer.class);
+public class JiraSchemeManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraSchemeManager.class);
+	private String projectKey;
 
-	@Override
-	public void afterPropertiesSet() {
-		createDecisionKnowledgeIssueTypes();
-		createDecisionKnowledgeLinkTypes();
-	}
-
-	public void createDecisionKnowledgeIssueTypes() {
-		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
-		for (String issueTypeName : missingDecisionKnowledgeIssueTypeNames) {
-			createIssueType(issueTypeName);
-		}
-	}
-
-	public List<String> findMissingDecisionKnowledgeIssueTypes() {
-		List<String> knowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			knowledgeTypes.add(type.toString());
-		}
-		for (String issueTypeName : getNamesOfExistingIssueTypes()) {
-			knowledgeTypes.remove(issueTypeName);
-		}
-		return knowledgeTypes;
-	}
-
-	public List<String> getNamesOfExistingIssueTypes() {
-		List<String> existingIssueTypeNames = new ArrayList<String>();
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> issueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : issueTypes) {
-			existingIssueTypeNames.add(issueType.getName());
-		}
-		return existingIssueTypeNames;
+	public JiraSchemeManager(String projectKey) {
+		this.projectKey = projectKey;
 	}
 
 	public static IssueType createIssueType(String issueTypeName) {
@@ -104,7 +71,7 @@ public class PluginInitializer implements InitializingBean {
 		String issueTypeFileName = getFileName(issueTypeName);
 
 		InputStream inputStream = ClassLoaderUtils.getResourceAsStream("images/" + issueTypeFileName,
-				PluginInitializer.class);
+				JiraSchemeManager.class);
 		Avatar tmpAvatar = AvatarImpl.createCustomAvatar(issueTypeFileName, "image/png", "0",
 				IconType.ISSUE_TYPE_ICON_TYPE);
 		Avatar issueAvatar = null;
@@ -116,70 +83,53 @@ public class PluginInitializer implements InitializingBean {
 				newIssueType = issueTypeManager.createIssueType(issueTypeName, issueTypeName, issueAvatar.getId());
 			}
 		} catch (DataAccessException | IOException e) {
-			LOGGER.error("Issue type " + issueTypeName + " could not be created.");
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Issue type " + issueTypeName + " could not be created: " + e.getMessage());
 		}
 
 		return newIssueType;
 	}
 
-	public void createDecisionKnowledgeLinkTypes() {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Set<String> existingIssueLinkTypeNames = DecisionKnowledgeProject.getNamesOfLinkTypes();
-
-		for (LinkType linkType : LinkType.getDefaultTypes()) {
-			if (existingIssueLinkTypeNames.contains(linkType.getName())) {
-				continue;
-			}
-			// TODO Use "createLinkType" method from below
-			issueLinkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardName(),
-					linkType.getInwardName(), linkType.getStyle());
-		}
-	}
-
-	public static void createLinkType(String linkTypeName) {
+	public static boolean createLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
 		if (types == null) {
-			return;
+			return false;
 		}
 		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
 		if (!type.isEmpty()) {
-			return;
+			return false;
 		}
 		LinkType linktype = LinkType.getLinkType(linkTypeName);
 		linkTypeManager.createIssueLinkType(linktype.getName(), linktype.getOutwardName(), linktype.getInwardName(),
 				linktype.getStyle());
+		return true;
 	}
 
-	public static void removeLinkType(String linkTypeName) {
+	public static boolean removeLinkType(String linkTypeName) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
 		if (types == null) {
-			return;
+			return false;
 		}
 		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
 		type.ifPresent(issueLinkType -> linkTypeManager.removeIssueLinkType(issueLinkType.getId()));
+		return true;
 	}
 
-	public static void addLinkTypeToScheme(String linkTypeName, String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+	public boolean addLinkTypeToScheme(String linkTypeName) {
+		if (linkTypeName == null) {
+			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		createLinkType(linkTypeName);
+		return createLinkType(linkTypeName);
 	}
 
-	public static void removeLinkTypeFromScheme(String linkTypeName, String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+	public boolean removeLinkTypeFromScheme(String linkTypeName) {
+		if (linkTypeName == null) {
+			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		removeLinkType(linkTypeName);
+		return removeLinkType(linkTypeName);
 	}
 
 	public static String getFileName(String issueTypeName) {
@@ -190,9 +140,9 @@ public class PluginInitializer implements InitializingBean {
 		return ComponentGetter.getUrlOfImageFolder() + getFileName(issueTypeName);
 	}
 
-	public static void addIssueTypeToScheme(IssueType jiraIssueType, String projectKey) {
-		if (jiraIssueType == null || projectKey == null) {
-			return;
+	public boolean addIssueTypeToScheme(IssueType jiraIssueType) {
+		if (jiraIssueType == null) {
+			return false;
 		}
 
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
@@ -205,8 +155,8 @@ public class PluginInitializer implements InitializingBean {
 			final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
 			options.addOption(IssueFieldConstants.ISSUE_TYPE, jiraIssueType.getId());
 			issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-			return;
 		}
+		return true;
 	}
 
 	/**
@@ -268,11 +218,11 @@ public class PluginInitializer implements InitializingBean {
 		return jiraWorkflow;
 	}
 
-	public static void removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
+	public boolean removeIssueTypeFromScheme(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null || projectKey == null) {
-			return;
+		if (issueTypeName == null || issueTypes == null) {
+			return false;
 		}
 
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
@@ -291,8 +241,42 @@ public class PluginInitializer implements InitializingBean {
 					}
 				}
 				issueTypeSchemeManager.update(configScheme, optionIds);
-				return;
 			}
 		}
+		return true;
+	}
+
+	public Collection<IssueType> getJiraIssueTypes() {
+		if (projectKey == null) {
+			return new ArrayList<IssueType>();
+		}
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectObjByKey(projectKey);
+		return issueTypeSchemeManager.getIssueTypesForProject(project);
+	}
+
+	public static String getJiraIssueTypeName(String typeId) {
+		IssueType issueType = getJiraIssueType(typeId);
+		if (issueType == null) {
+			return "";
+		}
+		return issueType.getName();
+	}
+
+	public static IssueType getJiraIssueType(String typeId) {
+		if (typeId == null || typeId.isBlank()) {
+			return null;
+		}
+		IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(typeId);
+		return issueType;
+	}
+
+	public static Collection<IssueType> getJiraIssueTypes(long projectId) {
+		if (projectId <= 0) {
+			return new ArrayList<IssueType>();
+		}
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectObj(projectId);
+		return issueTypeSchemeManager.getIssueTypesForProject(project);
 	}
 }
