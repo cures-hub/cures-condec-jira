@@ -247,7 +247,7 @@ public class JiraSchemeManager {
 	}
 
 	public Collection<IssueType> getJiraIssueTypes() {
-		if (projectKey == null || projectKey.isBlank()) {
+		if (projectKey == null) {
 			return new ArrayList<IssueType>();
 		}
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
