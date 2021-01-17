@@ -93,6 +93,11 @@ public class TestJiraSchemeManager extends TestSetUp {
 	}
 
 	@Test
+	public void testGetJiraIssueTypesByProjectKeyInvalid() {
+		assertEquals(0, new JiraSchemeManager(null).getJiraIssueTypes().size());
+	}
+
+	@Test
 	public void testGetJiraIssueTypesOk() {
 		assertEquals(6, JiraSchemeManager.getJiraIssueTypes(1).size());
 	}
