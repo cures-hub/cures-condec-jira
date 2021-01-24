@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -45,6 +46,19 @@ public class FilteringManager {
 		this(user, new FilterSettings(projectKey, query, user));
 	}
 
+	public Set<KnowledgeElement> getElementsInContext() {
+		Set<KnowledgeElement> elements;
+
+		if (filterSettings.getSelectedElement() != null) {
+			graph.addVertex(filterSettings.getSelectedElement());
+			elements = getElementsInLinkDistance(filterSettings.getSelectedElement());
+		} else {
+			elements = new HashSet<KnowledgeElement>();
+			elements.addAll(graph.vertexSet());
+		}
+		return elements;
+	}
+
 	/**
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
@@ -53,20 +67,30 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<>();
 		}
-		Set<KnowledgeElement> elements;
+		Set<KnowledgeElement> elements = getElementsInContext();
 
-		if (filterSettings.getSelectedElement() != null) {
-			graph.addVertex(filterSettings.getSelectedElement());
-			elements = getElementsInLinkDistance();
-		} else {
-			elements = graph.vertexSet();
-		}
 		elements = filterElements(elements);
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
 		return elements;
 	}
+
+	/**
+	 * @return all knowledge elements that do not match the {@link FilterSettings}.
+	 */
+	public Set<KnowledgeElement> getElementsNotMatchingFilterSettings() {
+		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
+			return new HashSet<>();
+		}
+		Set<KnowledgeElement> elements = getElementsInContext();
+
+		Set<KnowledgeElement> elementsMatchingFilterSettings = getElementsMatchingFilterSettings();
+		elements.removeAll(elementsMatchingFilterSettings);
+		return elements;
+	}
+	
 
 	/**
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
@@ -77,17 +101,62 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
+		removeAllTransitiveLinks();
+
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 
+		int id = -65536;
+		for (KnowledgeElement element : getElementsNotMatchingFilterSettings()) {
+			Set<Link> links = element.getLinks();
+			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
+			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
+			for (Link link : links) {
+				if (link.getSource().getId() == element.getId()) {
+					targetElements.add(link.getTarget());
+				}
+				if (link.getTarget().getId() == element.getId()) {
+					sourceElements.add(link.getSource());
+				}
+			}
+			for (KnowledgeElement sourceElement : sourceElements) {
+				for (KnowledgeElement targetElement : targetElements) {
+					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
+					transitiveLink.setId(id++);
+					graph.addEdge(transitiveLink);
+					try {
+						subgraph.addEdge(transitiveLink.getSource(), transitiveLink.getTarget(),  transitiveLink);	
+					} catch (IllegalArgumentException e) {
+						// An empty catch block. This occurs when the linked elements 0-1-2-3 exist, while 1 and 2 
+						// are removed using filters. When creating transitive links for 1, 0 and 2 need to be linked
+						// to each other while 2 is not in the subgraph, thus raising an IllegalArgumentException. 
+					}
+				}
+			}
+		}
+
 		return subgraph;
 	}
 
-	private Set<KnowledgeElement> getElementsInLinkDistance() {
-		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
+	private void removeAllTransitiveLinks() {
+		if (graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
+			return;
+		}
+		Set<Link> links = new HashSet<Link>();
+		links.addAll(graph.edgeSet());
+		links.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		graph.removeAllEdges(links);
+	}
+
+	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
+			return new HashSet<>();
+		}
 		int linkDistance = filterSettings.getLinkDistance();
-		return new HashSet<>(selectedElement.getLinkedElements(linkDistance));
+		return new HashSet<>(element.getLinkedElements(linkDistance));
 	}
 
 	private Graph<KnowledgeElement, Link> getSubgraphMatchingLinkTypes(Graph<KnowledgeElement, Link> subgraph) {

@@ -70,7 +70,7 @@
     document.getElementById("additional-link-types-header").insertAdjacentHTML('afterend', html);
 
     var additionalLinkTypes = ["Supports", "Attacks", "Duplicates", "Forbids", "Constraints", "Enables",
-        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
+        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces", "Transitive"];
     var typeLinkToggles = [];
     for (i in additionalLinkTypes) {
         var toggleName = additionalLinkTypes[i] + "-toggle";

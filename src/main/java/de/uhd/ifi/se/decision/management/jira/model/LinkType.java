@@ -17,8 +17,8 @@ import java.util.Set;
  * explicitly included in this enum (only as OTHER).
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain_style", "#00994C"), // pro-arguments to solution options
-	ATTACK("Attacks", "attacks", "is attacked by", "contain_style", "#c0392b"), // con-arguments to solution options
+	SUPPORT("Supports", "supports", "is supported by", "contain-style", "#00994C"), // pro-arguments to solution options
+	ATTACK("Attacks", "attacks", "is attacked by", "contain-style", "#c0392b"), // con-arguments to solution options
 	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#c0392b"), // among decisions
 	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
 	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions
@@ -28,6 +28,7 @@ public enum LinkType {
 	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), // among decisions
 	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), // among decisions
 	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
+	TRANSITIVE("Transitive", "transitively links to", "is transitively linked to", "contain-style", "#7f7f7f"), // among transitively linkes elements
 	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
 	private String name;
