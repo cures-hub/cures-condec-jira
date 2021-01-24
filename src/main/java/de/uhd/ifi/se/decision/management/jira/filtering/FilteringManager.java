@@ -122,15 +122,15 @@ public class FilteringManager {
 			}
 			for (KnowledgeElement sourceElement : sourceElements) {
 				for (KnowledgeElement targetElement : targetElements) {
+					if (sourceElement.getId() == targetElement.getId()) {
+						continue;
+					}
 					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
 					transitiveLink.setId(id++);
 					graph.addEdge(transitiveLink);
-					try {
-						subgraph.addEdge(transitiveLink.getSource(), transitiveLink.getTarget(),  transitiveLink);	
-					} catch (IllegalArgumentException e) {
-						// An empty catch block. This occurs when the linked elements 0-1-2-3 exist, while 1 and 2 
-						// are removed using filters. When creating transitive links for 1, 0 and 2 need to be linked
-						// to each other while 2 is not in the subgraph, thus raising an IllegalArgumentException. 
+					if (subgraph.vertexSet().contains(sourceElement) && subgraph.vertexSet().contains(targetElement)
+							&& graph.getEdgeSource(transitiveLink) != null && graph.getEdgeTarget(transitiveLink) != null) {
+						subgraph.addEdge(graph.getEdgeSource(transitiveLink), graph.getEdgeTarget(transitiveLink), transitiveLink);	
 					}
 				}
 			}
