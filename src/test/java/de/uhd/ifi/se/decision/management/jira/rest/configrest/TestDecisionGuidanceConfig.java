@@ -76,25 +76,25 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with valid value.")
-	public void testDeleteRDFKNowledgeSourceValid() {
+	public void testDeleteRDFKnowledgeSourceValid() {
 		assertEquals(200, configRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, VALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with invalid value and valid project.")
-	public void testDeleteRDFKNowledgeSourceInvalidValue() {
+	public void testDeleteRDFKnowledgeSourceInvalidValue() {
 		assertEquals(400, configRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, INVALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with valid value and invalid project")
-	public void testDeleteRDFKNowledgeSourceInvalidProject() {
+	public void testDeleteRDFKnowledgeSourceInvalidProject() {
 		assertEquals(400, configRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, VALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with invalid value and invalid Project.")
-	public void testDeleteRDFKNowledgeSourceInvalidProjectInvalidValue() {
+	public void testDeleteRDFKnowledgeSourceInvalidProjectInvalidValue() {
 		assertEquals(400, configRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, INVALID_VALUE).getStatus());
 	}
 
@@ -104,7 +104,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
-	public void tesUpdateRDFKNowledgeSourceValid() {
+	public void tesUpdateRDFKnowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "VALID SOURCE", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(200, configRest
@@ -113,7 +113,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
-	public void testUpdateRDFKNowledgeSourceInValid() {
+	public void testUpdateRDFKnowledgeSourceInValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(400, configRest
@@ -122,7 +122,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
-	public void testUpdateRDFKNowledgeSourceInValidRequest() {
+	public void testUpdateRDFKnowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(400, configRest
@@ -135,21 +135,21 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 
 	@Test
 	@DisplayName("Tests the method setKnowledgeSourceActivation with valid project and valid ")
-	public void testActivateRDFKNowledgeSourceValidProjectValidValue() {
+	public void testActivateRDFKnowledgeSourceValidProjectValidValue() {
 		assertEquals(200,
 			configRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setKnowledgeSourceActivation with invalid project and valid ")
-	public void testActivateRDFKNowledgeSourceInValidProjectValidValue() {
+	public void testActivateRDFKnowledgeSourceInValidProjectValidValue() {
 		assertEquals(400,
 			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setKnowledgeSourceActivation with invalid project and INvalid ")
-	public void testActivateRDFKNowledgeSourceInValidProjectInValidValue() {
+	public void testActivateRDFKnowledgeSourceInValidProjectInValidValue() {
 		assertEquals(400,
 			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
 	}
@@ -236,6 +236,13 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 		assertEquals(400, configRest.setSimilarityThreshold(request, INVALID_PROJECT_KEY, 1).getStatus());
 		assertEquals(400, configRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, -1).getStatus());
 		assertEquals(400, configRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, 3).getStatus());
+	}
+
+	@Test
+	@DisplayName("Tests the method setIrrelevantWords")
+	public void testSetIrrelevantWords() {
+		assertEquals(200, configRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "WHICH;WHAT;SHOULD").getStatus());
+		assertEquals(400, configRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "").getStatus());
 	}
 
 }

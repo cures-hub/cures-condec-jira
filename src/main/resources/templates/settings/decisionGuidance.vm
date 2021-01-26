@@ -276,6 +276,22 @@
 
     </div>
 
+    <div class="field-group">
+        <label for="irrelevant-words">Irrelevant Words</label>
+        <input class="text long-field"
+               type="text"
+               data-aui-validation-field
+               value="$irrelevantWords"
+               id="irrelevant-words"
+               name="irrelevant-words"/>
+        <button id="save-irrelevant-words" class='aui-button aui-button-primary aui-button-compact'>
+            Save
+        </button>
+        <div class="description">Set irrelevant words that should not be involved in the score calculation.
+        </div>
+
+    </div>
+
     <div class="settings-divider">
         <h4>Configure Project Knowledge Sources</h4>
         <table id="project-source-table" class="aui aui-table-list">
@@ -345,7 +361,12 @@
            event.preventDefault();
            const value = $("#similarity-threshold").val();
            conDecAPI.setSimilarityThreshold("$projectKey", value);
+       })
 
+      $("#save-irrelevant-words").click((event) => {
+           event.preventDefault();
+           const value = $("#irrelevant-words").val();
+           conDecAPI.setIrrelevantWords("$projectKey", value);
        })
 
         $("#create-rdf-source").click((event) => {
@@ -503,6 +524,8 @@
 
 
     });
+
+
 
 
 

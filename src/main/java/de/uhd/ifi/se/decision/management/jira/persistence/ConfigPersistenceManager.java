@@ -337,6 +337,14 @@ public class ConfigPersistenceManager {
 		return NumberUtils.toDouble(getValue(projectKey, "similarityThreshold"), 0.85);
 	}
 
+	public static void setIrrelevantWords(String projectKey, String words) {
+		setValue(projectKey, "bagOfIrrelevantWords", words);
+	}
+
+	public static String getIrrelevantWords(String projectKey) {
+		return getValue(projectKey, "bagOfIrrelevantWords");
+	}
+
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type type = new TypeToken<List<RDFSource>>() {

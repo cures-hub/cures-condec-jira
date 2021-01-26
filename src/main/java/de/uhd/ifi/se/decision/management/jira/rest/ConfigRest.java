@@ -793,6 +793,28 @@ public class ConfigRest {
 	}
 
 
+	@Path("/setIrrelevantWords")
+	@POST
+	public Response setIrrelevantWords(@Context HttpServletRequest request,
+										   @QueryParam("projectKey") String projectKey,
+										   @QueryParam("words") String words) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		if (words.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The words should not be blank")).build();
+		}
+
+		ConfigPersistenceManager.setIrrelevantWords(projectKey, words);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+
+
+
+
 	@Path("/setRDFKnowledgeSource")
 	@POST
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,

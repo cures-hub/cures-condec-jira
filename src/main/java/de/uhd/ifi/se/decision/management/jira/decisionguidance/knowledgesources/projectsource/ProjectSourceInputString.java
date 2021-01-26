@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.BagOfIrrelevantWords;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -10,6 +11,7 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.apache.commons.text.similarity.SimilarityScore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,11 +68,11 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		for (Argument argument : arguments) {
 			if (argument.getType().equals(KnowledgeType.PRO.toString())) {
 				numberProArguments += 1;
-				score.composeScore(new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary()));
+				score.composeScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
 			}
 			if (argument.getType().equals(KnowledgeType.CON.toString())) {
 				numberConArguments += 1;
-				score.composeScore(new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary()));
+				score.composeScore(new RecommendationScore(-.01f, argument.getType() + " : " + argument.getSummary()));
 			}
 		}
 
@@ -85,8 +87,14 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	}
 
 	private <T> T calculateSimilarity(SimilarityScore<T> similarityScore, String left, String right) {
-		T score = similarityScore.apply(left.toLowerCase(), right.toLowerCase());
+		T score = similarityScore.apply(cleanInput(left), cleanInput(right));
 		return score;
+	}
+
+	private String cleanInput(String input) {
+		List<String> inputTokens = Arrays.asList(input.split(" "));
+		BagOfIrrelevantWords bagOfIrrelevantWords = new BagOfIrrelevantWords(ConfigPersistenceManager.getIrrelevantWords(projectKey));
+		return bagOfIrrelevantWords.cleanSentence(inputTokens);
 	}
 
 	protected Recommendation createRecommendation(KnowledgeElement element, KnowledgeType... knowledgeTypes) {

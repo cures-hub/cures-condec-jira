@@ -10,17 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 public class TestRDFSource extends TestSetUp {
@@ -75,6 +70,7 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testRDFSourceWithStringInput() {
 
+		/*
 		List<Recommendation> mockedRecommendations = new ArrayList<>();
 		mockedRecommendations.add(new Recommendation());
 		mockedRecommendations.add(new Recommendation());
@@ -82,13 +78,14 @@ public class TestRDFSource extends TestSetUp {
 
 
 		RDFSourceInputString rdfSourceInputString = mock(RDFSourceInputString.class);
-		when(rdfSourceInputString.getResults("MySQL")).thenReturn(mockedRecommendations);
+		when(rdfSourceInputString.getResults("MySQL")).thenReturn(mockedRecommendations);*/
+
+		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
 
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
 
 
-
-		assertEquals(3, rdfSourceInputString.getResults("MySQL").size());
+		assertEquals(34, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
@@ -108,6 +105,7 @@ public class TestRDFSource extends TestSetUp {
 		graph.addEdge(link);
 
 
+		/*
 		List<Recommendation> mockedRecommendations = new ArrayList<>();
 		mockedRecommendations.add(new Recommendation());
 		mockedRecommendations.add(new Recommendation());
@@ -115,12 +113,14 @@ public class TestRDFSource extends TestSetUp {
 
 
 		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = mock(RDFSourceInputKnowledgeElement.class);
-		when(rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement())).thenReturn(mockedRecommendations);
+		when(rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement())).thenReturn(mockedRecommendations);*/
+
+		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
 
 
 		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
 
-		assertEquals(3, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
+		assertEquals(34, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
 	}

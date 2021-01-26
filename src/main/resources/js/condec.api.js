@@ -887,7 +887,17 @@
 		});
 	};
 
-
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setIrrelevantWords = function (projectKey, words) {
+		generalApi.postJSON(this.restPrefix + "/config/setIrrelevantWords.json?projectKey=" + projectKey + "&words=" + words, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The irrelevant words are updated!");
+			}
+		});
+	};
 
 
 	/*
