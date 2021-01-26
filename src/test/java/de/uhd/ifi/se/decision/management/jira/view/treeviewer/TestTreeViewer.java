@@ -123,7 +123,7 @@ public class TestTreeViewer extends TestSetUp {
 		filterSettings.setLinkDistance(0);
 		filterSettings.setSelectedElement((KnowledgeElement) null);
 		treeViewer = new TreeViewer(filterSettings);
-		assertEquals(18, treeViewer.getNodes().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), treeViewer.getNodes().size());
 	}
 
 }

@@ -24,7 +24,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 
 	@Test
 	public void testElementNull() {
-		assertEquals(18, graph.getUnlinkedElements(null).size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), graph.getUnlinkedElements(null).size());
 	}
 
 	@Test

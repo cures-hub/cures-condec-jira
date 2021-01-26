@@ -19,6 +19,10 @@ public class JiraIssueLinks {
 		return jiraIssueLinks;
 	}
 
+	public static int getTestJiraIssueLinkCount() {
+		return getTestJiraIssueLinks().size();
+	}
+
 	private static List<IssueLink> createIssueLinks() {
 		currentLinkId = 0;
 		List<IssueLink> issueLinks = new ArrayList<>();

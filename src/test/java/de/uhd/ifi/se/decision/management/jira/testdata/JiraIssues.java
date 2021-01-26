@@ -39,6 +39,10 @@ public class JiraIssues {
 		return jiraIssues;
 	}
 
+	public static int getTestJiraIssueCount() {
+		return getTestJiraIssues().size();
+	}
+
 	public static List<Issue> createJiraIssues(Project project) {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 

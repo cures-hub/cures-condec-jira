@@ -23,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -54,7 +55,7 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(18, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -67,7 +68,7 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(18, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -75,7 +76,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
-		assertEquals(18, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -117,9 +118,9 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(18, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(22, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount(), filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test

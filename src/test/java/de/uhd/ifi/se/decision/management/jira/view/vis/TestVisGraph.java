@@ -15,6 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestVisGraph extends TestSetUp {
@@ -32,7 +33,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetNodes() {
-		assertEquals(18, visGraph.getNodes().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), visGraph.getNodes().size());
 	}
 
 	@Test
@@ -61,7 +62,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetGraph() {
-		assertEquals(18, visGraph.getGraph().vertexSet().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), visGraph.getGraph().vertexSet().size());
 	}
 
 	@Test

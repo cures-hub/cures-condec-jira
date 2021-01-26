@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -50,7 +51,7 @@ public class TestIBaseRecommender extends TestSetUp {
 		recommender.recommendations.add(new Recommendation());
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
-		assertEquals(18, manager.getKnowledgeElements().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
 
 		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
