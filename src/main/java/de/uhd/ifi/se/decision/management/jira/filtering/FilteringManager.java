@@ -110,16 +110,16 @@ public class FilteringManager {
 			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
 			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
 			for (Link link : links) {
-				if (link.getSource().getId() == element.getId()) {
+				if (link.getSource().getId() == element.getId() && link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
 					targetElements.add(link.getTarget());
 				}
-				if (link.getTarget().getId() == element.getId()) {
+				if (link.getTarget().getId() == element.getId() && link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
 					sourceElements.add(link.getSource());
 				}
 			}
 			for (KnowledgeElement sourceElement : sourceElements) {
 				for (KnowledgeElement targetElement : targetElements) {
-					if (sourceElement.getId() == targetElement.getId()) {
+					if (sourceElement.getId() == targetElement.getId() && sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
 						continue;
 					}
 					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
