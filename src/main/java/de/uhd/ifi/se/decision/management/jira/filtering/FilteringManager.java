@@ -103,36 +103,38 @@ public class FilteringManager {
 		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 
-		int id = -65536;
-		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
-		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-			Set<Link> links = element.getLinks();
-			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
-			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
-			for (Link link : links) {
-				if (link.getSource().getId() == element.getId() && link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
-					targetElements.add(link.getTarget());
-				}
-				if (link.getTarget().getId() == element.getId() && link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
-					sourceElements.add(link.getSource());
-				}
-			}
-			for (KnowledgeElement sourceElement : sourceElements) {
-				for (KnowledgeElement targetElement : targetElements) {
-					if (sourceElement.getId() == targetElement.getId() && sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
-						continue;
+		if (filterSettings.createTransitiveLinks()) {
+			int id = -65536;
+			Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
+			for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
+				Set<Link> links = element.getLinks();
+				Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
+				Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
+				for (Link link : links) {
+					if (link.getSource().getId() == element.getId() && link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
+						targetElements.add(link.getTarget());
 					}
-					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
-					transitiveLink.setId(id++);
-					graph.addEdge(transitiveLink);
-					if (subgraph.vertexSet().contains(sourceElement) && subgraph.vertexSet().contains(targetElement)
-							&& graph.getEdgeSource(transitiveLink) != null && graph.getEdgeTarget(transitiveLink) != null) {
-						subgraph.addEdge(graph.getEdgeSource(transitiveLink), graph.getEdgeTarget(transitiveLink), transitiveLink);	
+					if (link.getTarget().getId() == element.getId() && link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
+						sourceElements.add(link.getSource());
+					}
+				}
+				for (KnowledgeElement sourceElement : sourceElements) {
+					for (KnowledgeElement targetElement : targetElements) {
+						if (sourceElement.getId() == targetElement.getId() && sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
+							continue;
+						}
+						Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
+						transitiveLink.setId(id++);
+						graph.addEdge(transitiveLink);
+						if (subgraph.vertexSet().contains(sourceElement) && subgraph.vertexSet().contains(targetElement)
+								&& graph.getEdgeSource(transitiveLink) != null && graph.getEdgeTarget(transitiveLink) != null) {
+							subgraph.addEdge(graph.getEdgeSource(transitiveLink), graph.getEdgeTarget(transitiveLink), transitiveLink);
+						}
 					}
 				}
 			}
 		}
-
+		
 		return subgraph;
 	}
 

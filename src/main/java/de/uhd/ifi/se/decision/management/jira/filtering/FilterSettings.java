@@ -59,6 +59,7 @@ public class FilterSettings {
 	private long endDate;
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
+	private boolean createTransitiveLinks;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -84,6 +85,7 @@ public class FilterSettings {
 		this.maxDegree = 50;
 		this.isHierarchical = false;
 		this.setIrrelevantTextShown(false);
+		this.createTransitiveLinks = false;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -499,6 +501,27 @@ public class FilterSettings {
 	@JsonProperty("isIrrelevantTextShown")
 	public void setIrrelevantTextShown(boolean isIrrelevantTextShown) {
 		this.isIrrelevantTextShown = isIrrelevantTextShown;
+	}
+
+	/**
+	 * @return true if the {@link KnowledgeGraph} or a respective subgraph provided
+	 *         by the {@link FilteringManager} should contain transitive links 
+	 * 	       as a replacement for knowledge elements removed by filters.
+	 */
+	public boolean createTransitiveLinks() {
+		return createTransitiveLinks;
+	}
+
+	/**
+	 * @param createTransitiveLinks
+	 *            true if the {@link KnowledgeGraph} or a respective subgraph
+	 *            provided by the {@link FilteringManager} should contain 
+	 *            transitive links as a replacement for knowledge elements 
+	 *            removed by filters.
+	 */
+	@JsonProperty("createTransitiveLinks")
+	public void setCreateTransitiveLinks(boolean createTransitiveLinks) {
+		this.createTransitiveLinks = createTransitiveLinks;
 	}
 
 	@Override
