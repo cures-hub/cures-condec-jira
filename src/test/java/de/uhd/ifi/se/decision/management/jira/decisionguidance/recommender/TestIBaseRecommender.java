@@ -50,12 +50,12 @@ public class TestIBaseRecommender extends TestSetUp {
 		recommender.recommendations.add(new Recommendation());
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
-		assertEquals(10, manager.getKnowledgeElements().size());
+		assertEquals(18, manager.getKnowledgeElements().size());
 
 		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
 
-		assertEquals(11, manager.getKnowledgeElements().size());
+		assertEquals(19, manager.getKnowledgeElements().size());
 	}
 
 	@Test

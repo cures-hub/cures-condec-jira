@@ -38,7 +38,7 @@ public class TestIsIncomplete extends TestSetUp {
 
 	@Test
 	public void testIsIncompleteFalse() {
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElements().get(3);
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElements().get(4);
 
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 		element.setStatus(KnowledgeStatus.RESOLVED);

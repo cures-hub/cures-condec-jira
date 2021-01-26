@@ -32,7 +32,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetNodes() {
-		assertEquals(10, visGraph.getNodes().size());
+		assertEquals(18, visGraph.getNodes().size());
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TestVisGraph extends TestSetUp {
 
 	@Test
 	public void testGetGraph() {
-		assertEquals(10, visGraph.getGraph().vertexSet().size());
+		assertEquals(18, visGraph.getGraph().vertexSet().size());
 	}
 
 	@Test

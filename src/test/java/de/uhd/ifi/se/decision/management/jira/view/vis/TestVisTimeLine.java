@@ -66,7 +66,7 @@ public class TestVisTimeLine extends TestSetUp {
 		VisTimeLine visTimeLine = new VisTimeLine(user, filterSettings, true, true);
 		assertNotNull(visTimeLine);
 		assertEquals(1, visTimeLine.getGroups().size());
-		assertEquals(10, visTimeLine.getTimeLineNodes().size());
+		assertEquals(18, visTimeLine.getTimeLineNodes().size());
 	}
 
 	@Test
