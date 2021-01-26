@@ -465,7 +465,7 @@
 				response) {
 			if (error === null) {
 				if (isKnowledgeExtractedFromGit) {
-					showFlag("success", "Git connection for this project is acticated.");
+					showFlag("success", "Git connection for this project is activated.");
 				} else {
 					showFlag("success", "Git connection for this project is deactivated.");
 				}
