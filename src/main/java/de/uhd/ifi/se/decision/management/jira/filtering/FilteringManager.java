@@ -104,7 +104,8 @@ public class FilteringManager {
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 
 		int id = -65536;
-		for (KnowledgeElement element : getElementsNotMatchingFilterSettings()) {
+		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
+		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
 			Set<Link> links = element.getLinks();
 			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
 			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
