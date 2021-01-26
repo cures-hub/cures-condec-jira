@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.jgrapht.Graph;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +21,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -218,5 +223,18 @@ public class TestFilteringManager extends TestSetUp {
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size() > 0);
+	}
+
+	@Test
+	public void testTransitiveLinks() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-31");
+		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> transitiveLinks = new HashSet<Link>();
+		transitiveLinks.addAll(subgraph.edgeSet());
+		transitiveLinks.removeIf(transitiveLink -> transitiveLink.getType() != LinkType.TRANSITIVE);
+		assertTrue(transitiveLinks.size() == 4);
 	}
 }

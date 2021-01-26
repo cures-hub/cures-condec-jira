@@ -33,8 +33,18 @@ public class JiraIssueLinks {
 		issueLink = createJiraIssueLink(5, 4);
 		issueLinks.add(issueLink);
 
+		// link between alternative and pro-argument
+		issueLink = createJiraIssueLink(33, 34);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(36, 37);
+		issueLinks.add(issueLink);
+		
 		// link between alternative and con-argument
 		issueLink = createJiraIssueLink(6, 3);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(33, 35);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(36, 38);
 		issueLinks.add(issueLink);
 
 		// links between WI and issue
@@ -42,9 +52,15 @@ public class JiraIssueLinks {
 		issueLinks.add(issueLink);
 		issueLink = createJiraIssueLink(1, 12);
 		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(31, 32);
+		issueLinks.add(issueLink);
 
 		// link between issue and alternative
 		issueLink = createJiraIssueLink(2, 3);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(32, 33);
+		issueLinks.add(issueLink);
+		issueLink = createJiraIssueLink(32, 36);
 		issueLinks.add(issueLink);
 
 		// link between argument and criteria

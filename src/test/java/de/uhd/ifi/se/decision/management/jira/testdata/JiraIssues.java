@@ -56,16 +56,24 @@ public class JiraIssues {
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
 		jiraIssues.add(jiraIssue);
-
+		jiraIssue = createJiraIssue(31, jiraIssueTypes.get(0), project, "WI: Deal with the drunken sailor", user);
+		jiraIssues.add(jiraIssue);
+		
 		// Issues (= decision problems)
 		jiraIssue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",
 				user);
 		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(32, jiraIssueTypes.get(1), project, "What shall we do with the drunken sailor?", user);
+		jiraIssues.add(jiraIssue);
 
 		// Alternative
 		jiraIssue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(33, jiraIssueTypes.get(2), project, "Put him in the long boat till he's sober!", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(36, jiraIssueTypes.get(2), project, "Put him in the scuppers with a hose-pipe on him!", user);
 		jiraIssues.add(jiraIssue);
 
 		// Decision
@@ -75,9 +83,17 @@ public class JiraIssues {
 		// Pro-Argument for the decision
 		jiraIssue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(34, jiraIssueTypes.get(4), project, "After this procedure, the sailor will be sober.", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(37, jiraIssueTypes.get(4), project, "After this procedure, the sailor will probably not get drunk again.", user);
+		jiraIssues.add(jiraIssue);
 
 		// Con-Argument
 		jiraIssue = createJiraIssue(6, jiraIssueTypes.get(4), project, "This sucks!", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(35, jiraIssueTypes.get(4), project, "This procedure endangers the availability of the long boat in a case of shipwrecking or maritime emergency.", user);
+		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(38, jiraIssueTypes.get(4), project, "This procedure is in violation of the United Nations Convention against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment.", user);
 		jiraIssues.add(jiraIssue);
 
 		// Non-functional requirement (used as criteria in decision table)
