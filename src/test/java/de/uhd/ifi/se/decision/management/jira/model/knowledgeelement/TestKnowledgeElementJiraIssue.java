@@ -82,7 +82,7 @@ public class TestKnowledgeElementJiraIssue extends TestSetUp {
 
 	@Test
 	public void testIsLinked() {
-		assertEquals(17, decisionKnowledgeElement.isLinked());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), decisionKnowledgeElement.isLinked());
 	}
 
 	@Test
