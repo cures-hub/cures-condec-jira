@@ -24,7 +24,7 @@ public class JiraIssueLinks {
 	}
 
 	private static List<IssueLink> createIssueLinks() {
-		currentLinkId = 0;
+		currentLinkId = 1;
 		List<IssueLink> issueLinks = new ArrayList<>();
 
 		// link between issue and decision

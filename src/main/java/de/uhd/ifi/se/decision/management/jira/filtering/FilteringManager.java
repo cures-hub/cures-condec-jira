@@ -80,10 +80,6 @@ public class FilteringManager {
 	 * @return all knowledge elements that do not match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsNotMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
-			LOGGER.error("FilteringManager misses important attributes.");
-			return new HashSet<>();
-		}
 		Set<KnowledgeElement> elements = getElementsInContext();
 
 		Set<KnowledgeElement> elementsMatchingFilterSettings = getElementsMatchingFilterSettings();
@@ -140,10 +136,6 @@ public class FilteringManager {
 	}
 
 	private void removeAllTransitiveLinks() {
-		if (graph == null) {
-			LOGGER.error("FilteringManager misses important attributes.");
-			return;
-		}
 		Set<Link> links = new HashSet<Link>();
 		links.addAll(graph.edgeSet());
 		links.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
@@ -151,10 +143,6 @@ public class FilteringManager {
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			LOGGER.error("FilteringManager misses important attributes.");
-			return new HashSet<>();
-		}
 		int linkDistance = filterSettings.getLinkDistance();
 		return new HashSet<>(element.getLinkedElements(linkDistance));
 	}
