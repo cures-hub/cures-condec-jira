@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -231,11 +232,30 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-31");
 		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		settings.setCreateTransitiveLinks(true);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		Set<Link> transitiveLinks = new HashSet<Link>();
 		transitiveLinks.addAll(subgraph.edgeSet());
-		transitiveLinks.removeIf(transitiveLink -> transitiveLink.getType() != LinkType.TRANSITIVE);
+		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
 		assertTrue(transitiveLinks.size() == 4);
+
+		Set<Link> otherLinks1 = new HashSet<Link>();
+		otherLinks1.addAll(subgraph.edgeSet());
+		otherLinks1.removeIf(link -> link.getType() == LinkType.TRANSITIVE);
+
+		settings.setCreateTransitiveLinks(false);
+		filteringManager = new FilteringManager(user, settings);
+		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> noTransitiveLinks = new HashSet<Link>();
+		noTransitiveLinks.addAll(subgraph.edgeSet());
+		noTransitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		assertTrue(noTransitiveLinks.size() == 0);
+
+		Set<Link> otherLinks2 = new HashSet<Link>();
+		otherLinks2.addAll(subgraph.edgeSet());
+		otherLinks2.removeIf(link -> link.getType() == LinkType.TRANSITIVE);
+		assertEquals(otherLinks1, otherLinks2);
 	}
+
 }
