@@ -878,6 +878,31 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
+	ConDecAPI.prototype.setSimilarityThreshold = function (projectKey, threshold) {
+		generalApi.postJSON(this.restPrefix + "/config/setSimilarityThreshold.json?projectKey=" + projectKey + "&threshold=" + threshold, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The similarity threshold is updated to: " + threshold);
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setIrrelevantWords = function (projectKey, words) {
+		generalApi.postJSON(this.restPrefix + "/config/setIrrelevantWords.json?projectKey=" + projectKey + "&words=" + words, null, function (
+			error, response) {
+			if (error === null) {
+				showFlag("success", "The irrelevant words are updated!");
+			}
+		});
+	};
+
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
 	ConDecAPI.prototype.setRDFKnowledgeSource = function (projectKey, rdfSource) {
 		generalApi.postJSON(this.restPrefix + "/config/setRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource, function (
 			error, response) {

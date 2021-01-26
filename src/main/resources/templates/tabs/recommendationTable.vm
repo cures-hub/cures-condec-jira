@@ -2,7 +2,7 @@
 <form class="aui">
     <div style="display:flex; align-items:center; gap:12px">
         <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
-        <button class="aui-button" id="recommendation-button"
+        <button class="aui-button" id="recommendation-button" disabled="true"
                 title="Adds a new criterion column to decision table">
             <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Get Recommendations</span>
             $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
@@ -33,11 +33,10 @@
     <tbody>
     </tbody>
 </table>
+
+
 <script>
     conDecDecisionGuidance.initView();
-
-
-
 
 </script>
 

@@ -39,11 +39,6 @@ public class TestProjectSource extends TestSetUp {
 		assertEquals("TEST", projectSource.getIcon());
 	}
 
-	@Test
-	public void testInvalidProject() {
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), null, true);
-		assertEquals(null, projectSource.getKnowledgePersistenceManager());
-	}
 
 	@Test
 	public void testStringInput() {

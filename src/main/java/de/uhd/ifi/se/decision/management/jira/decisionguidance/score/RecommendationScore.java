@@ -4,26 +4,29 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *  A RecommendationScore consists of a total score value and an explanation.
+ */
 public class RecommendationScore {
 
-	private float scoreValue;
+	private float totalScore;
 	private String explanation;
-	private List<RecommendationScore> score;
+	private List<RecommendationScore> partScores;
 
 
-	public RecommendationScore(float scoreValue, String explanation) {
-		this.scoreValue = scoreValue;
+	public RecommendationScore(float totalScore, String explanation) {
+		this.totalScore = totalScore;
 		this.explanation = explanation;
-		this.score = new ArrayList<>();
+		this.partScores = new ArrayList<>();
 	}
 
-	@XmlElement(name = "score")
-	public float getScoreValue() {
-		return scoreValue;
+	@XmlElement(name = "totalScore")
+	public float getTotalScore() {
+		return totalScore;
 	}
 
-	public void setScoreValue(float scoreValue) {
-		this.scoreValue = scoreValue;
+	public void setTotalScore(float totalScore) {
+		this.totalScore = totalScore;
 	}
 
 	@XmlElement(name = "explanation")
@@ -35,17 +38,21 @@ public class RecommendationScore {
 		this.explanation = explanation;
 	}
 
+	/**
+	 * Adds the part scores which composes the total score.
+	 * @param score
+	 */
 	public void composeScore(RecommendationScore score) {
-		this.score.add(score);
+		this.partScores.add(score);
 	}
 
 	public void setComposedScore(List<RecommendationScore> recommendationScores) {
-		this.score.addAll(recommendationScores);
+		this.partScores.addAll(recommendationScores);
 	}
 
-	@XmlElement(name = "composedScore")
+	@XmlElement(name = "partScores")
 	public List<RecommendationScore> getComposeDScore() {
-		return this.score;
+		return this.partScores;
 	}
 
 
