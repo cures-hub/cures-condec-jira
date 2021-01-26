@@ -54,7 +54,7 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 					meanRecommendationScore.setComposedScore(recommendation1.getRecommendationScore().getComposeDScore());
 				}
 			}
-			meanRecommendationScore.setScoreValue(meanScore / numberDuplicates);
+			meanRecommendationScore.setTotalScore(meanScore / numberDuplicates);
 			meanScoreRecommendation.setScore(meanRecommendationScore);
 			filteredRecommendations.add(meanScoreRecommendation);
 		}

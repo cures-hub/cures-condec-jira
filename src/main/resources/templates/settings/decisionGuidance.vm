@@ -31,7 +31,7 @@
         </span></legend>
             <aui-toggle id="keyword-toggle" name="" value="KEYWORD"
                         #if ($recommendationInput.KEYWORD)
-                            checked
+                        checked
                         #end
                         label=""></aui-toggle>
             <div class="description">Keyword-based recommendations use keywords from the input field.
@@ -132,6 +132,15 @@
                 <div class="description">Enter the timeout in milliseconds.</div>
             </div>
             <div class="field-group">
+                <label for="create-constraint-knowledgesource">Constraint</label>
+                <input type="text" id="create-constraint-knowledgesource"
+                       class="text long-field"
+                       name="constraint-knowledgesource">
+                <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+                    multiple values with "&".
+                </div>
+            </div>
+            <div class="field-group">
                 <button class="aui-button-primary aui-button" id="create-rdf-source">
                     Create
                 </button>
@@ -197,6 +206,15 @@
             </div>
         </div>
         <div class="field-group">
+            <label>Constraint</label>
+            <input class="constraint-knowledgesource text long-field" name="constraint-knowledgesource"
+                   id="$rdfSource.toString()-constraint"
+                   value="$rdfSource.getConstraint()"></input>
+            <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+                multiple values with "&".
+            </div>
+        </div>
+        <div class="field-group">
             <label for="update-rdf-source">Update</label>
             <button id="update-rdf-source" class="aui-button update-knowledgesource" data-prefix="$rdfSource.toString()"
                     name="$rdfSource.getName()">
@@ -235,6 +253,41 @@
             displayed in the
             jira
             issue view.
+        </div>
+
+    </div>
+
+    <div class="field-group">
+        <label for="similarity-threshold">Similarity Score of Issues (%)</label>
+        <input class="text short-field"
+               type="number"
+               min="0"
+               max="1"
+               step="0.1"
+               data-aui-validation-field
+               value="$similarityThreshold"
+               id="similarity-threshold"
+               name="similarity-threshold"/>
+        <button id="save-similarity-threshold" class='aui-button aui-button-primary aui-button-compact'>
+            Save
+        </button>
+        <div class="description">Set the similarity score for textual similarity.
+        </div>
+
+    </div>
+
+    <div class="field-group">
+        <label for="irrelevant-words">Irrelevant Words</label>
+        <input class="text long-field"
+               type="text"
+               data-aui-validation-field
+               value="$irrelevantWords"
+               id="irrelevant-words"
+               name="irrelevant-words"/>
+        <button id="save-irrelevant-words" class='aui-button aui-button-primary aui-button-compact'>
+            Save
+        </button>
+        <div class="description">Set irrelevant words that should not be involved in the score calculation.
         </div>
 
     </div>
@@ -304,19 +357,33 @@
 
         })
 
+       $("#save-similarity-threshold").click((event) => {
+           event.preventDefault();
+           const value = $("#similarity-threshold").val();
+           conDecAPI.setSimilarityThreshold("$projectKey", value);
+       })
+
+      $("#save-irrelevant-words").click((event) => {
+           event.preventDefault();
+           const value = $("#irrelevant-words").val();
+           conDecAPI.setIrrelevantWords("$projectKey", value);
+       })
+
         $("#create-rdf-source").click((event) => {
            event.preventDefault();
            const name = $("#create-name-knowledgesource");
            const service = $("#create-uri-knowledgesource");
            const queryString = $("#create-query-knowledgesource");
            const timeout = $("#create-param-knowledgesource");
+           const constraint = $("#create-constraint-knowledgesource");
 
            var rdfSourceJSON = {
                 "projectKey": "$projectKey",
                 "name": name.val(),
                 "service": service.val(),
                 "queryString": queryString.val(),
-                "timeout": timeout.val()
+                "timeout": timeout.val(),
+                "constraint" : constraint.val()
            }
            conDecAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
         });
@@ -333,13 +400,15 @@
                    const service = $(prefix + "-service");
                    const queryString = $(prefix + "-query");
                    const timeout = $(prefix + "-timeout");
+                   const constraint = $(prefix + "-constraint");
 
                    var rdfSourceJSON = {
                         "projectKey": "$projectKey",
                         "name": name.val(),
                         "service": service.val(),
                         "queryString": queryString.val(),
-                        "timeout": timeout.val()
+                        "timeout": timeout.val(),
+                        "constraint" : constraint.val()
                    }
                    console.log(rdfSourceJSON);
                    conDecAPI.updateKnowledgeSource("$projectKey",knowledgeSourceName, rdfSourceJSON);
@@ -413,22 +482,19 @@
 
 
         const FACTORYPATTERN =
-               "select distinct ?alternative ?url ?links where {\n" +
+               "select distinct ?subject ?url count(?links) where {\n" +
                 "%variable% dct:subject ?concept.\n" +
-                "?software dct:subject ?concept.\n " +
-                "?url foaf:primaryTopic ?software.\n " +
+                "?subject dct:subject ?concept.\n " +
+                "?url foaf:primaryTopic ?subject.\n " +
                "FILTER(regex(?concept, 'pattern', 'i')).\n" +
-               "?software  dbo:wikiPageExternalLink ?links.\n" +
-               "?software rdfs:label ?alternative.\n" +
-               "FILTER(LANG(?alternative) = 'en'). }";
+               "?subject  dbo:wikiPageExternalLink ?links.\n" +
+               "} GROUP BY ?subject ?url";
 
-        const FRAMEWORKS = "select distinct ?alternative ?url ?link   where { \n" +
+        const FRAMEWORKS = "select distinct ?subject ?url count(?link)   where { \n" +
                             "%variable% dbo:genre ?genre.\n" +
-                            "?sameGenre dbo:genre ?genre.\n" +
-                            "?sameGenre rdfs:label ?alternative.\n" +
-                            "?sameGenre foaf:isPrimaryTopicOf ?url.\n" +
-                            "FILTER(LANG(?alternative) = 'en').\n" +
-                            "?sameGenre dbo:wikiPageExternalLink ?link.}";
+                            "?subject dbo:genre ?genre.\n" +
+                            "?subject foaf:isPrimaryTopicOf ?url.\n" +
+                            "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url";
 
          $("#insert-design-patterns").click(function(event) {
             event.preventDefault();
