@@ -13,6 +13,7 @@
 			#parse("templates/filter/degree.vm")
 			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
 			#parse("templates/filter/isHierarchicalGraph.vm")
+        	#parse("templates/filter/isTransitiveLinks.vm")
 			#parse("templates/filter/filterButton.vm")
 		</form>		
 	</div>

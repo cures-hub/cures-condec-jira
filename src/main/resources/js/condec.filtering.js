@@ -124,6 +124,11 @@
 		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
 		if (isIrrelevantTextShownInput !== null) {
 			filterElements.push(isIrrelevantTextShownInput);
+        }
+        
+        var isTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
+		if (isTransitiveLinksInput !== null) {
+			filterElements.push(isTransitiveLinksInput);
 		}
 
 		filterElements.forEach(function (filterElement) {
@@ -223,6 +228,12 @@
 		if (isHierarchicalGraphInput !== null) {
 			filterSettings["isHierarchical"] = isHierarchicalGraphInput.checked;
 		}
+
+        // Read whether knowledge graph should be shown with transitive links
+        var createTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
+        if (createTransitiveLinksInput !== null) {
+            filterSettings["createTransitiveLinks"] = createTransitiveLinksInput.checked;
+        }
 
 		return filterSettings;
 	};

@@ -35,7 +35,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		init();
 		issueCompletenessCheck = new IssueCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(3);
+		issue = elements.get(4);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 	}
 
@@ -44,7 +44,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToDecision() {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
-		KnowledgeElement decision = elements.get(6);
+		KnowledgeElement decision = elements.get(10);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(issue.getLink(decision));
@@ -54,7 +54,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsLinkedToAlternative() {
-		KnowledgeElement alternative = elements.get(5);
+		KnowledgeElement alternative = elements.get(7);
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
 		assertNotNull(issue.getLink(alternative));
@@ -66,7 +66,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToDecision() {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
-		KnowledgeElement decision = elements.get(6);
+		KnowledgeElement decision = elements.get(10);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 

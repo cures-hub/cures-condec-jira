@@ -35,6 +35,6 @@ public class TestGetElements extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
 		List<KnowledgeElement> listWithObjects = graph.getElements(KnowledgeType.ISSUE);
-		assertEquals(2, listWithObjects.size());
+		assertEquals(3, listWithObjects.size());
 	}
 }

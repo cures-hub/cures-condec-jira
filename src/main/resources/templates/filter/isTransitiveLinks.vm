@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="is-transitive-links-input-$viewIdentifier">$i18n.getText('condec.label.is.transitive.links')</label>
+    <input class="checkbox" type="checkbox" id="is-transitive-links-input-$viewIdentifier"/>
+</div>

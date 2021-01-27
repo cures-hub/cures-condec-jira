@@ -63,7 +63,7 @@ public class TestDecisionTable extends TestSetUp {
 	public void testGetAlternativesOnIssueDirectly() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
-		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(3);
+		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(4);
 		decisionTable.setDecisionTableForIssue(issue, user);
 		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
 
@@ -87,13 +87,13 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTableData.put("alternatives", new ArrayList<>());
 		decisionTableData.put("criteria", new ArrayList<>());
 
-		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(3);
+		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
 		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
 		assertEquals(0, alternative1.getArguments().size());
 
-		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
+		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(5);
 		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
 		decisionTable.getArguments(knowledgeElement);
 		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
@@ -104,7 +104,7 @@ public class TestDecisionTable extends TestSetUp {
 	public void testGetArgumentCriteriaOnIssueDirectly() {
 		List<DecisionTableElement> criteriaList = new ArrayList<>();
 		Argument argument;
-		argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(5));
+		argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
 		decisionTable.getArgumentCriteria(argument, criteriaList);
 		assertNotNull(argument.getCriterion());
 		assertEquals(2, criteriaList.size());

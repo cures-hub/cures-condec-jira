@@ -37,7 +37,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		decision = elements.get(6);
+		decision = elements.get(10);
 		decisionCompletenessCheck = new DecisionCompletenessCheck();
 	}
 
@@ -46,7 +46,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToIssue() {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
-		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement issue = elements.get(4);
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(decision.getLink(issue));

@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -33,13 +34,13 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNodes() {
-		assertEquals(10, graph.vertexSet().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), graph.vertexSet().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetEdges() {
-		assertEquals(15, graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount(), graph.edgeSet().size());
 	}
 
 	@Test
@@ -55,7 +56,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testRemoveEdge() {
 		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		assertTrue(graph.removeEdge(link));
-		assertEquals(14, graph.edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount() - 1, graph.edgeSet().size());
 		assertTrue(graph.addEdge(link));
 	}
 

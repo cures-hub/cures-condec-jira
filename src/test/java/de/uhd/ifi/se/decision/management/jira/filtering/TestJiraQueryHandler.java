@@ -14,6 +14,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestJiraQueryHandler extends TestSetUp {
@@ -51,7 +52,7 @@ public class TestJiraQueryHandler extends TestSetUp {
 	public void testGetJiraIssuesFromFilledQuery() {
 		jiraQueryHandler = new JiraQueryHandler(user, "TEST", "?jql=project=TEST");
 		List<Issue> jiraIssues = jiraQueryHandler.getJiraIssuesFromQuery();
-		assertEquals(10, jiraIssues.size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), jiraIssues.size());
 	}
 
 	@Test

@@ -28,7 +28,7 @@ public class TestCommentMetricCalculator extends TestSetUp {
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
 		Map<String, Integer> map = commentMetricCalculator.getNumberOfCommentsPerIssue();
-		assertEquals(10, map.size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), map.size());
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TestCommentMetricCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommitsPerJiraIssue() {
-		assertEquals(10, commentMetricCalculator.getNumberOfCommitsPerIssue().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), commentMetricCalculator.getNumberOfCommitsPerIssue().size());
 	}
 
 }

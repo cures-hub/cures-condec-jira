@@ -23,11 +23,11 @@ public class TestCheckForCompleteness extends TestSetUp {
 	public void setUp() {
 		init();
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(3);
+		issue = elements.get(4);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		decision = elements.get(6);
-		alternative = elements.get(5);
-		proArgument = elements.get(7);
+		decision = elements.get(10);
+		alternative = elements.get(8);
+		proArgument = elements.get(11);
 	}
 
 	@Test
