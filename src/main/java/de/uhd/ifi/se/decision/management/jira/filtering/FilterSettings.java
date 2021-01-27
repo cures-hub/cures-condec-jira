@@ -84,7 +84,7 @@ public class FilterSettings {
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
-		this.setIrrelevantTextShown(false);
+		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
 	}
 
@@ -107,8 +107,9 @@ public class FilterSettings {
 	/**
 	 * @return key of the Jira project.
 	 */
+	@XmlElement(name = "projectKey")
 	public String getProjectKey() {
-		return project.getProjectKey();
+		return project != null ? project.getProjectKey() : "";
 	}
 
 	/**
@@ -505,8 +506,8 @@ public class FilterSettings {
 
 	/**
 	 * @return true if the {@link KnowledgeGraph} or a respective subgraph provided
-	 *         by the {@link FilteringManager} should contain transitive links 
-	 * 	       as a replacement for knowledge elements removed by filters.
+	 *         by the {@link FilteringManager} should contain transitive links as a
+	 *         replacement for knowledge elements removed by filters.
 	 */
 	public boolean createTransitiveLinks() {
 		return createTransitiveLinks;
@@ -515,9 +516,8 @@ public class FilterSettings {
 	/**
 	 * @param createTransitiveLinks
 	 *            true if the {@link KnowledgeGraph} or a respective subgraph
-	 *            provided by the {@link FilteringManager} should contain 
-	 *            transitive links as a replacement for knowledge elements 
-	 *            removed by filters.
+	 *            provided by the {@link FilteringManager} should contain transitive
+	 *            links as a replacement for knowledge elements removed by filters.
 	 */
 	@JsonProperty("createTransitiveLinks")
 	public void setCreateTransitiveLinks(boolean createTransitiveLinks) {

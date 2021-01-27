@@ -46,19 +46,6 @@ public class FilteringManager {
 		this(user, new FilterSettings(projectKey, query, user));
 	}
 
-	public Set<KnowledgeElement> getElementsInContext() {
-		Set<KnowledgeElement> elements;
-
-		if (filterSettings.getSelectedElement() != null) {
-			graph.addVertex(filterSettings.getSelectedElement());
-			elements = getElementsInLinkDistance(filterSettings.getSelectedElement());
-		} else {
-			elements = new HashSet<KnowledgeElement>();
-			elements.addAll(graph.vertexSet());
-		}
-		return elements;
-	}
-
 	/**
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
@@ -67,26 +54,13 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<>();
 		}
-		Set<KnowledgeElement> elements = getElementsInContext();
-
+		Set<KnowledgeElement> elements = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
 		elements = filterElements(elements);
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
 		return elements;
 	}
-
-	/**
-	 * @return all knowledge elements that do not match the {@link FilterSettings}.
-	 */
-	public Set<KnowledgeElement> getElementsNotMatchingFilterSettings() {
-		Set<KnowledgeElement> elements = getElementsInContext();
-
-		Set<KnowledgeElement> elementsMatchingFilterSettings = getElementsMatchingFilterSettings();
-		elements.removeAll(elementsMatchingFilterSettings);
-		return elements;
-	}
-	
 
 	/**
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
@@ -97,52 +71,66 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-		removeAllTransitiveLinks();
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		Graph<KnowledgeElement, Link> subgraph = new AsSubgraph<>(graph, elements);
+		KnowledgeGraph subgraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
 		subgraph = getSubgraphMatchingLinkTypes(subgraph);
 
 		if (filterSettings.createTransitiveLinks()) {
-			int id = -65536;
-			Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
-			for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-				Set<Link> links = element.getLinks();
-				Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
-				Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
-				for (Link link : links) {
-					if (link.getSource().getId() == element.getId() && link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
-						targetElements.add(link.getTarget());
-					}
-					if (link.getTarget().getId() == element.getId() && link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
-						sourceElements.add(link.getSource());
-					}
-				}
-				for (KnowledgeElement sourceElement : sourceElements) {
-					for (KnowledgeElement targetElement : targetElements) {
-						if (sourceElement.getId() == targetElement.getId() && sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
-							continue;
-						}
-						Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
-						transitiveLink.setId(id++);
-						graph.addEdge(transitiveLink);
-						if (subgraph.vertexSet().contains(sourceElement) && subgraph.vertexSet().contains(targetElement)
-								&& graph.getEdgeSource(transitiveLink) != null && graph.getEdgeTarget(transitiveLink) != null) {
-							subgraph.addEdge(graph.getEdgeSource(transitiveLink), graph.getEdgeTarget(transitiveLink), transitiveLink);
-						}
-					}
-				}
-			}
+			addTransitiveLinksToSubgraph(subgraph);
 		}
-		
 		return subgraph;
 	}
 
-	private void removeAllTransitiveLinks() {
-		Set<Link> links = new HashSet<Link>();
-		links.addAll(graph.edgeSet());
-		links.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
-		graph.removeAllEdges(links);
+	public KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
+		int id = -65536;
+		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
+		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
+			Set<Link> links = element.getLinks();
+			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
+			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
+			for (Link link : links) {
+				if (link.getSource().getId() == element.getId()
+						&& link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
+					targetElements.add(link.getTarget());
+				}
+				if (link.getTarget().getId() == element.getId()
+						&& link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
+					sourceElements.add(link.getSource());
+				}
+			}
+			for (KnowledgeElement sourceElement : sourceElements) {
+				for (KnowledgeElement targetElement : targetElements) {
+					if (sourceElement.getId() == targetElement.getId()
+							&& sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
+						continue;
+					}
+					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
+					transitiveLink.setId(id++);
+					subgraph.addEdge(transitiveLink);
+				}
+			}
+		}
+
+		return subgraph;
+	}
+
+	/**
+	 * @return all knowledge elements that do not match the {@link FilterSettings}.
+	 */
+	public Set<KnowledgeElement> getElementsNotMatchingFilterSettings() {
+		Set<KnowledgeElement> elementsInLinkDistanceOrEntireVertexSet = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
+		Set<KnowledgeElement> elementsMatchingFilterSettings = getElementsMatchingFilterSettings();
+		elementsInLinkDistanceOrEntireVertexSet.removeAll(elementsMatchingFilterSettings);
+		return elementsInLinkDistanceOrEntireVertexSet;
+	}
+
+	private Set<KnowledgeElement> getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet() {
+		if (filterSettings.getSelectedElement() != null) {
+			graph.addVertex(filterSettings.getSelectedElement());
+			return getElementsInLinkDistance(filterSettings.getSelectedElement());
+		}
+		return graph.vertexSet();
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
@@ -150,7 +138,7 @@ public class FilteringManager {
 		return new HashSet<>(element.getLinkedElements(linkDistance));
 	}
 
-	private Graph<KnowledgeElement, Link> getSubgraphMatchingLinkTypes(Graph<KnowledgeElement, Link> subgraph) {
+	private KnowledgeGraph getSubgraphMatchingLinkTypes(KnowledgeGraph subgraph) {
 		if (filterSettings.getLinkTypes().size() < DecisionKnowledgeProject.getNamesOfLinkTypes().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);

@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -198,8 +197,7 @@ public class TrainingData {
 	public File saveToFile(String projectKey) {
 		File trainingDataFile = null;
 		try {
-			trainingDataFile = new File(
-					TextClassifier.CLASSIFIER_DIRECTORY + createTrainingDataFileName(projectKey));
+			trainingDataFile = new File(TextClassifier.CLASSIFIER_DIRECTORY + createTrainingDataFileName(projectKey));
 			trainingDataFile.createNewFile();
 			Write.csv(dataFrame, trainingDataFile.toPath(), CSVFormat.DEFAULT);
 		} catch (IOException e) {
