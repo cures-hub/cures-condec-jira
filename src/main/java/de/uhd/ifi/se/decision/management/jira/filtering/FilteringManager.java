@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jgrapht.Graph;
 import org.jgrapht.graph.AsSubgraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public class FilteringManager {
 	 * @return subgraph of the {@link KnowledgeGraph} that matches the
 	 *         {@link FilterSettings}.
 	 */
-	public Graph<KnowledgeElement, Link> getSubgraphMatchingFilterSettings() {
+	public KnowledgeGraph getSubgraphMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
@@ -74,7 +73,7 @@ public class FilteringManager {
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		KnowledgeGraph subgraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
-		subgraph = getSubgraphMatchingLinkTypes(subgraph);
+		removeLinksWithTypesNotInFilterSettings(subgraph);
 
 		if (filterSettings.createTransitiveLinks()) {
 			addTransitiveLinksToSubgraph(subgraph);
@@ -82,7 +81,7 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	public KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
+	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
 		int id = -65536;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
 		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
@@ -130,7 +129,7 @@ public class FilteringManager {
 			graph.addVertex(filterSettings.getSelectedElement());
 			return getElementsInLinkDistance(filterSettings.getSelectedElement());
 		}
-		return graph.vertexSet();
+		return new HashSet<>(graph.vertexSet());
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
@@ -138,7 +137,16 @@ public class FilteringManager {
 		return new HashSet<>(element.getLinkedElements(linkDistance));
 	}
 
-	private KnowledgeGraph getSubgraphMatchingLinkTypes(KnowledgeGraph subgraph) {
+	/**
+	 * Removes the edges from the graph with types that are not in the
+	 * {@link FilterSettings#getLinkTypes()}.
+	 * 
+	 * @param subgraph
+	 *            {@link KnowledgeGraph} object.
+	 * @return subgraph of the {@link KnowledgeGraph} which might have fewer edges
+	 *         than before.
+	 */
+	private KnowledgeGraph removeLinksWithTypesNotInFilterSettings(KnowledgeGraph subgraph) {
 		if (filterSettings.getLinkTypes().size() < DecisionKnowledgeProject.getNamesOfLinkTypes().size()) {
 			Set<Link> linksNotMatchingFilterSettings = getLinksNotMatchingFilterSettings(subgraph.edgeSet());
 			subgraph.removeAllEdges(linksNotMatchingFilterSettings);
