@@ -272,7 +272,7 @@ public class TrainingData {
 		try {
 			trainingData = Read.csv(trainingDataFile.getAbsolutePath(), CSVFormat.DEFAULT.withFirstRecordAsHeader(),
 					getDataFrameStructure());
-		} catch (IOException | URISyntaxException e) {
+		} catch (Exception e) {
 			LOGGER.error("Data frame could not be loaded from training data file: " + e.getMessage());
 		}
 		return trainingData;
