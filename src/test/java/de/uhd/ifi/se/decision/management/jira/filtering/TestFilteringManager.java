@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.jgrapht.Graph;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +21,9 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -49,7 +55,7 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryEmpty() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "");
-		assertEquals(10, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -62,7 +68,7 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testConstructorValidQueryFilter() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?filter=allopenissues");
-		assertEquals(10, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -70,7 +76,7 @@ public class TestFilteringManager extends TestSetUp {
 	public void testConstructorValidQueryJQL() {
 		FilteringManager filteringManager = new FilteringManager("TEST", user, "?jql=project=TEST");
 		assertEquals("?jql=project=TEST", filteringManager.getFilterSettings().getSearchTerm());
-		assertEquals(10, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
@@ -112,9 +118,9 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(10, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(15, filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount(), filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test
@@ -219,4 +225,36 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size() > 0);
 	}
+
+	@Test
+	public void testTransitiveLinks() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-31");
+		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		settings.setCreateTransitiveLinks(true);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> transitiveLinks = new HashSet<Link>();
+		transitiveLinks.addAll(subgraph.edgeSet());
+		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		assertTrue(transitiveLinks.size() == 4);
+
+		Set<Link> otherLinks1 = new HashSet<Link>();
+		otherLinks1.addAll(subgraph.edgeSet());
+		otherLinks1.removeIf(link -> link.getType() == LinkType.TRANSITIVE);
+
+		settings.setCreateTransitiveLinks(false);
+		filteringManager = new FilteringManager(user, settings);
+		subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> noTransitiveLinks = new HashSet<Link>();
+		noTransitiveLinks.addAll(subgraph.edgeSet());
+		noTransitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		assertTrue(noTransitiveLinks.size() == 0);
+
+		Set<Link> otherLinks2 = new HashSet<Link>();
+		otherLinks2.addAll(subgraph.edgeSet());
+		otherLinks2.removeIf(link -> link.getType() == LinkType.TRANSITIVE);
+		assertEquals(otherLinks1, otherLinks2);
+	}
+
 }

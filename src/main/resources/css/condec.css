@@ -72,6 +72,7 @@ a:focus a:hover {
 .condec-filter-criterion {
 	display: inline-block;
 	margin-top: 5px;
+	margin-right: 5px;
 }
 
 .jira-module-fullscreen {

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestMatrix extends TestSetUp {
 	private Matrix matrix;
@@ -23,7 +24,7 @@ public class TestMatrix extends TestSetUp {
 
 	@Test
 	public void testGetHeaderElements() {
-		assertEquals(10, this.matrix.getHeaderElements().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(), this.matrix.getHeaderElements().size());
 	}
 
 	@Test

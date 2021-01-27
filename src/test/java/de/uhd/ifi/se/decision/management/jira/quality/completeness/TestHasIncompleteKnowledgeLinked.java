@@ -35,10 +35,10 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	public void setUp() {
 		init();
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(3);
+		issue = elements.get(4);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		decision = elements.get(6);
-		alternative = elements.get(5);
+		decision = elements.get(10);
+		alternative = elements.get(7);
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
 	}

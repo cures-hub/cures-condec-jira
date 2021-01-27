@@ -11,6 +11,7 @@
         	#parse("templates/filter/linkDistance.vm")
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")     
         	#parse("templates/filter/isIrrelevantText.vm")     
+        	#parse("templates/filter/isTransitiveLinks.vm")
         </form>
     </div>
 </div>

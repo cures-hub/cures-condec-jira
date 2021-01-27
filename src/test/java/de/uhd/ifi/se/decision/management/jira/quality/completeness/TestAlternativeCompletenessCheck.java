@@ -39,7 +39,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		alternative = elements.get(5);
+		alternative = elements.get(7);
 		alternativeCompletenessCheck = new AlternativeCompletenessCheck();
 	}
 
@@ -48,7 +48,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToIssue() {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
-		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement issue = elements.get(4);
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(alternative.getLink(issue));
@@ -60,7 +60,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToIssue() {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
-		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement issue = elements.get(4);
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		Link linkToIssue = alternative.getLink(issue);
@@ -94,7 +94,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a pro-argument
-		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement issue = elements.get(4);
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, KnowledgeType.PRO);
@@ -112,7 +112,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a con-argument
-		KnowledgeElement issue = elements.get(3);
+		KnowledgeElement issue = elements.get(4);
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, KnowledgeType.CON);

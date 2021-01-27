@@ -12,6 +12,7 @@
 			#parse("templates/filter/documentationLocation.vm")    
         	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
         	#parse("templates/filter/isTestCode.vm")    
+        	#parse("templates/filter/isTransitiveLinks.vm")
 			   
         </form>
     </div>

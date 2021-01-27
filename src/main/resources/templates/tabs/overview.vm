@@ -16,6 +16,8 @@
 	#parse("templates/filter/degree.vm")
 	#parse("templates/filter/documentationDate.vm")
 	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+	#parse("templates/filter/isTransitiveLinks.vm")
+
 </form>
 <div class="aui-group">
     <div id="resizable" class="left">

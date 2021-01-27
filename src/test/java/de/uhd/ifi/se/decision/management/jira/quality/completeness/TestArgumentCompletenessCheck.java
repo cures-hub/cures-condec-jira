@@ -38,7 +38,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		argumentCompletenessCheck = new ArgumentCompletenessCheck();
-		proArgument = elements.get(7);
+		proArgument = elements.get(11);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToDecision() {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
 		assertEquals(5, proArgument.getId());
-		KnowledgeElement decision = elements.get(6);
+		KnowledgeElement decision = elements.get(10);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
@@ -70,7 +70,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsNeitherLinkedToDecisionNorToAlternative() {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
 		assertEquals(5, proArgument.getId());
-		KnowledgeElement decision = elements.get(6);
+		KnowledgeElement decision = elements.get(10);
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 
