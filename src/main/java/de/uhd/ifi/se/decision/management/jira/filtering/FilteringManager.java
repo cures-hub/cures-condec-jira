@@ -85,19 +85,8 @@ public class FilteringManager {
 		int id = -65536;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
 		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-			Set<Link> links = element.getLinks();
-			Set<KnowledgeElement> sourceElements = new HashSet<KnowledgeElement>();
-			Set<KnowledgeElement> targetElements = new HashSet<KnowledgeElement>();
-			for (Link link : links) {
-				if (link.getSource().getId() == element.getId()
-						&& link.getSource().getDocumentationLocation() == element.getDocumentationLocation()) {
-					targetElements.add(link.getTarget());
-				}
-				if (link.getTarget().getId() == element.getId()
-						&& link.getTarget().getDocumentationLocation() == element.getDocumentationLocation()) {
-					sourceElements.add(link.getSource());
-				}
-			}
+			Set<KnowledgeElement> sourceElements = graph.getSourceElements(element);
+			Set<KnowledgeElement> targetElements = graph.getTargetElements(element);
 			for (KnowledgeElement sourceElement : sourceElements) {
 				for (KnowledgeElement targetElement : targetElements) {
 					if (sourceElement.getId() == targetElement.getId()

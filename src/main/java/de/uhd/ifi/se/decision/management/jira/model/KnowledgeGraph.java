@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
@@ -331,5 +332,13 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			}
 		}
 		return null;
+	}
+
+	public Set<KnowledgeElement> getTargetElements(KnowledgeElement sourceElement) {
+		return outgoingEdgesOf(sourceElement).stream().map(Link::getTarget).collect(Collectors.toSet());
+	}
+
+	public Set<KnowledgeElement> getSourceElements(KnowledgeElement targetElement) {
+		return incomingEdgesOf(targetElement).stream().map(Link::getSource).collect(Collectors.toSet());
 	}
 }
