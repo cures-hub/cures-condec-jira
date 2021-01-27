@@ -334,11 +334,11 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return null;
 	}
 
-	public Set<KnowledgeElement> getTargetElements(KnowledgeElement sourceElement) {
+	public Set<KnowledgeElement> getLinkedTargetElements(KnowledgeElement sourceElement) {
 		return outgoingEdgesOf(sourceElement).stream().map(Link::getTarget).collect(Collectors.toSet());
 	}
 
-	public Set<KnowledgeElement> getSourceElements(KnowledgeElement targetElement) {
+	public Set<KnowledgeElement> getLinkedSourceElements(KnowledgeElement targetElement) {
 		return incomingEdgesOf(targetElement).stream().map(Link::getSource).collect(Collectors.toSet());
 	}
 }

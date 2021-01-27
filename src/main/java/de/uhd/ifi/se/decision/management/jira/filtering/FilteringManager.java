@@ -85,12 +85,11 @@ public class FilteringManager {
 		int id = -65536;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
 		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-			Set<KnowledgeElement> sourceElements = graph.getSourceElements(element);
-			Set<KnowledgeElement> targetElements = graph.getTargetElements(element);
+			Set<KnowledgeElement> sourceElements = graph.getLinkedSourceElements(element);
+			Set<KnowledgeElement> targetElements = graph.getLinkedTargetElements(element);
 			for (KnowledgeElement sourceElement : sourceElements) {
 				for (KnowledgeElement targetElement : targetElements) {
-					if (sourceElement.getId() == targetElement.getId()
-							&& sourceElement.getDocumentationLocation() == targetElement.getDocumentationLocation()) {
+					if (sourceElement.equals(targetElement)) {
 						continue;
 					}
 					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
@@ -99,7 +98,6 @@ public class FilteringManager {
 				}
 			}
 		}
-
 		return subgraph;
 	}
 
@@ -127,7 +125,7 @@ public class FilteringManager {
 	}
 
 	/**
-	 * Removes the edges from the graph with types that are not in the
+	 * Removes those edges from the graph that have types that are not in the
 	 * {@link FilterSettings#getLinkTypes()}.
 	 * 
 	 * @param subgraph
