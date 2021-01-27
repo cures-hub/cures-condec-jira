@@ -82,14 +82,30 @@ public class FilteringManager {
 	}
 
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
+		KnowledgeGraph temporaryGraph = new KnowledgeGraph();
 		int id = -65536;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
 		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-			Set<KnowledgeElement> sourceElements = graph.getLinkedSourceElements(element);
-			Set<KnowledgeElement> targetElements = graph.getLinkedTargetElements(element);
-			for (KnowledgeElement sourceElement : sourceElements) {
-				for (KnowledgeElement targetElement : targetElements) {
-					if (sourceElement.equals(targetElement)) {
+			Set<KnowledgeElement> linkedElements = graph.getLinkedElements(element);
+			if (temporaryGraph.isElementInGraph(element)) {
+				linkedElements.addAll(temporaryGraph.getLinkedElements(element));
+			}
+			for (KnowledgeElement sourceElement : linkedElements) {
+				for (KnowledgeElement targetElement : linkedElements) {
+					if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
+							|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement, 
+							targetElement) || graph.containsEdge(targetElement, sourceElement)) {
+						continue;
+					}
+					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
+						if (!graph.getLinkedSourceElements(element).contains(sourceElement)) {
+							continue;
+						}
+						if (!graph.getLinkedTargetElements(element).contains(targetElement)) {
+							continue;
+						}
+					}
+					if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
 						continue;
 					}
 					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
