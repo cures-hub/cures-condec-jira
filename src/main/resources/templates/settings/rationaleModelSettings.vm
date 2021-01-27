@@ -70,14 +70,14 @@
     document.getElementById("additional-link-types-header").insertAdjacentHTML('afterend', html);
 
     var additionalLinkTypes = ["Supports", "Attacks", "Duplicates", "Forbids", "Constraints", "Enables",
-        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces", "Transitive"];
+        "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
     var typeLinkToggles = [];
     for (i in additionalLinkTypes) {
         var toggleName = additionalLinkTypes[i] + "-toggle";
         html = "<div class='field-group'>";
         html += "<label for=" + toggleName + ">" + additionalLinkTypes[i] + "</label>";
         html += "<aui-toggle id='" + toggleName + "' value='" + additionalLinkTypes[i] + "' label='" + additionalLinkTypes[i] + "'></aui-toggle>";
-        html += "<div class='description'>Enables the " + additionalLinkTypes[i] + " element for this project.</div>";
+        html += "<div class='description'>Enables the " + additionalLinkTypes[i] + " link type for this project. Creates a Jira issue link type.</div>";
         html += "</div>";
         document.getElementById("additional-link-types-text").insertAdjacentHTML('afterend', html);
         typeLinkToggles.push(document.getElementById(toggleName));
