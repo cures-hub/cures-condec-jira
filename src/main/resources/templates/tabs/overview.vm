@@ -26,14 +26,21 @@
     </div>
 </div>
 <script>
-/* Adds the on click listener on tab opening */
-$(document).ready(function () {
-	var isOnceClicked = false;
-    AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#overview-tab")) {
-    		conDecKnowledgePage.initView();
-			isOnceClicked = true;
-		}
+#if($codeFileName == "")
+	/* Adds the on click listener on tab opening */
+	$(document).ready(function () {
+		var isOnceClicked = false;
+		AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+			if (!isOnceClicked && event.target.href.includes("#overview-tab")) {
+				conDecKnowledgePage.initView();
+				isOnceClicked = true;
+			}
+		});
+	});    
+#else
+	/* Inits overview as the default tab */
+	$(document).ready(function () {
+		conDecKnowledgePage.initView();
 	});
-});    
+#end
 </script>
