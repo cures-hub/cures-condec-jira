@@ -1,3 +1,7 @@
+#set($codeFileName = $request.getParameter("codeFileName"))
+#if(!$codeFileName)
+    #set($codeFileName = "")
+#end
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 

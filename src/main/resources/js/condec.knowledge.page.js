@@ -30,8 +30,15 @@
 		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
-			if (knowledgeTypes[index] === "Issue") {
-				isSelected = "selected ";
+			const urlParams = new URLSearchParams(window.location.href);
+			if (urlParams.has('codeFileName')) {
+				if (knowledgeTypes[index] === "Code") {
+					isSelected = "selected ";
+				}
+			} else {
+				if (knowledgeTypes[index] === "Issue") {
+					isSelected = "selected ";
+				}
 			}
 			jQuery("select[name='knowledge-type-dropdown-overview']")[0].insertAdjacentHTML("beforeend", "<option "
 			        + isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
