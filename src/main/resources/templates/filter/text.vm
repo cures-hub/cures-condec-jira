@@ -1,1 +1,1 @@
-<input class="text medium-field" id="search-input-$viewIdentifier" placeholder="$i18n.getText('condec.filter.label')"/>
+<input class="text medium-field" id="search-input-$viewIdentifier" placeholder="$i18n.getText('condec.filter.label')" value="$codeFileName"/>
