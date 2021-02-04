@@ -62,7 +62,7 @@ public class JiraIssues {
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(31, jiraIssueTypes.get(0), project, "WI: Deal with the drunken sailor", user);
 		jiraIssues.add(jiraIssue);
-		
+
 		// Issues (= decision problems)
 		jiraIssue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
 		jiraIssues.add(jiraIssue);
@@ -116,6 +116,7 @@ public class JiraIssues {
 		issue.setSummary(summary);
 		issue.setDescription(summary);
 		issue.setCreated(new Timestamp(System.currentTimeMillis()));
+		issue.setUpdated(issue.getCreated());
 		issue.setResolutionDate(new Timestamp(System.currentTimeMillis() + 10000));
 		Status status = new MockStatus("1", "Unresolved");
 		issue.setStatus(status);
