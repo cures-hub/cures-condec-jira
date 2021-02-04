@@ -478,7 +478,8 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
 				.getKnowledgeElement(decisionKnowledgeElement);
@@ -489,9 +490,8 @@ public class KnowledgeRest {
 
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
-		sentence.setSummary(null);
 		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
-		persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
+		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
 	}
 
