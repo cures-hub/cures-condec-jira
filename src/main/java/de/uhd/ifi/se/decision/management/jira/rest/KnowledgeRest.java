@@ -367,6 +367,11 @@ public class KnowledgeRest {
 			persistenceManager.deleteLink(existingLink, user);
 		}
 
+		if (parentElement.equals(childElement)) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Link could not be created because of identical elements (self links forbidden).")).build();
+		}
+
 		Link link;
 		if (linkTypeName == null || linkTypeName.equals("null")) {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
