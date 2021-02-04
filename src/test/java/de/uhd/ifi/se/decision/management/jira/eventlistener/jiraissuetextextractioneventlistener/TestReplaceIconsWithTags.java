@@ -61,8 +61,8 @@ public class TestReplaceIconsWithTags {
 
 	@Test
 	public void testLineBreak() {
-		String textWithIcon = "(!) This is a very severe issue.\r\n";
-		assertEquals("{issue} This is a very severe issue.{issue}\r\n",
+		String textWithIcon = "(!) This is a very severe issue.\n";
+		assertEquals("{issue} This is a very severe issue.{issue}\n",
 				JiraIssueTextExtractionEventListener.replaceIconsWithTags(textWithIcon));
 	}
 
@@ -75,8 +75,8 @@ public class TestReplaceIconsWithTags {
 
 	@Test
 	public void testProAndCon() {
-		String textWithoutIcon = "(+) Good idea.\r\n(-) No, this is bad.";
-		assertEquals("{pro} Good idea.{pro}\r\n{con} No, this is bad.{con}",
+		String textWithoutIcon = "(+) Good idea.\n(-) No, this is bad.";
+		assertEquals("{pro} Good idea.{pro}\n{con} No, this is bad.{con}",
 				JiraIssueTextExtractionEventListener.replaceIconsWithTags(textWithoutIcon));
 	}
 }
