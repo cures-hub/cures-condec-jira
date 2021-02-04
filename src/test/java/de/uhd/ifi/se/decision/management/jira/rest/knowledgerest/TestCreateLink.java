@@ -5,14 +5,12 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -25,8 +23,6 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestCreateLink extends TestSetUp {
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
-
-	private final static String CREATION_ERROR = "Link could not be created due to a bad request.";
 
 	@Before
 	public void setUp() {
@@ -71,8 +67,8 @@ public class TestCreateLink extends TestSetUp {
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest
-						.createLink(request, "TEST", sentenceIssue.getId(), "s", sentenceDecision.getId(), "s", null)
-						.getStatus());
+				.createLink(request, "TEST", sentenceIssue.getId(), "s", sentenceDecision.getId(), "s", null)
+				.getStatus());
 	}
 
 	@Test
@@ -88,32 +84,32 @@ public class TestCreateLink extends TestSetUp {
 
 	@Test
 	public void testRequestNullProjectKeyNullChildElementFilledParentElementFilledLinkTypeNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, 4, "i", 1, "i", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(null, null, 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyNullChildElementFilledParentElementFilledLinkTypeNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(request, null, 4, "i", 1, "i", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(request, null, 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyFilledChildElementFilledParentElementFilledLinkTypeNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, "TEST", 4, "i", 1, "i", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(null, "TEST", 4, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementIdZeroParentElementFilledLinkTypeNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(request, "TEST", 0, "i", 1, "i", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(request, "TEST", 0, "i", 1, "i", null).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementIdZeroLinkTypeNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(request, "TEST", 4, "i", 0, "i", null).getEntity());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(request, "TEST", 4, "i", 0, "i", null).getStatus());
 	}
 
 	@Test
@@ -126,5 +122,11 @@ public class TestCreateLink extends TestSetUp {
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledLinkTypeInvalid() {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", "null").getStatus());
+	}
+
+	@Test
+	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementEqualsChildelement() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				knowledgeRest.createLink(request, "TEST", 4, "i", 4, "i", null).getStatus());
 	}
 }
