@@ -93,6 +93,13 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGetUpdatingDate() {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+		assertNotNull(sentence.getUpdatingDate());
+	}
+
+	@Test
+	@NonTransactional
 	public void testGetTextFromComment() {
 		assertEquals("some sentence in front.", irrelevantFirstSentence.getText());
 	}
