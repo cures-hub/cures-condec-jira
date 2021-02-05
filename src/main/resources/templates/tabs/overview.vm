@@ -44,5 +44,9 @@
 	$(document).ready(function () {
 		conDecKnowledgePage.initView();
 	});
+	$("#jstree").bind('ready.jstree', function(e, data) {
+		var node = document.querySelector('[title="$codeFileName"]');
+		conDecTreeViewer.selectNodeInTreeViewer(node.id.substr(0,node.id.search('_anchor')), '#jstree');
+    });
 #end
 </script>
