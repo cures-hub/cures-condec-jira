@@ -117,6 +117,7 @@ public class FilteringManager {
 					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
 							(  !graph.getLinkedSourceElements(element).contains(sourceElement) 
 							|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
+							"".isEmpty();
 							continue;
 					}
 
