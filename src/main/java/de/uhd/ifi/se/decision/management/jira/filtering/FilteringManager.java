@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.graph.AsSubgraph;
@@ -82,35 +84,77 @@ public class FilteringManager {
 	}
 
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
+
+		// we always need a selected element
+		if (filterSettings.getSelectedElement() == null) {
+			return subgraph;
+		}
+		
 		KnowledgeGraph temporaryGraph = new KnowledgeGraph();
 		int id = -65536;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
+		Map<KnowledgeElement, Integer> linkDistanceMap = new HashMap<KnowledgeElement, Integer>();
+
+		// iterate through every element removed by filters
 		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
 			Set<KnowledgeElement> linkedElements = graph.getLinkedElements(element);
 			if (temporaryGraph.isElementInGraph(element)) {
 				linkedElements.addAll(temporaryGraph.getLinkedElements(element));
 			}
-			for (KnowledgeElement sourceElement : linkedElements) {
+
+			// iterate through every pair of elements linked to the removed element, which are possible candidates for creating a transitive link in between
+			for (KnowledgeElement sourceElement : linkedElements) { 
 				for (KnowledgeElement targetElement : linkedElements) {
+
+					// if both elements are identical or are already linked to each other
 					if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
 							|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement, 
 							targetElement) || graph.containsEdge(targetElement, sourceElement)) {
-						continue;
+						continue; 
 					}
+
+					// if both elements are decision knowledge elements:
 					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
+
+						// if the source element is not in the source elements of the removed element, the direction is wrong
 						if (!graph.getLinkedSourceElements(element).contains(sourceElement)) {
 							continue;
 						}
+
+						// if the target element is not in the target elements of the removed element, the direction is wrong
 						if (!graph.getLinkedTargetElements(element).contains(targetElement)) {
 							continue;
 						}
 					}
+
+					// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
 					if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
+						continue; 
+					}
+
+					// computing link distances takes a lot of time, so we store and reuse the results
+					if (!linkDistanceMap.containsKey(sourceElement)) {
+						linkDistanceMap.put(sourceElement, sourceElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
+					}
+					if (!linkDistanceMap.containsKey(targetElement)) {
+						linkDistanceMap.put(targetElement, targetElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
+					}
+
+					// if both knowledge elements have the same link distance to the selected element, we do not create a transitive link
+					if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
+							|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
 						continue;
 					}
+					
 					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
 					transitiveLink.setId(id++);
-					subgraph.addEdge(transitiveLink);
+
+					// we store the link just created so we can create transitive links even if multiple knowledge elements in a row are removed by filters
+					temporaryGraph.addEdge(transitiveLink);
+
+					if (subgraph.isElementInGraph(sourceElement) && subgraph.isElementInGraph(targetElement)) {
+						subgraph.addEdge(transitiveLink);
+					}
 				}
 			}
 		}
