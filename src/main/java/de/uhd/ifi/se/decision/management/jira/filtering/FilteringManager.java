@@ -113,18 +113,11 @@ public class FilteringManager {
 						continue; 
 					}
 
-					// if both elements are decision knowledge elements:
-					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
-
-						// if the source element is not in the source elements of the removed element, the direction is wrong
-						if (!graph.getLinkedSourceElements(element).contains(sourceElement)) {
+					// if both elements are decision knowledge elements, check whether the direction is correct
+					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
+							(  !graph.getLinkedSourceElements(element).contains(sourceElement) 
+							|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
 							continue;
-						}
-
-						// if the target element is not in the target elements of the removed element, the direction is wrong
-						if (!graph.getLinkedTargetElements(element).contains(targetElement)) {
-							continue;
-						}
 					}
 
 					// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
