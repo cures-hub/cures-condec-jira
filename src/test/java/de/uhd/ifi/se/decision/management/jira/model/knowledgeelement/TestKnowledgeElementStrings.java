@@ -14,8 +14,10 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 
 /**
@@ -169,5 +171,19 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 		decisionKnowledgeElement.removeDecisionGroup("TestGroup");
 		assertFalse(decisionKnowledgeElement.getDecisionGroups().contains("TestGroup"));
 
+	}
+
+	@Test
+	public void testGetLinkDistance() {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		KnowledgeElement other = new KnowledgeElement(id + 1, summary + " 2", description + " 2", type, projectKey, "Test 2",
+				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+		graph.addVertexNotBeingInDatabase(decisionKnowledgeElement);
+		graph.addVertexNotBeingInDatabase(other);
+		Link link = new Link(decisionKnowledgeElement, other);
+		graph.addEdge(link);
+		assertEquals(0, decisionKnowledgeElement.getLinkDistance(decisionKnowledgeElement, 1));
+		assertEquals(-1, decisionKnowledgeElement.getLinkDistance(other, 0));
+		assertEquals(1, decisionKnowledgeElement.getLinkDistance(other, 1));
 	}
 }

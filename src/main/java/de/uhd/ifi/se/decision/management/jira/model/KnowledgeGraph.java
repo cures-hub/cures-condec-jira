@@ -341,4 +341,14 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public Set<KnowledgeElement> getLinkedSourceElements(KnowledgeElement targetElement) {
 		return incomingEdgesOf(targetElement).stream().map(Link::getSource).collect(Collectors.toSet());
 	}
+
+	public Set<KnowledgeElement> getLinkedElements(KnowledgeElement element) {
+		Set<KnowledgeElement> linkedElements = getLinkedTargetElements(element);
+		linkedElements.addAll(getLinkedSourceElements(element));
+		return linkedElements;
+	}
+
+	public boolean isElementInGraph(KnowledgeElement element) {
+		return this.vertexSet().contains(element);
+	}
 }

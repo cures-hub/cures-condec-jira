@@ -11,7 +11,9 @@
 		    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
 		    #parse("templates/filter/documentationDate.vm")	
 		    #parse("templates/filter/linkDistance.vm")	
+			#if($showTransitiveFilter)
         	#parse("templates/filter/isTransitiveLinks.vm")
+			#end
 		    #parse("templates/filter/filterButton.vm")
 		</form>
 	</div>
