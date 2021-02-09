@@ -83,6 +83,37 @@ public class FilteringManager {
 		return subgraph;
 	}
 
+	private Boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement, 
+			KnowledgeGraph temporaryGraph, KnowledgeElement element, Map<KnowledgeElement, Integer> linkDistanceMap) {
+				
+		// if both elements are identical or are already linked to each other
+		if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
+				|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement, 
+				targetElement) || graph.containsEdge(targetElement, sourceElement)) {
+			return false; 
+		}
+
+		// if both elements are decision knowledge elements, check whether the direction is correct
+		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
+				(  !graph.getLinkedSourceElements(element).contains(sourceElement) 
+				|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
+			return false;
+		}
+
+		// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
+		if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
+			return false;
+		}
+
+		// if both knowledge elements have the same link distance to the selected element, we do not create a transitive link
+		if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
+				|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
 
 		// we always need a selected element
@@ -106,26 +137,6 @@ public class FilteringManager {
 			for (KnowledgeElement sourceElement : linkedElements) { 
 				for (KnowledgeElement targetElement : linkedElements) {
 
-					// if both elements are identical or are already linked to each other
-					if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
-							|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement, 
-							targetElement) || graph.containsEdge(targetElement, sourceElement)) {
-						continue; 
-					}
-
-					// if both elements are decision knowledge elements, check whether the direction is correct
-					if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
-							(  !graph.getLinkedSourceElements(element).contains(sourceElement) 
-							|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
-							"".isEmpty();
-							continue;
-					}
-
-					// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
-					if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
-						continue; 
-					}
-
 					// computing link distances takes a lot of time, so we store and reuse the results
 					if (!linkDistanceMap.containsKey(sourceElement)) {
 						linkDistanceMap.put(sourceElement, sourceElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
@@ -133,21 +144,17 @@ public class FilteringManager {
 					if (!linkDistanceMap.containsKey(targetElement)) {
 						linkDistanceMap.put(targetElement, targetElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
 					}
-
-					// if both knowledge elements have the same link distance to the selected element, we do not create a transitive link
-					if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
-							|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
-						continue;
-					}
 					
-					Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
-					transitiveLink.setId(id++);
+					if (transitiveLinkShallBeAdded(sourceElement, targetElement, temporaryGraph, element, linkDistanceMap)) {
+						Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
+						transitiveLink.setId(id++);
 
-					// we store the link just created so we can create transitive links even if multiple knowledge elements in a row are removed by filters
-					temporaryGraph.addEdge(transitiveLink);
+						// we store the link just created so we can create transitive links even if multiple knowledge elements in a row are removed by filters
+						temporaryGraph.addEdge(transitiveLink);
 
-					if (subgraph.isElementInGraph(sourceElement) && subgraph.isElementInGraph(targetElement)) {
-						subgraph.addEdge(transitiveLink);
+						if (subgraph.isElementInGraph(sourceElement) && subgraph.isElementInGraph(targetElement)) {
+							subgraph.addEdge(transitiveLink);
+						}
 					}
 				}
 			}
