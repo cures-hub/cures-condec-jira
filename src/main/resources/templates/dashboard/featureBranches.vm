@@ -1,23 +1,23 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-<div class="condec-dashboard-contents filtering">
+<div id="configproject" class="condec-dashboard-contents filtering">
 	<form class="aui">
 		<div class="field-group">
-			<label for="condec-dashboard-item-project-selection">Project:</label>
-			<select id="condec-dashboard-item-project-selection" class="select long-field">
+			<label for="condec-dashboard-branch-project-selection">Project:</label>
+			<select name="project" id="condec-dashboard-branch-project-selection" class="select long-field">
 				<option value="">
 					$i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
 				</option>
-			#foreach ($project in $projects)
-				<option value="$project.getKey()"
-					#if ($projectsWithGit.indexOf($project) == -1)
-						style="background-color:yellow"
-					#end
-				>
-					$project.getKey() - $project.getName()
-				</option>
-			#end
+                #foreach ($project in $projects)
+                    <option value="$project.getKey()"
+                        #if ($projectsWithGit.indexOf($project) == -1)
+                            style="background-color:yellow"
+                        #end
+                    >
+                        $project.getKey() - $project.getName()
+                    </option>
+                #end
 			</select>
 		</div>
 	</form>
@@ -57,23 +57,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-$(document).ready(function() {
-    function projectSelectOrOnChange(event) {
-        var projectKey = event.target.value;
-        var selectedOptionIndex = event.target.options.selectedIndex;
-        var selectedOption = event.target.options[selectedOptionIndex];
-        conDecBranchesDashboard.init(projectKey);
-    }
-    selectNode = document.getElementById("condec-dashboard-item-project-selection");
-	selectNode.addEventListener("change", projectSelectOrOnChange);	
-});
+    $(document).ready(function() {
+        function projectSelectOrOnChange(event) {
+            var projectKey = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            conDecBranchesDashboard.init(projectKey);
+        }
+        selectNode = document.getElementById("condec-dashboard-branch-project-selection");
+        selectNode.addEventListener("change", projectSelectOrOnChange);
+    });
 </script>
 
 #if ($projectKey)
 	<script>
-	$(document).ready(function() {		
-		conDecBranchesDashboard.init("$projectKey");	
-		selectNode.value = "$projectKey";  
-	});
+        $(document).ready(function() {
+            conDecBranchesDashboard.init("$projectKey");
+
+            selectNode.value = "$projectKey";
+        });
 	</script>
-#end	
+#end

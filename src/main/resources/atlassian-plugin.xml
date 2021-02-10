@@ -494,6 +494,8 @@
 			location="/css/condec.dashboard.css" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
+        <resource type="download" name="condec.general.metrics.dashboard.js"
+            location="js/dashboard/condec.general.metrics.dashboard.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
@@ -528,25 +530,25 @@
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
 	</dashboard-item>
 
-	<dashboard-item key="condec-general-metrics-dashboard-item"
-		name="ConDec Dashboard for General Metrics">
-		<definition>
-			<title>ConDec General Metrics</title>
-			<categories>
-				<category>Jira</category>
-			</categories>
-			<author>
-				<name>ConDec team</name>
-			</author>
-			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-		</definition>
-		<description>Shows basic metrics, e.g. wrt. distribution of comments, commits, and documentation locations of rationale.</description>
-		<resource name="view" type="velocity"
-			location="/templates/dashboard/generalMetrics.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
-	</dashboard-item>
+    <dashboard-item key="condec-general-metrics-dashboard-item"
+                    name="ConDec Dashboard for General Metrics">
+        <definition>
+            <title key="condec.dashboard.generalmetrics.title" />
+            <categories>
+                <category>Jira</category>
+            </categories>
+            <author>
+                <name>ConDec team</name>
+            </author>
+            <thumbnail
+                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+        </definition>
+        <description key="condec.dashboard.generalmetrics.description" />
+        <resource name="view" type="velocity"
+                  location="/templates/dashboard/generalMetrics.vm" />
+        <context-provider
+            class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
+    </dashboard-item>
 	
 	<dashboard-item key="condec-rationale-completeness-dashboard-item"
 		name="ConDec Dashboard for Intra-Rationale Completeness">

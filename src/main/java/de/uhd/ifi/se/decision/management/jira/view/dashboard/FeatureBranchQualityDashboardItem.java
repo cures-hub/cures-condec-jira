@@ -13,11 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class FeatureBranchQualityDashboardItem extends ConDecDashboardItem {
 
 	@Override
-	public Map<String, Object> getAdditionalParameters() {
-		Map<String, Object> additionalParameters = new LinkedHashMap<>();
+	public Map<String, Object> getMetrics() {
+		Map<String, Object> metrics = new LinkedHashMap<>();
 
 		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
-		additionalParameters.put("projects", projects);
+		metrics.put("projects", projects);
 
 		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
 		for (Project project : projects) {
@@ -27,8 +27,8 @@ public class FeatureBranchQualityDashboardItem extends ConDecDashboardItem {
 			}
 		}
 
-		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
-		return additionalParameters;
+		metrics.put("projectsWithGit", accessableProjectsWithGitRepo);
+		return metrics;
 	}
 
 }
