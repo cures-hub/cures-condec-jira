@@ -276,4 +276,9 @@ public class TrainingData {
 		return trainingData;
 	}
 
+	@Override
+	public String toString() {
+		return dataFrame.toString(dataFrame.size());
+	}
+
 }
