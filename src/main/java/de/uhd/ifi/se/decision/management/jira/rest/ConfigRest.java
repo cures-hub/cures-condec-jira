@@ -28,6 +28,8 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
@@ -639,17 +641,12 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
 		}
 
-		String prefix = "";
-		StringBuilder prettyMapOutput = new StringBuilder();
-		prettyMapOutput.append("{");
-		for (Map.Entry<String, Double> e : evaluationResults.entrySet()) {
-			prettyMapOutput.append(prefix).append(System.lineSeparator()).append("\"").append(e.getKey())
-			.append("\" : \"").append(e.getValue()).append("\"");
-			prefix = ",";
+		String json = "";
+		try {
+			json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(evaluationResults);
+		} catch (JsonProcessingException e) {
 		}
-		prettyMapOutput.append(System.lineSeparator()).append("}");
-
-		return Response.ok(ImmutableMap.of("content", prettyMapOutput.toString())).build();
+		return Response.ok(ImmutableMap.of("content", json)).build();
 	}
 
 	@Path("/testClassifierWithText")
