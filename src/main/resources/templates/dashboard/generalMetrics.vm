@@ -61,7 +61,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
             var selectedOptionIndex = event.target.options.selectedIndex;
             var selectedOption = event.target.options[selectedOptionIndex];
 
-            ConDecGeneralMetricsDashboard.init(projectKey);
+            conDecGeneralMetricsDashboard.init(projectKey);
         }
         selectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
         selectNode.addEventListener("change", projectSelectOrOnChange);
@@ -71,7 +71,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 #if ($projectKey)
 <script>
     $(document).ready(function() {
-        ConDecGeneralMetricsDashboard.init("$projectKey");
+        conDecGeneralMetricsDashboard.init("$projectKey");
 
         selectNode.value = "$projectKey";
     });

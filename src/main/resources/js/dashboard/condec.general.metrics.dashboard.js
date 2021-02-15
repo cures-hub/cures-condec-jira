@@ -9,6 +9,14 @@
  */
 
 (function (global) {
+	var processing = null;
+
+	var dashboardContentNode;
+	var dashboardDataErrorNode;
+	var dashboardNoContentsNode;
+	var dashboardProcessingNode;
+	var dashboardProjectWithoutGit;
+
 	var ConDecGeneralMetricsDashboard = function ConDecGeneralMetricsDashboard() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
@@ -121,22 +129,19 @@
 	}
 
 	function renderData(data) {
-		showDashboardSection(dashboardContentNode);
-
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
+		var commitsPerIssue = new Map();
 
 		/* set something for box plots in case no data will be added to them */
 		commentsPerIssue.set("none", 0);
-
-		/* form data for charts */
-		commentsPerIssue = data;
+		commitsPerIssue.set("none", 0);
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
 			"", "#Comments per Jira Issue", commentsPerIssue);
 		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
-			"", "#Commits per Jira Issue", "$numberOfCommitsPerJiraIssue");
+			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary",
 			"", "#Requirements and Code Classes", "$requirementsAndCodeFiles");
