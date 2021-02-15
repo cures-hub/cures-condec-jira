@@ -624,14 +624,15 @@ public class ConfigRest {
 	@Path("/evaluateTextClassifier")
 	@POST
 	public Response evaluateTextClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("trainingFileName") String trainingFileName) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("trainingFileName") String trainingFileName,
+			@QueryParam("numberOfFolds") int numberOfFolds) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
-		Map<String, Double> evaluationResults = trainer.evaluateClassifier();
+		Map<String, Double> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
 
 		if (evaluationResults.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

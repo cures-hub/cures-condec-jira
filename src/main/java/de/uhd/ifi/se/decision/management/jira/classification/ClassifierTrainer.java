@@ -139,10 +139,13 @@ public class ClassifierTrainer {
 
 	/**
 	 * Evaluates the binary and fine-grained classifier using common metrics.
+	 * 
+	 * @param k
+	 *            number of folds in k-fold cross-validation.
 	 *
 	 * @return map of evaluation results
 	 */
-	public Map<String, Double> evaluateClassifier() {
+	public Map<String, Double> evaluateClassifier(int k) {
 		List<ClassificationMetric> metrics = new ArrayList<>();
 		metrics.add(new FScore());
 		metrics.add(new Precision());
@@ -151,8 +154,8 @@ public class ClassifierTrainer {
 
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(3, trainingData));
-		resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(3, trainingData));
+		resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
+		resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
 		LOGGER.debug("Finished evaluation!");
 		return resultsMap;
 	}

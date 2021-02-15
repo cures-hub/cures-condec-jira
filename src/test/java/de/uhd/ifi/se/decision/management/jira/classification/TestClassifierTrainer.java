@@ -67,7 +67,7 @@ public class TestClassifierTrainer extends TestSetUp {
 		trainer.train();
 		boolean executionSuccessful = true;
 		try {
-			trainer.evaluateClassifier();
+			trainer.evaluateClassifier(3);
 		} catch (Exception e) {
 			executionSuccessful = false;
 		}

@@ -91,10 +91,10 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			Integer[] predictions = mapFineGrainedToBinaryResults(ArrayUtils.toObject(predictionsPrimitive),
 					classLabel);
 
-			Double fineGrainedPrecisions = Precision.of(ArrayUtils.toPrimitive(truths),
+			double fineGrainedPrecisions = Precision.of(ArrayUtils.toPrimitive(truths),
 					ArrayUtils.toPrimitive(predictions));
 			resultsMap.put("Fine-grained Precision " + type.toString(), fineGrainedPrecisions);
-			Double fineGrainedRecall = Sensitivity.of(ArrayUtils.toPrimitive(truths),
+			double fineGrainedRecall = Sensitivity.of(ArrayUtils.toPrimitive(truths),
 					ArrayUtils.toPrimitive(predictions));
 			resultsMap.put("Fine-grained Recall " + type.toString(), fineGrainedRecall);
 			resultsMap.put("Fine-grained F1 " + type.toString(),

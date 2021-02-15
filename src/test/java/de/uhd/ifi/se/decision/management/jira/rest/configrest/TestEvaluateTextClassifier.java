@@ -32,7 +32,7 @@ public class TestEvaluateTextClassifier extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.evaluateTextClassifier(null, null, null).getStatus());
+				configRest.evaluateTextClassifier(null, null, null, 3).getStatus());
 	}
 
 	// @Test
@@ -47,6 +47,6 @@ public class TestEvaluateTextClassifier extends TestSetUp {
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv").getStatus());
+				configRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3).getStatus());
 	}
 }
