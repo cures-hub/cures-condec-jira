@@ -1,7 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -9,6 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.validation.ClassificationValidations;
+import smile.validation.CrossValidation;
+import smile.validation.metric.Precision;
+import smile.validation.metric.Sensitivity;
 
 /**
  * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
@@ -56,6 +65,46 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		// return OneVersusRest.fit(trainingSamples, trainingLabels,
 		// (x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
 		return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	}
+
+	@Override
+	public Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, true);
+		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
+				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, this::train);
+		resultsMap.put("Fine-grained Accuracy Overall", validations.avg.accuracy);
+		resultsMap.put("Fine-grained Number of Errors Overall", (double) validations.avg.error);
+
+		int[] truthsPrimitive = new int[0];
+		int[] predictionsPrimitive = new int[0];
+		for (int i = 0; i < k; i++) {
+			truthsPrimitive = PreprocessedData.concatenate(truthsPrimitive, validations.rounds.get(0).truth);
+			predictionsPrimitive = PreprocessedData.concatenate(predictionsPrimitive,
+					validations.rounds.get(0).prediction);
+		}
+
+		for (int classLabel = 0; classLabel < TextClassifier.getInstance().getFineGrainedClassifier()
+				.getNumClasses(); classLabel++) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
+			Integer[] truths = mapFineGrainedToBinaryResults(ArrayUtils.toObject(truthsPrimitive), classLabel);
+			Integer[] predictions = mapFineGrainedToBinaryResults(ArrayUtils.toObject(predictionsPrimitive),
+					classLabel);
+
+			Double fineGrainedPrecisions = Precision.of(ArrayUtils.toPrimitive(truths),
+					ArrayUtils.toPrimitive(predictions));
+			resultsMap.put("Fine-grained Precision " + type.toString(), fineGrainedPrecisions);
+			Double fineGrainedRecall = Sensitivity.of(ArrayUtils.toPrimitive(truths),
+					ArrayUtils.toPrimitive(predictions));
+			resultsMap.put("Fine-grained Recall " + type.toString(), fineGrainedRecall);
+			resultsMap.put("Fine-grained F1 " + type.toString(),
+					2 * (fineGrainedRecall * fineGrainedPrecisions) / (fineGrainedRecall + fineGrainedPrecisions));
+		}
+		return resultsMap;
+	}
+
+	private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement) {
+		return Arrays.stream(array).map(x -> x.equals(currentElement) ? 1 : 0).toArray(Integer[]::new);
 	}
 
 	/**

@@ -78,6 +78,16 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
+	 * @param k
+	 *            for k-fold cross-validation. (Typical values are 3 or 10.)
+	 * @param groundTruthData
+	 *            {@link TrainingData} used for training and evaluation in k-fold
+	 *            cross-validation.
+	 * @return map of evaluation results.
+	 */
+	public abstract Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData);
+
+	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
 	 *
 	 * @param filePathAndName

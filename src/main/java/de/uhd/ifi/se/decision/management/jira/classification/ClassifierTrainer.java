@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,18 +10,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.classification.Classifier;
-import smile.validation.ClassificationValidations;
-import smile.validation.CrossValidation;
 import smile.validation.metric.Accuracy;
 import smile.validation.metric.ClassificationMetric;
 import smile.validation.metric.FScore;
@@ -144,6 +137,11 @@ public class ClassifierTrainer {
 		return knowledgeElements;
 	}
 
+	/**
+	 * Evaluates the binary and fine-grained classifier using common metrics.
+	 *
+	 * @return map of evaluation results
+	 */
 	public Map<String, Double> evaluateClassifier() {
 		List<ClassificationMetric> metrics = new ArrayList<>();
 		metrics.add(new FScore());
@@ -153,64 +151,9 @@ public class ClassifierTrainer {
 
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		resultsMap.putAll(evaluateBinaryClassifier(3));
-		resultsMap.putAll(evaluateFineGrainedClassifier(3));
+		resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(3, trainingData));
+		resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(3, trainingData));
 		LOGGER.debug("Finished evaluation!");
 		return resultsMap;
-	}
-
-	public Map<String, Double> evaluateBinaryClassifier(int k) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
-				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
-				TextClassifier.getInstance().getBinaryClassifier()::train);
-
-		resultsMap.put("Binary Precision", validations.avg.precision);
-		resultsMap.put("Binary Recall", validations.avg.sensitivity);
-		resultsMap.put("Binary F1", validations.avg.f1);
-		resultsMap.put("Binary Accuracy", validations.avg.accuracy);
-		resultsMap.put("Binary Number of Errors", (double) validations.avg.error);
-		return resultsMap;
-	}
-
-	public Map<String, Double> evaluateFineGrainedClassifier(int k) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
-				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
-				TextClassifier.getInstance().getFineGrainedClassifier()::train);
-		resultsMap.put("Fine-grained Accuracy Overall", validations.avg.accuracy);
-		resultsMap.put("Fine-grained Number of Errors Overall", (double) validations.avg.error);
-
-		int[] truthsPrimitive = new int[0];
-		int[] predictionsPrimitive = new int[0];
-		for (int i = 0; i < k; i++) {
-			truthsPrimitive = PreprocessedData.concatenate(truthsPrimitive, validations.rounds.get(0).truth);
-			predictionsPrimitive = PreprocessedData.concatenate(predictionsPrimitive,
-					validations.rounds.get(0).prediction);
-		}
-
-		for (int classLabel = 0; classLabel < TextClassifier.getInstance().getFineGrainedClassifier()
-				.getNumClasses(); classLabel++) {
-			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
-			Integer[] truths = mapFineGrainedToBinaryResults(ArrayUtils.toObject(truthsPrimitive), classLabel);
-			Integer[] predictions = mapFineGrainedToBinaryResults(ArrayUtils.toObject(predictionsPrimitive),
-					classLabel);
-
-			Double fineGrainedPrecisions = Precision.of(ArrayUtils.toPrimitive(truths),
-					ArrayUtils.toPrimitive(predictions));
-			resultsMap.put("Fine-grained Precision" + type.toString(), fineGrainedPrecisions);
-			Double fineGrainedRecall = Sensitivity.of(ArrayUtils.toPrimitive(truths),
-					ArrayUtils.toPrimitive(predictions));
-			resultsMap.put("Fine-grained Recall" + type.toString(), fineGrainedRecall);
-			resultsMap.put("Fine-grained F1" + type.toString(),
-					2 * (fineGrainedRecall * fineGrainedPrecisions) / (fineGrainedRecall + fineGrainedPrecisions));
-		}
-		return resultsMap;
-	}
-
-	private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement) {
-		return Arrays.stream(array).map(x -> x.equals(currentElement) ? 1 : 0).toArray(Integer[]::new);
 	}
 }

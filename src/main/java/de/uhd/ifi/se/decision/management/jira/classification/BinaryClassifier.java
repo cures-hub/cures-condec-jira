@@ -1,13 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.validation.ClassificationValidations;
+import smile.validation.CrossValidation;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
@@ -56,6 +60,22 @@ public class BinaryClassifier extends AbstractClassifier {
 		// return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2,
 		// 0.5);
 		return LogisticRegression.binomial(trainingSamples, trainingLabels);
+	}
+
+	@Override
+	public Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, false);
+		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
+				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
+				this::train);
+
+		resultsMap.put("Binary Precision", validations.avg.precision);
+		resultsMap.put("Binary Recall", validations.avg.sensitivity);
+		resultsMap.put("Binary F1", validations.avg.f1);
+		resultsMap.put("Binary Accuracy", validations.avg.accuracy);
+		resultsMap.put("Binary Number of Errors", (double) validations.avg.error);
+		return resultsMap;
 	}
 
 	/**
