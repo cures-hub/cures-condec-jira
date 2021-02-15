@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import smile.data.DataFrame;
 import smile.data.Tuple;
 import smile.data.type.DataType;
@@ -142,6 +143,29 @@ public class TrainingData {
 	 */
 	public int[] getKnowledgeTypeLabelsForRelevantSentences() {
 		return relevantSentenceKnowledgeTypeLabelMap.values().stream().mapToInt(i -> i).toArray();
+	}
+
+	/**
+	 * @return list of knowledge elements created from training data. Only the
+	 *         summary and the type is set!
+	 */
+	public List<KnowledgeElement> getKnowledgeElements() {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : allSentenceRelevanceMap.entrySet()) {
+			if (entry.getValue().equals(0)) {
+				KnowledgeElement element = new KnowledgeElement();
+				element.setSummary(entry.getKey());
+				elements.add(element);
+			}
+		}
+		for (Map.Entry<String, Integer> entry : relevantSentenceKnowledgeTypeLabelMap.entrySet()) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(entry.getValue());
+			KnowledgeElement element = new KnowledgeElement();
+			element.setSummary(entry.getKey());
+			element.setType(type);
+			elements.add(element);
+		}
+		return elements;
 	}
 
 	/**

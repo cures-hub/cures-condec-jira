@@ -6,8 +6,8 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.Classifier;
+import smile.classification.LogisticRegression;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
@@ -40,7 +40,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -50,10 +50,12 @@ public class BinaryClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingSamples
 	 * @param trainingLabels
+	 * @return
 	 */
-	private void train(double[][] trainingSamples, int[] trainingLabels) {
-		model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
-		// model = LogisticRegression.binomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
+		// return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2,
+		// 0.5);
+		return LogisticRegression.binomial(trainingSamples, trainingLabels);
 	}
 
 	/**

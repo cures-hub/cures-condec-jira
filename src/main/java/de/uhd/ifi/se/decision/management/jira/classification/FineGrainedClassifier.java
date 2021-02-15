@@ -7,9 +7,8 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.classification.OneVersusRest;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.Classifier;
+import smile.classification.LogisticRegression;
 
 /**
  * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
@@ -41,7 +40,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -51,11 +50,12 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingSamples
 	 * @param trainingLabels
+	 * @return
 	 */
-	private void train(double[][] trainingSamples, int[] trainingLabels) {
-		model = OneVersusRest.fit(trainingSamples, trainingLabels,
-				(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
-		// model = LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
+		// return OneVersusRest.fit(trainingSamples, trainingLabels,
+		// (x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		return LogisticRegression.multinomial(trainingSamples, trainingLabels);
 	}
 
 	/**

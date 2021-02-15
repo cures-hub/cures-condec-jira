@@ -836,9 +836,10 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.evaluateTextClassifier = function (projectKey, animatedElement, callback) {
+	ConDecAPI.prototype.evaluateTextClassifier = function (projectKey, trainingFileName, animatedElement, callback) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/evaluateTextClassifier.json?projectKey=" + projectKey,
+		generalApi.postJSON(this.restPrefix + "/config/evaluateTextClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+			+ trainingFileName,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");

@@ -1,34 +1,39 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import smile.classification.Classifier;
+import smile.validation.ClassificationValidations;
+import smile.validation.CrossValidation;
+import smile.validation.metric.Accuracy;
 import smile.validation.metric.ClassificationMetric;
 import smile.validation.metric.FScore;
+import smile.validation.metric.Precision;
+import smile.validation.metric.Sensitivity;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select a training data file.
  */
-public class ClassifierTrainer implements EvaluableClassifier {
+public class ClassifierTrainer {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ClassifierTrainer.class);
 
 	protected TrainingData trainingData;
@@ -121,7 +126,17 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			if (!element.getType().canBeDocumentedInJiraIssueText() && element.getType() != KnowledgeType.OTHER) {
 				continue;
 			}
-			if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isValidated()) {
+			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+					&& element.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
+			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
+			// element).isValidated()) {
+			// continue;
+			// }
+			if (element.getSummary().startsWith("In class ") && element.getSummary().contains("the following methods")
+					|| element.getSummary().contains("Commit Hash:")) {
+				// Code change or commit comment
 				continue;
 			}
 			knowledgeElements.add(element);
@@ -129,97 +144,73 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		return knowledgeElements;
 	}
 
-	private List<String> extractStringsFromDke(List<KnowledgeElement> sentences) {
-		List<String> extractedStringsFromPoji = new ArrayList<String>();
-		for (KnowledgeElement sentence : sentences) {
-			extractedStringsFromPoji.add(sentence.getSummary());
-		}
-		return extractedStringsFromPoji;
-	}
-
-	@Override
 	public Map<String, Double> evaluateClassifier() {
-		// create and initialize default measurements list
-		List<ClassificationMetric> defaultMeasurements = new ArrayList<>();
-		defaultMeasurements.add(new FScore());
+		List<ClassificationMetric> metrics = new ArrayList<>();
+		metrics.add(new FScore());
+		metrics.add(new Precision());
+		metrics.add(new Sensitivity());
+		metrics.add(new Accuracy());
 
-		List<KnowledgeElement> elements = getKnowledgeElementsValidForTraining();
-		return evaluateClassifier(defaultMeasurements, elements);
+		LOGGER.debug("Started evaluation!");
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		resultsMap.putAll(evaluateBinaryClassifier(3));
+		resultsMap.putAll(evaluateFineGrainedClassifier(3));
+		LOGGER.debug("Finished evaluation!");
+		return resultsMap;
 	}
 
-	@Override
-	public Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
-			List<KnowledgeElement> partOfJiraIssueTexts) {
-		LOGGER.debug("Started evaluation!");
-		Map<String, Double> resultsMap = new HashMap<>();
-		List<KnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()
-				.filter(x -> !x.getType().equals(KnowledgeType.OTHER)).collect(toList());
+	public Map<String, Double> evaluateBinaryClassifier(int k) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
+		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
+				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
+				TextClassifier.getInstance().getBinaryClassifier()::train);
 
-		// format data
-		List<String> sentences = this.extractStringsFromDke(partOfJiraIssueTexts);
-		List<String> relevantSentences = this.extractStringsFromDke(relevantPartOfJiraIssueTexts);
-		// extract true values
-		Integer[] binaryTruths = partOfJiraIssueTexts.stream()
-				// when type equals other then it is irrelevant
-				.map(x -> x.getType().equals(KnowledgeType.OTHER) ? 0 : 1).collect(toList())
-				.toArray(new Integer[partOfJiraIssueTexts.size()]);
+		resultsMap.put("Binary Precision", validations.avg.precision);
+		resultsMap.put("Binary Recall", validations.avg.sensitivity);
+		resultsMap.put("Binary F1", validations.avg.f1);
+		resultsMap.put("Binary Accuracy", validations.avg.accuracy);
+		resultsMap.put("Binary Number of Errors", (double) validations.avg.error);
+		return resultsMap;
+	}
 
-		Integer[] fineGrainedTruths = relevantPartOfJiraIssueTexts.stream()
-				.map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x.getType())).collect(toList())
-				.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
+	public Map<String, Double> evaluateFineGrainedClassifier(int k) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
+		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
+				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
+				TextClassifier.getInstance().getFineGrainedClassifier()::train);
+		resultsMap.put("Fine-grained Accuracy Overall", validations.avg.accuracy);
+		resultsMap.put("Fine-grained Number of Errors Overall", (double) validations.avg.error);
 
-		// predict classes
-		long start = System.currentTimeMillis();
-
-		boolean[] binaryPredictionsList = TextClassifier.getInstance().getBinaryClassifier()
-				.predict(sentences);
-		Integer[] binaryPredictions = new Integer[sentences.size()];
-		for (int i = 0; i < binaryPredictionsList.length; i++) {
-			binaryPredictions[i] = binaryPredictionsList[i] ? 1 : 0;
+		int[] truthsPrimitive = new int[0];
+		int[] predictionsPrimitive = new int[0];
+		for (int i = 0; i < k; i++) {
+			truthsPrimitive = PreprocessedData.concatenate(truthsPrimitive, validations.rounds.get(0).truth);
+			predictionsPrimitive = PreprocessedData.concatenate(predictionsPrimitive,
+					validations.rounds.get(0).prediction);
 		}
 
-		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
-		// sentences took " + (end-start) + " ms.");
+		for (int classLabel = 0; classLabel < TextClassifier.getInstance().getFineGrainedClassifier()
+				.getNumClasses(); classLabel++) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
+			Integer[] truths = mapFineGrainedToBinaryResults(ArrayUtils.toObject(truthsPrimitive), classLabel);
+			Integer[] predictions = mapFineGrainedToBinaryResults(ArrayUtils.toObject(predictionsPrimitive),
+					classLabel);
 
-		Integer[] fineGrainedPredictions = TextClassifier.getInstance().getFineGrainedClassifier()
-				.predict(relevantSentences).stream().map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x))
-				.collect(toList()).toArray(new Integer[relevantSentences.size()]);
-		long end = System.currentTimeMillis();
-
-		LOGGER.info("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
-
-		// calculate measurements for each ClassificationMeasure in measurements
-		for (ClassificationMetric measurement : measurements) {
-			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
-			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
-			Double binaryMeasurement = measurement.score(ArrayUtils.toPrimitive(binaryTruths),
-					ArrayUtils.toPrimitive(binaryPredictions));
-			resultsMap.put(binaryKey, binaryMeasurement);
-
-			for (int classLabel : IntStream
-					.range(0, TextClassifier.getInstance().getFineGrainedClassifier().getNumClasses())
-					.toArray()) {
-				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
-						+ FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
-
-				Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
-				Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions,
-						classLabel);
-
-				Double fineGrainedMeasurement = measurement.score(ArrayUtils.toPrimitive(currentFineGrainedTruths),
-						ArrayUtils.toPrimitive(currentFineGrainedPredictions));
-				resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
-			}
-
+			Double fineGrainedPrecisions = Precision.of(ArrayUtils.toPrimitive(truths),
+					ArrayUtils.toPrimitive(predictions));
+			resultsMap.put("Fine-grained Precision" + type.toString(), fineGrainedPrecisions);
+			Double fineGrainedRecall = Sensitivity.of(ArrayUtils.toPrimitive(truths),
+					ArrayUtils.toPrimitive(predictions));
+			resultsMap.put("Fine-grained Recall" + type.toString(), fineGrainedRecall);
+			resultsMap.put("Fine-grained F1" + type.toString(),
+					2 * (fineGrainedRecall * fineGrainedPrecisions) / (fineGrainedRecall + fineGrainedPrecisions));
 		}
-		// return results
-		LOGGER.debug("Finished evaluation!");
-
 		return resultsMap;
 	}
 
 	private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement) {
 		return Arrays.stream(array).map(x -> x.equals(currentElement) ? 1 : 0).toArray(Integer[]::new);
-
 	}
 }
