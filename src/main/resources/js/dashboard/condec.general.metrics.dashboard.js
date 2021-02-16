@@ -129,6 +129,10 @@
 	}
 
 	function renderData(data) {
+		var str = JSON.stringify(data);
+		var map = new Map(JSON.parse(str));
+		window.alert(map);
+
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
 		var commitsPerIssue = new Map();
@@ -146,19 +150,27 @@
 		relevantSentences.set("no Jira issue", "");
 		knowledgeTypeDistribution.set("no knowledge type", "");
 
+		/* form data for charts */
+		commentsPerIssue = data.get("numberOfCommentsPerJiraIssue");
+		commitsPerIssue = data.get("numberOfCommitsPerJiraIssue");
+		reqCodeSummary = data.get("requirementsAndCodeFiles");
+		decSources = data.get("numberOfElementsPerDocumentationLocation");
+		relevantSentences = data.get("numberOfRelevantComments");
+		knowledgeTypeDistribution = data.get("distributionOfKnowledgeTypes");
+
 		/* render box-plots */
-		ConDecReqDash.initializeChartForBranchSource("boxplot-CommentsPerJiraIssue",
+		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
 			"", "#Comments per Jira Issue", commentsPerIssue);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-CommitsPerJiraIssue",
+		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
 			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChartForBranchSource("piechartInteger-ReqCodeSummary",
+		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary",
 			"", "#Requirements and Code Classes", reqCodeSummary);
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-DecSources",
+		ConDecReqDash.initializeChart("piechartRich-DecSources",
 			"", "#Rationale Elements per Origin", decSources);
-		ConDecReqDash.initializeChartForBranchSource("piechartInteger-RelevantSentences",
+		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChartForBranchSource("piechartInteger-KnowledgeTypeDistribution",
+		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 	}
 

@@ -66,38 +66,38 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	public Map<String, String> getElementsFromDifferentOrigins() {
+	public Map<String, Integer> getNumberOfElementsPerDocumentationLocation() {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
-		Map<String, String> originMap = new HashMap<>();
+		Map<String, Integer> originMap = new HashMap<>();
 
-		String elementsInJiraIssues = "";
-		String elementsInJiraIssueText = "";
-		String elementsInCommitMessages = "";
-		String elementsInCodeComments = "";
+		Integer elementsInJiraIssues = 0;
+		Integer elementsInJiraIssueText = 0;
+		Integer elementsInCommitMessages = 0;
+		Integer elementsInCodeComments = 0;
 		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues += element.getKey() + " ";
+				elementsInJiraIssues++;
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages += element.getKey() + " ";
+					elementsInCommitMessages++;
 				} else {
-					elementsInJiraIssueText += element.getKey() + " ";
+					elementsInJiraIssueText++;
 				}
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments += element.getKey() + " ";
+				elementsInCodeComments++;
 			}
 		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.trim());
-		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
-		originMap.put("Commit Message", elementsInCommitMessages.trim());
-		originMap.put("Code Comment", elementsInCodeComments.trim());
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText);
+		originMap.put("Entire Jira Issue", elementsInJiraIssues);
+		originMap.put("Commit Message", elementsInCommitMessages);
+		originMap.put("Code Comment", elementsInCodeComments);
 		return originMap;
 	}
 

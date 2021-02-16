@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response.Status;
 import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ public class DashboardRest {
 
 	@Path("/numberOfCommentsPerJiraIssue")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getNumberOfCommentsPerJiraIssue(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -54,6 +54,7 @@ public class DashboardRest {
 
 	@Path("/numberOfCommitsPerJiraIssue")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getNumberOfCommitsPerJiraIssue(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -75,6 +76,7 @@ public class DashboardRest {
 
 	@Path("/distributionOfKnowledgeTypes")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getDistributionOfKnowledgeTypes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -94,6 +96,7 @@ public class DashboardRest {
 
 	@Path("/requirementsAndCodeFiles")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRequirementsAndCodeFiles(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -120,6 +123,7 @@ public class DashboardRest {
 
 	@Path("/numberOfElementsPerDocumentationLocation")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getNumberOfElementsPerDocumentationLocation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -128,42 +132,43 @@ public class DashboardRest {
 
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
 
-		Map<String, String> originMap = new HashMap<>();
+		Map<String, Integer> originMap = new HashMap<>();
 
-		String elementsInJiraIssues = "";
-		String elementsInJiraIssueText = "";
-		String elementsInCommitMessages = "";
-		String elementsInCodeComments = "";
+		Integer elementsInJiraIssues = 0;
+		Integer elementsInJiraIssueText = 0;
+		Integer elementsInCommitMessages = 0;
+		Integer elementsInCodeComments = 0;
 		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues += element.getKey() + " ";
+				elementsInJiraIssues++;
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages += element.getKey() + " ";
+					elementsInCommitMessages++;
 				} else {
-					elementsInJiraIssueText += element.getKey() + " ";
+					elementsInJiraIssueText++;
 				}
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments += element.getKey() + " ";
+				elementsInCodeComments++;
 			}
 		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.trim());
-		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
-		originMap.put("Commit Message", elementsInCommitMessages.trim());
-		originMap.put("Code Comment", elementsInCodeComments.trim());
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText);
+		originMap.put("Entire Jira Issue", elementsInJiraIssues);
+		originMap.put("Commit Message", elementsInCommitMessages);
+		originMap.put("Code Comment", elementsInCodeComments);
 
 		return Response.status(Status.OK).entity(originMap).build();
 	}
 
 	@Path("/numberOfRelevantComments")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getNumberOfRelevantComments(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -181,6 +186,7 @@ public class DashboardRest {
 
 	@Path("/generalMetrics")
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getGeneralMetrics(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
@@ -197,7 +203,7 @@ public class DashboardRest {
 
 		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
 		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
-		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getElementsFromDifferentOrigins());
+		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getNumberOfElementsPerDocumentationLocation());
 		metrics.put("numberOfRelevantComments", metricCalculator.getNumberOfRelevantComments());
 
 		return Response.status(Status.OK).entity(metrics).build();

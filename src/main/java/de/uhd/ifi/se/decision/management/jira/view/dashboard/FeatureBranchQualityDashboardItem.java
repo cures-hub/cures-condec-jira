@@ -28,6 +28,7 @@ public class FeatureBranchQualityDashboardItem extends ConDecDashboardItem {
 		}
 
 		metrics.put("projectsWithGit", accessableProjectsWithGitRepo);
+
 		return metrics;
 	}
 

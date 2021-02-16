@@ -1,24 +1,33 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
+import com.atlassian.jira.project.Project;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class GeneralMetricsDashboardItem extends ConDecDashboardItem {
 
 	@Override
 	public Map<String, Object> getMetrics() {
 		Map<String, Object> metrics = new LinkedHashMap<>();
-		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings.getProjectKey());
 
-		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
-		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
+		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
+		metrics.put("projects", projects);
 
-		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
-		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
-		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getElementsFromDifferentOrigins());
-		metrics.put("numberOfRelevantComments", metricCalculator.getNumberOfRelevantComments());
+		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
+		for (Project project : projects) {
+			String projectKey = project.getKey();
+			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+				accessableProjectsWithGitRepo.add(project);
+			}
+		}
+
+		metrics.put("projectsWithGit", accessableProjectsWithGitRepo);
 
 		return metrics;
 	}
