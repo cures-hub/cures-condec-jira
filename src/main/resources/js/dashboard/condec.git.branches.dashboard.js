@@ -371,23 +371,23 @@ var ConDecDevBranches = [];
 		var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
 		/* render pie-charts */
-		ConDecReqDash.initializeChartForBranchSource('piechartRich-QualityStatusForBranches',
-			'', 'How many branches document rationale well?', statusesForBranchesData); /* 'Quality status' */
-		ConDecReqDash.initializeChartForBranchSource('piechartRich-ProblemTypesInBranches',
-			'', 'Which documentation mistakes are most common?', sortedProblemTypesOccurrance); /*'Total quality problems' */
-		ConDecReqDash.initializeChartForBranchSource('piechartRich-BranchesPerIssue',
-			'', 'How many branches do Jira tasks have?', sortedBranchesPerIssue);
+		ConDecReqDash.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
+			"", "How many branches document rationale well?", statusesForBranchesData); /* "Quality status" */
+		ConDecReqDash.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
+			"", "Which documentation mistakes are most common?", sortedProblemTypesOccurrance); /*"Total quality problems" */
+		ConDecReqDash.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
+			"", "How many branches do Jira tasks have?", sortedBranchesPerIssue);
 		/* render box-plots */
-		ConDecReqDash.initializeChartForBranchSource('boxplot-IssuesPerBranch',
-			'', 'Issues number in branches', issuesInBranches);
-		ConDecReqDash.initializeChartForBranchSource('boxplot-DecisionsPerBranch',
-			'', 'Decisions number in branches', decisionsInBranches);
-		ConDecReqDash.initializeChartForBranchSource('boxplot-AlternativesPerBranch',
-			'', 'Alternatives number in branches', alternativesInBranches);
-		ConDecReqDash.initializeChartForBranchSource('boxplot-ProsPerBranch',
-			'', 'Pro arguments number in branches', prosInBranches);
-		ConDecReqDash.initializeChartForBranchSource('boxplot-ConsPerBranch',
-			'', 'Con arguments number in branches', consInBranches);
+		ConDecReqDash.initializeChartForBranchSource("boxplot-IssuesPerBranch",
+			"", "Issues number in branches", issuesInBranches);
+		ConDecReqDash.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
+			"", "Decisions number in branches", decisionsInBranches);
+		ConDecReqDash.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
+			"", "Alternatives number in branches", alternativesInBranches);
+		ConDecReqDash.initializeChartForBranchSource("boxplot-ProsPerBranch",
+			"", "Pro arguments number in branches", prosInBranches);
+		ConDecReqDash.initializeChartForBranchSource("boxplot-ConsPerBranch",
+			"", "Con arguments number in branches", consInBranches);
 
 		/* remember in global scope for development/debugging */
 		ConDecDevBranchesQuality = {branchesQuality: branchesQuality};
