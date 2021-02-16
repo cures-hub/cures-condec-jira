@@ -36,13 +36,13 @@ public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
 	public void testGetMetrics() {
 		Map<String, Object> metricsMap = dashboardItem.getMetrics();
 		// metrics are accessed via REST API
-		assertEquals(0, metricsMap.size());
+		assertEquals(2, metricsMap.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAdditionalParameters() {
 		Map<String, Object> additionalParameters = dashboardItem.getAdditionalParameters();
-		assertEquals(2, additionalParameters.size());
+		assertEquals(0, additionalParameters.size());
 	}
 }

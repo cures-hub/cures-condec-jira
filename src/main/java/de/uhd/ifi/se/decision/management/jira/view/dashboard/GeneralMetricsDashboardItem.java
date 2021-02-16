@@ -10,7 +10,7 @@ public class GeneralMetricsDashboardItem extends ConDecDashboardItem {
 	@Override
 	public Map<String, Object> getMetrics() {
 		Map<String, Object> metrics = new LinkedHashMap<>();
-		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings);
+		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings.getProjectKey());
 
 		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
 		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
