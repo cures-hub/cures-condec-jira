@@ -156,6 +156,10 @@ public class ClassifierTrainer {
 		Map<String, Double> resultsMap = new LinkedHashMap<>();
 		resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
 		resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
+
+		// round to 2 decimal points
+		resultsMap.replaceAll((key, value) -> Math.round(value * 100.0) / 100.0);
+
 		LOGGER.debug("Finished evaluation!");
 		return resultsMap;
 	}
