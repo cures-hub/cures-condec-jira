@@ -128,10 +128,22 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
+	function getMap(jsonString) {
+		jsonString = jsonString.replace("\{", "").replace("\}", "");
+		jsonString = jsonString.replace("\"", "");
+
+		var jsMap = new Map();
+		var mapEntries = jsonString.split(",");
+		for (i = 0; i < mapEntries.length; i++) {
+			var mapEntry = mapEntries[i].split(":");
+			jsMap.set(mapEntry[0], mapEntry[1]);
+		}
+		return jsMap;
+	}
+
 	function renderData(data) {
-		var str = JSON.stringify(data);
-		var map = new Map(JSON.parse(str));
-		window.alert(map);
+		var jsonstr = JSON.stringify(data);
+		var json = JSON.parse(jsonstr);
 
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
@@ -151,12 +163,12 @@
 		knowledgeTypeDistribution.set("no knowledge type", "");
 
 		/* form data for charts */
-		commentsPerIssue = data.get("numberOfCommentsPerJiraIssue");
-		commitsPerIssue = data.get("numberOfCommitsPerJiraIssue");
-		reqCodeSummary = data.get("requirementsAndCodeFiles");
-		decSources = data.get("numberOfElementsPerDocumentationLocation");
-		relevantSentences = data.get("numberOfRelevantComments");
-		knowledgeTypeDistribution = data.get("distributionOfKnowledgeTypes");
+		commentsPerIssue = getMap(JSON.stringify(json.numberOfCommentsPerJiraIssue));
+		commitsPerIssue = getMap(JSON.stringify(json.numberOfCommitsPerJiraIssue));
+		reqCodeSummary = getMap(JSON.stringify(json.requirementsAndCodeFiles));
+		decSources = getMap(JSON.stringify(json.numberOfElementsPerDocumentationLocation));
+		relevantSentences = getMap(JSON.stringify(json.numberOfRelevantComments));
+		knowledgeTypeDistribution = getMap(JSON.stringify(json.distributionOfKnowledgeTypes));
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
