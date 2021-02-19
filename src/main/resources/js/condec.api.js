@@ -777,7 +777,7 @@
 	 * external references: templates/settings/classificationSettings.vm
 	 */
 	ConDecAPI.prototype.setTextClassifierEnabled = function (isTextClassifierEnabled, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setTextClassifierEnabled.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/classification/setTextClassifierEnabled.json?projectKey="
 			+ projectKey + "&isTextClassifierEnabled=" + isTextClassifierEnabled, null, function (error,
 				response) {
 			if (error === null) {
@@ -792,7 +792,7 @@
 	 * external references: templates/settings/classificationSettings.vm
 	 */
 	ConDecAPI.prototype.testClassifierWithText = function (text, projectKey, resultDomElement) {
-		generalApi.postJSON(this.restPrefix + "/config/testClassifierWithText?projectKey="
+		generalApi.postJSON(this.restPrefix + "/classification/testClassifierWithText?projectKey="
 			+ projectKey + "&text=" + text, null, function (error, response) {
 				if (error === null) {
 					resultDomElement.innerText = response.content;
@@ -807,7 +807,7 @@
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function (projectKey, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/classifyWholeProject.json?projectKey=" + projectKey,
+		generalApi.postJSON(this.restPrefix + "/classification/classifyWholeProject.json?projectKey=" + projectKey,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");
@@ -822,7 +822,7 @@
 	 */
 	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+		generalApi.postJSON(this.restPrefix + "/classification/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
 			+ trainingFileName,
 			null,
 			function (error, response) {
@@ -838,7 +838,7 @@
 	 */
 	ConDecAPI.prototype.evaluateTextClassifier = function (projectKey, trainingFileName, numberOfFolds, animatedElement, callback) {
 		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/config/evaluateTextClassifier.json?projectKey=" + projectKey + "&trainingFileName="
+		generalApi.postJSON(this.restPrefix + "/classification/evaluateTextClassifier.json?projectKey=" + projectKey + "&trainingFileName="
 			+ trainingFileName + "&numberOfFolds=" + numberOfFolds,
 			null,
 			function (error, response) {
@@ -854,7 +854,7 @@
 	 * external references: templates/settings/classificationSettings.vm
 	 */
 	ConDecAPI.prototype.saveTrainingFile = function (projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/config/saveTrainingFile.json?projectKey=" + projectKey, null,
+		generalApi.postJSON(this.restPrefix + "/classification/saveTrainingFile.json?projectKey=" + projectKey, null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The training file was successfully created and saved in "

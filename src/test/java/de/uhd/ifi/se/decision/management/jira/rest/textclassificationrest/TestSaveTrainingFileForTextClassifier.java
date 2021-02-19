@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.textclassificationrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -19,12 +19,12 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ConfigRest configRest;
+	private TextClassificationRest classificationRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		classificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -32,19 +32,19 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.saveTrainingFileForTextClassifier(null, null).getStatus());
+				classificationRest.saveTrainingFileForTextClassifier(null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyExists() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.saveTrainingFileForTextClassifier(null, "TEST").getStatus());
+				classificationRest.saveTrainingFileForTextClassifier(null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.saveTrainingFileForTextClassifier(request, null).getStatus());
+				classificationRest.saveTrainingFileForTextClassifier(request, null).getStatus());
 	}
 
 	@Test
@@ -52,6 +52,6 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 	public void testRequestValidProjectKeyExists() {
 		JiraIssues.addElementToDataBase();
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.saveTrainingFileForTextClassifier(request, "TEST").getStatus());
+				classificationRest.saveTrainingFileForTextClassifier(request, "TEST").getStatus());
 	}
 }

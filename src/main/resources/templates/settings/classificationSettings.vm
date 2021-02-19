@@ -119,21 +119,18 @@
 </div>
 
 <script>
-    // init the variables
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
-
-    const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
-    const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
-    const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
+    
+    isClassifierUsedToggle.addEventListener("change", function (error) {
+        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
+        this.busy = true;
+        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
+        this.busy = false;
+    });
 
     const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
-
-    // add listeners
-    testClassifierWithTextBtn.addEventListener('click', () => {
-       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
-    });
     
     const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
     saveTrainingFileButton.addEventListener("click", function () {
@@ -163,12 +160,18 @@
         conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, numberOfFoldsInput.value, 
         animatedElement, saveToFile("evaluation_results.json"));
     });
+    
+    const evaluateTrainedTextClassifierButton = document.getElementById("evaluateTrainedTextClassifier-button");
+    evaluateTrainedTextClassifierButton.addEventListener("click", function () {
+        conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, -1, animatedElement, saveToFile("evaluation_results.json"));
+    });
+    
+    const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
+    const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
+    const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
 
-    isClassifierUsedToggle.addEventListener("change", function (error) {
-        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
-        this.busy = true;
-        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
-        this.busy = false;
+    testClassifierWithTextBtn.addEventListener('click', () => {
+       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
     });
 
     // helper functions

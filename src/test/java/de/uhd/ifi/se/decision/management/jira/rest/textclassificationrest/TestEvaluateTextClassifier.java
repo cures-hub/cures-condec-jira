@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.textclassificationrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,18 +13,18 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestEvaluateTextClassifier extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ConfigRest configRest;
+	private TextClassificationRest configRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		configRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
