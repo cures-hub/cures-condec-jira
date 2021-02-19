@@ -72,7 +72,7 @@
 
 <div class="field-group">
     <label for="trainClassifier-button">Train or Evaluate the Classifier</label>
-    <select id="select-training-file" name="select-training-file" class="select medium-long-field">
+    <select id="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
                 #if ($trainingFile.toString().contains($selectedTrainingFile))
@@ -83,12 +83,11 @@
         #end
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
-    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier"/>
+    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
     Number of folds k: 
-    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"
-           placeholder="Enter number of folds for cross-validation in evaluation" name="numberOfFolds"> 
+    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
     <div class="description">
-        Trains or evaluates the classifier on the selected data file. The evaluation is done via k-fold cross-validation.<br/>
+        Trains or/and evaluates the classifier on the selected data file. The evaluation is done via k-fold cross-validation.<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
         training or the evaluation can be very resource expensive!
     </div>
@@ -98,10 +97,19 @@
 </div>
 
 <div class="field-group">
-    <label for="testClassifierWithText-input">Test the Classifier</label>
+    <label for="evaluateTrainedTextClassifier-button">Evaluate the Trained Classifier</label>
+    <input type="button" class="aui-button" id="evaluateTrainedTextClassifier-button" value="Evaluate Trained Classifier On Different Data"/>
+    <div class="description">
+        Evaluates the trained classifier on the selected data file above (for cross-project validation).<br/>
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>
+        The selected data file <b>should be different from the data file that the classifier was trained on</b>.
+        Otherwise, use k-fold cross-validation from above to train and evaluate the classifier on the same data.
+    </div>
+</div>
 
-    <textarea class="textarea" name="testText-input"
-              id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
+<div class="field-group">
+    <label for="testClassifierWithText-input">Test the Classifier</label>
+    <textarea class="textarea" id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
 </div>
 <div class="buttons-container">
     <div class="buttons">
