@@ -39,7 +39,7 @@ public class PreprocessedData {
 		updatedLabels = new int[0];
 		for (int i = 0; i < stringsToBePreprocessed.length; i++) {
 			double[][] preprocessedSentence = preprocessor.preprocess(stringsToBePreprocessed[i]);
-			if (preprocessedSentence[0] == null) {
+			if (preprocessedSentence.length == 0 || preprocessedSentence[0] == null) {
 				continue;
 			}
 			int[] labelsForSentenceNGrams = new int[preprocessedSentence.length];

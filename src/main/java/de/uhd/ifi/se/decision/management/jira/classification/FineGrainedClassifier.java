@@ -1,15 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.template.TemplateSource.File;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.classification.OneVersusRest;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.Classifier;
+import smile.classification.LogisticRegression;
+import smile.validation.ClassificationMetrics;
+import smile.validation.ClassificationValidation;
 
 /**
  * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
@@ -41,7 +48,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -51,11 +58,73 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingSamples
 	 * @param trainingLabels
+	 * @return
 	 */
-	private void train(double[][] trainingSamples, int[] trainingLabels) {
-		model = OneVersusRest.fit(trainingSamples, trainingLabels,
-				(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
-		// model = LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
+		// return OneVersusRest.fit(trainingSamples, trainingLabels,
+		// (x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	}
+
+	@Override
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+				groundTruthData.getDecisionKnowledgeElements());
+		Classifier<double[]> oldModel = model;
+
+		int[] truth = new int[0];
+		int[] prediction = new int[0];
+		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+			train(entry.getKey());
+			String[] sentences = entry.getValue().getRelevantSentences();
+			int[] truthForFold = entry.getValue().getKnowledgeTypeLabelsForRelevantSentences();
+			int[] predictionForFold = new int[sentences.length];
+			for (int i = 0; i < sentences.length; i++) {
+				predictionForFold[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
+			}
+
+			truth = PreprocessedData.concatenate(truth, truthForFold);
+			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
+		}
+		model = oldModel;
+		return calculateEvaluationMetrics(truth, prediction);
+	}
+
+	@Override
+	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
+		String[] sentences = groundTruthData.getRelevantSentences();
+		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
+
+		int[] prediction = new int[sentences.length];
+		for (int i = 0; i < sentences.length; i++) {
+			prediction[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
+		}
+		return calculateEvaluationMetrics(truth, prediction);
+	}
+
+	private Map<String, ClassificationMetrics> calculateEvaluationMetrics(int[] truth, int[] prediction) {
+		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
+		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
+				model, truth, prediction, 0.0, 0.0);
+		resultsMap.put("Fine-grained Overall", validationOverall.metrics);
+
+		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
+			int[] binaryTruth = mapFineGrainedToBinaryResults(truth, classLabel);
+			int[] binaryPredictions = mapFineGrainedToBinaryResults(prediction, classLabel);
+
+			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
+					model, binaryTruth, binaryPredictions, 0.0, 0.0);
+
+			resultsMap.put("Fine-grained " + type.toString(), validation.metrics);
+		}
+		return resultsMap;
+	}
+
+	private int[] mapFineGrainedToBinaryResults(int[] multiClassResults, int label) {
+		Integer[] binaryResults = Arrays.stream(ArrayUtils.toObject(multiClassResults))
+				.map(x -> x.equals(label) ? 1 : 0).toArray(Integer[]::new);
+		return ArrayUtils.toPrimitive(binaryResults);
 	}
 
 	/**

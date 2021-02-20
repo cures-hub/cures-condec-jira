@@ -1,13 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.Classifier;
+import smile.classification.LogisticRegression;
+import smile.validation.ClassificationMetrics;
+import smile.validation.ClassificationValidation;
+import smile.validation.ClassificationValidations;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
@@ -40,7 +45,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	public void train(TrainingData trainingData) {
 		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -50,10 +55,48 @@ public class BinaryClassifier extends AbstractClassifier {
 	 *
 	 * @param trainingSamples
 	 * @param trainingLabels
+	 * @return
 	 */
-	private void train(double[][] trainingSamples, int[] trainingLabels) {
-		model = SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
-		// model = LogisticRegression.binomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
+		// return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2,
+		// 0.5);
+		return LogisticRegression.binomial(trainingSamples, trainingLabels);
+	}
+
+	@Override
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+				groundTruthData.getKnowledgeElements());
+		Classifier<double[]> entireModel = model;
+
+		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
+		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+			train(entry.getKey());
+			String[] sentences = entry.getValue().getAllSentences();
+			int[] truthForFold = entry.getValue().getRelevanceLabelsForAllSentences();
+			int[] predictionForFold = new int[sentences.length];
+			for (int i = 0; i < sentences.length; i++) {
+				predictionForFold[i] = predict(sentences[i]) ? 1 : 0;
+			}
+			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
+					0.0, 0.0));
+		}
+		model = entireModel;
+		return Map.of("Binary", new ClassificationValidations<Classifier<double[]>>(validations).avg);
+	}
+
+	@Override
+	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
+		String[] sentences = groundTruthData.getAllSentences();
+		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();
+
+		int[] prediction = new int[sentences.length];
+		for (int i = 0; i < sentences.length; i++) {
+			prediction[i] = predict(sentences[i]) ? 1 : 0;
+		}
+		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
+				model, truth, prediction, 0.0, 0.0);
+		return Map.of("Binary", validation.metrics);
 	}
 
 	/**

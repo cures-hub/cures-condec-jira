@@ -64,4 +64,9 @@ public class TestBinaryClassifier extends TestSetUp {
 		binaryClassificationResult[2] = 1;
 		assertEquals(1, AbstractClassifier.mode(binaryClassificationResult));
 	}
+
+	@Test
+	public void testModeEmptyArray() {
+		assertEquals(0, AbstractClassifier.mode(new int[0]));
+	}
 }
