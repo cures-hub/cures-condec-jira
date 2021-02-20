@@ -84,11 +84,6 @@ public class TextClassificationRest {
 
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
-
-		if (evaluationResults.size() == 0) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
-		}
 		return Response.ok(ImmutableMap.of("content", evaluationResults.toString())).build();
 	}
 

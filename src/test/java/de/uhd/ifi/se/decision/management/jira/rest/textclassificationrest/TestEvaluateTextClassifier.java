@@ -19,27 +19,21 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestEvaluateTextClassifier extends TestSetUp {
 
 	private HttpServletRequest request;
-	private TextClassificationRest configRest;
+	private TextClassificationRest classificationRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new TextClassificationRest();
+		classificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNull() {
+	public void testRequestNullProjectKeyNullGroundTruthNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.evaluateTextClassifier(null, null, null, 3).getStatus());
+				classificationRest.evaluateTextClassifier(null, null, null, 3).getStatus());
 	}
-
-	// @Test
-	// public void testRequestValidProjectKeyExistsUntrainedClassifier() {
-	// assertEquals(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(),
-	// configRest.evaluateModel(request, "TEST"));
-	// }
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
@@ -47,6 +41,12 @@ public class TestEvaluateTextClassifier extends TestSetUp {
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3).getStatus());
+				classificationRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", -1).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyGroundTruthValidThreeFoldCrossValidation() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				classificationRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3).getStatus());
 	}
 }
