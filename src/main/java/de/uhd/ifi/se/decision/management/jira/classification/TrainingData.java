@@ -71,6 +71,7 @@ public class TrainingData {
 	 */
 	public TrainingData() {
 		this(readDataFrameFromDefaultTrainingDataCSVFile());
+		this.fileName = "defaultTrainingData";
 	}
 
 	/**
@@ -82,6 +83,7 @@ public class TrainingData {
 	 */
 	public TrainingData(String fileName) {
 		this(readDataFrameFromCSVFile(fileName));
+		this.fileName = fileName;
 	}
 
 	/**

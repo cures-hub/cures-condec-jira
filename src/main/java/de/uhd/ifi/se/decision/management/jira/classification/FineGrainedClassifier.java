@@ -87,7 +87,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
 		}
 		model = oldModel;
-		return calculateEvaluationMetric(truth, prediction);
+		return calculateEvaluationMetrics(truth, prediction);
 	}
 
 	@Override
@@ -99,10 +99,10 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
 		}
-		return calculateEvaluationMetric(truth, prediction);
+		return calculateEvaluationMetrics(truth, prediction);
 	}
 
-	private Map<String, ClassificationMetrics> calculateEvaluationMetric(int[] truth, int[] prediction) {
+	private Map<String, ClassificationMetrics> calculateEvaluationMetrics(int[] truth, int[] prediction) {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
 				model, truth, prediction, 0.0, 0.0);

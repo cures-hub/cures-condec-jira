@@ -143,17 +143,17 @@ public class ClassifierTrainer {
 	 */
 	public Map<String, ClassificationMetrics> evaluateClassifier(int k) {
 		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
-				+ trainingData.getFileName() + ". Number of folds is set to: " + k);
+				+ trainingData.getFileName());
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
 		if (k > 1) {
-			// train and evaluate on the same data using k-fold cross-validation
+			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
 			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
 			resultsMap.putAll(
 					TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
 		} else {
-			// evaluate the trained classifier on different data than it was trained on (for
-			// cross-project validation)
+			LOGGER.info(
+					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
 			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(trainingData));
 			resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(trainingData));
 		}

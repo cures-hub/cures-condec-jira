@@ -71,7 +71,7 @@
 </div>
 
 <div class="field-group">
-    <label for="trainClassifier-button">Train or Evaluate the Classifier</label>
+    <label for="trainClassifier-button">Train the Text Classifier</label>
     <select id="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
@@ -83,13 +83,10 @@
         #end
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
-    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
-    Number of folds k: 
-    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
     <div class="description">
-        Trains or/and evaluates the classifier on the selected data file. The evaluation is done via k-fold cross-validation.<br/>
+        Trains the text classifier on the selected data file.<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
-        training or the evaluation can be very resource expensive!
+        training can be very resource expensive!
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
@@ -97,13 +94,26 @@
 </div>
 
 <div class="field-group">
-    <label for="evaluateTrainedTextClassifier-button">Evaluate the Trained Classifier</label>
+    <label for="evaluateTrainedTextClassifier-button">Evaluate the Trained Text Classifier</label>
     <input type="button" class="aui-button" id="evaluateTrainedTextClassifier-button" value="Evaluate Trained Classifier On Different Data"/>
     <div class="description">
         Evaluates the trained classifier on the selected data file above (for cross-project validation).<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>
         The selected data file <b>should be different from the data file that the classifier was trained on</b>.
-        Otherwise, use k-fold cross-validation from above to train and evaluate the classifier on the same data.
+        Otherwise, use k-fold cross-validation to train and evaluate the classifier on the same data.
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="evaluateTextClassifier-button">Evaluate the Text Classifier using k-fold Cross-Validation</label>
+  	<input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
+    Number of folds k: 
+    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
+    <div class="description">
+        Trains and evaluates the classifier on the selected data file via k-fold cross-validation (splits the data into training and evaluation parts).<br/>
+        If the classifier was trained before, the training will be restored after the evaluation finished.<br/>
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this 
+        evaluation can be very resource expensive!<br/>       
     </div>
 </div>
 
@@ -157,8 +167,10 @@
     const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
     evaluateTextClassifierButton.addEventListener("click", function () {
     	var numberOfFoldsInput = document.getElementById("number-of-folds-input");
-        conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, numberOfFoldsInput.value, 
-        animatedElement, saveToFile("evaluation_results.json"));
+    	if (confirm("Are you sure you want to evaluate the classifier using " + numberOfFoldsInput.value + "-fold cross-validation?")) {    
+        	conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, numberOfFoldsInput.value, 
+        	animatedElement, saveToFile("evaluation_results.json"));
+        }
     });
     
     const evaluateTrainedTextClassifierButton = document.getElementById("evaluateTrainedTextClassifier-button");
