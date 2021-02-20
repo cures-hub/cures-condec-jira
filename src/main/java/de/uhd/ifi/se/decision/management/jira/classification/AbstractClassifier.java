@@ -178,6 +178,9 @@ public abstract class AbstractClassifier {
 	 */
 	public static int mode(int[] values) {
 		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		if (values.length == 0) {
+			return 0;
+		}
 		for (int value : values) {
 			Integer count = map.get(value);
 			map.put(value, count != null ? count + 1 : 1);

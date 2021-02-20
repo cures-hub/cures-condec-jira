@@ -331,7 +331,7 @@ public class TrainingData {
 	public static Map<TrainingData, TrainingData> splitForKFoldCrossValidation(int k, List<KnowledgeElement> elements) {
 		Map<TrainingData, TrainingData> splitData = new HashMap<>();
 		Collections.shuffle(elements);
-		int chunkSize = Math.round(elements.size() / k);
+		int chunkSize = (int) Math.ceil(elements.size() / k);
 		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
 		for (int i = 0; i < k; i++) {
 			List<KnowledgeElement> evaluationElements = parts.get(i);
