@@ -17,10 +17,10 @@ import smile.classification.LogisticRegression;
 import smile.validation.ClassificationValidations;
 import smile.validation.CrossValidation;
 import smile.validation.metric.Accuracy;
+import smile.validation.metric.Error;
 import smile.validation.metric.FScore;
 import smile.validation.metric.Precision;
 import smile.validation.metric.Sensitivity;
-import smile.validation.metric.Error;
 
 /**
  * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
@@ -72,36 +72,21 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	@Override
 	public Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
 		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, true);
 		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
 				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, this::train);
-		resultsMap.put("Fine-grained Accuracy Overall", validations.avg.accuracy);
-		resultsMap.put("Fine-grained Number of Errors Overall", (double) validations.avg.error);
 
-		int[] truthsPrimitive = new int[0];
-		int[] predictionsPrimitive = new int[0];
+		int[] truth = new int[0];
+		int[] prediction = new int[0];
 		for (int i = 0; i < k; i++) {
-			truthsPrimitive = PreprocessedData.concatenate(truthsPrimitive, validations.rounds.get(i).truth);
-			predictionsPrimitive = PreprocessedData.concatenate(predictionsPrimitive,
-					validations.rounds.get(i).prediction);
+			truth = PreprocessedData.concatenate(truth, validations.rounds.get(i).truth);
+			prediction = PreprocessedData.concatenate(prediction, validations.rounds.get(i).prediction);
 		}
-
-		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
-			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
-			int[] truths = mapFineGrainedToBinaryResults(truthsPrimitive, classLabel);
-			int[] predictions = mapFineGrainedToBinaryResults(predictionsPrimitive, classLabel);
-
-			resultsMap.put("Fine-grained Precision " + type.toString(), Precision.of(truths, predictions));
-			resultsMap.put("Fine-grained Recall " + type.toString(), Sensitivity.of(truths, predictions));
-			resultsMap.put("Fine-grained F1 " + type.toString(), FScore.of(1.0, truths, predictions));
-		}
-		return resultsMap;
+		return calculateEvaluationMetric(truth, prediction, k);
 	}
 
 	@Override
 	public Map<String, Double> evaluateClassifier(TrainingData groundTruthData) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
 
@@ -109,9 +94,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
 		}
+		return calculateEvaluationMetric(truth, prediction, 1);
+	}
 
+	private Map<String, Double> calculateEvaluationMetric(int[] truth, int[] prediction, int numberOfIterations) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
 		resultsMap.put("Fine-grained Accuracy Overall", Accuracy.of(truth, prediction));
-		resultsMap.put("Fine-grained Number of Errors Overall", (double) Error.of(truth, prediction));
+		resultsMap.put("Fine-grained Number of Errors Overall",
+				(double) Error.of(truth, prediction) / numberOfIterations);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
 			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
@@ -121,11 +111,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			resultsMap.put("Fine-grained Precision " + type.toString(), Precision.of(binaryTruth, binaryPredictions));
 			resultsMap.put("Fine-grained Recall " + type.toString(), Sensitivity.of(binaryTruth, binaryPredictions));
 			resultsMap.put("Fine-grained F1 " + type.toString(), FScore.of(1.0, binaryTruth, binaryPredictions));
+			resultsMap.put("Fine-grained Accuracy " + type.toString(), Accuracy.of(binaryTruth, binaryPredictions));
+			resultsMap.put("Fine-grained Number of Errors " + type.toString(),
+					(double) Error.of(binaryTruth, binaryPredictions) / numberOfIterations);
 		}
 		return resultsMap;
 	}
 
-	private int[] mapFineGrainedToBinaryResults(int[] multiClassResults, Integer label) {
+	private int[] mapFineGrainedToBinaryResults(int[] multiClassResults, int label) {
 		Integer[] binaryResults = Arrays.stream(ArrayUtils.toObject(multiClassResults))
 				.map(x -> x.equals(label) ? 1 : 0).toArray(Integer[]::new);
 		return ArrayUtils.toPrimitive(binaryResults);

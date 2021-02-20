@@ -13,10 +13,10 @@ import smile.classification.LogisticRegression;
 import smile.validation.ClassificationValidations;
 import smile.validation.CrossValidation;
 import smile.validation.metric.Accuracy;
+import smile.validation.metric.Error;
 import smile.validation.metric.FScore;
 import smile.validation.metric.Precision;
 import smile.validation.metric.Sensitivity;
-import smile.validation.metric.Error;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
