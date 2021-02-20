@@ -12,6 +12,11 @@ import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
 import smile.validation.ClassificationValidations;
 import smile.validation.CrossValidation;
+import smile.validation.metric.Accuracy;
+import smile.validation.metric.FScore;
+import smile.validation.metric.Precision;
+import smile.validation.metric.Sensitivity;
+import smile.validation.metric.Error;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
@@ -67,14 +72,32 @@ public class BinaryClassifier extends AbstractClassifier {
 		Map<String, Double> resultsMap = new LinkedHashMap<>();
 		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, false);
 		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
-				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels,
-				this::train);
+				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, this::train);
 
 		resultsMap.put("Binary Precision", validations.avg.precision);
 		resultsMap.put("Binary Recall", validations.avg.sensitivity);
 		resultsMap.put("Binary F1", validations.avg.f1);
 		resultsMap.put("Binary Accuracy", validations.avg.accuracy);
 		resultsMap.put("Binary Number of Errors", (double) validations.avg.error);
+		return resultsMap;
+	}
+
+	@Override
+	public Map<String, Double> evaluateClassifier(TrainingData groundTruthData) {
+		Map<String, Double> resultsMap = new LinkedHashMap<>();
+		String[] sentences = groundTruthData.getAllSentences();
+		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();
+
+		int[] prediction = new int[sentences.length];
+		for (int i = 0; i < sentences.length; i++) {
+			prediction[i] = predict(sentences[i]) ? 1 : 0;
+		}
+
+		resultsMap.put("Binary Precision", Precision.of(truth, prediction));
+		resultsMap.put("Binary Recall", Sensitivity.of(truth, prediction));
+		resultsMap.put("Binary F1", FScore.of(1.0, truth, prediction));
+		resultsMap.put("Binary Accuracy", Accuracy.of(truth, prediction));
+		resultsMap.put("Binary Number of Errors", (double) Error.of(truth, prediction));
 		return resultsMap;
 	}
 

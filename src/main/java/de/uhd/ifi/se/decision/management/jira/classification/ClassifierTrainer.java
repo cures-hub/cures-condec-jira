@@ -154,8 +154,18 @@ public class ClassifierTrainer {
 
 		LOGGER.debug("Started evaluation!");
 		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
-		resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
+
+		if (k > 1) {
+			// train and evaluate on the same data using k-fold cross-validation
+			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
+			resultsMap.putAll(
+					TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
+		} else {
+			// evaluate the trained classifier on different data than it was trained on (for
+			// cross-project validation)
+			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(trainingData));
+			resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(trainingData));
+		}
 
 		// round to 2 decimal points
 		resultsMap.replaceAll((key, value) -> Math.round(value * 100.0) / 100.0);
