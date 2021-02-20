@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,13 +10,9 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.validation.ClassificationMetrics;
+import smile.validation.ClassificationValidation;
 import smile.validation.ClassificationValidations;
-import smile.validation.CrossValidation;
-import smile.validation.metric.Accuracy;
-import smile.validation.metric.Error;
-import smile.validation.metric.FScore;
-import smile.validation.metric.Precision;
-import smile.validation.metric.Sensitivity;
 
 /**
  * Binary classifier that predicts whether a sentence (i.e.
@@ -68,23 +64,29 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, false);
-		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
-				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, this::train);
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+				groundTruthData.getKnowledgeElements());
+		Classifier<double[]> entireModel = model;
 
-		resultsMap.put("Binary Precision", validations.avg.precision);
-		resultsMap.put("Binary Recall", validations.avg.sensitivity);
-		resultsMap.put("Binary F1", validations.avg.f1);
-		resultsMap.put("Binary Accuracy", validations.avg.accuracy);
-		resultsMap.put("Binary Number of Errors", (double) validations.avg.error);
-		return resultsMap;
+		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
+		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+			train(entry.getKey());
+			String[] sentences = entry.getValue().getAllSentences();
+			int[] truthForFold = entry.getValue().getRelevanceLabelsForAllSentences();
+			int[] predictionForFold = new int[sentences.length];
+			for (int i = 0; i < sentences.length; i++) {
+				predictionForFold[i] = predict(sentences[i]) ? 1 : 0;
+			}
+			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
+					0.0, 0.0));
+		}
+		model = entireModel;
+		return Map.of("Binary", new ClassificationValidations<Classifier<double[]>>(validations).avg);
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier(TrainingData groundTruthData) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
+	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
 		String[] sentences = groundTruthData.getAllSentences();
 		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();
 
@@ -92,13 +94,9 @@ public class BinaryClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = predict(sentences[i]) ? 1 : 0;
 		}
-
-		resultsMap.put("Binary Precision", Precision.of(truth, prediction));
-		resultsMap.put("Binary Recall", Sensitivity.of(truth, prediction));
-		resultsMap.put("Binary F1", FScore.of(1.0, truth, prediction));
-		resultsMap.put("Binary Accuracy", Accuracy.of(truth, prediction));
-		resultsMap.put("Binary Number of Errors", (double) Error.of(truth, prediction));
-		return resultsMap;
+		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
+				model, truth, prediction, 0.0, 0.0);
+		return Map.of("Binary", validation.metrics);
 	}
 
 	/**

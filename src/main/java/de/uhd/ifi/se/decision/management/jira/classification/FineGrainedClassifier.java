@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.template.TemplateSource.File;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -14,13 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
-import smile.validation.ClassificationValidations;
-import smile.validation.CrossValidation;
-import smile.validation.metric.Accuracy;
-import smile.validation.metric.Error;
-import smile.validation.metric.FScore;
-import smile.validation.metric.Precision;
-import smile.validation.metric.Sensitivity;
+import smile.validation.ClassificationMetrics;
+import smile.validation.ClassificationValidation;
 
 /**
  * Fine grained classifier that predicts the {@link KnowledgeType} of a sentence
@@ -71,22 +67,31 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData) {
-		PreprocessedData preprocessedData = new PreprocessedData(groundTruthData, true);
-		ClassificationValidations<Classifier<double[]>> validations = CrossValidation.classification(k,
-				preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, this::train);
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
+		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+				groundTruthData.getDecisionKnowledgeElements());
+		Classifier<double[]> oldModel = model;
 
 		int[] truth = new int[0];
 		int[] prediction = new int[0];
-		for (int i = 0; i < k; i++) {
-			truth = PreprocessedData.concatenate(truth, validations.rounds.get(i).truth);
-			prediction = PreprocessedData.concatenate(prediction, validations.rounds.get(i).prediction);
+		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+			train(entry.getKey());
+			String[] sentences = entry.getValue().getRelevantSentences();
+			int[] truthForFold = entry.getValue().getKnowledgeTypeLabelsForRelevantSentences();
+			int[] predictionForFold = new int[sentences.length];
+			for (int i = 0; i < sentences.length; i++) {
+				predictionForFold[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
+			}
+
+			truth = PreprocessedData.concatenate(truth, truthForFold);
+			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
 		}
-		return calculateEvaluationMetric(truth, prediction, k);
+		model = oldModel;
+		return calculateEvaluationMetric(truth, prediction);
 	}
 
 	@Override
-	public Map<String, Double> evaluateClassifier(TrainingData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
 
@@ -94,26 +99,24 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
 		}
-		return calculateEvaluationMetric(truth, prediction, 1);
+		return calculateEvaluationMetric(truth, prediction);
 	}
 
-	private Map<String, Double> calculateEvaluationMetric(int[] truth, int[] prediction, int numberOfIterations) {
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
-		resultsMap.put("Fine-grained Accuracy Overall", Accuracy.of(truth, prediction));
-		resultsMap.put("Fine-grained Number of Errors Overall",
-				(double) Error.of(truth, prediction) / numberOfIterations);
+	private Map<String, ClassificationMetrics> calculateEvaluationMetric(int[] truth, int[] prediction) {
+		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
+		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
+				model, truth, prediction, 0.0, 0.0);
+		resultsMap.put("Fine-grained Overall", validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
 			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
 			int[] binaryTruth = mapFineGrainedToBinaryResults(truth, classLabel);
 			int[] binaryPredictions = mapFineGrainedToBinaryResults(prediction, classLabel);
 
-			resultsMap.put("Fine-grained Precision " + type.toString(), Precision.of(binaryTruth, binaryPredictions));
-			resultsMap.put("Fine-grained Recall " + type.toString(), Sensitivity.of(binaryTruth, binaryPredictions));
-			resultsMap.put("Fine-grained F1 " + type.toString(), FScore.of(1.0, binaryTruth, binaryPredictions));
-			resultsMap.put("Fine-grained Accuracy " + type.toString(), Accuracy.of(binaryTruth, binaryPredictions));
-			resultsMap.put("Fine-grained Number of Errors " + type.toString(),
-					(double) Error.of(binaryTruth, binaryPredictions) / numberOfIterations);
+			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
+					model, binaryTruth, binaryPredictions, 0.0, 0.0);
+
+			resultsMap.put("Fine-grained " + type.toString(), validation.metrics);
 		}
 		return resultsMap;
 	}

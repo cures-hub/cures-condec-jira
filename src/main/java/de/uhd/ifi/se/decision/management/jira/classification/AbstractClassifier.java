@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import smile.classification.Classifier;
+import smile.validation.ClassificationMetrics;
 
 /**
  * Abstract superclass for the {@link BinaryClassifier} and
@@ -85,7 +86,7 @@ public abstract class AbstractClassifier {
 	 *            cross-validation.
 	 * @return map of evaluation results.
 	 */
-	public abstract Map<String, Double> evaluateClassifier(int k, TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData);
 
 	/**
 	 * @param groundTruthData
@@ -93,7 +94,7 @@ public abstract class AbstractClassifier {
 	 *            be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
-	public abstract Map<String, Double> evaluateClassifier(TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.

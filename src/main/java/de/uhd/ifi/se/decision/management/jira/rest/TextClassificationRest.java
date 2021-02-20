@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
@@ -32,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import smile.validation.ClassificationMetrics;
 
 /**
  * REST resource for text classification and its configuration
@@ -84,19 +83,13 @@ public class TextClassificationRest {
 		}
 
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
-		Map<String, Double> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
+		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
 
 		if (evaluationResults.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "No evaluation results were calculated!")).build();
 		}
-
-		String json = "";
-		try {
-			json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(evaluationResults);
-		} catch (JsonProcessingException e) {
-		}
-		return Response.ok(ImmutableMap.of("content", json)).build();
+		return Response.ok(ImmutableMap.of("content", evaluationResults.toString())).build();
 	}
 
 	@Path("/testClassifierWithText")

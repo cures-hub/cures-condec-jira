@@ -16,11 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.validation.metric.Accuracy;
-import smile.validation.metric.ClassificationMetric;
-import smile.validation.metric.FScore;
-import smile.validation.metric.Precision;
-import smile.validation.metric.Sensitivity;
+import smile.validation.ClassificationMetrics;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
@@ -145,15 +141,10 @@ public class ClassifierTrainer {
 	 *
 	 * @return map of evaluation results
 	 */
-	public Map<String, Double> evaluateClassifier(int k) {
-		List<ClassificationMetric> metrics = new ArrayList<>();
-		metrics.add(new FScore());
-		metrics.add(new Precision());
-		metrics.add(new Sensitivity());
-		metrics.add(new Accuracy());
-
-		LOGGER.debug("Started evaluation!");
-		Map<String, Double> resultsMap = new LinkedHashMap<>();
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k) {
+		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
+				+ trainingData.getFileName() + ". Number of folds is set to: " + k);
+		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
 		if (k > 1) {
 			// train and evaluate on the same data using k-fold cross-validation
@@ -167,10 +158,7 @@ public class ClassifierTrainer {
 			resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(trainingData));
 		}
 
-		// round to 2 decimal points
-		resultsMap.replaceAll((key, value) -> Math.round(value * 100.0) / 100.0);
-
-		LOGGER.debug("Finished evaluation!");
+		LOGGER.info("Finished evaluation: " + resultsMap.toString());
 		return resultsMap;
 	}
 }
