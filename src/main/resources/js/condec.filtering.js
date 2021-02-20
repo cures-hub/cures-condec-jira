@@ -1,19 +1,19 @@
 /**
  * This module is responsible for filling the filter HTML elements and for
  * filtering functionality.
- * 
+ *
  * Requires no other module
- * 
+ *
  * Is required by: conDecJiraIssueModule, conDecEvolutionPage,
  * ConDecRelationshipPage, conDecMatrix, conDecRationaleBacklog,
  * conDecKnowledgePage
- * 
+ *
  * @issue Should filters change all views or only the current view?
  * @decision Filters are only applied in the current view using updateView()!
  * @alternative We could update all views using conDecObservable.notify()!
  * @pro The user could reuse the filter settings, which is more useable.
  * @con This would need more computation and decreases performance.
- * 
+ *
  * @issue Should filtering be performed instantly after every change or using a
  *        "filter" button?
  * @decision Perform filtering instantly after changes in some views, e.g.
@@ -29,7 +29,7 @@
 	/*
 	 * Fills the HTML elements for basic filter criteria such as knowledge
 	 * types, status, ... of a view.
-	 * 
+	 *
 	 * external references: condec.jira.issue.module, condec.evolution.page,
 	 * condec.relationship.page, condec.matrix
 	 */
@@ -44,7 +44,7 @@
 
 	/**
 	 * For views with filter button, i.e., NO instant filtering.
-	 * 
+	 *
 	 * external references: condec.jira.issue.module, condec.evolution.page,
 	 * condec.relationship.page, condec.matrix
 	 */
@@ -59,7 +59,7 @@
 
 	/**
 	 * For views without filter button but instant filtering.
-	 * 
+	 *
 	 * external references: condec.jira.issue.module, condec.knowledge.page,
 	 * condec.rationale.backlog
 	 */
@@ -125,7 +125,7 @@
 		if (isIrrelevantTextShownInput !== null) {
 			filterElements.push(isIrrelevantTextShownInput);
         }
-        
+
         var isTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
 		if (isTransitiveLinksInput !== null) {
 			filterElements.push(isTransitiveLinksInput);
@@ -138,7 +138,7 @@
 
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
-	 * 
+	 *
 	 * external references: condec.jira.issue.module, condec.knowledge.page,
 	 * condec.evolution.page, condec.rationale.backlog
 	 */
@@ -234,6 +234,33 @@
         if (createTransitiveLinksInput !== null) {
             filterSettings["createTransitiveLinks"] = createTransitiveLinksInput.checked;
         }
+
+		// Read whether knowledge graph should be shown with CIA Context or not
+		var displayType = document.getElementById("select2-display-type-" + viewIdentifier);
+		if (displayType !== null) {
+			filterSettings["displayType"] = displayType.value;
+		}
+
+		var decayValue = document.getElementById("decay-input-" + viewIdentifier);
+		if (decayValue !== null) {
+			filterSettings["decayValue"] = decayValue.value;
+		}
+
+		var threshold = document.getElementById("threshold-input-" + viewIdentifier);
+		if (threshold !== null) {
+			filterSettings["threshold"] = threshold.value;
+		}
+
+		var context = document.getElementById("context-input-" + viewIdentifier);
+		if (context !== null) {
+			filterSettings["context"] = context.value;
+		}
+
+		// Read selected link types
+		var propagationRule = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
+		if (propagationRule) {
+			filterSettings["propagationRule"] = propagationRule;
+		}
 
 		return filterSettings;
 	};

@@ -69,22 +69,8 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceWithStringInput() {
-
-		/*
-		List<Recommendation> mockedRecommendations = new ArrayList<>();
-		mockedRecommendations.add(new Recommendation());
-		mockedRecommendations.add(new Recommendation());
-		mockedRecommendations.add(new Recommendation());
-
-
-		RDFSourceInputString rdfSourceInputString = mock(RDFSourceInputString.class);
-		when(rdfSourceInputString.getResults("MySQL")).thenReturn(mockedRecommendations);*/
-
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-
 		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
-
-
 		assertEquals(34, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
@@ -103,23 +89,8 @@ public class TestRDFSource extends TestSetUp {
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(PROJECTKEY);
 		graph.addEdge(link);
-
-
-		/*
-		List<Recommendation> mockedRecommendations = new ArrayList<>();
-		mockedRecommendations.add(new Recommendation());
-		mockedRecommendations.add(new Recommendation());
-		mockedRecommendations.add(new Recommendation());
-
-
-		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = mock(RDFSourceInputKnowledgeElement.class);
-		when(rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement())).thenReturn(mockedRecommendations);*/
-
 		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
-
-
 		rdfSourceInputKnowledgeElement.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
-
 		assertEquals(34, rdfSourceInputKnowledgeElement.getResults(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
@@ -140,15 +111,6 @@ public class TestRDFSource extends TestSetUp {
 		source.setActivated(false);
 		assertEquals(false, source.isActivated());
 	}
-
-	/*
-	@Test
-	public void testRDFqueryDataBaseExecption() {
-		RDFSource source = new RDFSource("Test");
-		source.setName("RDFSource");
-		source.setActivated(true);
-		assertEquals(null, source.queryDatabase("aöslkdjasdkjhasd###111///**", "TEST")); //expcet QueryParseException to be catched
-	} */
 
 	@Test
 	public void testConstructor() {

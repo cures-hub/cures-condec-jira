@@ -6,20 +6,20 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 
 <div class="aui-tabs horizontal-tabs" id="jira-issue-tabs" data-aui-persist="username">
-	<ul class="tabs-menu">
-		<li class="menu-item" id="menu-item-jstree">
-			<a href="#jstree-tab" title="jsTree">
-				Tree Visualization 
-				<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
-			</a>
-		</li>
-		<li class="menu-item" id="menu-item-treant">
-			<a href="#treant-tab" title="Treant">
-				Tree Visualization
-				<span class="aui-icon aui-icon-small aui-iconfont-more"></span>
-			</a>
-		</li>
-		<li class="menu-item active-tab" id="menu-item-graph">
+    <ul class="tabs-menu">
+        <li class="menu-item" id="menu-item-jstree">
+            <a href="#jstree-tab" title="jsTree">
+                Tree Visualization
+                <span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
+            </a>
+        </li>
+        <li class="menu-item" id="menu-item-treant">
+            <a href="#treant-tab" title="Treant">
+                Tree Visualization
+                <span class="aui-icon aui-icon-small aui-iconfont-more"></span>
+            </a>
+        </li>
+        <li class="menu-item active-tab" id="menu-item-graph">
 			<a href="#graph-tab" title="vis.js">Graph Visualization</a>
 		</li>
 		<li class="menu-item" id="menu-item-decision-table">
@@ -40,6 +40,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
+        <li class="menu-item" id="menu-item-cia">
+            <a href="#cia-tab">$i18n.getText('condec.label.cia')</a>
+        </li>
 	</ul>
 	#set($showTransitiveFilter = true)
 	<div class="tabs-pane" id="jstree-tab">
@@ -58,48 +61,53 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		#parse("templates/tabs/decisiontable/view.vm")
 	</div>
 	<div class="tabs-pane" id="feature-branches-tab">
-		#parse("templates/tabs/featureBranches.vm")
-	</div>
-	<div class="tabs-pane" id="matrix-tab">
+        #parse("templates/tabs/featureBranches.vm")
+    </div>
+    <div class="tabs-pane" id="matrix-tab">
         #parse("templates/tabs/matrix/view.vm")
     </div>
-	<div class="tabs-pane" id="duplicates-tab">
-		#parse("templates/tabs/duplicates.vm")
-	</div>
-	<div class="tabs-pane" id="chronology-tab">
+    <div class="tabs-pane" id="duplicates-tab">
+        #parse("templates/tabs/duplicates.vm")
+    </div>
+    <div class="tabs-pane" id="chronology-tab">
         #parse("templates/tabs/chronology.vm")
+    </div>
+    <div class="tabs-pane" id="cia-tab">
+        #parse("templates/tabs/changeImpactIssueTab.vm")
     </div>
 </div>
 
-<a id="open-fullscreen"><span style="padding-right:6px;" class="aui-icon aui-icon-small aui-iconfont-vid-full-screen-on">Fullscreen</span>  $i18n.getText("condec.fullscreen")</a>
+<a id="open-fullscreen"><span style="padding-right:6px;"
+                              class="aui-icon aui-icon-small aui-iconfont-vid-full-screen-on">Fullscreen</span>  $i18n.getText(
+    "condec.fullscreen")</a>
 <a id="close-fullscreen" class="aui-close-button">Close</a>
 
 #parse("templates/contextMenu.vm")
 #parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
 <script>
-$(document).ready(function () {
-	conDecAPI.checkIfProjectKeyIsValid();      
-	conDecExport.addOnClickEventToExportAsTable();
+    $(document).ready(function () {
+        conDecAPI.checkIfProjectKeyIsValid();
+        conDecExport.addOnClickEventToExportAsTable();
 
-	// Add event listener to menu items in "More" menu
-	conDecContextMenu.addContextMenuToCommentTabPanel();
+        // Add event listener to menu items in "More" menu
+        conDecContextMenu.addContextMenuToCommentTabPanel();
 
-	var resetDecisionKnowledgeFromTextMenuItem = document.getElementById("reset-decision-knowledge-from-text-link");
-	resetDecisionKnowledgeFromTextMenuItem.addEventListener("click", function(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		if (confirm("Are you sure you want to reset the decision knowledge elements extracted from the description and comments of this Jira issue? " 
-			+ "This will reset all links in the knowledge graph of these elements.")) {
-				conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function() {
-					conDecObservable.notify();
-				});
-			}
-	});
+        var resetDecisionKnowledgeFromTextMenuItem = document.getElementById("reset-decision-knowledge-from-text-link");
+        resetDecisionKnowledgeFromTextMenuItem.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (confirm("Are you sure you want to reset the decision knowledge elements extracted from the description and comments of this Jira issue? "
+                + "This will reset all links in the knowledge graph of these elements.")) {
+                conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function () {
+                    conDecObservable.notify();
+                });
+            }
+        });
 
-	var resetRecommendationFromKnowledgeElement = document.getElementById("remove-recommendations-from-knowledge-graph-link");
-	resetRecommendationFromKnowledgeElement.addEventListener("click", function(event) {
-		event.preventDefault();
+        var resetRecommendationFromKnowledgeElement = document.getElementById("remove-recommendations-from-knowledge-graph-link");
+        resetRecommendationFromKnowledgeElement.addEventListener("click", function (event) {
+            event.preventDefault();
 		event.stopPropagation();
 		if (confirm("Are you sure you want to remove the recommended knowledge elements for this Jira issue?")) {
 				conDecAPI.resetRecommendationForKnowledgeElement(JIRA.Issue.getIssueId(), function() {

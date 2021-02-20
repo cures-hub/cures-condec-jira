@@ -11,28 +11,28 @@
 				Tree Visualization 
 				<span class="aui-icon aui-icon-small aui-iconfont-more-vertical"></span>
 			</a>
-		</li>				
-		<li class="menu-item">
-			<a href="#graph-$viewIdentifier" title="vis.js">Graph Visualization</a>
-		</li>
-		<li class="menu-item">
-			<a href="#matrix-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
-		</li>
-		<li class="menu-item">
-			<a href="#decision-table-$viewIdentifier">Decision Table</a>
-		</li>
-	</ul>
-	<div class="tabs-pane active-pane treant" id="treant-tab-$viewIdentifier">
-		<div id="treant-$viewIdentifier" class="treant"></div>
-	</div>
-	<div class="tabs-pane" id="jstree-$viewIdentifier">
-	</div>
-	<div class="tabs-pane" id="graph-$viewIdentifier">
-	</div>
-	<div class="tabs-pane" id="matrix-$viewIdentifier">
-		#parse("templates/tabs/matrix/matrix.vm")
-	</div>
-	<div class="tabs-pane" id="decision-table-$viewIdentifier">
-		#parse("templates/tabs/decisiontable/decisionTable.vm")
-	</div>
-</div>    
+        </li>
+        <li class="menu-item">
+            <a href="#graph-$viewIdentifier" title="vis.js">Graph Visualization</a>
+        </li>
+        <li class="menu-item">
+            <a href="#matrix-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
+        </li>
+        <li class="menu-item">
+            <a href="#decision-table-$viewIdentifier">Decision Table</a>
+        </li>
+    </ul>
+     <div class="tabs-pane active-pane treant" id="treant-tab-$viewIdentifier">
+         <div id="treant-$viewIdentifier" class="treant"></div>
+     </div>
+     <div class="tabs-pane" id="jstree-$viewIdentifier">
+     </div>
+     <div class="tabs-pane" id="graph-$viewIdentifier">
+     </div>
+     <div class="tabs-pane" id="matrix-$viewIdentifier">
+         #parse("templates/tabs/matrix/matrix.vm")
+     </div>
+     <div class="tabs-pane" id="decision-table-$viewIdentifier">
+         #parse("templates/tabs/decisiontable/decisionTable.vm")
+     </div>
+ </div>

@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
@@ -565,6 +566,33 @@ public class ConfigPersistenceManager {
 
 	public static boolean getActivationStatusOfQualityEvent(String projectKey, String eventKey) {
 		return "true".equals(getValue(projectKey, eventKey));
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Cia Settings */
+	/*										*/
+	/* **************************************/
+
+	public static void setCiaSettings(String projectKey, CiaSettings ciaSettings) {
+		Type type = new TypeToken<CiaSettings>() {
+		}.getType();
+		saveObject(projectKey, "ciaSettings", ciaSettings, type);
+	}
+
+	public static CiaSettings getCiaSettings(String projectKey) {
+		Type type = new TypeToken<CiaSettings>() {
+		}.getType();
+		CiaSettings ciaSettings = null;
+		try {
+			ciaSettings = (CiaSettings) getSavedObject(projectKey, "ciaSettings", type);
+		} catch (JsonSyntaxException e) {
+		}
+		if (ciaSettings == null) {
+			ciaSettings = new CiaSettings();
+			setCiaSettings(projectKey, ciaSettings);
+		}
+		return ciaSettings;
 	}
 
 }

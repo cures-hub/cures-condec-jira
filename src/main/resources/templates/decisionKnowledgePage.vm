@@ -40,6 +40,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-groups">
         	<a href="#decision-groups-tab">Decision Groups</a>
         </li>
+        <li class="menu-item" id="menu-item-groups">
+            <a href="#cia-tab">CI-Analysis</a>
+        </li>
 	</ul>
 #if($codeFileName == "")
 	<div class="tabs-pane active-pane" id="rationale-backlog-tab">
@@ -73,6 +76,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div class="tabs-pane" id="decision-groups-tab">
         #parse("templates/tabs/decisionGroups.vm")
+    </div>
+    <div class="tabs-pane" id="cia-tab">
+        #parse("templates/tabs/changeImpactDecisionKnowledgePage.vm")
     </div>
 </div>
 #parse("templates/contextMenu.vm")

@@ -1,6 +1,6 @@
 /*
  This view provides trees of knowledge elements.
- 
+
  Requires
  * conDecAPI
  * conDecObservable
@@ -21,7 +21,7 @@
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
-		
+
 		// Fill view
 		this.fetchAndRender();
 	};
@@ -41,7 +41,7 @@
 				}
 			}
 			jQuery("select[name='knowledge-type-dropdown-overview']")[0].insertAdjacentHTML("beforeend", "<option "
-			        + isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+				+ isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 		}
 
 		var createElementButton = document.getElementById("create-element-button");
@@ -64,10 +64,10 @@
 
 		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
-		
+
 		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
-		
-		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");	
+
+		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();
 	};
@@ -93,7 +93,7 @@
 		}
 		addSelectNodeEventListenerToTreeViewer();
 	}
-	
+
 	function addSelectNodeEventListenerToTreeViewer() {
 		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("overview");
@@ -104,11 +104,11 @@
 
 			conDecTreant.buildTreant(filterSettings, true, "treant-overview");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-overview", "#search-input-overview", "jstree-overview");
-			jQuery("#jstree-overview").on("loaded.jstree", function() {
+			jQuery("#jstree-overview").on("loaded.jstree", function () {
 				jQuery("#jstree-overview").jstree("open_all");
 			});
-			conDecVis.buildVis(filterSettings, "graph-overview");		
-			conDecMatrix.buildMatrix(filterSettings, "overview");		
+			conDecVis.buildVis(filterSettings, "graph-overview");
+			conDecMatrix.buildMatrix(filterSettings, "overview");
 			conDecDecisionTable.build(filterSettings, "overview", node);
 		});
 	}

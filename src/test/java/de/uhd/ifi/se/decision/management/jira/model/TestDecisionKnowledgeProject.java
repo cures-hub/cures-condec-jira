@@ -1,15 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.atlassian.jira.project.Project;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
@@ -18,6 +9,14 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for a Jira project with the configuration settings used in this
@@ -139,7 +138,21 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
 		assertEquals(1, DecisionKnowledgeProject
-				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
+			.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
+	}
+
+	@Test
+	public void testGetAllNamesOfLinkTypes() {
+		assertEquals(9, DecisionKnowledgeProject.getAllNamesOfLinkTypes().size());
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("Other"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("contains"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("attacks"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("supports"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("comments"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is contained by"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is attacked by"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is supported by"));
+		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is commented by"));
 	}
 
 	@AfterClass

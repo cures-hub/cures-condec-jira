@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import org.junit.AfterClass;
@@ -16,9 +17,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -612,6 +617,25 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setAlternativeLinkedToArgument(true);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
+	}
+
+	@Test
+	public void testSetAndGetCiaSettings() {
+		CiaSettings settings = new CiaSettings();
+		assertEquals(0.75, settings.getDecayValue(), 0.01);
+		assertEquals(0.25, settings.getThreshold(), 0.01);
+		assertEquals(9, settings.getLinkImpact().size());
+		settings.setDecayValue(0.75f);
+		settings.setThreshold(0.2f);
+		settings.setLinkImpact(new HashMap<>() {{
+			put("comment", 0.5f);
+		}});
+		ConfigPersistenceManager.setCiaSettings("TEST", settings);
+		CiaSettings loaded = ConfigPersistenceManager.getCiaSettings("TEST");
+		assertEquals(0.75, loaded.getDecayValue(), 0.01);
+		assertEquals(0.2, loaded.getThreshold(), 0.01);
+		assertEquals(1, loaded.getLinkImpact().size());
+		assertEquals(0.5f, loaded.getLinkImpact().getOrDefault("comment", 0.0f), 0.01);
 	}
 
 	@AfterClass

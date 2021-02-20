@@ -1,15 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -17,15 +7,24 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Creates an adjacency matrix of the {@link KnowledgeGraph}. The matrix can
  * either be created on the entire graph or on a subgraph matching the giving
  * {@link FilterSettings}. The subgraph is provided by the
  * {@link FilteringManager}.
- * 
+ *
  * Each matrix cell contains a {@link Link} object or null if no link exists.
- * 
+ *
  * If you want to change the shown (sub-)graph, do not change this class but
  * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
@@ -34,6 +33,9 @@ public class Matrix {
 	@XmlElement
 	private Set<KnowledgeElement> headerElements;
 
+	@XmlElement
+	private Map<Long, String> colorMap;
+
 	private int size;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
@@ -41,11 +43,24 @@ public class Matrix {
 	public Matrix(Set<KnowledgeElement> elements) {
 		headerElements = elements;
 		size = headerElements.size();
+		colorMap = new HashMap<>();
+		headerElements.forEach(entry -> {
+			colorMap.put(entry.getId(), "#ffffff");
+		});
+	}
+
+	public Matrix(Set<KnowledgeElement> elements, Map<Long, String> colorMap) {
+		headerElements = elements;
+		size = headerElements.size();
+		this.colorMap = colorMap;
 	}
 
 	public Matrix(FilterSettings filterSettings) {
 		this(new FilteringManager(filterSettings).getSubgraphMatchingFilterSettings().vertexSet());
 		LOGGER.info(filterSettings.toString());
+		headerElements.forEach(entry -> {
+			colorMap.put(entry.getId(), "#ffffff");
+		});
 	}
 
 	public Set<KnowledgeElement> getHeaderElements() {
@@ -83,9 +98,9 @@ public class Matrix {
 
 	/**
 	 * Used to plot the legend for relationship types in the frontend.
-	 * 
+	 *
 	 * @return map of link type names and colors. Also contains Jira issue link
-	 *         types.
+	 * types.
 	 */
 	@XmlElement(name = "linkTypesWithColor")
 	public Map<String, String> getLinkTypesWithColor() {
@@ -95,5 +110,13 @@ public class Matrix {
 			linkTypesWithColor.put(linkTypeName, color);
 		}
 		return linkTypesWithColor;
+	}
+
+	public Map<Long, String> getColorMap() {
+		return colorMap;
+	}
+
+	public void setColorMap(Map<Long, String> colorMap) {
+		this.colorMap = colorMap;
 	}
 }

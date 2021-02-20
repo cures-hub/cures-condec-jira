@@ -19,10 +19,11 @@ a:focus a:hover {
 }
 
 .right {
-  width: 67%;
-  float: left;
-  overflow: auto;
-  resize: both;
+    width: 67%;
+    float: left;
+    overflow: auto;
+    resize: both;
+    margin: 10px;
 }
 
 .graph {
@@ -87,17 +88,35 @@ a:focus a:hover {
   overflow: scroll;
 }
 
+.aui-dropdown2-wide {
+  max-width: 500px;
+}
+
+.aui-list-truncate-wide {
+  width: 500px;
+}
+
 #close-fullscreen {
   z-index: 999;
   display:none;
   position: fixed;
   right: 48px;
-  top:48px;
-  cursor: pointer;
+    top: 48px;
+    cursor: pointer;
 }
 
 #open-fullscreen {
-  cursor: pointer;
-  padding:16px;
-  display:block;
+    cursor: pointer;
+    padding: 16px;
+    display: block;
+}
+
+#change-impact-decision-knowledge-tree {
+    min-width: 400px;
+    min-height: 400px;
+    margin: 10px;
+}
+
+#select2-display-type-cia {
+    vertical-align: bottom;
 }

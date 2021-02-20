@@ -1,27 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -36,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.service.CiaService;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
@@ -45,6 +28,24 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST resource for view
@@ -114,8 +115,11 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		TreeViewer treeViewer = new TreeViewer(filterSettings);
-		return Response.ok(treeViewer).build();
+		if(filterSettings.isCiaRequest()){
+			return Response.ok(CiaService.calculateTreeImpact(filterSettings)).build();
+		} else {
+			return Response.ok(new TreeViewer(filterSettings)).build();
+		}
 	}
 
 	@Path("/getEvolutionData")
@@ -218,7 +222,12 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		VisGraph visGraph = new VisGraph(user, filterSettings);
+		VisGraph visGraph;
+		if (filterSettings.isCiaRequest()) {
+			visGraph = CiaService.calculateGraphImpact(filterSettings);
+		} else {
+			visGraph = new VisGraph(user, filterSettings);
+		}
 		return Response.ok(visGraph).build();
 	}
 
@@ -260,7 +269,13 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Matrix matrix = new Matrix(filterSettings);
+		Matrix matrix;
+		if (filterSettings.isCiaRequest()) {
+			matrix = CiaService.calculateMatrixImpact(filterSettings);
+		} else {
+			matrix = new Matrix(filterSettings);
+		}
+
 		return Response.ok(matrix).build();
 	}
 

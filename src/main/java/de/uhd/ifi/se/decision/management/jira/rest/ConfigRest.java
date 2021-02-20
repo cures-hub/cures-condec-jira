@@ -1,23 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -26,7 +8,6 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
@@ -41,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -48,9 +30,31 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * REST resource for plug-in configuration
@@ -286,6 +290,26 @@ public class ConfigRest {
 		}
 		Set<String> linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		return Response.ok(linkTypes).build();
+	}
+
+	@Path("/getAllLinkTypes")
+	@GET
+	public Response getAllLinkTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Set<String> linkTypes = DecisionKnowledgeProject.getAllNamesOfLinkTypes();
+		return Response.ok(linkTypes).build();
+	}
+
+	@Path("/getPropagationRules")
+	@GET
+	public Response getPropagationRules() {
+		Set<String> propagationRulesAsString = Arrays.stream(PassRule.values()).map(PassRule::getTranslation)
+			.filter(entry -> !entry.equals("undefined"))
+			.collect(Collectors.toSet());
+		return Response.ok(propagationRulesAsString).build();
 	}
 
 	// TODO Refactor: too many ifs
@@ -770,6 +794,37 @@ public class ConfigRest {
 
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
 		return Response.ok().build();
+	}
+
+	@Path("/setCiaSettings")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response setCiaSettings(@Context HttpServletRequest request,
+								   @QueryParam("projectKey") String projectKey, CiaSettings ciaSettings) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+
+		if (ciaSettings == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+		}
+
+		ConfigPersistenceManager.setCiaSettings(projectKey, ciaSettings);
+		return Response.ok(Status.ACCEPTED).build();
+	}
+
+	@GET
+	@Path("/getCiaSettings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCiaSettings(@QueryParam("projectKey") String projectKey) {
+
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
 	}
 
 	@Path("/setProjectSource")

@@ -1,13 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -24,14 +16,17 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * Models a Jira project and its configuration. The Jira project is extended
  * with settings for this plug-in, for example, whether the plug-in is activated
  * for the project.
- * 
+ *
  * This class provides read-only access to the settings. To change the settings,
  * use the {@link ConfigPersistenceManager}.
- * 
+ *
  * @issue Should the DecisionKnowledgeProject class extend the Jira project
  *        class?
  * @decision The DecisionKnowledgeProject does not extend the Jira project class
@@ -227,6 +222,17 @@ public class DecisionKnowledgeProject {
 		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
 		Set<String> namesOfJiraIssueLinkTypes = types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
 		Set<String> allLinkTypes = namesOfJiraIssueLinkTypes;
+		// In the future, there will also be a "transitive" link type for transitive
+		// link creation.
+		allLinkTypes.add("Other");
+		return allLinkTypes;
+	}
+
+	public static Set<String> getAllNamesOfLinkTypes() {
+		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
+		Set<String> allLinkTypes = new HashSet<>();
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getInward).collect(Collectors.toSet()));
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getOutward).collect(Collectors.toSet()));
 		// In the future, there will also be a "transitive" link type for transitive
 		// link creation.
 		allLinkTypes.add("Other");

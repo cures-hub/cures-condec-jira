@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 import java.util.Objects;
 
@@ -63,7 +62,7 @@ public class RDFSource extends KnowledgeSource {
 		this.constraint = constraint;
 	}
 
-	@Override
+    @Override
 	public InputMethod getInputMethod() {
 		this.inputMethod = SourceInputFactoryUtils.getInputMethod(recommenderType);
 		return this.inputMethod;

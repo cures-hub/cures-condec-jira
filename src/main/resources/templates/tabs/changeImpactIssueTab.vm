@@ -1,0 +1,79 @@
+<form class="aui condec-filter">
+    <!-- Knowledge Type Dropdown -->
+    <button aria-controls="knowledge-type-dropdown-cia"
+            class="aui-button aui-dropdown2-trigger aui-style-default short-field" aria-haspopup="true">
+        $i18n.getText('condec.label.knowledge.type')
+    </button>
+    <aui-dropdown-menu id="knowledge-type-dropdown-cia" name="knowledgeTypes"></aui-dropdown-menu>
+
+    <!-- Status Dropdown -->
+    <button aria-controls="status-dropdown-cia" class="aui-button aui-dropdown2-trigger short-field"
+            aria-haspopup="true">
+        $i18n.getText("condec.label.knowledge.status")
+    </button>
+    <aui-dropdown-menu id="status-dropdown-cia" name="status"></aui-dropdown-menu>
+
+    <!-- Decay Value -->
+    <div class="condec-filter-criterion">
+        <label for="decay-input-cia" id="decay-input-label-cia">
+            $i18n.getText("condec.decay.label")
+        </label>
+        <input type="number" id="decay-input-cia" value="0.75" min="0" step='0.01' class="text short-field"
+               placeholder="Enter Decay" name="decay">
+    </div>
+
+    <!-- Threshold -->
+    <div class="condec-filter-criterion">
+        <label for="threshold-input-cia" id="threshold-input-label-cia">
+            $i18n.getText("condec.threshold.label")
+        </label>
+        <input type="number" id="threshold-input-cia" value="0.25" min="0" step='0.01'
+               class="text short-field"
+               placeholder="Enter threshold" name="threshold">
+    </div>
+
+    <!-- linkImpact -->
+    <a href="#dwarfers" aria-owns="dwarfers" aria-haspopup="true"
+       class="aui-button aui-style-default aui-dropdown2-trigger">$i18n.getText('condec.label.link.types')</a>
+
+    <!-- Dropdown -->
+    <div id="dwarfers" class="aui-style-default aui-dropdown2 aui-dropdown2-wide">
+        <ul id="cia_menu_items" class="aui-list-truncate aui-list-truncate-wide">
+        </ul>
+    </div>
+
+    <!-- Propagation Rules -->
+    <button aria-controls="propagation-rule-dropdown-cia" class="aui-button aui-dropdown2-trigger"
+            aria-haspopup="true">
+        $i18n.getText("condec.label.propagation.rule")
+    </button>
+    <aui-dropdown-menu id="propagation-rule-dropdown-cia" name="passRule"></aui-dropdown-menu>
+
+    <!-- Context -->
+    <div class="condec-filter-criterion">
+        <label for="context-input-cia" id="context-input-label-cia">
+            $i18n.getText("condec.context.label")
+        </label>
+        <input type="number" id="context-input-cia" value="0" min="0" step='1' class="text short-field"
+               placeholder="Context distance" name="context">
+    </div>
+
+    <!-- Display Type -->
+    <select id="select2-display-type-cia"
+            class="select large-field condec-filter-criterion" name="displayTypes">
+        <option selected="selected" value="Tree">Tree</option>
+        <option value="Graph">Graph</option>
+        <option value="Matrix">Matrix</option>
+    </select>
+    <!-- Filter Button -->
+    <input type="button" id="filter-button-cia" class="aui-button aui-button-primary" value="Filter"/>
+</form>
+<div id="cia-container" class="treant"></div>
+#set ($viewIdentifier = "cia")
+#parse("templates/tabs/matrix/matrix.vm")
+<script>
+    /* Adds the on click listener on tab opening */
+    $(document).ready(function () {
+        conDecCia.initView();
+    });
+</script>

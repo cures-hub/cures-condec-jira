@@ -1,19 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestTreeViewerNode extends TestSetUp {
 
@@ -94,5 +95,34 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testGetIcon() {
 		assertEquals(null, node.getIcon());
+	}
+
+	@Test
+	public void testGetAndSetAttributes() {
+		Map<String, String> attributes = node.getAttr();
+		assertEquals(attributes.size(), 2L);
+		assertEquals(attributes.get("title"), "WI: Implement feature");
+		assertEquals(attributes.get("style"), "color:crimson");
+		Map<String, String> newAttributes = new HashMap<>();
+		newAttributes.put("title", "test");
+		node.setAttr(newAttributes);
+		attributes = node.getAttr();
+		assertEquals(attributes.size(), 1L);
+		assertEquals(attributes.get("title"), "test");
+	}
+
+	@Test
+	public void testGetAndSetLiAttributes() {
+		Map<String, String> attributes = node.getLiAttr();
+		assertEquals(attributes.size(), 1L);
+		assertEquals(attributes.get("class"), "issue");
+		Map<String, String> newAttributes = new HashMap<>();
+		newAttributes.put("class", "test");
+		newAttributes.put("style", "color:crimson");
+		node.setLiAttr(newAttributes);
+		attributes = node.getLiAttr();
+		assertEquals(attributes.size(), 2L);
+		assertEquals(attributes.get("class"), "test");
+		assertEquals(attributes.get("style"), "color:crimson");
 	}
 }

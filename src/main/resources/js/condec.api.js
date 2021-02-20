@@ -1,18 +1,18 @@
 /**
  * This module implements the communication with the ConDec Java REST API and
  * the Jira API.
- * 
+ *
  * Requires: conDecTreant.findParentElement
- * 
+ *
  * Is required by: conDecContextMenu conDecDialog conDecEvolutionPage
  * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
  * conDecTabPanel conDecVis
- * 
+ *
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
 (function (global) {
-	
+
 	var projectKey = null;
 
 	var ConDecAPI = function () {
@@ -34,6 +34,7 @@
 		 */
 		this.knowledgeTypes = [];
 		this.extendedKnowledgeTypes = [];
+		this.propagationRules = [];
 
 		this.decisionStatus = ["decided", "challenged", "rejected"];
 		this.alternativeStatus = ["idea", "discarded", "recommended"];
@@ -124,7 +125,7 @@
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
-	 * 
+	 *
 	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function (summary, description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement, callback) {
@@ -192,7 +193,7 @@
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function (id, type, documentationLocation, callback) {
 		this.getDecisionKnowledgeElement(id, documentationLocation, function (element) {
-        	conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type, 
+        	conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type,
 				documentationLocation, null, callback);
         });
 	};
@@ -248,6 +249,16 @@
 					callback(link);
 				}
 			});
+	};
+
+	/**
+	 * Updates the knowledge status of the element. The summary and description are set null
+	 * to indicate that only the knowledge status is updated.
+	 *
+	 * external references: condec.dialog
+	 */
+	ConDecAPI.prototype.setStatus = function (id, documentationLocation, type, status, callback) {
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
 	};
 
 	/*
@@ -360,7 +371,7 @@
 	 * filter settings matching the JQL. Otherwise it provides the default
 	 * filter settings (e.g. link distance 3, all knowledge types, all link
 	 * types, ...).
-	 * 
+	 *
 	 * external reference: currently not used, used to be used in
 	 * Jira issue view to fill the HTML filter elements
 	 */
@@ -376,10 +387,10 @@
 	/**
 	 * @param isPlacedAtCreationDate elements will be placed at their creation date.
 	 * @param isPlacedAtUpdatingDate elements will be placed at the date of their last update.
-	 * 
-	 * If both isPlacedAtCreationDate and isPlacedAtUpdatingDate are true, a bar connecting 
+	 *
+	 * If both isPlacedAtCreationDate and isPlacedAtUpdatingDate are true, a bar connecting
 	 * both dates is shown in chronology view.
-	 * 
+	 *
 	 * external references: condec.evolution.page
 	 */
 	ConDecAPI.prototype.getEvolutionData = function (filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
@@ -511,12 +522,12 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setGitRepositoryConfigurations = function (projectKey, gitRepositoryConfigurations) {
-		generalApi.postJSON(this.restPrefix + "/config/setGitRepositoryConfigurations.json?projectKey=" 
-				+ projectKey, gitRepositoryConfigurations, function (error, response) {
-				if (error === null) {
-					showFlag("success", "The git URIs and credentials for this project have been set.");
-				}
-			});
+		generalApi.postJSON(this.restPrefix + "/config/setGitRepositoryConfigurations.json?projectKey="
+			+ projectKey, gitRepositoryConfigurations, function (error, response) {
+			if (error === null) {
+				showFlag("success", "The git URIs and credentials for this project have been set.");
+			}
+		});
 	};
 
 	/*
@@ -601,6 +612,16 @@
 	ConDecAPI.prototype.getLinkTypes = function () {
 		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
 			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + conDecAPI.projectKey);
+		}
+		return this.linkTypes;
+	};
+
+	/*
+	 * external references: condec.dialog, condec.filtering
+	 */
+	ConDecAPI.prototype.getAllLinkTypes = function () {
+		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
+			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.linkTypes;
 	};
@@ -766,13 +787,13 @@
 				}
 			});
 	};
-	
+
 	ConDecAPI.prototype.renameDecisionGroup = function (oldName, newName, callback) {
 		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
 			+ "&oldName=" + oldName + "&newName=" + newName);
 		callback();
 	};
-	
+
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
@@ -787,7 +808,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
@@ -813,7 +834,7 @@
 				animatedElement.classList.remove("aui-progress-indicator-value");
 				if (error === null) {
 					showFlag("success", "The whole project has been classified.");
-				} 
+				}
 			});
 	};
 
@@ -865,7 +886,7 @@
 				}
 			});
 	};
-	
+
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
@@ -975,6 +996,29 @@
 					callback(definitionOfDone);
 				}
 			});
+	};
+
+	ConDecAPI.prototype.getPropagationRules = function () {
+		if (this.propagationRules === undefined || this.propagationRules.length === 0) {
+			this.propagationRules = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getPropagationRules.json?projectKey=" + conDecAPI.projectKey);
+		}
+		return this.propagationRules;
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setCiaSettings = function (projectKey, ciaSettings) {
+		generalApi.postJSON(this.restPrefix + "/config/setCiaSettings.json?projectKey="
+			+ projectKey, ciaSettings, function (error, response) {
+			if (error === null) {
+				showFlag("success", "The Cia Settings are updated.");
+			}
+		});
+	};
+
+	ConDecAPI.prototype.getCiaSettings = function (projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + "/config/getCiaSettings.json?projectKey=" + projectKey, callback);
 	};
 
 	/*
