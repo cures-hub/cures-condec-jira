@@ -105,7 +105,7 @@
 		<description>
 			Provides the JavaScript files for the management of decision knowledge.
 		</description>
-		<context>jira.view.issue</context>
+		<context>atl.general</context>
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
 		<!-- treant -->

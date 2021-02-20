@@ -55,7 +55,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 				result);
 		result = decisionMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{decision}<p>This is a decision.</p>\\{decision}", result);
-
 	}
 
 	@Test
@@ -90,7 +89,6 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 		result = proMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{pro}<p>This is a supporting argument.</p>\\{pro}", result);
-
 	}
 
 	@Test
