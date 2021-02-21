@@ -22,6 +22,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -32,7 +33,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.apache.jena.vocabulary.RDF;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -40,9 +40,9 @@ import org.apache.jena.vocabulary.RDF;
  */
 public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
-		.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
+			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
-		.getOSGiComponentInstanceOfType(TransactionTemplate.class);
+			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -142,8 +142,17 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	public static boolean isTextClassifierEnabled(String projectKey) {
-		return getValue(projectKey, "isTextClassifierEnabled").equals("true");
+	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
+		Type type = new TypeToken<TextClassificationConfiguration>() {
+		}.getType();
+		TextClassificationConfiguration textClassificationConfiguration = new TextClassificationConfiguration();
+		try {
+			textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(projectKey,
+					"textClassificationConfiguration", type);
+		} catch (JsonSyntaxException e) {
+
+		}
+		return textClassificationConfiguration;
 	}
 
 	public static boolean isWebhookEnabled(String projectKey) {
@@ -196,7 +205,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setGitRepositoryConfigurations(String projectKey,
-													  List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+			List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
 		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
@@ -209,7 +218,7 @@ public class ConfigPersistenceManager {
 		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
 		try {
 			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
-				"gitRepositoryConfigurations", type);
+					"gitRepositoryConfigurations", type);
 		} catch (JsonSyntaxException e) {
 
 		}
@@ -220,13 +229,15 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-											   boolean isKnowledgeTypeEnabled) {
+			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	// TODO Testing
-	public static void setTextClassifierEnabled(String projectKey, boolean isActivated) {
-		setValue(projectKey, "isTextClassifierEnabled", Boolean.toString(isActivated));
+	public static void setTextClassificationConfiguration(String projectKey,
+			TextClassificationConfiguration textClassificationConfiguration) {
+		Type type = new TypeToken<TextClassificationConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "textClassificationConfiguration", textClassificationConfiguration, type);
 	}
 
 	public static void setValue(String parameter, String value) {
@@ -283,7 +294,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-											 List<String> selectedIssueNames) {
+			List<String> selectedIssueNames) {
 		String joinedIssueNames = String.join(",", selectedIssueNames);
 		setValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
 	}
@@ -451,10 +462,10 @@ public class ConfigPersistenceManager {
 			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
 				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-					jiraProject.getProjectKey());
+						jiraProject.getProjectKey());
 				if (jiraProject.isActivated()) {
 					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-						projectSourceActivation);
+							projectSourceActivation);
 					projectSources.add(projectSource);
 				}
 			}
@@ -504,7 +515,7 @@ public class ConfigPersistenceManager {
 		Map<String, Boolean> recommenderTypes = new HashMap<>();
 		for (RecommenderType recommenderType : RecommenderType.values()) {
 			recommenderTypes.put(recommenderType.toString(),
-				Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
+					Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
 		}
 		return recommenderTypes;
 	}

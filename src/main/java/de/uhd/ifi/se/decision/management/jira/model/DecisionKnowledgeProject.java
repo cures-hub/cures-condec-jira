@@ -17,6 +17,7 @@ import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -182,11 +183,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if the text classifier is enabled to automatically classify the
+	 * @return configuration of the text classifier to automatically classify the
 	 *         text of Jira issue descriptions and comments.
 	 */
-	public boolean isTextClassifierEnabled() {
-		return ConfigPersistenceManager.isTextClassifierEnabled(getProjectKey());
+	public TextClassificationConfiguration getTextClassificationConfiguration() {
+		return ConfigPersistenceManager.getTextClassificationConfiguration(getProjectKey());
 	}
 
 	/**

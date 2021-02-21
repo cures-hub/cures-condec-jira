@@ -130,7 +130,7 @@
 
 <script>
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
+    isClassifierUsedToggle.checked = $project.getTextClassificationConfiguration().isActivated();
     
     isClassifierUsedToggle.addEventListener("change", function (error) {
         currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
