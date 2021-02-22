@@ -75,7 +75,7 @@
     <select id="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
-                #if ($trainingFile.toString().contains($selectedTrainingFile))
+                #if ($trainingFile.toString().contains($project.getTextClassificationConfiguration().getSelectedGroundTruthFile()))
                     selected
                 #end
             >
