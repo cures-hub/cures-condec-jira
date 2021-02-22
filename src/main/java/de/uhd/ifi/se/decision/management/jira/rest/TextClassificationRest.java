@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -84,6 +85,10 @@ public class TextClassificationRest {
 
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
+		TextClassificationConfiguration config = ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey);
+		config.setLastEvaluationResults(evaluationResults.toString());
+		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
 		return Response.ok(ImmutableMap.of("content", evaluationResults.toString())).build();
 	}
 

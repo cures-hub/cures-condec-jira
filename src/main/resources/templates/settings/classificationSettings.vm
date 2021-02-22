@@ -128,6 +128,13 @@
     </div>
 </div>
 
+<div class="field-group">
+    <label>Last Evaluation Results:</label>    
+    <div class="aui-message aui-message-info">
+		<p>$project.getTextClassificationConfiguration().getLastEvaluationResults()</p>
+	</div>
+</div>
+
 <script>
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
     isClassifierUsedToggle.checked = $project.getTextClassificationConfiguration().isActivated();

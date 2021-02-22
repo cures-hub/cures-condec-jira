@@ -12,13 +12,14 @@ public class TextClassificationConfiguration {
 
 	private boolean isActivated;
 	private String selectedGroundTruthFile;
-	public String lastEvaluationResults;
+	private String lastEvaluationResults;
 	public String trainedBinaryClassifier;
 	public String trainedFineGrainedClassifier;
 
 	public TextClassificationConfiguration() {
 		this.isActivated = false;
 		this.selectedGroundTruthFile = "defaultTrainingData.csv";
+		this.lastEvaluationResults = "";
 	}
 
 	public boolean isActivated() {
@@ -37,6 +38,15 @@ public class TextClassificationConfiguration {
 	@JsonProperty("selectedGroundTruthFile")
 	public void setSelectedGroundTruthFile(String selectedGroundTruthFile) {
 		this.selectedGroundTruthFile = selectedGroundTruthFile;
+	}
+
+	public String getLastEvaluationResults() {
+		return lastEvaluationResults;
+	}
+
+	@JsonProperty("lastEvaluationResults")
+	public void setLastEvaluationResults(String lastEvaluationResults) {
+		this.lastEvaluationResults = lastEvaluationResults;
 	}
 
 }
