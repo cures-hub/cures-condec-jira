@@ -85,11 +85,14 @@ public class TextClassificationRest {
 
 		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
+		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
+		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
+		evaluationResultsMessage += evaluationResults.toString();
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
-		config.setLastEvaluationResults(evaluationResults.toString());
+		config.setLastEvaluationResults(evaluationResultsMessage);
 		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
-		return Response.ok(ImmutableMap.of("content", evaluationResults.toString())).build();
+		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
 	@Path("/testClassifierWithText")
