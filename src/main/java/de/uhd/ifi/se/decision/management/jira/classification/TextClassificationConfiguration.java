@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 public class TextClassificationConfiguration {
 
 	private boolean isActivated;
-	public String selectedGroundTruthFile;
+	private String selectedGroundTruthFile;
 	public String lastEvaluationResults;
 	public String trainedBinaryClassifier;
 	public String trainedFineGrainedClassifier;
@@ -28,6 +28,15 @@ public class TextClassificationConfiguration {
 	@JsonProperty("isActivated")
 	public void setActivated(boolean isActivated) {
 		this.isActivated = isActivated;
+	}
+
+	public String getSelectedGroundTruthFile() {
+		return selectedGroundTruthFile;
+	}
+
+	@JsonProperty("selectedGroundTruthFile")
+	public void setSelectedGroundTruthFile(String selectedGroundTruthFile) {
+		this.selectedGroundTruthFile = selectedGroundTruthFile;
 	}
 
 }

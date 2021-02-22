@@ -244,6 +244,13 @@ public class ConfigPersistenceManager {
 		setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 	}
 
+	public static void setTrainingFileForClassifier(String projectKey, String trainingFileName) {
+		TextClassificationConfiguration textClassificationConfiguration = getTextClassificationConfiguration(
+				projectKey);
+		textClassificationConfiguration.setSelectedGroundTruthFile(trainingFileName);
+		setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
+	}
+
 	public static void setTextClassificationConfiguration(String projectKey,
 			TextClassificationConfiguration textClassificationConfiguration) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
@@ -294,14 +301,6 @@ public class ConfigPersistenceManager {
 
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
-	}
-
-	public static void setTrainingFileForClassifier(String projectKey, String trainingFileName) {
-		setValue(projectKey, "trainingFileName", trainingFileName);
-	}
-
-	public static String getTrainingFileForClassifier(String projectKey) {
-		return getValue(projectKey, "trainingFileName");
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
