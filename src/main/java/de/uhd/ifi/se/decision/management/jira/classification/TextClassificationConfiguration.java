@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
@@ -15,18 +17,17 @@ public class TextClassificationConfiguration {
 	public String trainedFineGrainedClassifier;
 
 	public TextClassificationConfiguration() {
-		this.setActivated(false);
+		this.isActivated = false;
 		this.selectedGroundTruthFile = "defaultTrainingData.csv";
-
 	}
 
 	public boolean isActivated() {
 		return isActivated;
 	}
 
+	@JsonProperty("isActivated")
 	public void setActivated(boolean isActivated) {
 		this.isActivated = isActivated;
 	}
-
 
 }

@@ -13,7 +13,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
-import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -42,10 +41,7 @@ public class TestClassifyWholeProject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
-		TextClassificationConfiguration textClassificationConfiguration = ConfigPersistenceManager
-				.getTextClassificationConfiguration("TEST");
-		textClassificationConfiguration.setActivated(true);
-		ConfigPersistenceManager.setTextClassificationConfiguration("TEST", textClassificationConfiguration);
+		ConfigPersistenceManager.setTextClassifierActivated("TEST", true);
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();

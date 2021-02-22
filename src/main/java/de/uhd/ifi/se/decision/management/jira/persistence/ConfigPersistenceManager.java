@@ -145,12 +145,16 @@ public class ConfigPersistenceManager {
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
-		TextClassificationConfiguration textClassificationConfiguration = new TextClassificationConfiguration();
+		TextClassificationConfiguration textClassificationConfiguration = null;
 		try {
 			textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(projectKey,
 					"textClassificationConfiguration", type);
 		} catch (JsonSyntaxException e) {
 
+		}
+		if (textClassificationConfiguration == null) {
+			textClassificationConfiguration = new TextClassificationConfiguration();
+			setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 		}
 		return textClassificationConfiguration;
 	}
@@ -231,6 +235,13 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
+	}
+
+	public static void setTextClassifierActivated(String projectKey, boolean isActivated) {
+		TextClassificationConfiguration textClassificationConfiguration = getTextClassificationConfiguration(
+				projectKey);
+		textClassificationConfiguration.setActivated(isActivated);
+		setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 	}
 
 	public static void setTextClassificationConfiguration(String projectKey,
@@ -356,6 +367,7 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "bagOfIrrelevantWords");
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type type = new TypeToken<List<RDFSource>>() {
@@ -379,6 +391,7 @@ public class ConfigPersistenceManager {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "finally" })
 	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		List<RDFSource> temp = new ArrayList<>();
