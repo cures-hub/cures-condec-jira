@@ -75,7 +75,7 @@
     <select id="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
-                #if ($trainingFile.toString().contains($selectedTrainingFile))
+                #if ($trainingFile.toString().contains($project.getTextClassificationConfiguration().getSelectedGroundTruthFile()))
                     selected
                 #end
             >
@@ -128,9 +128,18 @@
     </div>
 </div>
 
+#if( $project.getTextClassificationConfiguration().getLastEvaluationResults() )
+<div class="field-group">
+    <label>Last Evaluation Results:</label>    
+    <div class="aui-message aui-message-info">
+		<p>$project.getTextClassificationConfiguration().getLastEvaluationResults()</p>
+	</div>
+</div>
+#end
+
 <script>
     const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
+    isClassifierUsedToggle.checked = $project.getTextClassificationConfiguration().isActivated();
     
     isClassifierUsedToggle.addEventListener("change", function (error) {
         currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";

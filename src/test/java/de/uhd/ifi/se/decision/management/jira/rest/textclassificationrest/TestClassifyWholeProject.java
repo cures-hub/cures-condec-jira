@@ -34,13 +34,14 @@ public class TestClassifyWholeProject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), classificationRest.classifyWholeProject(null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				classificationRest.classifyWholeProject(null, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
-		ConfigPersistenceManager.setTextClassifierEnabled("TEST", true);
+		ConfigPersistenceManager.setTextClassifierActivated("TEST", true);
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
@@ -50,6 +51,7 @@ public class TestClassifyWholeProject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTextClassifierDisabledForProject() {
-		assertEquals(Status.FORBIDDEN.getStatusCode(), classificationRest.classifyWholeProject(request, "TEST").getStatus());
+		assertEquals(Status.FORBIDDEN.getStatusCode(),
+				classificationRest.classifyWholeProject(request, "TEST").getStatus());
 	}
 }

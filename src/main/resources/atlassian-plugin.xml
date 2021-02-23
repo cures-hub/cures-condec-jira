@@ -84,14 +84,15 @@
 		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
 		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
-		<dependency>com.atlassian.auiplugin:table</dependency>
+		<dependency>com.atlassian.auiplugin:aui-table</dependency>
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
-		<dependency>com.atlassian.auiplugin:dialog2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
-		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
+		<dependency>com.atlassian.auiplugin:aui-icon</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
-		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-iconography</dependency>
+		<dependency>com.atlassian.auiplugin:aui-tabs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
 		<dependency>com.atlassian.auiplugin:aui-page-layout</dependency>

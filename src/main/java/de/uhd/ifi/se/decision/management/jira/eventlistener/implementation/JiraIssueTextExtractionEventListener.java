@@ -103,7 +103,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
+		if (ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {
 			persistenceManager.deleteElementsInComment(issueEvent.getComment());
 			new ClassificationManagerForJiraIssueText(projectKey).classifyComment(issueEvent.getComment());
 		} else {
@@ -132,7 +132,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
 
-		if (ConfigPersistenceManager.isTextClassifierEnabled(projectKey)) {
+		if (ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {
 			persistenceManager.deleteElementsInDescription(issueEvent.getIssue());
 			// TODO This seems not to work for manual classified sentences. Check and fix
 			new ClassificationManagerForJiraIssueText(projectKey).classifyDescription(issueEvent.getIssue());
@@ -199,7 +199,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		if (positionOfTerminator > 0) {
 			positionOfTerminator += positionOfIcon;
 			textWithoutIcon = text.substring(0, positionOfTerminator) + type.getTag()
-			+ text.substring(positionOfTerminator);
+					+ text.substring(positionOfTerminator);
 		} else {
 			textWithoutIcon += type.getTag();
 		}
