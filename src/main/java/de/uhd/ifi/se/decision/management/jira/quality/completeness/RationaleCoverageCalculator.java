@@ -24,12 +24,14 @@ public class RationaleCoverageCalculator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
-	private FilterSettings filterSettings;
+	private String projectKey;
 	private ApplicationUser user;
+	private FilterSettings filterSettings;
 
-	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
+	public RationaleCoverageCalculator(ApplicationUser user, String projectKey, FilterSettings filterSettings) {
 		this.user = user;
+		this.projectKey = projectKey;
+		this.filterSettings = filterSettings;
 	}
 
 	// TODO Currently only link distance 1 is assessed. Enable higher link
@@ -43,7 +45,7 @@ public class RationaleCoverageCalculator {
 		}
 
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user,
-				filterSettings.getProjectKey(), jiraIssueType);
+				projectKey, jiraIssueType);
 
 		String withLink = "";
 		String withoutLink = "";
@@ -66,8 +68,7 @@ public class RationaleCoverageCalculator {
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
 
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user,
-				filterSettings.getProjectKey());
+		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 
 		FilterSettings filterSettingsForType = filterSettings;
 		Set<String> types = new HashSet<>();

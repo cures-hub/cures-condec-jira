@@ -1,32 +1,34 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
+import com.atlassian.jira.project.Project;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class RationaleCompletenessDashboardItem extends ConDecDashboardItem {
 
 	@Override
-	public Map<String, Object> getMetrics() {
-		Map<String, Object> metrics = new LinkedHashMap<>();
+	public Map<String, Object> getAdditionalParameters() {
+		Map<String, Object> additionalParameters = new LinkedHashMap<>();
 
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
-				filterSettings);
-		metrics.put("issuesSolvedByDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
-		metrics.put("decisionsSolvingIssues", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE));
-		metrics.put("proArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
-		metrics.put("conArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
-		metrics.put("proArgumentDocumentedForDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.PRO));
-		metrics.put("conArgumentDocumentedForDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.CON));
+		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
+		additionalParameters.put("projects", projects);
 
-		return metrics;
+		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
+		for (Project project : projects) {
+			String projectKey = project.getKey();
+			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+				accessableProjectsWithGitRepo.add(project);
+			}
+		}
+
+		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
+
+		return additionalParameters;
 	}
 }

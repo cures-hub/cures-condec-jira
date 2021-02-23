@@ -66,38 +66,38 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	public Map<String, Integer> getNumberOfElementsPerDocumentationLocation() {
+	public Map<String, String> getElementsFromDifferentOrigins() {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
-		Map<String, Integer> originMap = new HashMap<>();
+		Map<String, String> originMap = new HashMap<>();
 
-		Integer elementsInJiraIssues = 0;
-		Integer elementsInJiraIssueText = 0;
-		Integer elementsInCommitMessages = 0;
-		Integer elementsInCodeComments = 0;
+		String elementsInJiraIssues = "";
+		String elementsInJiraIssueText = "";
+		String elementsInCommitMessages = "";
+		String elementsInCodeComments = "";
 		Set<KnowledgeElement> elements = graph.vertexSet();
 		for (KnowledgeElement element : elements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues++;
+				elementsInJiraIssues += element.getKey() + " ";
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages++;
+					elementsInCommitMessages += element.getKey() + " ";
 				} else {
-					elementsInJiraIssueText++;
+					elementsInJiraIssueText += element.getKey() + " ";
 				}
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments++;
+				elementsInCodeComments += element.getKey() + " ";
 			}
 		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText);
-		originMap.put("Entire Jira Issue", elementsInJiraIssues);
-		originMap.put("Commit Message", elementsInCommitMessages);
-		originMap.put("Code Comment", elementsInCodeComments);
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.trim());
+		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
+		originMap.put("Commit Message", elementsInCommitMessages.trim());
+		originMap.put("Code Comment", elementsInCodeComments.trim());
 		return originMap;
 	}
 

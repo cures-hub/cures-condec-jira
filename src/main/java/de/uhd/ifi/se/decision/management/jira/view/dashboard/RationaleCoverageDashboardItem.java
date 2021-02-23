@@ -1,31 +1,35 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
+import com.atlassian.jira.project.Project;
+
+import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class RationaleCoverageDashboardItem extends ConDecDashboardItem {
 
 	@Override
-	public Map<String, Object> getMetrics() {
-		Map<String, Object> metrics = new LinkedHashMap<>();
-		if (jiraIssueType == null) {
-			return metrics;
+	public Map<String, Object> getAdditionalParameters() {
+		Map<String, Object> additionalParameters = new LinkedHashMap<>();
+
+		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
+		additionalParameters.put("projects", projects);
+
+		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
+		for (Project project : projects) {
+			String projectKey = project.getKey();
+			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+				accessableProjectsWithGitRepo.add(project);
+			}
 		}
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
+		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
 
-		metrics.put("decisionsPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
-		metrics.put("issuesPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
-		metrics.put("decisionDocumentedForSelectedJiraIssue",
-				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
-		metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-				.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
-
-		return metrics;
+		return additionalParameters;
 	}
 }

@@ -13,19 +13,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.CommentMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-
-import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.CommentMetricCalculator;
 
 /**
  * REST resource for dashboards
@@ -33,156 +40,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.CommentMetr
 @Path("/dashboard")
 public class DashboardRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
-
-	@Path("/numberOfCommentsPerJiraIssue")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getNumberOfCommentsPerJiraIssue(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-		CommentMetricCalculator commentCalculator = new CommentMetricCalculator(jiraIssues);
-
-		Map<String, Integer> numberOfCommentsPerIssue = commentCalculator.getNumberOfCommentsPerIssue();
-
-		return Response.status(Status.OK).entity(numberOfCommentsPerIssue).build();
-	}
-
-	@Path("/numberOfCommitsPerJiraIssue")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getNumberOfCommitsPerJiraIssue(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-		CommentMetricCalculator commentCalculator = new CommentMetricCalculator(jiraIssues);
-
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.OK).entity(new HashMap<>()).build();
-		}
-
-		Map<String, Integer> numberOfCommitsPerIssue = commentCalculator.getNumberOfCommitsPerIssue();
-
-		return Response.status(Status.OK).entity(numberOfCommitsPerIssue).build();
-	}
-
-	@Path("/distributionOfKnowledgeTypes")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getDistributionOfKnowledgeTypes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-
-		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			List<KnowledgeElement> elements = graph.getElements(type);
-			distributionOfKnowledgeTypes.put(type.toString(), elements.size());
-		}
-
-		return Response.status(Status.OK).entity(distributionOfKnowledgeTypes).build();
-	}
-
-	@Path("/requirementsAndCodeFiles")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRequirementsAndCodeFiles(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-
-		Map<String, Integer> summaryMap = new HashMap<String, Integer>();
-		int numberOfRequirements = 0;
-		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
-		for (Issue issue : jiraIssues) {
-			if (requirementsTypes.contains(issue.getIssueType().getName())) {
-				numberOfRequirements++;
-			}
-		}
-		summaryMap.put("Requirements", numberOfRequirements);
-		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE).size());
-
-		return Response.status(Status.OK).entity(summaryMap).build();
-	}
-
-	@Path("/numberOfElementsPerDocumentationLocation")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getNumberOfElementsPerDocumentationLocation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
-
-		Map<String, Integer> originMap = new HashMap<>();
-
-		Integer elementsInJiraIssues = 0;
-		Integer elementsInJiraIssueText = 0;
-		Integer elementsInCommitMessages = 0;
-		Integer elementsInCodeComments = 0;
-		Set<KnowledgeElement> elements = graph.vertexSet();
-		for (KnowledgeElement element : elements) {
-			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
-				continue;
-			}
-			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues++;
-				continue;
-			}
-			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages++;
-				} else {
-					elementsInJiraIssueText++;
-				}
-			}
-			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments++;
-			}
-		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText);
-		originMap.put("Entire Jira Issue", elementsInJiraIssues);
-		originMap.put("Commit Message", elementsInCommitMessages);
-		originMap.put("Code Comment", elementsInCodeComments);
-
-		return Response.status(Status.OK).entity(originMap).build();
-	}
-
-	@Path("/numberOfRelevantComments")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getNumberOfRelevantComments(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-				.build();
-		}
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-		CommentMetricCalculator commentCalculator = new CommentMetricCalculator(jiraIssues);
-
-		Map<String, Integer> numberOfRelevantComments = commentCalculator.getNumberOfRelevantComments();
-
-		return Response.status(Status.OK).entity(numberOfRelevantComments).build();
-	}
 
 	@Path("/generalMetrics")
 	@GET
@@ -200,12 +57,89 @@ public class DashboardRest {
 
 		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
 		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
-
 		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
 		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
-		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getNumberOfElementsPerDocumentationLocation());
+		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getElementsFromDifferentOrigins());
 		metrics.put("numberOfRelevantComments", metricCalculator.getNumberOfRelevantComments());
 
 		return Response.status(Status.OK).entity(metrics).build();
+	}
+
+	@Path("/rationaleCompleteness")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getRationaleCompleteness(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		Map<String, Object> metrics = new LinkedHashMap<>();
+
+		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(projectKey);
+
+		metrics.put("issuesSolvedByDecision", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		metrics.put("decisionsSolvingIssues", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+		metrics.put("proArgumentDocumentedForAlternative", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
+		metrics.put("conArgumentDocumentedForAlternative", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
+		metrics.put("proArgumentDocumentedForDecision", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.PRO));
+		metrics.put("conArgumentDocumentedForDecision", rationaleCompletenessCalculator
+			.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.CON));
+
+		return Response.status(Status.OK).entity(metrics).build();
+	}
+
+	@Path("/rationaleCoverage")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getRationaleCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		String jiraIssueTypeName = "";
+		IssueType jiraIssueType = JiraSchemeManager.createIssueType(jiraIssueTypeName );
+		String linkDistance = "";
+
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		FilterSettings filterSettings = new FilterSettings(projectKey, "", user);
+		filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
+
+		Map<String, Object> metrics = new LinkedHashMap<>();
+
+		if (jiraIssueType != null) {
+			RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, projectKey, filterSettings);
+
+			metrics.put("decisionsPerJiraIssue",
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
+			metrics.put("issuesPerJiraIssue",
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
+			metrics.put("decisionDocumentedForSelectedJiraIssue",
+				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
+			metrics.put("issueDocumentedForSelectedJiraIssue",
+				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
+		}
+
+		return Response.status(Status.OK).entity(metrics).build();
+	}
+
+	@Path("/jiraIssueTypes")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getJiraIssueTypes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		List<IssueType> jiraIssueTypes = new ArrayList<IssueType>(new JiraSchemeManager(projectKey).getJiraIssueTypes());
+
+		return Response.status(Status.OK).entity(jiraIssueTypes).build();
 	}
 }

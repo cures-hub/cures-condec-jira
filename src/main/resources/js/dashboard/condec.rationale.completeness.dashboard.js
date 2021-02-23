@@ -1,11 +1,11 @@
 /*
- This module fills the box plots and pie charts used in the general metrics dashboard item.
+ This module fills the box plots and pie charts used in the rationale completeness dashboard item.
 
  Requires
  * js/condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * generalMetricsDashboardItem.vm
+ * rationaleCompletenessDashboardItem.vm
  */
 
 (function (global) {
@@ -17,16 +17,16 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecGeneralMetricsDashboard = function ConDecGeneralMetricsDashboard() {
-		console.log("ConDecGeneralMetricsDashboard constructor");
+	var ConDecRationaleCompletenessDashboard = function ConDecRationaleCompletenessDashboard() {
+		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.init = function init(projectKey) {
-		getHTMLNodes("condec-general-metrics-dashboard-contents-container"
-			, "condec-general-metrics-dashboard-contents-data-error"
-			, "condec-general-metrics-dashboard-no-project"
-			, "condec-general-metrics-dashboard-processing"
-			, "condec-general-metrics-dashboard-nogit-error");
+	ConDecRationaleCompletenessDashboard.prototype.init = function init(projectKey) {
+		getHTMLNodes("condec-rationale-completeness-dashboard-contents-container"
+			, "condec-rationale-completeness-dashboard-contents-data-error"
+			, "condec-rationale-completeness-dashboard-no-project"
+			, "condec-rationale-completeness-dashboard-processing"
+			, "condec-rationale-completeness-dashboard-nogit-error");
 
 		getMetrics(projectKey);
 	};
@@ -58,7 +58,7 @@
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
 		showDashboardSection(dashboardProcessingNode);
-		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json?projectKey=" + projectKey;
+		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json?projectKey=" + projectKey;
 		/* get cache or server data? */
 		if (localStorage.getItem("condec.restCacheTTL")) {
 			console.log("condec.restCacheTTL setting found");
@@ -100,17 +100,17 @@
 			type: "get",
 			dataType: "json",
 			async: true,
-			success: conDecGeneralMetricsDashboard.processData,
-			error: conDecGeneralMetricsDashboard.processDataBad
+			success: conDecRationaleCompletenessDashboard.processData,
+			error: conDecRationaleCompletenessDashboard.processDataBad
 		});
 	}
 
-	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
+	ConDecRationaleCompletenessDashboard.prototype.processDataBad = function processDataBad(data) {
 		console.log(data.responseJSON.error);
 		showDashboardSection(dashboardDataErrorNode);
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.processData = function processData(data) {
+	ConDecRationaleCompletenessDashboard.prototype.processData = function processData(data) {
 		processXhrResponseData(data);
 	};
 
@@ -146,45 +146,43 @@
 		var json = JSON.parse(jsonstr);
 
 		/*  init data for charts */
-		var commentsPerIssue = new Map();
-		var commitsPerIssue = new Map();
-		var reqCodeSummary = new Map();
-		var decSources = new Map();
-		var relevantSentences = new Map();
-		var knowledgeTypeDistribution = new Map();
+		var issuesSolvedByDecision = new Map();
+		var decisionsSolvingIssues = new Map();
+		var proArgumentDocumentedForDecision = new Map();
+		var conArgumentDocumentedForAlternative = new Map();
+		var conArgumentDocumentedForDecision = new Map();
+		var proArgumentDocumentedForAlternative = new Map();
 
 		/* set something in case no data will be added to them */
-		commentsPerIssue.set("none", 0);
-		commitsPerIssue.set("none", 0);
-
-		reqCodeSummary.set("no code classes", "");
-		decSources.set("no rationale elements", "");
-		relevantSentences.set("no Jira issue", "");
-		knowledgeTypeDistribution.set("no knowledge type", "");
+		issuesSolvedByDecision.set("none", "");
+		decisionsSolvingIssues.set("none", "");
+		proArgumentDocumentedForDecision.set("none", "");
+		conArgumentDocumentedForAlternative.set("none", "");
+		conArgumentDocumentedForDecision.set("none", "");
+		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		commentsPerIssue = getMap(JSON.stringify(json.numberOfCommentsPerJiraIssue));
-		commitsPerIssue = getMap(JSON.stringify(json.numberOfCommitsPerJiraIssue));
-		reqCodeSummary = getMap(JSON.stringify(json.requirementsAndCodeFiles));
-		decSources = getMap(JSON.stringify(json.numberOfElementsPerDocumentationLocation));
-		relevantSentences = getMap(JSON.stringify(json.numberOfRelevantComments));
-		knowledgeTypeDistribution = getMap(JSON.stringify(json.distributionOfKnowledgeTypes));
+		issuesSolvedByDecision = getMap(JSON.stringify(json.issuesSolvedByDecision));
+		decisionsSolvingIssues = getMap(JSON.stringify(json.decisionsSolvingIssues));
+		proArgumentDocumentedForDecision = getMap(JSON.stringify(json.proArgumentDocumentedForDecision));
+		conArgumentDocumentedForAlternative = getMap(JSON.stringify(json.conArgumentDocumentedForAlternative));
+		conArgumentDocumentedForDecision = getMap(JSON.stringify(json.conArgumentDocumentedForDecision));
+		proArgumentDocumentedForAlternative = getMap(JSON.stringify(json.proArgumentDocumentedForAlternative));
 
-		/* render box-plots */
-		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
-			"", "#Comments per Jira Issue", commentsPerIssue);
-		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
-			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary",
-			"", "#Requirements and Code Classes", reqCodeSummary);
-		ConDecReqDash.initializeChart("piechartRich-DecSources",
-			"", "#Rationale Elements per Origin", decSources);
-		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
-			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
-			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
+		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",
+			"", "How many issues (=decision problems) are solved by a decision?", issuesSolvedByDecision);
+		ConDecReqDash.initializeChart("piechartRich-DecisionsSolvingIssues",
+			"", "For how many decisions is the issue (=decision problem) documented?", decisionsSolvingIssues);
+		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForDecision",
+			"", "How many decisions have at least one pro argument documented?", proArgumentDocumentedForDecision);
+		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForDecision",
+			"", "How many decisions have at least one con argument documented?", conArgumentDocumentedForDecision);
+		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForAlternative",
+			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative);
+		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForAlternative",
+			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative);
 	}
 
-	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();
+	global.conDecRationaleCompletenessDashboard = new ConDecRationaleCompletenessDashboard();
 })(window);

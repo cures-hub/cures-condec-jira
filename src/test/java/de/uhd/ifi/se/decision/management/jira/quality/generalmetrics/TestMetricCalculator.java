@@ -46,7 +46,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 		addElementToDataBase(24, KnowledgeType.DECISION);
 		addComment(getTestJiraIssues().get(7));
 		calculator.setJiraIssues(getTestJiraIssues());
-		assertEquals(4, calculator.getNumberOfElementsPerDocumentationLocation().size());
+		assertEquals(4, calculator.getElementsFromDifferentOrigins().size());
 	}
 
 }

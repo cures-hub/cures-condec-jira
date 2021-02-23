@@ -347,7 +347,7 @@ var ConDecDevBranches = [];
 		var prosInBranches = new Map();
 		var consInBranches = new Map();
 
-		/* set something for box plots in case no data will be added to them */
+		/* set something in case no data will be added to them */
 		issuesInBranches.set("none", 0);
 		decisionsInBranches.set("none", 0);
 		alternativesInBranches.set("none", 0);

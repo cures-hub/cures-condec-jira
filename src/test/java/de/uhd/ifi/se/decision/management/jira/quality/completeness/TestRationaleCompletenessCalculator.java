@@ -21,7 +21,8 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		calculator = new RationaleCompletenessCalculator(new FilterSettings("TEST", ""));
+		String projectKey = "TEST";
+		calculator = new RationaleCompletenessCalculator(projectKey);
 	}
 
 	@Test
