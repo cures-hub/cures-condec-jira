@@ -77,6 +77,16 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
         }
 
         function issueTypeSelectOrOnChange(event) {
+            var issueType = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+            var projectKey = projectNode.value;
+
+            var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-link-distance-input");
+            var linkDistance = linkDistanceNode.value;
+
             conDecRationaleCoverageDashboard.init(projectKey, issueType, linkDistance);
         }
 

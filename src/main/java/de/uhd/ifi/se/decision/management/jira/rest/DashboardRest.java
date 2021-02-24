@@ -97,17 +97,15 @@ public class DashboardRest {
 	@Path("/rationaleCoverage")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRationaleCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
+	public Response getRationaleCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+										 @QueryParam("issueType") String issueType, @QueryParam("linkDistance") String linkDistance) {
+		if (request == null || projectKey == null || issueType == null || linkDistance == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
 		}
 
-		String jiraIssueTypeName = "";
-		IssueType jiraIssueType = JiraSchemeManager.createIssueType(jiraIssueTypeName );
-		String linkDistance = "";
-
 		ApplicationUser user = AuthenticationManager.getUser(request);
+		IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
 		FilterSettings filterSettings = new FilterSettings(projectKey, "", user);
 		filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
 
@@ -138,7 +136,13 @@ public class DashboardRest {
 				.build();
 		}
 
-		List<IssueType> jiraIssueTypes = new ArrayList<IssueType>(new JiraSchemeManager(projectKey).getJiraIssueTypes());
+		Collection<IssueType> jiraIssueTypesCollection = new JiraSchemeManager(projectKey).getJiraIssueTypes();
+
+		List<String> jiraIssueTypes =  new ArrayList<>();
+
+		for (IssueType issueType : jiraIssueTypesCollection) {
+			jiraIssueTypes.add(issueType.getName());
+		}
 
 		return Response.status(Status.OK).entity(jiraIssueTypes).build();
 	}

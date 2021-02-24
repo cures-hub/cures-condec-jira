@@ -38,7 +38,7 @@
 			, "condec-rationale-coverage-dashboard-processing"
 			, "condec-rationale-coverage-dashboard-nogit-error");
 
-		getMetrics(projectKey);
+		getMetrics(projectKey, issueType, linkDistance);
 	};
 
 	function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
@@ -122,20 +122,38 @@
 	}
 
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function fillOptionsJiraIssueTypes(data) {
-		var jiraIssueTypes = (getMap(JSON.stringify(data)));
+		var jiraIssueTypes = getList(JSON.stringify(data));
 
 		var jiraIssueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
 
-		for(jiraIssueType in jiraIssueTypes) {
+		var emptyIssueType = document.createElement('option');
+		emptyIssueType.value = "";
+		emptyIssueType.text = "";
+		jiraIssueTypeNode.options.add(emptyIssueType);
+
+		for (i = 0; i < jiraIssueTypes.length; i++) {
 			var issueType = document.createElement('option');
-			issueType.value = jiraIssueType.getKey();
-			issueType.text = jiraIssueType.getKey();
+			issueType.value = jiraIssueTypes[i];
+			issueType.text = jiraIssueTypes[i];
 			jiraIssueTypeNode.options.add(issueType);
 		}
 	};
 
-	function getMetrics(projectKey) {
+	function getList(jsonString) {
+		jsonString = jsonString.replace("\[", "").replace("\]", "");
+		jsonString = jsonString.replaceAll("\"", "");
+
+		return jsonString.split(",");
+	}
+
+	function getMetrics(projectKey, issueType, linkDistance) {
 		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
+			return;
+		}
+		if (!issueType || !issueType.length || !issueType.length > 0) {
+			return;
+		}
+		if (!linkDistance || !linkDistance > 0) {
 			return;
 		}
 		/*
@@ -143,7 +161,8 @@
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
 		showDashboardSection(dashboardProcessingNode);
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?projectKey=" + projectKey;
+		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?projectKey=" + projectKey
+			+ "&issueType=" + issueType + "&linkDistance=" + linkDistance;
 		/* get cache or server data? */
 		if (localStorage.getItem("condec.restCacheTTL")) {
 			console.log("condec.restCacheTTL setting found");
