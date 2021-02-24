@@ -40,6 +40,7 @@ public class TestGetRationaleCoverage extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
+	@Test
 	public void testGetRationaleCoverageNull() {
 		this.projectKey = null;
 		Response response = dashboardRest.getRationaleCoverage(request, projectKey, issueType, linkDistance);

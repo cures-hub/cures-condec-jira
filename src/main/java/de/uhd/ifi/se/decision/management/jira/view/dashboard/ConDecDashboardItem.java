@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +84,25 @@ public class ConDecDashboardItem implements ContextProvider {
 			return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		}
 		return null;
+	}
+
+	protected Map<String, Object> fillAdditionalParameters() {
+		Map<String, Object> additionalParameters = new LinkedHashMap<>();
+
+		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
+		additionalParameters.put("projects", projects);
+
+		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
+		for (Project project : projects) {
+			String projectKey = project.getKey();
+			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+				accessableProjectsWithGitRepo.add(project);
+			}
+		}
+
+		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
+
+		return additionalParameters;
 	}
 
 	protected Map<String, Object> getAdditionalParameters() {

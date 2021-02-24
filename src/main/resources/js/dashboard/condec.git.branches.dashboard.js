@@ -328,8 +328,8 @@ var ConDecDevBranches = [];
 				return b[1] - a[1];
 			});
 			var sortedMap = new Map();
-			for (var i = 0; i < sortedKeyByVal.length; i++) {
-				var mapKey = sortedKeyByVal[i][0];
+			for (var j = 0; j < sortedKeyByVal.length; j++) {
+				var mapKey = sortedKeyByVal[j][0];
 				sortedMap.set(mapKey, unsortedMap.get(mapKey));
 			}
 			return sortedMap;
@@ -398,7 +398,7 @@ var ConDecDevBranches = [];
 				}
 			}
 			return this.getTitle(-1);
-		}
+		};
 		ConDecDevBranchesQuality.getTitle = function (idx) {
 			if (!this.branchesQuality[idx]) {
 				return "";
@@ -409,10 +409,10 @@ var ConDecDevBranches = [];
 				+ "\n" + " numCons: " + branch.numCons
 				+ "\n" + " numDecisions: " + branch.numDecisions
 				+ "\n" + " numIssues: " + branch.numIssues
-				+ "\n" + " numPros: " + branch.numIssues
+				+ "\n" + " numPros: " + branch.numIssues;
 
 			return buffer;
-		}
+		};
 
 	}
 

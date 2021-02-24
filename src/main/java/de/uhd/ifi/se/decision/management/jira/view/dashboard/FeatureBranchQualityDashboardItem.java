@@ -14,22 +14,7 @@ public class FeatureBranchQualityDashboardItem extends ConDecDashboardItem {
 
 	@Override
 	public Map<String, Object> getAdditionalParameters() {
-		Map<String, Object> additionalParameters = new LinkedHashMap<>();
-
-		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
-		additionalParameters.put("projects", projects);
-
-		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
-		for (Project project : projects) {
-			String projectKey = project.getKey();
-			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-				accessableProjectsWithGitRepo.add(project);
-			}
-		}
-
-		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
-
-		return additionalParameters;
+		return fillAdditionalParameters();
 	}
 
 }
