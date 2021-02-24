@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 public class ConDecDashboardItem implements ContextProvider {
-
 	protected ApplicationUser user;
 	protected FilterSettings filterSettings;
 	protected IssueType jiraIssueType;
