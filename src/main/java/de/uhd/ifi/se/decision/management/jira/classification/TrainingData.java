@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import smile.data.DataFrame;
 import smile.data.Tuple;
 import smile.data.type.DataType;
@@ -43,6 +48,7 @@ public class TrainingData {
 	private DataFrame dataFrame;
 	private Map<String, Integer> allSentenceRelevanceMap;
 	private Map<String, Integer> relevantSentenceKnowledgeTypeLabelMap;
+	private String fileName;
 
 	/**
 	 * Organizes the data in such a way that it can be used to train and evaluate
@@ -65,6 +71,7 @@ public class TrainingData {
 	 */
 	public TrainingData() {
 		this(readDataFrameFromDefaultTrainingDataCSVFile());
+		this.fileName = "defaultTrainingData";
 	}
 
 	/**
@@ -76,6 +83,7 @@ public class TrainingData {
 	 */
 	public TrainingData(String fileName) {
 		this(readDataFrameFromCSVFile(fileName));
+		this.fileName = fileName;
 	}
 
 	/**
@@ -87,6 +95,7 @@ public class TrainingData {
 	 */
 	public TrainingData(File file) {
 		this(readDataFrameFromCSVFile(file));
+		this.fileName = file.getName();
 	}
 
 	/**
@@ -274,6 +283,74 @@ public class TrainingData {
 			LOGGER.error("Data frame could not be loaded from training data file: " + e.getMessage());
 		}
 		return trainingData;
+	}
+
+	/**
+	 * @return list of knowledge elements created from training data. Only the
+	 *         summary and the type is set!
+	 */
+	public List<KnowledgeElement> getKnowledgeElements() {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : allSentenceRelevanceMap.entrySet()) {
+			if (entry.getValue().equals(0)) {
+				KnowledgeElement element = new KnowledgeElement();
+				element.setSummary(entry.getKey());
+				elements.add(element);
+			}
+		}
+		elements.addAll(getDecisionKnowledgeElements());
+		return elements;
+	}
+
+	/**
+	 * @return list of decision knowledge (rationale) elements created from training
+	 *         data. Only the summary and the type is set!
+	 */
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : relevantSentenceKnowledgeTypeLabelMap.entrySet()) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(entry.getValue());
+			KnowledgeElement element = new KnowledgeElement();
+			element.setSummary(entry.getKey());
+			element.setType(type);
+			elements.add(element);
+		}
+		return elements;
+	}
+
+	@Override
+	public String toString() {
+		return dataFrame.toString(dataFrame.size());
+	}
+
+	/**
+	 * @issue How to balance the training data?
+	 * @param k
+	 * @return
+	 */
+	public static Map<TrainingData, TrainingData> splitForKFoldCrossValidation(int k, List<KnowledgeElement> elements) {
+		Map<TrainingData, TrainingData> splitData = new HashMap<>();
+		Collections.shuffle(elements);
+		int chunkSize = (int) Math.ceil(elements.size() / k);
+		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
+		for (int i = 0; i < k; i++) {
+			List<KnowledgeElement> evaluationElements = parts.get(i);
+			List<KnowledgeElement> trainingElements = new ArrayList<>();
+			for (int j = 0; j < parts.size(); j++) {
+				if (j != i) {
+					// part is not already used as evaluation data
+					trainingElements.addAll(parts.get(j));
+				}
+			}
+			TrainingData trainingData = new TrainingData(trainingElements);
+			TrainingData evaluationData = new TrainingData(evaluationElements);
+			splitData.put(trainingData, evaluationData);
+		}
+		return splitData;
+	}
+
+	public String getFileName() {
+		return fileName != null ? fileName : "";
 	}
 
 }

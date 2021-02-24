@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.textclassificationrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,19 +14,19 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestClassifyWholeProject extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ConfigRest configRest;
+	private TextClassificationRest classificationRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		classificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -34,23 +34,24 @@ public class TestClassifyWholeProject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.classifyWholeProject(null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				classificationRest.classifyWholeProject(null, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
-		ConfigPersistenceManager.setTextClassifierEnabled("TEST", true);
+		ConfigPersistenceManager.setTextClassifierActivated("TEST", true);
 		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
 		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
 		trainer.train();
-		assertEquals(Status.OK.getStatusCode(), configRest.classifyWholeProject(request, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), classificationRest.classifyWholeProject(request, "TEST").getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTextClassifierDisabledForProject() {
 		assertEquals(Status.FORBIDDEN.getStatusCode(),
-				configRest.classifyWholeProject(request, "TEST").getStatus());
+				classificationRest.classifyWholeProject(request, "TEST").getStatus());
 	}
 }

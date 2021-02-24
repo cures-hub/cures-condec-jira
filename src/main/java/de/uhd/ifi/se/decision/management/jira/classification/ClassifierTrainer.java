@@ -1,34 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.validation.metric.ClassificationMetric;
-import smile.validation.metric.FScore;
+import smile.validation.ClassificationMetrics;
 
 /**
  * Class responsible to train the supervised text classifier. For this purpose,
  * the project admin needs to create and select a training data file.
  */
-public class ClassifierTrainer implements EvaluableClassifier {
+public class ClassifierTrainer {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ClassifierTrainer.class);
 
 	protected TrainingData trainingData;
@@ -121,7 +115,17 @@ public class ClassifierTrainer implements EvaluableClassifier {
 			if (!element.getType().canBeDocumentedInJiraIssueText() && element.getType() != KnowledgeType.OTHER) {
 				continue;
 			}
-			if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isValidated()) {
+			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+					&& element.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
+			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
+			// element).isValidated()) {
+			// continue;
+			// }
+			if (element.getSummary().startsWith("In class ") && element.getSummary().contains("the following methods")
+					|| element.getSummary().contains("Commit Hash:")) {
+				// Code change or commit comment
 				continue;
 			}
 			knowledgeElements.add(element);
@@ -129,97 +133,32 @@ public class ClassifierTrainer implements EvaluableClassifier {
 		return knowledgeElements;
 	}
 
-	private List<String> extractStringsFromDke(List<KnowledgeElement> sentences) {
-		List<String> extractedStringsFromPoji = new ArrayList<String>();
-		for (KnowledgeElement sentence : sentences) {
-			extractedStringsFromPoji.add(sentence.getSummary());
-		}
-		return extractedStringsFromPoji;
-	}
+	/**
+	 * Evaluates the binary and fine-grained classifier using common metrics.
+	 * 
+	 * @param k
+	 *            number of folds in k-fold cross-validation.
+	 *
+	 * @return map of evaluation results
+	 */
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k) {
+		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
+				+ trainingData.getFileName());
+		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
-	@Override
-	public Map<String, Double> evaluateClassifier() {
-		// create and initialize default measurements list
-		List<ClassificationMetric> defaultMeasurements = new ArrayList<>();
-		defaultMeasurements.add(new FScore());
-
-		List<KnowledgeElement> elements = getKnowledgeElementsValidForTraining();
-		return evaluateClassifier(defaultMeasurements, elements);
-	}
-
-	@Override
-	public Map<String, Double> evaluateClassifier(List<ClassificationMetric> measurements,
-			List<KnowledgeElement> partOfJiraIssueTexts) {
-		LOGGER.debug("Started evaluation!");
-		Map<String, Double> resultsMap = new HashMap<>();
-		List<KnowledgeElement> relevantPartOfJiraIssueTexts = partOfJiraIssueTexts.stream()
-				.filter(x -> !x.getType().equals(KnowledgeType.OTHER)).collect(toList());
-
-		// format data
-		List<String> sentences = this.extractStringsFromDke(partOfJiraIssueTexts);
-		List<String> relevantSentences = this.extractStringsFromDke(relevantPartOfJiraIssueTexts);
-		// extract true values
-		Integer[] binaryTruths = partOfJiraIssueTexts.stream()
-				// when type equals other then it is irrelevant
-				.map(x -> x.getType().equals(KnowledgeType.OTHER) ? 0 : 1).collect(toList())
-				.toArray(new Integer[partOfJiraIssueTexts.size()]);
-
-		Integer[] fineGrainedTruths = relevantPartOfJiraIssueTexts.stream()
-				.map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x.getType())).collect(toList())
-				.toArray(new Integer[relevantPartOfJiraIssueTexts.size()]);
-
-		// predict classes
-		long start = System.currentTimeMillis();
-
-		boolean[] binaryPredictionsList = TextClassifier.getInstance().getBinaryClassifier()
-				.predict(sentences);
-		Integer[] binaryPredictions = new Integer[sentences.size()];
-		for (int i = 0; i < binaryPredictionsList.length; i++) {
-			binaryPredictions[i] = binaryPredictionsList[i] ? 1 : 0;
+		if (k > 1) {
+			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
+			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
+			resultsMap.putAll(
+					TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
+		} else {
+			LOGGER.info(
+					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
+			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(trainingData));
+			resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(trainingData));
 		}
 
-		// LOGGER.info(("Time for binary prediction on " + sentences.size() + "
-		// sentences took " + (end-start) + " ms.");
-
-		Integer[] fineGrainedPredictions = TextClassifier.getInstance().getFineGrainedClassifier()
-				.predict(relevantSentences).stream().map(x -> FineGrainedClassifier.mapKnowledgeTypeToIndex(x))
-				.collect(toList()).toArray(new Integer[relevantSentences.size()]);
-		long end = System.currentTimeMillis();
-
-		LOGGER.info("Time for prediction on " + sentences.size() + " sentences took " + (end - start) + " ms.");
-
-		// calculate measurements for each ClassificationMeasure in measurements
-		for (ClassificationMetric measurement : measurements) {
-			LOGGER.debug("Evaluating: " + measurement.getClass().getSimpleName());
-			String binaryKey = measurement.getClass().getSimpleName() + "_binary";
-			Double binaryMeasurement = measurement.score(ArrayUtils.toPrimitive(binaryTruths),
-					ArrayUtils.toPrimitive(binaryPredictions));
-			resultsMap.put(binaryKey, binaryMeasurement);
-
-			for (int classLabel : IntStream
-					.range(0, TextClassifier.getInstance().getFineGrainedClassifier().getNumClasses())
-					.toArray()) {
-				String fineGrainedKey = measurement.getClass().getSimpleName() + "_fineGrained_"
-						+ FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
-
-				Integer[] currentFineGrainedTruths = mapFineGrainedToBinaryResults(fineGrainedTruths, classLabel);
-				Integer[] currentFineGrainedPredictions = mapFineGrainedToBinaryResults(fineGrainedPredictions,
-						classLabel);
-
-				Double fineGrainedMeasurement = measurement.score(ArrayUtils.toPrimitive(currentFineGrainedTruths),
-						ArrayUtils.toPrimitive(currentFineGrainedPredictions));
-				resultsMap.put(fineGrainedKey, fineGrainedMeasurement);
-			}
-
-		}
-		// return results
-		LOGGER.debug("Finished evaluation!");
-
+		LOGGER.info("Finished evaluation: " + resultsMap.toString());
 		return resultsMap;
-	}
-
-	private Integer[] mapFineGrainedToBinaryResults(Integer[] array, Integer currentElement) {
-		return Arrays.stream(array).map(x -> x.equals(currentElement) ? 1 : 0).toArray(Integer[]::new);
-
 	}
 }

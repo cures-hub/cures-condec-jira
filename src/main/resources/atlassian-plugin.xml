@@ -84,14 +84,15 @@
 		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
 		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
-		<dependency>com.atlassian.auiplugin:table</dependency>
+		<dependency>com.atlassian.auiplugin:aui-table</dependency>
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
-		<dependency>com.atlassian.auiplugin:dialog2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
-		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
+		<dependency>com.atlassian.auiplugin:aui-icon</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
-		<dependency>com.atlassian.auiplugin:tabs</dependency>
+		<dependency>com.atlassian.auiplugin:aui-iconography</dependency>
+		<dependency>com.atlassian.auiplugin:aui-tabs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
 		<dependency>com.atlassian.auiplugin:aui-page-layout</dependency>
@@ -105,7 +106,7 @@
 		<description>
 			Provides the JavaScript files for the management of decision knowledge.
 		</description>
-		<context>jira.view.issue</context>
+		<context>atl.general</context>
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/lib/jstree/jstree.js" />
 		<!-- treant -->
@@ -593,5 +594,4 @@
         <context-provider
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
     </dashboard-item>
-
 </atlassian-plugin>

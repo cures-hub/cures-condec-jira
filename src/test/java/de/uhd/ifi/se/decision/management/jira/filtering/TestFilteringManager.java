@@ -257,4 +257,30 @@ public class TestFilteringManager extends TestSetUp {
 		assertEquals(otherLinks1, otherLinks2);
 	}
 
+	@Test
+	public void testTransitiveLinksWithMultipleKnowledgeElementsInARowAreRemovedByFilters() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-31");
+		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Work Item", "Argument", "Pro", "Con")));
+		settings.setCreateTransitiveLinks(true);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> transitiveLinks = new HashSet<Link>();
+		transitiveLinks.addAll(subgraph.edgeSet());
+		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		assertTrue(transitiveLinks.size() == 4);
+	}
+
+	@Test
+	public void testTransitiveLinksNoSelectedElement() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		settings.setCreateTransitiveLinks(true);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
+		Set<Link> noTransitiveLinks = new HashSet<Link>();
+		noTransitiveLinks.addAll(subgraph.edgeSet());
+		noTransitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
+		assertTrue(noTransitiveLinks.size() == 0);
+	}
 }

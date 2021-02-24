@@ -18,6 +18,7 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 	private RenderContext issueView = new RenderContext();
 	private RenderContext wysiwygView = new RenderContext();
+	private static String imgHtml = " padding:3px;'><img class='emoticon' width='16' height='16' align='absmiddle' src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
 
 	@Before
 	public void setUp() {
@@ -36,7 +37,7 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 		String body = "<p>This is an issue.</p>";
 		String result = issueMacro.execute(null, body, issueView);
 		assertEquals(
-				"<p style='background-color:#ffffcc; padding:3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/issue.png'> This is an issue.</p>",
+				"<p style='background-color:#ffffcc;" + imgHtml + "issue.png'> This is an issue.</p>",
 				result);
 		result = issueMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{issue}<p>This is an issue.</p>\\{issue}", result);
@@ -50,11 +51,10 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 		String body = "<p>This is a decision.</p>";
 		String result = decisionMacro.execute(null, body, issueView);
 		assertEquals(
-				"<p style='background-color:#fce3be; padding:3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png'> This is a decision.</p>",
+				"<p style='background-color:#fce3be;" + imgHtml + "decision.png'> This is a decision.</p>",
 				result);
 		result = decisionMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{decision}<p>This is a decision.</p>\\{decision}", result);
-
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 		String result = alternativeMacro.execute(null, body, issueView);
 		assertEquals(
-				"<p style='background-color:#fff6e8; padding:3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/alternative.png'> This is an alternative.</p>",
+				"<p style='background-color:#fff6e8;" + imgHtml + "alternative.png'> This is an alternative.</p>",
 				result);
 		result = alternativeMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{alternative}<p>This is an alternative.</p>\\{alternative}", result);
@@ -83,12 +83,12 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 		String result = proMacro.execute(null, body, issueView);
 		assertEquals(
-				"<p style='background-color:#defade; padding:3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_pro.png'> This is a supporting argument.</p>",
+				"<p style='background-color:#defade;" + imgHtml
+				+ "argument_pro.png'> This is a supporting argument.</p>",
 				result);
 
 		result = proMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{pro}<p>This is a supporting argument.</p>\\{pro}", result);
-
 	}
 
 	@Test
@@ -101,7 +101,8 @@ public class TestKnowledgeClassificationMacro extends TestSetUp {
 
 		String result = conMacro.execute(null, body, issueView);
 		assertEquals(
-				"<p style='background-color:#ffe7e7; padding:3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_con.png'> This is an attacking argument.</p>",
+				"<p style='background-color:#ffe7e7;" + imgHtml
+				+ "argument_con.png'> This is an attacking argument.</p>",
 				result);
 
 		result = conMacro.execute(null, body, wysiwygView);

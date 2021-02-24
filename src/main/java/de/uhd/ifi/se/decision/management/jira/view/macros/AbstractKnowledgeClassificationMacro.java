@@ -54,11 +54,12 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		long jiraIssueId = getJiraIssueId(renderContext);
 		String eventCode = getOnContextMenuEventListener(elementId, jiraIssueId);
 		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " "
-				+ body.replace("<p>", "").replace("</p>", "") + "</p>";
+		+ body.replace("<p>", "").replace("</p>", "") + "</p>";
 	}
 
 	private String getIconHTML(KnowledgeType knowledgeType) {
-		return "<img src='" + knowledgeType.getIconUrl() + "'>";
+		return "<img class='emoticon' width='16' height='16' align='absmiddle' src='" + knowledgeType.getIconUrl()
+				+ "'>";
 	}
 
 	@Override

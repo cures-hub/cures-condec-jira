@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -85,10 +84,44 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetCreationDate() {
+	public void testGetCreationDateDefault() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		sentence.setCreationDate(new Date());
 		assertNotNull(sentence.getCreationDate());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCreationDateForSentenceInDescription() {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+		sentence.setJiraIssue(1);
+		assertNotNull(sentence.getCreationDate());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCreationDateForSentenceInComment() {
+		assertNotNull(alternative.getCreationDate());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetUpdatingDateDefault() {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+		assertNotNull(sentence.getUpdatingDate());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetUpdatingDateForSentenceInDescription() {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
+		sentence.setJiraIssue(1);
+		assertNotNull(sentence.getUpdatingDate());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetUpdatingDateForSentenceInComment() {
+		assertNotNull(alternative.getUpdatingDate());
 	}
 
 	@Test

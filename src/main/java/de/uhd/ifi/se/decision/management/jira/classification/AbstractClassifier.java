@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import smile.classification.Classifier;
+import smile.validation.ClassificationMetrics;
 
 /**
  * Abstract superclass for the {@link BinaryClassifier} and
@@ -26,7 +27,7 @@ public abstract class AbstractClassifier {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractClassifier.class);
 
 	protected Classifier<double[]> model;
-	private int numClasses;
+	protected int numClasses;
 	protected boolean isCurrentlyTraining;
 
 	/**
@@ -76,6 +77,24 @@ public abstract class AbstractClassifier {
 		// model.update(trainingSample, trainingLabel);
 		isCurrentlyTraining = false;
 	}
+
+	/**
+	 * @param k
+	 *            for k-fold cross-validation. (Typical values are 3 or 10.)
+	 * @param groundTruthData
+	 *            {@link TrainingData} used for training and evaluation in k-fold
+	 *            cross-validation.
+	 * @return map of evaluation results.
+	 */
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData);
+
+	/**
+	 * @param groundTruthData
+	 *            {@link TrainingData} used for evaluation. The classifier needs to
+	 *            be already trained on different data!
+	 * @return map of evaluation results (e.g. of cross-project validation).
+	 */
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
@@ -159,6 +178,9 @@ public abstract class AbstractClassifier {
 	 */
 	public static int mode(int[] values) {
 		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		if (values.length == 0) {
+			return 0;
+		}
 		for (int value : values) {
 			Integer count = map.get(value);
 			map.put(value, count != null ? count + 1 : 1);

@@ -61,20 +61,9 @@
 </div>
 
 <div class="field-group">
-    <label for="evaluateTextClassifier-button">Evaluate Classifier</label>
-    <input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier"/>
-    <div class="description">Evaluate the current classifier using the user-validated data in the current knowledge graph. (If the
-        evaluation fails the classifier might need to be trained!)
-    </div>
-    <div class="aui-progress-indicator">
-        <span id="evaluate-classifier-progress"></span>
-    </div>
-</div>
-
-<div class="field-group">
     <label for="saveTrainingFile-button">Create a Training File</label>
     <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
-    <div class="description">Creates a training file (in csv format) of <b>user-validated</b> text data
+    <div class="description">Creates a training file (in csv format) of <b>human-validated</b> text data
         for the current project that can be used to train the classifier.
         This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.
@@ -82,11 +71,11 @@
 </div>
 
 <div class="field-group">
-    <label for="trainClassifier-button">Train the Classifier</label>
-    <select id="select-training-file" name="select-training-file" class="select medium-long-field">
+    <label for="trainClassifier-button">Train the Text Classifier</label>
+    <select id="select-training-file" class="select medium-long-field">
         #foreach ($trainingFile in $trainingFiles)
             <option value="$trainingFile"
-                #if ($trainingFile.toString().contains($selectedTrainingFile))
+                #if ($trainingFile.toString().contains($project.getTextClassificationConfiguration().getSelectedGroundTruthFile()))
                     selected
                 #end
             >
@@ -95,7 +84,7 @@
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
-        Trains the classifier on the selected training data file. <br/>
+        Trains the text classifier on the selected data file.<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
         training can be very resource expensive!
     </div>
@@ -105,42 +94,63 @@
 </div>
 
 <div class="field-group">
-    <label for="testClassifierWithText-input">Test the Classifier</label>
+    <label for="evaluateTrainedTextClassifier-button">Evaluate the Trained Text Classifier</label>
+    <input type="button" class="aui-button" id="evaluateTrainedTextClassifier-button" value="Evaluate Trained Classifier On Different Data"/>
+    <div class="description">
+        Evaluates the trained classifier on the selected data file above (for cross-project validation).<br/>
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>
+        The selected data file <b>should be different from the data file that the classifier was trained on</b>.
+        Otherwise, use k-fold cross-validation to train and evaluate the classifier on the same data.
+    </div>
+</div>
 
-    <textarea class="textarea" name="testText-input"
-              id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
+<div class="field-group">
+    <label for="evaluateTextClassifier-button">Evaluate the Text Classifier using k-fold Cross-Validation</label>
+  	<input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
+    Number of folds k: 
+    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
+    <div class="description">
+        Trains and evaluates the classifier on the selected data file via k-fold cross-validation (splits the data into training and evaluation parts).<br/>
+        If the classifier was trained before, the training will be restored after the evaluation finished.<br/>
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this 
+        evaluation can be very resource expensive!<br/>       
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="testClassifierWithText-input">Test the Classifier</label>
+    <textarea class="textarea" id="testClassifierWithText-input" placeholder="Your text to be classified here..."></textarea>
 </div>
 <div class="buttons-container">
     <div class="buttons">
         <input type="button" class="aui-button" id="testClassifierWithText-button" value="Test classifier"/>
-
         <span class="cancel" id="testClassifierWithText-result">The result will be displayed here.</span>
     </div>
 </div>
 
-<script>
-    // init the variables
-    const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
-    isClassifierUsedToggle.checked = $project.isTextClassifierEnabled();
+#if( $project.getTextClassificationConfiguration().getLastEvaluationResults() )
+<div class="field-group">
+    <label>Last Evaluation Results:</label>    
+    <div class="aui-message aui-message-info">
+		<p>$project.getTextClassificationConfiguration().getLastEvaluationResults()</p>
+	</div>
+</div>
+#end
 
-    const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
-    const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
-    const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
+<script>
+    const isClassifierUsedToggle = document.getElementById("isClassifierUsed-toggle");
+    isClassifierUsedToggle.checked = $project.getTextClassificationConfiguration().isActivated();
+    
+    isClassifierUsedToggle.addEventListener("change", function (error) {
+        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
+        this.busy = true;
+        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
+        this.busy = false;
+    });
 
     const currentClassifierStatusInfo = document.getElementById("classifierStatus-text");
     currentClassifierStatusInfo.style.display = isClassifierUsedToggle.checked ? "inherit" : "none";
-
-    // add listeners
-    testClassifierWithTextBtn.addEventListener('click', () => {
-       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
-    });
     
-    const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
-    evaluateTextClassifierButton.addEventListener("click", function () {
-        var animatedElement = document.getElementById("evaluate-classifier-progress");
-        conDecAPI.evaluateTextClassifier("$projectKey", animatedElement, saveToFile("evaluation_results.json"));
-    });
-
     const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
     saveTrainingFileButton.addEventListener("click", function () {
         conDecAPI.saveTrainingFile("$projectKey", saveToFile("classifierTrainingData.csv"));
@@ -149,25 +159,40 @@
     const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
     classifyAllIssuesInProjectButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big and cannot be reverted!")) {
-            var animatedElement = document.getElementById("classify-whole-project-progress-bar");
-            conDecAPI.classifyWholeProject("$projectKey", animatedElement);
+            var animatedElementWholeProjectClassification = document.getElementById("classify-whole-project-progress-bar");
+            conDecAPI.classifyWholeProject("$projectKey", animatedElementWholeProjectClassification);
         }
     });
 
+	var trainDataSelect = document.getElementById("select-training-file");
+	var animatedElement = document.getElementById("train-classifier-progress");
     const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
-        if (confirm("Are you sure you want to retrain the classifier?")) {
-            var trainDataSelect = document.getElementById("select-training-file");
-            var animatedElement = document.getElementById("train-classifier-progress");
+        if (confirm("Are you sure you want to retrain the classifier?")) {                        
             conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
         }
     });
+    
+    const evaluateTextClassifierButton = document.getElementById("evaluateTextClassifier-button");
+    evaluateTextClassifierButton.addEventListener("click", function () {
+    	var numberOfFoldsInput = document.getElementById("number-of-folds-input");
+    	if (confirm("Are you sure you want to evaluate the classifier using " + numberOfFoldsInput.value + "-fold cross-validation?")) {    
+        	conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, numberOfFoldsInput.value, 
+        	animatedElement, saveToFile("evaluation_results.json"));
+        }
+    });
+    
+    const evaluateTrainedTextClassifierButton = document.getElementById("evaluateTrainedTextClassifier-button");
+    evaluateTrainedTextClassifierButton.addEventListener("click", function () {
+        conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, -1, animatedElement, saveToFile("evaluation_results.json"));
+    });
+    
+    const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");
+    const testClassifierWithTextInput = document.getElementById("testClassifierWithText-input");
+    const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
 
-    isClassifierUsedToggle.addEventListener("change", function (error) {
-        currentClassifierStatusInfo.style.display = this.checked ? "inherit" : "none";
-        this.busy = true;
-        conDecAPI.setTextClassifierEnabled(this.checked, this.value);
-        this.busy = false;
+    testClassifierWithTextBtn.addEventListener('click', () => {
+       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
     });
 
     // helper functions

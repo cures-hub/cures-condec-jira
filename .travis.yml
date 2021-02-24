@@ -1,31 +1,34 @@
-os: osx # only because osx is less often used than linux on TravisCI and makes building faster
-sudo: false
+os: osx
 language: java
 cache:
   directories:
-    - $HOME/.m2
+  - "$HOME/.m2"
 jdk:
-  - oraclejdk15
+- oraclejdk15
 before_install:
-  - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
-  - mkdir opt
-  - tar -xvzf *plugin-sdk* -C opt
-  - mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
-  - chmod a+x opt/atlassian-plugin-sdk/bin/*
-  - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
-  - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
+- wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
+- mkdir opt
+- tar -xvzf *plugin-sdk* -C opt
+- mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
+- chmod a+x opt/atlassian-plugin-sdk/bin/*
+- chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
+- export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install: true
 script:
-  - atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+- atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
 notifications:
   email: false
 deploy:
   provider: releases
-  file: $TRAVIS_BUILD_DIR/target/cures-condec-jira.jar
+  file: "$TRAVIS_BUILD_DIR/target/cures-condec-jira.jar"
   skip_cleanup: true
-  github_token: $github_token
+  token: "$GITHUB_TOKEN"
   on:
-      tags: true
+    tags: true
+    branch: develop
   overwrite: true
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml
+- bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml
+env:
+  global:
+  - secure: jByw8On1E7BSq8T5vLUBbTmhC8WxrZSGkl7a0kl9twfrozLS+o8ovZb1qZ/YVAF3hiZhUa0sqjh12vzg7zvmr2u25Fvjkto/aCDqhtRlEAaML2MI3MuXu2JKUNGQdEj4J+V3otPtvbwVc4eVggS3Ve1oY93tH70mTJcWtH+ophH8AtLMR6yVC5JW++ZDOtGuM7sRrQdEgrfjb5/y9kqNdP33JUhP/d+UIdlYVIqSAfFbjKwUCWD6iyyL1r9n7YfTV3TDXhrxsQd1kQBoeSOtRGoGKOOfOhpu6o+Vhvvme0ysPppRtX1iMz+7MLh62su//N7ia8RBAYDgeu7LFSYvQpnAtauTy6Io5r6GOIftaLJhZUJL6g5DMCPqpQKvQ/BERMrzbOD+OQgQFRmvETni96AMdx7QAg2ElYA6cng+avJJSSZY3cyWROo7guBrRaLep1gflD7njYuayPajHUXqqlFW3RzemcVFsRCIfc+kGlsf3EN+mfnqJ3dyzJZqTwH1PiFti2lLtODtZbB+LhvnmWzsnETScGykHOxwSl5gG3T6dP4QnoIaGkuNcmlRx+uw5p/e4FI7OCpBWXS5ZVwJHSxi/D71tFeTm1EZOxcXU7xuimeDOdTxJkfsWJz4ILCUdfzBKa/xPDS7Stb9aEWOIKnAGdQnULEMDSnZu8Hlr+4=

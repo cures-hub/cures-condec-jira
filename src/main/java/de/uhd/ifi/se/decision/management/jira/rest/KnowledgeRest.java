@@ -367,6 +367,11 @@ public class KnowledgeRest {
 			persistenceManager.deleteLink(existingLink, user);
 		}
 
+		if (parentElement.equals(childElement)) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Link could not be created because of identical elements (self links forbidden).")).build();
+		}
+
 		Link link;
 		if (linkTypeName == null || linkTypeName.equals("null")) {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
@@ -478,7 +483,8 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+				.getJiraIssueTextManager();
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
 				.getKnowledgeElement(decisionKnowledgeElement);
@@ -489,9 +495,8 @@ public class KnowledgeRest {
 
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
-		sentence.setSummary(null);
 		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
-		persistenceManager.getJiraIssueTextManager().createLinksForNonLinkedElements(sentence.getJiraIssue());
+		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
 	}
 

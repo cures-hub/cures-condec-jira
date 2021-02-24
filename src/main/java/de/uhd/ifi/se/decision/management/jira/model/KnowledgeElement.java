@@ -559,6 +559,21 @@ public class KnowledgeElement {
 		return elements;
 	}
 
+	public int getLinkDistance(KnowledgeElement other, int maxLinkDistance) {
+		Set<KnowledgeElement> linkedElements = new HashSet<KnowledgeElement>();
+		for (int distance = 0; distance <= maxLinkDistance; distance++) {
+			Set<KnowledgeElement> newLinkedElements = getLinkedElements(distance);
+			newLinkedElements.removeAll(linkedElements);
+			for (KnowledgeElement element : newLinkedElements) {
+				if (other.equals(element)) {
+					return distance;
+				}
+			}
+			linkedElements.addAll(newLinkedElements);
+		}
+		return -1;
+	}
+
 	/**
 	 * @param otherElement
 	 *            object of {@link KnowledgeElement}.

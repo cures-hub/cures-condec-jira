@@ -262,8 +262,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 
 	@Override
 	public void setDescription(String body) {
-		super.setDescription(body);
-		super.setSummary(body);
+		this.setSummary(body);
 	}
 
 	@Override
