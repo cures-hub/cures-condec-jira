@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.atlassian.jira.project.Project;
 
-import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 

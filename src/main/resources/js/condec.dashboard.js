@@ -10,7 +10,7 @@
 
 	conDecDashboard.prototype.getGeneralMetrics = function (projectKey) {
 		generalApi.getJSON(this.restPrefix + "/dashboard/generalMetrics.json?projectKey="
-			+ projectKey)
+			+ projectKey);
 	};
 
 	conDecDashboard.prototype.getRationaleCompleteness = function (projectKey) {

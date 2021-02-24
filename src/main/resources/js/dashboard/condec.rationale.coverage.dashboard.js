@@ -22,7 +22,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.initProject = function init(projectKey) {
-		document.getElementById("condec-dashboard-rationale-coverage-issuetype-selection").classList.remove("hidden")
+		document.getElementById("condec-dashboard-rationale-coverage-issuetype-selection").classList.remove("hidden");
 
 		var issueTypeSelection = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
 
@@ -153,7 +153,7 @@
 		if (!issueType || !issueType.length || !issueType.length > 0) {
 			return;
 		}
-		if (!linkDistance || !linkDistance > 0) {
+		if (!linkDistance || !linkDistance >= 0) {
 			return;
 		}
 		/*

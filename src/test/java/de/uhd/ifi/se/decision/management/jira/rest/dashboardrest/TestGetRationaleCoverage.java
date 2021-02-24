@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
 
-public class testGetRationaleCoverage extends TestSetUp {
+public class TestGetRationaleCoverage extends TestSetUp {
 	protected DashboardRest dashboardRest;
 	protected HttpServletRequest request;
 	private String projectKey;
@@ -26,17 +26,23 @@ public class testGetRationaleCoverage extends TestSetUp {
 	public void setUp() {
 		init();
 		dashboardRest = new DashboardRest();
-		this.projectKey = "TEST";
 		this.issueType = "TEST";
 		this.linkDistance = Integer.toString(3);
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
-		request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
+		this.request = new MockHttpServletRequest();
+		this.request.setAttribute("user", user);
 	}
 
 	@Test
 	public void testGetRationaleCoverage() {
+		this.projectKey = "TEST";
 		Response response = dashboardRest.getRationaleCoverage(request, projectKey, issueType, linkDistance);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+	}
+
+	public void testGetRationaleCoverageNull() {
+		this.projectKey = null;
+		Response response = dashboardRest.getRationaleCoverage(request, projectKey, issueType, linkDistance);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

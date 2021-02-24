@@ -4,7 +4,6 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -14,23 +13,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
-import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
-import com.atlassian.jira.issue.Issue;
+
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
@@ -39,7 +30,6 @@ import com.google.common.collect.ImmutableMap;
  */
 @Path("/dashboard")
 public class DashboardRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
 
 	@Path("/generalMetrics")
 	@GET

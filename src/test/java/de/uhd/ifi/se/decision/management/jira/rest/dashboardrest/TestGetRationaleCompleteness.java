@@ -24,15 +24,22 @@ public class TestGetRationaleCompleteness extends TestSetUp {
 	public void setUp() {
 		init();
 		dashboardRest = new DashboardRest();
-		this.projectKey = "TEST";
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
-		request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
+		this.request = new MockHttpServletRequest();
+		this.request.setAttribute("user", user);
 	}
 
 	@Test
 	public void testGetRationaleCompleteness() {
+		this.projectKey = "TEST";
 		Response response = dashboardRest.getRationaleCompleteness(request, projectKey);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testGetRationaleCompletenessNull() {
+		this.projectKey = null;
+		Response response = dashboardRest.getRationaleCompleteness(request, projectKey);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

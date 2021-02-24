@@ -11,12 +11,11 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetGeneralMetrics extends TestSetUp {
-
+public class TestGetJiraIssueTypes extends TestSetUp {
 	protected DashboardRest dashboardRest;
 	protected HttpServletRequest request;
 	private String projectKey;
@@ -31,16 +30,16 @@ public class TestGetGeneralMetrics extends TestSetUp {
 	}
 
 	@Test
-	public void testGetGeneralMetrics() {
+	public void testGetJiraIssueTypes() {
 		this.projectKey = "TEST";
-		Response response = dashboardRest.getGeneralMetrics(request, projectKey);
+		Response response = dashboardRest.getJiraIssueTypes(request, projectKey);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetGeneralMetricsNull() {
+	public void testGetJiraIssueTypesNull() {
 		this.projectKey = null;
-		Response response = dashboardRest.getGeneralMetrics(request, projectKey);
+		Response response = dashboardRest.getJiraIssueTypes(request, projectKey);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }
