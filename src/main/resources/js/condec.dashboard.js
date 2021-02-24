@@ -9,8 +9,23 @@
 	};
 
 	conDecDashboard.prototype.getGeneralMetrics = function (projectKey) {
-		generalApi.getJSON(this.restPrefix + "/dashboard/getGeneralMetrics.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/dashboard/generalMetrics.json?projectKey="
 			+ projectKey)
+	};
+
+	conDecDashboard.prototype.getRationaleCompleteness = function (projectKey) {
+		generalApi.getJSON(this.restPrefix + "/dashboard/rationaleCompleteness.json?projectKey="
+			+ projectKey);
+	};
+
+	conDecDashboard.prototype.getRationaleCoverage = function (projectKey, issueType, linkDistance) {
+		generalApi.getJSON(this.restPrefix + "/dashboard/rationaleCOverage.json?projectKey="
+			+ projectKey + "&issueType=" + issueType + "&linkDistance=" + linkDistance);
+	};
+
+	conDecDashboard.prototype.getJiraIssueTypes = function (projectKey) {
+		generalApi.getJSON(this.restPrefix + "/dashboard/jiraIssueTypes.json?projectKey="
+			+ projectKey);
 	};
 
 	global.conDecDashboard = new conDecDashboard();
