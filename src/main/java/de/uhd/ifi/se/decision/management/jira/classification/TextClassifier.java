@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Tries to identify decision knowledge in natural language texts using a binary
@@ -37,8 +38,11 @@ public class TextClassifier {
 		LOGGER.info("New text classifier was created");
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
-		binaryClassifier = new BinaryClassifier();
-		fineGrainedClassifier = new FineGrainedClassifier(5);
+		TextClassificationConfiguration config = ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey);
+		String prefix = config.getPrefixOfClassifierName();
+		binaryClassifier = new BinaryClassifier(prefix);
+		fineGrainedClassifier = new FineGrainedClassifier(5, prefix);
 	}
 
 	/**

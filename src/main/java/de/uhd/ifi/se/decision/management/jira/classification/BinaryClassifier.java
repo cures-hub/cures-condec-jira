@@ -24,8 +24,8 @@ import smile.validation.ClassificationValidations;
  */
 public class BinaryClassifier extends AbstractClassifier {
 
-	public BinaryClassifier() {
-		super(2);
+	public BinaryClassifier(String namePrefix) {
+		super(2, namePrefix);
 	}
 
 	@Override

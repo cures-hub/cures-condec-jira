@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -46,6 +47,10 @@ public class TextClassificationConfiguration {
 	@JsonProperty("lastEvaluationResults")
 	public void setLastEvaluationResults(String lastEvaluationResults) {
 		this.lastEvaluationResults = lastEvaluationResults;
+	}
+
+	public String getPrefixOfClassifierName() {
+		return FilenameUtils.getBaseName(selectedGroundTruthFile);
 	}
 
 }

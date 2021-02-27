@@ -29,6 +29,7 @@ public abstract class AbstractClassifier {
 	protected Classifier<double[]> model;
 	protected int numClasses;
 	protected boolean isCurrentlyTraining;
+	protected String namePrefix;
 
 	/**
 	 * Reads the classifier from file if it was already trained and saved to file
@@ -38,16 +39,25 @@ public abstract class AbstractClassifier {
 	 *            2 for the binary classifier and > 2 for the fine grained
 	 *            classifier.
 	 */
-	public AbstractClassifier(int numClasses) {
+	public AbstractClassifier(int numClasses, String namePrefix) {
 		this.numClasses = numClasses;
 		this.isCurrentlyTraining = false;
+		this.namePrefix = namePrefix;
 		loadFromFile();
 	}
 
 	/**
-	 * @return name of the classifier that is used as the file name.
+	 * @return file name of the classifier, e.g. binaryClassifier.model
 	 */
 	public abstract String getName();
+
+	/**
+	 * @return full name of the trained classifier for ground truth data, e.g.
+	 *         "CONDEC-binaryClassifier.model".
+	 */
+	public String getNameWithPrefix() {
+		return namePrefix + "-" + getName();
+	}
 
 	/**
 	 * Trains the model using supervised training data, features and labels.
@@ -118,7 +128,7 @@ public abstract class AbstractClassifier {
 	 * Saves model to a file, so that it can be loaded at a later time.
 	 */
 	public File saveToFile() {
-		return saveToFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
+		return saveToFile(TextClassifier.CLASSIFIER_DIRECTORY + getNameWithPrefix());
 	}
 
 	/**
@@ -128,26 +138,29 @@ public abstract class AbstractClassifier {
 	 *            absolute path to the classifier file that should be loaded.
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean loadFromFile(String filePathAndName) {
-		Classifier<double[]> oldModel = model;
+	public static Classifier<double[]> loadFromFile(String filePathAndName) {
+		Classifier<double[]> model = null;
 		try {
 			FileInputStream fileIn = new FileInputStream(filePathAndName);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 			model = (Classifier<double[]>) objectIn.readObject();
 			objectIn.close();
 		} catch (Exception e) {
-			LOGGER.error("Could not load a classifier from file: " + getName() + ". " + e.getMessage());
-			model = oldModel;
-			return false;
+			LOGGER.error("Could not load a classifier from file: " + filePathAndName + ". " + e.getMessage());
 		}
-		return true;
+		return model;
 	}
 
 	/**
 	 * Loads pre-trained classifier from file.
 	 */
 	public boolean loadFromFile() {
-		return loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getName());
+		Classifier<double[]> newModel = loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getNameWithPrefix());
+		if (newModel != null) {
+			model = newModel;
+			return true;
+		}
+		return false;
 	}
 
 	/**

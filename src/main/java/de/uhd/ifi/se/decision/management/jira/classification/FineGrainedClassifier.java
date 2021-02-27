@@ -27,8 +27,8 @@ import smile.validation.ClassificationValidation;
  */
 public class FineGrainedClassifier extends AbstractClassifier {
 
-	public FineGrainedClassifier(int numClasses) {
-		super(numClasses);
+	public FineGrainedClassifier(int numClasses, String namePrefix) {
+		super(numClasses, namePrefix);
 	}
 
 	@Override
