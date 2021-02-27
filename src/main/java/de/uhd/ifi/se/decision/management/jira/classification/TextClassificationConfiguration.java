@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the automatic text classification for
- * one Jira project (see @link {@link DecisionKnowledgeProject}.
+ * one Jira project (see {@link DecisionKnowledgeProject}.
  */
 public class TextClassificationConfiguration {
 

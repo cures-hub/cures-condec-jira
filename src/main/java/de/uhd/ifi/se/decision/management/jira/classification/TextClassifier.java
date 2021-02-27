@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +31,9 @@ public class TextClassifier {
 	 */
 	public static String CLASSIFIER_DIRECTORY = ComponentGetter.PLUGIN_HOME + "classifier" + File.separator;
 
-	public static TextClassifier instance;
+	public static Map<String, TextClassifier> instances = new HashMap<>();
 
-	private TextClassifier() {
+	private TextClassifier(String projectKey) {
 		LOGGER.info("New text classifier was created");
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
@@ -39,11 +41,25 @@ public class TextClassifier {
 		fineGrainedClassifier = new FineGrainedClassifier(5);
 	}
 
-	public static TextClassifier getInstance() {
-		if (instance == null) {
-			instance = new TextClassifier();
+	/**
+	 * Retrieves an existing {@link TextClassifier} instance or creates a new
+	 * instance if there is no instance for the given project key. Uses the multiton
+	 * design pattern.
+	 * 
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @return either a new or already existing {@link TextClassifier} instance.
+	 */
+	public static TextClassifier getInstance(String projectKey) {
+		if (projectKey == null) {
+			throw new IllegalArgumentException("The project key must not be null.");
 		}
-		return instance;
+		if (instances.containsKey(projectKey)) {
+			return instances.get(projectKey);
+		}
+		TextClassifier textClassifier = new TextClassifier(projectKey);
+		instances.put(projectKey, textClassifier);
+		return instances.get(projectKey);
 	}
 
 	/**

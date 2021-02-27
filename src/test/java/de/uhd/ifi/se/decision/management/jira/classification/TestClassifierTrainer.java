@@ -102,14 +102,13 @@ public class TestClassifierTrainer extends TestSetUp {
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
 		trainer.train();
-		assertEquals(2, TextClassifier.getInstance().getBinaryClassifier().predict(TEST_SENTENCES).length);
+		assertEquals(2, TextClassifier.getInstance("TEST").getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeFineGrainedPredicition() {
-		assertEquals(2,
-				TextClassifier.getInstance().getFineGrainedClassifier().predict(TEST_SENTENCES).size());
+		assertEquals(2, TextClassifier.getInstance("TEST").getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
 	public static File getTestTrainingDataFile() {

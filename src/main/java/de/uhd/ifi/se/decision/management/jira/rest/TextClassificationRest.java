@@ -107,12 +107,14 @@ public class TextClassificationRest {
 		StringBuilder builder = new StringBuilder();
 		List<String> textList = Collections.singletonList(text);
 
-		boolean relevant = TextClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+
+		boolean relevant = classifier.getBinaryClassifier().predict(textList)[0];
 		builder.append(relevant ? "Relevant" : "Irrelevant");
 
 		if (relevant) {
 			builder.append(": ");
-			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList).get(0);
+			KnowledgeType type = classifier.getFineGrainedClassifier().predict(textList).get(0);
 			builder.append(type.toString());
 		}
 		return Response.ok(ImmutableMap.of("content", builder.toString())).build();

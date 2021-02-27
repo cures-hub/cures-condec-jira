@@ -24,10 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 public class ClassificationManagerForJiraIssueText {
 
 	private JiraIssueTextPersistenceManager persistenceManager;
+	private String projectKey;
 
 	public ClassificationManagerForJiraIssueText(String projectKey) {
-		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
+		this.projectKey = projectKey;
 	}
 
 	/**
@@ -76,8 +77,7 @@ public class ClassificationManagerForJiraIssueText {
 
 	public void classifyComment(Comment comment) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
-		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager
-				.updateElementsOfCommentInDatabase(comment);
+		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		sentences.addAll(sentencesOfComment);
 		classifySentencesBinary(sentences);
 		classifySentencesFineGrained(sentences);
@@ -93,9 +93,8 @@ public class ClassificationManagerForJiraIssueText {
 		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = sentencesRelevantForBinaryClf.stream()
-				.map(PartOfJiraIssueText::getDescription)
-				.collect(Collectors.toList());
-		boolean[] classificationResult = TextClassifier.getInstance().getBinaryClassifier()
+				.map(PartOfJiraIssueText::getDescription).collect(Collectors.toList());
+		boolean[] classificationResult = TextClassifier.getInstance(projectKey).getBinaryClassifier()
 				.predict(stringsToBeClassified);
 		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
@@ -147,7 +146,7 @@ public class ClassificationManagerForJiraIssueText {
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = sentencesToBeClassified.stream().map(PartOfJiraIssueText::getDescription)
 				.collect(Collectors.toList());
-		List<KnowledgeType> classificationResult = TextClassifier.getInstance().getFineGrainedClassifier()
+		List<KnowledgeType> classificationResult = TextClassifier.getInstance(projectKey).getFineGrainedClassifier()
 				.predict(stringsToBeClassified);
 		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentencesToBeClassified);
 		return sentences;
