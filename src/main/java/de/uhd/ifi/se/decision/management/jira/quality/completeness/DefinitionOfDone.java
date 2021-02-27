@@ -26,7 +26,6 @@ public class DefinitionOfDone {
 	private Map<String, Boolean> criteriaMap = new HashMap<>();
 
 	public DefinitionOfDone() {
-		System.out.println("new object DOD");
 		criteriaMap.put("issueIsLinkedToAlternative", Boolean.FALSE);
 		criteriaMap.put("decisionIsLinkedToPro", Boolean.FALSE);
 		criteriaMap.put("alternativeIsLinkedToArgument", Boolean.FALSE);
