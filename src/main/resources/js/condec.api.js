@@ -832,6 +832,21 @@
 				}
 			});
 	};
+	
+	/*
+	 * external references: templates/settings/classificationSettings.vm
+	 */
+	ConDecAPI.prototype.useTrainedClassifier = function (projectKey, trainedClassifier) {
+		generalApi.postJSON(this.restPrefix + "/classification/useTrainedClassifier.json?projectKey=" + projectKey + 
+				"&trainedClassifier=" + trainedClassifier,
+			null,
+			function (error, response) {
+				if (error === null) {
+					showFlag("success", "The trained classifier was successfully set for the project.");
+				}
+			});
+	};
+	
 
 	/*
 	 * external references: templates/settings/classificationSettings.vm

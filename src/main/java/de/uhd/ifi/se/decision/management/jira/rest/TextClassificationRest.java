@@ -53,6 +53,27 @@ public class TextClassificationRest {
 		return Response.ok().build();
 	}
 
+	@Path("/useTrainedClassifier")
+	@POST
+	public Response useTrainedClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (trainedClassifier == null || trainedClassifier.isEmpty()) {
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The classifier could not be set since the file name is invalid."))
+					.build();
+		}
+		TextClassificationConfiguration config = ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey);
+		config.setSelectedTrainedClassifier(trainedClassifier);
+		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		TextClassifier.getInstance(projectKey).setSelectedTrainedClassifier(trainedClassifier);
+		return Response.ok().build();
+	}
+
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,

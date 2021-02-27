@@ -96,4 +96,9 @@ public class TextClassifier {
 	public boolean isTrained() {
 		return binaryClassifier.isTrained() && fineGrainedClassifier.isTrained();
 	}
+
+	public void setSelectedTrainedClassifier(String trainedClassifier) {
+		binaryClassifier = new BinaryClassifier(trainedClassifier);
+		fineGrainedClassifier = new FineGrainedClassifier(5, trainedClassifier);
+	}
 }

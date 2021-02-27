@@ -183,6 +183,12 @@
             conDecAPI.classifyWholeProject("$projectKey", animatedElementWholeProjectClassification);
         }
     });
+    
+    var trainedClassifierSelect = document.getElementById("select-trained-classifier");
+    const useTrainedClassifier = document.getElementById("useTrainedClassifier-button");
+    useTrainedClassifier.addEventListener("click", function () {                   
+    	conDecAPI.useTrainedClassifier("$projectKey", trainedClassifierSelect.value);
+    });
 
 	var trainDataSelect = document.getElementById("select-training-file");
 	var animatedElement = document.getElementById("train-classifier-progress");
