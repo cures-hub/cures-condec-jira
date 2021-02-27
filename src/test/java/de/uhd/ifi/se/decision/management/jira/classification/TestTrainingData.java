@@ -108,4 +108,18 @@ public class TestTrainingData extends TestSetUp {
 		trainingFile.delete();
 	}
 
+	@Test
+	@NonTransactional
+	public void testCreateFileNameProjectValid() {
+		String fileName = TrainingData.createTrainingDataFileName("TEST");
+		assertTrue(fileName.startsWith("TEST"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testCreateFileNameProjectNull() {
+		String fileName = TrainingData.createTrainingDataFileName(null);
+		assertTrue(fileName.startsWith("-"));
+	}
+
 }

@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManag
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -48,7 +49,7 @@ public class TextClassificationRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ConfigPersistenceManager.setTextClassifierActivated("TEST", isActivated);
+		ConfigPersistenceManager.setTextClassifierActivated(projectKey, isActivated);
 		return Response.ok().build();
 	}
 
@@ -152,7 +153,9 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (!ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {
+		TextClassificationConfiguration config = new DecisionKnowledgeProject(projectKey)
+				.getTextClassificationConfiguration();
+		if (!Boolean.valueOf(config.isActivated())) {
 			return Response.status(Status.FORBIDDEN)
 					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}

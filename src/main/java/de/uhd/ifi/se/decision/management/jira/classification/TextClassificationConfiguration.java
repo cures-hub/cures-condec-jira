@@ -17,9 +17,8 @@ public class TextClassificationConfiguration {
 	public String trainedFineGrainedClassifier;
 
 	public TextClassificationConfiguration() {
-		this.isActivated = false;
-		this.selectedGroundTruthFile = "defaultTrainingData.csv";
-		this.lastEvaluationResults = "";
+		selectedGroundTruthFile = "defaultTrainingData.csv";
+		lastEvaluationResults = "";
 	}
 
 	public boolean isActivated() {

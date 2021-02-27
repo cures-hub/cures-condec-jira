@@ -89,9 +89,10 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
-	public static Object getSavedObject(String projectKey, String parameter, Type type) {
+	public static Object getSavedObject(String projectKey, String parameter, Type type) throws Exception {
 		Gson gson = new Gson();
-		return gson.fromJson(getValue(projectKey, parameter), type);
+		String value = getValue(projectKey, parameter);
+		return gson.fromJson(value, type);
 	}
 
 	public static String getWebhookSecret(String projectKey) {
@@ -149,8 +150,7 @@ public class ConfigPersistenceManager {
 		try {
 			textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(projectKey,
 					"textClassificationConfiguration", type);
-		} catch (JsonSyntaxException e) {
-
+		} catch (Exception e) {
 		}
 		if (textClassificationConfiguration == null) {
 			textClassificationConfiguration = new TextClassificationConfiguration();
@@ -223,7 +223,7 @@ public class ConfigPersistenceManager {
 		try {
 			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
 					"gitRepositoryConfigurations", type);
-		} catch (JsonSyntaxException e) {
+		} catch (Exception e) {
 
 		}
 		if (gitRepositoryConfigurations == null) {
@@ -376,7 +376,7 @@ public class ConfigPersistenceManager {
 				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 				if (rdfSourceList == null)
 					rdfSourceList = new ArrayList<>();
-			} catch (JsonSyntaxException e) {
+			} catch (Exception e) {
 				rdfSourceList = new ArrayList<>();
 				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 			}
@@ -550,7 +550,7 @@ public class ConfigPersistenceManager {
 		DefinitionOfDone definitionOfDone = null;
 		try {
 			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
-		} catch (JsonSyntaxException e) {
+		} catch (Exception e) {
 		}
 		if (definitionOfDone == null) {
 			definitionOfDone = new DefinitionOfDone();

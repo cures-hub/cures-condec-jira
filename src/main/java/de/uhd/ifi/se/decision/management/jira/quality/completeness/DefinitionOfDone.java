@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Sets rules that the decision knowledge documentation needs to fulfill to be
@@ -26,6 +26,7 @@ public class DefinitionOfDone {
 	private Map<String, Boolean> criteriaMap = new HashMap<>();
 
 	public DefinitionOfDone() {
+		System.out.println("new object DOD");
 		criteriaMap.put("issueIsLinkedToAlternative", Boolean.FALSE);
 		criteriaMap.put("decisionIsLinkedToPro", Boolean.FALSE);
 		criteriaMap.put("alternativeIsLinkedToArgument", Boolean.FALSE);

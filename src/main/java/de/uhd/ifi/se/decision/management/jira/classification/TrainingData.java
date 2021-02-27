@@ -215,7 +215,7 @@ public class TrainingData {
 		return trainingDataFile;
 	}
 
-	private String createTrainingDataFileName(String projectKey) {
+	public static String createTrainingDataFileName(String projectKey) {
 		Date date = new Date();
 		String prefix = "";
 		if (projectKey != null) {
