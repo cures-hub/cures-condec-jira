@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -217,12 +217,11 @@ public class TrainingData {
 
 	private String createTrainingDataFileName(String projectKey) {
 		Date date = new Date();
-		Timestamp timestamp = new Timestamp(date.getTime());
 		String prefix = "";
 		if (projectKey != null) {
 			prefix = projectKey;
 		}
-		return prefix + timestamp.getTime() + ".csv";
+		return prefix + "-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(date) + ".csv";
 	}
 
 	private static StructType getDataFrameStructure() {
