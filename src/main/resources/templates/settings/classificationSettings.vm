@@ -51,14 +51,20 @@
 </div>
 
 <div class="field-group">
-    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
-    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <label for="useTrainedClassifier-button">Use a Trained Text Classifier</label>
+    <select id="select-trained-classifier" class="select medium-long-field">
+        #foreach ($classifier in $trainedClassifiers)
+            <option value="$classifier"
+                #if ($classifier.toString().contains($textClassificationConfig.getSelectedTrainedClassifier()))
+                    selected
+                #end
+            >
+                $classifier</option>
+        #end
+    </select>
+    <input type="button" class="aui-button" id="useTrainedClassifier-button" value="Use Classifier"/>
     <div class="description">
-    	Classifies the text in the description and the comments of all Jira issues for this project. <br/>
-    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
-    </div>
-    <div class="aui-progress-indicator">
-        <span id="classify-whole-project-progress-bar"></span>
+        Use an already trained text classifier in this project. The classifier might be updated by online training.<br/>
     </div>
 </div>
 
@@ -92,6 +98,18 @@
     </div>
     <div class="aui-progress-indicator">
         <span id="train-classifier-progress"></span>
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <div class="description">
+    	Classifies the text in the description and the comments of all Jira issues for this project. <br/>
+    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
+    </div>
+    <div class="aui-progress-indicator">
+        <span id="classify-whole-project-progress-bar"></span>
     </div>
 </div>
 

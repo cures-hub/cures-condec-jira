@@ -40,7 +40,7 @@ public class TextClassifier {
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
-		String prefix = config.getPrefixOfClassifierName();
+		String prefix = config.getPrefixOfSelectedGroundTruthFileName();
 		binaryClassifier = new BinaryClassifier(prefix);
 		fineGrainedClassifier = new FineGrainedClassifier(5, prefix);
 	}

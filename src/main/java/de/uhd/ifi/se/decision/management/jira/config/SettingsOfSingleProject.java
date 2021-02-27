@@ -60,6 +60,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance(projectKey).isTraining());
 		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance(projectKey).isTrained());
 		velocityParameters.put("trainingFiles", FileManager.getTrainingFileNames());
+		velocityParameters.put("trainedClassifiers", FileManager.getTrainedClassifierNames());
 
 		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
 
