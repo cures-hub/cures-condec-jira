@@ -89,10 +89,9 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
-	public static Object getSavedObject(String projectKey, String parameter, Type type) throws Exception {
+	public static Object getSavedObject(String projectKey, String parameter, Type type) {
 		Gson gson = new Gson();
-		String value = getValue(projectKey, parameter);
-		return gson.fromJson(value, type);
+		return gson.fromJson(getValue(projectKey, parameter), type);
 	}
 
 	public static String getWebhookSecret(String projectKey) {
@@ -146,15 +145,10 @@ public class ConfigPersistenceManager {
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
-		TextClassificationConfiguration textClassificationConfiguration = null;
-		try {
-			textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(projectKey,
-					"textClassificationConfiguration", type);
-		} catch (Exception e) {
-		}
+		TextClassificationConfiguration textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(
+				projectKey, "textClassificationConfiguration", type);
 		if (textClassificationConfiguration == null) {
-			textClassificationConfiguration = new TextClassificationConfiguration();
-			setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
+			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
 	}
@@ -219,13 +213,8 @@ public class ConfigPersistenceManager {
 	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
-		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
-		try {
-			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
-					"gitRepositoryConfigurations", type);
-		} catch (Exception e) {
-
-		}
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(
+				projectKey, "gitRepositoryConfigurations", type);
 		if (gitRepositoryConfigurations == null) {
 			return new ArrayList<GitRepositoryConfiguration>();
 		}
@@ -547,14 +536,9 @@ public class ConfigPersistenceManager {
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
-		DefinitionOfDone definitionOfDone = null;
-		try {
-			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
-		} catch (Exception e) {
-		}
+		DefinitionOfDone definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
 		if (definitionOfDone == null) {
-			definitionOfDone = new DefinitionOfDone();
-			setDefinitionOfDone(projectKey, definitionOfDone);
+			return new DefinitionOfDone();
 		}
 		return definitionOfDone;
 	}
