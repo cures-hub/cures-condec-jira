@@ -1,47 +1,110 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 
-#if (!$projectKey)	
-	#parse("templates/dashboard/projectPicker.vm")	
-#end
+<div id="configproject" class="condec-dashboard-contents filtering">
+    <form class="aui">
+        <div class="field-group">
+            <label for="condec-dashboard-rationale-coverage-project-selection">Project:</label>
+            <select name="project" id="condec-dashboard-rationale-coverage-project-selection" class="select long-field">
+                <option value="">
+                    $i18n.getText("condec.dashboard.rationalecoverage.project.selection.pickone")
+                </option>
+                #foreach ($project in $projects)
+                    <option value="$project.getKey()"
+                        #if ($projectsWithGit.indexOf($project) == -1)
+                            style="background-color:yellow"
+                        #end
+                    >
+                        $project.getKey() - $project.getName()
+                    </option>
+                #end
+            </select>
+            <div id="condec-dashboard-rationale-coverage-issuetype-selection" class="condec-filter-distance hidden">
+                <label for="condec-dashboard-rationale-coverage-issuetype-input">Jira Issue Type:</label>
+                <select name="issueType" id="condec-dashboard-rationale-coverage-issuetype-input" class="select">
+                    <option value="">
+                        $i18n.getText("condec.dashboard.rationalecoverage.issuetype.selection.pickone")
+                    </option>
+                    #foreach($jiraIssueType in $jiraIssueTypes)
+                        <option value=$jiraIssueType.getId()>$jiraIssueType.getName()</option>
+                    #end
+                </select>
+                <label for="condec-dashboard-rationale-coverage-link-distance-input">Link Distance:</label>
+                <input name="linkDistance" id="condec-dashboard-rationale-coverage-link-distance-input" class="text short-field"
+                       type="number" value="3" min="0" placeholder="Enter distance">
+            </div>
+        </div>
+    </form>
+</div>
 
-#if ($projectKey)	
-	#parse("templates/dashboard/requirementsDashboardItemFilter.vm")
-	<script>
-	$(document).ready(function () {	
-		conDecAPI.projectKey = "$projectKey";
-		conDecFiltering.fillFilterElements("requirements-dashboard");
-	});
-</script>
-#end
+<div id="condec-rationale-coverage-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecoverage.project.data.error")
+</div>
 
-#if (!$projectKey || !$issueType)
-	#parse("templates/dashboard/noProjectSelected.vm")
-#end
+<div id="condec-rationale-coverage-dashboard-no-project" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.rationalecoverage.project.selection.not.done")
+</div>
 
-#if ($projectKey && $issueType)
-<div class="condec-dashboard-contents results" id="dynamic-content-basics">
-    <h3>Rationale Coverage for Jira Issues of Type "$issueType.getName()"</h3>
-	<div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
-	<div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
-    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>	    
+<div id="condec-rationale-coverage-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.rationalecoverage.project.processing")
+</div>
+
+<div id="condec-rationale-coverage-dashboard-fatal-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecoverage.setup.error")
+</div>
+
+<div id="condec-rationale-coverage-dashboard-nogit-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecoverage.project.nogit")
+</div>
+
+<div id="condec-rationale-coverage-dashboard-contents-container" class="condec-dashboard-contents results hidden">
+    <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
     <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
 </div>
+
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-	$(document).ready(function () {	
-		// initialize charts
-		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue", 
-			"", "#Decisions per Jira Issue", "$issuesPerJiraIssue");
-		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue", 
-			"", "#Issues per Jira Issue", "$decisionsPerJiraIssue");
-		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue", 
-			"", "For how many $issueType.getName() elements is an issue documented?", "$decisionDocumentedForSelectedJiraIssue");
-		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue", 
-			"", "For how many $issueType.getName() elements is a decision documented?", "$issueDocumentedForSelectedJiraIssue");	
-    	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
-	});
+    $(document).ready(function() {
+        function projectSelectOrOnChange(event) {
+            var projectKey = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            conDecRationaleCoverageDashboard.initProject(projectKey);
+        }
+
+        function issueTypeSelectOrOnChange(event) {
+            var issueType = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+            var projectKey = projectNode.value;
+
+            var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-link-distance-input");
+            var linkDistance = linkDistanceNode.value;
+
+            conDecRationaleCoverageDashboard.init(projectKey, issueType, linkDistance);
+        }
+
+        selectProjectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+        selectProjectNode.addEventListener("change", projectSelectOrOnChange);
+
+        selectIssueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+        selectIssueTypeNode.addEventListener("change", issueTypeSelectOrOnChange);
+    });
+</script>
+
+#if ($projectKey && $issueType && $linkDistance)
+<script>
+    $(document).ready(function() {
+        conDecRationaleCoverageDashboard.init("$projectKey", "$issueType", "$linkDistance");
+
+        ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
+        selectNode.value = "$projectKey";
+    });
 </script>
 #end

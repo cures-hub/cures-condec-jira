@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -25,7 +24,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new GeneralMetricCalculator(user, new FilterSettings("TEST", ""));
+		calculator = new GeneralMetricCalculator(user, "TEST");
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 

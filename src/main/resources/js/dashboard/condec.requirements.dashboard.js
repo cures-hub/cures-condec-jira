@@ -32,8 +32,8 @@
     }
 
     ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
-        isIssueData = true;
-        this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
+		isIssueData = true;
+		this.initializeChartForSources(divId, title, subtitle, dataMap);
     }
     
     /** 

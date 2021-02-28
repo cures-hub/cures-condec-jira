@@ -1,39 +1,81 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-#if (!$projectKey)
-	#parse("templates/dashboard/projectPicker.vm")	
-	#parse("templates/dashboard/noProjectSelected.vm")	
-#end
+<div id="configproject" class="condec-dashboard-contents filtering">
+    <form class="aui">
+        <div class="field-group">
+            <label for="condec-dashboard-rationale-completeness-project-selection">Project:</label>
+            <select name="project" id="condec-dashboard-rationale-completeness-project-selection" class="select long-field">
+                <option value="">
+                    $i18n.getText("condec.dashboard.rationalecompleteness.project.selection.pickone")
+                </option>
+                #foreach ($project in $projects)
+                    <option value="$project.getKey()"
+                        #if ($projectsWithGit.indexOf($project) == -1)
+                            style="background-color:yellow"
+                        #end
+                    >
+                        $project.getKey() - $project.getName()
+                    </option>
+                #end
+            </select>
+        </div>
+    </form>
+</div>
 
-#if ($projectKey)
-<div class="condec-dashboard-contents results" id="dynamic-content-completeness">
-    <h3>Intra-Rationale Completeness Metrics</h3>
+<div id="condec-rationale-completeness-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecompleteness.project.data.error")
+</div>
+
+<div id="condec-rationale-completeness-dashboard-no-project" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.rationalecompleteness.project.selection.not.done")
+</div>
+
+<div id="condec-rationale-completeness-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.rationalecompleteness.project.processing")
+</div>
+
+<div id="condec-rationale-completeness-dashboard-fatal-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecompleteness.setup.error")
+</div>
+
+<div id="condec-rationale-completeness-dashboard-nogit-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.rationalecompleteness.project.nogit")
+</div>
+
+<div id="condec-rationale-completeness-dashboard-contents-container" class="condec-dashboard-contents results hidden">
     <div id="piechartRich-IssuesSolvedByDecision" class="piechart"></div>
     <div id="piechartRich-DecisionsSolvingIssues" class="piechart"></div>
-	<div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
-    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ProArgumentDocumentedForDecision" class="piechart"></div>
     <div id="piechartRich-ConArgumentDocumentedForDecision" class="piechart"></div>
-    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>    
+    <div id="piechartRich-ProArgumentDocumentedForAlternative" class="piechart"></div>
+    <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
 </div>
+
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-	$(document).ready(function () {			
-		// initialize charts
-		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision", 
-			"", "How many issues (=decision problems) are solved by a decision?", "$issuesSolvedByDecision");
-		ConDecReqDash.initializeChart("piechartRich-DecisionsSolvingIssues", 
-			"", "For how many decisions is the issue (=decision problem) documented?", "$decisionsSolvingIssues");
-		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForDecision", 
-			"", "How many decisions have at least one pro argument documented?", "$proArgumentDocumentedForDecision");
-		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForAlternative", 
-			"", "How many alternatives have at least one con argument documented?", "$conArgumentDocumentedForAlternative");
-		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForDecision", 
-			"", "How many decisions have at least one con argument documented?", "$conArgumentDocumentedForDecision");	
-		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForAlternative", 
-			"", "How many alternatives have at least one pro argument documented?", "$proArgumentDocumentedForAlternative");	
-    	ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
-	});
+    $(document).ready(function() {
+        function projectSelectOrOnChange(event) {
+            var projectKey = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
+            conDecRationaleCompletenessDashboard.init(projectKey);
+        }
+        selectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+        selectNode.addEventListener("change", projectSelectOrOnChange);
+    });
+</script>
+
+#if ($projectKey)
+<script>
+    $(document).ready(function() {
+        ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
+        conDecRationaleCompletenessDashboard.init("$projectKey");
+
+        selectNode.value = "$projectKey";
+    });
 </script>
 #end

@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -25,15 +24,15 @@ public class GeneralMetricCalculator {
 
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
-	private FilterSettings filterSettings;
+	private String projectKey;
 	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
-		this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
-		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
+	public GeneralMetricCalculator(ApplicationUser user, String projectKey) {
+		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.projectKey = projectKey;
+		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}
 
@@ -106,7 +105,7 @@ public class GeneralMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfCommits() {
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
