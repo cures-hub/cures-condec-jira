@@ -33,6 +33,10 @@ public interface CodeClassInDatabase extends RawEntity<Long> {
 
 	void setFileName(String fileName);
 
+	int getLineCount();
+
+	void setLineCount(int lineCount);
+
 	String getProjectKey();
 
 	void setProjectKey(String projectKey);

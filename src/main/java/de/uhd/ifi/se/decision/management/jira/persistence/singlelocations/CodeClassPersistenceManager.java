@@ -160,6 +160,8 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		ChangedFile changedFile = (ChangedFile) knowledgeElement;
 		ChangedFile existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getName());
 		if (existingElement != null) {
+			updateKnowledgeElement(knowledgeElement, user);
+			existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getName());
 			existingElement.setCommits(changedFile.getCommits());
 			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
@@ -186,6 +188,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setFileName(element.getSummary());
+		databaseEntry.setLineCount(element.getLineCount());
 	}
 
 	@Override
@@ -201,7 +204,10 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		KnowledgeElement fileToBeUpdated = getKnowledgeElementByName(((ChangedFile) newElement).getOldName());
 		if (fileToBeUpdated == null) {
-			return false;
+			fileToBeUpdated = getKnowledgeElementByName(((ChangedFile) newElement).getName());
+			if (fileToBeUpdated == null) {
+				return false;
+			}
 		}
 		newElement.setId(fileToBeUpdated.getId());
 		CodeClassInDatabase entry = findDatabaseEntry(newElement);

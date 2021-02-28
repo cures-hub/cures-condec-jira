@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
-final public class CompletenessHandler {
+public final class CompletenessHandler {
 
 	private CompletenessHandler() {
 	}
@@ -19,7 +19,8 @@ final public class CompletenessHandler {
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
 			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
 			entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
-			entry(KnowledgeType.CON, new ArgumentCompletenessCheck()));
+			entry(KnowledgeType.CON, new ArgumentCompletenessCheck()),
+			entry(KnowledgeType.CODE, new CodeCompletenessCheck()));
 
 	/**
 	 * @issue Should knowledge elements without definition of done be assumed to be

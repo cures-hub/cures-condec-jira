@@ -18,6 +18,7 @@ public class TestCheckForCompleteness extends TestSetUp {
 	private KnowledgeElement decision;
 	private KnowledgeElement alternative;
 	private KnowledgeElement proArgument;
+	private KnowledgeElement codeFile;
 
 	@Before
 	public void setUp() {
@@ -28,6 +29,7 @@ public class TestCheckForCompleteness extends TestSetUp {
 		decision = elements.get(10);
 		alternative = elements.get(8);
 		proArgument = elements.get(11);
+		codeFile = elements.get(19);
 	}
 
 	@Test
@@ -52,6 +54,12 @@ public class TestCheckForCompleteness extends TestSetUp {
 	@NonTransactional
 	public void testCompleteArgument() {
 		assertTrue(CompletenessHandler.checkForCompleteness(proArgument));
+	}
+
+	@Test
+	@NonTransactional
+	public void testCompleteCodeFile() {
+		assertTrue(CompletenessHandler.checkForCompleteness(codeFile));
 	}
 
 }
