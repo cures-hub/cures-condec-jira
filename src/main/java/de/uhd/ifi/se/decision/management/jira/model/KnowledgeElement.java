@@ -45,6 +45,7 @@ public class KnowledgeElement {
 	private Date updatingDate;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
+	private int lineCount;
 
 	protected KnowledgeStatus status;
 
@@ -670,6 +671,14 @@ public class KnowledgeElement {
 	@XmlElement(name = "status")
 	public String getStatusAsString() {
 		return getStatus().toString();
+	}
+
+	public int getLineCount() {
+		return this.lineCount;
+	}
+
+	public void setLineCount(int lineCount) {
+		this.lineCount = lineCount;
 	}
 
 	/**
