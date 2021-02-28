@@ -218,11 +218,15 @@
     const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
 
     testClassifierWithTextBtn.addEventListener('click', () => {
-       conDecAPI.classifyText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
+       conDecAPI.classifyText(testClassifierWithTextInput.value, "$projectKey", showClassificationResult)
     });
-
+    
     // helper functions
-    const saveToFile = function (name) {
+    showClassificationResult = function (classificationResult) {
+    	document.getElementById("testClassifierWithText-result").innerText = classificationResult;
+    }
+    
+    saveToFile = function (name) {
         return function (content) {
             let link = document.createElement("a");
             link.style.display = "none";

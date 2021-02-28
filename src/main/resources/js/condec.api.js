@@ -791,13 +791,13 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.classifyText = function (text, projectKey, resultDomElement) {
+	ConDecAPI.prototype.classifyText = function (text, projectKey, callback) {
 		generalApi.postJSON(this.restPrefix + "/classification/classifyText?projectKey="
 			+ projectKey + "&text=" + text, null, function (error, response) {
 				if (error === null) {
-					resultDomElement.innerText = response.content;
+					callback(response.content);
 				} else {
-					resultDomElement.innerText = "Error! Please check if the classifier is trained.";
+					callback("Error! Please check if the classifier is trained.");
 				}
 			});
 	};
