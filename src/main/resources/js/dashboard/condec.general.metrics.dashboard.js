@@ -9,8 +9,6 @@
  */
 
 (function (global) {
-	var processing = null;
-
 	var dashboardContentNode;
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
@@ -59,8 +57,6 @@
 		 */
 		showDashboardSection(dashboardProcessingNode);
 		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json?projectKey=" + projectKey;
-		/* get cache or server data? */
-		checkCache(url);
 
 		console.log("Starting  REST query.");
 		AJS.$.ajax({
@@ -71,43 +67,6 @@
 			success: conDecGeneralMetricsDashboard.processData,
 			error: conDecGeneralMetricsDashboard.processDataBad
 		});
-	}
-
-	function checkCache(url) {
-		if (localStorage.getItem("condec.restCacheTTL")) {
-			console.log("condec.restCacheTTL setting found");
-			if (localStorage.getItem(url)) {
-				var data = null;
-				var now = Date.now();
-				var cacheTTL = parseInt(localStorage.getItem("condec.restCacheTTL"));
-				try {
-					data = JSON.parse(localStorage.getItem(url));
-				} catch (ex) {
-					data = null;
-				}
-				if (data && cacheTTL) {
-					if (now - data.timestamp < cacheTTL) {
-						console.log(
-							"Cache is within specified TTL, therefore getting data from local cache instead from server."
-						);
-						return processXhrResponseData(data);
-					} else {
-						console.log("Cache TTL expired, therefore starting  REST query.");
-					}
-				}
-				if (!cacheTTL) {
-					console.log(
-						"Cache TTL is not a number, therefore starting  REST query."
-					);
-				}
-			}
-		} else {
-			localStorage.setItem("condec.restCacheTTL", 1000 * 60 * 3); /*
-																	 * init 3
-																	 * minute
-																	 * caching
-																	 */
-		}
 	}
 
 	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
@@ -122,9 +81,6 @@
 	function processXhrResponseData(data) {
 		doneWithXhrRequest();
 		showDashboardSection(dashboardContentNode);
-		data.timestamp = Date.now();
-		localStorage.setItem(url, JSON.stringify(data, null, 1));
-		processing = null;
 		renderData(data);
 	}
 
