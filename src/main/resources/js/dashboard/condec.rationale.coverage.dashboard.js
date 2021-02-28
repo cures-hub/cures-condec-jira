@@ -74,7 +74,7 @@
 		 */
 		url = conDecAPI.restPrefix + "/dashboard/jiraIssueTypes.json?projectKey=" + projectKey;
 
-		console.log("Starting  REST query.");
+		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			type: "get",
@@ -117,7 +117,7 @@
 		if (!issueType || !issueType.length || !issueType.length > 0) {
 			return;
 		}
-		if (!linkDistance || !linkDistance >= 0) {
+		if (!linkDistance || !(linkDistance >= 0)) {
 			return;
 		}
 		/*
@@ -128,7 +128,7 @@
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?projectKey=" + projectKey
 			+ "&issueType=" + issueType + "&linkDistance=" + linkDistance;
 
-		console.log("Starting  REST query.");
+		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			type: "get",

@@ -58,7 +58,7 @@
 		showDashboardSection(dashboardProcessingNode);
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json?projectKey=" + projectKey;
 
-		console.log("Starting  REST query.");
+		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			type: "get",
