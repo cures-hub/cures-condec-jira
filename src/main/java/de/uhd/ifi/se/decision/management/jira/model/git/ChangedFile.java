@@ -107,6 +107,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(String fileContent) {
 		this();
 		this.fileContent = fileContent;
+		this.setLineCount(this.getNumberOfLines());
 		this.methodDeclarations = parseMethods();
 	}
 
@@ -123,11 +124,13 @@ public class ChangedFile extends KnowledgeElement {
 		this.id = databaseEntry.getId();
 		this.project = new DecisionKnowledgeProject(databaseEntry.getProjectKey());
 		this.treeWalkPath = databaseEntry.getFileName();
+		this.setLineCount(databaseEntry.getLineCount());
 	}
 
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
+		this.setLineCount(this.getNumberOfLines());
 		this.diffEntry = diffEntry;
 		this.editList = editList;
 		this.methodDeclarations = parseMethods();
