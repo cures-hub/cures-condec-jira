@@ -1,5 +1,7 @@
 <h2>Rationale Backlog Configuration</h2>
 
+#set($definitionOfDone = $project.getDefinitionOfDone())
+
 <form class="aui">
     #parse("templates/settings/fragments/completenessCriteriaSettings.vm")
     #parse("templates/settings/fragments/completenessEventSettings.vm")

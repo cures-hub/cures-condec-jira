@@ -18,9 +18,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -183,11 +185,19 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return configuration of the text classifier to automatically classify the
-	 *         text of Jira issue descriptions and comments.
+	 * @return configuration of the {@link TextClassifier} to automatically classify
+	 *         the text of Jira issue descriptions and comments.
 	 */
 	public TextClassificationConfiguration getTextClassificationConfiguration() {
 		return ConfigPersistenceManager.getTextClassificationConfiguration(getProjectKey());
+	}
+
+	/**
+	 * @return configuration for the {@link DefinitionOfDone} for knowledge
+	 *         documentation for this project.
+	 */
+	public DefinitionOfDone getDefinitionOfDone() {
+		return ConfigPersistenceManager.getDefinitionOfDone(getProjectKey());
 	}
 
 	/**
