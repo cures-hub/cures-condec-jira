@@ -23,9 +23,9 @@ public class CodeCompletenessCheck implements CompletenessCheck {
         if (codeFile.getDescription().toLowerCase().startsWith("test")) {
             return true;
         }
-		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(3);
+		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(4);
 		for (KnowledgeElement linkedElement : linkedElements) {
-			if (linkedElement.getType() == KnowledgeType.ISSUE) {
+			if (linkedElement.getType() == KnowledgeType.DECISION) {
 				return true;
 			}
 		}

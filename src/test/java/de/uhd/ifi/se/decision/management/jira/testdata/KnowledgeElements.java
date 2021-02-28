@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
@@ -32,17 +30,9 @@ public class KnowledgeElements {
 	private static List<KnowledgeElement> createKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<Issue> jiraIssues = JiraIssues.getTestJiraIssues();
-		KnowledgeElement decisionKnowledgeIssueToBeLinked = new KnowledgeElement();
 		for (Issue jiraIssue : jiraIssues) {
-			KnowledgeElement element = new KnowledgeElement(jiraIssue);
-			elements.add(element);
-			if (element.getType() == KnowledgeType.ISSUE) {
-				decisionKnowledgeIssueToBeLinked = element;
-			}
+			elements.add(new KnowledgeElement(jiraIssue));
 		}
-
-		assertFalse(decisionKnowledgeIssueToBeLinked.equals(new KnowledgeElement()));
-		decisionKnowledgeIssueToBeLinked.setProject("TEST");
 
 		String stringThatIsNotDone = "public class ClassThatIsNotDone {\n" + 
 		"    // This file must be larger than 50 lines,\n" + 
@@ -105,8 +95,16 @@ public class KnowledgeElements {
 		linkedFileThatIsDone.setTreeWalkPath("LinkedClassThatIsDone.java");
 		linkedFileThatIsDone.setId(103);
 		linkedFileThatIsDone.setProject("TEST");
+
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
-		Link link = new Link(linkedFileThatIsDone, decisionKnowledgeIssueToBeLinked);
+		KnowledgeElement issueToBeLinked = new KnowledgeElement(jiraIssues.get(4));
+		KnowledgeElement decisionToBeLinked = new KnowledgeElement(jiraIssues.get(10));
+		graph.addVertexNotBeingInDatabase(issueToBeLinked);
+		graph.addVertexNotBeingInDatabase(decisionToBeLinked);
+
+		Link link = new Link(linkedFileThatIsDone, issueToBeLinked);
+		graph.addEdgeNotBeingInDatabase(link);
+		link = new Link(issueToBeLinked, decisionToBeLinked);
 		graph.addEdgeNotBeingInDatabase(link);
 		assertEquals(1, linkedFileThatIsDone.getLinks().size());
 		elements.add(linkedFileThatIsDone);
