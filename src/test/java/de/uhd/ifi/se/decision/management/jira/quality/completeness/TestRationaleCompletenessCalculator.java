@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -21,7 +20,8 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		calculator = new RationaleCompletenessCalculator(new FilterSettings("TEST", ""));
+		String projectKey = "TEST";
+		calculator = new RationaleCompletenessCalculator(projectKey);
 	}
 
 	@Test

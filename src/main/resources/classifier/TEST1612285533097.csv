@@ -1,0 +1,13 @@
+isAlternative,isPro,isCon,isDecisions,isIssue,sentence
+0,0,0,0,0,WI: Implement feature
+0,0,0,0,0,WI: Yet another work item
+0,0,0,0,0,WI: Do an interesting task
+0,0,0,0,0,WI: Deal with the drunken sailor
+0,0,0,0,1,How can we implement the feature?
+0,0,0,0,1,How can we implement the new get function?
+0,0,0,0,1,What shall we do with the drunken sailor?
+1,0,0,0,0,We could do it like this!
+1,0,0,0,0,Put him in the long boat till he's sober!
+1,0,0,0,0,Put him in the scuppers with a hose-pipe on him!
+0,0,0,1,0,We will do it like this!
+0,0,0,0,0,NFR: Usabililty

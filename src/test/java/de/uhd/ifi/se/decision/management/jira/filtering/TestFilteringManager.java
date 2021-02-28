@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.Graph;
@@ -162,6 +163,19 @@ public class TestFilteringManager extends TestSetUp {
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertEquals(10, filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+	}
+
+	@Test
+	public void testIsElementMatchingDecisionGroupFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		List<String> decGroups = List.of("Low", "Medium", "High");
+		settings.setDecisionGroups(decGroups);
+		FilteringManager filteringManager = new FilteringManager(settings);
+		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
+		element.addDecisionGroup("Low");
+		element.addDecisionGroup("Medium");
+		element.addDecisionGroup("High");
+		assertTrue(filteringManager.isElementMatchingDecisionGroupFilter(element));
 	}
 
 	@Test

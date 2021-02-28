@@ -7,7 +7,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,16 +24,12 @@ public class RationaleCompletenessCalculator {
 		this.projectKey = projectKey;
 	}
 
-	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
-		this(filterSettings.getProjectKey());
-	}
-
 	public Map<String, String> getElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
 		List<KnowledgeElement> allSourceElements = KnowledgeGraph.getOrCreate(projectKey)
-				.getElements(sourceElementType);
+			.getElements(sourceElementType);
 		String sourceElementsWithTargetTypeLinked = "";
 		String sourceElementsWithoutTargetTypeLinked = "";
 
@@ -48,9 +43,9 @@ public class RationaleCompletenessCalculator {
 
 		Map<String, String> havingLinkMap = new LinkedHashMap<String, String>();
 		havingLinkMap.put(sourceElementType.toString() + " has " + targetElementType.toString(),
-				sourceElementsWithTargetTypeLinked.trim());
+			sourceElementsWithTargetTypeLinked.trim());
 		havingLinkMap.put(sourceElementType.toString() + " has no " + targetElementType.toString(),
-				sourceElementsWithoutTargetTypeLinked.trim());
+			sourceElementsWithoutTargetTypeLinked.trim());
 		return havingLinkMap;
 	}
 

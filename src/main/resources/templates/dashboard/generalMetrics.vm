@@ -1,38 +1,79 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 
-#if (!$projectKey)
-	#parse("templates/dashboard/projectPicker.vm")	
-	#parse("templates/dashboard/noProjectSelected.vm")	
-#end
+<div id="configproject" class="condec-dashboard-contents filtering">
+    <form class="aui">
+        <div class="field-group">
+            <label for="condec-dashboard-general-metrics-project-selection">Project:</label>
+            <select name="project" id="condec-dashboard-general-metrics-project-selection" class="select long-field">
+                <option value="">
+                    $i18n.getText("condec.dashboard.generalmetrics.project.selection.pickone")
+                </option>
+                #foreach ($project in $projects)
+                    <option value="$project.getKey()"
+                        #if ($projectsWithGit.indexOf($project) == -1)
+                            style="background-color:yellow"
+                        #end
+                    >
+                        $project.getKey() - $project.getName()
+                    </option>
+                #end
+            </select>
+        </div>
+    </form>
+</div>
 
-#if ($projectKey)
-<div class="condec-dashboard-contents results" id="dynamic-content-general">
-    <h3>General Metrics</h3>
+<div id="condec-general-metrics-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.generalmetrics.project.data.error")
+</div>
+
+<div id="condec-general-metrics-dashboard-no-project" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.generalmetrics.project.selection.not.done")
+</div>
+
+<div id="condec-general-metrics-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.generalmetrics.project.processing")
+</div>
+
+<div id="condec-general-metrics-dashboard-fatal-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.generalmetrics.setup.error")
+</div>
+
+<div id="condec-general-metrics-dashboard-nogit-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.generalmetrics.project.nogit")
+</div>
+
+<div id="condec-general-metrics-dashboard-contents-container" class="condec-dashboard-contents results hidden">
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
-	<div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
     <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
     <div id="piechartRich-DecSources" class="piechart"></div>
-	<div id="piechartInteger-RelevantSentences" class="piechart"></div>
+    <div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
-</div>	
+</div>
+
 #parse("templates/dashboard/navigationOverlay.vm")
 
 <script>
-	$(document).ready(function () {
-		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue", 
-			"", "#Comments per Jira Issue", "$numberOfCommentsPerJiraIssue");
-		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue", 
-			"", "#Commits per Jira Issue", "$numberOfCommitsPerJiraIssue");
-		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary", 
-			"", "#Requirements and Code Classes", "$requirementsAndCodeFiles");
-		ConDecReqDash.initializeChart("piechartRich-DecSources", 
-			"", "#Rationale Elements per Origin", "$numberOfElementsPerDocumentationLocation");
-		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences", 
-			"", "Comments in Jira Issues relevant to Decision Knowledge", "$numberOfRelevantComments");
-		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution", 
-			"", "Distribution of Knowledge Types", "$distributionOfKnowledgeTypes");	
-	});
+    $(document).ready(function() {
+        function projectSelectOrOnChange(event) {
+            var projectKey = event.target.value;
+            var selectedOptionIndex = event.target.options.selectedIndex;
+            var selectedOption = event.target.options[selectedOptionIndex];
+
+            conDecGeneralMetricsDashboard.init(projectKey);
+        }
+        selectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+        selectNode.addEventListener("change", projectSelectOrOnChange);
+    });
+</script>
+
+#if ($projectKey)
+<script>
+    $(document).ready(function() {
+        conDecGeneralMetricsDashboard.init("$projectKey");
+
+        selectNode.value = "$projectKey";
+    });
 </script>
 #end
