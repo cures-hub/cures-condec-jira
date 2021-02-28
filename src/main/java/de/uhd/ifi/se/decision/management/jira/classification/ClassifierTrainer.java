@@ -54,9 +54,9 @@ public class ClassifierTrainer {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");
-			TextClassifier.getInstance().getBinaryClassifier().train(trainingData);
+			TextClassifier.getInstance(projectKey).getBinaryClassifier().train(trainingData);
 			LOGGER.debug("Fine-grained classifier training started.");
-			TextClassifier.getInstance().getFineGrainedClassifier().train(trainingData);
+			TextClassifier.getInstance(projectKey).getFineGrainedClassifier().train(trainingData);
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;
@@ -65,7 +65,7 @@ public class ClassifierTrainer {
 	}
 
 	public boolean update(PartOfJiraIssueText sentence) {
-		TextClassifier classifier = TextClassifier.getInstance();
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		try {
 			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
 			// classifier needs numerical value
@@ -148,14 +148,17 @@ public class ClassifierTrainer {
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(k, trainingData));
 			resultsMap.putAll(
-					TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(k, trainingData));
+					TextClassifier.getInstance(projectKey).getBinaryClassifier().evaluateClassifier(k, trainingData));
+			resultsMap.putAll(TextClassifier.getInstance(projectKey).getFineGrainedClassifier().evaluateClassifier(k,
+					trainingData));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
-			resultsMap.putAll(TextClassifier.getInstance().getBinaryClassifier().evaluateClassifier(trainingData));
-			resultsMap.putAll(TextClassifier.getInstance().getFineGrainedClassifier().evaluateClassifier(trainingData));
+			resultsMap.putAll(
+					TextClassifier.getInstance(projectKey).getBinaryClassifier().evaluateClassifier(trainingData));
+			resultsMap.putAll(
+					TextClassifier.getInstance(projectKey).getFineGrainedClassifier().evaluateClassifier(trainingData));
 		}
 
 		LOGGER.info("Finished evaluation: " + resultsMap.toString());

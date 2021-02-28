@@ -51,15 +51,13 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("request", request);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
-
-		velocityParameters.put("definitionOfDone", ConfigPersistenceManager.getDefinitionOfDone(projectKey));
-
 		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance().isTraining());
-		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance().isTrained());
+		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance(projectKey).isTraining());
+		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance(projectKey).isTrained());
 		velocityParameters.put("trainingFiles", FileManager.getTrainingFileNames());
+		velocityParameters.put("trainedClassifiers", FileManager.getTrainedClassifierNames());
 
 		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
 

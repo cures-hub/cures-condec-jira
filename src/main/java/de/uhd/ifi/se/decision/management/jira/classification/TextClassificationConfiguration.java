@@ -1,25 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the automatic text classification for
- * one Jira project (see @link {@link DecisionKnowledgeProject}.
+ * one Jira project (see {@link DecisionKnowledgeProject}.
  */
 public class TextClassificationConfiguration {
 
 	private boolean isActivated;
-	private String selectedGroundTruthFile;
+	private String selectedGroundTruthFileName;
 	private String lastEvaluationResults;
-	public String trainedBinaryClassifier;
-	public String trainedFineGrainedClassifier;
+	private String trainedClassifierName;
 
 	public TextClassificationConfiguration() {
-		this.isActivated = false;
-		this.selectedGroundTruthFile = "defaultTrainingData.csv";
-		this.lastEvaluationResults = "";
+		selectedGroundTruthFileName = "defaultTrainingData.csv";
+		lastEvaluationResults = "";
+		trainedClassifierName = "";
 	}
 
 	public boolean isActivated() {
@@ -32,12 +32,12 @@ public class TextClassificationConfiguration {
 	}
 
 	public String getSelectedGroundTruthFile() {
-		return selectedGroundTruthFile;
+		return selectedGroundTruthFileName;
 	}
 
 	@JsonProperty("selectedGroundTruthFile")
 	public void setSelectedGroundTruthFile(String selectedGroundTruthFile) {
-		this.selectedGroundTruthFile = selectedGroundTruthFile;
+		this.selectedGroundTruthFileName = selectedGroundTruthFile;
 	}
 
 	public String getLastEvaluationResults() {
@@ -49,4 +49,16 @@ public class TextClassificationConfiguration {
 		this.lastEvaluationResults = lastEvaluationResults;
 	}
 
+	public String getPrefixOfSelectedGroundTruthFileName() {
+		return FilenameUtils.getBaseName(selectedGroundTruthFileName);
+	}
+
+	public String getSelectedTrainedClassifier() {
+		return trainedClassifierName;
+	}
+
+	@JsonProperty("selectedTrainedClassifier")
+	public void setSelectedTrainedClassifier(String trainedClassifier) {
+		this.trainedClassifierName = trainedClassifier;
+	}
 }

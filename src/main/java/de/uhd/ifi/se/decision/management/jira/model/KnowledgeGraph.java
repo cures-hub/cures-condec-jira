@@ -46,7 +46,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	/**
 	 * Retrieves an existing {@link KnowledgeGraph} instance or creates a new
-	 * instance if there is no instance for the given project key.
+	 * instance if there is no instance for the given project key. Uses the multiton
+	 * design pattern.
 	 * 
 	 * @param projectKey
 	 *            of the Jira project.

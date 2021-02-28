@@ -9,8 +9,10 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ public interface FileManager {
 	Logger LOGGER = LoggerFactory.getLogger(FileManager.class);
 
 	/**
-	 * @return all files on the server as a list.
+	 * @return all ground truth files on the server as a list.
 	 */
 	static List<File> getAllTrainingFiles() {
 		List<File> trainingFilesOnServer = new ArrayList<File>();
@@ -38,7 +40,7 @@ public interface FileManager {
 	}
 
 	/**
-	 * @return names of all files on the server as a list of strings.
+	 * @return names of all ground truth files on the server as a list of strings.
 	 */
 	static List<String> getTrainingFileNames() {
 		List<File> arffFilesOnServer = getAllTrainingFiles();
@@ -47,6 +49,34 @@ public interface FileManager {
 			arffFileNames.add(file.getName());
 		}
 		return arffFileNames;
+	}
+
+	/**
+	 * @return names of all ground truth files on the server as a list of strings.
+	 */
+	static Set<String> getTrainedClassifierNames() {
+		List<File> trainedClassifierFilesOnServer = getAllTrainedClassifiers();
+		Set<String> fileNames = new HashSet<String>();
+		for (File file : trainedClassifierFilesOnServer) {
+			String[] split = file.getName().split("(-fineGrained)|(-binary)");
+			if (split.length > 0) {
+				fileNames.add(split[0]);
+			}
+		}
+		return fileNames;
+	}
+
+	/**
+	 * @return all files of trained classifiers on the server as a list.
+	 */
+	static List<File> getAllTrainedClassifiers() {
+		List<File> trainedClassifiersOnServer = new ArrayList<File>();
+		for (File file : new File(TextClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
+			if (file.getName().toLowerCase(Locale.ENGLISH).matches("(.)*.model")) {
+				trainedClassifiersOnServer.add(file);
+			}
+		}
+		return trainedClassifiersOnServer;
 	}
 
 	/**

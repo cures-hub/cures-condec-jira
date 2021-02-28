@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManag
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -48,7 +49,28 @@ public class TextClassificationRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ConfigPersistenceManager.setTextClassifierActivated("TEST", isActivated);
+		ConfigPersistenceManager.setTextClassifierActivated(projectKey, isActivated);
+		return Response.ok().build();
+	}
+
+	@Path("/useTrainedClassifier")
+	@POST
+	public Response useTrainedClassifier(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (trainedClassifier == null || trainedClassifier.isEmpty()) {
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The classifier could not be set since the file name is invalid."))
+					.build();
+		}
+		TextClassificationConfiguration config = ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey);
+		config.setSelectedTrainedClassifier(trainedClassifier);
+		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		TextClassifier.getInstance(projectKey).setSelectedTrainedClassifier(trainedClassifier);
 		return Response.ok().build();
 	}
 
@@ -95,10 +117,10 @@ public class TextClassificationRest {
 		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
-	@Path("/testClassifierWithText")
+	@Path("/classifyText")
 	@POST
-	public Response testClassifierWithText(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("text") String text) {
+	public Response classifyText(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("text") String text) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -106,12 +128,14 @@ public class TextClassificationRest {
 		StringBuilder builder = new StringBuilder();
 		List<String> textList = Collections.singletonList(text);
 
-		boolean relevant = TextClassifier.getInstance().getBinaryClassifier().predict(textList)[0];
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+
+		boolean relevant = classifier.getBinaryClassifier().predict(textList)[0];
 		builder.append(relevant ? "Relevant" : "Irrelevant");
 
 		if (relevant) {
 			builder.append(": ");
-			KnowledgeType type = TextClassifier.getInstance().getFineGrainedClassifier().predict(textList).get(0);
+			KnowledgeType type = classifier.getFineGrainedClassifier().predict(textList).get(0);
 			builder.append(type.toString());
 		}
 		return Response.ok(ImmutableMap.of("content", builder.toString())).build();
@@ -152,7 +176,9 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (!ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {
+		TextClassificationConfiguration config = new DecisionKnowledgeProject(projectKey)
+				.getTextClassificationConfiguration();
+		if (!Boolean.valueOf(config.isActivated())) {
 			return Response.status(Status.FORBIDDEN)
 					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}

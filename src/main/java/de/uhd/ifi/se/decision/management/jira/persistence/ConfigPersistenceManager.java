@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -39,6 +42,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
  * activated for a specific project.
  */
 public class ConfigPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigPersistenceManager.class);
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentAccessor
 			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
@@ -91,7 +95,13 @@ public class ConfigPersistenceManager {
 
 	public static Object getSavedObject(String projectKey, String parameter, Type type) {
 		Gson gson = new Gson();
-		return gson.fromJson(getValue(projectKey, parameter), type);
+		Object object = null;
+		try {
+			object = gson.fromJson(getValue(projectKey, parameter), type);
+		} catch (Exception e) {
+			LOGGER.error("Saved config could not be read: " + e.getMessage());
+		}
+		return object;
 	}
 
 	public static String getWebhookSecret(String projectKey) {
@@ -145,16 +155,10 @@ public class ConfigPersistenceManager {
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
-		TextClassificationConfiguration textClassificationConfiguration = null;
-		try {
-			textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(projectKey,
-					"textClassificationConfiguration", type);
-		} catch (JsonSyntaxException e) {
-
-		}
+		TextClassificationConfiguration textClassificationConfiguration = (TextClassificationConfiguration) getSavedObject(
+				projectKey, "textClassificationConfiguration", type);
 		if (textClassificationConfiguration == null) {
-			textClassificationConfiguration = new TextClassificationConfiguration();
-			setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
+			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
 	}
@@ -219,13 +223,8 @@ public class ConfigPersistenceManager {
 	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
 		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
 		}.getType();
-		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
-		try {
-			gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(projectKey,
-					"gitRepositoryConfigurations", type);
-		} catch (JsonSyntaxException e) {
-
-		}
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(
+				projectKey, "gitRepositoryConfigurations", type);
 		if (gitRepositoryConfigurations == null) {
 			return new ArrayList<GitRepositoryConfiguration>();
 		}
@@ -376,7 +375,7 @@ public class ConfigPersistenceManager {
 				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
 				if (rdfSourceList == null)
 					rdfSourceList = new ArrayList<>();
-			} catch (JsonSyntaxException e) {
+			} catch (Exception e) {
 				rdfSourceList = new ArrayList<>();
 				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
 			}
@@ -547,14 +546,9 @@ public class ConfigPersistenceManager {
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
-		DefinitionOfDone definitionOfDone = null;
-		try {
-			definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
-		} catch (JsonSyntaxException e) {
-		}
+		DefinitionOfDone definitionOfDone = (DefinitionOfDone) getSavedObject(projectKey, "definitionOfDone", type);
 		if (definitionOfDone == null) {
-			definitionOfDone = new DefinitionOfDone();
-			setDefinitionOfDone(projectKey, definitionOfDone);
+			return new DefinitionOfDone();
 		}
 		return definitionOfDone;
 	}
