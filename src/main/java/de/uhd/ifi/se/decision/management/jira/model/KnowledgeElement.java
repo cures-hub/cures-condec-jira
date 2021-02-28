@@ -45,6 +45,18 @@ public class KnowledgeElement {
 	private Date updatingDate;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
+
+	/** 
+	 * @issue Where shall we store the line count of a code file knowledge element?
+	 * @alternative In the ChangedFile class!
+	 * @pro Only files have a line count, not other knowledge elements.
+	 * @con The line count needs to be handled by the CodeClassPersistenceManager, which uses KnowledgeElement instead of ChangedFile in many cases.
+	 * @con The CodeCompletenessCheck class (using the lineCount) implements the CompletenessCheck interface, which works with KnowledgeElements, not ChangedFiles.
+	 * @con Converting a KnowledgeElement into a ChangedFile performs very badly.
+	 * @decision In the KnowledgeElement class!
+	 * @con Not all knowledge elements have a line count.
+	 * @pro Many functions using the lineCount already work with KnowledgeElements, not ChangedFiles.
+	 */
 	private int lineCount;
 
 	protected KnowledgeStatus status;
