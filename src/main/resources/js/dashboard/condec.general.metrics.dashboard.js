@@ -60,6 +60,20 @@
 		showDashboardSection(dashboardProcessingNode);
 		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json?projectKey=" + projectKey;
 		/* get cache or server data? */
+		checkCache(url);
+
+		console.log("Starting  REST query.");
+		AJS.$.ajax({
+			url: url,
+			type: "get",
+			dataType: "json",
+			async: true,
+			success: conDecGeneralMetricsDashboard.processData,
+			error: conDecGeneralMetricsDashboard.processDataBad
+		});
+	}
+
+	function checkCache(url) {
 		if (localStorage.getItem("condec.restCacheTTL")) {
 			console.log("condec.restCacheTTL setting found");
 			if (localStorage.getItem(url)) {
@@ -94,15 +108,6 @@
 																	 * caching
 																	 */
 		}
-		console.log("Starting  REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: true,
-			success: conDecGeneralMetricsDashboard.processData,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
 	}
 
 	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
