@@ -11,10 +11,12 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TestClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetTextClassifierEnabled extends TestSetUp {
+public class TestClassifyText extends TestSetUp {
 
 	private HttpServletRequest request;
 	private TextClassificationRest classificationRest;
@@ -28,14 +30,17 @@ public class TestSetTextClassifierEnabled extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNullActivationFalse() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.setTextClassifierEnabled(null, null, false).getStatus());
+	public void testRequestNullProjectKeyNullTextNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), classificationRest.classifyText(null, null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyValidActivationTrue() {
+	public void testRequestValidProjectKeyValidTextValid() {
+		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
+		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.train();
 		assertEquals(Status.OK.getStatusCode(),
-				classificationRest.setTextClassifierEnabled(request, "TEST", true).getStatus());
+				classificationRest.classifyText(request, "TEST", "How can we implement?").getStatus());
 	}
+
 }

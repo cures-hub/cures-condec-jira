@@ -30,23 +30,23 @@ public class TestUseTrainedClassifier extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNullTrainedClassifierNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.useTrainedClassifier(request, null, null).getStatus());
+				classificationRest.useTrainedClassifier(null, null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestNullProjectKeyValidTrainedClassifierNull() {
+	public void testRequestValidProjectKeyValidTrainedClassifierNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.useTrainedClassifier(request, "TEST", null).getStatus());
 	}
 
 	@Test
-	public void testRequestNullProjectKeyValidTrainedClassifierEmpty() {
+	public void testRequestValidProjectKeyValidTrainedClassifierEmpty() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.useTrainedClassifier(request, "TEST", "").getStatus());
 	}
 
 	@Test
-	public void testRequestNullProjectKeyValidTrainedClassifierValid() {
+	public void testRequestValidProjectKeyValidTrainedClassifierValid() {
 		assertEquals(Status.OK.getStatusCode(),
 				classificationRest.useTrainedClassifier(request, "TEST", "defaultTrainingData").getStatus());
 	}
