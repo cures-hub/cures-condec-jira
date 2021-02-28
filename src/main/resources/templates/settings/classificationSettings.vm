@@ -218,7 +218,7 @@
     const testClassifierWithTextResult = document.getElementById("testClassifierWithText-result");
 
     testClassifierWithTextBtn.addEventListener('click', () => {
-       conDecAPI.testClassifierWithText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
+       conDecAPI.classifyText(testClassifierWithTextInput.value, "$projectKey", testClassifierWithTextResult)
     });
 
     // helper functions

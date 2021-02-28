@@ -791,8 +791,8 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.testClassifierWithText = function (text, projectKey, resultDomElement) {
-		generalApi.postJSON(this.restPrefix + "/classification/testClassifierWithText?projectKey="
+	ConDecAPI.prototype.classifyText = function (text, projectKey, resultDomElement) {
+		generalApi.postJSON(this.restPrefix + "/classification/classifyText?projectKey="
 			+ projectKey + "&text=" + text, null, function (error, response) {
 				if (error === null) {
 					resultDomElement.innerText = response.content;
