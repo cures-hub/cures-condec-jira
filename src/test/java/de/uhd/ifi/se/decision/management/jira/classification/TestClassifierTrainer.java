@@ -87,7 +87,7 @@ public class TestClassifierTrainer extends TestSetUp {
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		sentence.setValidated(true);
 
-		assertTrue(trainer.update(sentence));
+		assertTrue(TextClassifier.getInstance("TEST").update(sentence));
 	}
 
 	// TODO: tests with unvalidated data element

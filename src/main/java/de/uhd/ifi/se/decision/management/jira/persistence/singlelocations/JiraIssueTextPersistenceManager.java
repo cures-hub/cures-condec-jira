@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueTextParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -42,12 +42,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTextPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	private static ClassifierTrainer classifierTrainer;
-
 	public JiraIssueTextPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
-		classifierTrainer = new ClassifierTrainer(projectKey);
 	}
 
 	@Override
@@ -193,8 +190,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<KnowledgeElement> getElementsInJiraIssue(long jiraIssueId) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey,
-						jiraIssueId))) {
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ?", projectKey, jiraIssueId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		return elements;
@@ -371,14 +367,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return sentenceInDatabase;
 	}
 
-	private static void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
+	private void setParameters(PartOfJiraIssueText element, PartOfJiraIssueTextInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
 		if (element.isValidated()) {
-			classifierTrainer.update(element);
+			TextClassifier.getInstance(projectKey).update(element);
 		}
 		databaseEntry.setStartPosition(element.getStartPosition());
 		databaseEntry.setEndPosition(element.getEndPosition());
@@ -422,7 +418,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if updating the Jira issue description or comment and also the
 	 *         database entries was successful.
 	 */
-	private static boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
+	private boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
 		String tag = sentence.getType().getTag();
 		String changedPartOfText = tag + sentence.getDescription() + tag;
 
@@ -451,7 +447,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		return updateInDatabase(sentence);
 	}
 
-	public static boolean updateInDatabase(PartOfJiraIssueText sentence) {
+	public boolean updateInDatabase(PartOfJiraIssueText sentence) {
 		boolean isUpdated = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class)) {
 			if (databaseEntry.getId() == sentence.getId()) {

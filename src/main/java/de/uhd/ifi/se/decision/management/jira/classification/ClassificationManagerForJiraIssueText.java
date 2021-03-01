@@ -132,7 +132,7 @@ public class ClassificationManagerForJiraIssueText {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
 				sentence.setRelevant(classificationResult[i]);
 				sentence.setValidated(false);
-				JiraIssueTextPersistenceManager.updateInDatabase(sentence);
+				persistenceManager.updateInDatabase(sentence);
 				i++;
 			}
 		}

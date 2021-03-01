@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import smile.classification.Classifier;
+import smile.classification.OnlineClassifier;
 import smile.validation.ClassificationMetrics;
 
 /**
@@ -75,16 +76,21 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Updates the classifier using supervised training data.
+	 * Updates the classifier using supervised training data. Used for online
+	 * training. That means that manually approved parts of text are directly used
+	 * for training.
 	 *
 	 * @param trainingSample
+	 *            feature for training.
 	 * @param trainingLabel
+	 *            label for training, e.g. for the binary relevance or the knowledge
+	 *            type.
 	 */
 	public void update(double[] trainingSample, int trainingLabel) {
 		isCurrentlyTraining = true;
-		LOGGER.info(
-				"Online training is currently not supported for SVMs in SMILE (Statistical Machine Intelligence and Learning Engine) library.");
-		// model.update(trainingSample, trainingLabel);
+		if (model instanceof OnlineClassifier) {
+			((OnlineClassifier<double[]>) model).update(trainingSample, trainingLabel);
+		}
 		isCurrentlyTraining = false;
 	}
 

@@ -22,6 +22,7 @@ public class TextClassifier {
 
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
+	private String projectKey;
 
 	/**
 	 * @issue What is the best place to store the supervised text classifier related
@@ -38,6 +39,7 @@ public class TextClassifier {
 		LOGGER.info("New text classifier was created");
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
+		this.projectKey = projectKey;
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		String prefix = config.getPrefixOfSelectedGroundTruthFileName();
@@ -100,5 +102,35 @@ public class TextClassifier {
 	public void setSelectedTrainedClassifier(String trainedClassifier) {
 		binaryClassifier = new BinaryClassifier(trainedClassifier);
 		fineGrainedClassifier = new FineGrainedClassifier(5, trainedClassifier);
+	}
+
+	/**
+	 * Updates the classifier using supervised training data. Used for online
+	 * training. That means that manually approved parts of text are directly used
+	 * for training.
+	 *
+	 * @param sentence
+	 *            manually approved {@link PartOfJiraIssueText} to train the
+	 *            classifier with.
+	 */
+	public boolean update(PartOfJiraIssueText sentence) {
+		if (!ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isOnlineLearningActivated()) {
+			return false;
+		}
+		try {
+			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
+			// classifier needs numerical value
+			int labelIsRelevant = sentence.isRelevant() ? 1 : 0;
+
+			for (double[] feature : features) {
+				binaryClassifier.update(feature, labelIsRelevant);
+				if (sentence.isRelevant()) {
+					fineGrainedClassifier.update(feature, sentence.getType());
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Could not update classifier: " + e.getMessage());
+		}
+		return true;
 	}
 }

@@ -10,12 +10,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.validation.ClassificationMetrics;
 
 /**
@@ -62,25 +60,6 @@ public class ClassifierTrainer {
 			isTrained = false;
 		}
 		return isTrained;
-	}
-
-	public boolean update(PartOfJiraIssueText sentence) {
-		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-		try {
-			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
-			// classifier needs numerical value
-			Integer labelIsRelevant = sentence.isRelevant() ? 1 : 0;
-
-			for (double[] feature : features) {
-				classifier.getBinaryClassifier().update(feature, labelIsRelevant);
-				if (sentence.isRelevant()) {
-					classifier.getFineGrainedClassifier().update(feature, sentence.getType());
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Could not update classifier: " + e.getMessage());
-		}
-		return true;
 	}
 
 	public TrainingData getTrainingData() {
