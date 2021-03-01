@@ -21,9 +21,9 @@ public class TestFineGrainedClassifier extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
+		TextClassifier classifier = TextClassifier.getInstance("TEST");
+		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.train();
 		fineGrainedClassifier = TextClassifier.getInstance("TEST").getFineGrainedClassifier();
 	}
 

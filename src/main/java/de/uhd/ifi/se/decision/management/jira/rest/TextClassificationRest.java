@@ -23,7 +23,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -87,7 +86,7 @@ public class TextClassificationRest {
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
+		TextClassifier trainer = new TextClassifier(projectKey, trainingFileName);
 		if (trainer.train()) {
 			return Response.ok().build();
 		}
@@ -105,7 +104,7 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
+		TextClassifier trainer = new TextClassifier(projectKey, trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
 		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
 		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
@@ -143,7 +142,7 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
+		TextClassifier trainer = TextClassifier.getInstance(projectKey);
 		File trainingFile = trainer.saveTrainingFile();
 
 		if (trainingFile != null) {

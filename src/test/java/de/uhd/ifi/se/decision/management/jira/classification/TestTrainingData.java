@@ -21,7 +21,7 @@ public class TestTrainingData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
+		File trainingFile = TestTextClassifier.getTestTrainingDataFile();
 		trainingData = new TrainingData(trainingFile);
 	}
 

@@ -17,8 +17,8 @@ public class TestPreprocessedData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		TextClassifier trainer = TextClassifier.getInstance("TEST");
+		trainer.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
 		trainingData = trainer.getTrainingData();
 	}
 

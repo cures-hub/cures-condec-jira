@@ -23,21 +23,21 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestClassifierTrainer extends TestSetUp {
-	private ClassifierTrainer trainer;
+public class TestTextClassifier extends TestSetUp {
+	private TextClassifier trainer;
 	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
 	@Before
 	public void setUp() {
 		init();
-		trainer = new ClassifierTrainer("TEST");
+		trainer = TextClassifier.getInstance("TEST");
 		trainer.setTrainingFile(getTestTrainingDataFile());
 	}
 
 	@Test
 	@NonTransactional
 	public void testOnlineClassificationTrainerSetTrainingData() {
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
+		trainer.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
 		assertTrue(trainer.train());
 	}
 
@@ -49,7 +49,7 @@ public class TestClassifierTrainer extends TestSetUp {
 		assertTrue(file.exists());
 		trainer.setTrainingFile(file);
 		assertNotNull(trainer.getTrainingData());
-		trainer = new ClassifierTrainer("TEST", file.getName());
+		trainer = new TextClassifier("TEST", file.getName());
 		assertTrue(trainer.train());
 		file.delete();
 	}
@@ -148,8 +148,7 @@ public class TestClassifierTrainer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefaultTrainingFile() {
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		File trainingFile = TestClassifierTrainer.getTestTrainingDataFile();
+		File trainingFile = TestTextClassifier.getTestTrainingDataFile();
 		assertTrue(trainingFile.exists());
 		trainer.setTrainingFile(trainingFile);
 	}
