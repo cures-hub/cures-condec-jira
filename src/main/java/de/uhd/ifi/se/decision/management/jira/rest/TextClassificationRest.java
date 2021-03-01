@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import smile.validation.ClassificationMetrics;
 
 /**
- * REST resource for text classification and its configuration
+ * REST resource for text classification and its configuration.
  */
 @Path("/classification")
 public class TextClassificationRest {
@@ -125,21 +123,14 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		StringBuilder builder = new StringBuilder();
-		List<String> textList = Collections.singletonList(text);
-
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-
-		boolean relevant = classifier.getBinaryClassifier().predict(textList)[0];
-		builder.append(relevant ? "Relevant" : "Irrelevant");
-
-		if (relevant) {
-			builder.append(": ");
-			KnowledgeType type = classifier.getFineGrainedClassifier().predict(textList).get(0);
-			builder.append(type.toString());
+		boolean isRelevant = classifier.getBinaryClassifier().predict(text);
+		String classificationResult = isRelevant ? "Relevant" : "Irrelevant";
+		if (isRelevant) {
+			KnowledgeType type = classifier.getFineGrainedClassifier().predict(text);
+			classificationResult += ": " + type.toString();
 		}
-		return Response.ok(ImmutableMap.of("content", builder.toString())).build();
-
+		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
 
 	@Path("/saveTrainingFile")

@@ -130,14 +130,14 @@
 		<dependency>
 			<groupId>com.atlassian.sal</groupId>
 			<artifactId>sal-api</artifactId>
-			<version>4.4.0</version>
+			<version>4.4.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Servlets -->
 		<dependency>
 			<groupId>com.atlassian.templaterenderer</groupId>
 			<artifactId>atlassian-template-renderer-api</artifactId>
-			<version>4.0.2</version>
+			<version>4.1.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -262,7 +262,7 @@
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.18.0</version>
+			<version>3.19.0</version>
 		</dependency>
 		<!-- Webhook -->
 		<dependency>

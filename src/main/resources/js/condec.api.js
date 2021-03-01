@@ -795,7 +795,7 @@
 		generalApi.postJSON(this.restPrefix + "/classification/classifyText?projectKey="
 			+ projectKey + "&text=" + text, null, function (error, response) {
 				if (error === null) {
-					callback(response.content);
+					callback(response.classificationResult);
 				} else {
 					callback("Error! Please check if the classifier is trained.");
 				}
