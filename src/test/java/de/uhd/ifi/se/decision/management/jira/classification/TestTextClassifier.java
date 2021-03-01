@@ -24,33 +24,33 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTextClassifier extends TestSetUp {
-	private TextClassifier trainer;
+	private TextClassifier classifier;
 	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
 	@Before
 	public void setUp() {
 		init();
-		trainer = TextClassifier.getInstance("TEST");
-		trainer.setTrainingFile(getTestTrainingDataFile());
+		classifier = TextClassifier.getInstance("TEST");
+		classifier.setTrainingFile(getTestTrainingDataFile());
 	}
 
 	@Test
 	@NonTransactional
 	public void testOnlineClassificationTrainerSetTrainingData() {
-		trainer.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
-		assertTrue(trainer.train());
+		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		assertTrue(classifier.train());
 	}
 
 	@Test
 	@NonTransactional
 	@Ignore
 	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
-		File file = trainer.saveTrainingFile();
+		File file = classifier.saveTrainingFile();
 		assertTrue(file.exists());
-		trainer.setTrainingFile(file);
-		assertNotNull(trainer.getTrainingData());
-		trainer = new TextClassifier("TEST", file.getName());
-		assertTrue(trainer.train());
+		classifier.setTrainingFile(file);
+		assertNotNull(classifier.getTrainingData());
+		classifier = new TextClassifier("TEST", file.getName());
+		assertTrue(classifier.train());
 		file.delete();
 	}
 
@@ -59,16 +59,16 @@ public class TestTextClassifier extends TestSetUp {
 	public void testDefaultArffFile() {
 		File file = getTestTrainingDataFile();
 		assertTrue(file.exists());
-		trainer.setTrainingFile(file);
+		classifier.setTrainingFile(file);
 	}
 
 	@Test
 	@NonTransactional
 	public void testEvaluateClassifier() {
-		trainer.train();
+		classifier.train();
 		boolean executionSuccessful = true;
 		try {
-			trainer.evaluateClassifier(3);
+			classifier.evaluateClassifier(3);
 		} catch (Exception e) {
 			executionSuccessful = false;
 		}
@@ -80,7 +80,7 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdate() {
-		trainer.train();
+		classifier.train();
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("In my opinion the query would be better!");
@@ -99,13 +99,13 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetInstances() {
-		assertNotNull(this.trainer.getTrainingData());
+		assertNotNull(this.classifier.getTrainingData());
 	}
 
 	@Test
 	@NonTransactional
 	public void testMakeBinaryPredicition() {
-		trainer.train();
+		classifier.train();
 		assertEquals(2, TextClassifier.getInstance("TEST").getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
@@ -150,7 +150,7 @@ public class TestTextClassifier extends TestSetUp {
 	public void testDefaultTrainingFile() {
 		File trainingFile = TestTextClassifier.getTestTrainingDataFile();
 		assertTrue(trainingFile.exists());
-		trainer.setTrainingFile(trainingFile);
+		classifier.setTrainingFile(trainingFile);
 	}
 
 }

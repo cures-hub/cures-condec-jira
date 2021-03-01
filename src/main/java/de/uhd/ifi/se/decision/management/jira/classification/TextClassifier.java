@@ -59,8 +59,7 @@ public class TextClassifier {
 	}
 
 	public TextClassifier(String projectKey, String fileName) {
-		new File(CLASSIFIER_DIRECTORY).mkdirs();
-		this.projectKey = projectKey;
+		this(projectKey);
 		if (fileName == null || fileName.isEmpty()) {
 			return;
 		}
