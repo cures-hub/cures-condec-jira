@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the automatic text classification for
- * one Jira project (see {@link DecisionKnowledgeProject}.
+ * one Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class TextClassificationConfiguration {
 
@@ -15,6 +15,7 @@ public class TextClassificationConfiguration {
 	private String selectedGroundTruthFileName;
 	private String lastEvaluationResults;
 	private String trainedClassifierName;
+	private boolean isOnlineLearningActivated;
 
 	public TextClassificationConfiguration() {
 		selectedGroundTruthFileName = "defaultTrainingData.csv";
@@ -60,5 +61,14 @@ public class TextClassificationConfiguration {
 	@JsonProperty("selectedTrainedClassifier")
 	public void setSelectedTrainedClassifier(String trainedClassifier) {
 		this.trainedClassifierName = trainedClassifier;
+	}
+
+	public boolean isOnlineLearningActivated() {
+		return isOnlineLearningActivated;
+	}
+
+	@JsonProperty("isOnlineLearningActivated")
+	public void setOnlineLearningActivated(boolean isOnlineLearningActivated) {
+		this.isOnlineLearningActivated = isOnlineLearningActivated;
 	}
 }

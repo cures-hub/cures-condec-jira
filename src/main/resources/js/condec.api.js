@@ -836,17 +836,16 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.useTrainedClassifier = function (projectKey, trainedClassifier) {
+	ConDecAPI.prototype.useTrainedClassifier = function (projectKey, trainedClassifier, isOnlineLearningActivated) {
 		generalApi.postJSON(this.restPrefix + "/classification/useTrainedClassifier.json?projectKey=" + projectKey + 
-				"&trainedClassifier=" + trainedClassifier,
+				"&trainedClassifier=" + trainedClassifier + "&isOnlineLearningActivated=" + isOnlineLearningActivated,
 			null,
 			function (error, response) {
 				if (error === null) {
 					showFlag("success", "The trained classifier was successfully set for the project.");
 				}
 			});
-	};
-	
+	};	
 
 	/*
 	 * external references: templates/settings/classificationSettings.vm

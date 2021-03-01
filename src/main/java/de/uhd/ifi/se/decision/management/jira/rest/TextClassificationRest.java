@@ -54,7 +54,8 @@ public class TextClassificationRest {
 	@Path("/useTrainedClassifier")
 	@POST
 	public Response useTrainedClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier,
+			@QueryParam("isOnlineLearningActivated") boolean isOnlineLearningActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -67,7 +68,8 @@ public class TextClassificationRest {
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		config.setSelectedTrainedClassifier(trainedClassifier);
-		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		config.setOnlineLearningActivated(isOnlineLearningActivated);
+		ConfigPersistenceManager.saveTextClassificationConfiguration(projectKey, config);
 		TextClassifier.getInstance(projectKey).setSelectedTrainedClassifier(trainedClassifier);
 		return Response.ok().build();
 	}
@@ -111,7 +113,7 @@ public class TextClassificationRest {
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		config.setLastEvaluationResults(evaluationResultsMessage);
-		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		ConfigPersistenceManager.saveTextClassificationConfiguration(projectKey, config);
 		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
