@@ -20,6 +20,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestClassifierTrainer extends TestSetUp {
@@ -87,6 +88,9 @@ public class TestClassifierTrainer extends TestSetUp {
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		sentence.setValidated(true);
 
+		TextClassificationConfiguration config = ConfigPersistenceManager.getTextClassificationConfiguration("TEST");
+		config.setOnlineLearningActivated(true);
+		ConfigPersistenceManager.saveTextClassificationConfiguration("TEST", config);
 		assertTrue(TextClassifier.getInstance("TEST").update(sentence));
 	}
 
