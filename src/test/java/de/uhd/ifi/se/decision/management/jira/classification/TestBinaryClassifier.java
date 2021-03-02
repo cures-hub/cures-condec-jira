@@ -24,7 +24,7 @@ public class TestBinaryClassifier extends TestSetUp {
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
 		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
-		binaryClassifier = TextClassifier.getInstance("TEST").getBinaryClassifier();
+		binaryClassifier = classifier.getBinaryClassifier();
 	}
 
 	@Test

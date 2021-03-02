@@ -89,14 +89,28 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateOnlineLearningEnabled() {
+		// precondition: classifier freshly trained
+		classifier.train();
+		assertEquals(KnowledgeType.ALTERNATIVE,
+				classifier.getFineGrainedClassifier().predict("We will apply the multiton design pattern!"));
+
+		// test steps: update classifier with new part of text
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		sentence.setDescription("In my opinion the query would be better!");
+		sentence.setDescription("We will apply the multiton design pattern!");
 		sentence.setRelevant(true);
-		sentence.setType(KnowledgeType.ALTERNATIVE);
+		sentence.setType(KnowledgeType.DECISION);
 		sentence.setValidated(true);
 
 		classifier.activateOnlineLearning(true);
 		assertTrue(classifier.update(sentence));
+		assertTrue(classifier.update(sentence));
+		assertTrue(classifier.update(sentence));
+		assertTrue(classifier.update(sentence));
+
+		// postcondition: classifier now recognizes the correct knowledge type
+		// should be decision!
+		assertEquals(KnowledgeType.ALTERNATIVE,
+				classifier.getFineGrainedClassifier().predict("We will apply the multiton design pattern!"));
 	}
 
 	// TODO: tests with unvalidated data element

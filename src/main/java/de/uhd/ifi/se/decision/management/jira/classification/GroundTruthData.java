@@ -184,15 +184,17 @@ public class GroundTruthData {
 	}
 
 	/**
+	 * 0,0,0,1,0 'I am a test sentence that is a decision.'
+	 * 
+	 * 1,0,0,0,0 'I am an alternative for the issue.'
+	 * 
+	 * 0,0,0,0,1 'And I am the issue for the decision and the alternative.'
+	 * 
 	 * @param trainingElements
 	 *            list of validated decision knowledge elements.
 	 * @return training dataframe for the supervised text classifier. The dataframe
 	 *         contains the knowledge type indicated by the value 1 (or 0 for type
 	 *         OTHER) and the summary of the element.
-	 * 
-	 *         0, 0, 0, 1, 0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I
-	 *         am an alternative for the issue.' 0,0,0,0,1 'And I am the issue for
-	 *         the decision and the alternative.'
 	 */
 	private static DataFrame buildDataFrame(List<KnowledgeElement> trainingElements) {
 		List<Tuple> rows = new ArrayList<>();

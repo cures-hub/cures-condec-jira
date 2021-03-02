@@ -164,8 +164,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return predictedKnowledgeType;
 	}
 
-	public void update(double[] feature, KnowledgeType label) {
-		super.update(feature, mapKnowledgeTypeToIndex(label));
+	public void update(double[][] trainingInstances, KnowledgeType label) {
+		super.update(trainingInstances, mapKnowledgeTypeToIndex(label));
 	}
 
 	/**

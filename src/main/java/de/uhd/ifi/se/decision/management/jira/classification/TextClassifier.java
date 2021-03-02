@@ -150,12 +150,9 @@ public class TextClassifier {
 			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
 			// classifier needs numerical value
 			int labelIsRelevant = sentence.isRelevant() ? 1 : 0;
-
-			for (double[] feature : features) {
-				binaryClassifier.update(feature, labelIsRelevant);
-				if (sentence.isRelevant()) {
-					fineGrainedClassifier.update(feature, sentence.getType());
-				}
+			binaryClassifier.update(features, labelIsRelevant);
+			if (sentence.isRelevant()) {
+				fineGrainedClassifier.update(features, sentence.getType());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Could not update classifier: " + e.getMessage());

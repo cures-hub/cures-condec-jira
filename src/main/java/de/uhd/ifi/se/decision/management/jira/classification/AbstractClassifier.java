@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -86,10 +87,12 @@ public abstract class AbstractClassifier {
 	 *            label for training, e.g. for the binary relevance or the knowledge
 	 *            type.
 	 */
-	public void update(double[] trainingSample, int trainingLabel) {
+	public void update(double[][] trainingSample, int trainingLabel) {
 		isCurrentlyTraining = true;
 		if (model instanceof OnlineClassifier) {
-			((OnlineClassifier<double[]>) model).update(trainingSample, trainingLabel);
+			int[] trainingLabelArray = new int[trainingSample.length];
+			Arrays.fill(trainingLabelArray, trainingLabel);
+			((OnlineClassifier<double[]>) model).update(trainingSample, trainingLabelArray);
 		}
 		isCurrentlyTraining = false;
 	}
@@ -106,8 +109,8 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * @param groundTruthData
-	 *            {@link GroundTruthData} used for evaluation. The classifier needs to
-	 *            be already trained on different data!
+	 *            {@link GroundTruthData} used for evaluation. The classifier needs
+	 *            to be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
 	public abstract Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData);
