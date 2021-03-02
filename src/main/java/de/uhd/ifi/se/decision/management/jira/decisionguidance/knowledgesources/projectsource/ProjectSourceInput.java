@@ -22,7 +22,7 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 	public abstract List<Recommendation> getResults(T input);
 
 	public void queryDatabase() {
-		knowledgeGraph = KnowledgeGraph.getOrCreate(this.name);
+		knowledgeGraph = KnowledgeGraph.getInstance(this.name);
 		if (this.knowledgeGraph != null)
 			knowledgeElements = this.knowledgeGraph.getElements(KnowledgeType.ISSUE);
 		else new ArrayList<>();

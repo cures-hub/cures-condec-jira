@@ -64,7 +64,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		Link linkToIssue = alternative.getLink(issue);
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(linkToIssue);
+		KnowledgeGraph.getInstance("TEST").removeEdge(linkToIssue);
 		linkToIssue = alternative.getLink(issue);
 		assertNull(linkToIssue);
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(alternative.getProject());

@@ -77,7 +77,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		Link linkToDecision = proArgument.getLink(decision);
 		assertNotNull(linkToDecision);
 
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(linkToDecision);
+		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
 		linkToDecision = proArgument.getLink(decision);
 		assertNull(linkToDecision);
 

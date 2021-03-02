@@ -88,7 +88,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 				.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		KnowledgeElement element = new KnowledgeElement(issueEvent.getIssue());
-		KnowledgeGraph.getOrCreate(element.getProject().getProjectKey()).removeVertex(element);
+		KnowledgeGraph.getInstance(element.getProject().getProjectKey()).removeVertex(element);
 	}
 
 	private void handleDeleteComment() {

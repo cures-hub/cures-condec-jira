@@ -428,7 +428,7 @@ public class FilterSettings {
 		}
 		if (elementKey.contains(":graph")) {
 			// not in database, only in RAM (singleton KnowledgeGraph object)
-			selectedElement = KnowledgeGraph.getOrCreate(elementKey.split(":")[0]).getElement(elementKey);
+			selectedElement = KnowledgeGraph.getInstance(elementKey.split(":")[0]).getElement(elementKey);
 			return;
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;

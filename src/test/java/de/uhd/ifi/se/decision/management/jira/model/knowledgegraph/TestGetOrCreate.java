@@ -22,8 +22,8 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectKeyValid() {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
-		assertEquals(graph, KnowledgeGraph.getOrCreate("TEST"));
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		assertEquals(graph, KnowledgeGraph.getInstance("TEST"));
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectKeyNull() {
-		assertNull(KnowledgeGraph.getOrCreate((String) null));
+		assertNull(KnowledgeGraph.getInstance((String) null));
 	}
 
 	@Test

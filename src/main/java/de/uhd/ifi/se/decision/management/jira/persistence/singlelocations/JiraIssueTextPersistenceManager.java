@@ -58,7 +58,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
+			KnowledgeGraph.getInstance(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -138,7 +138,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", projectKey,
 						jiraIssueId, commentId));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
+			KnowledgeGraph.getInstance(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 
@@ -336,7 +336,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText(databaseEntry);
 		if (sentence.getId() > 0 && sentence.isRelevant()) {
-			KnowledgeGraph.getOrCreate(projectKey).addVertex(sentence);
+			KnowledgeGraph.getInstance(projectKey).addVertex(sentence);
 		}
 		return sentence;
 	}
@@ -660,7 +660,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			sentence.setStatus(elementsInDatabase.get(i).getStatus());
 			updateInDatabase(sentence);
 			elementsInDatabase.set(i, sentence);
-			KnowledgeGraph.getOrCreate(projectKey).updateElement(sentence);
+			KnowledgeGraph.getInstance(projectKey).updateElement(sentence);
 			AutomaticLinkCreator.createSmartLinkForSentenceIfRelevant(sentence);
 		}
 		return elementsInDatabase;

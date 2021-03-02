@@ -65,7 +65,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	public void testGraphWithIrrelevantComment() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		String projectKey = sentence.getProject().getProjectKey();
-		graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getInstance(projectKey);
 		assertTrue(graph.containsVertex(sentence));
 	}
 
@@ -76,7 +76,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		String projectKey = sentence.getProject().getProjectKey();
-		graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getInstance(projectKey);
 		assertTrue(graph.containsVertex(sentence));
 	}
 

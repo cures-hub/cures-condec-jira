@@ -107,7 +107,7 @@ public class KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received since the knowledge element was not found."))
 					.build();
 		}
-		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getOrCreate(projectKey)
+		List<KnowledgeElement> unlinkedDecisionKnowledgeElements = KnowledgeGraph.getInstance(projectKey)
 				.getUnlinkedElements(element);
 		LOGGER.info("Unlinked elements for " + element.getKey() + " were retrieved.");
 		return Response.ok(unlinkedDecisionKnowledgeElements).build();

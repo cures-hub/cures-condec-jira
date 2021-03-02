@@ -40,10 +40,10 @@ public class TestDeleteElementsOfProject extends TestSetUp {
 		sentence.setCommentId(0);
 		manager.insertKnowledgeElement(sentence, user);
 
-		int numberOfNodesInGraph = KnowledgeGraph.getOrCreate("TEST").vertexSet().size();
+		int numberOfNodesInGraph = KnowledgeGraph.getInstance("TEST").vertexSet().size();
 		assertTrue(manager.getKnowledgeElements().size() > 0);
 		assertTrue(manager.deleteElementsOfProject());
 		assertEquals(0, manager.getKnowledgeElements().size());
-		assertTrue(KnowledgeGraph.getOrCreate("TEST").vertexSet().size() < numberOfNodesInGraph);
+		assertTrue(KnowledgeGraph.getInstance("TEST").vertexSet().size() < numberOfNodesInGraph);
 	}
 }

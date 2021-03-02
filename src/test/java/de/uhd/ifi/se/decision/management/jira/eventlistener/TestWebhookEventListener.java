@@ -78,7 +78,7 @@ public class TestWebhookEventListener extends TestSetUp {
 		IssueEvent event = new IssueEvent(issue, user, jiraComment, null, new MockGenericValue("test"),
 				new HashMap<String, String>(), EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(event);
-		KnowledgeGraph.getOrCreate("TEST").addVertex(new KnowledgeElement(issue));
+		KnowledgeGraph.getInstance("TEST").addVertex(new KnowledgeElement(issue));
 	}
 
 	@Test

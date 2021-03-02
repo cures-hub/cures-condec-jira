@@ -80,7 +80,7 @@ public class CodeFileExtractorAndMaintainer {
 		KnowledgeElement currentIssue = null;
 		KnowledgeElement currentAlternativeOrDecision = null;
 		for (KnowledgeElement element : elements) {
-			KnowledgeElement elementInGraph = KnowledgeGraph.getOrCreate(projectKey)
+			KnowledgeElement elementInGraph = KnowledgeGraph.getInstance(projectKey)
 					.addVertexNotBeingInDatabase(element);
 			Link link = new Link();
 			if (element.getType() == KnowledgeType.ISSUE) { // An issue is linked directly to the code file.
@@ -121,7 +121,7 @@ public class CodeFileExtractorAndMaintainer {
 					link = new Link(elementInGraph, currentIssue);
 				}
 			}
-			KnowledgeGraph.getOrCreate(projectKey).addEdgeNotBeingInDatabase(link);
+			KnowledgeGraph.getInstance(projectKey).addEdgeNotBeingInDatabase(link);
 		}
 	}
 

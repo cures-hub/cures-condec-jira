@@ -44,7 +44,7 @@ public class DecisionTable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
 
 	public DecisionTable(String projectKey) {
-		graph = KnowledgeGraph.getOrCreate(projectKey);
+		graph = KnowledgeGraph.getInstance(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		decisionTableData = new HashMap<>();
 	}

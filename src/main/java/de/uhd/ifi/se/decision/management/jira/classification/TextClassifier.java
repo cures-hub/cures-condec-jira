@@ -266,8 +266,13 @@ public class TextClassifier {
 		return trainingData.saveToFile(projectKey);
 	}
 
+	/**
+	 * @return list of relevant knowledge elements and irrelevant parts of text from
+	 *         the underlying software development project. This list can be used to
+	 *         train and evaluate the automatic text classifier.
+	 */
 	public List<KnowledgeElement> getKnowledgeElementsValidForTraining() {
-		Set<KnowledgeElement> allElementsInGraph = KnowledgeGraph.getOrCreate(projectKey).vertexSet();
+		Set<KnowledgeElement> allElementsInGraph = KnowledgeGraph.getInstance(projectKey).vertexSet();
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
 		for (KnowledgeElement element : allElementsInGraph) {
 			if (!element.getType().canBeDocumentedInJiraIssueText() && element.getType() != KnowledgeType.OTHER) {

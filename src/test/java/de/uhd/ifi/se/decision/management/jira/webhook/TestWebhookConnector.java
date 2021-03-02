@@ -138,7 +138,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testDeleteRootElementInTreeWorks() {
 		assertTrue(webhookConnector.deleteElement(element, user));
-		KnowledgeGraph.getOrCreate("TEST").addVertex(element);
+		KnowledgeGraph.getInstance("TEST").addVertex(element);
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testDeleteOtherElementInTreeWorks() {
 		element.setType("DESCRIPTION");
 		assertTrue(webhookConnector.deleteElement(element, user));
-		KnowledgeGraph.getOrCreate("TEST").addVertex(element);
+		KnowledgeGraph.getInstance("TEST").addVertex(element);
 	}
 
 	@Test

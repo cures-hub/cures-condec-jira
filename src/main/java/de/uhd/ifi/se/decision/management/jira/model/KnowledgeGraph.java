@@ -53,7 +53,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *            of the Jira project.
 	 * @return either a new or already existing {@link KnowledgeGraph} instance.
 	 */
-	public static KnowledgeGraph getOrCreate(String projectKey) {
+	public static KnowledgeGraph getInstance(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {
 			return null;
 		}
@@ -69,7 +69,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (project == null) {
 			return null;
 		}
-		return getOrCreate(project.getProjectKey());
+		return getInstance(project.getProjectKey());
 	}
 
 	public KnowledgeGraph() {

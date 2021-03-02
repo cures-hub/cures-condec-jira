@@ -223,7 +223,7 @@ public class KnowledgePersistenceManager {
 			databaseId = jiraIssuePersistenceManager.insertLink(link, user);
 			if (databaseId > 0) {
 				link.setId(databaseId);
-				KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+				KnowledgeGraph.getInstance(projectKey).addEdge(link);
 			}
 			updateIssueStatus(link, user);
 			return databaseId;
@@ -236,7 +236,7 @@ public class KnowledgePersistenceManager {
 		databaseId = GenericLinkManager.insertLink(link, user);
 		if (databaseId > 0) {
 			link.setId(databaseId);
-			KnowledgeGraph.getOrCreate(projectKey).addEdge(link);
+			KnowledgeGraph.getInstance(projectKey).addEdge(link);
 		}
 		updateIssueStatus(link, user);
 		return databaseId;
@@ -376,7 +376,7 @@ public class KnowledgePersistenceManager {
 		if (!deleteLink(formerLink, user)) {
 			return 0;
 		}
-		KnowledgeGraph.getOrCreate(projectKey).removeEdge(formerLink);
+		KnowledgeGraph.getInstance(projectKey).removeEdge(formerLink);
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 
@@ -398,7 +398,7 @@ public class KnowledgePersistenceManager {
 				.getManagerForSingleLocation(element);
 		boolean isDeleted = persistenceManager.deleteKnowledgeElement(element, user);
 		if (isDeleted) {
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(element);
+			KnowledgeGraph.getInstance(projectKey).removeVertex(element);
 		}
 		return isDeleted;
 	}
@@ -418,7 +418,7 @@ public class KnowledgePersistenceManager {
 		boolean isUpdated = persistenceManager.updateKnowledgeElement(element, user);
 		if (isUpdated) {
 			KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId());
-			KnowledgeGraph.getOrCreate(projectKey).updateElement(updatedElement);
+			KnowledgeGraph.getInstance(projectKey).updateElement(updatedElement);
 			for (KnowledgeElement issue : updatedElement.getNeighborsOfType(KnowledgeType.PROBLEM)) {
 				updateIssueStatus(issue, user);
 			}
@@ -452,7 +452,7 @@ public class KnowledgePersistenceManager {
 			return null;
 		}
 		KnowledgeElement elementWithId = persistenceManager.insertKnowledgeElement(element, user, parentElement);
-		KnowledgeGraph.getOrCreate(projectKey).addVertex(elementWithId);
+		KnowledgeGraph.getInstance(projectKey).addVertex(elementWithId);
 		return elementWithId;
 	}
 

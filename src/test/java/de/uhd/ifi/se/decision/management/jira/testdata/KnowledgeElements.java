@@ -96,7 +96,7 @@ public class KnowledgeElements {
 		linkedFileThatIsDone.setId(103);
 		linkedFileThatIsDone.setProject("TEST");
 
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		KnowledgeElement issueToBeLinked = new KnowledgeElement(jiraIssues.get(4));
 		KnowledgeElement decisionToBeLinked = new KnowledgeElement(jiraIssues.get(10));
 		graph.addVertexNotBeingInDatabase(issueToBeLinked);

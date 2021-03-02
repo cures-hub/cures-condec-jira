@@ -28,7 +28,7 @@ public class RationaleCompletenessCalculator {
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
-		List<KnowledgeElement> allSourceElements = KnowledgeGraph.getOrCreate(projectKey)
+		List<KnowledgeElement> allSourceElements = KnowledgeGraph.getInstance(projectKey)
 			.getElements(sourceElementType);
 		String sourceElementsWithTargetTypeLinked = "";
 		String sourceElementsWithoutTargetTypeLinked = "";

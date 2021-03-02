@@ -101,7 +101,7 @@ public class TestRDFSource extends TestSetUp {
 		alternative.setSummary("MySQL");
 		alternative.setId(123);
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(PROJECTKEY);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(PROJECTKEY);
 		graph.addEdge(link);
 
 
