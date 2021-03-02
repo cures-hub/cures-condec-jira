@@ -40,12 +40,12 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 * Trains the fine grained classifier.
 	 *
 	 * @param trainingData
-	 *            {@link TrainingData} read from csv file (see
+	 *            {@link GroundTruthData} read from csv file (see
 	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
 	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
-	public void train(TrainingData trainingData) {
+	public void train(GroundTruthData trainingData) {
 		isCurrentlyTraining = true;
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
@@ -67,14 +67,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
-		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+	public Map<String, ClassificationMetrics> evaluateClassifier(int k, GroundTruthData groundTruthData) {
+		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
 		Classifier<double[]> oldModel = model;
 
 		int[] truth = new int[0];
 		int[] prediction = new int[0];
-		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			train(entry.getKey());
 			String[] sentences = entry.getValue().getRelevantSentences();
 			int[] truthForFold = entry.getValue().getKnowledgeTypeLabelsForRelevantSentences();
@@ -91,7 +91,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
 

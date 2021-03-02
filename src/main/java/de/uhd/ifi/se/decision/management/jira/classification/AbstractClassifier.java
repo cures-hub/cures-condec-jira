@@ -65,7 +65,7 @@ public abstract class AbstractClassifier {
 	 *
 	 * @param trainingData
 	 */
-	public abstract void train(TrainingData trainingData);
+	public abstract void train(GroundTruthData trainingData);
 
 	/**
 	 * @param sample
@@ -98,19 +98,19 @@ public abstract class AbstractClassifier {
 	 * @param k
 	 *            for k-fold cross-validation. (Typical values are 3 or 10.)
 	 * @param groundTruthData
-	 *            {@link TrainingData} used for training and evaluation in k-fold
+	 *            {@link GroundTruthData} used for training and evaluation in k-fold
 	 *            cross-validation.
 	 * @return map of evaluation results.
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, GroundTruthData groundTruthData);
 
 	/**
 	 * @param groundTruthData
-	 *            {@link TrainingData} used for evaluation. The classifier needs to
+	 *            {@link GroundTruthData} used for evaluation. The classifier needs to
 	 *            be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.

@@ -12,7 +12,7 @@ import smile.math.MathEx;
 
 public class TestPreprocessedData extends TestSetUp {
 
-	private TrainingData trainingData;
+	private GroundTruthData trainingData;
 
 	@Before
 	public void setUp() {

@@ -34,7 +34,8 @@ import smile.io.Write;
  * {@link KnowledgeGraph) in such a way that it can be used to train and
  * evaluate the {@link TextClassifier}.
  * 
- * Is also responsible for reading and saving training data from/to .csv files.
+ * Is also responsible for reading and saving ground truth data from/to .csv
+ * files.
  * 
  * @see #getAllSentences()
  * @see #getRelevanceLabelsForAllSentences()
@@ -42,8 +43,8 @@ import smile.io.Write;
  * @see #getRelevantSentences()
  * @see #getKnowledgeTypeLabelsForRelevantSentences()
  */
-public class TrainingData {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TrainingData.class);
+public class GroundTruthData {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GroundTruthData.class);
 
 	private DataFrame dataFrame;
 	private Map<String, Integer> allSentenceRelevanceMap;
@@ -59,7 +60,7 @@ public class TrainingData {
 	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
 	 *            current {@link KnowledgeGraph).
 	 */
-	public TrainingData(DataFrame dataFrame) {
+	public GroundTruthData(DataFrame dataFrame) {
 		this.dataFrame = dataFrame;
 		allSentenceRelevanceMap = new LinkedHashMap<>();
 		relevantSentenceKnowledgeTypeLabelMap = new LinkedHashMap<>();
@@ -69,7 +70,7 @@ public class TrainingData {
 	/**
 	 * Reads the defaultTrainingData.csv that comes with the plugin.
 	 */
-	public TrainingData() {
+	public GroundTruthData() {
 		this(readDataFrameFromDefaultTrainingDataCSVFile());
 		this.fileName = "defaultTrainingData";
 	}
@@ -81,7 +82,7 @@ public class TrainingData {
 	 *            of a .csv file with training data. The file must be stored in the
 	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
 	 */
-	public TrainingData(String fileName) {
+	public GroundTruthData(String fileName) {
 		this(readDataFrameFromCSVFile(fileName));
 		this.fileName = fileName;
 	}
@@ -93,20 +94,20 @@ public class TrainingData {
 	 *            a .csv file with training data. The file must be stored in the
 	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
 	 */
-	public TrainingData(File file) {
+	public GroundTruthData(File file) {
 		this(readDataFrameFromCSVFile(file));
 		this.fileName = file.getName();
 	}
 
 	/**
-	 * Creates a {@link TrainingData} object including a {@link DataFrame} from the
-	 * given {@link KnowledgeElement}s.
+	 * Creates a {@link GroundTruthData} object including a {@link DataFrame} from
+	 * the given {@link KnowledgeElement}s.
 	 * 
 	 * @param fileName
 	 *            of a .csv file with training data. The file must be stored in the
 	 *            {@link TextClassifier#CLASSIFIER_DIRECTORY}.
 	 */
-	public TrainingData(List<KnowledgeElement> trainingElements) {
+	public GroundTruthData(List<KnowledgeElement> trainingElements) {
 		this(buildDataFrame(trainingElements));
 	}
 
@@ -327,8 +328,9 @@ public class TrainingData {
 	 * @param k
 	 * @return
 	 */
-	public static Map<TrainingData, TrainingData> splitForKFoldCrossValidation(int k, List<KnowledgeElement> elements) {
-		Map<TrainingData, TrainingData> splitData = new HashMap<>();
+	public static Map<GroundTruthData, GroundTruthData> splitForKFoldCrossValidation(int k,
+			List<KnowledgeElement> elements) {
+		Map<GroundTruthData, GroundTruthData> splitData = new HashMap<>();
 		Collections.shuffle(elements);
 		int chunkSize = (int) Math.ceil(elements.size() / k);
 		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
@@ -341,8 +343,8 @@ public class TrainingData {
 					trainingElements.addAll(parts.get(j));
 				}
 			}
-			TrainingData trainingData = new TrainingData(trainingElements);
-			TrainingData evaluationData = new TrainingData(evaluationElements);
+			GroundTruthData trainingData = new GroundTruthData(trainingElements);
+			GroundTruthData evaluationData = new GroundTruthData(evaluationElements);
 			splitData.put(trainingData, evaluationData);
 		}
 		return splitData;

@@ -31,7 +31,7 @@ public class TextClassifier {
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
 	private String projectKey;
-	private TrainingData groundTruthData;
+	private GroundTruthData groundTruthData;
 
 	/**
 	 * @issue What is the best place to store the supervised text classifier related
@@ -49,7 +49,7 @@ public class TextClassifier {
 		new File(CLASSIFIER_DIRECTORY).mkdirs();
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
-		groundTruthData = new TrainingData();
+		groundTruthData = new GroundTruthData();
 	}
 
 	private TextClassifier(String projectKey) {
@@ -191,7 +191,7 @@ public class TextClassifier {
 		if (fileName == null || fileName.isEmpty()) {
 			return false;
 		}
-		groundTruthData = new TrainingData(fileName);
+		groundTruthData = new GroundTruthData(fileName);
 		return train();
 	}
 
@@ -220,7 +220,7 @@ public class TextClassifier {
 	 * @return ground truth data that the classifier can be trained and evaluated
 	 *         on.
 	 */
-	public TrainingData getGroundTruthData() {
+	public GroundTruthData getGroundTruthData() {
 		return groundTruthData;
 	}
 
@@ -231,7 +231,7 @@ public class TextClassifier {
 	 *            file containing ground truth to train and evaluate the classifier.
 	 */
 	public void setTrainingFile(File file) {
-		groundTruthData = new TrainingData(file);
+		groundTruthData = new GroundTruthData(file);
 	}
 
 	/**
@@ -241,7 +241,7 @@ public class TextClassifier {
 	 *            file containing ground truth to train and evaluate the classifier.
 	 */
 	public void setTrainingFile(String fileName) {
-		groundTruthData = new TrainingData(fileName);
+		groundTruthData = new GroundTruthData(fileName);
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class TextClassifier {
 	 *         could not be saved.
 	 */
 	public File saveTrainingFile() {
-		TrainingData trainingData = new TrainingData(getKnowledgeElementsValidForTraining());
+		GroundTruthData trainingData = new GroundTruthData(getKnowledgeElementsValidForTraining());
 		return trainingData.saveToFile(projectKey);
 	}
 
