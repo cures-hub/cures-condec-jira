@@ -240,7 +240,7 @@ public class TextClassifier {
 	 * @param fileName
 	 *            file containing ground truth to train and evaluate the classifier.
 	 */
-	public void setTrainingFile(String fileName) {
+	public void setGroundTruthFile(String fileName) {
 		groundTruthData = new GroundTruthData(fileName);
 	}
 

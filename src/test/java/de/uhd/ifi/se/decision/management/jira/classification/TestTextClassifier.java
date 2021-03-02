@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -23,19 +23,26 @@ import smile.validation.ClassificationMetrics;
 
 public class TestTextClassifier extends TestSetUp {
 
-	private TextClassifier classifier;
+	private static TextClassifier classifier;
 	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
-	@Before
-	public void setUp() {
+	@BeforeClass
+	public static void setUp() {
 		init();
 		classifier = TextClassifier.getInstance("TEST");
 		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		classifier.train();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	@NonTransactional
+	public void testGetInstanceProjectKeyInvalid() {
+		TextClassifier.getInstance(null);
 	}
 
 	@Test
 	@NonTransactional
-	public void testSetTrainingData() {
+	public void testSetGroundTruthDataThroughFile() {
 		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		assertEquals(TestGroundTruthData.getTestGroundTruthDataFile().getName(),
 				classifier.getGroundTruthData().getFileName());
@@ -43,15 +50,16 @@ public class TestTextClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
-		File file = classifier.saveTrainingFile();
-		assertTrue(file.exists());
-		classifier.setGroundTruthFile(file);
-		assertNotNull(classifier.getGroundTruthData());
-		classifier = TextClassifier.getInstance("TEST");
-		assertTrue(classifier.train(file.getName()));
-		file.delete();
+	public void testSetGroundTruthDataThroughFileName() {
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile().getName());
+		assertEquals(TestGroundTruthData.getTestGroundTruthDataFile().getName(),
+				classifier.getGroundTruthData().getFileName());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetGroundTruthData() {
+		assertTrue(classifier.getGroundTruthData().getDataFrame().size() > 30);
 	}
 
 	@Test
@@ -66,8 +74,7 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testEvaluateClassifierOnSameDataAsTraining() {
 		// Training and evaluating the classifier on the same data should not be done in
-		// reality!
-		classifier.train();
+		// reality, this is only for unit testing!
 		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(-1);
 		assertEquals(0.9, evaluationResults.get("Binary").f1, 0.1);
 		assertEquals(0.9, evaluationResults.get("Fine-grained Alternative").f1, 0.1);
@@ -76,8 +83,6 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdate() {
-		classifier.train();
-
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("In my opinion the query would be better!");
 		sentence.setRelevant(true);
@@ -94,21 +99,27 @@ public class TestTextClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetInstances() {
-		assertNotNull(this.classifier.getGroundTruthData());
+	public void testMakeBinaryPrediction() {
+		assertEquals(2, classifier.getBinaryClassifier().predict(TEST_SENTENCES).length);
 	}
 
 	@Test
 	@NonTransactional
-	public void testMakeBinaryPredicition() {
-		classifier.train();
-		assertEquals(2, TextClassifier.getInstance("TEST").getBinaryClassifier().predict(TEST_SENTENCES).length);
+	public void testMakeFineGrainedPrediction() {
+		assertEquals(2, classifier.getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testMakeFineGrainedPredicition() {
-		assertEquals(2, TextClassifier.getInstance("TEST").getFineGrainedClassifier().predict(TEST_SENTENCES).size());
+	public void testTrainInvalidFile() {
+		assertFalse(classifier.train(null));
+		assertFalse(classifier.train(""));
+	}
+
+	@Test
+	@NonTransactional
+	public void testTrainValidFile() {
+		assertTrue(classifier.train(TestGroundTruthData.getTestGroundTruthDataFile().getName()));
 	}
 
 	@Test
@@ -121,6 +132,19 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testIsTrained() {
 		assertTrue(classifier.isTrained());
+	}
+
+	@Test
+	@NonTransactional
+	@Ignore
+	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
+		File file = classifier.saveTrainingFile();
+		assertTrue(file.exists());
+		classifier.setGroundTruthFile(file);
+		assertNotNull(classifier.getGroundTruthData());
+		classifier = TextClassifier.getInstance("TEST");
+		assertTrue(classifier.train(file.getName()));
+		file.delete();
 	}
 
 }

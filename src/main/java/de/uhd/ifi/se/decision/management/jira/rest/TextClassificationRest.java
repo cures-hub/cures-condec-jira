@@ -105,7 +105,7 @@ public class TextClassificationRest {
 		}
 
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-		classifier.setTrainingFile(trainingFileName);
+		classifier.setGroundTruthFile(trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
 		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
 		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
