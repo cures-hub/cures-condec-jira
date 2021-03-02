@@ -17,7 +17,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import smile.validation.ClassificationMetrics;
 
@@ -82,17 +81,22 @@ public class TestTextClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testUpdate() {
+	public void testUpdateOnlineLearningDisabled() {
+		classifier.activateOnlineLearning(false);
+		assertFalse(classifier.update(null));
+	}
+
+	@Test
+	@NonTransactional
+	public void testUpdateOnlineLearningEnabled() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("In my opinion the query would be better!");
 		sentence.setRelevant(true);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		sentence.setValidated(true);
 
-		TextClassificationConfiguration config = ConfigPersistenceManager.getTextClassificationConfiguration("TEST");
-		config.setOnlineLearningActivated(true);
-		ConfigPersistenceManager.saveTextClassificationConfiguration("TEST", config);
-		assertTrue(TextClassifier.getInstance("TEST").update(sentence));
+		classifier.activateOnlineLearning(true);
+		assertTrue(classifier.update(sentence));
 	}
 
 	// TODO: tests with unvalidated data element

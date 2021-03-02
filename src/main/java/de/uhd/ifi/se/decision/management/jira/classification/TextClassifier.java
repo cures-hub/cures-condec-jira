@@ -120,6 +120,20 @@ public class TextClassifier {
 	}
 
 	/**
+	 * @param isOnlineLearningActivated
+	 *            true if the classifier should be updated whenever a manually
+	 *            approved {@link PartOfJiraIssueText} is created or updated.
+	 * 
+	 * @see {@link #update(PartOfJiraIssueText)}
+	 */
+	public void activateOnlineLearning(boolean isOnlineLearningActivated) {
+		TextClassificationConfiguration config = ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey);
+		config.setOnlineLearningActivated(isOnlineLearningActivated);
+		ConfigPersistenceManager.saveTextClassificationConfiguration(projectKey, config);
+	}
+
+	/**
 	 * Updates the classifier using supervised training data. Used for online
 	 * training. That means that manually approved parts of text are directly used
 	 * for training.
