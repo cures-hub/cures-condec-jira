@@ -230,7 +230,7 @@ public class TextClassifier {
 	 * @param file
 	 *            file containing ground truth to train and evaluate the classifier.
 	 */
-	public void setTrainingFile(File file) {
+	public void setGroundTruthFile(File file) {
 		groundTruthData = new GroundTruthData(file);
 	}
 

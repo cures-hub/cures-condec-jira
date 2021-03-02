@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.TestTextClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TestGroundTruthData;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
@@ -43,7 +43,7 @@ public class TestClassifyWholeProject extends TestSetUp {
 	public void testRequestValidProjectKeyExistsTrainedClassifier() {
 		ConfigPersistenceManager.setTextClassifierActivated("TEST", true);
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		assertEquals(Status.OK.getStatusCode(), classificationRest.classifyWholeProject(request, "TEST").getStatus());
 	}

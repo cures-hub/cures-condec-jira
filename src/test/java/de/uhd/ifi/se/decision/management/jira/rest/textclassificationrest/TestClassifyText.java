@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.classification.TestTextClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.TestGroundTruthData;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -37,7 +37,7 @@ public class TestClassifyText extends TestSetUp {
 	@Test
 	public void testRequestValidProjectKeyValidTextValid() {
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		assertEquals(Status.OK.getStatusCode(),
 				classificationRest.classifyText(request, "TEST", "How can we implement?").getStatus());

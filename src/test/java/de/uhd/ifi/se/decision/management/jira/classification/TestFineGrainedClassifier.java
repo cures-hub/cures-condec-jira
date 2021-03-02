@@ -22,7 +22,7 @@ public class TestFineGrainedClassifier extends TestSetUp {
 	public void setUp() {
 		init();
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		fineGrainedClassifier = TextClassifier.getInstance("TEST").getFineGrainedClassifier();
 	}

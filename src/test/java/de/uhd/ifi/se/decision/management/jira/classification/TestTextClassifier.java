@@ -3,15 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
+import smile.validation.ClassificationMetrics;
 
 public class TestTextClassifier extends TestSetUp {
 
@@ -32,14 +30,15 @@ public class TestTextClassifier extends TestSetUp {
 	public void setUp() {
 		init();
 		classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 	}
 
 	@Test
 	@NonTransactional
-	public void testOnlineClassificationTrainerSetTrainingData() {
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
-		assertTrue(classifier.train());
+	public void testSetTrainingData() {
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		assertEquals(TestGroundTruthData.getTestGroundTruthDataFile().getName(),
+				classifier.getGroundTruthData().getFileName());
 	}
 
 	@Test
@@ -48,7 +47,7 @@ public class TestTextClassifier extends TestSetUp {
 	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
 		File file = classifier.saveTrainingFile();
 		assertTrue(file.exists());
-		classifier.setTrainingFile(file);
+		classifier.setGroundTruthFile(file);
 		assertNotNull(classifier.getGroundTruthData());
 		classifier = TextClassifier.getInstance("TEST");
 		assertTrue(classifier.train(file.getName()));
@@ -57,26 +56,22 @@ public class TestTextClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testDefaultArffFile() {
-		File file = getTestTrainingDataFile();
-		assertTrue(file.exists());
-		classifier.setTrainingFile(file);
+	public void testEvaluateClassifierWith3FoldCrossValidation() {
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(3);
+		assertEquals(0.8, evaluationResults.get("Binary").f1, 0.1);
+		assertEquals(0.1, evaluationResults.get("Fine-grained Alternative").f1, 0.4);
 	}
 
 	@Test
 	@NonTransactional
-	public void testEvaluateClassifier() {
+	public void testEvaluateClassifierOnSameDataAsTraining() {
+		// Training and evaluating the classifier on the same data should not be done in
+		// reality!
 		classifier.train();
-		boolean executionSuccessful = true;
-		try {
-			classifier.evaluate(3);
-		} catch (Exception e) {
-			executionSuccessful = false;
-		}
-		assertTrue(executionSuccessful);
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(-1);
+		assertEquals(0.9, evaluationResults.get("Binary").f1, 0.1);
+		assertEquals(0.9, evaluationResults.get("Fine-grained Alternative").f1, 0.1);
 	}
-
-	// TODO: evaluate without existing dec. know.
 
 	@Test
 	@NonTransactional
@@ -116,42 +111,16 @@ public class TestTextClassifier extends TestSetUp {
 		assertEquals(2, TextClassifier.getInstance("TEST").getFineGrainedClassifier().predict(TEST_SENTENCES).size());
 	}
 
-	public static File getTestTrainingDataFile() {
-		File trimmedDefaultFile = new File(TestFileManager.TEST_TRAINING_FILE_PATH);
-		if (trimmedDefaultFile.exists()) {
-			return trimmedDefaultFile;
-		}
-
-		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.csv");
-
-		int numberOfLines = 42;
-
-		BufferedWriter writer = null;
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
-			writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
-
-			String currentLine;
-			int counter = 0;
-			while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
-				writer.write(currentLine + System.getProperty("line.separator"));
-				counter++;
-			}
-			writer.close();
-			reader.close();
-			return trimmedDefaultFile;
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		return fullDefaultFile;
+	@Test
+	@NonTransactional
+	public void testIsTraining() {
+		assertFalse(classifier.isTraining());
 	}
 
 	@Test
 	@NonTransactional
-	public void testDefaultTrainingFile() {
-		File trainingFile = TestTextClassifier.getTestTrainingDataFile();
-		assertTrue(trainingFile.exists());
-		classifier.setTrainingFile(trainingFile);
+	public void testIsTrained() {
+		assertTrue(classifier.isTrained());
 	}
 
 }

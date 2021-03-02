@@ -22,7 +22,7 @@ public class TestBinaryClassifier extends TestSetUp {
 	public void setUp() {
 		init();
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		binaryClassifier = TextClassifier.getInstance("TEST").getBinaryClassifier();
 	}

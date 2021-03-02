@@ -4,7 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,13 +26,13 @@ public class TestGroundTruthData extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		File trainingFile = TestTextClassifier.getTestTrainingDataFile();
+		File trainingFile = getTestGroundTruthDataFile();
 		groundTruthData = new GroundTruthData(trainingFile);
 	}
 
 	@Test
 	@NonTransactional
-	public void testTraingDataNotNull() {
+	public void testGroundTruthDataNotNull() {
 		assertNotNull(groundTruthData);
 	}
 
@@ -69,7 +74,7 @@ public class TestGroundTruthData extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testCreateTrainingDataFromKnowledgeElements() {
+	public void testCreateGroundTruthDataFromKnowledgeElements() {
 		DataFrame dataFrame = new GroundTruthData(KnowledgeElements.getTestKnowledgeElements()).getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
@@ -77,7 +82,7 @@ public class TestGroundTruthData extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testCreateTrainingRow() {
+	public void testCreateGroundTruthDataEntry() {
 		Object[] rowValues = GroundTruthData.createTrainingRow(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(0, rowValues[0]);
 		assertEquals("WI: Implement feature", rowValues[5]);
@@ -85,7 +90,7 @@ public class TestGroundTruthData extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testCreateTrainingDataFromFileName() {
+	public void testCreateGroundTruthDataFromFileName() {
 		DataFrame dataFrame = new GroundTruthData("defaultTrainingData.csv").getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
@@ -93,7 +98,7 @@ public class TestGroundTruthData extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testCreateTrainingDataFromDafaultTrainingFile() {
+	public void testCreateGroundTruthDataFromDafaultFile() {
 		DataFrame dataFrame = new GroundTruthData().getDataFrame();
 		assertEquals(5, dataFrame.columnIndex("sentence"));
 		assertTrue(dataFrame.size() > 1);
@@ -120,6 +125,58 @@ public class TestGroundTruthData extends TestSetUp {
 	public void testCreateFileNameProjectNull() {
 		String fileName = GroundTruthData.createTrainingDataFileName(null);
 		assertTrue(fileName.startsWith("-"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testDefaultGroundTruthDataFile() {
+		File file = TestGroundTruthData.getTestGroundTruthDataFile();
+		assertTrue(file.exists());
+	}
+
+	/**
+	 * @issue Which parts of text should we use to train and evaluate the classifier
+	 *        during unit testing?
+	 * @decision Use a subset of the default training data that comes with the
+	 *           ConDec plugin!
+	 * @pro To only use a subset increases the time efficiency of unit testing.
+	 * @alternative We could use the entire default training data during unit
+	 *              testing.
+	 * @pro This would make the evaluation results more realistic than when only
+	 *      using a few parts of text.
+	 * 
+	 * @return ground truth data set for unit tests that only covers a few parts of
+	 *         text so that training and evaluation of the classifier in unit tests
+	 *         is fast.
+	 */
+	public static File getTestGroundTruthDataFile() {
+		File trimmedDefaultFile = new File(TestFileManager.TEST_TRAINING_FILE_PATH);
+		if (trimmedDefaultFile.exists()) {
+			return trimmedDefaultFile;
+		}
+
+		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.csv");
+
+		int numberOfLines = 42;
+
+		BufferedWriter writer = null;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(fullDefaultFile));
+			writer = new BufferedWriter(new FileWriter(trimmedDefaultFile));
+
+			String currentLine;
+			int counter = 0;
+			while ((currentLine = reader.readLine()) != null && counter < numberOfLines) {
+				writer.write(currentLine + System.getProperty("line.separator"));
+				counter++;
+			}
+			writer.close();
+			reader.close();
+			return trimmedDefaultFile;
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		return fullDefaultFile;
 	}
 
 }

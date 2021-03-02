@@ -27,7 +27,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 	public void setUp() {
 		init();
 		TextClassifier classifier = TextClassifier.getInstance("TEST");
-		classifier.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		classificationManager = new ClassificationManagerForJiraIssueText("TEST");
 		sentences = JiraIssues.getSentencesForCommentText(
