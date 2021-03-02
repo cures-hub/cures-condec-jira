@@ -86,8 +86,8 @@ public class TextClassificationRest {
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
-		TextClassifier trainer = new TextClassifier(projectKey, trainingFileName);
-		if (trainer.train()) {
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+		if (classifier.train(trainingFileName)) {
 			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -104,8 +104,9 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 
-		TextClassifier trainer = new TextClassifier(projectKey, trainingFileName);
-		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+		classifier.setTrainingFile(trainingFileName);
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
 		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
 		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
 		evaluationResultsMessage += evaluationResults.toString();

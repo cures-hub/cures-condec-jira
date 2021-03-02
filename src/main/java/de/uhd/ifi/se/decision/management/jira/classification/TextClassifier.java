@@ -31,7 +31,7 @@ public class TextClassifier {
 	private BinaryClassifier binaryClassifier;
 	private FineGrainedClassifier fineGrainedClassifier;
 	private String projectKey;
-	private TrainingData trainingData;
+	private TrainingData groundTruthData;
 
 	/**
 	 * @issue What is the best place to store the supervised text classifier related
@@ -44,26 +44,22 @@ public class TextClassifier {
 
 	public static Map<String, TextClassifier> instances = new HashMap<>();
 
-	private TextClassifier(String projectKey) {
+	private TextClassifier() {
 		LOGGER.info("New text classifier was created");
 		new File(CLASSIFIER_DIRECTORY).mkdirs();
-		trainingData = new TrainingData();
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
+		groundTruthData = new TrainingData();
+	}
+
+	private TextClassifier(String projectKey) {
+		this();
 		this.projectKey = projectKey;
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		String prefix = config.getPrefixOfSelectedGroundTruthFileName();
 		binaryClassifier = new BinaryClassifier(prefix);
 		fineGrainedClassifier = new FineGrainedClassifier(5, prefix);
-	}
-
-	public TextClassifier(String projectKey, String fileName) {
-		this(projectKey);
-		if (fileName == null || fileName.isEmpty()) {
-			return;
-		}
-		trainingData = new TrainingData(fileName);
 	}
 
 	/**
@@ -159,22 +155,23 @@ public class TextClassifier {
 	 * @param k
 	 *            number of folds in k-fold cross-validation.
 	 *
-	 * @return map of evaluation results
+	 * @return map of evaluation results (precision, recall, F1-score, accuracy,
+	 *         ...).
 	 */
-	public Map<String, ClassificationMetrics> evaluateClassifier(int k) {
+	public Map<String, ClassificationMetrics> evaluate(int k) {
 		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
-				+ trainingData.getFileName());
+				+ groundTruthData.getFileName());
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluateClassifier(k, trainingData));
-			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(k, trainingData));
+			resultsMap.putAll(binaryClassifier.evaluateClassifier(k, groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(k, groundTruthData));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
-			resultsMap.putAll(binaryClassifier.evaluateClassifier(trainingData));
-			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(trainingData));
+			resultsMap.putAll(binaryClassifier.evaluateClassifier(groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(groundTruthData));
 		}
 
 		LOGGER.info("Finished evaluation: " + resultsMap.toString());
@@ -182,19 +179,36 @@ public class TextClassifier {
 	}
 
 	/**
-	 * Trains the Classifier with the Data from the Database that was set and
-	 * validated from the user. Creates a new model Files that can be used to
-	 * classify the comments and description of a Jira issue and Git-commit
-	 * messages.
+	 * Trains the classifier with the given ground truth data that needs to manually
+	 * approved by the user. Creates new classifier model files to classify the
+	 * comments and description of a Jira issue and git commit messages.
+	 * 
+	 * @param fileName
+	 *            of the ground truth file used for training.
+	 * @return true if training succeeded.
 	 */
-	// is called after setting training-file
+	public boolean train(String fileName) {
+		if (fileName == null || fileName.isEmpty()) {
+			return false;
+		}
+		groundTruthData = new TrainingData(fileName);
+		return train();
+	}
+
+	/**
+	 * Trains the classifier with the given ground truth data that needs to manually
+	 * approved by the user. Creates new classifier model files to classify the
+	 * comments and description of a Jira issue and git commit messages.
+	 * 
+	 * @return true if training succeeded.
+	 */
 	public boolean train() {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");
-			binaryClassifier.train(trainingData);
+			binaryClassifier.train(groundTruthData);
 			LOGGER.debug("Fine-grained classifier training started.");
-			fineGrainedClassifier.train(trainingData);
+			fineGrainedClassifier.train(groundTruthData);
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;
@@ -202,18 +216,32 @@ public class TextClassifier {
 		return isTrained;
 	}
 
-	public TrainingData getTrainingData() {
-		return trainingData;
+	/**
+	 * @return ground truth data that the classifier can be trained and evaluated
+	 *         on.
+	 */
+	public TrainingData getGroundTruthData() {
+		return groundTruthData;
 	}
 
 	/**
-	 * Reads training data from a file to train the classifier.
+	 * Sets the ground truth data from a file to train and evaluate the classifier.
 	 *
 	 * @param file
-	 *            file to train the classifier.
+	 *            file containing ground truth to train and evaluate the classifier.
 	 */
 	public void setTrainingFile(File file) {
-		trainingData = new TrainingData(file);
+		groundTruthData = new TrainingData(file);
+	}
+
+	/**
+	 * Sets the ground truth data from a file to train and evaluate the classifier.
+	 *
+	 * @param fileName
+	 *            file containing ground truth to train and evaluate the classifier.
+	 */
+	public void setTrainingFile(String fileName) {
+		groundTruthData = new TrainingData(fileName);
 	}
 
 	/**

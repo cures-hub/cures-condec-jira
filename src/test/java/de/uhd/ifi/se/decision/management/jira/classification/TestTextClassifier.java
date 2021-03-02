@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTextClassifier extends TestSetUp {
+
 	private TextClassifier classifier;
 	private static final List<String> TEST_SENTENCES = Arrays.asList("Pizza is preferred", "I have an issue");
 
@@ -48,9 +49,9 @@ public class TestTextClassifier extends TestSetUp {
 		File file = classifier.saveTrainingFile();
 		assertTrue(file.exists());
 		classifier.setTrainingFile(file);
-		assertNotNull(classifier.getTrainingData());
-		classifier = new TextClassifier("TEST", file.getName());
-		assertTrue(classifier.train());
+		assertNotNull(classifier.getGroundTruthData());
+		classifier = TextClassifier.getInstance("TEST");
+		assertTrue(classifier.train(file.getName()));
 		file.delete();
 	}
 
@@ -68,7 +69,7 @@ public class TestTextClassifier extends TestSetUp {
 		classifier.train();
 		boolean executionSuccessful = true;
 		try {
-			classifier.evaluateClassifier(3);
+			classifier.evaluate(3);
 		} catch (Exception e) {
 			executionSuccessful = false;
 		}
@@ -99,7 +100,7 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetInstances() {
-		assertNotNull(this.classifier.getTrainingData());
+		assertNotNull(this.classifier.getGroundTruthData());
 	}
 
 	@Test

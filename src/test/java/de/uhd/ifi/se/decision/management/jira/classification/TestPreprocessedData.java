@@ -19,7 +19,7 @@ public class TestPreprocessedData extends TestSetUp {
 		init();
 		TextClassifier trainer = TextClassifier.getInstance("TEST");
 		trainer.setTrainingFile(TestTextClassifier.getTestTrainingDataFile());
-		trainingData = trainer.getTrainingData();
+		trainingData = trainer.getGroundTruthData();
 	}
 
 	@Test
