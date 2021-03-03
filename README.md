@@ -42,14 +42,14 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
-- [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/installed_plugin.png)
+- [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/installed_plugin.png)
 - Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png)
 
-## User Interface
+## ConDec Views and Features
 
 ### Decision Knowledge Page
-Jira ConDec provides a *TreeViewer* that lists all documented decision knowledge elements.
-The user can choose the type of the top level decision knowledge element, e.g., to understand which decisions were made or which issues were addressed during the project.
+Jira ConDec provides a *TreeViewer* that lists all documented knowledge elements.
+The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed during the project.
 The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
@@ -68,6 +68,11 @@ Jira ConDec provides a [Jira issue module that enables the user to explore decis
 The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
 - Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
+- Configure the features listed below
+
+### Features
+ConDec offers the following features:
+- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic_text_classification.md)
 
 ## Implementation Details
 
