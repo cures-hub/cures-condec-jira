@@ -73,7 +73,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		Link linkToDecision = issue.getLink(decision);
 		assertNotNull(linkToDecision);
 
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(linkToDecision);
+		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
 		linkToDecision = issue.getLink(decision);
 		assertNull(linkToDecision);
 
@@ -95,7 +95,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		Set<Link> links = issue.getLinks();
 		for (Link link : links) {
 			if (link.getOppositeElement(issue).getType() == KnowledgeType.ALTERNATIVE) {
-				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
+				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
 		assertFalse(issueCompletenessCheck.execute(issue));

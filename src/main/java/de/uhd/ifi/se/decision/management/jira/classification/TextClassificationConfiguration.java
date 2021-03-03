@@ -4,10 +4,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 
 /**
  * Contains the configuration details for the automatic text classification for
- * one Jira project (see {@link DecisionKnowledgeProject}.
+ * one Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class TextClassificationConfiguration {
 
@@ -15,6 +16,7 @@ public class TextClassificationConfiguration {
 	private String selectedGroundTruthFileName;
 	private String lastEvaluationResults;
 	private String trainedClassifierName;
+	private boolean isOnlineLearningActivated;
 
 	public TextClassificationConfiguration() {
 		selectedGroundTruthFileName = "defaultTrainingData.csv";
@@ -60,5 +62,27 @@ public class TextClassificationConfiguration {
 	@JsonProperty("selectedTrainedClassifier")
 	public void setSelectedTrainedClassifier(String trainedClassifier) {
 		this.trainedClassifierName = trainedClassifier;
+	}
+
+	/**
+	 * @return true if the classifier should be updated whenever a manually approved
+	 *         {@link PartOfJiraIssueText} is created or updated.
+	 * 
+	 * @see {@link TextClassifier#update(PartOfJiraIssueText)}
+	 */
+	public boolean isOnlineLearningActivated() {
+		return isOnlineLearningActivated;
+	}
+
+	/**
+	 * @param isOnlineLearningActivated
+	 *            true if the classifier should be updated whenever a manually
+	 *            approved {@link PartOfJiraIssueText} is created or updated.
+	 * 
+	 * @see {@link TextClassifier#update(PartOfJiraIssueText)}
+	 */
+	@JsonProperty("isOnlineLearningActivated")
+	public void setOnlineLearningActivated(boolean isOnlineLearningActivated) {
+		this.isOnlineLearningActivated = isOnlineLearningActivated;
 	}
 }

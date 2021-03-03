@@ -119,7 +119,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	public void testInheritSetAndDeleteGroupAssignment() {
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
 		KnowledgeElement godClass = null;

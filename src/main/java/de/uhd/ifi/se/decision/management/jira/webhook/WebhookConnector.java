@@ -142,7 +142,7 @@ public class WebhookConnector {
 	 */
 	private List<KnowledgeElement> getWebhookRootElements(KnowledgeElement element) {
 		List<KnowledgeElement> webhookRootElements = new ArrayList<KnowledgeElement>();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(graph, element);
 		linkedElements.add(element);
 		for (KnowledgeElement linkedElement : linkedElements) {

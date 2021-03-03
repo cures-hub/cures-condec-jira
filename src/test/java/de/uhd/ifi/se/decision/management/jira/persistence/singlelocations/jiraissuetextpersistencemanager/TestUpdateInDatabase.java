@@ -34,7 +34,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	public void testUpdateSentenceElement() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
+		manager.updateInDatabase(sentence);
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
 		assertEquals(KnowledgeType.ALTERNATIVE, element.getType());
 	}
@@ -44,7 +44,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	public void testUpdateKnowledgeType() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueTextPersistenceManager.updateInDatabase(sentence);
+		manager.updateInDatabase(sentence);
 		PartOfJiraIssueText element = (PartOfJiraIssueText) manager.getKnowledgeElement(sentence);
 		assertEquals(KnowledgeType.ALTERNATIVE, element.getType());
 	}
@@ -55,7 +55,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 		PartOfJiraIssueText element = JiraIssues.getIrrelevantSentence();
 		element.setRelevant(true);
 		element.setValidated(true);
-		JiraIssueTextPersistenceManager.updateInDatabase(element);
+		manager.updateInDatabase(element);
 		element = (PartOfJiraIssueText) manager.getKnowledgeElement(element);
 		assertTrue(element.isRelevant());
 		assertTrue(element.isValidated());

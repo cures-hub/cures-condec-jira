@@ -62,7 +62,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
 			if (link.getOppositeElement(decision).getType() == KnowledgeType.ISSUE) {
-				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
+				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
 		assertFalse(decisionCompletenessCheck.execute(decision));

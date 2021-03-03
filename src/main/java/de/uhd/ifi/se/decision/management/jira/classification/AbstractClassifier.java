@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import smile.classification.Classifier;
+import smile.classification.OnlineClassifier;
 import smile.validation.ClassificationMetrics;
 
 /**
@@ -30,6 +32,7 @@ public abstract class AbstractClassifier {
 	protected int numClasses;
 	protected boolean isCurrentlyTraining;
 	protected String namePrefix;
+	protected double fitTime;
 
 	/**
 	 * Reads the classifier from file if it was already trained and saved to file
@@ -64,7 +67,7 @@ public abstract class AbstractClassifier {
 	 *
 	 * @param trainingData
 	 */
-	public abstract void train(TrainingData trainingData);
+	public abstract void train(GroundTruthData trainingData);
 
 	/**
 	 * @param sample
@@ -75,16 +78,23 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Updates the classifier using supervised training data.
+	 * Updates the classifier using supervised training data. Used for online
+	 * training. That means that manually approved parts of text are directly used
+	 * for training.
 	 *
 	 * @param trainingSample
+	 *            feature for training.
 	 * @param trainingLabel
+	 *            label for training, e.g. for the binary relevance or the knowledge
+	 *            type.
 	 */
-	public void update(double[] trainingSample, int trainingLabel) {
+	public void update(double[][] trainingSample, int trainingLabel) {
 		isCurrentlyTraining = true;
-		LOGGER.info(
-				"Online training is currently not supported for SVMs in SMILE (Statistical Machine Intelligence and Learning Engine) library.");
-		// model.update(trainingSample, trainingLabel);
+		if (model instanceof OnlineClassifier) {
+			int[] trainingLabelArray = new int[trainingSample.length];
+			Arrays.fill(trainingLabelArray, trainingLabel);
+			((OnlineClassifier<double[]>) model).update(trainingSample, trainingLabelArray);
+		}
 		isCurrentlyTraining = false;
 	}
 
@@ -92,19 +102,19 @@ public abstract class AbstractClassifier {
 	 * @param k
 	 *            for k-fold cross-validation. (Typical values are 3 or 10.)
 	 * @param groundTruthData
-	 *            {@link TrainingData} used for training and evaluation in k-fold
+	 *            {@link GroundTruthData} used for training and evaluation in k-fold
 	 *            cross-validation.
 	 * @return map of evaluation results.
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData);
 
 	/**
 	 * @param groundTruthData
-	 *            {@link TrainingData} used for evaluation. The classifier needs to
-	 *            be already trained on different data!
+	 *            {@link GroundTruthData} used for evaluation. The classifier needs
+	 *            to be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.

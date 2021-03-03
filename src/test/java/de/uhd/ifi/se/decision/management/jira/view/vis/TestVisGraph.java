@@ -85,8 +85,8 @@ public class TestVisGraph extends TestSetUp {
 		filterSettings.setSelectedElement("TEST-1");
 		filterSettings.setLinkDistance(1);
 		visGraph = new VisGraph(user, filterSettings);
-		assertTrue(KnowledgeGraph.getOrCreate("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
-		assertTrue(KnowledgeGraph.getOrCreate("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());
+		assertTrue(KnowledgeGraph.getInstance("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
+		assertTrue(KnowledgeGraph.getInstance("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());
 	}
 
 	@Test

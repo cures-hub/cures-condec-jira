@@ -21,10 +21,10 @@ public class TestFineGrainedClassifier extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
-		fineGrainedClassifier = TextClassifier.getInstance("TEST").getFineGrainedClassifier();
+		TextClassifier classifier = TextClassifier.getInstance("TEST");
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		classifier.train();
+		fineGrainedClassifier = classifier.getFineGrainedClassifier();
 	}
 
 	@Test

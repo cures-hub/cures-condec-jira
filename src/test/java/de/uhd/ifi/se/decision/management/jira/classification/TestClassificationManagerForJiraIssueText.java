@@ -26,9 +26,9 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
+		TextClassifier classifier = TextClassifier.getInstance("TEST");
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		classifier.train();
 		classificationManager = new ClassificationManagerForJiraIssueText("TEST");
 		sentences = JiraIssues.getSentencesForCommentText(
 				"The quick brown fox jumps over the lazy dog. We expect this to be irrelevant. "

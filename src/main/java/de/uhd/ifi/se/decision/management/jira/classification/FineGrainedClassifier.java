@@ -40,15 +40,17 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 * Trains the fine grained classifier.
 	 *
 	 * @param trainingData
-	 *            {@link TrainingData} read from csv file (see
+	 *            {@link GroundTruthData} read from csv file (see
 	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
 	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
-	public void train(TrainingData trainingData) {
+	public void train(GroundTruthData trainingData) {
 		isCurrentlyTraining = true;
+		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -67,31 +69,37 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
-		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
+		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
 		Classifier<double[]> oldModel = model;
 
 		int[] truth = new int[0];
 		int[] prediction = new int[0];
-		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+		double fitTime = 0;
+		double scoreTime = 0;
+		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
+			long start = System.nanoTime();
 			train(entry.getKey());
+			fitTime += (System.nanoTime() - start) / 1E6;
+			start = System.nanoTime();
 			String[] sentences = entry.getValue().getRelevantSentences();
 			int[] truthForFold = entry.getValue().getKnowledgeTypeLabelsForRelevantSentences();
 			int[] predictionForFold = new int[sentences.length];
 			for (int i = 0; i < sentences.length; i++) {
 				predictionForFold[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
 			}
-
+			scoreTime += (System.nanoTime() - start) / 1E6;
 			truth = PreprocessedData.concatenate(truth, truthForFold);
 			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
 		}
 		model = oldModel;
-		return calculateEvaluationMetrics(truth, prediction);
+		return calculateEvaluationMetrics(truth, prediction, fitTime, scoreTime);
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
+		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
 
@@ -99,13 +107,15 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = mapKnowledgeTypeToIndex(predict(sentences[i]));
 		}
-		return calculateEvaluationMetrics(truth, prediction);
+		double scoreTime = (System.nanoTime() - start) / 1E6;
+		return calculateEvaluationMetrics(truth, prediction, fitTime, scoreTime);
 	}
 
-	private Map<String, ClassificationMetrics> calculateEvaluationMetrics(int[] truth, int[] prediction) {
+	private Map<String, ClassificationMetrics> calculateEvaluationMetrics(int[] truth, int[] prediction, double fitTime,
+			double scoreTime) {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, 0.0, 0.0);
+				model, truth, prediction, fitTime, scoreTime);
 		resultsMap.put("Fine-grained Overall", validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
@@ -114,7 +124,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			int[] binaryPredictions = mapFineGrainedToBinaryResults(prediction, classLabel);
 
 			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-					model, binaryTruth, binaryPredictions, 0.0, 0.0);
+					model, binaryTruth, binaryPredictions, fitTime, scoreTime);
 
 			resultsMap.put("Fine-grained " + type.toString(), validation.metrics);
 		}
@@ -164,8 +174,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return predictedKnowledgeType;
 	}
 
-	public void update(double[] feature, KnowledgeType label) {
-		super.update(feature, mapKnowledgeTypeToIndex(label));
+	public void update(double[][] trainingInstances, KnowledgeType label) {
+		super.update(trainingInstances, mapKnowledgeTypeToIndex(label));
 	}
 
 	/**

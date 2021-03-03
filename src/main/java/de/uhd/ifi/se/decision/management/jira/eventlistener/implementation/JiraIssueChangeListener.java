@@ -14,7 +14,7 @@ public class JiraIssueChangeListener implements IssueEventListener {
 		String projectKey = issueEvent.getProject().getKey();
 		Issue jiraIssue = issueEvent.getIssue();
 		KnowledgeElement element = new KnowledgeElement(jiraIssue);
-		KnowledgeGraph.getOrCreate(projectKey).updateElement(element);
+		KnowledgeGraph.getInstance(projectKey).updateElement(element);
 	}
 
 }

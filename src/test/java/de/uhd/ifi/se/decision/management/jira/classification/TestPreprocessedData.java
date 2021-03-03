@@ -12,14 +12,14 @@ import smile.math.MathEx;
 
 public class TestPreprocessedData extends TestSetUp {
 
-	private TrainingData trainingData;
+	private GroundTruthData trainingData;
 
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainingData = trainer.getTrainingData();
+		TextClassifier trainer = TextClassifier.getInstance("TEST");
+		trainer.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		trainingData = trainer.getGroundTruthData();
 	}
 
 	@Test

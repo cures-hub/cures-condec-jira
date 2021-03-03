@@ -9,6 +9,7 @@ bin/
 *target/
 .DS_Store
 .vscode/
+src/main/resources/classifier/
 
 # Files
 .classpath

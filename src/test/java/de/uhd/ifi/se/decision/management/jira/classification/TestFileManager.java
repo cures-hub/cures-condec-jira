@@ -30,8 +30,8 @@ public class TestFileManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetTrainingFileNames() {
-		assertFalse(FileManager.getTrainingFileNames().contains("glove.6b.50d.csv"));
-		assertTrue(FileManager.getTrainingFileNames().contains("defaultTrainingData.csv"));
+		assertFalse(FileManager.getGroundTruthFileNames().contains("glove.6b.50d.csv"));
+		assertTrue(FileManager.getGroundTruthFileNames().contains("defaultTrainingData.csv"));
 	}
 
 	@Test

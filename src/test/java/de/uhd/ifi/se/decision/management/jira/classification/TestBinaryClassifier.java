@@ -21,10 +21,10 @@ public class TestBinaryClassifier extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ClassifierTrainer trainer = new ClassifierTrainer("TEST");
-		trainer.setTrainingFile(TestClassifierTrainer.getTestTrainingDataFile());
-		trainer.train();
-		binaryClassifier = TextClassifier.getInstance("TEST").getBinaryClassifier();
+		TextClassifier classifier = TextClassifier.getInstance("TEST");
+		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
+		classifier.train();
+		binaryClassifier = classifier.getBinaryClassifier();
 	}
 
 	@Test

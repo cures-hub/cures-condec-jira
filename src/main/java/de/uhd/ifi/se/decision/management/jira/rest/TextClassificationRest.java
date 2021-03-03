@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +23,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassifierTrainer;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -35,7 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import smile.validation.ClassificationMetrics;
 
 /**
- * REST resource for text classification and its configuration
+ * REST resource for text classification and its configuration.
  */
 @Path("/classification")
 public class TextClassificationRest {
@@ -56,7 +53,8 @@ public class TextClassificationRest {
 	@Path("/useTrainedClassifier")
 	@POST
 	public Response useTrainedClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier) {
+			@QueryParam("projectKey") String projectKey, @QueryParam("trainedClassifier") String trainedClassifier,
+			@QueryParam("isOnlineLearningActivated") boolean isOnlineLearningActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -69,7 +67,8 @@ public class TextClassificationRest {
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		config.setSelectedTrainedClassifier(trainedClassifier);
-		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		config.setOnlineLearningActivated(isOnlineLearningActivated);
+		ConfigPersistenceManager.saveTextClassificationConfiguration(projectKey, config);
 		TextClassifier.getInstance(projectKey).setSelectedTrainedClassifier(trainedClassifier);
 		return Response.ok().build();
 	}
@@ -87,8 +86,8 @@ public class TextClassificationRest {
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
-		if (trainer.train()) {
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+		if (classifier.train(trainingFileName)) {
 			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -105,15 +104,20 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey, trainingFileName);
-		Map<String, ClassificationMetrics> evaluationResults = trainer.evaluateClassifier(numberOfFolds);
-		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
-		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
-		evaluationResultsMessage += evaluationResults.toString();
+		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+		classifier.setGroundTruthFile(trainingFileName);
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
+		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + System.lineSeparator();
+		String trainedClassifierName = "Name of trained classifier: " + ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey).getSelectedTrainedClassifier();
+		evaluationResultsMessage += numberOfFolds > 1
+				? "Trained and evaluated using " + numberOfFolds + "-fold cross-validation"
+				: trainedClassifierName;
+		evaluationResultsMessage += System.lineSeparator() + evaluationResults.toString();
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		config.setLastEvaluationResults(evaluationResultsMessage);
-		ConfigPersistenceManager.setTextClassificationConfiguration(projectKey, config);
+		ConfigPersistenceManager.saveTextClassificationConfiguration(projectKey, config);
 		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
@@ -125,21 +129,14 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		StringBuilder builder = new StringBuilder();
-		List<String> textList = Collections.singletonList(text);
-
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-
-		boolean relevant = classifier.getBinaryClassifier().predict(textList)[0];
-		builder.append(relevant ? "Relevant" : "Irrelevant");
-
-		if (relevant) {
-			builder.append(": ");
-			KnowledgeType type = classifier.getFineGrainedClassifier().predict(textList).get(0);
-			builder.append(type.toString());
+		boolean isRelevant = classifier.getBinaryClassifier().predict(text);
+		String classificationResult = isRelevant ? "Relevant" : "Irrelevant";
+		if (isRelevant) {
+			KnowledgeType type = classifier.getFineGrainedClassifier().predict(text);
+			classificationResult += ": " + type.toString();
 		}
-		return Response.ok(ImmutableMap.of("content", builder.toString())).build();
-
+		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
 
 	@Path("/saveTrainingFile")
@@ -150,7 +147,7 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ClassifierTrainer trainer = new ClassifierTrainer(projectKey);
+		TextClassifier trainer = TextClassifier.getInstance(projectKey);
 		File trainingFile = trainer.saveTrainingFile();
 
 		if (trainingFile != null) {

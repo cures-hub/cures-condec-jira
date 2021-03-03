@@ -37,15 +37,17 @@ public class BinaryClassifier extends AbstractClassifier {
 	 * Trains the binary classifier.
 	 *
 	 * @param trainingData
-	 *            {@link TrainingData} read from csv file (see
+	 *            {@link GroundTruthData} read from csv file (see
 	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
 	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
-	public void train(TrainingData trainingData) {
+	public void train(GroundTruthData trainingData) {
 		isCurrentlyTraining = true;
+		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
+		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -64,29 +66,34 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(int k, TrainingData groundTruthData) {
-		Map<TrainingData, TrainingData> splitData = TrainingData.splitForKFoldCrossValidation(k,
+	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
+		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getKnowledgeElements());
 		Classifier<double[]> entireModel = model;
 
 		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
-		for (Map.Entry<TrainingData, TrainingData> entry : splitData.entrySet()) {
+		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
+			long start = System.nanoTime();
 			train(entry.getKey());
+			double fitTime = (System.nanoTime() - start) / 1E6;
+			start = System.nanoTime();
 			String[] sentences = entry.getValue().getAllSentences();
 			int[] truthForFold = entry.getValue().getRelevanceLabelsForAllSentences();
 			int[] predictionForFold = new int[sentences.length];
 			for (int i = 0; i < sentences.length; i++) {
 				predictionForFold[i] = predict(sentences[i]) ? 1 : 0;
 			}
+			double scoreTime = (System.nanoTime() - start) / 1E6;
 			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
-					0.0, 0.0));
+					fitTime, scoreTime));
 		}
 		model = entireModel;
 		return Map.of("Binary", new ClassificationValidations<Classifier<double[]>>(validations).avg);
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(TrainingData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
+		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getAllSentences();
 		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();
 
@@ -94,8 +101,9 @@ public class BinaryClassifier extends AbstractClassifier {
 		for (int i = 0; i < sentences.length; i++) {
 			prediction[i] = predict(sentences[i]) ? 1 : 0;
 		}
+		double scoreTime = (System.nanoTime() - start) / 1E6;
 		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, 0.0, 0.0);
+				model, truth, prediction, fitTime, scoreTime);
 		return Map.of("Binary", validation.metrics);
 	}
 

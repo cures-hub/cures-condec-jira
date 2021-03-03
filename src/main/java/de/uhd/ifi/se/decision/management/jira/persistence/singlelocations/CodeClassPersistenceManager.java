@@ -74,7 +74,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(id, documentationLocation);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
+			KnowledgeGraph.getInstance(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -94,7 +94,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.CODE);
-			KnowledgeGraph.getOrCreate(projectKey).removeVertex(new ChangedFile(databaseEntry));
+			KnowledgeGraph.getInstance(projectKey).removeVertex(new ChangedFile(databaseEntry));
 			isDeleted = CodeClassInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;

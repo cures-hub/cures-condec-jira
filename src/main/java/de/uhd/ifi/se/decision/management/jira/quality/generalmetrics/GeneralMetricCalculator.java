@@ -30,7 +30,7 @@ public class GeneralMetricCalculator {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
 	public GeneralMetricCalculator(ApplicationUser user, String projectKey) {
-		this.graph = KnowledgeGraph.getOrCreate(projectKey);
+		this.graph = KnowledgeGraph.getInstance(projectKey);
 		this.projectKey = projectKey;
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);

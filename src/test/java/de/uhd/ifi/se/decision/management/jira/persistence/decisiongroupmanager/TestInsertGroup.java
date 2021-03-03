@@ -68,7 +68,7 @@ public class TestInsertGroup extends TestSetUpGit {
 	@Test
 	public void testInheritInsertGroup() {
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles();
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate("TEST");
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
 		KnowledgeElement godClass = null;

@@ -100,7 +100,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 					typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
-				KnowledgeGraph.getOrCreate(projectKey).removeEdge(link);
+				KnowledgeGraph.getInstance(projectKey).removeEdge(link);
 				return true;
 			}
 		}

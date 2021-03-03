@@ -46,7 +46,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIncompleteRootElement() {
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(alternative.getLink(issue));
+		KnowledgeGraph.getInstance("TEST").removeEdge(alternative.getLink(issue));
 		assertTrue(alternative.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(alternative));
 	}
@@ -61,8 +61,8 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertEquals(KnowledgeType.OTHER, workItem.getType());
 		assertEquals(30, workItem.getId());
 		assertNotEquals(0, workItem.isLinked());
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(decision));
+		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
+		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(decision));
 		assertEquals(0, workItem.isLinked());
 		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
@@ -77,11 +77,11 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	public void testCompleteLinkDistanceOne() {
 		assertNotEquals(0, workItem.isLinked());
 		// remove all links, that are not needed.
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(decision));
+		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(decision));
 		Set<Link> links = anotherWorkItem.getLinks();
 		for (Link link : links) {
 			if (!link.getTarget().equals(workItem)) {
-				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
+				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
 		assertEquals(1, workItem.getLinks().size());
@@ -98,11 +98,11 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIncompleteLinkDistanceOne() {
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
+		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
 			if (link.getOppositeElement(decision).getType() == KnowledgeType.ISSUE) {
-				KnowledgeGraph.getOrCreate("TEST").removeEdge(link);
+				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
 		assertTrue(decision.isIncomplete());
@@ -118,11 +118,11 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIncompleteLinkDistanceTwo() {
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(workItem.getLink(anotherWorkItem));
+		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		assertFalse(decision.isIncomplete());
 		assertNotNull(decision.getLink(issue));
 		assertFalse(issue.isIncomplete());
-		KnowledgeGraph.getOrCreate("TEST").removeEdge(issue.getLink(alternative));
+		KnowledgeGraph.getInstance("TEST").removeEdge(issue.getLink(alternative));
 		assertNull(issue.getLink(alternative));
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);

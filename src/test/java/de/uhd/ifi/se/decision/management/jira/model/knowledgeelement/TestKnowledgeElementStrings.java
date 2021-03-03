@@ -175,7 +175,7 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testGetLinkDistance() {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		KnowledgeElement other = new KnowledgeElement(id + 1, summary + " 2", description + " 2", type, projectKey, "Test 2",
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 		graph.addVertexNotBeingInDatabase(decisionKnowledgeElement);

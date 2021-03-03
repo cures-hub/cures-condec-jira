@@ -39,7 +39,7 @@ public class FilteringManager {
 		this.user = user;
 		this.filterSettings = filterSettings;
 		if (filterSettings != null) {
-			this.graph = KnowledgeGraph.getOrCreate(filterSettings.getProjectKey());
+			this.graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
 		}
 	}
 

@@ -240,17 +240,17 @@ public class ConfigPersistenceManager {
 		TextClassificationConfiguration textClassificationConfiguration = getTextClassificationConfiguration(
 				projectKey);
 		textClassificationConfiguration.setActivated(isActivated);
-		setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
+		saveTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 	}
 
 	public static void setTrainingFileForClassifier(String projectKey, String trainingFileName) {
 		TextClassificationConfiguration textClassificationConfiguration = getTextClassificationConfiguration(
 				projectKey);
 		textClassificationConfiguration.setSelectedGroundTruthFile(trainingFileName);
-		setTextClassificationConfiguration(projectKey, textClassificationConfiguration);
+		saveTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 	}
 
-	public static void setTextClassificationConfiguration(String projectKey,
+	public static void saveTextClassificationConfiguration(String projectKey,
 			TextClassificationConfiguration textClassificationConfiguration) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();

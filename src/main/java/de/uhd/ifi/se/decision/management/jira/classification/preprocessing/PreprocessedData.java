@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
-import de.uhd.ifi.se.decision.management.jira.classification.TrainingData;
+import de.uhd.ifi.se.decision.management.jira.classification.GroundTruthData;
 
 public class PreprocessedData {
 
@@ -8,7 +8,7 @@ public class PreprocessedData {
 	public int[] updatedLabels;
 	public Preprocessor preprocessor;
 
-	public PreprocessedData(TrainingData trainingData, boolean isFineGrained) {
+	public PreprocessedData(GroundTruthData trainingData, boolean isFineGrained) {
 		preprocessor = Preprocessor.getInstance();
 		if (isFineGrained) {
 			int size = trainingData.getRelevantSentences().length;
