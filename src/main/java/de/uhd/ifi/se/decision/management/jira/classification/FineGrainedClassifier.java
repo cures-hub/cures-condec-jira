@@ -76,7 +76,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData,
+			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
 		Classifier<double[]> oldModel = model;
@@ -87,7 +88,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		double scoreTime = 0;
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			long start = System.nanoTime();
-			train(entry.getKey(), ClassifierType.LR);
+			train(entry.getKey(), classifierType);
 			fitTime += (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
 			String[] sentences = entry.getValue().getRelevantSentences();
@@ -123,7 +124,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
 				model, truth, prediction, fitTime, scoreTime);
-		resultsMap.put("Fine-grained Overall", validationOverall.metrics);
+		resultsMap.put("Fine-grained Overall " + model.getClass().getName(), validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
 			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);

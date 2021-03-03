@@ -165,19 +165,22 @@ public class TextClassifier {
 	 * 
 	 * @param k
 	 *            number of folds in k-fold cross-validation.
+	 * @param fineGrainedClassifierType
+	 * @param binaryClassifierType
 	 *
 	 * @return map of evaluation results (precision, recall, F1-score, accuracy,
 	 *         ...).
 	 */
-	public Map<String, ClassificationMetrics> evaluate(int k) {
+	public Map<String, ClassificationMetrics> evaluate(int k, ClassifierType binaryClassifierType,
+			ClassifierType fineGrainedClassifierType) {
 		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
 				+ groundTruthData.getFileName());
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluate(k, groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluate(k, groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluate(k, groundTruthData, binaryClassifierType));
+			resultsMap.putAll(fineGrainedClassifier.evaluate(k, groundTruthData, fineGrainedClassifierType));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");

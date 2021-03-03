@@ -102,7 +102,9 @@ public class TextClassificationRest {
 	@POST
 	public Response evaluateTextClassifier(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("trainingFileName") String trainingFileName,
-			@QueryParam("numberOfFolds") int numberOfFolds) {
+			@QueryParam("numberOfFolds") int numberOfFolds,
+			@QueryParam("binaryClassifierType") String binaryClassifierType,
+			@QueryParam("fineGrainedClassifierType") String fineGrainedClassifierType) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -110,7 +112,9 @@ public class TextClassificationRest {
 
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		classifier.setGroundTruthFile(trainingFileName);
-		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds,
+				ClassifierType.valueOfOrDefault(binaryClassifierType),
+				ClassifierType.valueOfOrDefault(fineGrainedClassifierType));
 		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + System.lineSeparator();
 		String trainedClassifierName = "Name of trained classifier: " + ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey).getSelectedTrainedClassifier();

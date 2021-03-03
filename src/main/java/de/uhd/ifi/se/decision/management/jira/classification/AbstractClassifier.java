@@ -109,7 +109,8 @@ public abstract class AbstractClassifier {
 	 *            cross-validation.
 	 * @return map of evaluation results.
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData,
+			ClassifierType classifierType);
 
 	/**
 	 * @param groundTruthData

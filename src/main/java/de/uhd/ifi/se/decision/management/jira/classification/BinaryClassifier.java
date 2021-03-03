@@ -71,7 +71,8 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData,
+			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getKnowledgeElements());
 		Classifier<double[]> entireModel = model;
@@ -79,7 +80,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			long start = System.nanoTime();
-			train(entry.getKey(), ClassifierType.LR);
+			train(entry.getKey(), classifierType);
 			double fitTime = (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
 			String[] sentences = entry.getValue().getAllSentences();
@@ -93,7 +94,8 @@ public class BinaryClassifier extends AbstractClassifier {
 					fitTime, scoreTime));
 		}
 		model = entireModel;
-		return Map.of("Binary", new ClassificationValidations<Classifier<double[]>>(validations).avg);
+		return Map.of("Binary " + model.getClass().getName(),
+				new ClassificationValidations<Classifier<double[]>>(validations).avg);
 	}
 
 	@Override
@@ -109,7 +111,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		double scoreTime = (System.nanoTime() - start) / 1E6;
 		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
 				model, truth, prediction, fitTime, scoreTime);
-		return Map.of("Binary", validation.metrics);
+		return Map.of("Binary " + model.getClass().getName(), validation.metrics);
 	}
 
 	/**
