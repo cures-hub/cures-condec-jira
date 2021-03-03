@@ -10,6 +10,8 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
 import smile.validation.ClassificationValidations;
@@ -42,11 +44,11 @@ public class BinaryClassifier extends AbstractClassifier {
 	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
-	public void train(GroundTruthData trainingData) {
+	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
 		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels());
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(), classifierType);
 		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
@@ -59,10 +61,13 @@ public class BinaryClassifier extends AbstractClassifier {
 	 * @param trainingLabels
 	 * @return
 	 */
-	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
-		// return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2,
-		// 0.5);
-		return LogisticRegression.binomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		switch (classifierType) {
+		case SVM:
+			return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
+		default:
+			return LogisticRegression.binomial(trainingSamples, trainingLabels);
+		}
 	}
 
 	@Override
@@ -74,7 +79,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			long start = System.nanoTime();
-			train(entry.getKey());
+			train(entry.getKey(), ClassifierType.LR);
 			double fitTime = (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
 			String[] sentences = entry.getValue().getAllSentences();

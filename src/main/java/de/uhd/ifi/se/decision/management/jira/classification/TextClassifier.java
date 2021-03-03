@@ -225,9 +225,9 @@ public class TextClassifier {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");
-			binaryClassifier.train(groundTruthData);
+			binaryClassifier.train(groundTruthData, binaryClassifierType);
 			LOGGER.debug("Fine-grained classifier training started.");
-			fineGrainedClassifier.train(groundTruthData);
+			fineGrainedClassifier.train(groundTruthData, fineGrainedClassifierType);
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;

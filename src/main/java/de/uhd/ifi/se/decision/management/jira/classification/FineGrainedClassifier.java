@@ -15,6 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.classification.OneVersusRest;
+import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
 
@@ -45,11 +48,11 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 *            current {@link KnowledgeGraph).
 	 */
 	@Override
-	public void train(GroundTruthData trainingData) {
+	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
 		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, classifierType);
 		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
@@ -62,10 +65,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	 * @param trainingLabels
 	 * @return
 	 */
-	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
-		// return OneVersusRest.fit(trainingSamples, trainingLabels,
-		// (x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
-		return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		switch (classifierType) {
+		case SVM:
+			return OneVersusRest.fit(trainingSamples, trainingLabels,
+					(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		default:
+			return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+		}
 	}
 
 	@Override
@@ -80,7 +87,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		double scoreTime = 0;
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			long start = System.nanoTime();
-			train(entry.getKey());
+			train(entry.getKey(), ClassifierType.LR);
 			fitTime += (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
 			String[] sentences = entry.getValue().getRelevantSentences();

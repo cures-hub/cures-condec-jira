@@ -66,8 +66,11 @@ public abstract class AbstractClassifier {
 	 * Trains the model using supervised training data, features and labels.
 	 *
 	 * @param trainingData
+	 * @param classifierType
+	 *            machine learning algorithm, e.g. support vector machine or
+	 *            logistic regression (see {@link ClassifierType}).
 	 */
-	public abstract void train(GroundTruthData trainingData);
+	public abstract void train(GroundTruthData trainingData, ClassifierType classifierType);
 
 	/**
 	 * @param sample
