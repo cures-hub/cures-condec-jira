@@ -66,7 +66,11 @@ public class TestTextClassifier extends TestSetUp {
 	public void testEvaluateClassifierWith3FoldCrossValidation() {
 		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(3, ClassifierType.LR,
 				ClassifierType.LR);
-		assertEquals(0.8, evaluationResults.get("Binary smile.classification.LogisticRegression$Binomial").f1, 0.1);
+		for (Map.Entry<String, ClassificationMetrics> entry : evaluationResults.entrySet()) {
+			if (entry.getKey().startsWith("Binary")) {
+				assertEquals(0.8, entry.getValue().f1, 0.1);
+			}
+		}
 		assertEquals(0.1, evaluationResults.get("Fine-grained Alternative").f1, 0.4);
 	}
 
@@ -76,7 +80,11 @@ public class TestTextClassifier extends TestSetUp {
 		// Training and evaluating the classifier on the same data should not be done in
 		// reality, this is only for unit testing!
 		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(-1, null, null);
-		assertEquals(0.9, evaluationResults.get("Binary smile.classification.LogisticRegression$Binomial").f1, 0.1);
+		for (Map.Entry<String, ClassificationMetrics> entry : evaluationResults.entrySet()) {
+			if (entry.getKey().startsWith("Binary")) {
+				assertEquals(0.9, entry.getValue().f1, 0.1);
+			}
+		}
 		assertEquals(0.9, evaluationResults.get("Fine-grained Alternative").f1, 0.1);
 	}
 
