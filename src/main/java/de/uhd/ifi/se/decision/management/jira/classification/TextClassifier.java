@@ -189,6 +189,10 @@ public class TextClassifier {
 		return resultsMap;
 	}
 
+	public boolean train() {
+		return train(ClassifierType.LR, ClassifierType.LR);
+	}
+
 	/**
 	 * Trains the classifier with the given ground truth data that needs to manually
 	 * approved by the user. Creates new classifier model files to classify the
@@ -198,12 +202,13 @@ public class TextClassifier {
 	 *            of the ground truth file used for training.
 	 * @return true if training succeeded.
 	 */
-	public boolean train(String fileName) {
+	public boolean train(String fileName, ClassifierType binaryClassifierType,
+			ClassifierType fineGrainedClassifierType) {
 		if (fileName == null || fileName.isEmpty()) {
 			return false;
 		}
 		groundTruthData = new GroundTruthData(fileName);
-		return train();
+		return train(binaryClassifierType, fineGrainedClassifierType);
 	}
 
 	/**
@@ -211,9 +216,12 @@ public class TextClassifier {
 	 * approved by the user. Creates new classifier model files to classify the
 	 * comments and description of a Jira issue and git commit messages.
 	 * 
+	 * @param fineGrainedClassifierType
+	 * @param binaryClassifierType
+	 * 
 	 * @return true if training succeeded.
 	 */
-	public boolean train() {
+	public boolean train(ClassifierType binaryClassifierType, ClassifierType fineGrainedClassifierType) {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");

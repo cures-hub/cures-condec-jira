@@ -23,6 +23,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -89,7 +90,8 @@ public class TextClassificationRest {
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-		if (classifier.train(trainingFileName)) {
+		if (classifier.train(trainingFileName, ClassifierType.valueOfOrDefault(binaryClassifierType),
+				ClassifierType.valueOfOrDefault(fineGrainedClassifierType))) {
 			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

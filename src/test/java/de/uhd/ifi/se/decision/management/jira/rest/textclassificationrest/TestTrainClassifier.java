@@ -28,33 +28,39 @@ public class TestTrainClassifier extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNullTrainingFileNull() {
+	public void testRequestNullProjectKeyNullTrainingFileNullDefaultClassifierTypes() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.trainClassifier(null, null, null, null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNullTrainingFileProvided() {
+	public void testRequestNullProjectKeyNullTrainingFileProvidedDefaultClassifierTypes() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.trainClassifier(null, null, "trainingData.csv", null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyExistsTrainingFileNull() {
+	public void testRequestValidProjectKeyExistsTrainingFileNullDefaultClassifierTypes() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.trainClassifier(request, "TEST", null, null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyExistsTrainingFileEmpty() {
+	public void testRequestValidProjectKeyExistsTrainingFileEmptyDefaultClassifierTypes() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.trainClassifier(request, "TEST", "", null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyExistsTrainingFileNonExistent() {
+	public void testRequestValidProjectKeyExistsTrainingFileNonExistentDefaultClassifierTypes() {
 		// ok because it falls back on the default training data
 		assertEquals(Status.OK.getStatusCode(),
-				classificationRest.trainClassifier(request, "TEST", "fake.csv", null, null).getStatus());
+				classificationRest.trainClassifier(request, "TEST", "fake.csv", "", null).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyExistsTrainingFileExistentClassifierTypesSelected() {
+		assertEquals(Status.OK.getStatusCode(), classificationRest
+				.trainClassifier(request, "TEST", "defaultTrainingData.csv", "LR", "SVM").getStatus());
 	}
 }
