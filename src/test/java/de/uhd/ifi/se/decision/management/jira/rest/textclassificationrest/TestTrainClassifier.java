@@ -30,31 +30,31 @@ public class TestTrainClassifier extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNullTrainingFileNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.trainClassifier(null, null, null).getStatus());
+				classificationRest.trainClassifier(null, null, null, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullTrainingFileProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.trainClassifier(null, null, "trainingData.csv").getStatus());
+				classificationRest.trainClassifier(null, null, "trainingData.csv", null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainingFileNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.trainClassifier(request, "TEST", null).getStatus());
+				classificationRest.trainClassifier(request, "TEST", null, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainingFileEmpty() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.trainClassifier(request, "TEST", "").getStatus());
+				classificationRest.trainClassifier(request, "TEST", "", null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainingFileNonExistent() {
 		// ok because it falls back on the default training data
 		assertEquals(Status.OK.getStatusCode(),
-				classificationRest.trainClassifier(request, "TEST", "fake.csv").getStatus());
+				classificationRest.trainClassifier(request, "TEST", "fake.csv", null, null).getStatus());
 	}
 }

@@ -820,10 +820,10 @@
 	/*
 	 * external references: templates/settings/classificationSettings.vm
 	 */
-	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, animatedElement) {
+	ConDecAPI.prototype.trainClassifier = function (projectKey, trainingFileName, binaryClassifierType, fineGrainedClassifierType, animatedElement) {
 		animatedElement.classList.add("aui-progress-indicator-value");
 		generalApi.postJSON(this.restPrefix + "/classification/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
-			+ trainingFileName,
+			+ trainingFileName + "&binaryClassifierType=" + binaryClassifierType + "&fineGrainedClassifierType=" + fineGrainedClassifierType,
 			null,
 			function (error, response) {
 				animatedElement.classList.remove("aui-progress-indicator-value");

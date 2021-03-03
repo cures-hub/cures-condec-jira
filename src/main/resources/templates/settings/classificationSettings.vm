@@ -209,11 +209,13 @@
     });
 
 	var trainDataSelect = document.getElementById("select-training-file");
+	var binaryTypeSelect = document.getElementById("select-classifier-type-binary");
+	var fineGrainedTypeSelect = document.getElementById("select-classifier-type-fine-grained");
 	var animatedElement = document.getElementById("train-classifier-progress");
     const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {                        
-            conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
+            conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, binaryTypeSelect.value, fineGrainedTypeSelect.value, animatedElement);
         }
     });
     

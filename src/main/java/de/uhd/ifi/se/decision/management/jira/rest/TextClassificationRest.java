@@ -76,7 +76,9 @@ public class TextClassificationRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("trainingFileName") String trainingFileName) {
+			@QueryParam("trainingFileName") String trainingFileName,
+			@QueryParam("binaryClassifierType") String binaryClassifierType,
+			@QueryParam("fineGrainedClassifierType") String fineGrainedClassifierType) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
