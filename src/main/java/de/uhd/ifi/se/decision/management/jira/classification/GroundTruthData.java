@@ -268,7 +268,7 @@ public class GroundTruthData {
 	}
 
 	public static DataFrame readDataFrameFromDefaultTrainingDataCSVFile() {
-		List<File> trainingFiles = FileManager.getAllTrainingFiles();
+		List<File> trainingFiles = FileManager.getAllGroundTruthFiles();
 		if (trainingFiles.isEmpty()) {
 			return null;
 		}

@@ -29,21 +29,15 @@ public interface FileManager {
 	/**
 	 * @return all ground truth files on the server as a list.
 	 */
-	static List<File> getAllTrainingFiles() {
-		List<File> trainingFilesOnServer = new ArrayList<File>();
-		for (File file : new File(TextClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
-			if (file.getName().toLowerCase(Locale.ENGLISH).matches("(?!glove)(.)*.csv")) {
-				trainingFilesOnServer.add(file);
-			}
-		}
-		return trainingFilesOnServer;
+	static List<File> getAllGroundTruthFiles() {
+		return getFilesMatchingRegex("(?!glove)(.)*.csv");
 	}
 
 	/**
 	 * @return names of all ground truth files on the server as a list of strings.
 	 */
 	static List<String> getTrainingFileNames() {
-		List<File> arffFilesOnServer = getAllTrainingFiles();
+		List<File> arffFilesOnServer = getAllGroundTruthFiles();
 		List<String> arffFileNames = new ArrayList<String>();
 		for (File file : arffFilesOnServer) {
 			arffFileNames.add(file.getName());
@@ -70,13 +64,17 @@ public interface FileManager {
 	 * @return all files of trained classifiers on the server as a list.
 	 */
 	static List<File> getAllTrainedClassifiers() {
-		List<File> trainedClassifiersOnServer = new ArrayList<File>();
+		return getFilesMatchingRegex("(.)*.model");
+	}
+
+	private static List<File> getFilesMatchingRegex(String regex) {
+		List<File> filesMatchingRegex = new ArrayList<File>();
 		for (File file : new File(TextClassifier.CLASSIFIER_DIRECTORY).listFiles()) {
-			if (file.getName().toLowerCase(Locale.ENGLISH).matches("(.)*.model")) {
-				trainedClassifiersOnServer.add(file);
+			if (file.getName().toLowerCase(Locale.ENGLISH).matches(regex)) {
+				filesMatchingRegex.add(file);
 			}
 		}
-		return trainedClassifiersOnServer;
+		return filesMatchingRegex;
 	}
 
 	/**
