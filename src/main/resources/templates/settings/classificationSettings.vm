@@ -91,7 +91,7 @@
 <div class="field-group">
     <label for="saveTrainingFile-button">Create a Training File</label>
     <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
-    <div class="description">Creates a training file (in csv format) of <b>human-validated</b> text data
+    <div class="description">Creates a training file (in csv format) of <b>manually approved</b> (i.e. human-validated) text data
         for the current project that can be used to train the classifier.
         This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
         If you want to train the classifier with this file you need to reload this page to access the file.

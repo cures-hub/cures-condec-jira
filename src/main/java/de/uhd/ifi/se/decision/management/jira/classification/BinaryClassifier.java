@@ -93,13 +93,14 @@ public class BinaryClassifier extends AbstractClassifier {
 			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
 					fitTime, scoreTime));
 		}
-		model = entireModel;
-		return Map.of("Binary " + model.getClass().getName(),
+		Map<String, ClassificationMetrics> binaryEvaluationResult = Map.of("Binary " + model.getClass().getName(),
 				new ClassificationValidations<Classifier<double[]>>(validations).avg);
+		model = entireModel;
+		return binaryEvaluationResult;
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluate(GroundTruthData groundTruthData) {
 		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getAllSentences();
 		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();

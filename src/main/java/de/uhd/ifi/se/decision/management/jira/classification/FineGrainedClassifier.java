@@ -80,7 +80,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
-		Classifier<double[]> oldModel = model;
+		Classifier<double[]> entireModel = model;
 
 		int[] truth = new int[0];
 		int[] prediction = new int[0];
@@ -101,12 +101,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			truth = PreprocessedData.concatenate(truth, truthForFold);
 			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
 		}
-		model = oldModel;
-		return calculateEvaluationMetrics(truth, prediction, fitTime, scoreTime);
+		Map<String, ClassificationMetrics> fineGrainedEvaluationResults = calculateEvaluationMetrics(truth, prediction,
+				fitTime, scoreTime);
+		model = entireModel;
+		return fineGrainedEvaluationResults;
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluate(GroundTruthData groundTruthData) {
 		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();

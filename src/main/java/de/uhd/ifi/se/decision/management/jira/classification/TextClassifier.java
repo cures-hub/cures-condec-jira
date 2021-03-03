@@ -184,8 +184,8 @@ public class TextClassifier {
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
-			resultsMap.putAll(binaryClassifier.evaluateClassifier(groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluate(groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluate(groundTruthData));
 		}
 
 		LOGGER.info("Finished evaluation: " + resultsMap.toString());

@@ -118,7 +118,7 @@ public abstract class AbstractClassifier {
 	 *            to be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluate(GroundTruthData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
