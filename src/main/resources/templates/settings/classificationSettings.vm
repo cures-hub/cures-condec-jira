@@ -97,9 +97,19 @@
                 $trainingFile</option>
         #end
     </select>
+    Binary:
+    <select id="select-classifier-type-binary" class="select medium-field">
+    	<option value="LR" selected>Logistic Regression</option>
+    	<option value="SVM">Support Vector Machine</option>
+    </select>
+    Fine-grained:
+    <select id="select-classifier-type-fine-grained" class="select medium-field">
+    	<option value="LR">Logistic Regression</option>
+    	<option value="SVM">Support Vector Machine</option>
+    </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
-        Trains the text classifier on the selected data file.<br/>
+        Trains the text classifier on the selected data file. The text classifier consists of a binary and a fine-grained classifier.<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
         training can be very resource expensive!
     </div>
