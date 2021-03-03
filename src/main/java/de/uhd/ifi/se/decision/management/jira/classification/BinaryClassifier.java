@@ -71,9 +71,9 @@ public class BinaryClassifier extends AbstractClassifier {
 				groundTruthData.getKnowledgeElements());
 		Classifier<double[]> entireModel = model;
 
-		long start = System.nanoTime();
 		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
+			long start = System.nanoTime();
 			train(entry.getKey());
 			double fitTime = (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
