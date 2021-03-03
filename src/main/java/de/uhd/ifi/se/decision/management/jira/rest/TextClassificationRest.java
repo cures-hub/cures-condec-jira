@@ -107,9 +107,13 @@ public class TextClassificationRest {
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		classifier.setGroundTruthFile(trainingFileName);
 		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
-		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + " ";
-		evaluationResultsMessage += numberOfFolds > 1 ? "Number of folds k = " + numberOfFolds : "\n\r";
-		evaluationResultsMessage += evaluationResults.toString();
+		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + System.lineSeparator();
+		String trainedClassifierName = "Name of trained classifier: " + ConfigPersistenceManager
+				.getTextClassificationConfiguration(projectKey).getSelectedTrainedClassifier();
+		evaluationResultsMessage += numberOfFolds > 1
+				? "Trained and evaluated using " + numberOfFolds + "-fold cross-validation"
+				: trainedClassifierName;
+		evaluationResultsMessage += System.lineSeparator() + evaluationResults.toString();
 		TextClassificationConfiguration config = ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey);
 		config.setLastEvaluationResults(evaluationResultsMessage);

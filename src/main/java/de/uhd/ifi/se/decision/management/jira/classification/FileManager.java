@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
 /**
- * Saves and writes training data files and other files for the text classifier.
+ * Saves and writes {@link GroundTruthData} files and other files for the text
+ * classifier.
  */
 public interface FileManager {
 
@@ -36,7 +37,7 @@ public interface FileManager {
 	/**
 	 * @return names of all ground truth files on the server as a list of strings.
 	 */
-	static List<String> getTrainingFileNames() {
+	static List<String> getGroundTruthFileNames() {
 		List<File> arffFilesOnServer = getAllGroundTruthFiles();
 		List<String> arffFileNames = new ArrayList<String>();
 		for (File file : arffFilesOnServer) {
@@ -46,7 +47,7 @@ public interface FileManager {
 	}
 
 	/**
-	 * @return names of all ground truth files on the server as a list of strings.
+	 * @return names of all trained classifiers on the server as a list of strings.
 	 */
 	static Set<String> getTrainedClassifierNames() {
 		List<File> trainedClassifierFilesOnServer = getAllTrainedClassifiers();
