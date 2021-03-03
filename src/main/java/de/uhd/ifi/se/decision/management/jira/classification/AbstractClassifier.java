@@ -32,6 +32,7 @@ public abstract class AbstractClassifier {
 	protected int numClasses;
 	protected boolean isCurrentlyTraining;
 	protected String namePrefix;
+	protected double fitTime;
 
 	/**
 	 * Reads the classifier from file if it was already trained and saved to file
@@ -105,7 +106,7 @@ public abstract class AbstractClassifier {
 	 *            cross-validation.
 	 * @return map of evaluation results.
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(int k, GroundTruthData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData);
 
 	/**
 	 * @param groundTruthData

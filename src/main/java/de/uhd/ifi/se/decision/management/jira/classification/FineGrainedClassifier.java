@@ -47,8 +47,10 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	@Override
 	public void train(GroundTruthData trainingData) {
 		isCurrentlyTraining = true;
+		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
@@ -67,7 +69,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(int k, GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
 		Classifier<double[]> oldModel = model;

@@ -176,8 +176,8 @@ public class TextClassifier {
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluateClassifier(k, groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(k, groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluate(k, groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluate(k, groundTruthData));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
