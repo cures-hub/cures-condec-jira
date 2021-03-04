@@ -179,13 +179,13 @@ public class TextClassifier {
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluate(k, groundTruthData, binaryClassifierType));
-			resultsMap.putAll(fineGrainedClassifier.evaluate(k, groundTruthData, fineGrainedClassifierType));
+			resultsMap.putAll(binaryClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, binaryClassifierType));
+			resultsMap.putAll(fineGrainedClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, fineGrainedClassifierType));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
-			resultsMap.putAll(binaryClassifier.evaluate(groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluate(groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluateTrainedClassifier(groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluateTrainedClassifier(groundTruthData));
 		}
 
 		LOGGER.info("Finished evaluation: " + resultsMap.toString());

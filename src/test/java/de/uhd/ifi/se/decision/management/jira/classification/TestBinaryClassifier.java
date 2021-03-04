@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class TestBinaryClassifier extends TestSetUp {
 	public void testSaveToAndLoadFromFile() {
 		File file = binaryClassifier.saveToFile();
 		assertTrue(file.exists());
-		assertTrue(binaryClassifier.loadFromFile());
+		assertNotNull(binaryClassifier.loadFromFile());
 		assertTrue(binaryClassifier.isTrained());
 		file.delete();
 	}

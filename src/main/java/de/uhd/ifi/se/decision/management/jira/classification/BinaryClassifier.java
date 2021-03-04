@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,14 @@ import smile.validation.ClassificationValidations;
  */
 public class BinaryClassifier extends AbstractClassifier {
 
+	/**
+	 * Constructs a new binary classifier instance. Reads the classifier from file
+	 * if it was already trained and saved to file system.
+	 * 
+	 * @param namePrefix
+	 *            to identify the ground truth data that the classifier was trained
+	 *            on, e.g. "defaultTrainingData" or a project key.
+	 */
 	public BinaryClassifier(String namePrefix) {
 		super(2, namePrefix);
 	}
@@ -35,14 +42,6 @@ public class BinaryClassifier extends AbstractClassifier {
 		return "binaryClassifier.model";
 	}
 
-	/**
-	 * Trains the binary classifier.
-	 *
-	 * @param trainingData
-	 *            {@link GroundTruthData} read from csv file (see
-	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
-	 *            current {@link KnowledgeGraph).
-	 */
 	@Override
 	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
@@ -54,13 +53,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		saveToFile();
 	}
 
-	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param trainingSamples
-	 * @param trainingLabels
-	 * @return
-	 */
+	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
 		switch (classifierType) {
 		case SVM:
@@ -71,7 +64,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData,
+	public Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k, GroundTruthData groundTruthData,
 			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getKnowledgeElements());
@@ -100,7 +93,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateTrainedClassifier(GroundTruthData groundTruthData) {
 		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getAllSentences();
 		int[] truth = groundTruthData.getRelevanceLabelsForAllSentences();

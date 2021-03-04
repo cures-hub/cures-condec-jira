@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.template.TemplateSource.File;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -30,6 +29,17 @@ import smile.validation.ClassificationValidation;
  */
 public class FineGrainedClassifier extends AbstractClassifier {
 
+	/**
+	 * Constructs a new fine-grained classifier instance. Reads the classifier from
+	 * file if it was already trained and saved to file system.
+	 * 
+	 * @param numClasses
+	 *            2 for the binary classifier and > 2 for the fine grained
+	 *            classifier.
+	 * @param namePrefix
+	 *            to identify the ground truth data that the classifier was trained
+	 *            on, e.g. "defaultTrainingData" or a project key.
+	 */
 	public FineGrainedClassifier(int numClasses, String namePrefix) {
 		super(numClasses, namePrefix);
 	}
@@ -39,14 +49,6 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return "fineGrainedClassifier.model";
 	}
 
-	/**
-	 * Trains the fine grained classifier.
-	 *
-	 * @param trainingData
-	 *            {@link GroundTruthData} read from csv file (see
-	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
-	 *            current {@link KnowledgeGraph).
-	 */
 	@Override
 	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
@@ -58,13 +60,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		saveToFile();
 	}
 
-	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param trainingSamples
-	 * @param trainingLabels
-	 * @return
-	 */
+	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
 		switch (classifierType) {
 		case SVM:
@@ -76,7 +72,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData,
+	public Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k, GroundTruthData groundTruthData,
 			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
 				groundTruthData.getDecisionKnowledgeElements());
@@ -108,7 +104,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateTrainedClassifier(GroundTruthData groundTruthData) {
 		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
@@ -234,5 +230,4 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			return -1;
 		}
 	}
-
 }
