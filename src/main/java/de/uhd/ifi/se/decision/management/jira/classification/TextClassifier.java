@@ -165,28 +165,35 @@ public class TextClassifier {
 	 * 
 	 * @param k
 	 *            number of folds in k-fold cross-validation.
+	 * @param fineGrainedClassifierType
+	 * @param binaryClassifierType
 	 *
 	 * @return map of evaluation results (precision, recall, F1-score, accuracy,
 	 *         ...).
 	 */
-	public Map<String, ClassificationMetrics> evaluate(int k) {
+	public Map<String, ClassificationMetrics> evaluate(int k, ClassifierType binaryClassifierType,
+			ClassifierType fineGrainedClassifierType) {
 		LOGGER.info("Start evaluation of text classifier in project " + projectKey + " on data file "
 				+ groundTruthData.getFileName());
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluate(k, groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluate(k, groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, binaryClassifierType));
+			resultsMap.putAll(fineGrainedClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, fineGrainedClassifierType));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
-			resultsMap.putAll(binaryClassifier.evaluateClassifier(groundTruthData));
-			resultsMap.putAll(fineGrainedClassifier.evaluateClassifier(groundTruthData));
+			resultsMap.putAll(binaryClassifier.evaluateTrainedClassifier(groundTruthData));
+			resultsMap.putAll(fineGrainedClassifier.evaluateTrainedClassifier(groundTruthData));
 		}
 
 		LOGGER.info("Finished evaluation: " + resultsMap.toString());
 		return resultsMap;
+	}
+
+	public boolean train() {
+		return train(ClassifierType.LR, ClassifierType.LR);
 	}
 
 	/**
@@ -198,12 +205,13 @@ public class TextClassifier {
 	 *            of the ground truth file used for training.
 	 * @return true if training succeeded.
 	 */
-	public boolean train(String fileName) {
+	public boolean train(String fileName, ClassifierType binaryClassifierType,
+			ClassifierType fineGrainedClassifierType) {
 		if (fileName == null || fileName.isEmpty()) {
 			return false;
 		}
 		groundTruthData = new GroundTruthData(fileName);
-		return train();
+		return train(binaryClassifierType, fineGrainedClassifierType);
 	}
 
 	/**
@@ -211,15 +219,18 @@ public class TextClassifier {
 	 * approved by the user. Creates new classifier model files to classify the
 	 * comments and description of a Jira issue and git commit messages.
 	 * 
+	 * @param fineGrainedClassifierType
+	 * @param binaryClassifierType
+	 * 
 	 * @return true if training succeeded.
 	 */
-	public boolean train() {
+	public boolean train(ClassifierType binaryClassifierType, ClassifierType fineGrainedClassifierType) {
 		boolean isTrained = true;
 		try {
 			LOGGER.debug("Binary classifier training started.");
-			binaryClassifier.train(groundTruthData);
+			binaryClassifier.train(groundTruthData, binaryClassifierType);
 			LOGGER.debug("Fine-grained classifier training started.");
-			fineGrainedClassifier.train(groundTruthData);
+			fineGrainedClassifier.train(groundTruthData, fineGrainedClassifierType);
 		} catch (Exception e) {
 			LOGGER.error("The classifier could not be trained:" + e.getMessage());
 			isTrained = false;
