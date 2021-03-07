@@ -95,8 +95,6 @@ public class DashboardRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings,
 										 @QueryParam("issueType") String issueType) {
-		System.out.println(issueType);
-
 		if (request == null || filterSettings == null || issueType == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
