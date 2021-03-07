@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.io.IOException;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -23,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCove
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -32,14 +36,15 @@ import com.google.common.collect.ImmutableMap;
 public class DashboardRest {
 
 	@Path("/generalMetrics")
-	@GET
+	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getGeneralMetrics(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
+	public Response getGeneralMetrics(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
 		}
 
+		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		Map<String, Object> metrics = new LinkedHashMap<>();
@@ -56,14 +61,15 @@ public class DashboardRest {
 	}
 
 	@Path("/rationaleCompleteness")
-	@GET
+	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRationaleCompleteness(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
+	public Response getRationaleCompleteness(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
 		}
 
+		String projectKey = filterSettings.getProjectKey();
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
 		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(projectKey);
@@ -85,19 +91,20 @@ public class DashboardRest {
 	}
 
 	@Path("/rationaleCoverage")
-	@GET
+	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getRationaleCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-										 @QueryParam("issueType") String issueType, @QueryParam("linkDistance") String linkDistance) {
-		if (request == null || projectKey == null || issueType == null || linkDistance == null) {
+	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings,
+										 @QueryParam("issueType") String issueType) {
+		System.out.println(issueType);
+
+		if (request == null || filterSettings == null || issueType == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
 		}
 
+		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
-		FilterSettings filterSettings = new FilterSettings(projectKey, "", user);
-		filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
 
 		Map<String, Object> metrics = new LinkedHashMap<>();
 

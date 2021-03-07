@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
@@ -19,7 +20,6 @@ public class TestGetGeneralMetrics extends TestSetUp {
 
 	protected DashboardRest dashboardRest;
 	protected HttpServletRequest request;
-	private String projectKey;
 
 	@Before
 	public void setUp() {
@@ -32,15 +32,16 @@ public class TestGetGeneralMetrics extends TestSetUp {
 
 	@Test
 	public void testGetGeneralMetrics() {
-		this.projectKey = "TEST";
-		Response response = dashboardRest.getGeneralMetrics(request, projectKey);
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getGeneralMetrics(request, filterSettings);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
 	public void testGetGeneralMetricsNull() {
-		this.projectKey = null;
-		Response response = dashboardRest.getGeneralMetrics(request, projectKey);
+		FilterSettings filterSettings = null;
+		Response response = dashboardRest.getGeneralMetrics(request, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

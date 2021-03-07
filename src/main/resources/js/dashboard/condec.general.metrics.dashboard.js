@@ -56,17 +56,29 @@
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
 		showDashboardSection(dashboardProcessingNode);
-		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json?projectKey=" + projectKey;
+
+		var filterSettings = getFilterSettings(projectKey);
+
+		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json";
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
-			type: "get",
+			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
+			type: "post",
 			dataType: "json",
+			data: filterSettings,
 			async: true,
 			success: conDecGeneralMetricsDashboard.processData,
 			error: conDecGeneralMetricsDashboard.processDataBad
 		});
+	}
+
+	function getFilterSettings(projectKey) {
+		var filterSettings = {};
+		filterSettings.projectKey = projectKey;
+		filterSettings.searchTerm = "";
+		return JSON.stringify(filterSettings);
 	}
 
 	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
@@ -103,8 +115,8 @@
 	}
 
 	function renderData(data) {
-		var jsonstr = JSON.stringify(data);
-		var json = JSON.parse(jsonstr);
+		var jsonStr = JSON.stringify(data);
+		var json = JSON.parse(jsonStr);
 
 		/*  init data for charts */
 		var commentsPerIssue = new Map();

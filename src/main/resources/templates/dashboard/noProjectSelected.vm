@@ -1,3 +1,0 @@
-<div id="condec-dashboard-no-project" class="condec-dashboard-contents init">
-	$i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
-</div>

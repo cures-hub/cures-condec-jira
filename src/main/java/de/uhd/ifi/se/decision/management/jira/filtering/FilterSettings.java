@@ -302,6 +302,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
+	@XmlElement(name = "linkDistance")
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -312,6 +313,7 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
+	@JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
 	}

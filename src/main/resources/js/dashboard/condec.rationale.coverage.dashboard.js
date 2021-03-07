@@ -125,18 +125,30 @@
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
 		showDashboardSection(dashboardProcessingNode);
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?projectKey=" + projectKey
-			+ "&issueType=" + issueType + "&linkDistance=" + linkDistance;
+
+		var filterSettings = getFilterSettings(projectKey, linkDistance);
+
+		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?issueType=" + issueType;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
-			type: "get",
+			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
+			type: "post",
 			dataType: "json",
+			data: filterSettings,
 			async: true,
 			success: conDecRationaleCoverageDashboard.processData,
 			error: conDecRationaleCoverageDashboard.processDataBad
 		});
+	}
+
+	function getFilterSettings(projectKey, linkDistance) {
+		var filterSettings = {};
+		filterSettings.projectKey = projectKey;
+		filterSettings.searchTerm = "";
+		filterSettings.linkDistance = linkDistance;
+		return JSON.stringify(filterSettings);
 	}
 
 	ConDecRationaleCoverageDashboard.prototype.processDataBad = function processDataBad(data) {
@@ -173,8 +185,8 @@
 	}
 
 	function renderData(data) {
-		var jsonstr = JSON.stringify(data);
-		var json = JSON.parse(jsonstr);
+		var jsonStr = JSON.stringify(data);
+		var json = JSON.parse(jsonStr);
 
 		/*  init data for charts */
 		var issuesPerJiraIssue = new Map();
