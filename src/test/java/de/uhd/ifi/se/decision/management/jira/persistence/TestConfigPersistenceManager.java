@@ -614,9 +614,19 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
+		assertEquals(50, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
+		assertEquals(4, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
 		definitionOfDone.setAlternativeLinkedToArgument(true);
+		definitionOfDone.setDecisionLinkedToPro(true);
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		definitionOfDone.setLineNumbersInCodeFile(20);
+		definitionOfDone.setLinkDistanceFromCodeFileToDecision(3);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
+		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
+		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
+		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
+		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
 	}
 
 	@Test
