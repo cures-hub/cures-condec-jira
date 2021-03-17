@@ -23,15 +23,16 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class DefinitionOfDone {
 
-	private Map<String, Boolean> criteriaMap = new HashMap<>();
+	private Map<String, Integer> criteriaMap = new HashMap<>();
 
 	public DefinitionOfDone() {
-		criteriaMap.put("issueIsLinkedToAlternative", Boolean.FALSE);
-		criteriaMap.put("decisionIsLinkedToPro", Boolean.FALSE);
-		criteriaMap.put("alternativeIsLinkedToArgument", Boolean.FALSE);
+		criteriaMap.put("issueIsLinkedToAlternative", 0);
+		criteriaMap.put("decisionIsLinkedToPro", 0);
+		criteriaMap.put("alternativeIsLinkedToArgument", 0);
+		criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
 	}
 
-	public Map<String, Boolean> getCriteriaMap() {
+	public Map<String, Integer> getCriteriaMap() {
 		return criteriaMap;
 	}
 
@@ -40,7 +41,7 @@ public class DefinitionOfDone {
 	 *         least one alternative.
 	 */
 	public boolean isIssueIsLinkedToAlternative() {
-		return (boolean) criteriaMap.get("issueIsLinkedToAlternative");
+		return criteriaMap.get("issueIsLinkedToAlternative") != 0;
 	}
 
 	/**
@@ -50,7 +51,11 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("issueIsLinkedToAlternative")
 	public void setIssueLinkedToAlternative(boolean issueIsLinkedToAlternative) {
-		criteriaMap.put("issueIsLinkedToAlternative", issueIsLinkedToAlternative);
+		if (issueIsLinkedToAlternative) {
+			criteriaMap.put("issueIsLinkedToAlternative", 1);
+		} else {
+			criteriaMap.put("issueIsLinkedToAlternative", 0);
+		}
 	}
 
 	/**
@@ -58,7 +63,7 @@ public class DefinitionOfDone {
 	 *         linked to at least one pro-argument.
 	 */
 	public boolean isDecisionIsLinkedToPro() {
-		return criteriaMap.get("decisionIsLinkedToPro");
+		return criteriaMap.get("decisionIsLinkedToPro") != 0;
 	}
 
 	/**
@@ -68,7 +73,11 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("decisionIsLinkedToPro")
 	public void setDecisionLinkedToPro(boolean decisionIsLinkedToPro) {
-		criteriaMap.put("decisionIsLinkedToPro", decisionIsLinkedToPro);
+		if (decisionIsLinkedToPro) {
+			criteriaMap.put("decisionIsLinkedToPro", 1);
+		} else {
+			criteriaMap.put("decisionIsLinkedToPro", 0);
+		}
 	}
 
 	/**
@@ -76,7 +85,7 @@ public class DefinitionOfDone {
 	 *         needs to be linked to at least one pro-argument.
 	 */
 	public boolean isAlternativeIsLinkedToArgument() {
-		return criteriaMap.get("alternativeIsLinkedToArgument");
+		return criteriaMap.get("alternativeIsLinkedToArgument") != 0;
 	}
 
 	/**
@@ -86,6 +95,10 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("alternativeIsLinkedToArgument")
 	public void setAlternativeLinkedToArgument(boolean alternativeIsLinkedToArgument) {
-		criteriaMap.put("alternativeIsLinkedToArgument", alternativeIsLinkedToArgument);
+		if (alternativeIsLinkedToArgument) {
+			criteriaMap.put("alternativeIsLinkedToArgument", 1);
+		} else {
+			criteriaMap.put("alternativeIsLinkedToArgument", 0);
+		}
 	}
 }
