@@ -49,6 +49,7 @@ public class KnowledgeElements {
 		ChangedFile fileThatIsNotDone = new ChangedFile(stringThatIsNotDone);
 		fileThatIsNotDone.setTreeWalkPath("ClassThatIsNotDone.java");
 		fileThatIsNotDone.setId(100);
+		fileThatIsNotDone.setProject("TEST");
 		elements.add(fileThatIsNotDone);
 
 		String smallStringThatIsDone = "public class SmallClassThatIsDone {\n" + 
@@ -60,6 +61,7 @@ public class KnowledgeElements {
 		ChangedFile smallFileThatIsDone = new ChangedFile(smallStringThatIsDone);
 		smallFileThatIsDone.setTreeWalkPath("SmallClassThatIsDone.java");
 		smallFileThatIsDone.setId(101);
+		smallFileThatIsDone.setProject("TEST");
 		elements.add(smallFileThatIsDone);
 
 		String testStringThatIsDone = "public class TestClassThatIsDone {\n" + 
@@ -77,6 +79,7 @@ public class KnowledgeElements {
 		ChangedFile testFileThatIsDone = new ChangedFile(testStringThatIsDone);
 		testFileThatIsDone.setTreeWalkPath("TestClassThatIsDone.java");
 		testFileThatIsDone.setId(102);
+		testFileThatIsDone.setProject("TEST");
 		elements.add(testFileThatIsDone);
 
 		String linkedStringThatIsDone = "public class LinkedClassThatIsDone {\n" + 
@@ -95,8 +98,12 @@ public class KnowledgeElements {
 		linkedFileThatIsDone.setTreeWalkPath("LinkedClassThatIsDone.java");
 		linkedFileThatIsDone.setId(103);
 		linkedFileThatIsDone.setProject("TEST");
+		linkedFileThatIsDone.setProject("TEST");
 
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		graph.addVertexNotBeingInDatabase(fileThatIsNotDone);
+		graph.addVertexNotBeingInDatabase(smallFileThatIsDone);
+		graph.addVertexNotBeingInDatabase(testFileThatIsDone);
 		KnowledgeElement issueToBeLinked = new KnowledgeElement(jiraIssues.get(4));
 		KnowledgeElement decisionToBeLinked = new KnowledgeElement(jiraIssues.get(10));
 		graph.addVertexNotBeingInDatabase(issueToBeLinked);

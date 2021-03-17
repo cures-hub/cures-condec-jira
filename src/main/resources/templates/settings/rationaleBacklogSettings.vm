@@ -15,8 +15,11 @@
             let definitionOfDone = {
                 "issueIsLinkedToAlternative": $("#issue-link-alternative-checkbox").prop("checked"),
                 "decisionIsLinkedToPro": $("#decision-link-pro-checkbox").prop("checked"),
-                "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked")
+                "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
+                "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
+                "linkDistanceFromCodeFileToDecision": $("#link-distance-from-code-file-to-decision-number-input").prop("value")
             }
+            console.log(definitionOfDone);
             conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         });
         conDecJiraIssueCompletenessModule.init();

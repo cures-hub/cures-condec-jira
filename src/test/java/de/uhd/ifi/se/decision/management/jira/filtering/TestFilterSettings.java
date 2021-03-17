@@ -235,6 +235,11 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetSelectedElement() {
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		Set<KnowledgeElement> vertexSet = new HashSet<KnowledgeElement>();
+		vertexSet.addAll(graph.vertexSet());
+		graph.removeAllVertices(vertexSet);
+
 		filterSettings.setSelectedElement("TEST-1");
 		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
 
@@ -250,9 +255,9 @@ public class TestFilterSettings extends TestSetUp {
 
 		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
 		elementNotInDatabase.setProject("TEST");
-		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementNotInDatabase);
-		filterSettings.setSelectedElement("TEST:graph:-2");
-		assertEquals("TEST:graph:-2", filterSettings.getSelectedElement().getKey());
+		elementNotInDatabase = KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementNotInDatabase);
+		filterSettings.setSelectedElement(elementNotInDatabase.getKey());
+		assertEquals(elementNotInDatabase.getKey(), filterSettings.getSelectedElement().getKey());
 	}
 
 	@Test
