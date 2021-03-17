@@ -30,6 +30,7 @@ public class DefinitionOfDone {
 		criteriaMap.put("decisionIsLinkedToPro", 0);
 		criteriaMap.put("alternativeIsLinkedToArgument", 0);
 		criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
+		criteriaMap.put("lineNumbersInCodeFile", 50);
 	}
 
 	public Map<String, Integer> getCriteriaMap() {
@@ -100,5 +101,29 @@ public class DefinitionOfDone {
 		} else {
 			criteriaMap.put("alternativeIsLinkedToArgument", 0);
 		}
+	}
+
+	public int getLinkDistanceFromCodeFileToDecision() {
+		if (!criteriaMap.containsKey("linkDistanceFromCodeFileToDecision")) {
+			criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
+		}
+		return criteriaMap.get("linkDistanceFromCodeFileToDecision");
+	}
+
+	@JsonProperty("linkDistanceFromCodeFileToDecision")
+	public void setLinkDistanceFromCodeFileToDecision(int linkDistanceFromCodeFileToDecision) {
+		criteriaMap.put("linkDistanceFromCodeFileToDecision", linkDistanceFromCodeFileToDecision);
+	}
+
+	public int getLineNumbersInCodeFile() {
+		if (!criteriaMap.containsKey("lineNumbersInCodeFile")) {
+			criteriaMap.put("lineNumbersInCodeFile", 50);
+		}
+		return criteriaMap.get("lineNumbersInCodeFile");
+	}
+
+	@JsonProperty("lineNumbersInCodeFile")
+	public void setLineNumbersInCodeFile(int lineNumbersInCodeFile) {
+		criteriaMap.put("lineNumbersInCodeFile", lineNumbersInCodeFile);
 	}
 }
