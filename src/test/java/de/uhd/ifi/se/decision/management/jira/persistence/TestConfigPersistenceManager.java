@@ -630,6 +630,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setAlternativeLinkedToArgument(false);
 		definitionOfDone.setDecisionLinkedToPro(false);
 		definitionOfDone.setIssueLinkedToAlternative(false);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
