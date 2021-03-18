@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CodeCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
@@ -113,6 +114,32 @@ public class DashboardRest {
 			metrics.put("issueDocumentedForSelectedJiraIssue",
 				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
 		}
+
+		return Response.status(Status.OK).entity(metrics).build();
+	}
+
+	@Path("/codeCoverage")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getCodeCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("linkDistance") String linkDistance) {
+		if (request == null || projectKey == null || linkDistance == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		FilterSettings filterSettings = new FilterSettings(projectKey, "", user);
+		filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
+
+		Map<String, Object> metrics = new LinkedHashMap<>();
+
+		CodeCoverageCalculator rationaleCoverageCalculator = new CodeCoverageCalculator(projectKey, filterSettings);
+
+		metrics.put("issuesPerCodeFile",
+			rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
+		metrics.put("decisionsPerCodeFile",
+			rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
 
 		return Response.status(Status.OK).entity(metrics).build();
 	}
