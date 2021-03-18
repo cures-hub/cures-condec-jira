@@ -137,9 +137,9 @@
 
         /* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerCodeFile",
-			"", "# Decisions per Code File", issuesPerCodeFile);
+			"", "# Issues per Code File", issuesPerCodeFile);
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerCodeFile",
-			"", "# Issues per Code File", decisionsPerCodeFile);
+			"", "# Decisions per Code File", decisionsPerCodeFile);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForCodeFile",
 			"", "For how many code files is an issue documented?", decisionDocumentedForCodeFile);
