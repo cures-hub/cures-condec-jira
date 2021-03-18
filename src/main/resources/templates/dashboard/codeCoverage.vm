@@ -51,6 +51,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 <div id="condec-code-coverage-dashboard-contents-container" class="condec-dashboard-contents results hidden">
     <div id="boxplot-IssuesPerCodeFile" class="boxplot"></div>
     <div id="boxplot-DecisionsPerCodeFile" class="boxplot"></div>
+    <div id="piechartRich-DecisionDocumentedForCodeFile" class="piechart"></div>
+    <div id="piechartRich-IssueDocumentedForCodeFile" class="piechart"></div>
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")

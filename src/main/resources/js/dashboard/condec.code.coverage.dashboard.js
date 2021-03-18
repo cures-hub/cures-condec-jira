@@ -119,20 +119,32 @@
 		/*  init data for charts */
 		var issuesPerCodeFile = new Map();
 		var decisionsPerCodeFile = new Map();
+		var decisionDocumentedForCodeFile = new Map();
+		var issueDocumentedForCodeFile = new Map();
         
 		/* set something for box plots in case no data will be added to them */
 		issuesPerCodeFile.set("none", 0);
 		decisionsPerCodeFile.set("none", 0);
 
+		decisionDocumentedForCodeFile.set("no code classes", "");
+		issueDocumentedForCodeFile.set("no rationale elements", "");
+
 		/* form data for charts */
 		issuesPerCodeFile = getMap(JSON.stringify(json.issuesPerCodeFile));
 		decisionsPerCodeFile = getMap(JSON.stringify(json.decisionsPerCodeFile));
+		decisionDocumentedForCodeFile = getMap(JSON.stringify(json.decisionDocumentedForCodeFile));
+		issueDocumentedForCodeFile = getMap(JSON.stringify(json.issueDocumentedForCodeFile));
 
         /* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerCodeFile",
 			"", "# Decisions per Code File", issuesPerCodeFile);
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerCodeFile",
 			"", "# Issues per Code File", decisionsPerCodeFile);
+		/* render pie-charts */
+		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForCodeFile",
+			"", "For how many code files is an issue documented?", decisionDocumentedForCodeFile);
+		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForCodeFile",
+			"", "For how many code files is a decision documented?", issueDocumentedForCodeFile);
 	}
 
 	global.conDecCodeCoverageDashboard = new ConDecCodeCoverageDashboard();

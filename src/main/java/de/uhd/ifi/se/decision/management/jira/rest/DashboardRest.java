@@ -134,12 +134,16 @@ public class DashboardRest {
 
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		CodeCoverageCalculator rationaleCoverageCalculator = new CodeCoverageCalculator(projectKey, filterSettings);
+		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(projectKey, filterSettings);
 
 		metrics.put("issuesPerCodeFile",
-			rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
+			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
 		metrics.put("decisionsPerCodeFile",
-			rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
+			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
+		metrics.put("decisionDocumentedForCodeFile",
+			codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
+		metrics.put("issueDocumentedForCodeFile",
+			codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
 
 		return Response.status(Status.OK).entity(metrics).build();
 	}
