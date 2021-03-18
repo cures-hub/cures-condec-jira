@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -21,11 +18,24 @@ public class CodeCoverageCalculator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	private String projectKey;
-	private FilterSettings filterSettings;
+	private int linkDistance;
+	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<KnowledgeElement, Map<KnowledgeType, Integer>>();
 
-	public CodeCoverageCalculator(String projectKey, FilterSettings filterSettings) {
+	public CodeCoverageCalculator(String projectKey, int linkDistance) {
 		this.projectKey = projectKey;
-		this.filterSettings = filterSettings;
+		this.linkDistance = linkDistance;
+	}
+
+	private void fillLinkedElementMap(KnowledgeElement codeFile) {
+		Map<KnowledgeType, Integer> knowledgeTypeMap = new HashMap<KnowledgeType, Integer>();
+		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(linkDistance);
+		for (KnowledgeElement linkedElement : linkedElements) {
+			if (!knowledgeTypeMap.containsKey(linkedElement.getType())) {
+				knowledgeTypeMap.put(linkedElement.getType(), 0);
+			}
+			knowledgeTypeMap.put(linkedElement.getType(), knowledgeTypeMap.get(linkedElement.getType()) + 1);
+		}
+		linkedElementMap.put(codeFile, knowledgeTypeMap);
 	}
 
 	public Map<String, String> getCodeFilesWithNeighborsOfOtherType(KnowledgeType knowledgeType) {
@@ -38,23 +48,17 @@ public class CodeCoverageCalculator {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
-		FilterSettings filterSettingsForType = filterSettings;
-		Set<String> types = new HashSet<>();
-		types.add(knowledgeType.toString());
-		filterSettingsForType.setKnowledgeTypes(types);
-
 		String withLink = "";
 		String withoutLink = "";
 
 		for (KnowledgeElement codeFile : codeFiles) {
-			// TODO do this without filter settings, so we do not need to create transitive links
-			filterSettingsForType.setSelectedElement(codeFile);
-			FilteringManager filteringManager = new FilteringManager(filterSettingsForType);
-			Set<KnowledgeElement> elementsOfTargetTypeReachable = filteringManager.getElementsMatchingFilterSettings();
-			if (elementsOfTargetTypeReachable.size() > 1) {
-				withLink += projectKey + '-' + codeFile.getDescription() + " ";
-			} else {
+			if (!linkedElementMap.containsKey(codeFile)) {
+				fillLinkedElementMap(codeFile);
+			}
+			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
 				withoutLink += projectKey + '-' + codeFile.getDescription() + " ";
+			} else {
+				withLink += projectKey + '-' + codeFile.getDescription() + " ";
 			}
 		}
 
@@ -75,18 +79,16 @@ public class CodeCoverageCalculator {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
-		FilterSettings filterSettingsForType = filterSettings;
-		Set<String> types = new HashSet<>();
-		types.add(knowledgeType.toString());
-		filterSettingsForType.setKnowledgeTypes(types);
-
 		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
 		for (KnowledgeElement codeFile : codeFiles) {
-			// TODO do this without filter settings, so we do not need to create transitive links
-			filterSettingsForType.setSelectedElement(codeFile);
-			FilteringManager filteringManager = new FilteringManager(filterSettingsForType);
-			Set<KnowledgeElement> elementsOfTargetTypeReachable = filteringManager.getElementsMatchingFilterSettings();
-			numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), elementsOfTargetTypeReachable.size() - 1);
+			if (!linkedElementMap.containsKey(codeFile)) {
+				fillLinkedElementMap(codeFile);
+			}
+			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
+				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), 0);
+			} else {
+				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), linkedElementMap.get(codeFile).get(knowledgeType));
+			}
 		}
 		return numberOfElementsReachable;
 	}

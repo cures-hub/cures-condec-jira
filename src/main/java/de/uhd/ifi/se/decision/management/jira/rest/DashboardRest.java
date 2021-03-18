@@ -128,13 +128,9 @@ public class DashboardRest {
 				.build();
 		}
 
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilterSettings filterSettings = new FilterSettings(projectKey, "", user);
-		filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
-
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(projectKey, filterSettings);
+		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(projectKey, Integer.parseInt(linkDistance));
 
 		metrics.put("issuesPerCodeFile",
 			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
