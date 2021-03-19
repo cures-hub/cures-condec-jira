@@ -26,6 +26,7 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 		init();
 		String projectKey = "TEST";
         List<KnowledgeElement> knowledgeElements = KnowledgeElements.getTestKnowledgeElements();
+        assertEquals(22, knowledgeElements.size());
         int linkDistance = 3;
 		calculator = new CodeCoverageCalculator(projectKey, linkDistance);
 	}
