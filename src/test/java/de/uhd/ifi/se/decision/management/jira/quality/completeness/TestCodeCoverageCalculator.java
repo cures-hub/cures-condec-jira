@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -11,7 +12,9 @@ import org.junit.Test;
 
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCodeCoverageCalculator extends TestSetUp {
@@ -22,32 +25,35 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 	public void setUp() {
 		init();
 		String projectKey = "TEST";
+        List<KnowledgeElement> knowledgeElements = KnowledgeElements.getTestKnowledgeElements();
         int linkDistance = 3;
 		calculator = new CodeCoverageCalculator(projectKey, linkDistance);
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssuesWithNeighborsOfOtherTypeNull() {
+	public void testGetCodeFilesWithNeighborsOfOtherTypeNull() {
 		assertNull(calculator.getCodeFilesWithNeighborsOfOtherType(null));
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssuesWithNeighborsOfOtherTypeFilled() {
+	public void testGetCodeFilesWithNeighborsOfOtherTypeFilled() {
 		Map<String, String> calculation = calculator
 				.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE);
 
 		assertTrue(calculation.containsKey("Links from Code File to Issue"));
-		assertTrue(calculation.get("Links from Code File to Issue").isEmpty());
+		assertTrue(calculation.get("Links from Code File to Issue").contains("TEST-LinkedClassThatIsDone.java"));
 		assertTrue(calculation.containsKey("No links from Code File to Issue"));
-		assertTrue(calculation.get("No links from Code File to Issue").isEmpty());
+		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-ClassThatIsNotDone.java"));
+		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-SmallClassThatIsDone.java"));
+		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-TestClassThatIsDone.java"));
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
+	public void testGetNumberOfDecisionKnowledgeElementsForCodeFiles() {
+		assertEquals(4, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
 	}
 
 }
