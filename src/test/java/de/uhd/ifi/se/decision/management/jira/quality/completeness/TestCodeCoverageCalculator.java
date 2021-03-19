@@ -49,12 +49,29 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-ClassThatIsNotDone.java"));
 		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-SmallClassThatIsDone.java"));
 		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-TestClassThatIsDone.java"));
-	}
+
+		calculation = calculator
+				.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION);
+
+		assertTrue(calculation.containsKey("Links from Code File to Decision"));
+		assertTrue(calculation.get("Links from Code File to Decision").contains("TEST-LinkedClassThatIsDone.java"));
+		assertTrue(calculation.containsKey("No links from Code File to Decision"));
+		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-ClassThatIsNotDone.java"));
+		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-SmallClassThatIsDone.java"));
+		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-TestClassThatIsDone.java"));
+    }
 
 	@Test
 	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForCodeFiles() {
+	public void testGetNumberOfDecisionKnowledgeElementsForCodeFilesNull() {
+		assertNull(calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(null));
+	}
+
+    @Test
+	@NonTransactional
+	public void testGetNumberOfDecisionKnowledgeElementsForCodeFilesFilled() {
 		assertEquals(4, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
+		assertEquals(4, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION).size());
 	}
 
 }
