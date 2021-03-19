@@ -146,19 +146,24 @@
     };
 
     ConDecReqDash.prototype.navigateToElement = function (elementName) {
-        var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
-        targetBaseUrl = baseUrl;
-        if (!isIssueData) {
-            targetBaseUrl = AJS.contextPath();
-            issueKeyParts = elementName.split("origin/");
-            var branchName = issueKeyParts[0];
-            if (issueKeyParts.length > 1) { // not local branch name
-                branchName = issueKeyParts[1];
+        targetBaseUrl = AJS.contextPath();
+        if (elementName.indexOf('.') == -1) {
+            var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
+            if (!isIssueData) {
+                issueKeyParts = elementName.split("origin/");
+                var branchName = issueKeyParts[0];
+                if (issueKeyParts.length > 1) { // not local branch name
+                    branchName = issueKeyParts[1];
+                }
+                var branchNameParts = branchName.split(".");
+                issueKey = branchNameParts[0];
             }
-            var branchNameParts = branchName.split(".");
-            issueKey = branchNameParts[0];
+            window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
+        } else {
+            var projectKey = elementName.substring(0, elementName.indexOf('-'));
+            var codeFileName = elementName.substring(elementName.indexOf('-') + 1);
+            window.open(targetBaseUrl + '/projects/' + projectKey + '?selectedItem=decision-knowledge-page&codeFileName=' + codeFileName, '_blank');
         }
-        window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
     }
 
     ConDecReqDash.prototype.setClickedChart = function (domNode) {

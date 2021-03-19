@@ -197,9 +197,9 @@
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
-			"", "#Decisions per Jira Issue", issuesPerJiraIssue);
+			"", "# Issues per Jira Issue", issuesPerJiraIssue);
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
-			"", "#Issues per Jira Issue", decisionsPerJiraIssue);
+			"", "# Decisions per Jira Issue", decisionsPerJiraIssue);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"", "For how many selected issue type elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);

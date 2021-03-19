@@ -511,6 +511,8 @@
                   location="js/dashboard/condec.rationale.completeness.dashboard.js" />
         <resource type="download" name="condec.rationale.coverage.dashboard.js"
                   location="js/dashboard/condec.rationale.coverage.dashboard.js" />
+        <resource type="download" name="condec.code.coverage.dashboard.js"
+                  location="js/dashboard/condec.code.coverage.dashboard.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
         <resource type="download" name="condec.git.code.elements.linker.js"
@@ -603,5 +605,25 @@
 			location="/templates/dashboard/rationaleCoverage.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
+	</dashboard-item>
+
+    <dashboard-item key="condec-code-coverage-dashboard-item"
+		name="ConDec Dashboard for Code Coverage">
+		<definition>
+            <title key="condec.dashboard.codecoverage.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+        <description key="condec.dashboard.codecoverage.description" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/codeCoverage.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.CodeCoverageDashboardItem" />
 	</dashboard-item>
 </atlassian-plugin>

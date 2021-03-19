@@ -19,8 +19,13 @@
 	};
 
 	conDecDashboard.prototype.getRationaleCoverage = function (projectKey, issueType, linkDistance) {
-		generalApi.getJSON(this.restPrefix + "/dashboard/rationaleCOverage.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/dashboard/rationaleCoverage.json?projectKey="
 			+ projectKey + "&issueType=" + issueType + "&linkDistance=" + linkDistance);
+	};
+
+	conDecDashboard.prototype.getCodeCoverage = function (projectKey, issueType, linkDistance) {
+		generalApi.getJSON(this.restPrefix + "/dashboard/CodeCoverage.json?projectKey="
+			+ projectKey + "&linkDistance=" + linkDistance);
 	};
 
 	conDecDashboard.prototype.getJiraIssueTypes = function (projectKey) {
