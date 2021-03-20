@@ -67,7 +67,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	public Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k, GroundTruthData groundTruthData,
 			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
-				groundTruthData.getKnowledgeElements());
+				groundTruthData.getBalancedKnowledgeElementsWrtRelevance());
 		Classifier<double[]> entireModel = model;
 
 		List<ClassificationValidation<Classifier<double[]>>> validations = new ArrayList<>();

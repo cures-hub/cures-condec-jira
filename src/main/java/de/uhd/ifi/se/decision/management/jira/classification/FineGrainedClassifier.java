@@ -75,7 +75,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 	public Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k, GroundTruthData groundTruthData,
 			ClassifierType classifierType) {
 		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
-				groundTruthData.getDecisionKnowledgeElements());
+				groundTruthData.getBalancedDecisionKnowledgeElements());
 		Classifier<double[]> entireModel = model;
 
 		int[] truth = new int[0];

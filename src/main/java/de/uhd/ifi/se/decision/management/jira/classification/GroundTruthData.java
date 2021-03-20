@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.slf4j.Logger;
@@ -292,16 +294,68 @@ public class GroundTruthData {
 	 *         summary and the type is set!
 	 */
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> elements = new ArrayList<>();
+		List<KnowledgeElement> elements = getIrrelevantPartsOfText();
+		elements.addAll(getDecisionKnowledgeElements());
+		return elements;
+	}
+
+	private List<KnowledgeElement> getIrrelevantPartsOfText() {
+		List<KnowledgeElement> irrelevantPartsOfText = new ArrayList<>();
 		for (Map.Entry<String, Integer> entry : allSentenceRelevanceMap.entrySet()) {
 			if (entry.getValue().equals(0)) {
 				KnowledgeElement element = new KnowledgeElement();
 				element.setSummary(entry.getKey());
-				elements.add(element);
+				irrelevantPartsOfText.add(element);
 			}
 		}
-		elements.addAll(getDecisionKnowledgeElements());
+		return irrelevantPartsOfText;
+	}
+
+	/**
+	 * @return list of balanced knowledge elements regarding their relevance. Uses
+	 *         random undersampling.
+	 */
+	public List<KnowledgeElement> getBalancedKnowledgeElementsWrtRelevance() {
+		int numberOfAllParts = allSentenceRelevanceMap.size();
+		int numberOfRelevantPartsOfText = relevantSentenceKnowledgeTypeLabelMap.size();
+		int numberOfIrrelevantPartsOfText = numberOfAllParts - numberOfRelevantPartsOfText;
+		int min = Math.min(numberOfIrrelevantPartsOfText, numberOfRelevantPartsOfText);
+		List<KnowledgeElement> elements = randomSubList(getIrrelevantPartsOfText(), min - 1);
+		elements.addAll(randomSubList(getDecisionKnowledgeElements(), min - 1));
 		return elements;
+	}
+
+	public static <T> List<T> randomSubList(List<T> list, int newSize) {
+		list = new ArrayList<>(list);
+		Collections.shuffle(list);
+		return list.subList(0, newSize);
+	}
+
+	/**
+	 * @return list of balanced knowledge elements regarding their type. Uses random
+	 *         undersampling.
+	 */
+	public List<KnowledgeElement> getBalancedDecisionKnowledgeElements() {
+		List<KnowledgeElement> elements = getDecisionKnowledgeElements();
+		List<KnowledgeElement> issues = elements.stream().filter(e -> e.getType() == KnowledgeType.ISSUE)
+				.collect(Collectors.toList());
+		List<KnowledgeElement> decisions = elements.stream().filter(e -> e.getType() == KnowledgeType.DECISION)
+				.collect(Collectors.toList());
+		List<KnowledgeElement> alternatives = elements.stream().filter(e -> e.getType() == KnowledgeType.ALTERNATIVE)
+				.collect(Collectors.toList());
+		List<KnowledgeElement> proArguments = elements.stream().filter(e -> e.getType() == KnowledgeType.PRO)
+				.collect(Collectors.toList());
+		List<KnowledgeElement> conArguments = elements.stream().filter(e -> e.getType() == KnowledgeType.CON)
+				.collect(Collectors.toList());
+		List<Integer> sampleSizes = Arrays.asList(issues.size(), decisions.size(), alternatives.size(),
+				proArguments.size(), conArguments.size());
+		int min = Collections.min(sampleSizes);
+		List<KnowledgeElement> balancedElements = randomSubList(issues, min - 1);
+		balancedElements.addAll(randomSubList(decisions, min - 1));
+		balancedElements.addAll(randomSubList(alternatives, min - 1));
+		balancedElements.addAll(randomSubList(proArguments, min - 1));
+		balancedElements.addAll(randomSubList(conArguments, min - 1));
+		return balancedElements;
 	}
 
 	/**
