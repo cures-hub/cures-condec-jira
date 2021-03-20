@@ -60,7 +60,7 @@ public class CodeFileExtractorAndMaintainer {
 
 	private void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
-		// codeFilePersistenceManager.deleteKnowledgeElements();
+		codeFilePersistenceManager.deleteKnowledgeElements();
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (changedFile.isCodeFile()) {
