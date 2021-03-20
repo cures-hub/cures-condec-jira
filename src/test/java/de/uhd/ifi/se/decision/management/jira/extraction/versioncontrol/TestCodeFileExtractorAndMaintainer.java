@@ -2,18 +2,30 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.codeclasspersistencemanager.TestInsertKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
+
+	@Before
+	public void setUp() {
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+        codeFileEndingMap.put("JAVA_C", "java");
+        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+	}
 
 	@Test
 	@NonTransactional
