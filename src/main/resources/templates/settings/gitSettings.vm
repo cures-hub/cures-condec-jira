@@ -91,6 +91,27 @@
 </div>
 
 <div class="field-group">
+    <label>Code File Endings</label>
+    Java/C code comment style: 
+    <input type="text" class="text long-field" id="code-comment-style-java-c" value="$project.getCodeFileEndings('JAVA_C')" placeholder="Example: java, c, h, cpp, hpp"/><br/>
+    Python code comment style: 
+    <input type="text" class="text long-field" id="code-comment-style-python" value="$project.getCodeFileEndings('PYTHON')" placeholder="Example: py, sh"/><br/>
+    HTML code comment style: 
+    <input type="text" class="text long-field" id="code-comment-style-html" value="$project.getCodeFileEndings('HTML')" placeholder="Example: html, htm, xml, css, php, vm, js, ts"/><br/>
+    TeX code comment style: 
+    <input type="text" class="text long-field" id="code-comment-style-tex" value="$project.getCodeFileEndings('TEX')" placeholder="Example: tex"/><br/>
+    <div class="aui-group">
+		<input type="button" id="file-endings-button" class="aui-button aui-button-primary" value="Save File Endings"/>
+	</div>
+	<div class="description">
+		Java/C code comment style: Single-line comments with //, multi-line comments with /* &hellip; */.<br/>
+        Python code comment style: Single-line comments with #.<br/>
+        HTML code comment style: Multi-line comments with &lt;!-- &hellip; --&gt;.<br/>
+        TeX code comment style: Single-line comments with %.
+	</div>
+</div>
+
+<div class="field-group">
     <label for="isPostFeatureBranchCommitsActivated-toggle">Post Feature Branch Commit Messages as
         Comment?</label>
     <aui-toggle id="isPostFeatureBranchCommitsActivated-toggle"
@@ -199,6 +220,25 @@
 		x--;
 	});
 
+    var fileEndingsSubmitButton = document.getElementById("file-endings-button");
+
+    fileEndingsSubmitButton.addEventListener("click", function () {
+        var codeCommentStyleJavaC = document.getElementById("code-comment-style-java-c").value;
+        var codeCommentStylePython = document.getElementById("code-comment-style-python").value;
+        var codeCommentStyleHTML = document.getElementById("code-comment-style-html").value;
+        var codeCommentStyleTeX = document.getElementById("code-comment-style-tex").value;
+		var codeFileEndings = {
+            "JAVA_C": codeCommentStyleJavaC,
+            "PYTHON": codeCommentStylePython,
+            "HTML": codeCommentStyleHTML,
+            "TEX": codeCommentStyleTeX
+        };
+       
+        conDecAPI.setCodeFileEndings("$projectKey", codeFileEndings);
+		
+        window.onbeforeunload = null;
+    });
+	
     var gitsSubmitButton = document.getElementById("git-uris-button");
 
     gitsSubmitButton.addEventListener("click", function () {
@@ -219,7 +259,6 @@
 			gitRepositoryConfigurations.push(gitRepositoryConfiguration);
         }
        
-        console.log(gitRepositoryConfigurations);
         conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
 		
         window.onbeforeunload = null;

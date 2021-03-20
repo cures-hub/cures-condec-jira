@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
@@ -230,6 +231,32 @@ public class ConfigPersistenceManager {
 			return new ArrayList<GitRepositoryConfiguration>();
 		}
 		return gitRepositoryConfigurations;
+	}
+
+	public static void setCodeFileEndings(String projectKey, Map<String, String> codeFileEndingMap) {
+		Type type = new TypeToken<Map<String, CommentStyleType>>() {
+		}.getType();
+		Map<String, CommentStyleType> codeFileEndings = new HashMap<String, CommentStyleType>();
+		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
+			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
+			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ").split(" ");
+			for (String fileEnding : fileEndings) {
+				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
+			}
+		}
+		saveObject(projectKey, "codeFileEndings", codeFileEndings, type);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
+		Type type = new TypeToken<Map<String, CommentStyleType>>() {
+		}.getType();
+		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(
+				projectKey, "codeFileEndings", type);
+		if (codeFileEndings == null) {
+			return new HashMap<String, CommentStyleType>();
+		}
+		return codeFileEndings;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
