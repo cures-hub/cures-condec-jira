@@ -13,7 +13,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -95,6 +98,25 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals("HTTP", gitConfs.get(0).getAuthMethod());
 		assertEquals("heinz.guenther", gitConfs.get(0).getUsername());
 		assertEquals("P@ssw0rd!", gitConfs.get(0).getToken());
+	}
+
+	@Test
+	public void testGetCodeFileEndings() {
+        Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+        codeFileEndingMap.put("JAVA_C", "java, c++, C");
+        codeFileEndingMap.put("PYTHON", "py");
+        codeFileEndingMap.put("HTML", "js, ts");
+        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		List<String> codeFileEndingsJavaC = Arrays.asList(project.getCodeFileEndings("JAVA_C").split(", "));
+		List<String> codeFileEndingsPython = Arrays.asList(project.getCodeFileEndings("PYTHON").split(", "));
+		List<String> codeFileEndingsHTML = Arrays.asList(project.getCodeFileEndings("HTML").split(", "));
+		assertTrue(codeFileEndingsJavaC.contains("java"));
+		assertTrue(codeFileEndingsJavaC.contains("c++"));
+		assertTrue(codeFileEndingsJavaC.contains("c"));
+		assertTrue(codeFileEndingsPython.contains("py"));
+		assertTrue(codeFileEndingsHTML.contains("js"));
+		assertTrue(codeFileEndingsHTML.contains("ts"));
+		assertTrue(project.getCodeFileEndings("TEX").equals(""));
 	}
 
 	@Test
