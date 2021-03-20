@@ -19,7 +19,7 @@ public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
         codeFileEndingMap.put("JAVA_C", "java");
         ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);

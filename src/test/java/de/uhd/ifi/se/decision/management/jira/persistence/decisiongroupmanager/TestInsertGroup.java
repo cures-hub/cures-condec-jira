@@ -29,7 +29,7 @@ public class TestInsertGroup extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		long id = 100;
 		String summary = "Test";
 		String description = "Test";
