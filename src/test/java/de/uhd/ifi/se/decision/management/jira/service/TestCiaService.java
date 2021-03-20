@@ -34,7 +34,7 @@ public class TestCiaService extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		Arrays.stream(KnowledgeType.values()).map(KnowledgeType::toString).forEach(
-			System.out::println
+			(string) -> {}
 		);
 
 		VisGraph graph = CiaService.calculateGraphImpact(settings);
