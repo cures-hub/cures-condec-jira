@@ -13,7 +13,7 @@ public enum CommentStyleType {
     private String multiLineCommentCharEnd;
 
     public static CommentStyleType getFromString(String commentStyleTypeString) {
-        switch (commentStyleTypeString) {
+        switch (commentStyleTypeString.toUpperCase()) {
             case "JAVA_C":
                 return CommentStyleType.JAVA_C;
 
