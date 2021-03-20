@@ -68,7 +68,7 @@ public class TestTextClassifier extends TestSetUp {
 				ClassifierType.LR);
 		for (Map.Entry<String, ClassificationMetrics> entry : evaluationResults.entrySet()) {
 			if (entry.getKey().startsWith("Binary")) {
-				assertEquals(0.8, entry.getValue().f1, 0.1);
+				assertEquals(0.8, entry.getValue().f1, 0.3);
 			}
 		}
 		assertEquals(0.1, evaluationResults.get("Fine-grained Alternative").f1, 0.4);

@@ -326,7 +326,6 @@ public class GroundTruthData {
 	}
 
 	public static <T> List<T> randomSubList(List<T> list, int newSize) {
-		list = new ArrayList<>(list);
 		Collections.shuffle(list);
 		return list.subList(0, newSize);
 	}
