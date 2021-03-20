@@ -135,10 +135,6 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
 		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
-		if (ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
-			Query.select().where("PROJECT_KEY = ?", projectKey)) == null) {
-			return knowledgeElements;
-		}
 		for (CodeClassInDatabase databaseEntry : ACTIVE_OBJECTS.find(CodeClassInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			knowledgeElements.add(new ChangedFile(databaseEntry));
