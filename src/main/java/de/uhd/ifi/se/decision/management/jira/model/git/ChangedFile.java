@@ -363,6 +363,9 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public CommentStyleType getCommentStyleType() {
+		if (getProject() == null) {
+			return CommentStyleType.NONE;
+		}
 		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager.getCodeFileEndings(getProject().getProjectKey());
 		if (codeFileEndings == null) {
 			return CommentStyleType.NONE;
