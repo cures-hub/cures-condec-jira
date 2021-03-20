@@ -54,6 +54,12 @@ public class TestSetCodeFileEndings extends TestSetUp {
 				configRest.setCodeFileEndings(request, "TEST", null).getStatus());
 	}
 
+	@Test
+	public void testEverythingJustFine() {
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.setCodeFileEndings(request, "TEST", codeFileEndings).getStatus());
+	}
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings
