@@ -37,6 +37,6 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,0,0,Ask her for advice.
 0,0,0,0,0,I added a sequence diagram for the recommendation mechanism
 0,0,0,0,0,"Here's a small screenshot of the current state."
+0,0,0,0,0,Maybe we can talk about that tomorrow.
+0,0,0,0,0,Thanks for updating the unit tests!
 0,0,0,0,0,Please install a current version of the plug-in on the server and test whether it works there.
-0,0,0,0,0,I like to implement it myself.
-0,0,0,0,0,I sqashed the branch into develop.
