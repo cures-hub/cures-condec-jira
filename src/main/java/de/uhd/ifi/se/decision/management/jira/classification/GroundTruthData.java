@@ -312,29 +312,37 @@ public class GroundTruthData {
 	}
 
 	/**
+	 * @param isRandom
+	 *            true if random undersampling, false if first elements in list are
+	 *            taken for undersampling.
 	 * @return list of balanced knowledge elements regarding their relevance. Uses
-	 *         random undersampling.
+	 *         undersampling.
 	 */
-	public List<KnowledgeElement> getBalancedKnowledgeElementsWrtRelevance() {
+	public List<KnowledgeElement> getBalancedKnowledgeElementsWrtRelevance(boolean isRandom) {
 		int numberOfAllParts = allSentenceRelevanceMap.size();
 		int numberOfRelevantPartsOfText = relevantSentenceKnowledgeTypeLabelMap.size();
 		int numberOfIrrelevantPartsOfText = numberOfAllParts - numberOfRelevantPartsOfText;
 		int min = Math.min(numberOfIrrelevantPartsOfText, numberOfRelevantPartsOfText);
-		List<KnowledgeElement> elements = randomSubList(getIrrelevantPartsOfText(), min - 1);
-		elements.addAll(randomSubList(getDecisionKnowledgeElements(), min - 1));
+		List<KnowledgeElement> elements = getSubList(getIrrelevantPartsOfText(), min - 1, isRandom);
+		elements.addAll(getSubList(getDecisionKnowledgeElements(), min - 1, isRandom));
 		return elements;
 	}
 
-	public static <T> List<T> randomSubList(List<T> list, int newSize) {
-		Collections.shuffle(list);
+	public static <T> List<T> getSubList(List<T> list, int newSize, boolean isRandom) {
+		if (isRandom) {
+			Collections.shuffle(list);
+		}
 		return list.subList(0, newSize);
 	}
 
 	/**
+	 * @param isRandom
+	 *            true if random undersampling, false if first elements in list are
+	 *            taken for undersampling.
 	 * @return list of balanced knowledge elements regarding their type. Uses random
 	 *         undersampling.
 	 */
-	public List<KnowledgeElement> getBalancedDecisionKnowledgeElements() {
+	public List<KnowledgeElement> getBalancedDecisionKnowledgeElements(boolean isRandom) {
 		List<KnowledgeElement> elements = getDecisionKnowledgeElements();
 		List<KnowledgeElement> issues = elements.stream().filter(e -> e.getType() == KnowledgeType.ISSUE)
 				.collect(Collectors.toList());
@@ -349,11 +357,11 @@ public class GroundTruthData {
 		List<Integer> sampleSizes = Arrays.asList(issues.size(), decisions.size(), alternatives.size(),
 				proArguments.size(), conArguments.size());
 		int min = Collections.min(sampleSizes);
-		List<KnowledgeElement> balancedElements = randomSubList(issues, min - 1);
-		balancedElements.addAll(randomSubList(decisions, min - 1));
-		balancedElements.addAll(randomSubList(alternatives, min - 1));
-		balancedElements.addAll(randomSubList(proArguments, min - 1));
-		balancedElements.addAll(randomSubList(conArguments, min - 1));
+		List<KnowledgeElement> balancedElements = getSubList(issues, min - 1, isRandom);
+		balancedElements.addAll(getSubList(decisions, min - 1, isRandom));
+		balancedElements.addAll(getSubList(alternatives, min - 1, isRandom));
+		balancedElements.addAll(getSubList(proArguments, min - 1, isRandom));
+		balancedElements.addAll(getSubList(conArguments, min - 1, isRandom));
 		return balancedElements;
 	}
 
