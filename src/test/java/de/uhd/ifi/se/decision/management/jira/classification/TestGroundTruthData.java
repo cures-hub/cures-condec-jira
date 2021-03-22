@@ -157,7 +157,7 @@ public class TestGroundTruthData extends TestSetUp {
 
 		File fullDefaultFile = new File("src/main/resources/classifier/defaultTrainingData.csv");
 
-		int numberOfLines = 52;
+		int numberOfLines = 42;
 
 		BufferedWriter writer = null;
 		try {

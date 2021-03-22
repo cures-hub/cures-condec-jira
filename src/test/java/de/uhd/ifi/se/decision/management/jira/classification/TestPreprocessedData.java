@@ -44,7 +44,7 @@ public class TestPreprocessedData extends TestSetUp {
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(29, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
+		assertEquals(34, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
 		assertEquals(213, preprocessedData.preprocessedSentences.length);
 		assertEquals(213, preprocessedData.updatedLabels.length);

@@ -290,6 +290,65 @@ public class GroundTruthData {
 	}
 
 	/**
+	 * @return list of decision knowledge (rationale) elements created from training
+	 *         data. Only the summary and the type is set!
+	 */
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : relevantSentenceKnowledgeTypeLabelMap.entrySet()) {
+			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(entry.getValue());
+			KnowledgeElement element = new KnowledgeElement();
+			element.setSummary(entry.getKey());
+			element.setType(type);
+			elements.add(element);
+		}
+		return elements;
+	}
+
+	@Override
+	public String toString() {
+		return dataFrame.toString(dataFrame.size());
+	}
+
+	/**
+	 * @issue How to balance the training data?
+	 * @param k
+	 * @return
+	 */
+	private static Map<GroundTruthData, GroundTruthData> splitForKFoldCrossValidation(int k,
+			List<KnowledgeElement> elements) {
+		Map<GroundTruthData, GroundTruthData> splitData = new HashMap<>();
+		int chunkSize = (int) Math.ceil(elements.size() / k);
+		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
+		for (int i = 0; i < k; i++) {
+			List<KnowledgeElement> evaluationElements = parts.get(i);
+			List<KnowledgeElement> trainingElements = new ArrayList<>();
+			for (int j = 0; j < parts.size(); j++) {
+				if (j != i) {
+					// part is not already used as evaluation data
+					trainingElements.addAll(parts.get(j));
+				}
+			}
+			GroundTruthData trainingData = new GroundTruthData(trainingElements);
+			GroundTruthData evaluationData = new GroundTruthData(evaluationElements);
+			splitData.put(trainingData, evaluationData);
+		}
+		return splitData;
+	}
+
+	public Map<GroundTruthData, GroundTruthData> splitForBinaryKFoldCrossValidation(int k) {
+		return splitForKFoldCrossValidation(k, getBalancedKnowledgeElementsWrtRelevance(true));
+	}
+
+	public Map<GroundTruthData, GroundTruthData> splitForFineGrainedKFoldCrossValidation(int k) {
+		return splitForKFoldCrossValidation(k, getBalancedDecisionKnowledgeElements(true));
+	}
+
+	public String getFileName() {
+		return fileName != null ? fileName : "";
+	}
+
+	/**
 	 * @return list of knowledge elements created from training data. Only the
 	 *         summary and the type is set!
 	 */
@@ -323,9 +382,14 @@ public class GroundTruthData {
 		int numberOfRelevantPartsOfText = relevantSentenceKnowledgeTypeLabelMap.size();
 		int numberOfIrrelevantPartsOfText = numberOfAllParts - numberOfRelevantPartsOfText;
 		int min = Math.min(numberOfIrrelevantPartsOfText, numberOfRelevantPartsOfText);
-		List<KnowledgeElement> elements = getSubList(getIrrelevantPartsOfText(), min - 1, isRandom);
-		elements.addAll(getSubList(getDecisionKnowledgeElements(), min - 1, isRandom));
-		return elements;
+		List<KnowledgeElement> irrelevantParts = getSubList(getIrrelevantPartsOfText(), min, isRandom);
+		List<KnowledgeElement> relevantParts = getSubList(getDecisionKnowledgeElements(), min, isRandom);
+		List<KnowledgeElement> balancedElements = new ArrayList<>();
+		for (int i = 0; i < min; i++) {
+			balancedElements.add(irrelevantParts.get(i));
+			balancedElements.add(relevantParts.get(i));
+		}
+		return balancedElements;
 	}
 
 	public static <T> List<T> getSubList(List<T> list, int newSize, boolean isRandom) {
@@ -344,77 +408,35 @@ public class GroundTruthData {
 	 */
 	public List<KnowledgeElement> getBalancedDecisionKnowledgeElements(boolean isRandom) {
 		List<KnowledgeElement> elements = getDecisionKnowledgeElements();
-		List<KnowledgeElement> issues = elements.stream().filter(e -> e.getType() == KnowledgeType.ISSUE)
-				.collect(Collectors.toList());
-		List<KnowledgeElement> decisions = elements.stream().filter(e -> e.getType() == KnowledgeType.DECISION)
-				.collect(Collectors.toList());
-		List<KnowledgeElement> alternatives = elements.stream().filter(e -> e.getType() == KnowledgeType.ALTERNATIVE)
-				.collect(Collectors.toList());
-		List<KnowledgeElement> proArguments = elements.stream().filter(e -> e.getType() == KnowledgeType.PRO)
-				.collect(Collectors.toList());
-		List<KnowledgeElement> conArguments = elements.stream().filter(e -> e.getType() == KnowledgeType.CON)
-				.collect(Collectors.toList());
+		List<KnowledgeElement> issues = getElementsOfType(elements, KnowledgeType.ISSUE);
+		List<KnowledgeElement> decisions = getElementsOfType(elements, KnowledgeType.DECISION);
+		List<KnowledgeElement> alternatives = getElementsOfType(elements, KnowledgeType.ALTERNATIVE);
+		List<KnowledgeElement> proArguments = getElementsOfType(elements, KnowledgeType.PRO);
+		List<KnowledgeElement> conArguments = getElementsOfType(elements, KnowledgeType.CON);
+
 		List<Integer> sampleSizes = Arrays.asList(issues.size(), decisions.size(), alternatives.size(),
 				proArguments.size(), conArguments.size());
 		int min = Collections.min(sampleSizes);
-		List<KnowledgeElement> balancedElements = getSubList(issues, min - 1, isRandom);
-		balancedElements.addAll(getSubList(decisions, min - 1, isRandom));
-		balancedElements.addAll(getSubList(alternatives, min - 1, isRandom));
-		balancedElements.addAll(getSubList(proArguments, min - 1, isRandom));
-		balancedElements.addAll(getSubList(conArguments, min - 1, isRandom));
+
+		List<KnowledgeElement> balancedIssues = getSubList(issues, min, isRandom);
+		List<KnowledgeElement> balancedDecisions = getSubList(decisions, min, isRandom);
+		List<KnowledgeElement> balancedAlternatives = getSubList(alternatives, min, isRandom);
+		List<KnowledgeElement> balancedPros = getSubList(proArguments, min, isRandom);
+		List<KnowledgeElement> balancedCons = getSubList(conArguments, min, isRandom);
+
+		List<KnowledgeElement> balancedElements = new ArrayList<>();
+		for (int i = 0; i < min; i++) {
+			balancedElements.add(balancedIssues.get(i));
+			balancedElements.add(balancedDecisions.get(i));
+			balancedElements.add(balancedAlternatives.get(i));
+			balancedElements.add(balancedPros.get(i));
+			balancedElements.add(balancedCons.get(i));
+		}
 		return balancedElements;
 	}
 
-	/**
-	 * @return list of decision knowledge (rationale) elements created from training
-	 *         data. Only the summary and the type is set!
-	 */
-	public List<KnowledgeElement> getDecisionKnowledgeElements() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : relevantSentenceKnowledgeTypeLabelMap.entrySet()) {
-			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(entry.getValue());
-			KnowledgeElement element = new KnowledgeElement();
-			element.setSummary(entry.getKey());
-			element.setType(type);
-			elements.add(element);
-		}
-		return elements;
-	}
-
-	@Override
-	public String toString() {
-		return dataFrame.toString(dataFrame.size());
-	}
-
-	/**
-	 * @issue How to balance the training data?
-	 * @param k
-	 * @return
-	 */
-	public static Map<GroundTruthData, GroundTruthData> splitForKFoldCrossValidation(int k,
-			List<KnowledgeElement> elements) {
-		Map<GroundTruthData, GroundTruthData> splitData = new HashMap<>();
-		Collections.shuffle(elements);
-		int chunkSize = (int) Math.ceil(elements.size() / k);
-		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
-		for (int i = 0; i < k; i++) {
-			List<KnowledgeElement> evaluationElements = parts.get(i);
-			List<KnowledgeElement> trainingElements = new ArrayList<>();
-			for (int j = 0; j < parts.size(); j++) {
-				if (j != i) {
-					// part is not already used as evaluation data
-					trainingElements.addAll(parts.get(j));
-				}
-			}
-			GroundTruthData trainingData = new GroundTruthData(trainingElements);
-			GroundTruthData evaluationData = new GroundTruthData(evaluationElements);
-			splitData.put(trainingData, evaluationData);
-		}
-		return splitData;
-	}
-
-	public String getFileName() {
-		return fileName != null ? fileName : "";
+	private static List<KnowledgeElement> getElementsOfType(List<KnowledgeElement> allElements, KnowledgeType type) {
+		return allElements.stream().filter(e -> e.getType() == type).collect(Collectors.toList());
 	}
 
 }

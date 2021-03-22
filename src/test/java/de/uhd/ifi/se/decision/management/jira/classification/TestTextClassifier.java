@@ -85,7 +85,7 @@ public class TestTextClassifier extends TestSetUp {
 				assertEquals(0.9, entry.getValue().f1, 0.1);
 			}
 		}
-		assertEquals(0.9, evaluationResults.get("Fine-grained Alternative").f1, 0.1);
+		assertEquals(0.9, evaluationResults.get("Fine-grained Alternative").f1, 0.2);
 	}
 
 	@Test
@@ -101,13 +101,13 @@ public class TestTextClassifier extends TestSetUp {
 		// precondition: classifier freshly trained
 		classifier.train();
 		assertEquals(KnowledgeType.ALTERNATIVE,
-				classifier.getFineGrainedClassifier().predict("We will apply the multiton design pattern!"));
+				classifier.getFineGrainedClassifier().predict("Increases extensibility"));
 
 		// test steps: update classifier with new part of text
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		sentence.setDescription("We will apply the multiton design pattern!");
+		sentence.setDescription("Increases extensibility");
 		sentence.setRelevant(true);
-		sentence.setType(KnowledgeType.DECISION);
+		sentence.setType(KnowledgeType.PRO);
 		sentence.setValidated(true);
 
 		classifier.activateOnlineLearning(true);
@@ -117,9 +117,9 @@ public class TestTextClassifier extends TestSetUp {
 		assertTrue(classifier.update(sentence));
 
 		// postcondition: classifier now recognizes the correct knowledge type
-		// should be decision!
+		// should be pro-argument!
 		assertEquals(KnowledgeType.ALTERNATIVE,
-				classifier.getFineGrainedClassifier().predict("We will apply the multiton design pattern!"));
+				classifier.getFineGrainedClassifier().predict("Increases extensibility"));
 	}
 
 	// TODO: tests with unvalidated data element

@@ -1,7 +1,5 @@
 isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,0,1,How can we implement?
-0,0,0,0,1,When should the API be called?
-0,0,0,0,1,What would be the best solution?
 0,0,0,0,1,Where should the view be shown?
 0,0,0,0,1,Which algorithm to choose?
 0,0,0,0,1,How could we display a large graph more clearly?
@@ -13,18 +11,14 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 1,0,0,0,0,Alternatively we can implement it as that.
 1,0,0,0,0,I would suggest to try to apply the observer pattern
 1,0,0,0,0,This technology could also be used.
-1,0,0,0,0,I think another implementation is also worth trying.
-1,0,0,0,0,We should try to do this in Java instead.
 1,0,0,0,0,"We could apply a model view controller (MVC) design pattern."
 0,1,0,0,0,This will improve the performance.
 0,1,0,0,0,It might have a positive impact on the readability.
-0,1,0,0,0,This is a better implementation.
 0,1,0,0,0,Less work
 0,1,0,0,0,This is easier to implement and maintain.
 0,1,0,0,0,The user experience will be improved.
 0,1,0,0,0,Open-source MIT licensed
 0,1,0,0,0,This will make it more easy in the future.
-0,0,1,0,0,It does not follow the conventions.
 0,0,1,0,0,It might have a negative impact on performance.
 0,0,1,0,0,Code becomes more complex
 0,0,1,0,0,I think this may be a bit confusing to the user.
@@ -34,7 +28,6 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,1,0,0,Hard to implement.
 0,0,0,1,0,I choose the first alternative.
 0,0,0,1,0,We concluded that we implement it in that way.
-0,0,0,1,0,The first alternative is clearly better.
 0,0,0,1,0,Therefore we used the second implementation.
 0,0,0,1,0,The decision was made to use a SVM.
 0,0,0,1,0,We chose to use this framework.
@@ -47,6 +40,3 @@ isAlternative,isPro,isCon,isDecisions,isIssue,sentence
 0,0,0,0,0,Please install a current version of the plug-in on the server and test whether it works there.
 0,0,0,0,0,I like to implement it myself.
 0,0,0,0,0,I sqashed the branch into develop.
-0,0,0,0,0,The quick brown fox jumps over the lazy dog.
-0,0,0,0,0,Maybe we can talk about that tomorrow.
-0,0,0,0,0,Thanks for updating the unit tests!
