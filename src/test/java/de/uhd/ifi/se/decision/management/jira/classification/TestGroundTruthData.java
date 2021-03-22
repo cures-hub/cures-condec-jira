@@ -47,22 +47,22 @@ public class TestGroundTruthData extends TestSetUp {
 
 		assertEquals(1, groundTruthData.getRelevanceLabelsForAllSentences()[1]);
 
-		assertEquals("Nobody knows.", groundTruthData.getAllSentences()[6]);
+		assertEquals("The user could configure the classifier algorithm", groundTruthData.getAllSentences()[6]);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetRelevantSentences() {
-		assertEquals(29, groundTruthData.getRelevantSentences().length);
-		assertEquals(29, groundTruthData.getKnowledgeTypeLabelsForRelevantSentences().length);
+		assertEquals(34, groundTruthData.getRelevantSentences().length);
+		assertEquals(34, groundTruthData.getKnowledgeTypeLabelsForRelevantSentences().length);
 
 		assertEquals("How can we implement?", groundTruthData.getRelevantSentences()[0]);
 		assertEquals(4, groundTruthData.getKnowledgeTypeLabelsForRelevantSentences()[0]);
 
 		assertEquals(4, groundTruthData.getKnowledgeTypeLabelsForRelevantSentences()[1]);
 
-		assertEquals("Alternatively we can implement it as that.", groundTruthData.getRelevantSentences()[6]);
-		assertEquals(0, groundTruthData.getRelevanceLabelsForAllSentences()[6]);
+		assertEquals("The user could configure the classifier algorithm", groundTruthData.getRelevantSentences()[6]);
+		assertEquals(1, groundTruthData.getRelevanceLabelsForAllSentences()[6]);
 	}
 
 	@Test

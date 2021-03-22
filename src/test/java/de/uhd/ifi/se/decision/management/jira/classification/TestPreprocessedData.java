@@ -31,23 +31,23 @@ public class TestPreprocessedData extends TestSetUp {
 	public void testBinary() {
 		assertEquals(41, trainingData.getRelevanceLabelsForAllSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		assertEquals(284, preprocessedData.preprocessedSentences.length);
-		assertEquals(284, preprocessedData.updatedLabels.length);
+		assertEquals(313, preprocessedData.preprocessedSentences.length);
+		assertEquals(313, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(1, preprocessedData.updatedLabels[0]);
 		assertEquals(1, preprocessedData.updatedLabels[1]);
 		assertEquals(1, preprocessedData.updatedLabels[2]);
 		assertEquals(1, preprocessedData.updatedLabels[3]);
-		assertEquals(0, preprocessedData.updatedLabels[32]);
-		assertEquals(-1, preprocessedData.getIsRelevantLabels()[32]);
+		assertEquals(0, preprocessedData.updatedLabels[300]);
+		assertEquals(-1, preprocessedData.getIsRelevantLabels()[300]);
 	}
 
 	@Test
 	public void testFineGrained() {
-		assertEquals(29, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
+		assertEquals(34, trainingData.getKnowledgeTypeLabelsForRelevantSentences().length);
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		assertEquals(213, preprocessedData.preprocessedSentences.length);
-		assertEquals(213, preprocessedData.updatedLabels.length);
+		assertEquals(246, preprocessedData.preprocessedSentences.length);
+		assertEquals(246, preprocessedData.updatedLabels.length);
 		// assertEquals(0.36143, preprocessedData.preprocessedSentences[0][0]);
 		assertEquals(4, preprocessedData.updatedLabels[0]);
 		assertEquals(4, preprocessedData.updatedLabels[1]);
@@ -58,8 +58,8 @@ public class TestPreprocessedData extends TestSetUp {
 		assertNotNull(preprocessedData.preprocessedSentences[preprocessedData.updatedLabels.length - 1]);
 
 		assertEquals(1, preprocessedData.getIsIssueLabels()[0]);
-		assertEquals(-1, preprocessedData.getIsIssueLabels()[40]);
-		assertEquals(1, preprocessedData.getIsAlternativeLabels()[40]);
+		assertEquals(-1, preprocessedData.getIsIssueLabels()[60]);
+		assertEquals(1, preprocessedData.getIsAlternativeLabels()[60]);
 	}
 
 }

@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.slf4j.Logger;
@@ -288,23 +290,6 @@ public class GroundTruthData {
 	}
 
 	/**
-	 * @return list of knowledge elements created from training data. Only the
-	 *         summary and the type is set!
-	 */
-	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		for (Map.Entry<String, Integer> entry : allSentenceRelevanceMap.entrySet()) {
-			if (entry.getValue().equals(0)) {
-				KnowledgeElement element = new KnowledgeElement();
-				element.setSummary(entry.getKey());
-				elements.add(element);
-			}
-		}
-		elements.addAll(getDecisionKnowledgeElements());
-		return elements;
-	}
-
-	/**
 	 * @return list of decision knowledge (rationale) elements created from training
 	 *         data. Only the summary and the type is set!
 	 */
@@ -330,10 +315,9 @@ public class GroundTruthData {
 	 * @param k
 	 * @return
 	 */
-	public static Map<GroundTruthData, GroundTruthData> splitForKFoldCrossValidation(int k,
+	private static Map<GroundTruthData, GroundTruthData> splitForKFoldCrossValidation(int k,
 			List<KnowledgeElement> elements) {
 		Map<GroundTruthData, GroundTruthData> splitData = new HashMap<>();
-		Collections.shuffle(elements);
 		int chunkSize = (int) Math.ceil(elements.size() / k);
 		List<List<KnowledgeElement>> parts = Lists.partition(elements, chunkSize);
 		for (int i = 0; i < k; i++) {
@@ -352,8 +336,107 @@ public class GroundTruthData {
 		return splitData;
 	}
 
+	public Map<GroundTruthData, GroundTruthData> splitForBinaryKFoldCrossValidation(int k) {
+		return splitForKFoldCrossValidation(k, getBalancedKnowledgeElementsWrtRelevance(true));
+	}
+
+	public Map<GroundTruthData, GroundTruthData> splitForFineGrainedKFoldCrossValidation(int k) {
+		return splitForKFoldCrossValidation(k, getBalancedDecisionKnowledgeElements(true));
+	}
+
 	public String getFileName() {
 		return fileName != null ? fileName : "";
+	}
+
+	/**
+	 * @return list of knowledge elements created from training data. Only the
+	 *         summary and the type is set!
+	 */
+	public List<KnowledgeElement> getKnowledgeElements() {
+		List<KnowledgeElement> elements = getIrrelevantPartsOfText();
+		elements.addAll(getDecisionKnowledgeElements());
+		return elements;
+	}
+
+	private List<KnowledgeElement> getIrrelevantPartsOfText() {
+		List<KnowledgeElement> irrelevantPartsOfText = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : allSentenceRelevanceMap.entrySet()) {
+			if (entry.getValue().equals(0)) {
+				KnowledgeElement element = new KnowledgeElement();
+				element.setSummary(entry.getKey());
+				irrelevantPartsOfText.add(element);
+			}
+		}
+		return irrelevantPartsOfText;
+	}
+
+	/**
+	 * @param isRandom
+	 *            true if random undersampling, false if first elements in list are
+	 *            taken for undersampling.
+	 * @return list of balanced knowledge elements regarding their relevance. Uses
+	 *         undersampling.
+	 */
+	public List<KnowledgeElement> getBalancedKnowledgeElementsWrtRelevance(boolean isRandom) {
+		int numberOfAllParts = allSentenceRelevanceMap.size();
+		int numberOfRelevantPartsOfText = relevantSentenceKnowledgeTypeLabelMap.size();
+		int numberOfIrrelevantPartsOfText = numberOfAllParts - numberOfRelevantPartsOfText;
+		int min = Math.min(numberOfIrrelevantPartsOfText, numberOfRelevantPartsOfText);
+		List<KnowledgeElement> irrelevantParts = getSubList(getIrrelevantPartsOfText(), min, isRandom);
+		List<KnowledgeElement> relevantParts = getSubList(getDecisionKnowledgeElements(), min, isRandom);
+		List<KnowledgeElement> balancedElements = new ArrayList<>();
+		for (int i = 0; i < min; i++) {
+			balancedElements.add(irrelevantParts.get(i));
+			balancedElements.add(relevantParts.get(i));
+		}
+		return balancedElements;
+	}
+
+	public static <T> List<T> getSubList(List<T> list, int newSize, boolean isRandom) {
+		if (isRandom) {
+			Collections.shuffle(list);
+		}
+		return list.subList(0, newSize);
+	}
+
+	/**
+	 * @param isRandom
+	 *            true if random undersampling, false if first elements in list are
+	 *            taken for undersampling.
+	 * @return list of balanced knowledge elements regarding their type. Uses random
+	 *         undersampling.
+	 */
+	public List<KnowledgeElement> getBalancedDecisionKnowledgeElements(boolean isRandom) {
+		List<KnowledgeElement> elements = getDecisionKnowledgeElements();
+		List<KnowledgeElement> issues = getElementsOfType(elements, KnowledgeType.ISSUE);
+		List<KnowledgeElement> decisions = getElementsOfType(elements, KnowledgeType.DECISION);
+		List<KnowledgeElement> alternatives = getElementsOfType(elements, KnowledgeType.ALTERNATIVE);
+		List<KnowledgeElement> proArguments = getElementsOfType(elements, KnowledgeType.PRO);
+		List<KnowledgeElement> conArguments = getElementsOfType(elements, KnowledgeType.CON);
+
+		List<Integer> sampleSizes = Arrays.asList(issues.size(), decisions.size(), alternatives.size(),
+				proArguments.size(), conArguments.size());
+		int min = Collections.min(sampleSizes);
+
+		List<KnowledgeElement> balancedIssues = getSubList(issues, min, isRandom);
+		List<KnowledgeElement> balancedDecisions = getSubList(decisions, min, isRandom);
+		List<KnowledgeElement> balancedAlternatives = getSubList(alternatives, min, isRandom);
+		List<KnowledgeElement> balancedPros = getSubList(proArguments, min, isRandom);
+		List<KnowledgeElement> balancedCons = getSubList(conArguments, min, isRandom);
+
+		List<KnowledgeElement> balancedElements = new ArrayList<>();
+		for (int i = 0; i < min; i++) {
+			balancedElements.add(balancedIssues.get(i));
+			balancedElements.add(balancedDecisions.get(i));
+			balancedElements.add(balancedAlternatives.get(i));
+			balancedElements.add(balancedPros.get(i));
+			balancedElements.add(balancedCons.get(i));
+		}
+		return balancedElements;
+	}
+
+	private static List<KnowledgeElement> getElementsOfType(List<KnowledgeElement> allElements, KnowledgeType type) {
+		return allElements.stream().filter(e -> e.getType() == type).collect(Collectors.toList());
 	}
 
 }

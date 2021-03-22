@@ -1,0 +1,75 @@
+Ground truth file name: CONDEC-NLP4RE2021.csv
+Trained and evaluated using 10-fold cross-validation
+{Binary smile.classification.LogisticRegression$Binomial={
+  fit time: 565,977 ms,
+  score time: 7,748 ms,
+  validation data size: 41,
+  error: 11,
+  accuracy: 72,20%,
+  sensitivity: 96,47%,
+  specificity: 47,74%,
+  precision: 64,91%,
+  F1 score: 77,46%,
+  MCC: 50,82%
+}, Fine-grained Overall smile.classification.LogisticRegression$Multinomial={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 721,
+  accuracy: 33,24%
+}, Fine-grained Alternative={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 230,
+  accuracy: 78,70%,
+  sensitivity: 17,59%,
+  specificity: 93,98%,
+  precision: 42,22%,
+  F1 score: 24,84%,
+  MCC: 16,75%
+}, Fine-grained Pro={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 210,
+  accuracy: 80,56%,
+  sensitivity: 11,11%,
+  specificity: 97,92%,
+  precision: 57,14%,
+  F1 score: 18,60%,
+  MCC: 18,68%
+}, Fine-grained Con={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 215,
+  accuracy: 80,09%,
+  sensitivity: 12,50%,
+  specificity: 96,99%,
+  precision: 50,94%,
+  F1 score: 20,07%,
+  MCC: 17,57%
+}, Fine-grained Decision={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 574,
+  accuracy: 46,85%,
+  sensitivity: 84,72%,
+  specificity: 37,38%,
+  precision: 25,28%,
+  F1 score: 38,94%,
+  MCC: 18,81%
+}, Fine-grained Issue={
+  fit time: 37275,166 ms,
+  score time: 80,785 ms,
+  validation data size: 1080,
+  error: 213,
+  accuracy: 80,28%,
+  sensitivity: 40,28%,
+  specificity: 90,28%,
+  precision: 50,88%,
+  F1 score: 44,96%,
+  MCC: 33,48%
+}}
