@@ -1,0 +1,1715 @@
+isAlternative,isPro,isCon,isDecisions,isIssue,sentence
+0,1,0,0,0,It is working quite well.
+0,0,1,0,0,I just tried to use the 2012 Version of safari for windows but it keeps crashing.
+1,0,0,0,0,"The link for the project setting page could be shown for every project."
+0,0,0,1,0,I moved all methods of the former ActiveObjectManager class to the class JiraIssueCommentPersistenceManager.
+0,0,0,0,0,This was already fixed in last weeks super fast bug fixing session before the sprint finalization.
+0,0,1,0,0,The tutorial is not working.
+0,0,1,0,0,"The FuncTestCase is not existing in the Packages from Jira 7.5.0."
+0,0,0,0,1,Would the element be visible in TreeViewer if the link is deleted?
+0,0,0,0,0,Yes.
+0,0,0,1,0,The eventlistener always looks for sentences without links and links them to the respective issue.
+0,0,1,0,0,I think this may be a bit confusing to the user.
+0,0,0,0,0,I put it on master branch and also linked it in the Marketplace.
+0,1,0,0,0,The privacy statement looks good to me.
+0,0,0,0,0,Thanks for updating the unit tests!
+0,1,0,0,0,"Okay, this looks like a plan."
+0,0,0,0,0,"Please update the unit tests for this class."
+0,0,0,0,0,I'm just working on a basic prototype to evaluate if this is possible as I thought.
+0,1,0,0,0,Great!
+0,0,0,0,0,I'll continue tomorrow finishing this.
+0,1,0,0,0,Got a prototype working now.
+1,0,0,0,0,"So We need a Macro Class for every knowledge type, and also an entry ""macro"" for each type in the ""atlassian-plugin.xml""."
+0,0,0,0,0,I just pushed the current state to ConDec-375.
+0,0,0,0,0,The constructor looks like this:
+0,0,0,0,0,I will continue to do more systemtests now.
+0,0,1,0,0,"The ""What you see is what you get"" editor is not as usable as i wish to."
+0,0,0,0,0,Maybe we can talk about that tomorrow.
+0,0,0,0,0,Thanks.
+0,0,0,0,0,"We discussed that a while ago, but did not come to a conclusion."
+0,1,0,0,0,"Great, thanks!"
+0,0,0,0,0,Thanks.
+0,0,0,0,0,"Please check the changes and update the unit tests of the persistence package."
+0,0,0,0,1,Is this all we need for Atlassian?
+0,1,0,0,0,We can upload new versions that are visible directly. There are no additional reviews.
+0,0,0,0,0,Thanks for adding the EULA.
+0,1,0,0,0,I think it is good like this.
+0,0,0,0,1,How can new comments automatically be linked to other decision knowledge?
+0,0,0,0,0,I sqashed the branch into develop.
+0,0,0,0,0,Thanks!
+0,0,0,0,0,We will further update the tests after improving and integrating the new model classes for decision knowledge from issue comments and further improving/simplifying the persistence API.
+0,0,0,0,1,I moved the diagram to Confluence: https://confluence-se.ifi.uni-heidelberg.de/display/DDJ/User+Interface
+0,0,0,0,1,Creating AO entries currently only works if the automatic classification is enabled. This should also work when a developers manually labels a comment.
+0,0,0,0,1,The problem is that calling the JIRA.trigger method in the JIRA issue module update method leads to doubled/redundant HTML elements.
+0,0,0,0,0,: https://marketplace.atlassian.com/manage/apps/1219690/versions
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,0,0,0,0,Please install a current version of the plug-in on the CURES server and test whether it works there.
+0,0,0,0,0,Thanks!
+0,0,0,0,0,"if (username == null || userManager.isAdmin(username)) {
+    redirectToLogin(request, response);
+    return;
+}"
+0,1,0,0,0,It also works for me.
+0,0,0,0,1,Is there a way to integrate this menu in the .vm file?
+0,0,0,0,0," <meta name=""decorator"" content=""atl.admin"">"
+0,0,0,0,1,"Do you also get the message ""TypeError: callback is not a function""?"
+0,0,0,1,0,Please delete it (we still have it under version control in case we discover its use).
+0,0,1,0,0,This View will only work with the Issue Strategy.
+0,1,0,0,0,That's a good idea to add the new REST method.
+0,0,0,1,0,Please add it to the config REST class.
+1,0,0,0,0,"Possible Testing Frameworks:
+ * [https://qunitjs.com/]
+ * [https://facebook.github.io/jest]
+ * https://github.com/jasmine/jasmine"
+1,0,0,0,0,"We use similar background colors in your tab panel like in the Treant nodes."
+0,0,0,0,1,Icons for pro and con arguments in sentences of issue comments are not shown in Treant.
+0,0,0,0,0,Just pushed this and created a pull request.
+0,1,0,0,0,It works awesome!!
+0,1,0,0,0,"Best thing: when adding a new comment, the treant is triggered to reload (by JIRA, I did not touch this)."
+0,0,1,0,0,"I think with some time the DecXtract tab pannel becomes a bit outdated (for JIRA issues with less comments)"
+0,0,0,1,0,All other functions can be done in Decision Knowledge Page or in the Treant module.
+0,1,0,0,0,"On the other hand, I think its a good possibility to gain an overview when there a a lot of comments and decision knowledge, like most of the Lucene issues."
+0,1,0,0,0,The direct notification of the treant in the issue module is awesome!
+0,0,0,0,0,Are you in office tomorrow?
+0,0,0,0,0,I think we should discuss this a bit further before we throw it out.
+0,0,0,0,0,Afterwards I could implement it during the weekend.
+0,0,0,0,0,I will be in office tomorrow and we will discuss this issue CONDEC-375.
+0,0,0,0,0,This will be part of a new work item so please close this one.
+1,0,0,0,0,"Add @ignore annotations to the methods that should be ignored"
+0,0,0,0,0,I'm having trouble reproducing this.
+0,0,0,0,0,Can you please provide some steps or testdata to get this exception?
+0,0,0,0,0,Or maybe a stacktrace?
+0,0,0,0,1,We need to find a way to get rid of the special treatment of sentences/decision knowledge in issue comments as much as possible.
+0,0,0,0,0,But this will be part of a future work item.
+0,0,0,0,0,Thanks.
+0,1,0,0,0,Those Icons look great in treant.
+0,0,1,0,0,This is hard to implement because I think you should distinguish between issue types such as work item and system function and maybe only include decision knowledge
+0,0,0,0,1,"So for example if i have a graph like: Decision1 -> WorkItem1 -> Issue1; So the link distance for Issue and Decision would be 0 because no knowledge types are connected to each other, right?"
+0,0,0,1,0,"We restrict recursive search for children of a valid KnowledgeType, not for KnowledgeType.Other."
+0,0,0,0,0,Please also squash this into the develop branch after fixing the codacy issues (and other things you still want to do).
+0,0,0,0,0,Let's discuss that tomorrow.
+0,0,0,0,1,Sentences are existing in ao (so they are shown in the treeViewer) but they do not contain any links (this usually does not happen).
+0,0,0,1,0,I moved the creation of the event listener to the fillIssueModule method that is only called once when the issue module is created.
+0,0,0,0,1,Does anybody still have a propagation to login page problem?
+0,0,0,0,1,"The content of the DecXtract issue tab panel is also blocked in the Safari browser."
+0,0,0,0,0,"global.open(baseUrl + ""/browse/"" + key, '_blank');"
+0,0,0,1,0,"I solved this for now by adding an event listener to the dialog hide function. When the dialog gets hidden, it is resetted."
+1,0,0,0,0,"On the long run, we could think about adding a separate dialog template file for every management function (adding elements, linking elements, deleting element et cetera)."
+0,1,0,0,0,"The advantage would be that we don't need the HTML code in the Javascript file anymore."
+0,0,0,0,0,Please shortly describe what you did.
+0,0,0,0,1,"With the ""\n\r"" removed, a null pointer occurred on substring methods."
+0,0,1,0,0,You won't be able to login otherwise.
+0,0,0,0,0,I installed the current version on this server.
+1,0,0,0,0,This alternative is proposed here: https://community.atlassian.com/t5/Answers-Developer-Questions/How-can-I-make-a-message-pop-up-from-java/qaq-p/478856
+0,0,0,0,0,Fixed.
+0,0,0,0,0,"I fixed this on the ""develop"" branch."
+0,0,0,0,1,Elements that were retrieved directly from the active objects (AO) database (not through links) did not get their body from the Jira issue comment.
+1,0,0,0,0,"It would be great if this would be also covered by a button on your setting page, maybe also by the ""validate sentence database""."
+0,0,0,0,0,I can reproduce this.
+0,0,0,0,0,I checked out your branch CONDEC-135 and installed the version on this server.
+0,0,0,0,0,I close this work item for now.
+0,0,0,0,0,We might reopen it for the remaining restructuring.
+0,0,0,0,0,"ALTER TABLE ""AO_1193A5_CONDEC_LINK"" DROP ""ID_OF_SOURCE_ELEMENT""; 
+ALTER TABLE ""AO_1193A5_CONDEC_LINK"" DROP ""ID_OF_DESTINATION_ELEMENT"";"
+0,0,0,0,0,Could you please look again at it?
+0,0,0,0,0,I will fix this on CONDEC-324.
+0,0,0,0,1,"Unfortunately, I still get an error when exporting decision knowledge as the json table."
+0,0,1,0,0,Not possible in JIRA
+0,0,0,1,0,Split the element key to retrieve the project key in case the project key is undefined.
+0,0,0,1,0,"If comments are edited, the sentence objects are newly created."
+0,0,0,1,0,Added a new constructor for the GitConfig so the ProjectKey is enough. 
+0,0,0,0,0,"The problem is, decisionKnowledgeElement.getType() returns ""con"" for a contra element. But css only looks for ""contra"" class elements. Because of this, it only fails for cons, not for pros."
+0,0,0,0,0,The isValidated attribute of Sentence objects is now set correctly.
+0,0,0,0,1,"Could you please try to access the REST API of the Git Integration for JIRA plugin from the Java side of our plugin?"
+0,0,1,0,0,"I tried this but could not pass the Authentication barrier."
+0,0,1,0,0,This needs explicit credentials.
+1,0,0,0,0,So may we ask the user for their credentials.
+1,0,0,0,0,Try to authenticate another way
+0,0,0,0,0,I looked a bit deeper into this.
+1,0,0,0,0,The user should have a possibility to configure the issue types for the webhook.
+0,0,0,1,0,"I decided to create a third class that just handles the ""Observation""."
+0,1,0,0,0,"OK, good idea."
+0,0,0,0,0,Review: The new code is looking good.
+0,0,0,0,0,It is short and more readable than before.
+0,0,0,0,0,The tests are refactored and are working. 
+0,0,0,1,0,Removing the Webhook observer and adding the functionality to the Connector.
+0,0,0,0,0,Fixed some small bugs.
+0,0,0,0,0,If you could review the toggle that would be great.
+0,0,0,0,0,If you think we are finished with this item we can close it then
+0,0,0,0,0,Thanks.
+0,0,0,0,0,I did some minor changes.
+0,0,0,0,1,"One problem was that the issue id could not be received for this link via JIRA.Issue.getIssueKey();"
+0,0,0,1,0,"Now, the following method is used to receive the issue key:"
+0,0,0,0,0,"var issueKey = JIRA.Issue.getIssueKey();
+    if(issueKey == null) {
+        issueKey = AJS.Meta.get(""issue-key"");
+    }"
+0,0,0,1,0,I removed the html tags.
+0,0,0,0,1,"Sadly in the Issue View the Message ""No Element has been selected"" is shown."
+1,0,0,0,0,If we stay with the synchronous calls i will now try to add a authentication page.
+0,0,0,0,0,Thanks for fixing the bugs!
+0,0,0,0,1,The problem was that the issueType was null when trying to add it to the Scheme.
+0,0,0,0,0,I committed this here: https://github.com/cures-hub/cures-condec-jira/pull/13
+0,0,0,1,0,I integrated a first version of the issue tab panel into the DecDoc plug-in.
+0,0,0,0,1,"Unfortunately, the tree is not rendered correctly."
+0,0,0,0,0,"Does this happen in your browser as well?"
+0,0,0,0,0,thank you!
+0,0,0,0,1,Should we also assign new icons to all extended decision knowledge types?
+0,0,0,1,0,"Avoid uneccessary copying of entire git repositories for every branch, remove folder creation for every git branch"
+0,0,0,1,0,"Sort commits by their committing time: oldest commits come first!"
+0,0,0,0,0,"done on ""develop"""
+0,0,0,0,0,Fixed.
+0,0,0,0,1,I don't see the flags in the Chrom(ium) browser but in Firefox.
+1,0,0,0,0,"Currently, also irrelevant sentences are exported."
+0,0,0,0,1,The dialog cannot be found since the issue page generates HTML which contains elements with not unique IDs.
+1,0,0,0,0,"Dialog.vm could receive a variable from its parent velocity page, this variable could be appended to ID attributes of the generated dialog HTML."
+0,0,0,1,0,"If the classifier automatically classifies a sentence, isValidated is set to false."
+1,0,0,0,0,"Currently, this template file is just a static HTML page"
+0,0,0,1,0,Refactored some javascript to closure objects.
+0,0,0,1,0,The DecisionKnowledgeProject class offers the method getKnowledgeTypes() to get the activated knowledge types for the JIRA project as a set.
+1,0,0,0,0,"We should include a pie chart that shows how many of the decisions have an issue documented and how many of the issues are already solved by a decision."
+1,0,0,0,0,"I would call the boxplot decision knowledge elements per issue."
+0,0,0,0,1,"Do you have an idea what causes this exception?"
+0,0,0,0,0,I get the following error message
+1,0,0,0,0,If this dependency should stay we could list all Issue Types from Jira via the IssueTypeManager. 
+1,0,0,0,0,"We can create the Dropdown via JSON https://docs.atlassian.com/aui/7.9.1/docs/dropdown.html"
+0,0,0,0,1,Would it also be possible to replace the end tag with a line break?
+1,0,0,0,0,"I think its a good idea to support line break ""end indicators"" for both  (icon and tags)."
+1,0,0,0,0,We could replace the end tag by a line break.
+1,0,0,0,0,We could support line breaks *and* end tags.
+1,0,0,0,0,This bug should be solved by changing to the latest Spring Scanner version.
+0,0,0,0,0,"Please check if the plugin runs with this version and then close this bug."
+0,0,0,0,0,There are no issues with the new Versions or the init process.
+0,0,0,0,1,"How can we check whether the user is authorized to change settings?"
+1,0,0,0,0,"Currently, we check whether the user is authorized in many classes, e.g. in the REST classes and in the Servlets."
+0,0,1,0,0,This leads to redundant code.
+1,0,0,0,0,Create an AuthorizationManager class that it is used in the REST and servlet classes.
+1,0,0,0,0,"Currently, we have the two mock classes MockAdminUserManager and MockDefaultUserManager."
+0,0,0,0,1,"Is it ok, if I combine these classes into ""MockUserManager""?"
+0,0,0,1,0,Fixed by adding a boolean to velocity parameters.
+0,0,0,0,1,I also have the problem that the knowledge types toggles seem to be deactivated although they are actually activated.
+0,0,0,0,1,Should the tags also no longer pop up after a change or only at the opening of the page? 
+0,1,0,0,0,It works on my local Jira instance.
+0,0,0,0,0,I also installed the version on the server.
+0,0,0,1,0,I fixed this by calling CommentSplitter in the DecXtractEventListener.
+0,0,0,0,0,AJS.$(document).ready(function ());
+0,0,0,0,0,"I already fixed this. "
+0,0,0,0,1,This is a very strange behavior and its not yet determined what is causing this.
+0,0,0,0,1,I think this happens because JIRA calls the code twice (why ever?).
+0,0,0,0,1,"If the code is executed ""fast enough"" sequentially or parallel a sentence is added twice into the db, since the first insertion is not finished when the second one starts its consistency function."
+1,0,0,0,0,A simple solution for this bug is to check the consistency after all sentences are inserted and delete possible duplicates
+1,0,0,0,0,An alternate solution is to identify the problem why the first consistency check (in the ao method for inserting a sentence) fails.
+0,0,1,0,0,This idea also does not work.
+0,0,0,1,0,"Fix by adding a static counter that increases with every deletion and is called every second time."
+0,0,0,0,1,"The problem is that ""somehow"" the generic links between sentences and issue are deleted."
+0,0,0,0,1,Unfortunately there is no reason for these links to be deleted.
+0,0,0,0,1,And there is no possibility for the user to delete a link without creating a new one.
+0,0,0,0,1,The last time (so when I was hunting for this bug) a Java Heap Space exception occurred.
+1,0,0,0,0,A workaround is a function that checks for every element if a valid link exists (no matter if the link is to a sentence or an issue).
+0,0,0,1,0,Please remove all the webhook calls from the KnowledgeRest class and add them to the ActiveObjectStrategy class.
+0,0,0,0,1,Do you also get a runtime exception: service proxy has been destroyed when running JIRA locally?
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,0,0,0,0,"There was a unit test which should have covered this, which was also not correct."
+0,1,0,0,0,"The new Trigger for the webhook don't show any of your problems in my tests (Create, Link , Delete)"
+0,0,0,0,0,Done!
+0,0,0,0,0,Mock up for DnD support
+0,1,0,0,0,I like it.
+1,0,0,0,0,"Currently, the LinkEntity interface does not extend the Link interface and the DecisionKnowledgeElementEntity interface does not extend the DecisionKnowledgeElement interface due to a technical issue."
+0,0,0,0,1,"The getKnowledgeType method returns an Enum instance, but we need a String for the AO database."
+0,0,0,0,1,We cannot both ignore this method in the Entity interface and write a new one because one cannot overload the return type of methods.
+0,1,0,0,0,This system function is relevant for both the active objects and the issue strategy.
+0,0,0,1,0,"If the issue strategy is chosen, the knowledge types are managed as JIRA issue types."
+1,0,0,0,0,"In order to limit the number of elements in the jsTree TreeViewer, the user should be enabled to textually filter the list."
+0,0,0,0,1,What kind of documentation is now missing? 
+0,0,0,0,0,I linked all issues that are related to a system function. 
+0,0,0,0,0,Thanks.
+0,0,0,1,0,I added a list of documentation items we should regularly check.
+0,1,0,0,0,The Git integration for Jira plugin is storing their Files at /var/atlassian/application-data/jira/data/git-plugin
+0,0,0,0,1,I don't know why our getProjectKey() method is called when using the git integration plugin.
+0,0,1,0,0,The method JIRA.API.Projects.getCurrentProjectKey(); does not work for the git integration plugin.
+0,0,0,1,0,I wrapped this into a try catch block.
+0,0,0,0,0,now the Elements are all loaded an only collapsed if the depth is lower then the amount of Elements in the Tree
+0,0,0,0,0,I refactored the code in the Treant class
+0,0,0,0,0,[https://www.w3schools.com/code/tryit.asp?
+0,0,0,0,0,Thanks.
+1,0,0,0,0,"The node text and color could also be changed to [Supporting Argument, green] and [Attacking Argument, red]."
+0,0,0,0,1,Or is there a possibility to have two parents?
+0,0,0,1,0,"Please colorize the links to arguments according to their type (supports: green, attacks: red)."
+0,0,0,0,0,This is the example i talked about: http://fperucic.github.io/treant-js/examples/connectors/
+0,0,0,1,0,"I decided to change the color of the element instead."
+0,0,0,0,1,"Is there a good way to perform static code analysis in IntelliJ?"
+1,0,0,0,0,There is a alternative [https://www.jetbrains.com/help/idea/code-analysis.html] .
+0,1,0,0,0,PMD and FindBugs has more preset rules. 
+0,1,0,0,0,FindBugs and PMD are also available on IntelliJ 
+0,0,0,0,1,The Webhook sends the data but the Frontend of the CUU page don't show it.
+0,0,0,0,0,this added a small button on the right. This button is not working like thought :D. Now i will try the suggested jQuery  method.
+0,0,1,0,0,The view is not resizeable at all. The cursor is not changing . 
+1,0,0,0,0,I also tried to make the tree viewer resizable using jquery ui.
+0,0,1,0,0,but did not succeed.
+0,0,0,1,0,Link new comments automatically to decision knowledge by rules!
+0,1,0,0,0,Changed files (code files) can easily be added into the knowledge graph.
+1,0,0,0,0,We could also put the treeviewer into an extensible sidebar: https://docs.atlassian.com/aui/7.9.3/docs/sidebar.html
+0,0,0,0,0,"I posted the issue to the developer community:
+https://community.atlassian.com/t5/Jira-questions/How-can-we-use-the-jstree-and-context-menu-jQuery-plugins-in-the/qaq-p/893933#M286615"
+0,1,0,0,0,Then we use the same path as other plugins
+0,0,0,0,0,Just started to work on this.
+0,0,0,1,0,We store our cloned repositories also at /var/atlassian/application-data/jira/data/condec-plugin
+0,0,0,0,0,"For reproducing the issue, you need to select a knowledge macro item:"
+0,0,0,0,0,image-2019-01-29-15-57-44-289.png|thumbnail!
+0,0,0,1,0,"I created two updateView() methods: one for the separate decision knowledge page and one for the issue modul."
+0,0,0,0,1,After removing the possibility to click and add issues in the Issue Module do we need a new updateView function?
+0,0,0,0,1,"The buildTreant method needs to be changed, so that the context menu and D&D is not added all the time but just for the decision knowledge page."
+0,0,0,0,1,"Further, we need a possibility to link to the decision knowledge page and provide the selected element in the link."
+0,0,0,1,0,"I added a function buildIssueTreant that exchange the createTreant with only the new Treant function."
+0,0,0,1,0,"I renamed updateIssueModule method into updateView since this is the generic method to update the view either on the separate decision knowledge page or on the issue modul."
+0,1,0,0,0,"Although both methods have the same name (updateView) there should be no conflict because the velocity templates that call these methods use different resources from the atlassian-plugin.xml."
+0,0,0,1,0,"We decided to integrate a GitConnector class in the Java side of the plugin using the jGit library."
+1,0,0,0,0,"I tried to implement an Input Field and a Button to submit the Git Repository address."
+0,0,0,0,1,"Unfortunately, I could not get it running without user credentials."
+0,0,0,1,0,We now use the resize option in the CSS file.
+0,0,0,0,1,"Are we changing the links also in the Decision Knowledge Page?"
+0,0,0,0,0,"I posted this issue to the developer community:
+https://community.atlassian.com/t5/Jira-questions/How-to-pass-an-argument-to-a-web-panel-via-the-URL/qaq-p/894345"
+0,0,0,0,1,"Do you know which page decorators to use to show the sidebar?"
+0,0,1,0,0,It does not work for the TreeViewer.
+0,1,0,0,0,"That's a good idea."
+1,0,0,0,0,"The tooltip should be shown if there is a description provided, otherwise there should be no tooltip."
+0,0,0,1,0,"I added Tooltips for Elements that have a description."
+0,0,0,0,1,"The Hover element is not changed at all and the tooltip function is not recognized. Do you have a idea why?"
+0,0,0,0,0,"I committed the changes."
+1,0,0,0,0,If we want some other style we can change the css. 
+1,0,0,0,0,It would be nice to also have the tooltips on the Treant nodes.
+0,0,1,0,0,Sadly nothing is easy.
+0,0,0,0,1,The Tooltip for the Treant is not showing because the a Element removes the title if you add some. 
+0,0,0,0,1,We need to use a different framework for this.
+0,0,0,1,0,We decided to not show link directions in the Treant.
+0,0,0,0,1,How to show link directions and semantics between knowledge elements?
+0,0,0,1,0,"Use a graph visualization framework (different to Treant.js) that supports showing link directions and semantics"
+0,0,0,0,0,"this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + .png;"
+1,0,0,0,0,"Maybe we can also use relative paths."
+0,0,0,1,0,"I added a new constructor in the TreeViewer to differentiate between icons for pro and con arguments!"
+0,0,0,0,1,"How do you observe changes to the data?"
+1,0,0,0,0,"We could create the webhook listener with JIRA"
+0,0,0,1,0,"The top level/root element is always an issue (we currently do not use the commit SHA as the key, only the issue key)."
+0,1,0,0,0,"This will make it more easy in the future."
+0,1,0,0,0,"Yes, I think the idea to change the methods in the KnowledgeRest class is good and straightforward."
+0,1,0,0,0,"Atlassian also uses this for their applications links: http://cures.ifi.uni-heidelberg.de:8080/plugins/servlet/applinks/listApplicationLinks"
+0,0,0,0,1,"How to access git commits on the server (Java) side of the plugin?"
+0,0,0,0,0,Got it!
+0,1,0,0,0,It works!
+0,0,1,0,0,"It's A LOT of code"
+1,0,0,0,0,"These could/should/have to be entered by the user, may in the project settings."
+0,0,0,0,0,"I'll commit my solution tomorrow."
+0,0,0,1,0,"The result tokens are stored in a Jira properties file."
+0,0,0,1,0,"We change the storage of the OAuth variables (secret, token, ...) from project specific to global."
+0,0,0,1,0,"Also moved the setting to global settings.!"
+0,0,0,0,1,Do you have any idea why this bug could appear?
+1,0,0,0,0,"An option would be to use/try JIRA's OAuth method."
+0,1,0,0,0,This works for Treant.
+0,0,0,0,0,"This is a link to configure the default screen on the CURES server: http://cures.ifi.uni-heidelberg.de:8080/secure/admin/ConfigureFieldScreen.jspa?"
+1,0,0,0,0,"When selecting the ""Add Element"" item in the context menu, links should be automatically established to the parent element."
+0,0,1,0,0,This is currently not working for the JIRA module.
+0,0,0,0,1,The question is how we can provide the linked issues to the form.
+0,0,0,0,0,"A key value pair of ""issue id"" as the key and ""treant"" as value should be posted."
+0,0,0,0,0,I created a new developer community post https://community.developer.atlassian.com/t/calling-the-quick-edit-plugin-function-create-linked-issue/24386
+0,0,0,0,0,Please describe on how you plan to implement the webhook.
+0,0,0,0,0,"I added another post to the Atlassian community: https://community.atlassian.com/t5/Jira-questions/How-to-trigger-the-create-linked-issue-dialog-from-a-JIRA-plugin/qaq-p/922606"
+1,0,0,0,0,"Let the user enter her credentials (in my case when she selects the project for being reported"
+1,0,0,0,0,"A better solution is to create a queue so you can better deal with timeouts and retries."
+0,1,0,0,0,"When you send webhooks inline, all your code is in one place."
+1,0,0,0,0,"You can use open source scalable queueing solutions like RabbitMQ or a service like Amazon Simple Queuing Service."
+1,0,0,0,0,"And if you need to retry a notification, just keep it marked active until it succeeds or is called the maximum number of times."
+0,1,0,0,0,"This way, your interaction is limited to adding and removing Äúmessages,Äù which tell you what webhooks to call."
+0,1,0,0,0,"In addition to using a tool designed for this purpose, a proper queue also saves database resources for what it does bestÄìproviding data to your primary application."
+0,0,0,1,0,"I created a onclick event for the Submission of the url and the secret:"
+0,0,0,0,1,How can we see the logs?
+1,0,0,0,0,You can have log files if you provide a time frame to them.
+0,0,0,0,0,Please ask via slack.
+0,0,0,1,0,"I changed the terminology to setKnowledgeExtractedFromGit and isKnowledgeExtractedFromGit and also added a toggle in the single project's setting page."
+0,0,0,0,0,"thanks for starting to work on this item."
+0,0,0,0,0,I finished the toggle for the Git integration.
+0,0,0,0,0,The issue comment toggle will be integrated by him.
+0,0,0,0,1,Do you have any idea why the icons are not loaded?
+0,0,0,0,0,I tried to fix the Icons but could not find a solution.
+0,0,0,0,0,I will try this tomorrow.
+0,0,0,1,0,I reintegrated the deprecated createIssueType method again.
+0,0,0,1,0,We will use this deprecated method until we find a better solution.
+0,0,0,0,0,The Atlassian support answered me.
+0,0,0,0,0,Now we have to hope that somebody in the community has an idea how to solve our problem.  
+0,0,0,0,0,"Sorry for commenting out tests, they need to be reworked as well."
+0,0,0,1,0,"I added the Codacy Badge to the Readme: https://github.com/cures-hub/cures-decdoc-jira/tree/develop"
+0,0,0,0,0,After using Sonarcloud  i would fix most of the new bugs that are appeared  
+0,1,0,0,0,It works very well.
+0,0,0,0,0,I will merge it on the development branch.
+0,0,0,1,0,We now use an input stream to read in the image data.
+0,1,0,0,0,The following page also uses input streams: https://www.programcreek.com/java-api-examples/?
+0,0,0,1,0,I added toggles to the template for a single project's settings.
+0,0,0,0,1,"Is there a way to use the standard asynchronous getJSON method and callback functions?"
+0,0,0,1,0,I changed the calls to the asynchronous getJSON method.
+0,0,0,0,1,Is there still need to configure the PMD Rules? 
+0,0,0,0,1,Is there a possibility to read the logger from java. I tried to read the sys out but this was empty. 
+1,0,0,0,0,We should add a pmd config file to the root directory of the plug-in where we define the PMD rules we want to check.
+0,1,0,0,0,It will be used by Codacy (similar to the eslintrc.conf).
+0,1,0,0,0,So no new System is needed. 
+0,0,0,1,0,"Yes, we use Codacy online."
+0,0,0,1,0,"Please add a config file (.eslintrc) for ESLint to the root directory of the JIRA plug-in"
+0,0,1,0,0,Enums cannot be written to database.
+0,0,0,1,0,The DecisionKnowledgeElementEntity interface does not extend the DecisionKnowledgeElement interface anymore.
+0,1,0,0,0,Everything is working very well. 
+0,0,0,1,0,Moved the Computing of the Child elements in the Graph class so this will Implement the Graph class and also remove the Recursion in the Data class. 
+0,0,0,1,0,I added a context menu item for this.
+0,0,0,0,1,I couldn't find a Drag and Drop functionality in the official Documentation
+0,0,0,1,0,added Drag and Drop support for the JsTree View.
+0,0,1,0,0,Treant.js doesn't support drag and drop.
+1,0,0,0,0,I could try to use [html5 drag and drop|http://https//www.w3schools.com/html/html5_draganddrop.asp.com] to add my own drag and drop support. 
+0,0,0,0,0,"function addingDragAndDropSupport() {
+   var nodeDivs = document.getElementsByClassName(""node"");
+   var i;
+   for(i=0; i<nodeDivs.length; i++){
+      nodeDivs[i].draggable=true;
+      nodeDivs[i].ondragend=""drag(event)"";
+   }
+}"
+0,0,0,0,0,"i added a new branch experiment. There i try to figure out how to add drag and drop support."
+0,0,0,0,1,"Is there a better solution that enables to use drag and drop more than once (without having so many links created and deleted)?"
+1,0,0,0,0,"It would be good to also allow to delete the current link to the parent node when using DnD in Treant."
+0,0,0,1,0,"To Fix this problem in intelliJ i had to change the Version of JavaScript to ECMA Script 6"
+0,0,0,1,0,"To Fix it in Maven i had to disable the compressResources of the Maven Plugin now Default Parameters are working "
+0,0,0,0,0,Thanks for the refactoring!
+0,0,0,0,1,"I tried to unify the classes ""Node"", ""NodeInfo"" and ""Data"" into one class Node. I had problems to access the attributes from the UI (decision.documentation.js)."
+0,0,0,0,0,Because every Key is NULL there will be no return Element. 
+0,0,0,1,0,We decided for now to keep the Treant and TreeViewer specific model classes since I did not succeed in getting rid of them.
+1,0,0,0,0,"A different way to connect with JIRA than the connectors is the JIRA-REST-Java-Client: [https://bitbucket.org/atlassian/jira-rest-java-client]"
+0,0,0,1,0,"I added a privacy statement to GitHub: https://github.com/cures-hub/cures-condec-jira/blob/master/privacy_statement.md"
+0,1,0,0,0,"since this is easy to implement."
+0,0,0,1,0,Use the classification methods and training data from R. Alkadhi
+0,0,0,0,0,Please have a look.
+0,0,0,1,0,"In order to include velocity template files in other files, we need to use the #parse method instead of #include."
+0,1,0,0,0,built-in Jira feature
+0,0,0,0,1,"Does [IntelliJ Git|https://github.com/JetBrains/intellij-community/tree/master/plugins/git4idea] makes use of the [libgit2 library|https://libgit2.github.com/]?"
+0,0,0,0,1,Is there an equivalent of the JGit library in IntelliJ?
+0,0,0,0,1,"Or is [IntelliJ Git|https://github.com/JetBrains/intellij-community/tree/master/plugins/git4idea] the equivalent for both EGit and JGit in Eclipse?"
+0,0,0,0,1,It might not be possible to have both an SSL on and non-SSL connection since the tomcat servers are configured in a way that makes them expect to be behind an SSL proxy.
+0,0,0,0,0,I squashed this into the develop branch.
+0,0,0,1,0,"Yes, I think we should use ""con"" instead of ""contra"" in the Treant Node class and in treant.css file."
+0,0,0,1,0,The ConDec JIRA plugin is now published in Marketplace
+0,0,0,0,0,He did fix it before he presented his part of the Project
+0,0,0,0,0,"I think we can add a first Version on Monday, after we finished all the work for this Sprint."
+0,0,0,0,0,I saw that you changed the jquery.contextMenu.css file.
+0,0,0,0,1,How does the privacy statement should look like?
+0,0,0,0,1,We still need to provide the end user license agreement.
+0,0,0,0,1,How to manage activation of the plugin?
+0,0,1,0,0,Potential of side effects for the not-issue module pages.
+0,0,0,1,0,Use the static method Link.instantiateDirectedLink to ensure the correct link direction.
+0,0,0,0,1,How to name active objects tables introduced by the ConDec JIRA plugin?
+0,0,0,1,0,"All active objects tables start with ConDec, e.g., CondecLink, CondecElement, CondecElementInComment!"
+0,1,0,0,0,"The Privacy Policy that we now have contains all we need I think. Like DuckDuckGo we don't collect data from the user on our servers."
+0,0,0,0,1,How can we get the path to JIRA's application directory?
+1,0,0,0,0,A possible first try would be so set the cloning path to the home directory as a default and give the user the possibility to change this location.
+0,0,0,0,1,"How can the model structure between ""Sentence"" and ""AOEntity"" be improved?"
+0,0,0,0,0,"System.getProperty(""user.home"") + File.separator + ""repository"" + File.separator;"
+0,1,0,0,0,I think this is a good idea.
+1,0,0,0,0,So maybe there could be two expendable divs on top of each other.
+0,0,0,0,0,Splitting the Java Script file was no problem.
+0,0,0,0,1,How to avoid JsonMapping exceptions?
+1,0,0,0,0,Another way would be to distinguish by operation system and set the path to the application data folder.
+0,0,0,1,0,"I added the icons to the tree viewer. Currently, the absolute JIRA address is used in the Data class:"
+0,0,0,1,0,Remove inheritance from AOEntity
+0,0,0,1,0,https://www.adaptavist.com/company/adaptavist-eula this would be the User License agreement of the Testing Plugin we using. We could edit this one.
+0,0,0,0,1,How do you enable to find the id of elements?
+0,0,0,0,1,We need to find a good way to specify system tests.
+0,0,0,1,0,I manually migrated the former id with prefix columns using a migration method
+0,0,0,1,0,I created the systems test in Kanoah
+0,0,0,0,1,"When the JIRA.trigger method is called, the #include(""templates/dialog.vm"") in the jiraIssueModule.vm is called again. Thus, the dialog is included twice and the id is not unique anymore."
+0,0,0,1,0,"We add a Jira [Event Listener|https://developer.atlassian.com/server/jira/platform/writing-jira-event-listeners-with-the-atlassian-event-library/]."
+0,0,0,1,0,show only irrelevant sentences in the treant structure and irrelevant in the decXtract TreeViewer
+0,0,0,0,1,"How can we get the ""create-linked-issue"" form?"
+0,1,0,0,0,less work
+0,0,0,0,1,Which icons should be shown for irrelevant sentences in issue comments?
+0,0,0,0,1,How can we add i18n support to tab panels?
+0,0,0,1,0,"We now redirect non-privileged users to Jira.BaseUrl + ""login.jsp"""
+1,0,0,0,0,Find an internal way to get the folder location within JIRA
+0,0,0,1,0,translate the static code in the dialogs and the placeholders in the decision knowledge view.
+0,0,0,1,0,I added the i18n folder with property files for English (default) and German language. I translated the labels in the atlassian-plugin.xml and the context menu items.
+0,0,0,0,0,An example of a servlet can be found here: https://github.com/cures-hub/cures-condec-jira/pull/15/files
+0,0,0,0,0,Please create a pull request for CONDEC-443 when you think it is ready for merging.
+0,0,0,0,0,I will have a look at it and merge (squash) it into develop.
+1,0,0,0,0,We could add a template file as a web-resource with a display condition. Set the condition to true from within the event listener
+0,0,0,0,1,It would be good to have the icons in a higher quality. Where are the icons from?
+1,0,0,0,0, Jira itself gives you the possibility to build Integration Tests. We could use this.
+0,0,0,0,1,How to prevent content blocker when calling window.open?
+0,0,0,0,1,"Is there a way to get all activated knowledge types, like a list or in single booleans?"
+0,0,0,0,1,How to enable the user to manually classify parts/sentences of issue comments into the knowledge types activated for the project using tags?
+0,0,0,0,1,For Testing SearchService has to be mocked. How can we mock the SearchService?
+0,0,0,0,1,Which statistics should be displayed together?
+1,0,0,0,0,We could write a class that is not a real enum but behaves like an enum.
+0,0,0,0,1,How to get the JQL-Query?
+0,0,0,0,1,How to trigger the webhook when using JIRA modals/dialogs? How can we add an event listener to the submit button of a JIRA dialog?
+0,0,0,0,1,do you think we should manage system tests in the Kanoah plugin?
+0,0,0,0,1,"How to get the jql for predefined filters? This seems not to be possible at the moment: https://community.developer.atlassian.com/t/get-jql-or-valid-filter-id-from-jira-default-filters/16645"
+1,0,0,0,0, The Alternative would be JBehave. This is a light weight  BDD Tool that also allows to add Test to Selenium.
+0,0,0,0,0,I added a quick fix for that:
+0,1,0,0,0,"It's a quick and easy fix though. And we don't risk exposing a time server, that might be susceptible to DOS attacks (or worse)."
+0,0,0,0,1,Should I also try to extract the HTML Code from the JS functions in the view or is it ok that there is some kind of nested HTML code in it? 
+0,0,0,0,1,How to notify views after model changes?
+0,0,0,0,1,How can we convert elements between different documentation locations?
+0,0,0,0,1,How to suppress that flags are shown when the user accesses the setting pages?
+0,0,0,0,1,How can we add the issue types used in the project to our knowledge type enum (if they are not included yet)?
+0,0,0,0,1,How can we ensure the correct link direction for arguments?
+0,0,0,0,1,"The method signature might differ for managing decision knowledge in issue comments, e.g. the insertion method needs the id of a JIRA issue. How can we deal with different method signatures?"
+0,0,0,0,1,How can DecXtract react on edited comments?
+0,0,0,0,1,How to show error messages from REST Java methods in frontend?
+0,0,0,1,0,Instantiate an XMLHttpRequest() object in conDecAPI Java Script methods and get its response.error attribute.
+0,0,0,0,1,How can we unify all existing deleteLink methods?
+1,0,0,0,0,I'm sure we can reuse this method to display proper argument types
+0,1,0,0,0,Found no possibility to get them on another way.
+0,0,0,0,1,How can the user manually classify sentences in knowledge types?
+0,0,0,0,1,how can decision knowledge be classified from raw sentences?
+0,0,1,0,0,more work
+0,0,0,0,1,"Currently, isValidated is not set correctly in database."
+0,0,0,0,1,It seems that the classifier is triggered even though it should be disabled.
+0,0,1,0,0,Leads to an unused variable in the JiraIssuePersistenceManager and the AbstractObjectPersistenceManager.
+0,0,0,1,0,Add parentElement variable to insert method in AbstractPersistenceManager class and set it null for JiraIssuePersistenceManager and ActiveObjectPersistenceManager
+0,0,1,0,0,PDF files cannot be edited.
+0,0,0,1,0,"I slightly changed the repository path to ""/var/atlassian/application-data/jira/data/condec-git""."
+0,1,0,0,0,faster: less componentAccessor calls
+0,0,0,0,1,Which elements should be the starting elements to calculate link distance?
+0,0,0,1,0,"Check if dialog already exists in jiraIssueModule.vm file. If yes, remove it before calling #include(""templates/dialog.vm"")."
+0,1,0,0,0,This is similar to the Git integration plugin.
+0,0,0,0,1,"Unfortunately, the tests fail. Do you know why?"
+0,1,0,0,0,"web standard, easily parsable, many librarys"
+0,1,0,0,0,"Also readable by humans with excel, lightweight"
+1,0,0,0,0,"We could use XML Extensive markup language"
+0,0,0,0,1,How can we get commits for a JIRA issue?
+0,0,0,1,0,Implement one generic deleteLink Method and send identifier of the linked objects to unify existing implementations!
+0,0,0,0,1,How can classified decision knowledge be saved?
+0,1,0,0,0,Aligned with domain model that graph is a graph of decision knowledge (=only relevant sentences)
+0,1,0,0,0,"All decision knowledge elements are tagged, only irrelevant sentences and elements of KnowledgeType.OTHER are not tagged. So we don't need an extra column for knowing whether a sentence is tagged."
+0,0,0,0,0,This bug appears in both browsers.
+1,0,0,0,0,I would start to refactor the test of the EventListener and the Spliter so we can see if it is working like bevor while refactoring.
+0,1,0,0,0,Only one rest interface for both methods
+0,0,0,0,1,"Currently, nothing happens if we change the documentation location. What should be done when changing the documentation location?"
+1,0,0,0,0,Extend existing event listener for webhook or decision knowledge extraction from issue comments
+0,0,0,0,1,Where should we catch the change events that trigger the knowledge visualization?
+1,0,0,0,0,"Unfortunatly I don't understand how  sets the link type when calling ""createLinkToExistingElement"" with a parameter for ""knowledgeTypeOfChild""."
+0,0,0,1,0,catch the Comment Edited Event via Event Listener
+0,0,0,1,0,"Get all Sentence objects for the current jira issue, filter them for the current type, select them by text body"
+0,0,0,1,0,"If a ""pro argument"" is changed to a ""con argument"", the link type needs to be changed from ""supports"" to ""attacks""."
+0,0,1,0,0,"hard to parse, not very flexible own parser has to be build, no data hierarchies"
+0,0,0,0,1,Test cases are combined. The tests are not very readable like this.
+0,0,0,1,0,use tags to parse sentences with knowledge types
+0,1,0,0,0,"Full Data hierarchies, old standard for Documents"
+0,0,1,0,0,developers won't do it after a while
+1,0,0,0,0,Use a servlet to render the template file and call the get method of the servlet from within the event listener
+0,1,0,0,0,you don't have to implement a tool for it
+0,0,0,1,0,"It is not possible to visualize a dialog from a velocity template triggered from java side.
+Closing a task will add a summarization of code as a comment."
+0,1,0,0,0,Showing the treant would be redundant if shown in a dialog
+0,0,0,0,1,How can a template velocity file be rendered and shown to the user after changing the status of a JIRA issue?
+0,0,0,0,0,"Thanks for refactoring and testing."
+0,0,0,0,0,I merged the branch and we will make improvements as part of new work items.
+0,0,1,0,0,"Created for document markup, not for data exchange"
+1,0,0,0,0,"We could use CSV comma separated values"
+0,0,0,1,0,I renamed the isTagged column to isValidated.
+0,0,1,0,0,"No separation of concerns, will lead to a ""God"" event listener class"
+0,0,0,0,1,automatic classification always runs when tab panel is opened. There should be an option to not run automatic classification and only use the tab panel to view manual tagged decision knowledge  
+0,0,0,0,1,How can we show only relevant sentences to the user in the treant section of the issue view?
+0,0,0,0,1,How does require method in commentTab.toolbar-init.js work? Can we use this for the other closures as well?
+1,0,0,0,0,Use a faster hardware
+0,0,0,0,1,"When calling the DecXtract TabPanel, all sentences are read from the comment section. This takes very long time. How can we speed this up?"
+0,0,0,0,1,How can we use only one link class for the whole project?
+0,0,0,0,0,I will close this work item for now.
+0,0,0,0,1,How can we prevent treant from showing inter-project and other non existing links?
+0,0,0,0,1,How to deal with code in comments?
+0,0,0,1,0,use an ao table to store all decision knowledge with their knowledge types
+0,0,0,1,0,Use only one class for all types of links and store the type!
+0,0,0,0,1,Which machine readable format should be implemented?
+0,0,0,0,1,How can the system distinguish between a plain text comment and a special formatted comment?
+0,0,1,0,0,this approach is slow for larger comment sections
+0,0,0,0,0,fix this now..
+0,0,0,0,0,The other Diagrams are looking good.
+0,0,0,0,0,I created a Class Diagram
+0,0,0,0,0,ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+0,0,0,0,0,Fixed Issue with Auto Classification.
+0,0,1,0,0,side effects
+0,0,1,0,0,readability is worse
+0,1,0,0,0,Two separate classes are easier to read
+0,0,0,0,1,The report module has too much coupling
+0,0,0,1,0,Refactoring the report class: Splitting the class in a calculator class  and a view class
+0,1,0,0,0,The validated column indicates whether an element is manually classified by a developer (true) or automatically classified by the classifier (false).
+0,1,0,0,0,The Folder will be created automatically
+0,0,0,0,1,At what level do we create the ASTs and compare them? (For Java)
+1,0,0,0,0,The obvious one would be at file level.
+1,0,0,0,0,There might be some merit in dumping everything in a single file before creating the AST.
+0,1,0,0,0,This might help to capture move actions that cross files.
+0,0,1,0,0,The mapping of actions will be more complicated
+1,0,0,0,0,Add the mock class MockJiraHome to the ComponentWorker
+0,0,1,0,0,"JIRA home folder is added as root folder in file system, e.g. in /jira_home/. On TravisCI, we don't have the rights to write in this folder. Thus, the tests fail on TravisCI."
+0,0,0,1,0,Create custom MockJiraHomeForTesting class that overwrites MockJiraHome class
+0,0,0,0,0,"git.checkout().setName(branch.getName()).call();"
+0,0,0,0,1,"I don't know how we can speed this up."
+1,0,0,0,0,We could iterate through all branches.
+0,0,1,0,0,This takes a lot of time.
+0,0,0,0,1,"Should we really remove one entire function? We already did all the work, why remove it?"
+1,0,0,0,0,"Yes, we could remove it."
+0,0,0,0,1,how can the user classify sentences manually?
+1,0,0,0,0,"We can use multiselect from com.atlassian.auiplugin:aui-forms"
+1,0,0,0,0,Alternatively we can use aui-item-checkbox
+0,0,1,0,0,less overview
+1,0,0,0,0,No dialog should be shown
+0,0,0,1,0,Use Existing sentences from AO Tables as datasource and add only new comments to ao.
+1,0,0,0,0,"Alternatively, we could use ntpdate and perform updates via cronjob."
+1,0,0,0,0,"In the former implementation, the extendedKnowledgeTypes list was initialized once and added to global scope."
+0,0,0,0,1,"getLinkedFirstClassElementsAndLinks() gets the current element and searches for Issue Links. But if the current element is a sentences, there will no links be in the JIRA Issue Link DB for this element. Since this method doesn't need documentation location, it searches the jira link db for links with the sentence id."
+0,0,0,1,0,Save links between decision knowledge elements from jira issue comments in an AO table!
+0,0,0,0,1,How can the system distinguish between a plain text comment and a special formatted comment?
+0,1,0,0,0,This was suggested here: https://community.atlassian.com/t5/Jira-questions/Multiple-Listeners-on-the-same-event/qaq-p/218620
+0,0,0,1,0,Create own event listener class for code summarization in issue comments!
+0,0,0,1,0,Rename ISSUE_ID column to JIRA_ISSUE_ID in order to be more verbose!
+0,0,0,0,1,How to distinguish between issue (decision problem) and a JIRA issue as an abstract container?
+0,0,0,0,1,What happens if the data folder does not exist in the file system? Do we need to make sure that this folder exists or create it otherwise?
+0,0,0,0,0,"The tests still fail on TravisCI"
+0,0,1,0,0,The initialization is very hard.
+0,0,0,1,0,I renamed the column KNOWLEDGE_TYPE_AS_STRING into TYPE in order to use the same terminology as in the CONDEC_ELEMENT table.
+0,0,0,1,0,I deleted the ARGUMENT and the USER_ID column.
+0,0,0,1,0,I made isTaggedFineGrained a derived method that returns true if the knowledge type is not OTHER.
+0,0,0,0,1,"I'm a bit worried about the existing data in the CONDEC and LUCENE project. Also I think the tables in Munich would be affected.
+Example:
+Sentence.java looks for ""start_substring_count"". If we add (since renaming is not possible) a new column ""Start_Position"" this will be empty and for all entries return 0 or null."
+0,0,0,1,0,I removed the TAGGED_MANUALLY column since it is currently always set to true because of the added macro tags.
+1,0,0,0,0,train developers to commit only single changes
+0,0,0,1,0,"Does not seem to matter, as the compilation unit can always act as a root node."
+0,0,0,0,1,Should we use the REST interface from Java (backend) or Java script (frontend) side of the plugin?
+0,0,0,0,1,"Should we use ""con"" as html class for con-arguments?"
+1,0,0,0,0,The List<QueryLiteral> getValues() method might be useful.
+1,0,0,0,0, Sum up the positions X and Y of the element and their parents could give us the right position if we stop at the treant-container
+1,0,0,0,0,Add missing test cases
+0,0,1,0,0,This is actually not necessary and probably slightly reduces performance to always access the empty png.
+0,0,0,0,1,How can links between decision knowledge Elements from jira issue comments be established?
+0,0,1,0,0,A new button with the already function is added
+0,0,1,0,0,Changing status on boards can not be triggered with button
+0,1,0,0,0,The wished dialog can be seen
+0,0,1,0,0,An invisible button is needed
+1,0,0,0,0,A button with the function of status changes can be added as a webitem
+1,0,0,0,0,Tried to use the $(document).ready() so the flags are added after the document is loaded. It is working like intended.
+1,0,0,0,0,"We could adapt the knowledge type enum. Currently, we statically filled the knowledge type enum with the types of decision knowledge (e.g., decision, alternative, issue, argument). The issue types used in the project should be recognized as knowledge types in order to correctly represent them in the graph of decision knowledge."
+1,0,0,0,0,Implementing the listener in a GitHub Plugin
+1,0,0,0,0,Using an event Listener for new commits (webhook)
+0,0,0,0,1,How can we prevent a possible loss of a comment when the user manually classifies parts of the comment as decision knowledge?
+0,1,0,0,0,No redundant code
+0,0,0,1,0,add decision knwoledge with fitting knowledge type to the TreeViewer
+0,0,0,0,1,Should we integrate parts of Jira issue description and comments into one database and model class or separate them?
+0,0,0,0,0,document.getElementById('treant-container').appendChild(document.getElementById('condec-context-menu'))
+0,0,1,0,0,"We need to identify how many, what type of containers we have."
+0,1,0,0,0,The code will have less confusing and inaccurate position calculations
+1,0,0,0,0,"l use page coordinates, but move the context menu html below root (body) element to avoid calculations!"
+1,0,0,0,0,"We could still use page coordinates, but move the context menu html below root (body) element to avoid calculations!"
+1,0,0,0,0,"I propose to use mouse position from the container boxes (event.clientX/Y rather than client.pageX/Y). If user left clicks into an element within a container, then the context menu should be moved in DOM into that container, css-postioned and shown."
+0,0,0,0,1,How to model decision knowledge elements in JIRA issue text?
+0,0,0,0,1,Should the existing rest interface be reused?
+0,1,0,0,0,more overview
+1,0,0,0,0, Webhook  from Github to build a own Listener for this
+0,0,0,0,1,Where do we implement this listener?
+0,0,1,0,0,"This is a commercial plugin, it is not open source"
+1,0,0,0,0,"When we use the client side, we have to add these tree nodes on client side"
+0,0,1,0,0,Event.path is undefined in the Firefox browser.
+0,0,1,0,0,After scrolling the context menu is in the wrong position.
+1,0,0,0,0,"Use rest interface from ""git integration for jira"" plugin"
+0,0,0,1,0,"The ""getProjectKey()"" method is included in the condec.api.js file."
+0,0,0,0,0,"function getProjectKey() {
+	return JIRA.API.Projects.getCurrentProjectKey();
+}"
+0,0,0,0,1,jQuery v1.9.1 cannot be used in the issue module and issue tab panel. It seems that JIRA already includes a different version of jQuery and there are conflicts: https://community.atlassian.com/t5/Answers-Developer-Questions/jQuery-in-JIRA/qaq-p/540652
+0,0,0,0,1,How can we integrate a different jQuery version than the version used by JIRA?
+0,1,0,0,0,jQuery collisions could be prevented
+0,0,1,0,0,jstree library source code would have to be customised. This will impede eventual jstree library updates and break compatibility with jstrees project code base.
+1,0,0,0,0,"Manipulate jstree injection of jquery object, so that the JIRA jquery does not get affected."
+0,0,0,1,0,i decided to go with the Original Implementation for the distance
+0,0,1,0,0,In a later state we need to refactor the implementation
+0,0,0,1,0,Rename START_SUBSTRING_COUNT to  START_POSITION and rename END_SUBSTRING_COUNT to  END_POSITION!
+1,0,0,0,0,"Add an object property for the projectKey, knowledgeTypes and extendedKnowledgeTypes."
+0,0,1,0,0,Much difference in pararmeters
+1,0,0,0,0,We should find a way to just leave away the icon in case of irrelevant sentences.
+1,0,0,0,0,An alternative is updating of JIRA's internal jQuery version.
+0,0,1,0,0,It is not that easy as I expected. Is is not meant to be updated from Atlassian.
+1,0,0,0,0,It might be a solution to only use jQuery after the dialog has been opened but not already in the issue tab panel.
+0,0,0,1,0,Show a tree viewer in tab panel for decision knowledge!
+1,0,0,0,0,We could clone comment tab panel and add checkboxes to new tab panel!
+1,0,0,0,0,Maybe it's also possible to extend the dropdown menu in the comment editor and add the decision knowledge tags there.
+0,1,0,0,0,Autocompletion is possible with usage of jquery.
+1,0,0,0,0,Drop Tree viewer (Irrelevant sentences are lost)
+0,0,0,0,1,"A drawbag is that an implemented macro class only receives the tagged content, without tags."
+0,0,0,1,0,Use event listener on JIRA Issue events!
+1,0,0,0,0,"We might clone and Modify JIRA Comment Tab Panel code to create a new Tab Panel!"
+1,0,0,0,0,Add toggle (may also other filter options to issue module)
+1,0,0,0,0,Add tags to automatically classified decision knowledge in order to identify it in the comment tab panel!
+1,0,0,0,0,"Show ""local Decision Knowledge"" with irrelevant Sentences in second Treant in Issue Module with a tab"
+0,0,0,0,1,I think it is not a big problem that it is not expendable for other knowledge types at the moment.
+0,1,0,0,0,"However, a solution might be to add macros for all existing knowledge types to the atlassian-plugin.xml and to specify activation conditions."
+0,1,0,0,0,"Yes, this is also shown in the tutorial"
+0,0,0,0,1,How to recognize new decision knowledge elements or changes on existing elements in comments?
+0,0,1,0,0,"On the other hand I did not find any possibility to add a filter section in the ""comment"" tab panel."
+0,1,0,0,0,"If that's the JIRA way of doing it, we could also change the tags to \..\. This might also be nice because than you could show the icons instead of the textual tags which might increase readability. Actually I quite like the idea of using  \..\ if this would come with some autocompletion and styling possibilities (colored background and/or icon view)."
+1,0,0,0,0,"If it's too comlicated and jQuery is not working on the issue pages, we could link the tree nodes to our decision knowledge page instead of to the JIRA issue page,
+e.g. instead of ""http://jira-se.ifi.uni-heidelberg.de/browse/CH-107"" to ""http://jira-se.ifi.uni-heidelberg.de/projects/CH?selectedItem=decisions-page?CH-107""."
+0,0,0,1,0,"We directly call JIRA's default edit dialog on JIRA issues, don't show our custom edit dialog at all!"
+0,0,1,0,0,Maybe misleading since ConDec icons are different from Jira icons
+0,1,0,0,0,With this dialog we don't have the problem that the issue type gets lost e.g. for work items when editing them from our graph.
+0,1,0,0,0,This could solve our problem with the Knowledge Types because we would send a Webhook every time the Event Listener would be triggered.
+0,1,0,0,0,Icon support for all types
+1,0,0,0,0,Add Servlet for decision knowledge page that is notified by an issue event listener.
+0,0,0,0,1,The notify method is not called and the view is not updated after using the edit dialog on the decision knowledge page. How can we update the view after editing an element?
+1,0,0,0,0,"First call our custom edit dialog and add an ""extension"" button. The extension button is to use the JIRA quick edit forms"
+0,0,0,1,0,Add a tree viewer for all sentences with a context menu to allow manual classification!
+0,0,0,1,0,"Only use one model class, database table, and persistence manager for both decision knowledge elements in Jira issue description and comments!"
+0,0,0,0,1,How can source code permanent have a high quality?
+0,1,0,0,0,Separation of concerns
+1,0,0,0,0,"Use separate model classes, database tables, and persistence managers for decision knowledge elements in Jira issue description and comments!"
+0,0,0,0,0,Pushed to 408.
+0,0,0,0,1,When should JIRA's default edit dialog be called?
+0,0,0,0,1,How to prevent null pointer exceptions in the DecisionKnowledgeReport class?
+0,0,0,1,0,"The problem was that element.getProject().getProjectKey() was called in the DecisionKnowledgeReport class, but that element.getProject() already returned null and thus the method getProjectKey() could not be found. I fixed this by only calling element.getProject() and checking whether it returns null."
+1,0,0,0,0,"Show Tree viewer in own Tab Panel: ""local Decision Knowledge"""
+0,0,0,1,0,"For example, we specified an activation condition for the menu item of the decision knowledge page."
+1,0,0,0,0,Change background color of decision knowledge elements in comment tab panel (similar as it is currently done in DecXtract tab panel)!
+0,0,0,0,1,"Where to show the tree viewer to view and manage ""local"" decision knowledge of a JIRA issue?"
+0,0,0,0,1,How to identify decision Knowledge in the comment tab panel?
+0,0,0,0,1,How to enable user whether decision knowledge elements are shown or hidden?
+1,0,0,0,0,"An Alternative is to not use the $, but ""var my_JQuery = jQuery.noConflict(true);"""
+0,0,0,1,0,"I replaced the drop down menu with a select field!"
+0,0,0,1,0,I created a new class ClassificationTrainer that should train the classifier on the data of the underlying project.
+0,0,0,1,0,We decided to show transparent image other.png!
+0,0,0,1,0,"In contrast to the tutorial, we have the @JiraImport annotation doubled. We should delete the annotation in the constructor."
+0,0,0,1,0,This is solved by using the AUI dropdown as the context menu.
+0,0,0,1,0,The icons are Fugue icons from http://p.yusukekamiyamane.com/icons/search/fugue/#keyword=hammer
+0,0,1,0,0,Even with global.open the pop up blocker is still active. :-(
+1,0,0,0,0,"Instead calling window.open, we need to call global.open inside of closure objects."
+0,0,0,1,0,We solved this by adding a getExtendedKnowledgeTypes method to the ConDecAPI closure object and call this method instead of accessing the global variable. The global variable was removed.
+0,0,0,1,0,We added the Issue Types from the Jira Project. An issue type can now also be added as root type.
+0,0,0,1,0,For all JIRA issues (also the decision knowledge issues) we use the quick-edit-issue dialog for editing nodes in the graph.
+0,0,0,1,0,I set the quick-edit-dialog to the default dialog when editing issues.
+0,0,0,1,0,Dialog.vm is only included in the JIRA issue module and NOT in tab panel vm file.
+0,0,0,1,0,I think we should only enable developers to use icons for the other knowledge types if we find a way to install our custom icons in Jira. But this has a low priority for now.
+0,0,0,1,0,Irrelevant sentences should not be included in the exported list of decision knowledge elements.
+0,0,0,1,0,We will try to separate HTML and JS as good as possible.
+0,0,1,0,0,I think if I extract the HTML Code most of the functions are no longer as readable as they are now. So I would stick with the code like it is now. 
+0,0,0,1,0,Use observer design pattern. Add a Javascript closure object for the observable (subject) that implements the notify method. The views are observers that need to subscribe/register to this observable.
+0,0,0,1,0,"I created one ""MockUserManager"" class."
+0,1,0,0,0,We can use the existing AO link table for that.
+0,1,0,0,0,The JBehave plugin also has a Eclispe and IntelliJ support
+0,0,1,0,0,Using this as a alternative we would use 2 different Ideas to build the same tests
+0,1,0,0,0,This would also be a possibility to add the Selenium test to our Project. This would solve some test problems of the Integration tests. We only need some kind of Server for the TestCases to run and a Deploy page where the plugin is deployed for the Selenium test.
+0,1,0,0,0,Open source
+0,0,0,0,0,"Here's a small screenshot of the current state."
+0,0,1,0,0,We need to clone the git repository to access the commits
+0,0,1,0,0,Using javascript probably will result in CORS errors
+0,1,0,0,0,"We should go that way, this is really safe!"
+0,0,0,0,1,"We have to find a sophisticated authentication method. Which one?"
+0,0,1,0,0,At the current Version of Jira the Integration Test are not working correctly
+0,1,0,0,0,"Better readability, less information overload in context menu."
+0,0,0,0,1,How can we add a context menu in the comment view tab panel?
+0,1,0,0,0,Included in the AUI core
+0,1,0,0,0,Looks nicer
+0,1,0,0,0,filtering by knowledge type in the AO Call is more efficient than for loop w/ If/Else
+0,0,1,0,0,Not included in AUI core
+0,1,0,0,0,A new button is not needed
+0,0,1,0,0,Linked decision knowledge can not be evaluated by the user
+0,0,0,0,1,"The constructor is not setting the documentation location. Because of this, there is a null pointer exception. "
+0,0,0,1,0,I added a new documentation location parameter to the constructor of decision knowledge elements.
+0,1,0,0,0,Boards view will not be excluded
+0,1,0,0,0,"If a text does not match, no context menu should be provided"
+0,0,1,0,0,"Unfortunately, comment Id and start / end position is not available"
+0,0,0,0,1,How can we get the Sentence ID while creating a colored macro?
+0,1,0,0,0,Would be a fast solution.
+0,0,1,0,0,Many tables would be to maintain in the future.
+0,1,0,0,0,Need to check only one link end
+0,0,1,0,0,Both link ends need to be checked all the time.
+1,0,0,0,0,Show the same text as in the comment tab panel!
+1,0,0,0,0,Use representation with tags []!
+0,0,1,0,0,"Used to be like this, but is now onconsistent with comments tab panel"
+1,0,0,0,0,Use icons and colors to indicate decision knowledge!
+0,1,0,0,0,Consistent with comments tab.
+0,0,1,0,0,Needs special treatment to only get relevant decision knowledge.
+0,0,0,1,0,The plugin now uses the JIRA Dialog2 component.
+0,0,0,1,0,Use jgit library
+0,0,1,0,0,Drag & Drop is already used in the tree viewer to link knowledge elements. Using D&D also for changing the knowledge types could confuse the user.
+1,0,0,0,0,A fix could be to check what strategy is used at this point
+0,0,1,0,0,"The proposed solution has the problem that we need to extend the check for every new documentation location. The location could also be issue comments, description or commit message and then the check becomes very long."
+0,0,0,1,0,"We provide two implementations of the Graph interface: one without (GraphImpl) and one with filtering (GraphImplFiltered). In addition, the GraphImplFiltered class extends the GraphImpl class."
+0,0,0,0,1,How to remove redundancy and have a better separation of concerns when building the knowledge graph?
+0,0,0,1,0,"It is not easily possible to trigger the create-linked-issue. Further, it is not available on every side, but only in the issue view."
+0,0,0,0,1,How to remove the icon's textual representation from Treant nodes?
+0,0,0,1,0,Integrate the methods of the GenericLink class into the Link class and delete the GenericLink class afterwards.
+0,0,0,1,0,The notify method is successfully called when surrounding its call with an extra function.
+0,0,0,1,0,Changed icon of arguments to this:  !argument.png|thumbnail!
+0,0,0,1,0,This seems to be a loading issue. I added the conDecAPI.checkIfProjectKeyIsValid() to the velocity templates after the $(document).ready call.
+0,0,1,0,0,The framwork is really big. Most of the functionality we will not use in the first place. 
+0,1,0,0,0,This is a very powerful framework.
+0,1,0,0,0,There is also a plugin for [IntelliJ|https://plugins.jetbrains.com/plugin/7212-cucumber-for-java] and [Eclipse|https://marketplace.eclipse.org/content/cucumber-eclipse-plugin]. 
+0,0,0,1,0, We only can set different Template Mocks so the return values are different.
+0,0,0,1,0,Unify REST methods for elements with different documentation location where possible
+0,0,0,0,1,"How can we enable to change a documentation location to a JIRA issue in order to easily export it into Confluence?"
+0,0,0,1,0,"Add ""Issues (decision problems) per JIRA Issue"" and ""Decisions per JIRA Issue"". Therefore remove ""Sentences per Issue""."
+0,0,0,1,0,"Add two more graphs for link between JIRA Issues and Decision / Issue. The user can select on the first report page which JIRA Issue he wants so see. Therefore we provide ""Task"" and ""Bug""."
+0,0,0,1,0,Link to selected element by user
+0,1,0,0,0,intuitiv linking: the user wants a new comment HERE
+0,0,0,1,0,Mock behavior of SearchService to return expected results for a given JQL-String
+0,0,0,1,0,Filter or JQL-Query are read from URL. I use window.location.search to access the filter/JQL-searchterm.
+0,0,1,0,0,"Unfortunately, this does not compile on TravisCI"
+0,0,0,0,1,How can the comment Section be notified to update?
+0,0,0,1,0,I also set the ntpd bind address to 127.0.0.1.
+0,0,1,0,0,counterintuitive
+0,0,0,0,1,Which link method should be used?
+0,0,0,1,0,"We use JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]); in the JS callbacks"
+0,0,0,1,0,"We don't need the Servlet at the moment."
+0,0,0,1,0,"We went with the multiselect form."
+0,1,0,0,0,"since it's easier to implement."
+0,1,0,0,0,Word files can be edited.
+0,1,0,0,0,Works on every Jira View
+0,0,0,1,0,"We add the ActivationCondition to the sidebar link to the decision knowledge page, to the issue module, and to the sidebar link to the project setting page in atlassian-plugin.xml."
+0,0,0,1,0,I added the application links between this JIRA server and bamboo + bitbucket on the CURES server.
+0,0,1,0,0,"It creates problem when I compile the plugin."
+0,0,1,0,0,"It seems not to be needed anymore."
+0,0,0,1,0,I added the elementKey and elementId to the context parameters of the Servlet.
+0,1,0,0,0,The elementKey or elementId do not have to be extracted from the URL String.
+0,0,0,1,0,I used the destroy() method to fix this issue.
+0,0,0,0,0,His code for training the classifier within JIRA can be found here
+0,0,1,0,0,Only available with Maven Version 2.X
+0,0,0,1,0,"Add an ""oncontextmenu"" entry to color span to add a context menu in the comment tab panel!"
+0,0,0,1,0,We decided to ignore code during automatic classification but allow code in manual classification with open and close tags.
+0,0,0,1,0,We now use regex to remove the icons' textual representation!
+0,0,1,0,0,"The length is restricted to 30 characters."
+0,0,0,0,1,Is it possible to import the OAuth classes via Maven?
+0,0,0,1,0,We decided that changing the type of manually classified sentences in JIRA issue comments should change their tag as well!
+0,0,0,0,1,How can we make sure that we use the latest version of a lib/dependency in the pom.xml?
+0,0,1,0,0,Imports versions that JIRA cannot use
+0,1,0,0,0,Only working solution in this case
+0,0,0,1,0,We manually update versions of libs/dependencies in the pom.xml so that they are compatible with the current Atlassian Tomcat version!
+0,0,0,0,1,"How can we extract comments from source code file?"
+1,0,0,0,0,"We could write a parser by ourselves!"
+0,1,0,0,0,full controll on parser's behavior
+0,0,1,0,0,costs time to deliver
+0,0,0,0,1,Which languages can the parser work with?
+1,0,0,0,0,We could use 3rd party tools to extract comments!
+0,1,0,0,0,specialized for family of programing languages
+0,0,1,0,0,API assessment has to be done
+0,0,0,0,1,What information should be presented to the user in Jira issue?
+0,0,1,0,0,is not very useful!
+0,1,0,0,0,This solves the problem.
+1,0,0,0,0,"Merge the three event listeners (for decision knowledge extraction from JIRA issue text, for code summarization and for the webhook) into one big event listener!"
+0,0,0,1,0,We decided to create the eventlistener package and one ConDecEventListener super class that all concrete event listeners inherit from!
+0,1,0,0,0,This gives a good overview.
+0,0,0,0,1,How to prevent the event listeners from blocking each other?
+0,0,0,0,1,Shouldn't we test the repository activation with given uri and give admin feedback upon problems with it?
+0,1,0,0,0,zero implementation effort
+0,0,0,0,0,This work item refactors the code
+0,0,1,0,0,This would be a God class without a proper separation of concerns.
+1,0,0,0,0,Line number for the beginning and end of the element within commit's message could be returned!
+0,0,1,0,0,Only line numbers will not be sufficient.
+1,0,0,0,0,Line number and column number for the beginning and end (range) of the element within commit's message could be returned!
+0,0,1,0,0,Too many numbers would be needed.
+0,0,0,1,0,The element's first character position within the whole commit message will be be returned!
+0,1,0,0,0,Character position within a commit message is the simplest and sufficient information for ordering rationale within a message.
+1,0,0,0,0,We could extract elements and build a graph of relationships between these elements!
+0,1,0,0,0,in most cases relationships between elements could be easily inferred.
+0,0,1,0,0,Harder to unit test.
+0,1,0,0,0,the existing graph structure could be reused.
+0,1,0,0,0,"Smaller unit of code, good to unit test and maintain"
+0,1,0,0,0,"Could be probably reused also for general extraction cases."
+0,0,0,0,1,"Currently even only one system user could start two conflicting requests for branch check-outs in the same system folder of plugin's server. How can inevitable conflicts of parallel branch checkouts be mitigated?"
+0,0,0,1,0,We decided to use the JIRA build-in filter possibilities and apply the results to the visualization
+0,0,0,1,0,"We will provide a specific sub folder underneath repositories base path on the file system for requested branch!"
+0,1,0,0,0,parallel request support is provided
+0,1,0,0,0,Not hard to implement
+0,0,1,0,0,Full parallelism is not given
+0,0,1,0,0,Wasteful memory and CPU usage
+0,0,1,0,0,Every branch checkout means another relatively slow copy on the file system
+0,1,0,0,0,file system space is cheap
+1,0,0,0,0,We could split it in two smaller classes
+0,0,0,0,1,The GraphFiltering class is too big and has too many dependencies to other classes. How to improve this?
+1,0,0,0,0,We could use one of several others Javascript libraries for graph visualization!
+0,1,0,0,0,Full parallelism is provided
+0,0,1,0,0,Hard to implement.
+0,0,1,0,0,Some user requests might be harmed by resource starving.
+0,1,0,0,0,Familiar for users
+0,1,0,0,0,Queries can be reapplied
+0,1,0,0,0,Elements stored as JIRA Issues can be widely filtered
+0,0,1,0,0,Elements not stored as JIRA Issues have to be checked for every single criterion
+0,0,1,0,0,It is not possible to filter elements by their documentation location
+1,0,0,0,0,We could create a new filter menu
+0,1,0,0,0,Filters can be more specific for decision knowledge
+0,1,0,0,0,Elements can be filtered by their documentation location
+0,0,1,0,0,Visualization may not be consictent to the results of a user query in JIRA
+0,0,0,0,1,How should filter possibilities presented to the user?
+0,1,0,0,0,Size of the tree is reduced and thus gives a better overview
+0,0,1,0,0,It is not clear
+1,0,0,0,0,"We could mark single elements"
+0,0,0,0,1,How should knowledge elements (=nodes) not matching the filter criteria be displayed in the tree?
+0,0,0,1,0,We use the vis.js library!
+0,1,0,0,0,Open-source MIT licensed
+0,1,0,0,0,lot's of configuration possibilities
+0,0,1,0,0,"Configuration complex, difficult to build on server side"
+0,0,0,0,1,Which library should be used to visualize the graph?
+0,0,0,0,0,"TODOs:
+* Save Deleted Sentences and add them to the AO-Database or get them from the History."
+0,0,0,0,0,A general workspace containing all Jira issues and views of the issue tracking system (ITS) Jira.
+0,0,0,0,1,How can we add a non SSL connection to the CURES JIRA server?
+0,0,0,1,0,We decided to get all Elements from the Project and add them to the View
+0,1,0,0,0,Provides tested and verified code
+0,1,0,0,0,Less implementation work
+0,0,1,0,0,Not configurable
+1,0,0,0,0,We could build a new persistence strategy
+0,0,1,0,0,A lot implementation work
+0,0,0,0,1,How can the extraction of decision knowledge from Jira issue description and comments (DecXtract) be included in ConDec?
+0,0,1,0,0,will be more code
+1,0,0,0,0,We could create a separate DecXtract plug-in
+0,1,0,0,0,is stable on our plugin
+0,1,0,0,0,"is working fine on our project."
+0,1,0,0,0,"This is the newest version, up-to-date."
+1,0,0,0,0,We could remove the treant and only use vis for all graphs
+0,0,0,1,0,"We decided to add ""@scanned"" to the class definition of both event listeners!"
+0,0,0,0,1,How can we make the tree view faster?
+1,0,0,0,0,We could remove the treant and use another framework
+0,0,1,0,0,is more implementation work
+0,1,0,0,0,will be less code
+0,1,0,0,0,will be faster than now
+0,1,0,0,0,less changes in the view
+0,1,0,0,0,Small size
+0,0,1,0,0,"not actively maintained"
+0,0,1,0,0,"does not follow Java naming conventions"
+0,0,1,0,0,"new programming language in project; Interprocess-communication inefficient"
+1,0,0,0,0,Use a python library with a Java wrapper to implement online training of the classifier!
+0,0,0,1,0,Use SMILE to implement the online classifier! I replaced WEKA/MEKA with the SMILE library!
+1,0,0,0,0,We could document REST API with Swagger!
+0,0,0,0,1,How can we document the REST API?
+0,0,0,1,0,We decided to add a new tab panel in the Jira issue view for DecXtract!
+0,0,0,0,1,Should we distinguish between user validated and non-validated text classification?
+0,1,0,0,0,This is easier to implement and maintain.
+0,1,0,0,0,Less work
+0,0,1,0,0,Slow calculations
+0,0,0,0,1,The main problem is that users dont seem to validate non-relevant text wich leads to a very imbalanced dataset.
+0,0,0,0,1,Should only user-validated data be exported?
+0,0,0,0,1,How can we enable the user to validate classified text?
+0,0,1,0,0,This is highly unusable.
+0,0,0,0,0,"Fixed this bug with WI-520, refactoring the graph class"
+0,0,0,0,0,Fixed this issue with the CONDEC-520
+1,0,0,0,0,We could move calculations to Javascript
+0,1,0,0,0,Possibly faster calculations
+0,0,1,0,0,Increased amount of work
+0,0,0,0,1,How can we distinguish useful alternatives from alternatives that are not possible to be implemented?
+0,1,0,0,0,simple to use
+1,0,0,0,0,"We could change the text color of the alternatives and issues if they are _rejected, unresolved, discarded_"
+0,1,0,0,0,simple to extend
+0,0,1,0,0,shows only if something has the status but not what status
+0,0,1,0,0,information overload
+0,1,0,0,0,Easy to implement
+0,0,0,0,1,Where should the evaluation tool be integrated?
+0,0,0,0,1,Which algorithm should be used?
+1,0,0,0,0,We could use Jira REST API to access backend functionality in frontend!
+0,0,1,0,0,"This is hard to understand, low abstraction level."
+0,0,0,1,0,"We now use Atlassian Javascript (AJS) to access the backend functionality in frontend!"
+0,0,0,0,1,How should the different Repositories be identified?
+0,0,0,1,0,"The links in the link table should be kept, but the documentation location of the source and/or destination element should be changed, respectively!"
+0,0,0,1,0,We decided to add a toggle in project settings to allow the user to turn automatic classification on and off!
+0,0,0,1,0,"The path of the REST API is: Jira base URL/rest/condec/latest/knowledge|config|view/REST service!"
+0,1,0,0,0,This is the same path as in the ConDec Confluence and ConDec Bitbucket plugins.
+0,0,0,1,0,"We use the Repository URL's as identifiers"
+0,1,0,0,0,"URL's are unique and are accessible from everywhere within the Plugin"
+0,0,0,0,1,What algorithm should we use?
+1,0,0,0,0,We could use Neural Networks.
+0,1,0,0,0,They have a good performance.
+0,1,0,0,0,They can be updated retrospectively.
+0,0,1,0,0,Unfortunatly they need a lot of training data for learning.
+0,0,0,1,0,We could use SVMs to enhance classification performance!
+0,1,0,0,0,They have a good performance.
+0,1,0,0,0,They can be updated retrospectively.
+0,1,0,0,0,They do not need a lot of training data for learning.
+0,0,0,0,1,How can we improve the visibility of the whole project in the comparison views?
+1,0,0,0,0,We could cluster all collapsed nodes
+0,0,0,0,1,Which format should those readable formats have?
+0,0,0,1,0,Use Word to export decision knowledge!
+0,0,0,0,1,Which word files should be supported?
+0,0,0,0,1,Which framework do we use?
+0,0,0,0,0,"I create a meeting agenda for tomorrow."
+0,0,0,0,1,What should be checked when closing a Jira issue?
+0,0,0,1,0,We decided to show a warning if unresolved issue is linked to the work item!
+0,0,0,0,1,How should disconnected sub-graphs be handled in the getElements REST API method?
+0,1,0,0,0,"Better classification results"
+0,0,1,0,0,Less training data.
+0,0,1,0,0,Redundant
+0,0,0,0,1,How can we integrate external Javascript dependencies?
+1,0,0,0,0,We could manually copy Javascript dependencies in our project!
+0,0,1,0,0,"This makes it hard to keep Javascript dependencies up-to-date, i.e., to have the latest versions is difficult."
+1,0,0,0,0,We could use npm to download Javascript dependencies and the npm-Maven-plugin!
+0,0,0,0,1,Where should the classified messages be displayed?
+0,0,0,1,0,They will be displayed as comments for the corresponding issue.
+0,1,0,0,0,Decision knowledge from comments and commit messages are at the same place.
+1,0,0,0,0,They could be displayed in the Git Commits Tab.
+0,0,1,0,0,The plugin is not open source.
+0,0,0,0,1,What account should post the comment?
+1,0,0,0,0,The user who committed could post the comment.
+0,1,0,0,0,It is visible who committed the code.
+0,0,1,0,0,Linking git users and jira users is not trivial.
+1,0,0,0,0,The user who opens the issue could post the comment.
+0,0,1,0,0,This might irritate everyone.
+0,0,0,1,0,We decided to create a special user for this task.
+0,1,0,0,0,Can easily be filterd.
+0,1,0,0,0,It is clear where the comment came from i.e. Git Commit Message.
+0,0,0,0,1,Which text-format should be used to save the release-notes?
+0,0,1,0,0,Requires a short introduction to edit it
+0,0,0,0,1,Which dashboards does the rationale manager need?
+1,0,0,0,0,We could keep all Metrics in one Dashboard
+0,0,1,0,0,Too many messages can be overwehelming and could clutter the user interface.
+0,1,0,0,0,Less clutter
+1,0,0,0,0,The administrator could choose what type of commits should be classified.
+0,1,0,0,0,"Easier to maintain, because only one classifier has to be cared for."
+0,0,1,0,0,No possibility to modify JQL
+0,0,0,0,1,Which default value should be used for the link distance filter?
+0,1,0,0,0,easy to implement
+0,0,0,0,1,What path should the REST API have?
+1,0,0,0,0,The former path of the REST API of the ConDec Jira plug-in was: Jira base URL/rest/decisions/latest/decisions|config|view/REST service!
+0,0,1,0,0,knowledge is needed of how to write a JQL
+0,0,0,0,1,How can we access the Jira API from the frontend?
+0,0,0,0,1,Where to store the status of a decision knowledge element?
+1,0,0,0,0,We could store the status of decision knowledge elements in a separate database table!
+0,0,1,0,0,The plugin gets hard to maintain if we use too many database tables.
+0,0,0,1,0,We decided to store the status either as an attribute of a Jira issue (if the decision knowledge is stored as separate Jira issues) or in a column of the existing database table!
+0,1,0,0,0,"The status is a ""normal"" attribute and not treated separately."
+0,0,0,0,1,How do we group the knowledge elements in the chronology view?
+0,0,0,1,0,The knowledge elements in the chronology view are grouped by the user that created/updated the knowledge element!
+0,1,0,0,0,A user can quickly see their documentation.
+1,0,0,0,0,"The knowledge elements in the chronology view could be grouped by other attributes, such as the status or knowledge type."
+0,1,0,0,0,Status changes can be done automatically if a decision is linked.
+0,1,0,0,0,Two status are easy to use.
+0,0,0,1,0,We decided that the status of an issue is either unresolved or resolved after a decision is made and documented!
+0,0,0,0,1,What status can issues have?
+0,0,0,1,0,We decided to model all links (between Jira issues and between any kind of knowledge element) in the same Link model class!
+0,1,0,0,0,"The documentation location is only an attribute of the source and destination element of a link and does not play a big role, which is easier to understand."
+0,0,0,0,1,How to model links (=edges) in the knowledge graph for knowledge elements (=nodes) in different documentation locations?
+0,0,0,1,0,"We decided to use transitive links between parent element and sub elements, that match the criteria to delete elements, that are filtered out, from the visualization!"
+0,0,0,0,1,Where to enable the rationale manager to configure the criteria shown in the decision table for decision making (such as quality attributes/QAs)?
+0,0,0,0,1,Which technology should be used to create the decision table?
+0,0,0,1,0,We will use the Atlassian User Interface (AUI) table component in the decision table!
+1,0,0,0,0,We could alternatively add a new custom context menu to manage solution options in the decision table!
+0,0,0,1,0,We will use a dropdown menu to switch between decision problems in the decision table!
+0,0,0,0,1,How to switch between several decision problems in decision table?
+0,0,1,0,0,This can impede other operations
+0,0,0,0,1,How to manage solution options and arguments in the decision table?
+0,0,1,0,0,more to maintain
+0,1,0,0,0,Freedom to create context menu which fits perfectly to needs
+0,0,0,1,0,The link distance Metrics are removed
+0,0,1,0,0,They do not show enough relevant information
+0,1,0,0,0,easy to implement
+0,0,1,0,0,It's getting hard to search for specific decision problem if the dropdown menu holds a lot of decision problems
+0,0,0,0,1,"How can a user configure which criteria are used during decision-making to assess solution options, i.e. which criteria are shown in the decision table?"
+0,0,0,0,0,Execution results imported from a running of the automated tests
+0,0,1,0,0,Functionality is restricted by current implementation
+0,1,0,0,0,Configuration and settings options are already available in the project settings page.
+1,0,0,0,0,We could provide a fixed options for criteria (e.g. quality attributes/QAs) to the user that s/he can select from!
+0,1,0,0,0,Does not increase maintainability
+0,1,0,0,0,Good separation of features
+0,0,1,0,0,Functionality is restricted by current implementation
+0,1,0,0,0,Possibility to modify JQL
+0,1,0,0,0,Reuse of existing code
+0,1,0,0,0,Does not increase maintainability
+0,1,0,0,0,Easily readable for non-machine learning experts.
+0,0,0,1,0,We decided to use 4 as the default value for the link distance filter!
+0,0,1,0,0,Bigger files.
+0,0,1,0,0,A lot of text can be hard to read.
+0,0,0,0,1,How to improve the usablity for rdf knowledge sources in the decision guidance page?
+0,0,0,1,0,We add an infobox with an example query and a short description!
+0,1,0,0,0,The user does not have to switch to an external manual.
+1,0,0,0,0,We could hardcode the DBPedia Knowledge Source!
+0,0,1,0,0,We lose all flexibility.
+0,0,0,1,0,We split the project setting page into subpages!
+0,0,0,1,0,"Offer the following setting categories to the rationale manager: basic configuration, rationale model, text classification, git connection, release notes, webhook!"
+0,0,0,0,1,Which categories of settings does the rationale manager need?
+0,0,0,0,1,The project setting page is currently quite big. How can we simplify it/prevent information overload?
+0,1,0,0,0,Easy to import into other tools.
+0,1,0,0,0,no additional implementation needed.
+0,0,1,0,0,UI is blocked during a back-end call.
+0,0,0,1,0,We decided to implement Asynchronous calls.
+0,1,0,0,0,"UI is not block, which leads to a better UX."
+0,1,0,0,0,Implementation cost is minimal.
+0,0,0,0,1,How should the evaluation results be presentd to the user?
+0,0,0,0,0,This work item refactors the
+0,0,0,1,0,We will adapt the existing context menu
+0,1,0,0,0,Reuse of existing code
+0,0,0,1,0,Configure which criteria (to assess solution options) are shown in the decision table via the Jira query language (JQL)!
+0,1,0,0,0,easy to use
+0,0,1,0,0,This might confuse users.
+1,0,0,0,0,We could integrate an extra filter to explicitly select unlinked decisions
+0,0,1,0,0,The ux could be problematic.
+0,1,0,0,0,"high flexibility to configure criteria, e.g. QAs of different projects could be used as criteria"
+0,0,0,1,0,We use a common interface!
+0,1,0,0,0,Unified method to calculate different metrics.
+0,0,0,0,1,How could we add new metrics?
+0,0,1,0,0,not user friendly
+0,0,1,0,0,possible problem detection is shifted to the system users which may badly affect system experience of many users
+0,1,0,0,0,admin user gets informed
+0,1,0,0,0,does not affect All Projects Admin View (CONDEC-198)
+0,0,1,0,0,Users may experience issues with git module if configuration is bad
+0,1,0,0,0,admin user gets informed if something is wrong with git's uri
+1,0,0,0,0,We could use static utility classes!
+0,0,1,0,0,Long loading times (16 seconds for all issues on the overview page).
+0,0,1,0,0,Strong dependencies. Bad maintainability.
+1,0,0,0,0,We could show a list of single knowledge elements in the jstree viewer on the left side of the rationale backlog and overview!
+0,0,1,0,0,Knowledge elements cannot be moved via drag & drop from on tree to another.
+0,1,0,0,0,Fast loading times (1.3 seconds for all issues on the overview page).
+0,0,0,0,0,These diagrams show the classes and their dependencies
+0,0,0,0,1,Why are empty knowledge elements included in the knowledge graph? How to prevent this?
+0,1,0,0,0,Can be easily checked
+0,0,0,0,0,screenshot-1.png|thumbnail!
+1,0,0,0,0,We could keep the decision knowledge elements documented in the description or comments of a Jira issue (e.g. a user story) after the Jira issue was deleted.
+0,0,0,1,0,We decided to show a list of trees in the jstree viewer on the left side of the rationale backlog and overview!
+0,0,0,0,1,Should the jstree viewer show a list of trees or only a list of single knowledge elements in the rationale backlog and overview?
+0,0,1,0,0,The source of the decision knowledge elements is not clear if it was deleted.
+0,0,0,0,0,"UML diagrams are in Confluence"
+0,0,0,1,0,"Add a button to the project settings page to ""clean database"", i.e., to remove invalid elements and links from database!"
+0,0,0,0,1,"How to clean up invalid elements from Jira issue description and comments and links in the database? For example, invalid elements are elements with end position zero."
+1,0,0,0,0,We could clean the database after every change from invalid elements and links.
+0,0,1,0,0,"This would increase loading times, i.e., reduce time efficiency."
+0,1,0,0,0,easy to implement
+0,0,0,0,1,"Should the status ""challenged"" be added to options in general (alternatives + decisions)?"
+0,0,0,1,0,The rationale backlog is the first tab in the decision knowledge page!
+0,0,0,1,0,Offer the same filter possibilities in all views on the knowledge graph! Use the FilterSettings and FilterManager classes!
+0,0,0,0,0,adjacency-matrix-with-filter-possibilities.png|thumbnail!
+0,0,0,1,0,Create a constructor with FilterSettings as a parameter in every view class!
+0,1,0,0,0,Can be imported in other Atlassian tools such as Confluence
+0,0,0,0,0,currentOverview.png|thumbnail!
+0,0,0,0,1,Which views do show a subgraph of the knowledge graph starting from a selected knowledge element?
+0,0,0,1,0,"The tree views (jstree and Treant), the vis graph view, the decision table, and the adjacency matrix show a subgraph of the knowledge graph starting from a selected knowledge element!"
+1,0,0,0,0,We could show unlinked decisions no matter what link types are selected
+0,0,1,0,0,"Rendering takes very long, very long loading times"
+0,0,1,0,0,Possibly poor quality
+0,1,0,0,0,The users doen't have to fill everything by themselves.
+0,1,0,0,0,The users can easier orientate in the UI.
+0,0,1,0,0,Default Values have to be implemented.
+1,0,0,0,0,We could write a description for the users!
+0,0,0,0,1,How can we improve usability?
+0,0,0,1,0,We decided to make the extraction of decision knowledge elements from Jira issue description and comments (DecXtract) a default feature of ConDec! It cannot be disabled by the user!
+0,0,0,0,0,image-2020-01-31-12-02-59-090.png|thumbnail!
+0,0,0,1,0,We set the comment id zero for decision knowledge elements in the description of a Jira issue to distinguish them from those in comments!
+0,0,0,0,1,How can we distinguish between decision knowledge elements in the description of a Jira issue from those in comments in the database table?
+0,0,0,1,0,Visualize the matrix using HTML and Javascript (no framework)!
+0,0,0,0,1,How should the matrix be visualized by the frontend? Which table framework should be used?
+0,0,1,0,0,too restrictive for some situations
+0,1,0,0,0,This will improve the performance.
+0,0,0,0,1,What configuration possibilities should the project admin have?
+0,0,0,1,0,We decided to add the following configuration possibilities: Activate/Deactivate Decision Knowledge Extraction from Issue Comments; Activate/Deactivate automatic classification; Enable the user to use icons as tags for manual classification?; Validate sentence / link database; Classify all issue instances!
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,0,0,1,0,A configurable criteria of the definition of done (DoD) of decisions is that they need to be linked to at least one pro-argument! All decisions not linked to a pro-argument are part of the rationale backlog!
+0,0,0,0,1,Why could it be necessary to delete the git repositories linked to a Jira project in the file system?
+0,0,0,1,0,Deletion of the repository is necessary if there are some problems with the repo (e.g. it cannot be pulled for unknown reasons) or if the plugin should be deinstalled to leave a clean file system afterwards. We add a possibility to delete git repositories in file system!
+0,0,0,0,1,Where do we implement the group assignment?
+0,1,0,0,0,The view shows all connected decisions/issues which makes it easier to assign groups to related decisions/issues
+0,0,0,0,1,Which Knowledge Elements should inherit the assigned Groups?
+0,0,1,0,0,produces more code
+0,0,0,1,0,We get file content from git blobs instead of checking out branches into file system! Do not checkout branches!
+1,0,0,0,0,We could checkout files into file system and read the file content
+0,0,0,0,1,How can we access changed files from git?
+1,0,0,0,0,"Alternatives and decisions could have the status ""challenged""!"
+0,0,0,0,1,How can we ensure that icons are shown correctly?
+0,0,0,1,0,Use the context atl.general in atlassian-plugin.xml to access JavaScript files all over Jira!
+0,0,0,0,1,How can we access JavaScript files all over Jira?
+0,1,0,0,0,easy to use
+0,1,0,0,0,easy to maintain
+0,1,0,0,0,Easier to implement since decisions and alternatives could share the OptionStatus class.
+0,0,1,0,0,does not make much sense
+0,1,0,0,0,Makes more sense and therefore easier to understand.
+0,0,1,0,0,Harder to implement since we need to differentiate between the status of alternatives and decisions
+0,1,0,0,0,easy to implement
+0,0,0,0,1,How could we calculate a score for the DBPedia Knowledge Source?
+0,1,0,0,0,Easier to manage and implement
+0,0,1,0,0,Loss of important relationships between the Elements
+1,0,0,0,0,We could use Constraints/Criterions!
+0,0,1,0,0,Must be defined by the rationale manager
+0,0,1,0,0,Violates the Open Closed Principle
+0,0,0,0,0,"Sequence Diagram for the recommendation mechanism"
+0,0,0,0,0,The changes were made on the WI CONDEC-779.
+0,0,0,0,0,This WI adds the management possibility of criteria in the decision table.
+0,0,0,0,0,"The user is enabled to create, edit and delete criteria."
+0,0,0,0,0,Quality attributes are used as criteria in the decision table.
+0,1,0,0,0,user can revert unintentional changes
+0,0,0,0,0,The ConDec plugin provides all features that are necessary to manage decision knowledge in Jira.
+0,0,0,1,0,Only one plugin is developed for Jira!
+0,0,0,1,0,"Only decisions can have the status ""challenged""!"
+0,0,1,0,0,Causes Code duplications
+0,0,1,0,0,Code becomes more complex
+0,1,0,0,0,Easier to add logic for new types
+0,0,1,0,0,Duplication of operations
+0,0,1,0,0,Problems with displaying in a filtered view
+0,0,0,0,1,How should a user manage criteria in the decision table?
+0,1,0,0,0,easy to use
+1,0,0,0,0,We could save all accepted recommendations and calculate the score with this information!
+0,0,1,0,0,unintentional changes in drop down menu are immediately applied to the decision table
+1,0,0,0,0,We could manage the criteria in the decision table via a dropdown menu!
+0,0,1,0,0,Duplicates
+0,0,0,1,0,We decided to manage criteria in the decision table via a dialog!
+0,1,0,0,0,greater design flexibility
+0,0,0,0,1,"How shall the parameters for the DoD criteria (number of hops, minimum lines of code etc.) be provided?"
+0,0,0,0,1,How does an end user license agreement should look like?
+0,0,0,0,0,decision-table.png|thumbnail!
+0,0,0,0,1,Should the knowledge graph be shown with random position of nodes/knowledge elements or hierarchically?
+0,0,0,1,0,We fill the form with default values and clean up the UI with groups!
+0,0,0,0,1,How to handle loops in the knowledge graphs in tree views?
+0,0,0,0,0,config-page-for-git-settings.png|thumbnail!
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,0,0,0,1,It seems that developers are not aware of the jstree tree viewer in tab panel next to the comments because they only interact with the views and functionalities of the Jira issue module for decision knowledge. How can we make the jstree tree viewer more prominent in the Jira issue view?
+0,0,0,1,0,Remove the tab panel for the jstree tree viewer next to the comments section! Add it as a tab of the Jira issue module for decision knowledge!
+0,0,0,1,0,Do not permanently include irrelevant sentences in the knowledge graph singleton object but add it to the jstree tree viewer via a filter possibility temporarely!
+0,0,0,0,1,"In the jstree viewer of the tab panel next to the comments, irrelevant sentences are shown as nodes in the tree. How to deal with irrelevant sentences in the graph views?"
+0,1,0,0,0,The knowledge graph instance stored in RAM does not become too big. This takes less resources.
+0,0,0,0,0,jstree-viewer-as-part-of-the-Jira-issue-view.png|thumbnail!
+0,0,0,0,0,"In this work item, the code class extraction from git is improved."
+0,0,0,0,0,link-dialog-with-link-type-selection-in-matrix.png|thumbnail!
+0,0,0,1,0,Resolve loops in the knowledge graph by displaying knowledge elements (nodes) twice in the tree views!
+0,0,0,1,0,Change knowledge graph to a singleton object!
+0,0,0,1,0,Use pagination!
+0,1,0,0,0,Improves performance.
+0,0,1,0,0,a lot of clicks are needed
+0,0,0,0,0,"CONDEC-705: Fix bugs for duplicate and link detection (#281)"
+0,0,0,1,0,"Add JiraSchemeManager class that is responsible for installing Jira issue types, link types and workflows needed by the plugin and to add them to the respective schemes! The installation is done when needed, NOT during plugin installation!"
+0,0,0,0,1,"How to install Jira issue types, link types and workflows needed by the plugin? How to add them to the respective schemes?"
+0,0,0,0,1,How to execute a Post Method?
+0,1,0,0,0,Use same default value across the whole Plugin
+0,1,0,0,0,easy testing via cmd
+0,0,1,0,0,to execute cUrl via an additional process with user input could be a security risk
+0,1,0,0,0,already used Plug-In
+0,0,1,0,0,Changes need to be made in both the interface and the class.
+0,0,0,1,0,Add concise JavaDoc about methods to explain the code! Do not use interfaces if they are not really necessary!
+1,0,0,0,0,We could add interfaces for every class and add JavaDoc there!
+0,1,0,0,0,The responsibility of the class becomes clear when reading the interface and it might help to structure the code in a clean way.
+0,0,0,0,1,"How to configure the webhook type (e.g. Slack, CuuSE, or mail), to generate suitable webhook data?"
+0,0,0,1,0,A Metric showing the average number of elements in the Decision Knowledge Graph is added
+0,0,0,1,0,The metric showing the number of commits per issue is removed
+0,0,1,0,0,Unreasonably long loading time for bigger projects with many commits
+0,0,1,0,0,Errorprone and not really necessary.
+1,0,0,0,0,We could use cUrl to execute a POST Request
+0,1,0,0,0,Allow future implementation of the filter
+0,0,0,0,0,Class diagram of the model classes of the ConDec Jira plugin
+0,0,0,0,0,"UML diagrams are in Confluence: https://confluence-se.ifi.uni-heidelberg.de/display/DDJ/Model"
+0,0,0,0,0,"The following diagram shows an overview"
+0,1,0,0,0,if done automatically it is easy to use
+0,0,0,0,1,"commits contain often more than one change. How to deal with this?"
+0,0,1,0,0,wrong input possible
+1,0,0,0,0,"We could enable the user to manually select the webhook type, e.g. via a drop down menu!"
+0,0,0,0,1,How can we ensure that the code is well structured and that classes offer clear methods with well documented parameters?
+0,0,0,1,0,show only relevant code changes for a linked work item!
+0,0,0,0,1,How can we get the correct context menu position in the Jira issue module and in the tab panel?
+0,1,0,0,0,No additional input
+0,0,0,1,0,Parse the webhook type (e.g. Slack type or treant) from the URL of the webhook receiver!
+0,0,1,0,0,we need to consider a lot of edge cases
+0,0,0,1,0,Filtering is mostly done in backend!
+0,1,0,0,0,very intuitive to use
+0,0,0,0,1,How to link/relate arguments to criteria and solution options in the decision table?
+0,1,0,0,0,might be easier to implement and to maintain
+0,0,0,0,1,"How to avoid failures during installation of the plugin, e.g. the ""error creating bean with name 'PluginInitalizer'""?"
+0,0,0,1,0,Use link types to distinguish between supporting and attacking arguments in the knowledge graph!
+0,0,1,0,0,drag and drop might not be supported in every browser
+0,0,0,0,0,This work item enables to accept a recommended solution option.
+0,0,0,1,0,We use the existing dialog to create a new knowledge element and already fill in the data of the recommendation to permanently add a recommendation to the knowlegdge graph!
+0,0,0,0,1,"How can we add recommendations to the knowledge graph (and all the views on it, such as the tree views, graph view, decision table, and the adjacency matrix)?"
+0,1,0,0,0,Maintain consistency for connected elements
+0,0,1,0,0,Does not cover cases were subsequent decisions might have different groups
+0,1,0,0,0,Consistency across Knowledge Tree
+0,0,1,0,0,Does not cover cases were subsequent decisions might have different groups
+0,0,0,1,0,"Make ""incomplete"" a boolean value of KnowledgeElement!"
+1,0,0,0,0,We could save the incompleteness property of a knowledge element in the database!
+0,0,0,0,1,How to create a context menu?
+0,0,0,1,0,We use the AUI dropdown menu!
+0,1,0,0,0,"Already provided by Jira"
+0,0,1,0,0,We cannot change the css anymore.
+1,0,0,0,0,We could use jQuery's contextMenu
+0,0,0,1,0,Change z-Index of the context menu to a very high value!
+0,1,0,0,0,It shows the context menu at the correct position.
+0,0,1,0,0,Might not be clean code.
+0,0,0,0,1,How can we get the context menu in front of the dialog?
+0,1,0,0,0,Reuse of existing and working functionality.
+0,0,0,0,1,How can we avoid that the parenthesis of the knowledge type macro is escaped in text mode?
+0,0,0,1,0,Add a line break in front of the parenthesis!
+1,0,0,0,0,We could find rationale in comments through pattern matching without using parsers!
+0,0,1,0,0,Does not comply with AUI Design Guidelines
+0,1,0,0,0,One has to write less code to modify table look as it already complies the AUI Design Guidelines
+0,0,1,0,0,Every change to the graph (e.g. creation of node or link) needs to be propagated into the existing graph object. This might be errorprone.
+0,0,1,0,0,The Feature might be too hidden for the developer.
+1,0,0,0,0,We could implement it in the decision knowledge page!
+0,0,1,0,0,More hidden for the developer.
+0,0,0,0,1,Where can we implement the recommendation of solutions?
+0,0,0,1,0,We implement it in the decision table view!
+0,0,0,1,0,Removing feature branch directories is not necessary anymore because we do not checkout feature branches anymore but use blobs!
+0,0,0,0,0,This work item creates the rationale backlog view
+0,0,1,0,0,The rationale manager cannot change the DoD criteria parameters.
+0,0,0,0,1,How can the user decide s/he wants to use the extraction of decision knowledge elements from Jira issue description and comments (=DecXtract) or not?
+0,0,0,1,0,Add a toggle on the project settings page to enable/disabled the extraction of decision knowledge elements from Jira issue description and comments (DecXtract)!
+1,0,0,0,0,We could use Switch-Case Statements
+0,1,0,0,0,The user is familiar with this view
+0,1,0,0,0,The user can modify the recommendations.
+1,0,0,0,0,We could implement a new UI!
+0,0,1,0,0,"More effort. It's not necessary, due to existing UI."
+0,0,0,0,1,The issue seemed to be that ntpd was not started (correctly) due to some ipv6 issues.
+0,0,0,0,1,How to distinguish between knowledge types when checking documentation completeness according to the definition of done (DoD)?
+0,0,0,1,0,"Use relationship/link/edge types according to Kruchten's taxonomy to link decisions, e.g. enable, forbids, overrides, and so on!"
+0,0,0,0,0,Screenshots are provided in CONDEC-649.
+0,0,0,0,1,"How to add the ""incompletly documented"" property to decision knowledge? How should the attribute which indicates that a decision knowledge element is incompletely documented be implemented?"
+0,0,0,0,1,How to create the TreeViewer for the rationale backlog?
+0,0,0,0,1,Should a knowledge element of a knowledge type that has no definition of done stored be assumed to be complete or incomplete?
+0,1,0,0,0,filters from other views can easily be reused
+1,0,0,0,0,The rationale backlog could be a gadget as part of a dashboard!
+0,0,0,0,0,The following classes were changed: ViewRest.java; TreeViewer.java; TestTreeViewer.java; KnowledgeElement.java; TestGetTreeViewer.java;
+0,0,0,0,1,Where should the rationale backlog be integrated/shown? Which GUI-Element should be used to create the rationale backlog?
+0,0,0,0,0,"This work item enables the user to filter"
+0,0,0,0,0,graph-view-with-filter-possibilities.png|thumbnail!
+0,0,0,0,0,This work item enables the rationale manager to
+0,0,1,0,0,User might get confused by similar looking views
+0,1,0,0,0,User can manage all knowledge elements in one place
+1,0,0,0,0,"We could not log anything at all."
+0,1,0,0,0,Easier to find rationale backlog items
+0,0,0,0,0,"Besides, the following line needs to be added:"
+0,0,0,1,0,Make rationale backlog a separate tab in the decision knowledge page!
+0,0,0,1,0,We use the Strategy pattern to implement multiple algorithms!
+0,0,1,0,0,gets complicated
+0,0,0,0,1,How can we implement multiple inputs for the algorithm?
+0,1,0,0,0,"consistent UI, look and feel like Jira"
+0,1,0,0,0,users are already familiar with the current items/options of the context menu
+0,0,1,0,0,The score calculations would unnecessary complicated.
+0,1,0,0,0,Algorithms can be replaced.
+0,1,0,0,0,Score can be calculated directly with the given data.
+0,1,0,0,0,Less code to maintain.
+1,0,0,0,0,We could overload methods!
+0,0,1,0,0,Not possible if the algorithms take the same input.
+0,0,0,0,1,Should rationale backlog and overview tabs joined together or separated?
+0,0,0,0,0,random-graph-layout.png|thumbnail!
+0,0,0,0,0,hierarchical-graph-layout.png|thumbnail!
+0,0,0,0,1,Which tool should be used to document system tests?
+0,0,0,1,0,"Create a separate ""extraction"" package for the extraction of decision knowledge from text (Jira issue description and comments, git commit messages, code comments) in the ConDec plug-in! All these features for extraction are called DecXtract!"
+0,1,0,0,0,Less overhead
+0,0,0,1,0,We enable the user to select whether the knowledge graph is shown with random position of nodes/knowledge elements or hierarchically!
+0,1,0,0,0,Rendering is very fast
+0,1,0,0,0,All the needed functionalities can be implemented without overhead
+1,0,0,0,0,"The Javascript framework ""Handsontable"" could be used to visualize the matrix!"
+0,0,0,0,0,How could we do this?
+0,0,0,1,0,Add the following options / functions: Activate/Deactivate automatic classification; Enable the user to use icons as tags for manual classification?; Clean database; Classify all text in Jira issues!
+0,0,0,0,0,All knowledge elements not fullfilling this definition of done should be automatically added to the rationale backlog until they match the DoD.
+0,0,0,0,1,Should the incomplete property of a knowledge element be persisted/stored?
+0,0,0,0,0,The following classes were changed: TestCipCalculation.java; TestConsistencyCheckEventTrigger.java; TestDuplicateDetectionManager.java; TestDuplicateSuggestion.java; TestDuplicateTextDetector.java; AlternativeCompletenessCheck.java; ArgumentCompletenessCheck.java; CompletenessCheck.java; DecisionCompletenessCheck.java; IssueCompletenessCheck.java; TestAlternativeCompletenessCheck.java; TestArgumentCompletenessCheck.java; TestDecisionCompletenessCheck.java; TestIssueCompletenessCheck.java; KnowledgeElement.java; KnowledgeGraph.java; ActiveCIP.java; ContextInformation.java; ContextInformationProvider.java; TextualSimilarityCIP.java; TimeCIP.java; TracingCIP.java; UserCIP.java; DuplicateSuggestion.java; LinkSuggestion.java; SimilarityScore.java; Suggestion.java; SuggestionType.java; FilterSettings.java; FilteringManager.java; ConsistencyPersistenceHelper.java; KnowledgePersistenceManager.java; TestFilterSettings.java; TestFilteringManager.java; BasicDuplicateTextDetector.java; DuplicateDetectionManager.java; DuplicateDetectionStrategy.java; JiraIssueLinks.java; JiraIssues.java; KnowledgeElements.java; ConsistencyRest.java; KnowledgeRest.java; TestGetLink.java; TestGetLinks.java; TestIsIncomplete.java; PartOfJiraIssueText.java; TestKnowledgeGraph.java; JiraIssueTextPersistenceManager.java; DiscardedSuggestionInDatabase.java; TestConsistencyCheckEventListener.java; TestVisGraph.java;
+0,0,0,1,0,"Make the determination of the incompleteness of a knowledge element an derived property, which is directly calculated, when needed!"
+0,1,0,0,0,More understandable and logical
+0,0,0,0,0,code-class-overview.png|thumbnail!
+0,0,0,0,0,code-class-overview-graph.png|thumbnail!
+0,0,0,0,0,code-class-overview-adjacency-matrix.png|thumbnail!
+0,0,0,1,0,We use the Apache Jena_(framework) to query DBPedia for decision guidance!
+0,0,0,0,1,How can we query DBPedia for recommendation of solution options and other kinds of decision guidance?
+0,0,0,1,0,"We add views such as the graph view or the decision table view in both the Jira issue view and the decision knowledge page! In the Jira issue view, the currently opened Jira issue (e.g. work item, requirement) is the selected element and a subgraph starting from that element is shown. In the decision knowledge page, the users can access the entire knowledge graph!"
+0,0,0,0,0,possibility-to-reset-decision-knowledge-from-Jira-issue-text.png|thumbnail!
+0,0,0,1,0,A configurable criteria for the definition of done (DoD) is that a decision needs to have at least one pro-argument linked!
+1,0,0,0,0,Pagination could be useful to spead-up the knowledge graph visualization.
+0,0,0,1,0,"Store the graph in RAM and update it every time it is requested! Update the graph on every change event (such as adding knowledge element, update element, delete element, add link/edge, delete link/edge)!"
+0,0,0,0,1,How can we increase the performance of the knowledge graph creation?
+0,0,1,0,0,might become quite big and take a lot of resources in RAM
+0,0,1,0,0,events that change Jira issues and their comments needs to be fetched
+0,0,1,0,0,different event types need to be considered
+0,0,1,0,0,changes on the graph must be done carefully
+0,1,0,0,0,probably massive performance boost
+0,0,0,0,1,What criteria for the definition of done (DoD) should be configurable?
+1,0,0,0,0,"We could store the graph in the database and build a newer version every n minutes in background! Build the graph in a background like a scheduled job, not user-request-driven."
+0,0,1,0,0,Based on assumption the performance problem is caused by graph creation in the back-end at request time. This might be wrong
+0,0,0,0,0,decision-knowledge-in-the-description-but-not-in-graph.png|thumbnail!
+0,0,0,0,0,This work item improves the extraction and linking of decision knowledge elements in the description and comments of a Jira issue.
+0,0,1,0,0,finding the n-minutes value is difficult
+0,1,0,0,0,"probably easier to implement"
+0,0,0,0,1,Why should we include views both in the Jira issue view and the decision knowledge page? Isn't that a redundancy in views?
+0,0,0,0,0,This work item adds the
+0,0,0,0,0,decision-table-tab-in-decision-knowledge-page.png|thumbnail!
+0,0,0,1,0,There are both configurable and non-configurable criteria of the definition of done (DoD)!
+0,0,0,0,1,Should there be some non-configurable criteria for the definition of done (DoD)?
+0,0,1,0,0,Rules could be too strict
+0,0,0,1,0,"Automatically install workflows for decision knowledge types (issue, decision, and alternatives) when the plugin is enabled using the PluginInitializer class!"
+0,0,0,1,0,A non-configurable criteria of the definition of done (DoD) of decisions is that they need to be linked to an issue (=decision problem)! All decisions that do not have an issue linked are part of the rationale backlog!
+0,0,0,0,1,What criteria should be default for the definition of done (DoD)?
+0,0,0,0,0,"In this work item, the chronology view is improved"
+0,0,0,0,1,Should the knowledge elements (in particular the decisions) be placed at their creation date or updating date in the chronology view?
+0,0,0,0,0,"In this work item, the decision table view "
+0,0,0,0,0,"In this work item, the Treant tree view "
+0,0,0,0,0,alternative-workflow.png|thumbnail!
+0,0,0,0,0,workflows-for-Jira-issue-types.png|thumbnail!
+0,0,0,0,0,issue-workflow.png|thumbnail!
+0,0,0,0,0,decision-workflow.png|thumbnail!
+0,0,0,0,0,Jira-issue-view-with-status-resolved.png|thumbnail!
+0,0,0,0,1,How to enable to manage the status of decision knowledge elements stored as Jira issues?
+0,0,0,0,0,"This work item adds "
+0,0,0,0,1,How to get detailed information of a backlog item and its context in the rationale backlog?
+0,0,0,1,0,Show the subgraph starting from the selected element/backlog item to provide context information!
+0,0,0,1,0,We manage our own link types in ConDec!
+0,0,0,0,1,Should ConDec manage its own link types or just use Jira issue link types?
+0,0,0,0,0,"In this work item, the Javascript files with closure objects are simplified."
+0,0,0,0,0,This work item adds 
+1,0,0,0,0,We could use RDF4J to query DBPedia for decision guidance!
+0,0,1,0,0,It is not that often used.
+0,0,0,0,0,image-2018-10-30-14-40-55-581.png|thumbnail!
+0,1,0,0,0,Has a library that allow SPARQL-Queries.
+0,0,1,0,0,Is not compatible to the AMPS-Version 8.1.0
+0,0,0,1,0,"Enable user to choose whether elements should be placed at their creation date, updating date or as a bar connecting both dates in chronology view!"
+0,0,0,0,0,https://confluence-se.ifi.uni-heidelberg.de/rest/gliffy/1.0/embeddedDiagrams/7802a8bd-93c9-4373-81b7-5761892d78c4.png?
+0,0,0,0,0,utm_medium=live&utm_source=jira!
+0,0,0,0,0,https://confluence-se.ifi.uni-heidelberg.de/rest/gliffy/1.0/embeddedDiagrams/9843f15c-0895-42c6-b347-8a4ff3a64713.png?
+0,0,0,0,1,What filter possibilities should the user have in the adjacency matrix view?
+0,1,0,0,0,More flexibility for the user
+1,0,0,0,0,"All rules/criteria in the definition of done (DoD) could be already set, i.e., non-configurable!"
+0,0,0,0,0,The following classes were changed:
+0,0,0,0,0,"In this work item, the Javascript code"
+0,0,1,0,0,Exported Jira projects only work with the same Jira version they were exported on 
+0,0,0,1,0,"We decided to create projects, issues, and decision knowledge via the Jira REST API!"
+0,1,0,0,0,The Jira REST API creates projects and issues quickly
+0,1,0,0,0,The test data does not need to be stored in a file
+0,0,0,0,1,How to store test project data? 
+0,0,0,0,1,Should we checkout files in the working directory of the local git repository?
+0,0,0,1,0,"Do not checkout branches (also not the master branch) into file system. Git repositories are bare, i.e. do not have a working directory! Use git fetch!"
+0,1,0,0,0,Supports resource and time efficiency (takes less space and time than pulling).
+1,0,0,0,0,"We could checkout files into working directory, use git pull!"
+0,1,0,0,0,Git repository content would be human readable on the server.
+0,0,1,0,0,Pulling takes a lot of time and space resources.
+0,0,0,1,0,Remove git blame method because git blame only works on files checked out into file system!
+0,0,0,0,1,What should be the superclass of the ChangedFile class?
+0,0,0,1,0,Make ChangedFile class extend KnowledgeElement!
+0,0,0,1,0,Remove Jira issue key column from code class database table because we use links instead!
+0,0,0,1,0,We use Precision and Recall!
+0,0,0,0,1,Which evaluation metrics could we use?
+0,0,0,0,1,How can we configure which properties of an object are provided when it is serialized into JSON format?
+0,0,0,0,1,How does the trace link maintenance work between code files and Jira issues?
+0,0,0,1,0,Use JSONFilter annotation above a getter method to configure which properties of the returned object are provided when it is serialized into JSON format!
+0,0,0,1,0,Trace link creation and maintenance between code files and Jira issues works as follows: 1) Initial trace link creation during git clone. 2) Manual link improvement and maintenance by developers. Developers can manually change links. 3) Automatic trace link maintenance during git fetch based on recent changes.
+1,0,0,0,0,We could use the F-Score!
+1,0,0,0,0,We could use the Average Precision!
+0,0,0,1,0,We use GSON to store KnowledeSources
+0,0,0,0,1,Which library should we use to encode KnowledgeSources as JSON?
+0,1,0,0,0,Dependency is already installed
+0,0,1,0,0,"More rather unreadable Code, due to the neccessary GSON-Code."
+0,0,1,0,0,Problem with knowledge elements in comments and descriptions
+0,0,0,1,0,Enable the rationale manager to recreate the knowledge graph singleton object by deactivating and activating the ConDec plugin for a Jira project!
+0,0,0,0,1,How can we ensure that the knowledge graph singleton object always contains the correct knowledge elements (=nodes) and links (=edges/relationships)?
+0,0,1,0,0,This does not fix the cause for incorrect elements and links in graph.
+0,1,0,0,0,Additional details can shown when treated as grid
+0,0,1,0,0,Loosing the overall picture
+0,0,0,0,0,"The UI structure diagram is in Confluence: https://confluence-se.ifi.uni-heidelberg.de/display/DDJ/UI-Strukturdiagramm"
+0,0,0,0,0,This work item extracts
+0,0,0,0,0,"This would look like:"
+0,1,0,0,0,Allows more flexibility for different knowledgesources.
+0,0,0,0,1,How do we get better recommendation results?
+0,0,0,0,1,How to manually classify text as an decision knowledge element?
+0,0,0,1,0,Reread decision knowledge elements from Jira issue description or comment if the user added a new element or deleted an existing element in the text!
+1,0,0,0,0,We could update the existing elements in database if the number of total elements does not decrease!
+0,0,0,0,1,How to deal with an updated Jira issue description or comment?
+0,0,1,0,0,"If a new element is added in between, e.g. a new argument, the links are wrong."
+0,0,0,1,0,Update the existing elements in database if the number of total elements stays the same!
+0,0,0,0,1,"How should we deal with Jira issue text annotated with decision knowledge tags that includes text formatting, inner macros, images and so on?"
+0,0,0,1,0,"Do not render text formatting, inner macros, images and so on in knowledge classification macros, only render line breaks!"
+0,1,0,0,0,Popular Jira macros such as code also do not render inner macros.
+0,1,0,0,0,Is consistent with the graph/tree nodes because there is also nothing rendered.
+0,1,0,0,0,"A knowledge element should be formulated in a short easy way so that it is easy to understand without cluttering through images, macros and so on. All other information is context information, which a developer can read from the text."
+0,1,0,0,0,More results are shown
+0,0,0,1,0,Delete all knowledge elements and links from Jira issue description and comments after project deletion in database! Remove all singleton objects for the project!
+0,0,0,0,1,How can we clean up after the deletion of a Jira project?
+0,0,0,1,0,We could imrpove the textutal similiarity detection
+0,1,0,0,0,Better detection of similar knowledge elements
+1,0,0,0,0,"We could render text formatting, inner macros, images and so on in knowledge classification macros!"
+0,0,1,0,0,"After rendering, it is not clear whether the inner macro is part of the knowledge element."
+0,0,1,0,0,The content in the description or comment of a Jira issue looks different to the graph node.
+0,0,0,0,1,"How can we notify the UI elements in case of model changes, e.g., how can we update the Treant after a new element was added?"
+1,0,0,0,0,"We could apply a model view controller (MVC) design pattern."
+0,0,0,0,1,How can we improve the context of a recommendation of a solution option?
+0,0,1,0,0,Other knowledge sources might not have arguments. This could be difficult.
+1,0,0,0,0,We could use alternatives to calculate a score for solution options!
+0,1,0,0,0,The score is more precise.
+0,0,0,1,0,We use the Template pattern!
+0,0,0,0,1,How could we create a common and unified interface for knowledge sources?
+0,0,0,1,0,We provide arguments if available!
+1,0,0,0,0,We could include arguments!
+1,0,0,0,0,We could include other alternatives
+1,0,0,0,0,We could include other context information
+0,0,0,0,1,How can we handle multiple inputs for a knowledge source?
+0,1,0,0,0,You only have to implement a method without changing the knowledge source.
+1,0,0,0,0,We could overload methods!
+0,0,1,0,0,The knowledge source class would grow and would become unclear.
+1,0,0,0,0,We could also use the jgit library.
+0,0,0,0,1,The toggles do only work if the script is placed before the </form> tag. Why?
+0,0,0,0,0,"This work items implements"
+0,0,0,1,0,"Write as many error messages in Java REST methods, not in Javascript."
+0,0,0,1,0,Prevent excessive null checks since they reduce readability of code
+0,1,0,0,0,"Less code, easier to implement"
+0,0,1,0,0,Decreases performance because many REST calls need to be done.
+1,0,0,0,0,We could only fill the currently active detail view on the right side of the rationale backlog and overview page when selecting a node on the right side!
+0,1,0,0,0,"Better performance, only one REST call needs to be made."
+0,0,1,0,0,Harder to implement. Tab selection handling needs to be implemented.
+0,1,0,0,0,The code is easier to understand if all knowledge elements from all documentation locations are treated the same. There would be a special treatment of Jira issues otherwise.
+0,1,0,0,0,"The random layout loads faster than the hierarchical layout, i.e. time efficiency is better."
+0,0,0,1,0,"Present subgraph starting from selected element with many different visualization frameworks such as Treant.js, jstree, vis.js and as an adjacency matrix and decision table!"
+0,0,0,0,1,Why are empty knowledge elements included in the knowledge graph? How to prevent this?
+0,0,0,1,0,Fill all detail views on the right side of the rationale backlog and overview page instantly when selecting a node on the right side!
+0,0,0,0,1,Should all detail views on the right side of the rationale backlog and overview page be filled instantly when selecting a node on the right side?
+0,0,0,0,1,Which filter criteria does the plugin support?
+0,0,0,1,0,"Filter criteria are knowledge type, creation date, documentation location, link distance, link type, status and a substring!"
+0,0,0,1,0,The knowledge graph instance is automatically cleared when the plugin is deactivated!
+0,0,0,0,1,How can the user (rationale manager) clear the knowledge graph instance?
+0,0,0,0,1,"How can we update the knowledge graph for each added node, changed node, deleted node, added link, or deleted link?"
+0,0,0,0,1,How could we display large graphs more clearly?
+0,1,0,0,0,The page is quickly loaded
+1,0,0,0,0,We could create a new REST method!
+0,0,1,0,0,It is not clear for the user which method to use.
+0,0,0,1,0,Use JDK version 11 to compile the plug-in!
+0,0,0,0,1,Which JDK version should be used to compile the plug-in?
+0,1,0,0,0,This is more efficient than recreating the test git repository all the time.
+0,0,1,0,0,Changes to the git repository (e.g. new commits) during testing has an effect on the test cases that follow. The order of test cases is arbitrary.
+1,0,0,0,0,We could have more than one mock git repositories for testing!
+0,0,0,0,1,Where to put Java Script code for comment tab panel?
+0,0,0,0,1,"Is it a problem to add new onclick listeners in context menu? If yes, how can we remove/overwrite existing ones?"
+0,0,0,0,1,How to notify views after model changes?
+0,0,0,0,1,Which JIRA issue types should the user be able to select when creating the decision knowledge report?
+0,0,0,1,0,We have one mock git repositories for testing!
+0,0,0,1,0,Show a screenshot of the dashboard item as its thumbnail!
+0,0,0,0,1,How should the thumbnail for the dashboard item look like?
+0,1,0,0,0,The user can easily identify the dashboard item already by its thumbnail.
+0,0,0,0,1,Should we have one or more git repositories for testing?
+0,0,0,1,0,The knowledge graph/tree is shown after the page is loaded!
+0,0,0,0,1,When is the knowledge graph/tree shown in the JIRA issue page?
+0,1,0,0,0,The mock git repository can be easily accessed using the Plugin Settings (see ConfigPersistenceManager class).
+0,0,0,1,0,Add parameter keyOfExistingElement to createDecisionKnowledgeElement REST method of KnowledgeRest class!
+0,0,0,0,1,How to enable an external user (e.g. in Slack) to add a comment to an existing Jira issue containing decision knowledge?
+0,0,0,1,0,Use the jacoco-maven-plugin to create coverage reports!
+0,0,0,0,1,How can we create coverage reports?
+1,0,0,0,0,We could use the cobertura-maven-plugin to create coverage reports!
+0,0,1,0,0,The cobertura-maven-plugin is incompatible with java 11.
+0,0,0,1,0,Enable to store default settings in MockPluginSettings class
+0,0,0,0,1,How to mock the git URI for the mock git repo?
+0,0,1,0,0,Inefficient usage of disk space.
+0,1,0,0,0,"Disk space is cheaper compared to network, RAM and CPU resources."
+0,1,0,0,0,Relatively simple strategy to implement
+0,0,0,0,1,How do we log in the ConDec project? What guidelines do we have for logging?
+0,0,0,1,0,We use SLF4 for logging. We differentiate Logger.error and Logger.info. We do not use System.err.print and we do not use e.printStackTrace()!
+0,0,0,1,0,Add pro-argument and con-argument knowledge types to KnowledgeType enum in backend
+0,0,0,0,1,How to identify pro- and con-arguments in Treant and TreeViewer?
+0,0,0,1,0,"Pro- and con-arguments are identified by link types, i.e., if types of links between elements resemble support or attack"
+0,0,0,0,1,Should we add macro tags when automatically classifying issue comments?
+0,0,0,1,0,"Remove possibility to filter irrelevant text in tree viewer for a single Jira issue, always show irrelevant text in this tree viewer"
+0,0,0,1,0,Do not distinguish between REST methods for filtered and unfiltered graphs!
+1,0,0,0,0,We could use /view/getJiraIssuesFeatureBranchesElements for API path!
+0,0,1,0,0,"It is not clear if ""Issues"" part stands for plural or possessive"
+0,0,1,0,0,"It is not clear if ""Branches"" part stands for plural or possessive"
+0,0,0,0,1,How should the route for getting decision elements collected in feature branches of a Jira issue be called?
+0,1,0,0,0,It is clear from the name and http method type that (decision) elements will be retrieved from feature branches related to a Jira issue
+0,0,0,1,0,"Copy or rename already existing repository folders to branch dedicated folder, pull updates and checkout the branch files in the dedicated folder!"
+0,0,0,0,1,Cloning git repositories costs a lot of time. How can providing branch related folder be accelerated?
+0,1,0,0,0,Simple but sufficient implementation.
+0,0,1,0,0,Too much utilization of resources.
+0,0,1,0,0,"It is not clear what ""Elements"" stand exactly for"
+0,0,0,1,0,Overwrite parts of JIRA issue text in AO database if they exist!
+0,0,0,0,1,"Currently elements are deleted and new ones are created afterwards. How to enable a ""real"" update?"
+0,0,0,1,0,Delete the JiraIssueComment class
+0,0,0,0,1,Do we need an explicit class for Jira issue comments or is the sentence (part of comment) class enough?
+0,0,1,0,0,It is confusing 
+0,0,0,1,0,Remove transaction callbacks when using object relational mapping
+0,0,0,0,1,Do we need transaction callbacks when using object relational mapping?
+0,0,0,0,1,How to call JIRA.trigger only for the JIRA issue instead of calling it globally?
+0,0,0,0,1,How to persist pro- and con-arguments?
+1,0,0,0,0,Pro- and con-arguments could be identified by knowledge types
+0,0,0,1,0,Use TreeViewer in TabPanel
+0,0,0,0,1,How to identify the JIRA issue key(s) in a commit message?
+1,0,0,0,0,We could detect the JIRA issue key as the first word in the message
+0,1,0,0,0,Simple implementation
+0,0,1,0,0,The JIRA issue key can also be in a different place and there could be more than one key (=tangled commit)
+0,0,0,0,1,Where should we manage classes related to filtering and searching knowledge?
+0,1,0,0,0,"very important for the usefulness of the presented knowledge"
+1,0,0,0,0,We could handle filtering in the view package
+0,1,0,0,0,Improves readability of code
+0,0,0,0,1,How to deal with the webhook? The webhook needs the projectKey.
+00,0,0,1,0,"We add recommendations with its own status ""recommeded"" to the knowledge graph!"
+0,0,0,0,1,How can we integrate recommendations for solution options better in other parts of the plugin? e.g. Knowledge Graph?
+0,1,0,0,0,The recommendations can be used and treated in the graph when needed (Change status etc.)
+0,0,1,0,0,"Currently, a lot of comments appear because of the documentation location."
+1,0,0,0,0,We could add recommendations temporarily to the graph!
+0,0,1,0,0,There is a problem with IDs which breaks the graph view.
+0,0,0,0,1,"How can we get only the JIRA issue types for a selected project in the JiraIssueTypeGenerator? Currently, all existing JIRA issue types are listed, this is too much."
+0,0,0,1,0,Show all JIRA issue types from the selected project!
+0,0,1,0,0,JIRA issue types differ between projects and should not be this static
+0,1,0,0,0,Easy to implement
+0,0,1,0,0,Information overload
+0,0,0,1,0,Use observer design pattern. Add a Javascript closure object for the observable (subject) that implements the notify method. The views are observers that need to subscribe/register to this observable.
+1,0,0,0,0,"Only show a static list of types, e.g. Work Item and Bug"
+1,0,0,0,0,Show all JIRA issue types available on the JIRA server
+0,0,0,0,1,Some of the returned elements by the method getAllElementsMatchingQuery() don't have an id and have an undefined key. Why?
+0,0,1,0,0,Graph creation might take longer if there are a lot of irrelevant sentences
+1,0,0,0,0,We could filter out irrelevant sentences during graph creation
+0,0,1,0,0,Requires additional checks in loops that add elements
+0,0,0,0,1,When to filter out irrelevant sentences from JIRA issue comments?
+1,0,0,0,0,We could use the Jaro Winkler Distance!
+0,0,0,0,1,The user is propagated to the login page when clicking the menu item. How to prevent propagation?
+0,0,0,0,1,How can we integrate a proper MVC pattern into Javascript?
+0,0,0,1,0,We will become independent of the Git integration for JIRA plugin.
+0,0,0,0,1,How can we access the REST API of the Git integration for JIRA plugin?
+0,0,0,0,1,How to handle decision knowledge elements documented in different locations in a generic way?
+1,0,0,0,0,Use a structural design pattern such as the factory pattern to instantiate objects of decision knowledge elements
+0,0,0,1,0,Check if a link between two elements was already traversed
+0,0,0,0,1,How to check if elements are already included in graph when building it?
+0,0,0,0,1,How to make sure that the issue event listener works correctly?
+1,0,0,0,0,"Also store system and project knowledge types in the KnowledgeType enum such Task, System Function and Bug Reports"
+0,0,0,0,1,How to show the AJS.dialog2 with the correct DOM when the context menu is triggered for the first time after accessing the page?
+0,0,0,0,1,What is the best place to clone the git repo to? To which directory does the Git integration for JIRA plug-in clone the repo? Can we use this directory?
+0,0,0,1,0,Replace Strategy design pattern by a design pattern that allows to combine persistence methods.
+0,0,0,0,1,"How to combine different knowledge persistence methods, e.g. in separate JIRA issues, in JIRA issue comments + description, and in commit messages?"
+0,0,0,1,0,Add DocumentationLocation enum and add an attribute to the decision knowledge element class
+0,0,0,0,1,How to integrate different locations of decision knowledge such as JIRA issue comments and commit messages?
+0,0,0,0,1,How to check if elements are already included in graph when building it?
+0,0,0,1,0,Only store decision knowledge types in the KnowledgeType enum such as Alternative and Decision
+0,0,0,1,0,Use HTTP requests and the ConDec REST API to perform system testing!
+0,1,0,0,0,HTTP requests are very performant (especially compared to Selenium)
+0,0,0,0,1,How to make knowledge extraction from issue comments configurable?
+0,0,0,0,1,How to show the AJS.dialog2 with the correct DOM when the context menu is triggered for the first time after accessing the page?
+0,0,0,1,0,"We will use specific classes"
+0,0,0,0,1,"How to integrate our decision knowledge model classes with the classes for the visualization frameworks?"
+0,1,0,0,0,HTTP requests don't require a browser
+0,0,0,0,1,How could we improve the score that indicates textual smilarity?
+0,0,0,1,0,"The link type ""transitive"" is always installed in ConDec and cannot be disabled by the rationale manager! The link type ""transitive"" is not added as a Jira issue link type!"
+0,0,0,0,1,Should the rationale manager be enabled to configure whether transitives links can be used or not?
+0,0,0,1,0,Copy subgraph of KnowledgeGraph to enable to add new transitive edges to the subgraph!
+0,0,1,0,0,The ConDec REST API is not well documented
+0,0,1,0,0,Selenium setup is complex and varies for each OS
+0,0,1,0,0,Selenium doesn't interact well with Jira
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,1,0,0,0,Gives good results.
+1,0,0,0,0,We could use simple substring matching!
+0,0,1,0,0,Returns a lot of irrelevant results.
+0,0,0,0,1,How can we add new transitive edges to a filtered subgraph of the KnowledgeGraph?
+0,0,0,1,0,"We decided to use a bag of words, that filter irrelevant words from the issue text!"
+0,1,0,0,0,Can be configured in each project.
+0,0,1,0,0,Takes more effort to implement.
+0,0,0,0,1,Shall we consider the direction of links?
+0,0,0,1,0,Implement binary and fine-grained text classification using WEKA and MEKA!
+1,0,0,0,0,We could use Binary relevance or Labor Powerset as base Classifier
+0,1,0,0,0,Better precision for new sentences
+0,0,1,0,0,model file is ~30 MB / 20 MB larger than with Labor Powerset
+0,0,0,1,0,Decision knowledge elements are all loaded in Treant and collapsed after a certain depth
+0,0,0,1,0,Use JIRA CSS classes and components (AUI) in the UI
+0,0,0,0,1,How to use the correct variable names when converting a Java object to a JSON String?
+0,0,0,0,1,How to integrate a different jQuery version than used by JIRA?
+0,0,0,0,0,"A user wants to view linked knowledge elements as a tree."
+0,0,0,0,0,screenshot-1.png|thumbnail!
+0,0,0,1,0,We use the Jaccard Similarity Algorithm!
+0,0,0,0,1,How could we improve the score for textual similarity?
+0,0,0,1,0,Integrate git via the Git integration for Jira plugin!
+0,0,0,0,1,How to get git commits for a work item?
+0,1,0,0,0,Provides REST method to get commits for a work item
+0,0,1,0,0,Complex OAuth implementation is required to call REST methods from Java code
+0,1,0,0,0,"Changable behaviour at runtime,"
+0,0,0,1,0,"Use CSS attribute ""resize: both;"" to make Tree Viewer resizable"
+0,0,0,0,1,How to make jstree Tree Viewer resizable?
+1,0,0,0,0,Use resizable function from the jQuery UI plug-in
+0,0,0,1,0,Use JsonProperty annotations above variable declarations
+0,0,0,1,0,Add a possibility for manual system testing!
+1,0,0,0,0,Use the jira-func-tests java library!
+0,0,0,0,0,This test execution only contains tests listed in [the test plan in Confluence|https://confluence-se.ifi.uni-heidelberg.de/display/DDJ/Test+Plan+for+ConDec+Jira]
+0,0,0,0,0,This test execution only contains tests listed in the test plan in Confluence
+0,0,0,0,1,How to convert a Java object to a JSON String?
+1,0,0,0,0,We could use JSONObject
+0,0,0,0,1,How to automatically install issue types for the issue persistence strategy with icons/avatars?
+0,0,0,0,1,How to show the AJS.dialog2 with the correct DOM when the context menu is triggered for the first time after accessing the page?
+0,0,0,1,0,Split connector and observer for better readability
+0,0,0,0,1,How can the execution of system tests be automated?
+0,1,0,0,0,Code can be tested by unit tests
+0,0,1,0,0,Worse performance
+0,1,0,0,0,Better performance
+0,0,1,0,0,No unit tests
+0,0,0,0,1,Should there be one Rest-Interface per dashboard or per metrics?
+0,1,0,0,0,Less complex
+0,0,1,0,0,Less modular
+0,1,0,0,0,More complex
+0,0,1,0,0,More modular
+0,0,0,0,1,Should the metrics for the dashboards be calculated in the frontend or the backend?
+0,0,0,1,0,Add decision knowledge elements from code comments to the singleton graph object only in RAM! Use negative ids to identify them!
+0,0,0,0,1,How can we add decision knowledge elements from code comments into the KnowledgeGraph?
+0,0,0,0,1,How could we improve usablity of the evaluation of knowledge sources?
+0,0,0,1,0,"We decided to plot general metrics, intra-rationale completeness, rationale coverage, and feature branch related metrics!"
+0,0,0,0,1,Which metrics should be plotted in the dashboard?
+0,0,0,1,0,List test dependencies for the system test repository as dependencies!
+0,0,1,0,0,Selenium tests are not very performant
+0,1,0,0,0,Selenium is popular and well documented
+0,1,0,0,0,The tests can be made atomic using this method
+0,0,0,1,0,We add Descriptions and Icons!
+0,0,0,0,1,How could we improve the traceability of a recommendation and its knowledgesource?
+0,1,0,0,0,Obvious with no user interaction!
+1,0,0,0,0,We could add tooltips!
+0,0,1,0,0,Users who don't know the feature won't find it.
+0,1,0,0,0,The description is more detailed and the user can understand the feature better.
+0,0,0,0,1,How could we improve recommendations?
+0,1,0,0,0,The input is more flexible and delivers more results.
+0,0,0,1,0,We use the event.clientX and event.clientY coordinates from the on click event to get the current mouse click position!
+0,0,0,0,1,"How can we get the current mouse click position, e.g. to position the context menu there?"
+0,0,0,1,0,Use the AUI select class for select field to look and feel like Jira!
+0,0,0,0,1,How to make select fields in HTML look (and feel) like the fields in Jira?
+0,1,0,0,0,The word filter will be increasingly helpful also in other views.
+0,0,1,0,0,It will be difficult to distinguish between different graphs and to select the correct graph where the filter shall be ignored.
+1,0,0,0,0,We could use SSH public key authentication.
+0,1,0,0,0,Personal credentials do not need to be stored in Jira for SSH public key authentication.
+0,0,1,0,0,"Difficult to set up (SSH key must be generated, uploaded to git and Jira)."
+0,0,1,0,0,SSH public key authentication is difficult to implement.
+1,0,0,0,0,We could use SSH authentication with credentials (username+password).
+0,0,1,0,0,SSH authentication with credentials is difficult to implement.
+0,0,1,0,0,"Personal SSH credentials need to be stored in Jira, or separate git user account needs to be set up."
+0,0,0,1,0,We decided to use HTTPS authentication with credentials (username+password)!
+0,0,0,0,1,Which authentication methods shall be implemented?
+0,1,0,0,0,"Appears to be supported by all major git services (including GitHub, GitLab, gitolite)."
+0,1,0,0,0,HTTPS authentication is easy to implement.
+0,0,1,0,0,"Personal HTTPS credentials need to be stored in Jira, or separate git user account needs to be set up."
+0,0,0,1,0,We decided to use GitHub OAuth access token!
+0,1,0,0,0,Personal GitHub credentials do not need to be stored in Jira.
+0,1,0,0,0,GitHub Token authentication is easy to implement.
+0,0,1,0,0,Only supported by GitHub.
+0,0,0,1,0,We decided to use GitLab Personal Access Token.
+0,1,0,0,0,Personal GitLab credentials do not need to be stored in Jira.
+0,1,0,0,0,GitLab Token authentication is easy to implement.
+0,0,1,0,0,Only supported by GitLab.
+0,0,1,0,0,High implementation effort.
+0,0,1,0,0,"Hell, I don't even know where this frondend filter is implemented."
+0,1,0,0,0,Very low implementation effort
+0,0,1,0,0,"This filter is also applied onto the graph itself, meaning that only the code file is shown, without context."
+0,0,0,1,0,Use the `conDecTreeViewer.selectNodeInTreeViewer` function!
+0,0,0,0,1,Where can we inject the URL parameter so that the correct graph is shown?
+0,1,0,0,0,The complete graph will be shown.
+0,1,0,0,0,Low implementation effort.
+0,0,0,0,1,How to speed up graph creation?
+0,0,0,0,1,Which DecXtract features should be integrated into the comment tab panel?
+0,0,0,0,1,Should it be possible to classify sentences as more than one decision knowledge type?
+0,0,0,1,0,Sentences are always classified as only one knowledge type.
+1,0,0,0,0,Drag and Drop could be used to manually change the type of classified decision knowledge elements in the text of a Jira issue!
+0,0,0,1,0,We decided to develop a ConDec Eclipse plugin
+1,0,0,0,0,We could use the Atlassian Spring Scanner
+0,0,0,0,1,"Which relationship types should be used to link decisions? "
+0,0,0,1,0,Develop one big Jira plugin (called ConDec) that contains all features to manage decision knowledge in Jira!
+0,0,0,1,0,Add possibility to export decision knowledge to the context menu
+0,0,0,1,0,JSON should be used as machine readable format
+0,0,0,0,1,How to deal with irrelevant parts of JIRA issue text in knowledge graph?
+0,0,0,0,1,How to enable the user to change the documentation location of a decision knowledge element?
+0,0,0,0,1,How to handle system testing?
+0,0,0,1,0,Use XRay to systematically manage system tests!
+0,0,0,0,1,How can we get the evolution history of elements for different documentation locations?
+0,0,0,0,1,How can we reuse the classes of one Jira plugin in another plugin?
+0,0,0,0,1,"Which context menu functionality should the DecXtract Tree Viewer items support? "
+0,0,0,0,1,How to manage knowledge types for automatic and manual classification of parts/sentences of issue comments?
+0,0,0,0,1,Should we develop one big JIRA plugin or many small ones?
+0,0,0,0,1,How should classified decision knowledge be edited?
+0,0,0,0,1,Should we use a classifier for only commit messages?
+0,0,0,0,1,Whic library should we choose to implement the classifier? How can we implement the online-classifier?
+0,0,0,0,1,How to manage link types? Which link types for links between knoweldge elements should the ConDec plugin offer?
+0,0,0,0,1,How do we log in the ConDec project? What guidelines do we have for logging?
+0,0,0,0,1,How can we get comments in code files?
+0,0,0,0,1,How to specialize the change impact results?
+0,0,0,0,1,How to trigger change impact analysis?
+0,0,0,0,1,How to display change impacted knowledge elements?
+0,0,0,0,1,What should be presented in the JIRA issue tab panel for decision knowledge?
+0,0,0,1,0,Handle link types equal to knowledge types!
+0,0,0,1,0,Display decision knowledge from all comments of linked JIRA issues and enable the user to textually filter it
+0,0,0,0,1,How to export and present decision knowledge from Jira into Confluence?
+0,0,0,0,1,"How should decision knowledge from different documentation locations (JIRA issue text, commits, ...) be linked?"
+0,0,0,0,1,Should the dialog to display classified decision knowledge display knowledge from ALL comments?
+0,0,0,0,1,"Which IDE should be supported in the CURES project, Eclipse or IntelliJ?"
+0,0,0,1,0,"Use ""KnowledgeType"" enum from model package!"
+0,0,0,1,0,Add documentation location to both link ends into one active objects (AO) database table!
