@@ -42,7 +42,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
-		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		DecisionGroupManager.insertGroup("TestGroup1a", this.decisionKnowledgeElement);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
         codeFileEndingMap.put("JAVA_C", "java");
         ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
@@ -69,7 +69,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		groups.add("New1");
 		groups.add("New2");
 		DecisionGroupManager.setGroupAssignment(groups, decisionKnowledgeElement);
-		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1a"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).size() == 2);
 	}
 
@@ -95,7 +95,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testDeleteGroupAssignmentElementNull() {
-		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1", null));
+		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1a", null));
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		groups.add("New2");
 
 		DecisionGroupManager.setGroupAssignment(groups, godClass);
-		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1"));
+		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1a"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
 
 		DecisionGroupManager.deleteGroupAssignment("New1", issueFromCodeCommentInGodClass);
