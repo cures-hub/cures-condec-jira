@@ -63,12 +63,12 @@ public class TestTextClassifier extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testEvaluateClassifierWith3FoldCrossValidation() {
-		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(3, ClassifierType.LR,
+	public void testEvaluateClassifierWith2FoldCrossValidation() {
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(2, ClassifierType.LR,
 				ClassifierType.LR);
 		for (Map.Entry<String, ClassificationMetrics> entry : evaluationResults.entrySet()) {
 			if (entry.getKey().startsWith("Binary")) {
-				// assertEquals(0.8, entry.getValue().f1, 0.4);
+				assertEquals(0.8, entry.getValue().accuracy, 0.4);
 			}
 		}
 		assertEquals(0.1, evaluationResults.get("Fine-grained Alternative").f1, 0.4);
