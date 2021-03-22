@@ -35,7 +35,7 @@ public class Preprocessor {
 
 	private final Integer nGramN;
 
-	private static Preprocessor instance;
+	public static Preprocessor instance;
 
 	public static Preprocessor getInstance() {
 		if (instance == null) {

@@ -72,7 +72,7 @@ The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/ma
 
 ### Features
 ConDec offers the following features:
-- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic_text_classification.md)
+- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
 
 ## Implementation Details
 

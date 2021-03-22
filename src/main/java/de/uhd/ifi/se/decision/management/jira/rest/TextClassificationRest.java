@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManag
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -48,6 +49,7 @@ public class TextClassificationRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ConfigPersistenceManager.setTextClassifierActivated(projectKey, isActivated);
+		Preprocessor.instance = null;
 		return Response.ok().build();
 	}
 

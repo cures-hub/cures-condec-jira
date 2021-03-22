@@ -200,6 +200,8 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="defaultTrainingData.csv"
 			location="/classifier/defaultTrainingData.csv" />
+		<resource type="download" name="CONDEC-NLP4RE2021.csv"
+			location="/classifier/CONDEC-NLP4RE2021.csv" />
 
 		<!-- Language models -->
 		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />

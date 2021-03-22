@@ -84,6 +84,7 @@ public interface FileManager {
 	 * @return updated file with default training content.
 	 */
 	static File copyDefaultTrainingDataToClassifierDirectory() {
+		copyDataToFile("CONDEC-NLP4RE2021.csv");
 		return copyDataToFile("defaultTrainingData.csv");
 	}
 
