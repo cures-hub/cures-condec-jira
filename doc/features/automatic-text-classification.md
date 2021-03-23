@@ -13,9 +13,9 @@ To reproduce the results from the **NLP4RE'21 workshop** do the following steps:
 - Choose the training file [CONDEC-NLP4RE2021.csv](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/classifier/CONDEC-NLP4RE2021.csv).
 - Set the machine-learning algorithm to Logistic Regression for both the binary and fine-grained classifiers.
 - Run 10-fold cross-validation (you need to set k to 10).
-- ConDec writes evaluation results to a text file. The output file should be similar to [evaluation-results-CONDEC-NLP4RE2021-LR-10fold](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/features/evaluation_results_CONDEC-NLP4RE2021-LR-10fold.txt). The results might differ a little bit because of the random undersampling that we did to balance the training data.
+- ConDec writes evaluation results to a text file. The output file should be similar to [evaluation-results-CONDEC-NLP4RE2021-LR-10fold](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/evaluation-results-CONDEC-NLP4RE2021-LR-10fold.txt). The results might differ a little bit because of the random undersampling that we did to balance the training data.
 
-Basic descriptive statistics on ground truth files can be calculated using the R file [training-data-analysis.r](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/features/training-data-analysis.r).
+Basic descriptive statistics on ground truth files can be calculated using the R file [training-data-analysis.r](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/training-data-analysis.r).
 
 ## Activation and Configuration
 The text classifier can be trained and evaluated directly in Jira.
