@@ -9,6 +9,7 @@
  */
 
 (function (global) {
+	var dashboardFilterNode;
 	var dashboardContentNode;
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
@@ -20,8 +21,6 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.initProject = function init(projectKey) {
-		document.getElementById("condec-dashboard-rationale-coverage-issuetype-selection").classList.remove("hidden");
-
 		var issueTypeSelection = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
 
 		removeOptions(issueTypeSelection);
@@ -30,7 +29,8 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.init = function init(projectKey, issueType, linkDistance) {
-		getHTMLNodes("condec-rationale-coverage-dashboard-contents-container"
+		getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
+			, "condec-rationale-coverage-dashboard-contents-container"
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
 			, "condec-rationale-coverage-dashboard-processing"
@@ -39,7 +39,8 @@
 		getMetrics(projectKey, issueType, linkDistance);
 	};
 
-	function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
@@ -49,6 +50,7 @@
 
 	function showDashboardSection(node) {
 		var hiddenClass = "hidden";
+		dashboardFilterNode.classList.add(hiddenClass);
 		dashboardContentNode.classList.add(hiddenClass);
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
@@ -92,7 +94,7 @@
 
 		var emptyIssueType = document.createElement('option');
 		emptyIssueType.value = "";
-		emptyIssueType.text = "";
+		emptyIssueType.text = "pick an issue type";
 		jiraIssueTypeNode.options.add(emptyIssueType);
 
 		for (i = 0; i < jiraIssueTypes.length; i++) {
@@ -221,3 +223,134 @@
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
 })(window);
+
+define('dashboard/rationaleCoverage', ['underscore', 'jquery'], function (_, $) {
+	var dashboardAPI;
+
+	var dashboardFilterNode;
+	var dashboardContentNode;
+	var dashboardDataErrorNode;
+	var dashboardNoContentsNode;
+	var dashboardProcessingNode;
+	var dashboardProjectWithoutGit;
+
+	var ConDecRationaleDashboardItem = function (API) {
+		dashboardAPI = API;
+	};
+
+	/**
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecRationaleDashboardItem.prototype.render = function (context, preferences) {
+		$(document).ready(function() {
+			var projectKey = preferences['projectKey'];
+			var issueType = preferences['issueType'];
+			var linkDistance = preferences['linkDistance']
+
+			conDecRationaleCoverageDashboard.init(projectKey, issueType, linkDistance);
+			dashboardAPI.resize();
+		});
+	};
+
+	ConDecRationaleDashboardItem.prototype.renderEdit = function (context, preferences) {
+		$(document).ready(function() {
+			getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
+				, "condec-rationale-coverage-dashboard-contents-container"
+				, "condec-rationale-coverage-dashboard-contents-data-error"
+				, "condec-rationale-coverage-dashboard-no-project"
+				, "condec-rationale-coverage-dashboard-processing"
+				, "condec-rationale-coverage-dashboard-nogit-error");
+
+			showDashboardSection(dashboardFilterNode);
+
+			setPreferences(preferences);
+
+			dashboardAPI.resize();
+
+			function onSaveButton(event) {
+				var preferences = getPreferences();
+				dashboardAPI.savePreferences(preferences);
+
+				var projectKey = preferences['projectKey'];
+				var issueType = preferences['issueType'];
+				var linkDistance = preferences['linkDistance'];
+
+				conDecRationaleCoverageDashboard.init(projectKey, issueType, linkDistance);
+				dashboardAPI.resize();
+			}
+
+			function onCancelButton(event) {
+				dashboardAPI.closeEdit();
+			}
+
+			function projectSelectOrOnChange(event) {
+				var projectKey = event.target.value;
+
+				conDecRationaleCoverageDashboard.initProject(projectKey);
+				document.getElementById("condec-dashboard-rationale-coverage-project-selection").value = projectKey;
+				dashboardAPI.resize();
+			}
+
+			saveButton = document.getElementById("rationale-coverage-save-button");
+			saveButton.addEventListener("click", onSaveButton);
+
+			cancelButton = document.getElementById("rationale-coverage-cancel-button");
+			cancelButton.addEventListener("click", onCancelButton);
+
+			selectProjectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+			selectProjectNode.addEventListener("change", projectSelectOrOnChange);
+		});
+	};
+
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+		dashboardFilterNode = document.getElementById(filterName);
+		dashboardContentNode = document.getElementById(containerName);
+		dashboardDataErrorNode = document.getElementById(dataErrorName);
+		dashboardNoContentsNode = document.getElementById(noProjectName);
+		dashboardProcessingNode = document.getElementById(processingName);
+		dashboardProjectWithoutGit = document.getElementById(noGitName);
+	}
+
+	function showDashboardSection(node) {
+		var hiddenClass = "hidden";
+		dashboardFilterNode.classList.add(hiddenClass);
+		dashboardContentNode.classList.add(hiddenClass);
+		dashboardDataErrorNode.classList.add(hiddenClass);
+		dashboardNoContentsNode.classList.add(hiddenClass);
+		dashboardProcessingNode.classList.add(hiddenClass);
+		dashboardProjectWithoutGit.classList.add(hiddenClass);
+		node.classList.remove(hiddenClass);
+	}
+
+	function getPreferences() {
+		var preferences = {};
+
+		var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+		preferences['projectKey'] = projectNode.value;
+
+		var issueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+		preferences['issueType'] = issueTypeNode.value;
+
+		var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-link-distance-input");
+		preferences['linkDistance'] = linkDistanceNode.value;
+
+		return preferences;
+	}
+
+	function setPreferences(preferences) {
+
+		var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+		projectNode.value = preferences['projectKey'];
+
+		var issueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+		issueTypeNode.value = preferences['issueType'];
+
+		var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-link-distance-input");
+		linkDistanceNode.value = preferences['linkDistance'];
+	}
+
+	return ConDecRationaleDashboardItem;
+});

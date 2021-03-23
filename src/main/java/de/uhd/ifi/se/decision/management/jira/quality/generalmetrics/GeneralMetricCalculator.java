@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +26,15 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private String projectKey;
+	private FilterSettings filterSettings;
 	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, String projectKey) {
+	public GeneralMetricCalculator(ApplicationUser user, String projectKey, FilterSettings filterSettings) {
 		this.graph = KnowledgeGraph.getInstance(projectKey);
 		this.projectKey = projectKey;
+		this.filterSettings = filterSettings;
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}

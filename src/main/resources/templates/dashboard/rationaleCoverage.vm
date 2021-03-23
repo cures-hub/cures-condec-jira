@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-<div id="configproject" class="condec-dashboard-contents filtering">
+<div id="condec-rationale-coverage-dashboard-configproject" class="condec-dashboard-contents filtering hidden">
     <form class="aui">
         <div class="field-group">
             <label for="condec-dashboard-rationale-coverage-project-selection">Project:</label>
@@ -19,7 +19,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
                     </option>
                 #end
             </select>
-            <div id="condec-dashboard-rationale-coverage-issuetype-selection" class="condec-filter-distance hidden">
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-rationale-coverage-issuetype-selection" class="condec-issueType">
                 <label for="condec-dashboard-rationale-coverage-issuetype-input">Jira Issue Type:</label>
                 <select name="issueType" id="condec-dashboard-rationale-coverage-issuetype-input" class="select">
                     <option value="">
@@ -29,9 +31,23 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
                         <option value=$jiraIssueType.getId()>$jiraIssueType.getName()</option>
                     #end
                 </select>
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-rationale-coverage-filter-selection" class="condec-filter">
                 <label for="condec-dashboard-rationale-coverage-link-distance-input">Link Distance:</label>
                 <input name="linkDistance" id="condec-dashboard-rationale-coverage-link-distance-input" class="text short-field"
                        type="number" value="3" min="0" placeholder="Enter distance">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+        </div>
+        <div class="buttons-container">
+            <div class="buttons">
+                <input id="rationale-coverage-save-button" class="button" type="button" value="Save">
+                <input id="rationale-coverage-cancel-button" class="button" type="button" value="Cancel">
             </div>
         </div>
     </form>
@@ -41,7 +57,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     $i18n.getText("condec.dashboard.rationalecoverage.project.data.error")
 </div>
 
-<div id="condec-rationale-coverage-dashboard-no-project" class="condec-dashboard-contents init">
+<div id="condec-rationale-coverage-dashboard-no-project" class="condec-dashboard-contents init hidden">
     $i18n.getText("condec.dashboard.rationalecoverage.project.selection.not.done")
 </div>
 
@@ -65,53 +81,3 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")
-
-<script>
-    $(document).ready(function() {
-        function projectSelectOrOnChange(event) {
-            var projectKey = event.target.value;
-            var selectedOptionIndex = event.target.options.selectedIndex;
-            var selectedOption = event.target.options[selectedOptionIndex];
-
-            conDecBranchesDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-branch-project-selection").value = projectKey;
-            conDecGeneralMetricsDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-general-metrics-project-selection").value = projectKey;
-            conDecRationaleCompletenessDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-rationale-completeness-project-selection").value = projectKey;
-            conDecRationaleCoverageDashboard.initProject(projectKey);
-            document.getElementById("condec-dashboard-rationale-coverage-project-selection").value = projectKey;
-        }
-
-        function issueTypeSelectOrOnChange(event) {
-            var issueType = event.target.value;
-            var selectedOptionIndex = event.target.options.selectedIndex;
-            var selectedOption = event.target.options[selectedOptionIndex];
-
-            var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
-            var projectKey = projectNode.value;
-
-            var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-link-distance-input");
-            var linkDistance = linkDistanceNode.value;
-
-            conDecRationaleCoverageDashboard.init(projectKey, issueType, linkDistance);
-        }
-
-        selectProjectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
-        selectProjectNode.addEventListener("change", projectSelectOrOnChange);
-
-        selectIssueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
-        selectIssueTypeNode.addEventListener("change", issueTypeSelectOrOnChange);
-    });
-</script>
-
-#if ($projectKey && $issueType && $linkDistance)
-<script>
-    $(document).ready(function() {
-        conDecRationaleCoverageDashboard.init("$projectKey", "$issueType", "$linkDistance");
-
-        ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
-        selectNode.value = "$projectKey";
-    });
-</script>
-#end

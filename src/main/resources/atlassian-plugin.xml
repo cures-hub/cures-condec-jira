@@ -510,13 +510,15 @@
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<context>atl.dashboard</context>
+        <context>dashboard-item-condec</context>
 	</web-resource>
 
 	<!-- ConDec dashboard items -->
 	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<dashboard-item key="condec-feature-branch-dashboard-item"
-		name="ConDec Dashboard for Feature Task Branches">
+		name="ConDec Dashboard for Feature Task Branches"
+        configurable="true">
 		<definition>
 			<title key="condec.dashboard.featurebranch.title" />
 			<categories>
@@ -536,7 +538,8 @@
 	</dashboard-item>
 
     <dashboard-item key="condec-general-metrics-dashboard-item"
-                    name="ConDec Dashboard for General Metrics">
+                    name="ConDec Dashboard for General Metrics"
+                    configurable="true">
         <definition>
             <title key="condec.dashboard.generalmetrics.title" />
             <categories>
@@ -556,7 +559,8 @@
     </dashboard-item>
 
     <dashboard-item key="condec-ratioanle-completeness-dashboard-item"
-                    name="ConDec Dashboard for Intra-Rationale Completeness">
+                    name="ConDec Dashboard for Intra-Rationale Completeness"
+                    configurable="true">
         <definition>
             <title key="condec.dashboard.rationalecompleteness.title" />
             <categories>
@@ -576,7 +580,8 @@
     </dashboard-item>
 
     <dashboard-item key="condec-rationale-coverage-dashboard-item"
-                    name="ConDec Dashboard for Rationale Coverage">
+                    name="ConDec Dashboard for Rationale Coverage"
+                    configurable="true">
         <definition>
             <title key="condec.dashboard.rationalecoverage.title" />
             <categories>
@@ -593,5 +598,6 @@
                   location="/templates/dashboard/rationaleCoverage.vm" />
         <context-provider
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
+        <amd-module>dashboard/rationaleCoverage</amd-module>
     </dashboard-item>
 </atlassian-plugin>

@@ -48,7 +48,7 @@ public class DashboardRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		Map<String, Object> metrics = new LinkedHashMap<>();
-		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, projectKey);
+		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, projectKey, filterSettings);
 
 		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
 		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
@@ -72,7 +72,7 @@ public class DashboardRest {
 		String projectKey = filterSettings.getProjectKey();
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(projectKey);
+		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(projectKey, filterSettings);
 
 		metrics.put("issuesSolvedByDecision", rationaleCompletenessCalculator
 			.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
