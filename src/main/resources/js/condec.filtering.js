@@ -40,6 +40,7 @@
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+		window.onbeforeunload = null;
 	};
 
 	/**
@@ -134,6 +135,7 @@
 		filterElements.forEach(function (filterElement) {
 			filterElement.addEventListener("input", () => callback());
 		});
+		window.onbeforeunload = null;
 	};
 
 	/*

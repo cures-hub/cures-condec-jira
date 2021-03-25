@@ -9,7 +9,6 @@ bin/
 *target/
 .DS_Store
 .vscode/
-src/main/resources/classifier/
 
 # Files
 .classpath
@@ -22,3 +21,4 @@ preview_standalone.*
 pngLaTeX.*
 tikz-uml.sty
 *.model
+src/main/resources/classifier/TEST*

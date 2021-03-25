@@ -25,7 +25,7 @@ deploy:
   token: "$GITHUB_TOKEN"
   on:
     tags: true
-    branch: develop
+    repo: cures-hub/cures-condec-jira
   overwrite: true
 after_success:
 - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml
