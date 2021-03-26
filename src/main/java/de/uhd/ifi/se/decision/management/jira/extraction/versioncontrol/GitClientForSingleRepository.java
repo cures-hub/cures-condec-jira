@@ -110,6 +110,9 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean openRepository(File directory) {
+		if (directory == null) {
+			return false;
+		}
 		try {
 			git = Git.open(directory);
 		} catch (Exception e) {

@@ -93,13 +93,13 @@
 <div class="field-group">
     <label>Code File Endings</label>
     Java/C code comment style: 
-    <input type="text" class="text long-field" id="code-comment-style-java-c" value="$project.getCodeFileEndings('JAVA_C')" placeholder="Example: java, c, h, cpp, hpp"/><br/>
+    <input type="text" class="text" id="code-comment-style-java-c" value="$project.getCodeFileEndings('JAVA_C')" placeholder="Example: java, c, h, cpp, hpp"/><br/>
     Python code comment style: 
-    <input type="text" class="text long-field" id="code-comment-style-python" value="$project.getCodeFileEndings('PYTHON')" placeholder="Example: py, sh"/><br/>
+    <input type="text" class="text" id="code-comment-style-python" value="$project.getCodeFileEndings('PYTHON')" placeholder="Example: py, sh"/><br/>
     HTML code comment style: 
-    <input type="text" class="text long-field" id="code-comment-style-html" value="$project.getCodeFileEndings('HTML')" placeholder="Example: html, htm, xml, css, php, vm, js, ts"/><br/>
+    <input type="text" class="text" id="code-comment-style-html" value="$project.getCodeFileEndings('HTML')" placeholder="Example: html, htm, xml, css, php, vm, js, ts"/><br/>
     TeX code comment style: 
-    <input type="text" class="text long-field" id="code-comment-style-tex" value="$project.getCodeFileEndings('TEX')" placeholder="Example: tex"/><br/>
+    <input type="text" class="text" id="code-comment-style-tex" value="$project.getCodeFileEndings('TEX')" placeholder="Example: tex"/><br/>
     <div class="aui-group">
 		<input type="button" id="file-endings-button" class="aui-button aui-button-primary" value="Save File Endings"/>
 	</div>

@@ -507,7 +507,11 @@ public class ConfigRest {
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories
-			GitClient.getOrCreate(projectKey);
+			if (GitClient.getOrCreate(projectKey) == null) {
+				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
+			}
 			// read all code files, decision knowledge elements and links from the default
 			// branch
 			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
