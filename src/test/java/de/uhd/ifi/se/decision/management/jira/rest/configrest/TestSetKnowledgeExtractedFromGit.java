@@ -2,8 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +15,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -61,6 +66,19 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 	@Test
 	public void testRequestValidProjectKeyValidIsExtractedTrue() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.setKnowledgeExtractedFromGit(request, "TEST", false).getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
 	}
+	
+	@Test
+	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
+		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration("/this/path/does/not/exist",
+				"master", "", "", "");
+		List<GitRepositoryConfiguration> badGitRepositoryConfigurations = new ArrayList<>();
+		badGitRepositoryConfigurations.add(badGitRepositoryConfiguration);
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
+	}
+
 }

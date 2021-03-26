@@ -73,16 +73,6 @@ public class TestSetGitRepositoryConfigurations extends TestSetUp {
 				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
 	}
 
-	@Test
-	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
-		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration("/this/path/does/not/exist",
-				"master", "", "", "");
-		List<GitRepositoryConfiguration> badGitRepositoryConfigurations = new ArrayList<>();
-		badGitRepositoryConfigurations.add(badGitRepositoryConfiguration);
-		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
-	}
-
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings
