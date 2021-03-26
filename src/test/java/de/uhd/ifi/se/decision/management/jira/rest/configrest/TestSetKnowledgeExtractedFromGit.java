@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -65,9 +66,12 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 
 	@Test
 	public void testRequestValidProjectKeyValidIsExtractedTrue() {
-		List<GitRepositoryConfiguration> badGitRepositoryConfigurations = new ArrayList<>();
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
+		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
+		"master", "", "", "");
+		gitRepositoryConfigurations.add(gitRepositoryConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
+				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
 		assertEquals(Response.Status.OK.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
 	}
@@ -82,9 +86,11 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 				configRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
 		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
-		badGitRepositoryConfigurations = new ArrayList<>();
-		assertEquals(Status.OK.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
-		}
-
+				List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
+				GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
+				"master", "", "", "");
+				gitRepositoryConfigurations.add(gitRepositoryConfiguration);
+				assertEquals(Status.OK.getStatusCode(),
+						configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
+	}		
 }
