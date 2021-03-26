@@ -2,7 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -26,7 +29,7 @@ public class TestInsertGroup extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		long id = 100;
 		String summary = "Test";
 		String description = "Test";
@@ -38,6 +41,9 @@ public class TestInsertGroup extends TestSetUpGit {
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
 		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+        codeFileEndingMap.put("JAVA_C", "java");
+        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 	}
 
 	@Test

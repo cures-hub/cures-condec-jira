@@ -519,7 +519,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: gitSettings.vm
 	 */
 	ConDecAPI.prototype.setGitRepositoryConfigurations = function (projectKey, gitRepositoryConfigurations) {
 		generalApi.postJSON(this.restPrefix + "/config/setGitRepositoryConfigurations.json?projectKey="
@@ -531,7 +531,19 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
+	 * external references: gitSettings.vm
+	 */
+	ConDecAPI.prototype.setCodeFileEndings = function (projectKey, codeFileEndings) {
+		generalApi.postJSON(this.restPrefix + "/config/setCodeFileEndings.json?projectKey="
+			+ projectKey, codeFileEndings, function (error, response) {
+			if (error === null) {
+				showFlag("success", "The code file endings for this project have been set.");
+			}
+		});
+	};
+
+	/*
+	 * external references: gitSettings.vm
 	 */
 	ConDecAPI.prototype.deleteGitRepos = function (projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/deleteGitRepos.json?projectKey=" + projectKey, null,

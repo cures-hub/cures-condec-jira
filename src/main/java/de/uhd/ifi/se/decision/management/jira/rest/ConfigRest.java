@@ -576,10 +576,27 @@ public class ConfigRest {
 		if (gitRepositoryConfigurations == null
 				|| !GitRepositoryConfiguration.areAllGitRepositoryConfigurationsValid(gitRepositoryConfigurations)) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Git repository configurations could not be set because it is null."))
+					ImmutableMap.of("error", "Git repository configurations could not be set because they are null."))
 					.build();
 		}
 		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
+		return Response.ok().build();
+	}
+
+	@Path("/setCodeFileEndings")
+	@POST
+	public Response setCodeFileEndings(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, Map<String, String> codeFileEndings) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (codeFileEndings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Code file endings could not be set because they are null."))
+					.build();
+		}
+		ConfigPersistenceManager.setCodeFileEndings(projectKey, codeFileEndings);
 		return Response.ok().build();
 	}
 

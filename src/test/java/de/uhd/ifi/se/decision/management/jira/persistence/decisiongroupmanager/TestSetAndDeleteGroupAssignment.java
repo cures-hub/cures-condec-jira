@@ -4,7 +4,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -28,7 +31,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		long id = 100;
 		String summary = "Test";
 		String description = "Test";
@@ -39,7 +42,10 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
-		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		DecisionGroupManager.insertGroup("TestGroup1a", this.decisionKnowledgeElement);
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+        codeFileEndingMap.put("JAVA_C", "java");
+        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 	}
 
 	@Test
@@ -63,7 +69,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		groups.add("New1");
 		groups.add("New2");
 		DecisionGroupManager.setGroupAssignment(groups, decisionKnowledgeElement);
-		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1a"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).size() == 2);
 	}
 
@@ -89,7 +95,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testDeleteGroupAssignmentElementNull() {
-		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1", null));
+		assertFalse(DecisionGroupManager.deleteGroupAssignment("TestGroup1a", null));
 	}
 
 	@Test
@@ -137,7 +143,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		groups.add("New2");
 
 		DecisionGroupManager.setGroupAssignment(groups, godClass);
-		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1"));
+		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1a"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
 
 		DecisionGroupManager.deleteGroupAssignment("New1", issueFromCodeCommentInGodClass);
