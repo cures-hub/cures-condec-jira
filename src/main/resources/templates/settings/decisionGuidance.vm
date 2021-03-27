@@ -285,12 +285,13 @@ $(document).ready(function() {
     $("#keyword-toggle").change(function() {
         var value= $(this).val();
         const isActivated = $(this).prop("checked");
-        conDecAPI.setRecommendationInput("$projectKey", value, isActivated);
+        conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
     });
+    
     $("#issue-toggle").change(function() {
         var value= $(this).val();
         const isActivated = $(this).prop("checked");
-        conDecAPI.setRecommendationInput("$projectKey", value, isActivated);
+        conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
     });
 
     if("$recommendationInput" == "KEYWORD")
@@ -299,26 +300,25 @@ $(document).ready(function() {
         $("#issue-based").prop("checked", true);
 
 	$('input[type=radio][name=radiobuttons-input]').change(function() {
-        conDecAPI.setRecommendationInput("$projectKey", this.value);
+        conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", this.value);
     });
 
     $("#save-max-recommendation-btn").click((event) => {
-       event.preventDefault();
+		event.preventDefault();
         const query = $("#max-recommendation").val();
-       conDecAPI.setMaxNumberRecommendations("$projectKey", query);
-
+		conDecDecisionGuidanceAPI.setMaxNumberRecommendations("$projectKey", query);
     })
 
    $("#save-similarity-threshold").click((event) => {
        event.preventDefault();
        const value = $("#similarity-threshold").val();
-       conDecAPI.setSimilarityThreshold("$projectKey", value);
+       conDecDecisionGuidanceAPI.setSimilarityThreshold("$projectKey", value);
    })
 
   $("#save-irrelevant-words").click((event) => {
        event.preventDefault();
        const value = $("#irrelevant-words").val();
-       conDecAPI.setIrrelevantWords("$projectKey", value);
+       conDecDecisionGuidanceAPI.setIrrelevantWords("$projectKey", value);
    })
 
     $("#create-rdf-source").click((event) => {
@@ -337,12 +337,11 @@ $(document).ready(function() {
             "timeout": timeout.val(),
             "constraint" : constraint.val()
        }
-       conDecAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
+       conDecDecisionGuidanceAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
     });
 
     var updateButtons = $(".update-knowledgesource");
     updateButtons.each(function() {
-
 
         $(this).click((event) => {
                event.preventDefault();
@@ -363,26 +362,25 @@ $(document).ready(function() {
                     "constraint" : constraint.val()
                }
                console.log(rdfSourceJSON);
-               conDecAPI.updateKnowledgeSource("$projectKey",knowledgeSourceName, rdfSourceJSON);
+               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey",knowledgeSourceName, rdfSourceJSON);
         });
-
     });
 
-     const activations = $(".activation-knowledgesource");
+	const activations = $(".activation-knowledgesource");
 
      activations.each(function() {
 
         $(this).change(function() {
             const knowledgeSourceName =  $(this).attr("name");
             const isActivated = $(this).prop("checked");
-            conDecAPI.setKnowledgeSourceActivated("$projectKey", knowledgeSourceName, isActivated);
+            conDecDecisionGuidanceAPI.setKnowledgeSourceActivated("$projectKey", knowledgeSourceName, isActivated);
         })
 
      });
 
       $("#add-recommendation-directly").change(function() {
         const isActivated = $(this).prop("checked");
-        conDecAPI.setAddRecommendationDirectly("$projectKey", isActivated);
+        conDecDecisionGuidanceAPI.setAddRecommendationDirectly("$projectKey", isActivated);
       })
 
      const deletions = $(".delete-knowledgesource");
@@ -393,7 +391,7 @@ $(document).ready(function() {
             var confirm = window.confirm("Do you really want to delete this knowledge source?");
             if(confirm) {
                 const knowledgeSourceName =  $(this).attr("name");
-                conDecAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName);
+                conDecDecisionGuidanceAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName);
                 location.reload();
             }
         })
@@ -402,36 +400,30 @@ $(document).ready(function() {
      $("#add-project-source").click((event) => {
         event.preventDefault();
         const projectSourceKey = $("#select-projects").val();
-        conDecAPI.setProjectSource("$projectKey", projectSourceKey);
+        conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectSourceKey);
         $("#project-source-table tbody").append(
-        "<tr>"+
-            "<td>" + projectSourceKey + "</td>"+
-           " <td><aui-toggle></aui-toggle>"+
-        "</tr>"
-
-        );
+        	"<tr>"+
+            	"<td>" + projectSourceKey + "</td>"+
+           		"<td><aui-toggle></aui-toggle>"+
+        	"</tr>");
      });
 
      const activationsProjects = $(".activation-knowledgesource-project");
 
      activationsProjects.each(function() {
 
-        $(this).change(function() {
-            const projectKey =  $(this).attr("name");
-            const isActivated = $(this).prop("checked");
-            conDecAPI.setProjectSource("$projectKey", projectKey, isActivated);
-        })
-
-     });
-
+	$(this).change(function() {
+		const projectKey =  $(this).attr("name");
+		const isActivated = $(this).prop("checked");
+		conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectKey, isActivated);
+		})
+	});
 
     const DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
                         "PREFIX dct: <http://purl.org/dc/terms/>\n"+
                         "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
                         "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
                         "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\n";
-
-
 
     const FACTORYPATTERN =
            "select distinct ?subject ?url count(?links) where {\n" +
@@ -458,9 +450,9 @@ $(document).ready(function() {
         event.preventDefault();
         var currentText = $("#create-query-knowledgesource").val();
         $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FRAMEWORKS);
-     });
+	});
 
-     $("#select-rdf-service").change(function() {
+	$("#select-rdf-service").change(function() {
            var value = $(this).val();
            if(value == "DBPedia") {
                 $("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")

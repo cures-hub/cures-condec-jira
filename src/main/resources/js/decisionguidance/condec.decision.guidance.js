@@ -8,12 +8,11 @@
 	var idOfExistingElement;
 	var documentationLocationOfExistingElement;
 
-	let ConDecDecisionGuidance = function ConDecDecisionGuidance() {
+	let ConDecDecisionGuidance = function () {
 		this.globalCounter = 0;
 		this.recommendations = []
 		this.idOfExistingElement = 0;
 		this.documentationLocationOfExistingElement = "s"
-
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
@@ -27,7 +26,7 @@
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
 		const keyword = $("#recommendation-keyword");
 		$("#recommendation-error").hide();
-		conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
+		conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
 			if (error === null) {
 				buildQuickRecommendationTable(results, currentIssue);
 			}
@@ -47,7 +46,7 @@
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
 			$("#recommendation-error").hide();
-			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,
+			conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,
 				currentIssue.documentationLocation, function(results, error) {
 					if (error === null) {
 						buildRecommendationTable(results);
@@ -79,7 +78,7 @@
 			tableRow += "<tr>";
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
-			tableRow += "<td>"   buildScore(recommendation.score, "score_" + counter) + "</td>";
+			tableRow += "<td>" + buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" + "Accept" + "</button></td>";
 			tableRow += "<td><ul>";
 			recommendation.arguments.forEach((argument) => {
@@ -132,7 +131,7 @@
 
 		let counter = 0;
 		var sortedByScore = results.slice(0);
-		sortedByScore.sort(function(a,  b) 
+		sortedByScore.sort(function(a, b) {
 			return b.score.totalScore - a.score.totalScore;
 		});
 
@@ -194,7 +193,7 @@
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
 			$("#recommendation-error").hide();
-			conDecAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
+			conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
 				if (error === null) {
 					buildRecommendationTable(results);
 				}
@@ -210,7 +209,7 @@
 	}
 
 	function buildScore(scoreObject, ID) {
-		const scoreControl = "<a data-aui-trigger aria-controls='"   ID + "' href='" + ID + "'>" +
+		const scoreControl = "<a data-aui-trigger aria-controls='" + ID + "' href='" + ID + "'>" +
 			+ scoreObject.totalScore.toFixed(2) + "%" +
 			"</a>";
 
