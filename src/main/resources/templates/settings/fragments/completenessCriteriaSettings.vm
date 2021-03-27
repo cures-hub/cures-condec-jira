@@ -49,9 +49,9 @@
 <div class="field-group">
     <label>Code File:</label>
     <ul>
-        <li>is a test file (i.e., its name starts with “test”) <input type="checkbox" disabled="disabled" checked="checked"></li>
-        <li>contains less than <input type="number" id="line-numbers-in-code-file-number-input" max="999" value="$definitionOfDone.getLineNumbersInCodeFile()"> lines of code</li>
-        <li>is linked to a decision with a maximum link distance of <input type="number" id="link-distance-from-code-file-to-decision-number-input" max="6" value="$definitionOfDone.getLinkDistanceFromCodeFileToDecision()"></li>
+        <li>is a test file (i.e., its name starts with "test") <input type="checkbox" disabled="disabled" checked="checked"></li>
+        <li>contains less than <input class="text short-field" type="number" id="line-numbers-in-code-file-number-input" max="999" value="$definitionOfDone.getLineNumbersInCodeFile()"> lines of code</li>
+        <li>is linked to a decision with a maximum link distance of <input class="text short-field" type="number" id="link-distance-from-code-file-to-decision-number-input" max="6" value="$definitionOfDone.getLinkDistanceFromCodeFileToDecision()"></li>
     </ul>
 </div>
 <div class="field-group">
