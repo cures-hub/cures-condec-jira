@@ -278,7 +278,7 @@
     </tbody>
 </table>
 
-#parse("templates/settings/fragments/decisionguidance/decisionGuidanceEvaluation.vm")
+#parse("templates/settings/decisionguidance/decisionGuidanceEvaluation.vm")
 
 <script>
 $(document).ready(function() {
@@ -309,17 +309,17 @@ $(document).ready(function() {
 		conDecDecisionGuidanceAPI.setMaxNumberRecommendations("$projectKey", query);
     })
 
-   $("#save-similarity-threshold").click((event) => {
+	$("#save-similarity-threshold").click((event) => {
        event.preventDefault();
        const value = $("#similarity-threshold").val();
        conDecDecisionGuidanceAPI.setSimilarityThreshold("$projectKey", value);
-   })
+	})
 
-  $("#save-irrelevant-words").click((event) => {
+	$("#save-irrelevant-words").click((event) => {
        event.preventDefault();
        const value = $("#irrelevant-words").val();
        conDecDecisionGuidanceAPI.setIrrelevantWords("$projectKey", value);
-   })
+	})
 
     $("#create-rdf-source").click((event) => {
        event.preventDefault();
