@@ -48,7 +48,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (maxNumberRecommendations < 0) {
@@ -65,7 +65,7 @@ public class DecisionGuidanceRest {
 	public Response setSimilarityThreshold(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("threshold") double threshold) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (threshold < 0 || threshold > 1) {
@@ -82,7 +82,7 @@ public class DecisionGuidanceRest {
 	public Response setIrrelevantWords(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("words") String words) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (words.isBlank()) {
@@ -100,7 +100,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
 
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -127,7 +127,7 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
 		}
 
-		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
+		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSources(projectKey)) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
 				return Response.status(Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
@@ -143,7 +143,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (knowledgeSourceName.isBlank()) {
@@ -161,7 +161,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
 			String rdfSourceJSON) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -182,7 +182,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
 			@QueryParam("isActivated") boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (knowledgeSourceName.isBlank()) {
@@ -199,7 +199,7 @@ public class DecisionGuidanceRest {
 	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (projectSourceKey.isBlank()) {
@@ -216,7 +216,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("addRecommendationDirectly") String addRecommendationDirectly) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -230,7 +230,7 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("recommendationInput") String recommendationInput,
 			@QueryParam("isActivated") boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -255,31 +255,16 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 		String projectKey = jiraIssue.getProjectObject().getKey();
-
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(jiraIssueId, "i");
-
-		List<KnowledgeElement> knowledgeElements = manager.getKnowledgeElements();
-
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
+		List<KnowledgeElement> knowledgeElementsInJiraIssue = persistenceManager.getJiraIssueTextManager()
+				.getElementsInJiraIssue(jiraIssueId);
 
-		for (KnowledgeElement knowledgeElement1 : knowledgeElements) {
-
-			if (knowledgeElement1.getKey().contains(knowledgeElement.getKey())
-					&& knowledgeElement1.getStatus().equals(KnowledgeStatus.RECOMMENDED)) {
-				manager.deleteKnowledgeElement(knowledgeElement1, user);
+		for (KnowledgeElement element : knowledgeElementsInJiraIssue) {
+			if (element.getStatus() == KnowledgeStatus.RECOMMENDED) {
+				persistenceManager.deleteKnowledgeElement(element, user);
 			}
 		}
-
-		// JiraIssueTextPersistenceManager persistenceManager =
-		// KnowledgePersistenceManager.getOrCreate(projectKey)
-		// .getJiraIssueTextManager();
-		// List<Comment> comments =
-		// ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		// comments.forEach(comment ->
-		// persistenceManager.deleteElementsInComment(comment));
-
 		return Response.status(Status.OK).build();
 	}
 
@@ -287,17 +272,14 @@ public class DecisionGuidanceRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("keyword") String keyword, @QueryParam("issueID") int issueID,
+			@QueryParam("keyword") String keyword, @QueryParam("issueID") int jiraIssueId,
 			@QueryParam("documentationLocation") String documentationLocation) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
-		}
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
+		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfDataIsValidResponse;
 		}
 
-		if (keyword.isBlank()) {
+		if (keyword == null || keyword.isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
@@ -305,11 +287,9 @@ public class DecisionGuidanceRest {
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager
 				.getAllActivatedKnowledgeSources(projectKey);
 
-		// KnowledgeElement knowledgeElement =
-		// this.getIssueFromDocumentationLocation(issueID, projectKey);
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueID, documentationLocation);
+		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(jiraIssueId, documentationLocation);
 
 		List<BaseRecommender> recommenders = new ArrayList<>();
 
@@ -369,18 +349,13 @@ public class DecisionGuidanceRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
 			@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName,
 			@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Request is null!")).build();
-		}
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
+		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfDataIsValidResponse;
 		}
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
-
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
 		KnowledgeElement issue = manager.getKnowledgeElement(issueID, documentationLocation);
 
 		if (issue == null) {

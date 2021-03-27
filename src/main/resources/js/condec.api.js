@@ -978,18 +978,6 @@
 		});
 	};
 
-	ConDecAPI.prototype.showFlag = function(type, message, status) {
-		if (status === null || status === undefined) {
-			status = "";
-		}
-		AJS.flag({
-			type: type,
-			close: "auto",
-			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
-			body: message
-		});
-	};
-
 	/*
 	 * external references: condec.export,
 	 * condec.gitdiffviewer, relatedIssuesTab.vm

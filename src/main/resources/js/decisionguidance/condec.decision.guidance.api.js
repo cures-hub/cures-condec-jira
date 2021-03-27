@@ -109,10 +109,13 @@
 	ConDecDecisionGuidanceAPI.prototype.setRecommendationInput = function(projectKey, recommendationInput, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput + "&isActivated=" + isActivated, null,
 			function(error, results) {
-				if (error) conDecAPI.showFlag("error", error);
-				if (isActivated)
-					conDecAPI.showFlag("success", "Recommendation Input has been successfully <b>activated</b>");
-				else conDecAPI.showFlag("success", "Recommendation Input has been successfully <b>deactivated</b>");
+				if (error) {
+					conDecAPI.showFlag("error", error);
+				} else if (isActivated) {
+					conDecAPI.showFlag("success", "Recommendation input has been successfully <b>activated</b>");
+				} else {
+					conDecAPI.showFlag("success", "Recommendation input has been successfully <b>deactivated</b>");
+				}
 			});
 	};
 
@@ -124,9 +127,9 @@
 			error, response) {
 			if (error === null) {
 				if (isActivated)
-					conDecAPI.showFlag("success", "The Knowledgesource " + knowledgeSourceName + " is activated.");
+					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is activated.");
 				else {
-					conDecAPI.showFlag("success", "The Knowledgesource " + knowledgeSourceName + " is deactivated.");
+					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is deactivated.");
 				}
 			}
 		});
@@ -156,7 +159,7 @@
 		generalApi.postJSON(this.restPrefix + "/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, null, function(
 			error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "The Knowledgesource " + knowledgeSourceName + " was successfully deleted.");
+				conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " was successfully deleted.");
 			}
 		});
 	};
@@ -168,7 +171,7 @@
 		generalApi.postJSON(this.restPrefix + "/updateKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, knowledgeSource, function(
 			error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "The Knowledgesource was successfully updated.");
+				conDecAPI.showFlag("success", "The knowledge source was successfully updated.");
 			}
 		});
 	};

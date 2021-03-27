@@ -21,7 +21,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -239,7 +238,8 @@ public class ConfigPersistenceManager {
 		Map<String, CommentStyleType> codeFileEndings = new HashMap<String, CommentStyleType>();
 		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
 			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ").split(" ");
+			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ")
+					.split(" ");
 			for (String fileEnding : fileEndings) {
 				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
 			}
@@ -251,8 +251,8 @@ public class ConfigPersistenceManager {
 	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
 		Type type = new TypeToken<Map<String, CommentStyleType>>() {
 		}.getType();
-		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(
-				projectKey, "codeFileEndings", type);
+		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(projectKey,
+				"codeFileEndings", type);
 		if (codeFileEndings == null) {
 			return new HashMap<String, CommentStyleType>();
 		}
@@ -393,55 +393,36 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "bagOfIrrelevantWords");
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
+		List<RDFSource> rdfSources = getRDFKnowledgeSources(projectKey);
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		if (rdfSource != null) {
-			try {
-				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
-				if (rdfSourceList == null)
-					rdfSourceList = new ArrayList<>();
-			} catch (Exception e) {
-				rdfSourceList = new ArrayList<>();
-				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
-			}
-
 			rdfSource.setActivated(true); // default: activated
-			rdfSourceList.add(rdfSource);
-
-			saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
-
+			rdfSources.add(rdfSource);
+			saveObject(projectKey, "rdfsource.list", rdfSources, type);
 		}
-
 	}
 
-	@SuppressWarnings({ "unchecked", "finally" })
-	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
-		List<RDFSource> temp = new ArrayList<>();
-		if (projectKey == null)
-			return rdfSourceList;
-
+	@SuppressWarnings("unchecked")
+	public static List<RDFSource> getRDFKnowledgeSources(String projectKey) {
+		if (projectKey == null) {
+			return new ArrayList<>();
+		}
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		try {
-			temp = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
-			if (temp != null) {
-				for (RDFSource source : temp) {
-					source.setLimit(getMaxNumberRecommendations(projectKey));
-					rdfSourceList.add(source);
-				}
-			}
-		} catch (JsonSyntaxException e) {
-		} finally {
-			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
+		List<RDFSource> rdfSources = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
+		if (rdfSources == null) {
+			return new ArrayList<>();
 		}
+		for (RDFSource source : rdfSources) {
+			source.setLimit(getMaxNumberRecommendations(projectKey));
+		}
+		return rdfSources;
 	}
 
 	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSources(projectKey);
 		for (int i = 0; i < rdfSourceList.size(); ++i) {
 			if (rdfSourceList.get(i).getName().equals(knowledgeSourceName)) {
 				rdfSourceList.set(i, rdfSource);
@@ -454,14 +435,14 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		List<RDFSource> rdfSourceList = getRDFKnowledgeSources(projectKey);
 		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
 		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
 	}
 
-	public static void deleteAllKnowledgeSource(String projectKey) {
+	public static void deleteAllKnowledgeSources(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
@@ -469,18 +450,18 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
+		List<RDFSource> rdfSources = getRDFKnowledgeSources(projectKey);
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
 
-		for (int i = 0; i < rdfSourceList.size(); ++i) {
-			if (rdfSourceName.equals(rdfSourceList.get(i).getName())) {
-				rdfSourceList.get(i).setActivated(isActivated);
+		for (int i = 0; i < rdfSources.size(); ++i) {
+			if (rdfSourceName.equals(rdfSources.get(i).getName())) {
+				rdfSources.get(i).setActivated(isActivated);
 				break;
 			}
 		}
 
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfsource.list", rdfSources, listType);
 	}
 
 	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
@@ -492,21 +473,22 @@ public class ConfigPersistenceManager {
 	}
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
-		List<ProjectSource> projectSources = new ArrayList<>();
 		if (projectKey == null)
-			return projectSources;
+			return new ArrayList<>();
 
 		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		if (currentProject != null) {
-			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-						jiraProject.getProjectKey());
-				if (jiraProject.isActivated()) {
-					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-							projectSourceActivation);
-					projectSources.add(projectSource);
-				}
+		if (currentProject == null) {
+			return new ArrayList<>();
+		}
+		List<ProjectSource> projectSources = new ArrayList<>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
+					jiraProject.getProjectKey());
+			if (jiraProject.isActivated()) {
+				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
+						projectSourceActivation);
+				projectSources.add(projectSource);
 			}
 		}
 		return projectSources;
@@ -515,7 +497,7 @@ public class ConfigPersistenceManager {
 	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 
-		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
+		knowledgeSources.addAll(getRDFKnowledgeSources(projectKey));
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		// New KnowledgeSources could be added here.
 
@@ -525,7 +507,7 @@ public class ConfigPersistenceManager {
 	public static List<KnowledgeSource> getAllActivatedKnowledgeSources(String projectKey) {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 
-		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
+		knowledgeSources.addAll(getRDFKnowledgeSources(projectKey));
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		// New KnowledgeSources could be added here.
 
@@ -610,14 +592,9 @@ public class ConfigPersistenceManager {
 	public static CiaSettings getCiaSettings(String projectKey) {
 		Type type = new TypeToken<CiaSettings>() {
 		}.getType();
-		CiaSettings ciaSettings = null;
-		try {
-			ciaSettings = (CiaSettings) getSavedObject(projectKey, "ciaSettings", type);
-		} catch (JsonSyntaxException e) {
-		}
+		CiaSettings ciaSettings = (CiaSettings) getSavedObject(projectKey, "ciaSettings", type);
 		if (ciaSettings == null) {
 			ciaSettings = new CiaSettings();
-			setCiaSettings(projectKey, ciaSettings);
 		}
 		return ciaSettings;
 	}
