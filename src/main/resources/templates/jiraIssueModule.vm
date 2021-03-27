@@ -116,8 +116,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 			}
 	});
 
-
-	//handles the fullscreen mode
+	// handles the fullscreen mode
     $("#close-fullscreen").click(function() {
         $(this).hide();
         $("#jira-issue-tabs").each(function() {
@@ -128,7 +127,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         $("#close-fullscreen").show();
         $("#jira-issue-tabs").addClass("jira-module-fullscreen");
     });
-
 });
 
 </script>

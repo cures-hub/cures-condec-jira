@@ -9,9 +9,7 @@
     <div class="field-group">
         <form class="aui">
             <label for="select2-issues">Issue</label>
-            <select id="select2-issues" placeholder="Select an issue..."
-                    class="select long-field">
-            </select>
+            <select id="select2-issues" placeholder="Select an issue..." class="select long-field"></select>
             <div class="description">Select an issue for evaluation.</div>
         </form>
     </div>
@@ -100,12 +98,11 @@
     let activeSources = []
     var sources = $("#knowledgesource-evaluation-dropdown")
     sources.change(function(e) {
-
         var isChecked = e.target.hasAttribute('checked');
         if (isChecked) {
            activeSources.push(e.target.textContent);
         } else {
-            activeSources.splice (activeSources.indexOf(e.target.textContent), 1);
+            activeSources.splice(activeSources.indexOf(e.target.textContent), 1);
         }
     });
 

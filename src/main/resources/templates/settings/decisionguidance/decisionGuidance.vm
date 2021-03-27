@@ -43,7 +43,7 @@
 <div id="create-knowledgesource-expander" class="aui-expander-content">
     <div class="field-group">
         <label for="create-name-knowledgesource">Name*</label>
-        <input id="create-name-knowledgesource" class="text medium-field" name="name-knowledgesource">
+        <input id="create-name-knowledgesource" class="text long-field" name="name-knowledgesource">
         <div class="description">Name your knowledge source.</div>
     </div>
     <div class="field-group">
@@ -56,7 +56,7 @@
     </div>
     <div class="field-group">
         <label for="create-uri-knowledgesource">RDF-Service</label>
-        <input id="create-uri-knowledgesource" class="text large-field" name="uri-knowledgesource"
+        <input id="create-uri-knowledgesource" class="text long-field" name="uri-knowledgesource"
                placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql">
         <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
     </div>
@@ -384,17 +384,18 @@ $(document).ready(function() {
 
      const deletions = $(".delete-knowledgesource");
 
-     deletions.each(function() {
-        $(this).click((event) => {
-            event.preventDefault();
+	deletions.each(function() {
+		$(this).click((event) => {
+			event.preventDefault();
             var confirm = window.confirm("Do you really want to delete this knowledge source?");
             if(confirm) {
-                const knowledgeSourceName =  $(this).attr("name");
-                conDecDecisionGuidanceAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName);
-                location.reload();
+                const knowledgeSourceName = $(this).attr("name");
+                conDecDecisionGuidanceAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName, function() {
+                	location.reload();
+                });
             }
         })
-     });
+	});
 
      $("#add-project-source").click((event) => {
         event.preventDefault();
@@ -439,11 +440,11 @@ $(document).ready(function() {
                         "?subject foaf:isPrimaryTopicOf ?url.\n" +
                         "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url";
 
-     $("#insert-design-patterns").click(function(event) {
+	$("#insert-design-patterns").click(function(event) {
         event.preventDefault();
         var currentText = $("#create-query-knowledgesource").val();
-        $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FACTORYPATTERN);
-     });
+		$("#create-query-knowledgesource").val(DBPEDIAPREFIX + FACTORYPATTERN);
+	});
 
     $("#insert-frameworks").click(function(event) {
         event.preventDefault();
@@ -458,10 +459,10 @@ $(document).ready(function() {
            } else {
                 $("#create-uri-knowledgesource").val("")
            }
-     });
+	});
 
-     $("#query-help-trigger").click( event => {
-         $("#query-help").toggle();
-     });
+	$("#query-help-trigger").click( event => {
+		$("#query-help").toggle();
+	});
 });
 </script>
