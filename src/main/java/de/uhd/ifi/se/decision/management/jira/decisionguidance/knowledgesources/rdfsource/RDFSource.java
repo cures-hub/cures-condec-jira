@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 
 /**
- * Resource Description Framework (RDF)
+ * Resource Description Framework (RDF) format
  */
 public class RDFSource extends KnowledgeSource {
 

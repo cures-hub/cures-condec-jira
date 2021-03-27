@@ -1,18 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.score;
 
-import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
- *  A RecommendationScore consists of a total score value and an explanation.
+ * A RecommendationScore consists of a total score value and an explanation.
  */
 public class RecommendationScore {
 
 	private float totalScore;
 	private String explanation;
 	private List<RecommendationScore> partScores;
-
 
 	public RecommendationScore(float totalScore, String explanation) {
 		this.totalScore = totalScore;
@@ -40,6 +40,7 @@ public class RecommendationScore {
 
 	/**
 	 * Adds the part scores which composes the total score.
+	 * 
 	 * @param score
 	 */
 	public void composeScore(RecommendationScore score) {
@@ -54,6 +55,5 @@ public class RecommendationScore {
 	public List<RecommendationScore> getComposeDScore() {
 		return this.partScores;
 	}
-
 
 }

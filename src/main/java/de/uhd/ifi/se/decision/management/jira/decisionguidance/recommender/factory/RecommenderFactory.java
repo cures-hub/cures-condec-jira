@@ -9,7 +9,7 @@ public class RecommenderFactory {
 
 	public static BaseRecommender<?> getRecommender(RecommenderType recommenderType) {
 		if (recommenderType == null) {
-			recommenderType = RecommenderType.getDefault();
+			return new IssueBasedRecommender();
 		}
 		switch (recommenderType) {
 		case ISSUE:

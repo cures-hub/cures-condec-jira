@@ -22,7 +22,7 @@
 		#if ($recommendationInput.KEYWORD)
 		checked
 		#end
-		label=""></aui-toggle>
+		></aui-toggle>
 	<div class="description">Keyword-based recommendations use keywords from the input field.</div>
 </fieldset>
 <fieldset class="group">
@@ -31,7 +31,7 @@
 		#if ($recommendationInput.ISSUE)
 		checked
 		#end
-		label=""></aui-toggle>
+		></aui-toggle>
 	<div class="description">Issue-based recommendations uses the decision problem (issue) itself and already documented solution options.</div>
 </fieldset>
 
@@ -70,8 +70,7 @@
             <div style="padding: 5px; max-width:300px;text-align: left;">
                 <a id="query-help-trigger"><span
                     class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
-                <div style="padding:6px; display:none; border: 1px solid #dfe1e6; line-height: 200%"
-                     id="query-help">
+                <div id="query-help">
                     "%variable%" is a placeholder for your search in the jira issue view.
                     The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
                     and ?url. <br>
@@ -138,7 +137,7 @@
 		#if ($rdfSource.isActivated())
         checked
         #end
-        label="$rdfSource.getName() activated?"></aui-toggle>
+        ></aui-toggle>
     <a style="right: 16px; top:16px;" class="aui-expander-trigger" aria-controls="$rdfSource.toString()">
    		<span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
 	</a>
@@ -271,7 +270,7 @@
 				#if ($projectSource.isActivated())
                 checked
                 #end
-                label="$projectSource.getName() activated?"></aui-toggle>
+                ></aui-toggle>
         	</td>
     	</tr>
     #end
