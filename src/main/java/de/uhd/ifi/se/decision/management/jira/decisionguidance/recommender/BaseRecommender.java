@@ -14,7 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 
 /**
  * Takes the input from the UI and passes it to the configured knowledge sources
- * @param <T> Datatype of the input e.g. String, KnowledgeElement
+ * 
+ * @param <T>
+ *            Datatype of the input e.g. String, KnowledgeElement
  */
 public abstract class BaseRecommender<T> {
 
@@ -26,12 +28,12 @@ public abstract class BaseRecommender<T> {
 		this.input = input;
 	}
 
-	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
+	public BaseRecommender<T> addKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSources.add(knowledgeSource);
 		return this;
 	}
 
-	public BaseRecommender addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
+	public BaseRecommender<T> addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
 		this.knowledgeSources.addAll(knowledgeSources);
 		return this;
 	}

@@ -1,5 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Objects;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
@@ -10,29 +20,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Objects;
-
-import static org.junit.Assert.*;
-
 
 public class TestRDFSource extends TestSetUp {
 
 	private final static String PROJECTKEY = "TEST";
 	private final static String NAME = "TESTSOURCE";
 	private final static String SERVICE = "http://dbpedia.org/sparql";
-	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
-		"PREFIX dct: <http://purl.org/dc/terms/>" +
-		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-		"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-		"PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
-	private final static String QUERY = PREFIX + " select distinct ?subject ?url count(?link)   where { " +
-		"%variable% dbo:genre ?genre. " +
-		"?subject dbo:genre ?genre. " +
-		"?subject foaf:isPrimaryTopicOf ?url. " +
-		"?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
+	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>"
+			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
+	private final static String QUERY = PREFIX + " select distinct ?subject ?url count(?link)   where { "
+			+ "%variable% dbo:genre ?genre. " + "?subject dbo:genre ?genre. " + "?subject foaf:isPrimaryTopicOf ?url. "
+			+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
 	private final static String TIMEOUT = "50000";
 	private final static int LIMIT = 1;
 
@@ -43,10 +42,9 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceConstructor() {
-		RDFSource rdfSource = new RDFSource();
+		RDFSource rdfSource = new RDFSource(PROJECTKEY);
 		assertNotNull(rdfSource);
 		rdfSource.setService(SERVICE);
-		rdfSource.setProjectKey(PROJECTKEY);
 		rdfSource.setQueryString(QUERY);
 		rdfSource.setTimeout(TIMEOUT);
 		rdfSource.setLimit(LIMIT);
@@ -62,7 +60,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testGetInputMethodAndSetData() {
-		KnowledgeSource rdfSource = new RDFSource();
+		KnowledgeSource rdfSource = new RDFSource(PROJECTKEY);
 		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
 		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
 	}
@@ -70,12 +68,14 @@ public class TestRDFSource extends TestSetUp {
 	@Test
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
+		rdfSourceInputString
+				.setData(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
 		assertEquals(34, rdfSourceInputString.getResults("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getResults("").size());
 		assertEquals(0, rdfSourceInputString.getResults(null).size());
 
-		rdfSourceInputString.setData(new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT, ""));
+		rdfSourceInputString
+				.setData(new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT, ""));
 		assertEquals(0, rdfSourceInputString.getResults("Does not matter").size());
 	}
 
@@ -95,7 +95,6 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getResults(new KnowledgeElement()).size());
 	}
-
 
 	@Test
 	public void testRDFSourceActivated() {
@@ -146,13 +145,11 @@ public class TestRDFSource extends TestSetUp {
 		assertFalse(rdfSourceother.equals(null));
 	}
 
-
 	@Test
 	public void testToString() {
 		RDFSource source = new RDFSource("Test");
 		source.setName("One Two Three");
 		assertEquals("One-Two-Three", source.toString());
 	}
-
 
 }

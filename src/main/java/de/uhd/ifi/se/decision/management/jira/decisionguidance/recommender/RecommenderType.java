@@ -26,6 +26,4 @@ public enum RecommenderType {
 	public static List<RecommenderType> getRecommenderTypes() {
 		return Arrays.asList(RecommenderType.values());
 	}
-
-
 }

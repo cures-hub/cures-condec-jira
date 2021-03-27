@@ -18,15 +18,14 @@ public class ProjectSource extends KnowledgeSource {
 		this.icon = "aui-iconfont-jira";
 	}
 
-
 	@Override
-	public InputMethod getInputMethod() {
-		if (recommenderType.equals(RecommenderType.KEYWORD))
-			this.inputMethod = new ProjectSourceInputString();
-		else
-			this.inputMethod = new ProjectSourceInputKnowledgeElement();
-
-		return this.inputMethod;
+	public InputMethod<Object, ProjectSource> getInputMethod() {
+		if (recommenderType.equals(RecommenderType.KEYWORD)) {
+			inputMethod = new ProjectSourceInputString();
+		} else {
+			inputMethod = new ProjectSourceInputKnowledgeElement();
+		}
+		return inputMethod;
 	}
 
 }

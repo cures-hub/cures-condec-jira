@@ -44,7 +44,7 @@ public class TestIBaseRecommender extends TestSetUp {
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 
-		BaseRecommender recommender = new IssueBasedRecommender(knowledgeElement);
+		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement);
 		recommender.addKnowledgeSource(knowledgeSources);
 
 		recommender.recommendations.add(new Recommendation());

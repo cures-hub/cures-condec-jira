@@ -5,12 +5,12 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.Recom
 
 public final class SourceInputFactoryUtils {
 
-	public static InputMethod getInputMethod(RecommenderType recommenderType) {
+	public static InputMethod<?, ?> getInputMethod(RecommenderType recommenderType) {
 		switch (recommenderType) {
-			case ISSUE:
-				return new RDFSourceInputKnowledgeElement();
-			default:
-				return new RDFSourceInputString();
+		case ISSUE:
+			return new RDFSourceInputKnowledgeElement();
+		default:
+			return new RDFSourceInputString();
 		}
 	}
 

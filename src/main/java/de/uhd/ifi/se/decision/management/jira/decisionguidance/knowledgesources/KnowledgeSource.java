@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
-import java.util.List;
-
 /**
- * A Knowledge Source contains all the configured data from the user and is stored in the system
+ * A Knowledge Source contains all the configured data from the user and is
+ * stored in the system
  */
 public abstract class KnowledgeSource {
 
@@ -19,10 +20,9 @@ public abstract class KnowledgeSource {
 	protected InputMethod inputMethod;
 	protected RecommenderType recommenderType;
 
-
 	/**
-	 * calculates the concrete result for a knowledgesource
-	 * getInputMethod() and setData() must be implemented by the concrete knowledge source
+	 * calculates the concrete result for a knowledgesource getInputMethod() and
+	 * setData() must be implemented by the concrete knowledge source
 	 *
 	 * @param object
 	 * @return
@@ -34,7 +34,6 @@ public abstract class KnowledgeSource {
 	}
 
 	public abstract InputMethod getInputMethod();
-
 
 	public String getProjectKey() {
 		return projectKey;

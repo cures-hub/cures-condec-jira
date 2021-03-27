@@ -1,5 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
@@ -7,14 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestIssueBasedRecommender extends TestSetUp {
 
@@ -38,7 +39,7 @@ public class TestIssueBasedRecommender extends TestSetUp {
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 
-		BaseRecommender recommender = new IssueBasedRecommender(knowledgeElement);
+		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement);
 		recommender.addKnowledgeSource(knowledgeSources);
 		List<Recommendation> recommendations = recommender.getRecommendation();
 
@@ -53,7 +54,7 @@ public class TestIssueBasedRecommender extends TestSetUp {
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 
-		BaseRecommender recommender = new IssueBasedRecommender(knowledgeElement, knowledgeSources);
+		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement, knowledgeSources);
 		assertEquals(2, recommender.getKnowledgeSources().size());
 	}
 

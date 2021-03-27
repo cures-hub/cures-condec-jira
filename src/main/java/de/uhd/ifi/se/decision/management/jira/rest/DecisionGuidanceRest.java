@@ -304,8 +304,6 @@ public class DecisionGuidanceRest {
 		}
 
 		List<Recommendation> recommendations = new ArrayList<>();
-		String errors = "";
-
 		for (BaseRecommender recommender : recommenders) {
 			for (KnowledgeSource knowledgeSource : allKnowledgeSources) {
 				if (knowledgeElement == null) {
@@ -322,7 +320,6 @@ public class DecisionGuidanceRest {
 				try {
 					recommendations.addAll(recommender.getResultFromKnowledgeSource(knowledgeSource));
 				} catch (Exception e) {
-					errors += "The knowledge source: " + knowledgeSource.getName() + " has a problem. \n";
 				}
 
 			}
@@ -339,7 +336,6 @@ public class DecisionGuidanceRest {
 		}
 
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
-
 	}
 
 	@Path("/getRecommendationEvaluation")

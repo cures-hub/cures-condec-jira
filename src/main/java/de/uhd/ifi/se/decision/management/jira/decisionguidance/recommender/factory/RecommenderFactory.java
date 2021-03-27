@@ -6,13 +6,16 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.Keywo
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 
 public class RecommenderFactory {
-	public static BaseRecommender getRecommender(RecommenderType recommenderType) {
-		if (recommenderType == null) recommenderType = RecommenderType.getDefault();
+
+	public static BaseRecommender<?> getRecommender(RecommenderType recommenderType) {
+		if (recommenderType == null) {
+			recommenderType = RecommenderType.getDefault();
+		}
 		switch (recommenderType) {
-			case ISSUE:
-				return new IssueBasedRecommender();
-			default:
-				return new KeywordBasedRecommender();
+		case ISSUE:
+			return new IssueBasedRecommender();
+		default:
+			return new KeywordBasedRecommender();
 		}
 	}
 }

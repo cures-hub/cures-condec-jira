@@ -126,9 +126,9 @@
 		generalApi.postJSON(this.restPrefix + "/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated, null, function(
 			error, response) {
 			if (error === null) {
-				if (isActivated)
+				if (isActivated) {
 					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is activated.");
-				else {
+				} else {
 					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is deactivated.");
 				}
 			}
