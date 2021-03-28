@@ -2,7 +2,7 @@
 
 <div class="field-group">
 	<label>Add Recommendations directly?</label>
-	<aui-toggle id="add-recommendation-directly"
+	<aui-toggle id="add-recommendation-directly" label="Add Recommendations directly?"
 		#if($addRecommendationDirectly)
 		checked
 		#end
@@ -18,7 +18,7 @@
 </aui-inline-dialog>
 <fieldset class="group">
 	<legend>Keyword-based</legend>
-	<aui-toggle id="keyword-toggle" value="KEYWORD"
+	<aui-toggle id="keyword-toggle" value="KEYWORD" label="Keyword-based"
 		#if ($recommendationInput.KEYWORD)
 		checked
 		#end
@@ -26,8 +26,8 @@
 	<div class="description">Keyword-based recommendations use keywords from the input field.</div>
 </fieldset>
 <fieldset class="group">
-	<legend>Issue-based</legend>
-	<aui-toggle id="issue-toggle" value="ISSUE"
+	<legend>Decision problem-based</legend>
+	<aui-toggle id="issue-toggle" value="ISSUE" label="Decision problem-based"
 		#if ($recommendationInput.ISSUE)
 		checked
 		#end
@@ -133,7 +133,7 @@
 
 <div class="field-group">
     <label>$rdfSource.getName() activated?</label>    
-    <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()"
+    <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()" label="$rdfSource.getName() activated?"
 		#if ($rdfSource.isActivated())
         checked
         #end
@@ -266,7 +266,7 @@
     	<tr>
         	<td>$projectSource.getName()</td>
         	<td>
-            <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()"
+            <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()" label="$projectSource.getName()"
 				#if ($projectSource.isActivated())
                 checked
                 #end
@@ -404,7 +404,7 @@ $(document).ready(function() {
         $("#project-source-table tbody").append(
         	"<tr>"+
             	"<td>" + projectSourceKey + "</td>"+
-           		"<td><aui-toggle></aui-toggle>"+
+           		"<td><aui-toggle label='projectSourceKey'></aui-toggle>"+
         	"</tr>");
      });
 

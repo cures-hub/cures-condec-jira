@@ -8,7 +8,7 @@
 	var idOfExistingElement;
 	var documentationLocationOfExistingElement;
 
-	let ConDecDecisionGuidance = function () {
+	let ConDecDecisionGuidance = function() {
 		this.globalCounter = 0;
 		this.recommendations = []
 		this.idOfExistingElement = 0;
@@ -26,11 +26,12 @@
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
 		const keyword = $("#recommendation-keyword");
 		$("#recommendation-error").hide();
-		conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
-			if (error === null) {
-				buildQuickRecommendationTable(results, currentIssue);
-			}
-		});
+		conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation,
+			function(recommendations, error) {
+				if (error === null && recommendations.length > 0) {
+					buildQuickRecommendationTable(recommendations, currentIssue);
+				}
+			});
 	};
 
 	/*
@@ -193,7 +194,6 @@
 			});
 		});
 
-		conDecAPI.showFlag("success", "Results: " + counter);
 		//Since the data is added later, the table must be set to sortable afterwards
 		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
