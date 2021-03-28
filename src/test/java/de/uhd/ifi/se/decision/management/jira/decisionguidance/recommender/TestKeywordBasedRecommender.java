@@ -39,7 +39,7 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		BaseRecommender<String> recommender = new KeywordBasedRecommender("feature");
 		recommender.addKnowledgeSource(knowledgeSources);
-		List<Recommendation> recommendations = recommender.getRecommendation();
+		List<Recommendation> recommendations = recommender.getRecommendations();
 
 		assertNotEquals(null, recommendations);
 	}
@@ -58,7 +58,7 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 	public void testSimpleRecommenderNoKnowledgeSources() {
 		BaseRecommender<String> simpleRecommender = new KeywordBasedRecommender("feature");
 
-		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
+		List<Recommendation> recommendations = simpleRecommender.getRecommendations();
 
 		assertEquals(0, recommendations.size());
 		assertEquals(0, simpleRecommender.getKnowledgeSources().size());

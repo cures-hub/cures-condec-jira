@@ -25,9 +25,9 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 	}
 
 	@Override
-	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
 		knowledgeSource.setRecommenderType(RecommenderType.ISSUE);
-		return knowledgeSource.getResults(input);
+		return knowledgeSource.getRecommendations(input);
 	}
 
 	@Override

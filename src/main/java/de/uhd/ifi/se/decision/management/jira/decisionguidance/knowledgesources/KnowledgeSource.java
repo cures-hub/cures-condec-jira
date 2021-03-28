@@ -16,6 +16,7 @@ public abstract class KnowledgeSource {
 	protected String name;
 	protected String icon;
 
+	// TODO Remove
 	protected InputMethod inputMethod;
 	protected RecommenderType recommenderType;
 
@@ -26,13 +27,13 @@ public abstract class KnowledgeSource {
 	 * @param object
 	 * @return
 	 */
-	public List<Recommendation> getResults(Object object) {
+	public List<Recommendation> getRecommendations(Object object) {
 		getInputMethod();
 		inputMethod.setKnowledgeSource(this);
 		return inputMethod.getRecommendations(object);
 	}
 
-	public abstract InputMethod getInputMethod();
+	public abstract <T> InputMethod<T, KnowledgeSource> getInputMethod();
 
 	public String getProjectKey() {
 		return projectKey;

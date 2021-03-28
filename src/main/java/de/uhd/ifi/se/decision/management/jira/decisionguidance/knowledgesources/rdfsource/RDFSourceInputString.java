@@ -28,6 +28,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
+/**
+ * Queries an RDF knowledge source (e.g. DBPedia) for a given String (for
+ * keyword-based search).
+ * 
+ * For example, a decision problem can be input by the user and used to query
+ * DBPedia.
+ */
 public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 	protected RDFSource knowledgeSource;

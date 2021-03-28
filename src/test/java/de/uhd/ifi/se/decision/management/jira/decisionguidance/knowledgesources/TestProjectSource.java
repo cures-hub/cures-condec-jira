@@ -29,7 +29,7 @@ public class TestProjectSource extends TestSetUp {
 		projectSource.setName("TEST");
 
 		projectSource.setRecommenderType(RecommenderType.KEYWORD);
-		List<Recommendation> recommendations = projectSource.getResults("How can we implement the feature");
+		List<Recommendation> recommendations = projectSource.getRecommendations("How can we implement the feature");
 
 		assertEquals(2, recommendations.size());
 		assertEquals("TEST", recommendations.get(0).getKnowledgeSourceName());

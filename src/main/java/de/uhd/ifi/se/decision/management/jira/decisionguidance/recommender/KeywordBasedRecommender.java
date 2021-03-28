@@ -24,9 +24,9 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 	}
 
 	@Override
-	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
+	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
 		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
-		return knowledgeSource.getResults(input);
+		return knowledgeSource.getRecommendations(input);
 	}
 
 	@Override

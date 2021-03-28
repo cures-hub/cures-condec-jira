@@ -19,8 +19,8 @@ public class ProjectSource extends KnowledgeSource {
 	}
 
 	@Override
-	public InputMethod<Object, ProjectSource> getInputMethod() {
-		if (recommenderType.equals(RecommenderType.KEYWORD)) {
+	public <T> InputMethod<T, KnowledgeSource> getInputMethod() {
+		if (recommenderType == RecommenderType.KEYWORD) {
 			inputMethod = new ProjectSourceInputString();
 		} else {
 			inputMethod = new ProjectSourceInputKnowledgeElement();

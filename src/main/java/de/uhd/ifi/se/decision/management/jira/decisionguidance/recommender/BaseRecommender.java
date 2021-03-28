@@ -13,7 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 /**
- * Takes the input from the UI and passes it to the configured knowledge sources
+ * Takes the input from the UI and passes it to the configured knowledge
+ * sources.
  * 
  * @param <T>
  *            data type of the input e.g. String, KnowledgeElement
@@ -48,14 +49,14 @@ public abstract class BaseRecommender<T> {
 		return knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
 	}
 
-	public List<Recommendation> getRecommendation() {
+	public List<Recommendation> getRecommendations() {
 		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
-			recommendations.addAll(getResultFromKnowledgeSource(knowledgeSource));
+			recommendations.addAll(getRecommendations(knowledgeSource));
 		}
 		return recommendations;
 	}
 
-	public abstract List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource);
+	public abstract List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource);
 
 	protected List<Recommendation> removeDuplicated(List<? extends Recommendation> recommendations) {
 		return recommendations.stream().distinct().collect(Collectors.toList());

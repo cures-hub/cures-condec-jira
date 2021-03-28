@@ -318,7 +318,7 @@ public class DecisionGuidanceRest {
 				}
 
 				try {
-					recommendations.addAll(recommender.getResultFromKnowledgeSource(knowledgeSource));
+					recommendations.addAll(recommender.getRecommendations(knowledgeSource));
 				} catch (Exception e) {
 				}
 

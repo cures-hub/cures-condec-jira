@@ -10,6 +10,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+/**
+ * Queries an RDF knowledge source (e.g. DBPedia) for a given
+ * {@link KnowledgeElement} and its linked elements.
+ * 
+ * For example, a decision problem with alternatives and arguments already
+ * documented can be used to query DBPedia.
+ */
 public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElement, RDFSource> {
 
 	protected RDFSource knowledgeSource;

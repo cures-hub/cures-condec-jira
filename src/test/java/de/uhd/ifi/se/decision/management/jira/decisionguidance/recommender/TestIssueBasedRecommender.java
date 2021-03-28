@@ -41,7 +41,7 @@ public class TestIssueBasedRecommender extends TestSetUp {
 
 		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement);
 		recommender.addKnowledgeSource(knowledgeSources);
-		List<Recommendation> recommendations = recommender.getRecommendation();
+		List<Recommendation> recommendations = recommender.getRecommendations();
 
 		assertNotEquals(null, recommendations);
 	}

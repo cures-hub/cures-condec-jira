@@ -134,7 +134,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 				KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
 		knowledgeSource.setRecommenderType(RecommenderType.ISSUE);
-		assertNotNull(recommender.getResultFromKnowledgeSource(knowledgeSource));
+		assertNotNull(recommender.getRecommendations(knowledgeSource));
 	}
 
 }
