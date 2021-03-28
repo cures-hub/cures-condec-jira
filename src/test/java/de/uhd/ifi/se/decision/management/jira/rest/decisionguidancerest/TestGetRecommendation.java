@@ -77,7 +77,7 @@ public class TestGetRecommendation extends TestSetUp {
 	public void testGetRecommendationGetRecommender() {
 		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString(), true);
 		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
 		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString(), true);
 		assertEquals(Status.OK.getStatusCode(),
@@ -94,7 +94,7 @@ public class TestGetRecommendation extends TestSetUp {
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, projectKey, validKeyword, 1, "s").getStatus());
 		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
 	}

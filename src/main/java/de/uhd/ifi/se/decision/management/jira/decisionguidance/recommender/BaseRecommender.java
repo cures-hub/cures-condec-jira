@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -74,7 +73,8 @@ public abstract class BaseRecommender<T> {
 	 * @param user
 	 * @param projectKey
 	 */
-	public void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey) {
+	public static void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey,
+			List<Recommendation> recommendations) {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		int id = 0;
 		for (Recommendation recommendation : recommendations) {
@@ -97,15 +97,14 @@ public abstract class BaseRecommender<T> {
 
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement knowledgeElement,
 			String keyword) {
-		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager
-				.getAllActivatedKnowledgeSources(projectKey);
+		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager.getAllActivatedKnowledgeSources(projectKey);
 		List<BaseRecommender> recommenders = new ArrayList<>();
 
-		for (Map.Entry<String, Boolean> entry : ConfigPersistenceManager.getRecommendationInputAsMap(projectKey)
-				.entrySet()) {
-			if (entry.getValue()) {
-				BaseRecommender recommender = RecommenderFactory
-						.getRecommender(RecommenderType.valueOf(entry.getKey()));
+		for (RecommenderType recommenderType : RecommenderType.values()) {
+			boolean isTypeActivated = ConfigPersistenceManager.getRecommendationInput(projectKey,
+					recommenderType.toString());
+			if (isTypeActivated) {
+				BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
 				recommender.addKnowledgeSource(knowledgeSources);
 				recommenders.add(recommender);
 			}
@@ -114,32 +113,13 @@ public abstract class BaseRecommender<T> {
 		List<Recommendation> recommendations = new ArrayList<>();
 		for (BaseRecommender recommender : recommenders) {
 			for (KnowledgeSource knowledgeSource : knowledgeSources) {
-				if (RecommenderType.KEYWORD.equals(recommender.getRecommenderType())) // TODO implement a more
-					// advanced logic that is
-					// extensible
+				if (RecommenderType.KEYWORD == recommender.getRecommenderType())
 					recommender.setInput(keyword);
 				else {
 					recommender.setInput(knowledgeElement);
 				}
-
-				try {
-					recommendations.addAll(recommender.getRecommendations(knowledgeSource));
-				} catch (Exception e) {
-				}
-
+				recommendations.addAll(recommender.getRecommendations(knowledgeSource));
 			}
-
-			// if (checkIfKnowledgeSourceNotConfigured(recommender)) {
-			// return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-			// "There is no knowledge source configured! <a
-			// href='/jira/plugins/servlet/condec/settings?projectKey="
-			// + projectKey + "&category=decisionGuidance'>Configure</a>"))
-			// .build();
-			// }
-
-			// if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
-			// recommender.addToKnowledgeGraph(knowledgeElement,
-			// AuthenticationManager.getUser(request), projectKey);
 		}
 		return recommendations;
 	}

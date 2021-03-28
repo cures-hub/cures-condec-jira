@@ -284,6 +284,9 @@ public class DecisionGuidanceRest {
 		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueId, documentationLocation);
 		List<Recommendation> recommendations = BaseRecommender.getAllRecommendations(projectKey, knowledgeElement,
 				keyword);
+		if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
+			BaseRecommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey,
+					recommendations);
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
 
@@ -313,13 +316,5 @@ public class DecisionGuidanceRest {
 				.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 
 		return Response.ok(recommendationEvaluation).build();
-	}
-
-	private boolean checkIfKnowledgeSourceNotConfigured(BaseRecommender<?> recommender) {
-		for (KnowledgeSource knowledgeSource : recommender.getKnowledgeSources()) {
-			if (knowledgeSource.isActivated())
-				return false;
-		}
-		return true;
 	}
 }
