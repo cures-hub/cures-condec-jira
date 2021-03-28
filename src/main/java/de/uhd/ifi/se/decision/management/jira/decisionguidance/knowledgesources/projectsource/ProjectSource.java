@@ -1,9 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 
+/**
+ * Models another Jira project as a knowledge source.
+ */
 public class ProjectSource extends KnowledgeSource {
 
 	public ProjectSource(String projectKey) {
@@ -17,15 +18,4 @@ public class ProjectSource extends KnowledgeSource {
 		this.isActivated = isActivated;
 		this.icon = "aui-iconfont-jira";
 	}
-
-	@Override
-	public <T> InputMethod<T, KnowledgeSource> getInputMethod() {
-		if (recommenderType == RecommenderType.KEYWORD) {
-			inputMethod = new ProjectSourceInputString();
-		} else {
-			inputMethod = new ProjectSourceInputKnowledgeElement();
-		}
-		return inputMethod;
-	}
-
 }

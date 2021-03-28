@@ -2,11 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 
 import java.util.Objects;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 
 /**
- * Resource Description Framework (RDF) format
+ * Knowledge source identified using the Resource Description Framework (RDF)
+ * format. Is used to model DBPedia.
  */
 public class RDFSource extends KnowledgeSource {
 
@@ -64,12 +64,6 @@ public class RDFSource extends KnowledgeSource {
 		this.limit = limit;
 		this.icon = "aui-iconfont-download";
 		this.constraint = constraint;
-	}
-
-	@Override
-	public InputMethod getInputMethod() {
-		inputMethod = SourceInputFactoryUtils.getInputMethod(recommenderType);
-		return inputMethod;
 	}
 
 	public String getService() {

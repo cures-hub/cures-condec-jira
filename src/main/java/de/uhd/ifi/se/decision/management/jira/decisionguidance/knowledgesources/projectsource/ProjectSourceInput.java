@@ -21,8 +21,8 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 
 	public void queryDatabase() {
 		knowledgeGraph = KnowledgeGraph.getInstance(projectKey);
-		if (this.knowledgeGraph != null) {
-			knowledgeElements = this.knowledgeGraph.getElements(KnowledgeType.ISSUE);
+		if (knowledgeGraph != null) {
+			knowledgeElements = knowledgeGraph.getElements(KnowledgeType.ISSUE);
 		} else {
 			knowledgeElements = new ArrayList<>();
 		}

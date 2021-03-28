@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframewo
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.TruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -37,7 +38,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	@Override
 	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
-		return knowledgeSource.getRecommendations(this.knowledgeElement);
+		return InputMethod.getIssueBasedIn(knowledgeSource).getRecommendations(this.knowledgeElement);
 	}
 
 	public EvaluationRecommender evaluate(@Nonnull KnowledgeElement issue) {
@@ -50,12 +51,12 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		List<Recommendation> recommendationsFromKnowledgeSource;
 		RecommenderType recommenderType = RecommenderType.ISSUE;
 		if (!keywords.isBlank()) {
-			knowledgeSources.get(0).setRecommenderType(RecommenderType.KEYWORD);
-			recommendationsFromKnowledgeSource = knowledgeSources.get(0).getRecommendations(this.keywords);
+			recommendationsFromKnowledgeSource = InputMethod.getKeywordBasedIn(knowledgeSources.get(0))
+					.getRecommendations(this.keywords);
 			recommenderType = RecommenderType.KEYWORD;
 		} else {
-			knowledgeSources.get(0).setRecommenderType(RecommenderType.ISSUE);
-			recommendationsFromKnowledgeSource = knowledgeSources.get(0).getRecommendations(this.knowledgeElement);
+			recommendationsFromKnowledgeSource = InputMethod.getIssueBasedIn(knowledgeSources.get(0))
+					.getRecommendations(this.knowledgeElement);
 		}
 
 		recommendationsFromKnowledgeSource.sort(Comparator.comparingDouble(Recommendation::getScore));

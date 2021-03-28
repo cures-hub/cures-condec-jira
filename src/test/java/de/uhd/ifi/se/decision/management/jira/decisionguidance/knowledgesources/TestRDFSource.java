@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputString;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -59,23 +58,16 @@ public class TestRDFSource extends TestSetUp {
 	}
 
 	@Test
-	public void testGetInputMethodAndSetData() {
-		KnowledgeSource rdfSource = new RDFSource(PROJECTKEY);
-		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
-		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
-	}
-
-	@Test
 	public void testRDFSourceWithStringInput() {
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-		rdfSourceInputString
-				.setKnowledgeSource(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
+		rdfSourceInputString.setKnowledgeSource(
+				new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
 		assertEquals(34, rdfSourceInputString.getRecommendations("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getRecommendations("").size());
 		assertEquals(0, rdfSourceInputString.getRecommendations(null).size());
 
-		rdfSourceInputString
-				.setKnowledgeSource(new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT, ""));
+		rdfSourceInputString.setKnowledgeSource(
+				new RDFSource(PROJECTKEY, "WRONG SERVICE", "INVALID QUERY", NAME, TIMEOUT, LIMIT, ""));
 		assertEquals(0, rdfSourceInputString.getRecommendations("Does not matter").size());
 	}
 
@@ -90,8 +82,10 @@ public class TestRDFSource extends TestSetUp {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(PROJECTKEY);
 		graph.addEdge(link);
 		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
-		rdfSourceInputKnowledgeElement.setKnowledgeSource(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
-		assertEquals(34, rdfSourceInputKnowledgeElement.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size());
+		rdfSourceInputKnowledgeElement
+				.setKnowledgeSource(new RDFSource(PROJECTKEY, SERVICE, QUERY, NAME, TIMEOUT, LIMIT, ""));
+		assertEquals(34,
+				rdfSourceInputKnowledgeElement.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getRecommendations(null).size());
 		assertEquals(0, rdfSourceInputKnowledgeElement.getRecommendations(new KnowledgeElement()).size());
 	}
@@ -119,15 +113,6 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals("TEST", rdfSource.getQueryString());
 		assertEquals("TEST", rdfSource.getName());
 		assertEquals("10000", rdfSource.getTimeout());
-	}
-
-	@Test
-	public void testgetInputMethod() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "TEST", "10000", 10, "");
-		rdfSource.setRecommenderType(RecommenderType.KEYWORD);
-		assertEquals(RDFSourceInputString.class, rdfSource.getInputMethod().getClass());
-		rdfSource.setRecommenderType(RecommenderType.ISSUE);
-		assertEquals(RDFSourceInputKnowledgeElement.class, rdfSource.getInputMethod().getClass());
 	}
 
 	@Test

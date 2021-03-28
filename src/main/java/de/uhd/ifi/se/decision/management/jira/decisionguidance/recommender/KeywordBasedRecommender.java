@@ -3,7 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSourceInputString;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputString;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 public class KeywordBasedRecommender extends BaseRecommender<String> {
@@ -25,8 +29,14 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 
 	@Override
 	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
-		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
-		return knowledgeSource.getRecommendations(input);
+		InputMethod inputMethod = null;
+		if (knowledgeSource instanceof ProjectSource) {
+			inputMethod = new ProjectSourceInputString();
+		} else {
+			inputMethod = new RDFSourceInputString();
+		}
+		inputMethod.setKnowledgeSource(knowledgeSource);
+		return inputMethod.getRecommendations(input);
 	}
 
 	@Override
