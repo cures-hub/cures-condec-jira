@@ -5,9 +5,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSourceInputKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
@@ -30,13 +27,7 @@ public class IssueBasedRecommender extends BaseRecommender<KnowledgeElement> {
 
 	@Override
 	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
-		InputMethod inputMethod = null;
-		if (knowledgeSource instanceof ProjectSource) {
-			inputMethod = new ProjectSourceInputKnowledgeElement();
-		} else {
-			inputMethod = new RDFSourceInputKnowledgeElement();
-		}
-		inputMethod.setKnowledgeSource(knowledgeSource);
+		InputMethod inputMethod = InputMethod.getIssueBasedIn(knowledgeSource);
 		return inputMethod.getRecommendations(input);
 	}
 

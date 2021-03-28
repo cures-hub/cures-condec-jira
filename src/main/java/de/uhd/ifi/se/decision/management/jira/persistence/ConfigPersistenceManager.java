@@ -400,7 +400,7 @@ public class ConfigPersistenceManager {
 		if (rdfSource != null) {
 			rdfSource.setActivated(true); // default: activated
 			rdfSources.add(rdfSource);
-			saveObject(projectKey, "rdfsource.list", rdfSources, type);
+			saveObject(projectKey, "rdfKnowledgeSources", rdfSources, type);
 		}
 	}
 
@@ -411,7 +411,7 @@ public class ConfigPersistenceManager {
 		}
 		Type type = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		List<RDFSource> rdfSources = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
+		List<RDFSource> rdfSources = (List<RDFSource>) getSavedObject(projectKey, "rdfKnowledgeSources", type);
 		if (rdfSources == null) {
 			return new ArrayList<>();
 		}
@@ -431,7 +431,7 @@ public class ConfigPersistenceManager {
 		}
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSources, listType);
+		saveObject(projectKey, "rdfKnowledgeSources", rdfSources, listType);
 	}
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
@@ -439,14 +439,14 @@ public class ConfigPersistenceManager {
 		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfKnowledgeSources", rdfSourceList, listType);
 	}
 
 	public static void deleteAllKnowledgeSources(String projectKey) {
 		List<RDFSource> rdfSourceList = new ArrayList<>();
 		Type listType = new TypeToken<List<RDFSource>>() {
 		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
+		saveObject(projectKey, "rdfKnowledgeSources", rdfSourceList, listType);
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
@@ -460,7 +460,7 @@ public class ConfigPersistenceManager {
 				break;
 			}
 		}
-		saveObject(projectKey, "rdfsource.list", rdfSources, listType);
+		saveObject(projectKey, "rdfKnowledgeSources", rdfSources, listType);
 	}
 
 	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
@@ -531,11 +531,12 @@ public class ConfigPersistenceManager {
 		return Boolean.valueOf(value);
 	}
 
+	// TODO Do not use maps because this is hard to understand
 	public static Map<String, Boolean> getRecommendationInputAsMap(String projectKey) {
 		Map<String, Boolean> recommenderTypes = new HashMap<>();
 		for (RecommenderType recommenderType : RecommenderType.values()) {
 			recommenderTypes.put(recommenderType.toString(),
-					Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
+					getRecommendationInput(projectKey, recommenderType.toString()));
 		}
 		return recommenderTypes;
 	}

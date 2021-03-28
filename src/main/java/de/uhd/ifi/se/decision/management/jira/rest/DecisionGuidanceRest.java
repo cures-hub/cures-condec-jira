@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.EvaluationRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -272,7 +268,7 @@ public class DecisionGuidanceRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("keyword") String keyword, @QueryParam("issueID") int jiraIssueId,
+			@QueryParam("keyword") String keyword, @QueryParam("issueId") int issueId,
 			@QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -284,57 +280,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The keywords should not be empty.")).build();
 		}
 
-		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager
-				.getAllActivatedKnowledgeSources(projectKey);
-
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(jiraIssueId, documentationLocation);
-
-		List<BaseRecommender> recommenders = new ArrayList<>();
-
-		for (Map.Entry<String, Boolean> entry : ConfigPersistenceManager.getRecommendationInputAsMap(projectKey)
-				.entrySet()) {
-			if (entry.getValue()) {
-				BaseRecommender recommender = RecommenderFactory
-						.getRecommender(RecommenderType.valueOf(entry.getKey()));
-				recommender.addKnowledgeSource(allKnowledgeSources);
-				recommenders.add(recommender);
-			}
-		}
-
-		List<Recommendation> recommendations = new ArrayList<>();
-		for (BaseRecommender recommender : recommenders) {
-			for (KnowledgeSource knowledgeSource : allKnowledgeSources) {
-				if (knowledgeElement == null) {
-					return Response.status(Status.BAD_REQUEST)
-							.entity(ImmutableMap.of("error", "The Knowledgeelement could not be found.")).build();
-				} else if (RecommenderType.KEYWORD.equals(recommender.getRecommenderType())) // TODO implement a more
-					// advanced logic that is
-					// extensible
-					recommender.setInput(keyword);
-				else {
-					recommender.setInput(knowledgeElement);
-				}
-
-				try {
-					recommendations.addAll(recommender.getRecommendations(knowledgeSource));
-				} catch (Exception e) {
-				}
-
-			}
-
-			if (checkIfKnowledgeSourceNotConfigured(recommender)) {
-				return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-						"There is no knowledge source configured! <a href='/jira/plugins/servlet/condec/settings?projectKey="
-								+ projectKey + "&category=decisionGuidance'>Configure</a>"))
-						.build();
-			}
-
-			if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
-				recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey);
-		}
-
+		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueId, documentationLocation);
+		List<Recommendation> recommendations = BaseRecommender.getAllRecommendations(projectKey, knowledgeElement,
+				keyword);
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
 
@@ -343,7 +292,7 @@ public class DecisionGuidanceRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-			@QueryParam("issueID") int issueID, @QueryParam("knowledgeSource") String knowledgeSourceName,
+			@QueryParam("issueId") int issueId, @QueryParam("knowledgeSource") String knowledgeSourceName,
 			@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -352,7 +301,7 @@ public class DecisionGuidanceRest {
 
 		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement issue = manager.getKnowledgeElement(issueID, documentationLocation);
+		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 
 		if (issue == null) {
 			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))

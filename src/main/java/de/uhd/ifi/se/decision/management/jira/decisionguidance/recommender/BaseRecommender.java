@@ -1,14 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
@@ -17,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
  * sources.
  * 
  * @param <T>
- *            data type of the input e.g. String, KnowledgeElement
+ *            data type of the input, e.g. String, KnowledgeElement
  */
 public abstract class BaseRecommender<T> {
 
@@ -89,6 +93,55 @@ public abstract class BaseRecommender<T> {
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
 			manager.insertLink(rootElement, insertedElement, user);
 		}
+	}
+
+	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement knowledgeElement,
+			String keyword) {
+		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager
+				.getAllActivatedKnowledgeSources(projectKey);
+		List<BaseRecommender> recommenders = new ArrayList<>();
+
+		for (Map.Entry<String, Boolean> entry : ConfigPersistenceManager.getRecommendationInputAsMap(projectKey)
+				.entrySet()) {
+			if (entry.getValue()) {
+				BaseRecommender recommender = RecommenderFactory
+						.getRecommender(RecommenderType.valueOf(entry.getKey()));
+				recommender.addKnowledgeSource(knowledgeSources);
+				recommenders.add(recommender);
+			}
+		}
+
+		List<Recommendation> recommendations = new ArrayList<>();
+		for (BaseRecommender recommender : recommenders) {
+			for (KnowledgeSource knowledgeSource : knowledgeSources) {
+				if (RecommenderType.KEYWORD.equals(recommender.getRecommenderType())) // TODO implement a more
+					// advanced logic that is
+					// extensible
+					recommender.setInput(keyword);
+				else {
+					recommender.setInput(knowledgeElement);
+				}
+
+				try {
+					recommendations.addAll(recommender.getRecommendations(knowledgeSource));
+				} catch (Exception e) {
+				}
+
+			}
+
+			// if (checkIfKnowledgeSourceNotConfigured(recommender)) {
+			// return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+			// "There is no knowledge source configured! <a
+			// href='/jira/plugins/servlet/condec/settings?projectKey="
+			// + projectKey + "&category=decisionGuidance'>Configure</a>"))
+			// .build();
+			// }
+
+			// if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
+			// recommender.addToKnowledgeGraph(knowledgeElement,
+			// AuthenticationManager.getUser(request), projectKey);
+		}
+		return recommendations;
 	}
 
 }

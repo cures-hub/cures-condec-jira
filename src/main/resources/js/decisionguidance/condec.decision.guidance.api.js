@@ -28,8 +28,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendation = function(projectKey, keyword, issueID, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID + "&documentationLocation=" + documentationLocation,
+	ConDecDecisionGuidanceAPI.prototype.getRecommendation = function(projectKey, keyword, issueId, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
 			function(error, results) {
 				callback(results, error);
 			});
@@ -38,8 +38,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueID, knowledgeSources, kResults, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueID=" + issueID + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
+	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
 			function(error, results) {
 				callback(results, error);
 			});
