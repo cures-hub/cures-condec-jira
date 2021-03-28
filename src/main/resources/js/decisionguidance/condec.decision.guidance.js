@@ -70,10 +70,7 @@
 		sortedByScore.forEach((recommendation) => {
 			const localCounter = counter;
 			counter += 1;
-			const alternative = recommendation.recommendation;
-			let url = "";
 			let tableRow = "";
-
 
 			tableRow += "<tr>";
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
@@ -113,8 +110,6 @@
 
 	function buildQuickRecommendationTable(results, currentIssue) {
 		conDecDecisionGuidance.recommendations = results;
-		const table = $("#recommendation-container-short tbody");
-		const recommendationMap = [];
 
 		var quickPopUp = "";
 		quickPopUp += "<div id='quick-recommendations'>";
@@ -138,12 +133,8 @@
 		var topResults = sortedByScore.slice(0, 4);
 
 		topResults.forEach((recommendation) => {
-			const localCounter = counter;
 			counter += 1;
-			const alternative = recommendation.recommendation;
-			let url = "";
 			let tableRow = "";
-
 
 			tableRow += "<tr>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
@@ -158,12 +149,11 @@
 		quickPopUp += "<a href='#recommendation-container' style='width:100%' id='more-recommendations' class='aui-button-link aui-button'>More</a>"
 		quickPopUp += "</div>"
 
-		var myFlag = AJS.flag({
+		AJS.flag({
 			type: 'success',
 			body: quickPopUp,
 			title: "Quick Recommendation"
 		});
-
 
 		var i = 1;
 		topResults.forEach(recommendation => {

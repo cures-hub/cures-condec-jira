@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
  */
 public abstract class KnowledgeSource {
 
-	protected List<Recommendation> recommendations;
 	protected String projectKey;
 	protected boolean isActivated;
 	protected String name;
@@ -29,8 +28,8 @@ public abstract class KnowledgeSource {
 	 */
 	public List<Recommendation> getResults(Object object) {
 		getInputMethod();
-		inputMethod.setData(this);
-		return inputMethod.getResults(object);
+		inputMethod.setKnowledgeSource(this);
+		return inputMethod.getRecommendations(object);
 	}
 
 	public abstract InputMethod getInputMethod();

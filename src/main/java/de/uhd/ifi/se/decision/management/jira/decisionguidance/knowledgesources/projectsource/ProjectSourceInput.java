@@ -17,7 +17,7 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 	protected List<KnowledgeElement> knowledgeElements;
 	protected ProjectSource knowledgeSource;
 
-	public abstract List<Recommendation> getResults(T input);
+	public abstract List<Recommendation> getRecommendations(T input);
 
 	public void queryDatabase() {
 		knowledgeGraph = KnowledgeGraph.getInstance(projectKey);
@@ -29,7 +29,7 @@ public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSou
 	}
 
 	@Override
-	public void setData(ProjectSource knowledgeSource) {
+	public void setKnowledgeSource(ProjectSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 		this.projectKey = knowledgeSource.getProjectKey();
 		this.name = knowledgeSource.getName();

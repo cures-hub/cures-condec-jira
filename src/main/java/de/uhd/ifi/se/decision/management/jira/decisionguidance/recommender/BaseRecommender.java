@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
  * Takes the input from the UI and passes it to the configured knowledge sources
  * 
  * @param <T>
- *            Datatype of the input e.g. String, KnowledgeElement
+ *            data type of the input e.g. String, KnowledgeElement
  */
 public abstract class BaseRecommender<T> {
 
@@ -29,7 +29,7 @@ public abstract class BaseRecommender<T> {
 	}
 
 	public BaseRecommender<T> addKnowledgeSource(KnowledgeSource knowledgeSource) {
-		this.knowledgeSources.add(knowledgeSource);
+		knowledgeSources.add(knowledgeSource);
 		return this;
 	}
 
@@ -41,18 +41,18 @@ public abstract class BaseRecommender<T> {
 	public abstract RecommenderType getRecommenderType();
 
 	public List<KnowledgeSource> getKnowledgeSources() {
-		return this.knowledgeSources;
+		return knowledgeSources;
 	}
 
 	public List<KnowledgeSource> getActivatedKnowledgeSources() {
-		return this.knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
+		return knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
 	}
 
 	public List<Recommendation> getRecommendation() {
 		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
-			this.recommendations.addAll(getResultFromKnowledgeSource(knowledgeSource));
+			recommendations.addAll(getResultFromKnowledgeSource(knowledgeSource));
 		}
-		return this.recommendations;
+		return recommendations;
 	}
 
 	public abstract List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource);
@@ -72,7 +72,7 @@ public abstract class BaseRecommender<T> {
 	public void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey) {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		int id = 0;
-		for (Recommendation recommendation : this.recommendations) {
+		for (Recommendation recommendation : recommendations) {
 			KnowledgeElement alternative = new KnowledgeElement();
 
 			// Set information

@@ -13,22 +13,22 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<KnowledgeElement> {
 
 	@Override
-	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
+	public List<Recommendation> getRecommendations(KnowledgeElement knowledgeElement) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
 		ProjectSourceInputString projectSourceInputString = new ProjectSourceInputString();
-		projectSourceInputString.setData(this.knowledgeSource);
+		projectSourceInputString.setKnowledgeSource(this.knowledgeSource);
 
 		if (knowledgeElement != null) {
 
-			recommendations.addAll(projectSourceInputString.getResults(knowledgeElement.getSummary()));
+			recommendations.addAll(projectSourceInputString.getRecommendations(knowledgeElement.getSummary()));
 
 			for (Link link : knowledgeElement.getLinks()) {
 				for (KnowledgeElement linkedElement : link.getBothElements()) {
 					if (linkedElement.getType().equals(KnowledgeType.ALTERNATIVE)
 							|| linkedElement.getType().equals(KnowledgeType.DECISION)) {
 						List<Recommendation> recommendationFromAlternative = projectSourceInputString
-								.getResults(linkedElement.getSummary());
+								.getRecommendations(linkedElement.getSummary());
 						recommendations.addAll(recommendationFromAlternative);
 					}
 				}

@@ -21,7 +21,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	private static final JaroWinklerDistance similarityScore = new JaroWinklerDistance();
 
 	@Override
-	public List<Recommendation> getResults(String inputs) {
+	public List<Recommendation> getRecommendations(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
 		THRESHOLD = ConfigPersistenceManager.getSimilarityThreshold(projectKey); //TODO refactor to other location

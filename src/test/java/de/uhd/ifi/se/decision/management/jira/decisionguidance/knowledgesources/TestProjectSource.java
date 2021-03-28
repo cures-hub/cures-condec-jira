@@ -43,19 +43,19 @@ public class TestProjectSource extends TestSetUp {
 	@Test
 	public void testStringInput() {
 		ProjectSourceInputString input = new ProjectSourceInputString();
-		input.setData(new ProjectSource("TEST", "TEST", true));
-		List<Recommendation> recommendations = input.getResults("How can we implement the feature");
+		input.setKnowledgeSource(new ProjectSource("TEST", "TEST", true));
+		List<Recommendation> recommendations = input.getRecommendations("How can we implement the feature");
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
 	public void testStringKnowledgeElement() {
 		ProjectSourceInputKnowledgeElement input = new ProjectSourceInputKnowledgeElement();
-		input.setData(new ProjectSource("TEST", "TEST", true));
+		input.setKnowledgeSource(new ProjectSource("TEST", "TEST", true));
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setId(123);
 		knowledgeElement.setSummary("How can we implement the feature");
-		List<Recommendation> recommendations = input.getResults(knowledgeElement);
+		List<Recommendation> recommendations = input.getRecommendations(knowledgeElement);
 		assertEquals(2, recommendations.size());
 	}
 

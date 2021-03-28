@@ -2,11 +2,11 @@
 
 <div class="field-group">
 	<label>Add Recommendations directly?</label>
-	<aui-toggle id="add-recommendation-directly" name=""
+	<aui-toggle id="add-recommendation-directly"
 		#if($addRecommendationDirectly)
 		checked
 		#end
-		label="$rdfSource.getName() activated?"></aui-toggle>
+		></aui-toggle>
 	<div class="description">If enabled, all recommendations for a decision problem are directly added to the knowledge graph.</div>
 </div>
 
@@ -18,7 +18,7 @@
 </aui-inline-dialog>
 <fieldset class="group">
 	<legend>Keyword-based</legend>
-	<aui-toggle id="keyword-toggle" name="" value="KEYWORD"
+	<aui-toggle id="keyword-toggle" value="KEYWORD"
 		#if ($recommendationInput.KEYWORD)
 		checked
 		#end
@@ -27,7 +27,7 @@
 </fieldset>
 <fieldset class="group">
 	<legend>Issue-based</legend>
-	<aui-toggle id="issue-toggle" name="" value="ISSUE"
+	<aui-toggle id="issue-toggle" value="ISSUE"
 		#if ($recommendationInput.ISSUE)
 		checked
 		#end

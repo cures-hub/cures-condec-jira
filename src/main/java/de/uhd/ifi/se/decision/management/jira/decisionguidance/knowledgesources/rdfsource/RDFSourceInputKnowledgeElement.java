@@ -21,32 +21,31 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	protected int limit;
 
 	@Override
-	public void setData(RDFSource knowledgeSource) {
+	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = this.knowledgeSource.getProjectKey();
-		this.name = this.knowledgeSource.getName();
-		this.service = this.knowledgeSource.getService();
-		this.queryString = this.knowledgeSource.getQueryString();
-		this.timeout = this.knowledgeSource.getTimeout();
-		this.limit = this.knowledgeSource.getLimit();
+		this.projectKey = knowledgeSource.getProjectKey();
+		this.name = knowledgeSource.getName();
+		this.service = knowledgeSource.getService();
+		this.queryString = knowledgeSource.getQueryString();
+		this.timeout = knowledgeSource.getTimeout();
+		this.limit = knowledgeSource.getLimit();
 	}
 
 	@Override
-	public List<Recommendation> getResults(KnowledgeElement knowledgeElement) {
-
+	public List<Recommendation> getRecommendations(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement == null) {
+			return new ArrayList<>();
+		}
 		List<Recommendation> recommendations = new ArrayList<>();
-		if (knowledgeElement == null)
-			return recommendations;
-
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
-		rdfSourceInputString.setData(this.knowledgeSource);
+		rdfSourceInputString.setKnowledgeSource(knowledgeSource);
 
 		for (Link link : knowledgeElement.getLinks()) {
 			for (KnowledgeElement linkedElement : link.getBothElements()) {
 				if (linkedElement.getType() == KnowledgeType.ALTERNATIVE
 						|| linkedElement.getType() == KnowledgeType.DECISION) {
 					List<Recommendation> recommendationFromAlternative = rdfSourceInputString
-							.getResults(linkedElement.getSummary());
+							.getRecommendations(linkedElement.getSummary());
 					recommendations.addAll(recommendationFromAlternative);
 				}
 			}

@@ -44,16 +44,16 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
 
 	@Override
-	public void setData(RDFSource knowledgeSource) {
+	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = this.knowledgeSource.getProjectKey();
-		this.name = this.knowledgeSource.getName();
-		this.service = this.knowledgeSource.getService();
-		this.queryString = this.knowledgeSource.getQueryString();
-		this.timeout = this.knowledgeSource.getTimeout();
-		this.limit = this.knowledgeSource.getLimit();
+		this.projectKey = knowledgeSource.getProjectKey();
+		this.name = knowledgeSource.getName();
+		this.service = knowledgeSource.getService();
+		this.queryString = knowledgeSource.getQueryString();
+		this.timeout = knowledgeSource.getTimeout();
+		this.limit = knowledgeSource.getLimit();
 		try {
-			this.constraints = Splitter.on("&").withKeyValueSeparator("=").split(this.knowledgeSource.getConstraint());
+			this.constraints = Splitter.on("&").withKeyValueSeparator("=").split(knowledgeSource.getConstraint());
 		} catch (IllegalArgumentException e) {
 			this.constraints = new HashMap<>();
 		}
@@ -107,7 +107,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	}
 
 	@Override
-	public List<Recommendation> getResults(String inputs) {
+	public List<Recommendation> getRecommendations(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		Map<Recommendation, Integer> scoreMap = new HashMap<>();
 
