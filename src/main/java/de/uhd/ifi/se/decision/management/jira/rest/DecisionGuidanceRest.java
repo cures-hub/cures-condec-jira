@@ -256,12 +256,14 @@ public class DecisionGuidanceRest {
 		List<KnowledgeElement> knowledgeElementsInJiraIssue = persistenceManager.getJiraIssueTextManager()
 				.getElementsInJiraIssue(jiraIssueId);
 
+		int numberOfRemovedElements = 0;
 		for (KnowledgeElement element : knowledgeElementsInJiraIssue) {
 			if (element.getStatus() == KnowledgeStatus.RECOMMENDED) {
 				persistenceManager.deleteKnowledgeElement(element, user);
+				numberOfRemovedElements++;
 			}
 		}
-		return Response.status(Status.OK).build();
+		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
 	}
 
 	@Path("/getRecommendation")

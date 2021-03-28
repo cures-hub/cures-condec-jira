@@ -19,7 +19,7 @@
 		conDecAPI.getCiaSettings(conDecAPI.getProjectKey(), loadCiaSettings);
 
 		addOnClickEventToFilterButton();
-		conDecObservable.subscribe(this);
+		//conDecObservable.subscribe(this); // updateView method needs to be implemented
 	};
 
 	function initTextDropdown(dropdownId, items) {
