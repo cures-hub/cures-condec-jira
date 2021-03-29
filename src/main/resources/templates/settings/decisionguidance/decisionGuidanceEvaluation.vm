@@ -1,80 +1,70 @@
 <div id="evaluation-container">
-    <h2>Evaluation of Knowledge sources</h2>
-
-    <div class="settings-divider">
-        <div class="field-group">
-            <label for="evaluation-keywords">Keywords</label>
-            <input id="evaluation-keywords" class="text long-field" placeholder="e.g. Databases"/>
-            <div class="description">Enter some keywords.
-            </div>
-        </div>
-
-        <div class="field-group">
-            <form class="aui">
-                <label for="select2-issues">Issue</label>
-                <select id="select2-issues" placeholder="Select an issue..."
-                        class="select long-field">
-                </select>
-                <div class="description">Select an issue for evaluation.
-                </div>
-            </form>
-        </div>
-
-        <div class="field-group">
-            <!-- Dropdown -->
-            <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
-               aria-haspopup="true"
-               class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
-            <label for="knowledgesource-evaluation-dropdown">Knowledge Sources</label>
-
-            <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
-                <div class="aui-dropdown2-section">
-                    <div class="aui-dropdown2-heading">
-                        <strong>RDF Sources</strong>
-                    </div>
-                    #foreach ($rdfSource in $rdfSources)
-                    <aui-item-checkbox interactive>$rdfSource.getName()
-                    </aui-item-checkbox>
-                    #end
-                </div>
-                <div class="aui-dropdown2-section">
-                    <div class="aui-dropdown2-heading">
-                        <strong>Project Sources</strong>
-                    </div>
-                    #foreach($projectSource in $projectSources)
-                    <aui-item-checkbox interactive>$projectSource.getName()
-                    </aui-item-checkbox>
-                    #end
-                </div>
-            </aui-dropdown-menu>
-            <div class="description">Select knowledge sources that you want to evaluate.
-            </div>
-        </div>
-        <div class="field-group">
-            <label for="k-results">Top-k Results</label>
-            <input class="text short-field"
-                   type="number"
-                   data-aui-validation-field
-                   value="5"
-                   id="k-results"
-                   name="k-results"/>
-            <div class="description">Set the top-k results that should be used for the metric calculation
-            </div>
-
-        </div>
-        <div class="field-group">
-            <div style="display:flex; align-items:center; gap:12px">
-                <input type="button" class="aui-button-primary aui-button" id="evaluation-knowledgesource-button"
-                       value="Evaluate"/>
-                <aui-spinner size="small" id="loading-spinner-recommendation"
-                             style="margin:0 auto; display:none; "></aui-spinner>
-            </div>
-            <div class="description">
-                Evaluates the selected knowledge source. <br/>
-            </div>
-        </div>
-
+	<h3>Evaluation of Knowledge Sources</h3>
+    <div class="field-group">
+        <label for="evaluation-keywords">Keywords</label>
+        <input id="evaluation-keywords" class="text long-field" placeholder="e.g. Databases"/>
+        <div class="description">Enter some keywords.</div>
     </div>
+
+    <div class="field-group">
+        <form class="aui">
+            <label for="select2-issues">Issue</label>
+            <select id="select2-issues" placeholder="Select an issue..." class="select long-field"></select>
+            <div class="description">Select an issue for evaluation.</div>
+        </form>
+    </div>
+
+    <div class="field-group">
+        <!-- Dropdown -->
+        <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
+           aria-haspopup="true"
+           class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
+        <label for="knowledgesource-evaluation-dropdown">Knowledge Sources</label>
+
+        <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
+            <div class="aui-dropdown2-section">
+                <div class="aui-dropdown2-heading">
+                    <strong>RDF Sources</strong>
+                </div>
+                #foreach ($rdfSource in $rdfSources)
+                <aui-item-checkbox interactive>$rdfSource.getName()
+                </aui-item-checkbox>
+                #end
+            </div>
+            <div class="aui-dropdown2-section">
+                <div class="aui-dropdown2-heading">
+                    <strong>Project Sources</strong>
+                </div>
+                #foreach($projectSource in $projectSources)
+                <aui-item-checkbox interactive>$projectSource.getName()
+                </aui-item-checkbox>
+                #end
+            </div>
+        </aui-dropdown-menu>
+        <div class="description">Select knowledge sources that you want to evaluate.</div>
+    </div>
+    <div class="field-group">
+        <label for="k-results">Top-k Results</label>
+        <input class="text short-field"
+               type="number"
+               data-aui-validation-field
+               value="5"
+               id="k-results"
+               name="k-results"/>
+        <div class="description">Set the top-k results that should be used for the metric calculation</div>
+    </div>
+    <div class="field-group">
+        <div style="display:flex; align-items:center; gap:12px">
+            <input type="button" class="aui-button-primary aui-button" id="evaluation-knowledgesource-button"
+                   value="Evaluate"/>
+            <aui-spinner size="small" id="loading-spinner-recommendation"
+                         style="margin:0 auto; display:none; "></aui-spinner>
+        </div>
+        <div class="description">
+            Evaluates the selected knowledge source.
+        </div>
+    </div>
+    <br/>
 
     <table id="evaluation-results-table" class="aui">
         <thead>
@@ -88,7 +78,6 @@
     </table>
 </div>
 <script>
-
     var init = false;
     var documentationLocations = {}
     $("#evaluation-container").mouseenter(function() {
@@ -109,15 +98,13 @@
     let activeSources = []
     var sources = $("#knowledgesource-evaluation-dropdown")
     sources.change(function(e) {
-
         var isChecked = e.target.hasAttribute('checked');
         if (isChecked) {
            activeSources.push(e.target.textContent);
         } else {
-            activeSources.splice (activeSources.indexOf(e.target.textContent), 1);
+            activeSources.splice(activeSources.indexOf(e.target.textContent), 1);
         }
     });
-
 
     let buildTableHeader = false;
     $("#evaluation-knowledgesource-button").click(function(event) {
@@ -149,7 +136,6 @@
 
                     buildTableHeader = true;
 
-
                     $("#evaluation-results-table tbody").append(
                     "<tr><td>" + eval.recommenderType + "</td>" +
                     "<td>" + eval.knowledgeSourceName + "</td>" +
@@ -161,7 +147,4 @@
             });
         });
     });
-
-
-
 </script>

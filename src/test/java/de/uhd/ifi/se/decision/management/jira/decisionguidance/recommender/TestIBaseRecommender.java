@@ -44,7 +44,7 @@ public class TestIBaseRecommender extends TestSetUp {
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 
-		BaseRecommender recommender = new IssueBasedRecommender(knowledgeElement);
+		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement);
 		recommender.addKnowledgeSource(knowledgeSources);
 
 		recommender.recommendations.add(new Recommendation());
@@ -53,8 +53,8 @@ public class TestIBaseRecommender extends TestSetUp {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
 		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
 
-		recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
-				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST");
+		BaseRecommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
+				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST", recommender.recommendations);
 
 		assertEquals(19, manager.getKnowledgeElements().size());
 	}

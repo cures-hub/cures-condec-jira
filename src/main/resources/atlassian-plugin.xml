@@ -158,8 +158,10 @@
                   location="/js/settings/condec.settings.quality.js" />
 		<resource type="download" name="condec.jira.issue.module.consistency.js"
 			location="/js/condec.jira.issue.module.consistency.js" />
+		<resource type="download" name="condec.decision.guidance.api.js"
+			location="/js/decisionguidance/condec.decision.guidance.api.js" />
 		<resource type="download" name="condec.decision.guidance.js"
-			location="/js/condec.decision.guidance.js" />
+			location="/js/decisionguidance/condec.decision.guidance.js" />		
 	</web-resource>
 
 	<web-resource key="release-notes-resources"
@@ -353,7 +355,7 @@
 	<web-item key="condec-project-settings-menu-item-decisionguidance"
 		name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
-		<description>Adds the "Decision guidance" menu item.</description>
+		<description>Adds the "Decision Guidance" menu item.</description>
 		<label key="condec.project.settings.menu.item.decision.guidance" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
 		</link>

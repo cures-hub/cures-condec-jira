@@ -1,23 +1,25 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import static org.junit.Assert.assertEquals;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import javax.servlet.http.HttpServletRequest;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestDecisionGuidanceConfig extends TestSetUp {
 	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	protected DecisionGuidanceRest decisionGuidanceRest;
 
 	protected static String INVALID_PROJECT_KEY = "";
 	protected static String VALID_PROJECT_KEY = "TEST";
@@ -28,7 +30,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		decisionGuidanceRest = new DecisionGuidanceRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -36,14 +38,13 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	/**
 	 * Test Set RDF Knowledge Source
 	 */
-
 	@Test
 	@DisplayName("Tests the method setRDFSource with valid value.")
 	public void testSetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(200,
-			configRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
+				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test
@@ -52,13 +53,13 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "NAME2", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(400,
-			configRest.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
+				decisionGuidanceRest.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test(expected = JsonSyntaxException.class)
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourceInvalidJSON() {
-		assertEquals(400, configRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, "-123").getStatus());
+		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, "-123").getStatus());
 	}
 
 	@Test
@@ -67,7 +68,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10, "");
 		Gson gson = new Gson();
 		assertEquals(400,
-			configRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
+				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
 	}
 
 	/**
@@ -77,25 +78,25 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with valid value.")
 	public void testDeleteRDFKnowledgeSourceValid() {
-		assertEquals(200, configRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, VALID_VALUE).getStatus());
+		assertEquals(200, decisionGuidanceRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, VALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with invalid value and valid project.")
 	public void testDeleteRDFKnowledgeSourceInvalidValue() {
-		assertEquals(400, configRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, INVALID_VALUE).getStatus());
+		assertEquals(400, decisionGuidanceRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, INVALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with valid value and invalid project")
 	public void testDeleteRDFKnowledgeSourceInvalidProject() {
-		assertEquals(400, configRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, VALID_VALUE).getStatus());
+		assertEquals(400, decisionGuidanceRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, VALID_VALUE).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method deleteRDFKnowledgeSource with invalid value and invalid Project.")
 	public void testDeleteRDFKnowledgeSourceInvalidProjectInvalidValue() {
-		assertEquals(400, configRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, INVALID_VALUE).getStatus());
+		assertEquals(400, decisionGuidanceRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, INVALID_VALUE).getStatus());
 	}
 
 	/**
@@ -107,8 +108,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void tesUpdateRDFKnowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "VALID SOURCE", "30000", 10, "");
 		Gson gson = new Gson();
-		assertEquals(200, configRest
-			.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
+		assertEquals(200, decisionGuidanceRest
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test
@@ -116,8 +117,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void testUpdateRDFKnowledgeSourceInValid() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10, "");
 		Gson gson = new Gson();
-		assertEquals(400, configRest
-			.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+		assertEquals(400, decisionGuidanceRest
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
 	}
 
 	@Test
@@ -125,8 +126,8 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource(VALID_PROJECT_KEY, "SERVICE", "QUERY", "", "30000", 10, "");
 		Gson gson = new Gson();
-		assertEquals(400, configRest
-			.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+		assertEquals(400, decisionGuidanceRest
+				.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
 	}
 
 	/**
@@ -137,21 +138,21 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@DisplayName("Tests the method setKnowledgeSourceActivation with valid project and valid ")
 	public void testActivateRDFKnowledgeSourceValidProjectValidValue() {
 		assertEquals(200,
-			configRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setKnowledgeSourceActivation with invalid project and valid ")
 	public void testActivateRDFKnowledgeSourceInValidProjectValidValue() {
 		assertEquals(400,
-			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setKnowledgeSourceActivation with invalid project and INvalid ")
 	public void testActivateRDFKnowledgeSourceInValidProjectInValidValue() {
 		assertEquals(400,
-			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
 	}
 
 	/**
@@ -161,88 +162,88 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@DisplayName("Tests the method setProjectSource with valid project and valid value ")
 	public void testSetProjectSourceValidProjectValidValue() {
 		assertEquals(200,
-			configRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setProjectSource with valid project and invalid value ")
 	public void testSetProjectSourceValidProjectInValidValue() {
 		assertEquals(400,
-			configRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, VALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setProjectSource with invalid project and valid value ")
 	public void testSetProjectSourceInValidProjectValidValue() {
 		assertEquals(400,
-			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, VALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setProjectSource with invalid project and invalid value ")
 	public void testSetProjectSourceInValidProjectInValidValue() {
 		assertEquals(400,
-			configRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
+				decisionGuidanceRest.setKnowledgeSourceActivated(request, INVALID_PROJECT_KEY, INVALID_VALUE, true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations valid Value")
 	public void testSetMaxRecommendationsValid() {
-		assertEquals(200, configRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, 20).getStatus());
+		assertEquals(200, decisionGuidanceRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, 20).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations invalid Value")
 	public void testSetMaxRecommendationsInvalidValue() {
-		assertEquals(400, configRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, -20).getStatus());
+		assertEquals(400, decisionGuidanceRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, -20).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations invalid project")
 	public void testSetMaxRecommendationsInvalidProject() {
-		assertEquals(400, configRest.setMaxNumberRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
+		assertEquals(400, decisionGuidanceRest.setMaxNumberRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method addRecommendationdirectly valid project")
 	public void testSetAddRecommendationDirectlyValidProject() {
-		assertEquals(200, configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "true").getStatus());
+		assertEquals(200, decisionGuidanceRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "true").getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method addRecommendationdirectly invalid project")
 	public void testSetAddRecommendationDirectlyInValidProject() {
-		assertEquals(400, configRest.setAddRecommendationDirectly(request, INVALID_PROJECT_KEY, "true").getStatus());
+		assertEquals(400, decisionGuidanceRest.setAddRecommendationDirectly(request, INVALID_PROJECT_KEY, "true").getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method addRecommendationdirectly invalid project")
 	public void testSetAddRecommendationDirectlyInvalidValue() {
 		assertEquals(200,
-			configRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
+				decisionGuidanceRest.setAddRecommendationDirectly(request, VALID_PROJECT_KEY, "invalidvalue").getStatus());
 	}
 
 	@Test
 	public void testSetRecommendationInput() {
-		assertEquals(200, configRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
-		assertEquals(400, configRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
-		assertEquals(400, configRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(200, decisionGuidanceRest.setRecommendationInput(request, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, decisionGuidanceRest.setRecommendationInput(null, VALID_PROJECT_KEY, "KEYWORD", true).getStatus());
+		assertEquals(400, decisionGuidanceRest.setRecommendationInput(request, INVALID_PROJECT_KEY, "KEYWORD", true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setSimilarityThreshold")
 	public void testSetSimilarityThreshold() {
-		assertEquals(200, configRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, 1).getStatus());
-		assertEquals(400, configRest.setSimilarityThreshold(request, INVALID_PROJECT_KEY, 1).getStatus());
-		assertEquals(400, configRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, -1).getStatus());
-		assertEquals(400, configRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, 3).getStatus());
+		assertEquals(200, decisionGuidanceRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, 1).getStatus());
+		assertEquals(400, decisionGuidanceRest.setSimilarityThreshold(request, INVALID_PROJECT_KEY, 1).getStatus());
+		assertEquals(400, decisionGuidanceRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, -1).getStatus());
+		assertEquals(400, decisionGuidanceRest.setSimilarityThreshold(request, VALID_PROJECT_KEY, 3).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setIrrelevantWords")
 	public void testSetIrrelevantWords() {
-		assertEquals(200, configRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "WHICH;WHAT;SHOULD").getStatus());
-		assertEquals(400, configRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "").getStatus());
+		assertEquals(200, decisionGuidanceRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "WHICH;WHAT;SHOULD").getStatus());
+		assertEquals(400, decisionGuidanceRest.setIrrelevantWords(request, VALID_PROJECT_KEY, "").getStatus());
 	}
 
 }

@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeywordBasedRecommender extends BaseRecommender<String> {
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
+public class KeywordBasedRecommender extends BaseRecommender<String> {
 
 	public KeywordBasedRecommender() {
 		this.recommendations = new ArrayList<>();
@@ -24,11 +24,10 @@ public class KeywordBasedRecommender extends BaseRecommender<String> {
 		this.addKnowledgeSource(knowledgeSources);
 	}
 
-
 	@Override
-	public List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource) {
-		knowledgeSource.setRecommenderType(RecommenderType.KEYWORD);
-		return knowledgeSource.getResults(input);
+	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
+		InputMethod inputMethod = InputMethod.getKeywordBasedIn(knowledgeSource);
+		return inputMethod.getRecommendations(input);
 	}
 
 	@Override

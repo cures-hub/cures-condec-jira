@@ -3,13 +3,15 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Type of the input, either keywords or decision problem (issue) with linked
+ * elements.
+ */
 public enum RecommenderType {
 	KEYWORD, ISSUE, EVALUATION;
 
 	/**
-	 * Change the default value here
-	 *
-	 * @return
+	 * @return default (i.e. simple) recommender type.
 	 */
 	public static RecommenderType getDefault() {
 		return KEYWORD;
@@ -26,6 +28,4 @@ public enum RecommenderType {
 	public static List<RecommenderType> getRecommenderTypes() {
 		return Arrays.asList(RecommenderType.values());
 	}
-
-
 }

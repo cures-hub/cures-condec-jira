@@ -1,40 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-
-import java.util.List;
-
 /**
- * A Knowledge Source contains all the configured data from the user and is stored in the system
+ * A Knowledge Source contains all the configured data from the user and is
+ * stored in the system
  */
 public abstract class KnowledgeSource {
 
-	protected List<Recommendation> recommendations;
 	protected String projectKey;
 	protected boolean isActivated;
 	protected String name;
 	protected String icon;
-
-	protected InputMethod inputMethod;
-	protected RecommenderType recommenderType;
-
-
-	/**
-	 * calculates the concrete result for a knowledgesource
-	 * getInputMethod() and setData() must be implemented by the concrete knowledge source
-	 *
-	 * @param object
-	 * @return
-	 */
-	public List<Recommendation> getResults(Object object) {
-		getInputMethod();
-		inputMethod.setData(this);
-		return inputMethod.getResults(object);
-	}
-
-	public abstract InputMethod getInputMethod();
-
 
 	public String getProjectKey() {
 		return projectKey;
@@ -58,14 +33,6 @@ public abstract class KnowledgeSource {
 
 	public void setActivated(boolean activated) {
 		isActivated = activated;
-	}
-
-	public void setInputMethod(InputMethod inputMethod) {
-		this.inputMethod = inputMethod;
-	}
-
-	public void setRecommenderType(RecommenderType recommenderType) {
-		this.recommenderType = recommenderType;
 	}
 
 	public String getIcon() {

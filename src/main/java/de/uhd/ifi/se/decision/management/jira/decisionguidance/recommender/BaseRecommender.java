@@ -1,20 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 /**
- * Takes the input from the UI and passes it to the configured knowledge sources
- * @param <T> Datatype of the input e.g. String, KnowledgeElement
+ * Takes the input from the UI and passes it to the configured knowledge
+ * sources.
+ * 
+ * @param <T>
+ *            data type of the input, e.g. String, KnowledgeElement
  */
 public abstract class BaseRecommender<T> {
 
@@ -26,12 +32,12 @@ public abstract class BaseRecommender<T> {
 		this.input = input;
 	}
 
-	public BaseRecommender addKnowledgeSource(KnowledgeSource knowledgeSource) {
-		this.knowledgeSources.add(knowledgeSource);
+	public BaseRecommender<T> addKnowledgeSource(KnowledgeSource knowledgeSource) {
+		knowledgeSources.add(knowledgeSource);
 		return this;
 	}
 
-	public BaseRecommender addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
+	public BaseRecommender<T> addKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources) {
 		this.knowledgeSources.addAll(knowledgeSources);
 		return this;
 	}
@@ -39,21 +45,21 @@ public abstract class BaseRecommender<T> {
 	public abstract RecommenderType getRecommenderType();
 
 	public List<KnowledgeSource> getKnowledgeSources() {
-		return this.knowledgeSources;
+		return knowledgeSources;
 	}
 
 	public List<KnowledgeSource> getActivatedKnowledgeSources() {
-		return this.knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
+		return knowledgeSources.stream().filter(KnowledgeSource::isActivated).collect(Collectors.toList());
 	}
 
-	public List<Recommendation> getRecommendation() {
+	public List<Recommendation> getRecommendations() {
 		for (KnowledgeSource knowledgeSource : this.getActivatedKnowledgeSources()) {
-			this.recommendations.addAll(getResultFromKnowledgeSource(knowledgeSource));
+			recommendations.addAll(getRecommendations(knowledgeSource));
 		}
-		return this.recommendations;
+		return recommendations;
 	}
 
-	public abstract List<Recommendation> getResultFromKnowledgeSource(KnowledgeSource knowledgeSource);
+	public abstract List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource);
 
 	protected List<Recommendation> removeDuplicated(List<? extends Recommendation> recommendations) {
 		return recommendations.stream().distinct().collect(Collectors.toList());
@@ -67,10 +73,11 @@ public abstract class BaseRecommender<T> {
 	 * @param user
 	 * @param projectKey
 	 */
-	public void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey) {
+	public static void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey,
+			List<Recommendation> recommendations) {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		int id = 0;
-		for (Recommendation recommendation : this.recommendations) {
+		for (Recommendation recommendation : recommendations) {
 			KnowledgeElement alternative = new KnowledgeElement();
 
 			// Set information
@@ -86,6 +93,35 @@ public abstract class BaseRecommender<T> {
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
 			manager.insertLink(rootElement, insertedElement, user);
 		}
+	}
+
+	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement knowledgeElement,
+			String keyword) {
+		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager.getAllActivatedKnowledgeSources(projectKey);
+		List<BaseRecommender> recommenders = new ArrayList<>();
+
+		for (RecommenderType recommenderType : RecommenderType.values()) {
+			boolean isTypeActivated = ConfigPersistenceManager.getRecommendationInput(projectKey,
+					recommenderType.toString());
+			if (isTypeActivated) {
+				BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
+				recommender.addKnowledgeSource(knowledgeSources);
+				recommenders.add(recommender);
+			}
+		}
+
+		List<Recommendation> recommendations = new ArrayList<>();
+		for (BaseRecommender recommender : recommenders) {
+			for (KnowledgeSource knowledgeSource : knowledgeSources) {
+				if (RecommenderType.KEYWORD == recommender.getRecommenderType())
+					recommender.setInput(keyword);
+				else {
+					recommender.setInput(knowledgeElement);
+				}
+				recommendations.addAll(recommender.getRecommendations(knowledgeSource));
+			}
+		}
+		return recommendations;
 	}
 
 }

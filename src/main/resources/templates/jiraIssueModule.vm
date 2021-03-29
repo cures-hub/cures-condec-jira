@@ -108,16 +108,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         var resetRecommendationFromKnowledgeElement = document.getElementById("remove-recommendations-from-knowledge-graph-link");
         resetRecommendationFromKnowledgeElement.addEventListener("click", function (event) {
             event.preventDefault();
-		event.stopPropagation();
-		if (confirm("Are you sure you want to remove the recommended knowledge elements for this Jira issue?")) {
-				conDecAPI.resetRecommendationForKnowledgeElement(JIRA.Issue.getIssueId(), function() {
+			event.stopPropagation();
+			if (confirm("Are you sure you want to remove the recommended knowledge elements for this Jira issue?")) {
+				conDecDecisionGuidanceAPI.resetRecommendationForKnowledgeElement(JIRA.Issue.getIssueId(), function() {
 					conDecObservable.notify();
 				});
 			}
 	});
 
-
-	//handles the fullscreen mode
+	// handles the fullscreen mode
     $("#close-fullscreen").click(function() {
         $(this).hide();
         $("#jira-issue-tabs").each(function() {
@@ -128,7 +127,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         $("#close-fullscreen").show();
         $("#jira-issue-tabs").addClass("jira-module-fullscreen");
     });
-
 });
 
 </script>

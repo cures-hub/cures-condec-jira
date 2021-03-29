@@ -12,7 +12,6 @@ public class BagOfIrrelevantWords {
 		irrelevantWords = Arrays.asList(irrelevantWordsString.split(";"));
 	}
 
-
 	public boolean checkIfWordIsRelevant(String word) {
 		return !irrelevantWords.contains(word.toUpperCase().trim());
 	}

@@ -1,5 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
@@ -7,14 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TestKeywordBasedRecommender extends TestSetUp {
 
@@ -36,9 +37,9 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender rcommender = new KeywordBasedRecommender("feature");
-		rcommender.addKnowledgeSource(knowledgeSources);
-		List<Recommendation> recommendations = rcommender.getRecommendation();
+		BaseRecommender<String> recommender = new KeywordBasedRecommender("feature");
+		recommender.addKnowledgeSource(knowledgeSources);
+		List<Recommendation> recommendations = recommender.getRecommendations();
 
 		assertNotEquals(null, recommendations);
 	}
@@ -49,15 +50,15 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender recommender = new KeywordBasedRecommender("feature", knowledgeSources);
+		BaseRecommender<String> recommender = new KeywordBasedRecommender("feature", knowledgeSources);
 		assertNotEquals(null, recommender);
 	}
 
 	@Test
 	public void testSimpleRecommenderNoKnowledgeSources() {
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("feature");
+		BaseRecommender<String> simpleRecommender = new KeywordBasedRecommender("feature");
 
-		List<Recommendation> recommendations = simpleRecommender.getRecommendation();
+		List<Recommendation> recommendations = simpleRecommender.getRecommendations();
 
 		assertEquals(0, recommendations.size());
 		assertEquals(0, simpleRecommender.getKnowledgeSources().size());
@@ -69,19 +70,18 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
+		BaseRecommender<String> simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
 		simpleRecommender.addKnowledgeSource(knowledgeSources);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSimpleRecommenderAddKnowledgeSources() {
-		BaseRecommender simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
+		BaseRecommender<String> simpleRecommender = new KeywordBasedRecommender("How can we implement the feature");
 		simpleRecommender.addKnowledgeSource(projectSource);
 		simpleRecommender.addKnowledgeSource(rdfSource);
 		assertEquals(2, simpleRecommender.getKnowledgeSources().size());
 	}
-
 
 	@Test
 	public void testRemoveDuplicates() {
@@ -90,13 +90,15 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "Source A", true);
 
-		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""), "");
-		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""), "");
+		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""),
+				"");
+		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1",
+				new RecommendationScore(0, ""), "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
-		BaseRecommender recommender = new KeywordBasedRecommender("");
+		BaseRecommender<String> recommender = new KeywordBasedRecommender("");
 
 		assertEquals(1, recommender.removeDuplicated(recommendations).size());
 	}
@@ -109,13 +111,15 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		KnowledgeSource knowledgeSourceA = new ProjectSource("TEST", "Source A", true);
 		KnowledgeSource knowledgeSourceB = new ProjectSource("TEST", "Source B", true);
 
-		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1", new RecommendationScore(0, ""), "");
-		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1", new RecommendationScore(0, ""), "");
+		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1",
+				new RecommendationScore(0, ""), "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1",
+				new RecommendationScore(0, ""), "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
-		BaseRecommender recommender = new KeywordBasedRecommender("");
+		BaseRecommender<String> recommender = new KeywordBasedRecommender("");
 
 		assertEquals(2, recommender.removeDuplicated(recommendations).size());
 	}
@@ -127,7 +131,5 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("INVALID"));
 
 		assertEquals(3, RecommenderType.getRecommenderTypes().size());
-
 	}
-
 }
