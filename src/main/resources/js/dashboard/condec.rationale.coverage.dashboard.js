@@ -462,11 +462,22 @@ define('dashboard/rationaleCoverage', [], function () {
 				dashboardAPI.resize();
 			}
 
+			function onSelectProject(event) {
+				conDecRationaleCoverageDashboard.setJiraIssueTypes(preferences['projectKey']);
+				conDecRationaleCoverageDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecRationaleCoverageDashboard.setDocumentationLocations();
+				conDecRationaleCoverageDashboard.setKnowledgeStatus();
+				conDecRationaleCoverageDashboard.setLinkTypes();
+			}
+
 			saveButton = document.getElementById("rationale-coverage-save-button");
 			saveButton.addEventListener("click", onSaveButton);
 
 			cancelButton = document.getElementById("rationale-coverage-cancel-button");
 			cancelButton.addEventListener("click", onCancelButton);
+
+			projectKeyNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+			projectKeyNode.addEventListener("change", onSelectProject);
 		});
 	};
 

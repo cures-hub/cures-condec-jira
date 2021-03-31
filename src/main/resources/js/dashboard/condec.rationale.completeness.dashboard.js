@@ -422,11 +422,22 @@ define('dashboard/rationaleCompleteness', [], function () {
 				dashboardAPI.resize();
 			}
 
+			function onSelectProject(event) {
+				conDecRationaleCompletenessDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecRationaleCompletenessDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecRationaleCompletenessDashboard.setDocumentationLocations();
+				conDecRationaleCompletenessDashboard.setKnowledgeStatus();
+				conDecRationaleCompletenessDashboard.setLinkTypes();
+			}
+
 			saveButton = document.getElementById("rationale-completeness-save-button");
 			saveButton.addEventListener("click", onSaveButton);
 
 			cancelButton = document.getElementById("rationale-completeness-cancel-button");
 			cancelButton.addEventListener("click", onCancelButton);
+
+			projectKeyNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+			projectKeyNode.addEventListener("change", onSelectProject);
 		});
 	};
 

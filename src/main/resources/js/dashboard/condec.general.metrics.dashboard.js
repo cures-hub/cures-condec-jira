@@ -249,13 +249,6 @@
 		});
 	}
 
-	function getFilterSettings(projectKey) {
-		var filterSettings = {};
-		filterSettings.projectKey = projectKey;
-		filterSettings.searchTerm = "";
-		return JSON.stringify(filterSettings);
-	}
-
 	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
 		console.log(data.responseJSON.error);
 		showDashboardSection(dashboardDataErrorNode);
@@ -431,11 +424,22 @@ define('dashboard/generalMetrics', [], function () {
 				dashboardAPI.resize();
 			}
 
+			function onSelectProject(event) {
+				conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecGeneralMetricsDashboard.setDocumentationLocations();
+				conDecGeneralMetricsDashboard.setKnowledgeStatus();
+				conDecGeneralMetricsDashboard.setLinkTypes();
+			}
+
 			saveButton = document.getElementById("general-metrics-save-button");
 			saveButton.addEventListener("click", onSaveButton);
 
 			cancelButton = document.getElementById("general-metrics-cancel-button");
 			cancelButton.addEventListener("click", onCancelButton);
+
+			projectKeyNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+			projectKeyNode.addEventListener("change", onSelectProject);
 		});
 	};
 
