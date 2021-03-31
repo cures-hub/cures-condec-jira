@@ -322,6 +322,7 @@ public class FilterSettings {
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
+	@XmlElement(name = "minDegree")
 	public int getMinDegree() {
 		return minDegree;
 	}
@@ -331,6 +332,7 @@ public class FilterSettings {
 	 *            minimal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
+	@JsonProperty("minDegree")
 	public void setMinDegree(int minDegree) {
 		this.minDegree = minDegree;
 	}
@@ -339,6 +341,7 @@ public class FilterSettings {
 	 * @return maximal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
+	@XmlElement(name = "maxDegree")
 	public int getMaxDegree() {
 		return maxDegree;
 	}
@@ -348,6 +351,7 @@ public class FilterSettings {
 	 *            maximal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
+	@JsonProperty("maxDegree")
 	public void setMaxDegree(int maxDegree) {
 		this.maxDegree = maxDegree;
 	}

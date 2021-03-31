@@ -18,6 +18,9 @@ import javax.ws.rs.core.Response.Status;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
@@ -122,6 +125,60 @@ public class DashboardRest {
 		return Response.status(Status.OK).entity(metrics).build();
 	}
 
+	@Path("/documentationLocations")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getDocumentationLocations(@Context HttpServletRequest request) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		List<DocumentationLocation> documentionLocationCollection = DocumentationLocation.getAllDocumentationLocations();
+
+		List<String> documentationLocations =  new ArrayList<>();
+
+		for (DocumentationLocation documentationLocation : documentionLocationCollection) {
+			documentationLocations.add(documentationLocation.toString());
+		}
+
+		return Response.status(Status.OK).entity(documentationLocations).build();
+	}
+
+	@Path("/knowledgeStatus")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getKnowledgeStatus(@Context HttpServletRequest request) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		List<KnowledgeStatus> knowledgeStatusCollection = KnowledgeStatus.getAllKnowledgeStatus();
+
+		List<String> knowledgeStatuses =  new ArrayList<>();
+
+		for (KnowledgeStatus knowledgeStatus : knowledgeStatusCollection) {
+			knowledgeStatuses.add(knowledgeStatus.toString());
+		}
+
+		return Response.status(Status.OK).entity(knowledgeStatuses).build();
+	}
+
+	@Path("/linkTypes")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getLinkTypes(@Context HttpServletRequest request) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		Set<String> linkTypes =  DecisionKnowledgeProject.getNamesOfLinkTypes();
+
+		return Response.status(Status.OK).entity(linkTypes).build();
+	}
+
 	@Path("/jiraIssueTypes")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
@@ -131,14 +188,26 @@ public class DashboardRest {
 				.build();
 		}
 
-		Collection<IssueType> jiraIssueTypesCollection = new JiraSchemeManager(projectKey).getJiraIssueTypes();
+		DecisionKnowledgeProject project = new DecisionKnowledgeProject(projectKey);
 
-		List<String> jiraIssueTypes =  new ArrayList<>();
-
-		for (IssueType issueType : jiraIssueTypesCollection) {
-			jiraIssueTypes.add(issueType.getName());
-		}
+		Set<String> jiraIssueTypes =  project.getJiraIssueTypeNames();
 
 		return Response.status(Status.OK).entity(jiraIssueTypes).build();
+	}
+
+	@Path("/knowledgeTypes")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getKnowledgeTypes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+
+		DecisionKnowledgeProject project = new DecisionKnowledgeProject(projectKey);
+
+		Set<String> knowledgeTypes =  project.getNamesOfConDecKnowledgeTypes();
+
+		return Response.status(Status.OK).entity(knowledgeTypes).build();
 	}
 }
