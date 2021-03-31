@@ -366,7 +366,7 @@
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
 })(window);
 
-define('dashboard/rationaleCoverage', ['underscore', 'jquery'], function (_, $) {
+define('dashboard/rationaleCoverage', [], function () {
 	var dashboardAPI;
 
 	var dashboardFilterNode;

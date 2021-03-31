@@ -1,14 +1,14 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-<div id="configproject" class="condec-dashboard-contents filtering">
-	<form class="aui">
-		<div class="field-group">
-			<label for="condec-dashboard-branch-project-selection">Project:</label>
-			<select name="project" id="condec-dashboard-branch-project-selection" class="select long-field">
-				<option value="">
-					$i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
-				</option>
+<div id="condec-branch-dashboard-configproject" class="condec-dashboard-contents filtering hidden">
+    <form class="aui">
+        <div class="field-group">
+            <label for="condec-dashboard-branch-project-selection">Project:</label>
+            <select name="project" id="condec-dashboard-branch-project-selection" class="select long-field">
+                <option value="">
+                    $i18n.getText("condec.dashboard.featurebranch.project.selection.pickone")
+                </option>
                 #foreach ($project in $projects)
                     <option value="$project.getKey()"
                         #if ($projectsWithGit.indexOf($project) == -1)
@@ -18,9 +18,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
                         $project.getKey() - $project.getName()
                     </option>
                 #end
-			</select>
-		</div>
-	</form>
+            </select>
+        </div>
+        <div class="buttons-container">
+            <div class="buttons">
+                <input id="branch-save-button" class="button" type="button" value="Save">
+                <input id="branch-cancel-button" class="button" type="button" value="Cancel">
+            </div>
+        </div>
+    </form>
 </div>
 
 <div id="condec-branches-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
@@ -55,34 +61,3 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")
-
-<script>
-    $(document).ready(function() {
-        function projectSelectOrOnChange(event) {
-            var projectKey = event.target.value;
-            var selectedOptionIndex = event.target.options.selectedIndex;
-            var selectedOption = event.target.options[selectedOptionIndex];
-
-            conDecBranchesDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-branch-project-selection").value = projectKey;
-            conDecGeneralMetricsDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-general-metrics-project-selection").value = projectKey;
-            conDecRationaleCompletenessDashboard.init(projectKey);
-            document.getElementById("condec-dashboard-rationale-completeness-project-selection").value = projectKey;
-            conDecRationaleCoverageDashboard.initProject(projectKey);
-            document.getElementById("condec-dashboard-rationale-coverage-project-selection").value = projectKey;
-        }
-        selectNode = document.getElementById("condec-dashboard-branch-project-selection");
-        selectNode.addEventListener("change", projectSelectOrOnChange);
-    });
-</script>
-
-#if ($projectKey)
-	<script>
-        $(document).ready(function() {
-            conDecBranchesDashboard.init("$projectKey");
-
-            selectNode.value = "$projectKey";
-        });
-	</script>
-#end

@@ -535,6 +535,7 @@
 			location="/templates/dashboard/featureBranches.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
+        <amd-module>dashboard/branches</amd-module>
 	</dashboard-item>
 
     <dashboard-item key="condec-general-metrics-dashboard-item"
@@ -556,6 +557,7 @@
                   location="/templates/dashboard/generalMetrics.vm" />
         <context-provider
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
+        <amd-module>dashboard/generalMetrics</amd-module>
     </dashboard-item>
 
     <dashboard-item key="condec-ratioanle-completeness-dashboard-item"
@@ -577,6 +579,7 @@
                   location="/templates/dashboard/rationaleCompleteness.vm" />
         <context-provider
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
+        <amd-module>dashboard/rationaleCompleteness</amd-module>
     </dashboard-item>
 
     <dashboard-item key="condec-rationale-coverage-dashboard-item"
