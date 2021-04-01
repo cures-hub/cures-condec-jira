@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -369,28 +370,52 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
+	public static void saveDecisionGuidanceConfiguration(String projectKey,
+			DecisionGuidanceConfiguration decisionGuidanceConfiguration) {
+		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "decisionGuidanceConfiguration", decisionGuidanceConfiguration, type);
+	}
+
+	public static DecisionGuidanceConfiguration getDecisionGuidanceConfiguration(String projectKey) {
+		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
+		}.getType();
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = (DecisionGuidanceConfiguration) getSavedObject(
+				projectKey, "decisionGuidanceConfiguration", type);
+		if (decisionGuidanceConfiguration == null) {
+			return new DecisionGuidanceConfiguration();
+		}
+		return decisionGuidanceConfiguration;
+	}
+
 	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
-		setValue(projectKey, "maxNumberRecommendations", Integer.toString(maxNumberRecommendation));
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setMaxNumberOfRecommendations(maxNumberRecommendation);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static int getMaxNumberRecommendations(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "maxNumberRecommendations"), 100);
+		return getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
 	}
 
 	public static void setSimilarityThreshold(String projectKey, double threshold) {
-		setValue(projectKey, "similarityThreshold", Double.toString(threshold));
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static double getSimilarityThreshold(String projectKey) {
-		return NumberUtils.toDouble(getValue(projectKey, "similarityThreshold"), 0.85);
+		return getDecisionGuidanceConfiguration(projectKey).getSimilarityThreshold();
 	}
 
 	public static void setIrrelevantWords(String projectKey, String words) {
-		setValue(projectKey, "bagOfIrrelevantWords", words);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setIrrelevantWords(words);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static String getIrrelevantWords(String projectKey) {
-		return getValue(projectKey, "bagOfIrrelevantWords");
+		return getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords();
 	}
 
 	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
