@@ -1,9 +1,11 @@
 <h2>Decision Guidance: Recommendation of Solution Options for Decision Problems</h2>
 
+#set($decisionGuidanceConfig = $project.getDecisionGuidanceConfiguration())
+
 <div class="field-group">
 	<label>Add Recommendations directly?</label>
 	<aui-toggle id="add-recommendation-directly" label="Add Recommendations directly?"
-		#if($addRecommendationDirectly)
+		#if($decisionGuidanceConfig.isRecommendationAddedToKnowledgeGraph())
 		checked
 		#end
 		></aui-toggle>
@@ -210,7 +212,7 @@
 	<input class="text short-field"
 		type="number"
 		data-aui-validation-field
-		value="$maxNumberRecommendations"
+		value="$decisionGuidanceConfig.getMaxNumberOfRecommendations()"
 		id="max-recommendation"
 		name="max-recommendation"/>
 	<button id="save-max-recommendation-btn" class='aui-button aui-button-primary aui-button-compact'>
@@ -229,7 +231,7 @@
        	max="1"
        	step="0.1"
        	data-aui-validation-field
-       	value="$similarityThreshold"
+       	value="$decisionGuidanceConfig.getSimilarityThreshold()"
        	id="similarity-threshold"
        	name="similarity-threshold"/>
 	<button id="save-similarity-threshold" class='aui-button aui-button-primary aui-button-compact'>
@@ -243,7 +245,7 @@
 	<input class="text long-field"
        	type="text"
        	data-aui-validation-field
-       	value="$irrelevantWords"
+       	value="$decisionGuidanceConfig.getIrrelevantWords()"
        	id="irrelevant-words"
        	name="irrelevant-words"/>
 	<button id="save-irrelevant-words" class='aui-button aui-button-primary aui-button-compact'>
