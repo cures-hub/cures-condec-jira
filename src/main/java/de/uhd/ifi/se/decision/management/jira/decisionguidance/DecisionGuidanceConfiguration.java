@@ -1,12 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 
 public class DecisionGuidanceConfiguration {
 
@@ -16,6 +19,7 @@ public class DecisionGuidanceConfiguration {
 	private String irrelevantWords;
 	private List<RDFSource> rdfKnowledgeSources;
 	private List<ProjectSource> projectKnowledgeSources;
+	private Set<RecommenderType> inputTypes;
 
 	public DecisionGuidanceConfiguration() {
 		this.setRecommendationAddedToKnowledgeGraph(false);
@@ -24,6 +28,7 @@ public class DecisionGuidanceConfiguration {
 		this.setIrrelevantWords("");
 		this.rdfKnowledgeSources = new ArrayList<>();
 		this.projectKnowledgeSources = new ArrayList<>();
+		this.inputTypes = new HashSet<>();
 	}
 
 	public boolean isRecommendationAddedToKnowledgeGraph() {
@@ -78,6 +83,24 @@ public class DecisionGuidanceConfiguration {
 	@JsonProperty
 	public void setProjectKnowledgeSources(List<ProjectSource> projectKnowledgeSources) {
 		this.projectKnowledgeSources = projectKnowledgeSources;
+	}
+
+	public Set<RecommenderType> getInputTypes() {
+		return inputTypes;
+	}
+
+	@JsonProperty
+	public void setInputTypes(Set<RecommenderType> inputTypes) {
+		this.inputTypes = inputTypes;
+	}
+
+	public void setRecommendationInput(String recommendationInput, boolean isActivated) {
+		RecommenderType type = RecommenderType.valueOf(recommendationInput);
+		if (isActivated) {
+			this.inputTypes.add(type);
+		} else {
+			this.inputTypes.remove(type);
+		}
 	}
 
 }

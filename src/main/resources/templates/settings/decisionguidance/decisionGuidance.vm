@@ -21,7 +21,7 @@
 <fieldset class="group">
 	<legend>Keyword-based</legend>
 	<aui-toggle id="keyword-toggle" value="KEYWORD" label="Keyword-based"
-		#if ($recommendationInput.KEYWORD)
+		#if ($decisionGuidanceConfig.getInputTypes().toString().contains("KEYWORD"))
 		checked
 		#end
 		></aui-toggle>
@@ -30,7 +30,7 @@
 <fieldset class="group">
 	<legend>Decision problem-based</legend>
 	<aui-toggle id="issue-toggle" value="ISSUE" label="Decision problem-based"
-		#if ($recommendationInput.ISSUE)
+		#if ($decisionGuidanceConfig.getInputTypes().toString().contains("ISSUE"))
 		checked
 		#end
 		></aui-toggle>
@@ -282,7 +282,7 @@
 #parse("templates/settings/decisionguidance/decisionGuidanceEvaluation.vm")
 
 <script>
-$(document).ready(function() {
+$(document).ready(function() {	
     $("#keyword-toggle").change(function() {
         var value= $(this).val();
         const isActivated = $(this).prop("checked");
@@ -294,11 +294,6 @@ $(document).ready(function() {
         const isActivated = $(this).prop("checked");
         conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
     });
-
-    if("$recommendationInput" == "KEYWORD")
-        $("#keyword-based").prop("checked", true);
-    else
-        $("#issue-based").prop("checked", true);
 
 	$('input[type=radio][name=radiobuttons-input]').change(function() {
         conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", this.value);

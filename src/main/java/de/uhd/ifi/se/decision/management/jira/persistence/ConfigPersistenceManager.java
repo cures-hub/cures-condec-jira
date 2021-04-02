@@ -386,32 +386,7 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setMaxNumberOfRecommendations(maxNumberRecommendation);
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static void setSimilarityThreshold(String projectKey, double threshold) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static double getSimilarityThreshold(String projectKey) {
-		return getDecisionGuidanceConfiguration(projectKey).getSimilarityThreshold();
-	}
-
-	public static void setIrrelevantWords(String projectKey, String words) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setIrrelevantWords(words);
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static String getIrrelevantWords(String projectKey) {
-		return getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords();
-	}
-
+	// TODO Remove all these methods here
 	public static void addRdfKnowledgeSource(String projectKey, RDFSource rdfSource) {
 		if (rdfSource == null) {
 			return;
@@ -420,10 +395,6 @@ public class ConfigPersistenceManager {
 		rdfSource.setActivated(true); // default: activated
 		decisionGuidanceConfiguration.getRdfKnowledgeSources().add(rdfSource);
 		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static List<RDFSource> getRDFKnowledgeSources(String projectKey) {
-		return getDecisionGuidanceConfiguration(projectKey).getRdfKnowledgeSources();
 	}
 
 	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
@@ -474,8 +445,9 @@ public class ConfigPersistenceManager {
 
 	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
 
-		knowledgeSources.addAll(getRDFKnowledgeSources(projectKey));
+		knowledgeSources.addAll(decisionGuidanceConfiguration.getRdfKnowledgeSources());
 		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
 		// New KnowledgeSources could be added here.
 
@@ -488,33 +460,15 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static void setAddRecommendationDirectly(String projectKey, boolean addRecommendationDirectly) {
+	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setRecommendationAddedToKnowledgeGraph(addRecommendationDirectly);
+		decisionGuidanceConfiguration.setRecommendationInput(recommendationInput, isActivated);
 		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
-	public static boolean getAddRecommendationDirectly(String projectKey) {
-		return getDecisionGuidanceConfiguration(projectKey).isRecommendationAddedToKnowledgeGraph();
-	}
-
-	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {
-		setValue(projectKey, "recommendationInput." + recommendationInput, String.valueOf(isActivated));
-	}
-
 	public static boolean getRecommendationInput(String projectKey, String recommenderInput) {
-		String value = getValue(projectKey, "recommendationInput." + recommenderInput);
-		return Boolean.valueOf(value);
-	}
-
-	// TODO Do not use maps because this is hard to understand
-	public static Map<String, Boolean> getRecommendationInputAsMap(String projectKey) {
-		Map<String, Boolean> recommenderTypes = new HashMap<>();
-		for (RecommenderType recommenderType : RecommenderType.values()) {
-			recommenderTypes.put(recommenderType.toString(),
-					getRecommendationInput(projectKey, recommenderType.toString()));
-		}
-		return recommenderTypes;
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		return decisionGuidanceConfiguration.getInputTypes().contains(RecommenderType.valueOf(recommenderInput));
 	}
 
 	/* **************************************/
@@ -522,7 +476,6 @@ public class ConfigPersistenceManager {
 	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
-
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
