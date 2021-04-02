@@ -28,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceC
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -460,17 +459,6 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setRecommendationInput(recommendationInput, isActivated);
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static boolean getRecommendationInput(String projectKey, String recommenderInput) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		return decisionGuidanceConfiguration.getInputTypes().contains(RecommenderType.valueOf(recommenderInput));
-	}
-
 	/* **************************************/
 	/*										*/
 	/* Configuration for Rationale Backlog */
@@ -508,7 +496,7 @@ public class ConfigPersistenceManager {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Cia Settings */
+	/* Configuration for Change Impact Analysis (CIA) Settings */
 	/*										*/
 	/* **************************************/
 

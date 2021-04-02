@@ -566,14 +566,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetRecommendationInput() {
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
-		assertEquals(true, ConfigPersistenceManager.getRecommendationInput("TEST", "KEYWORD"));
-		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
-		assertEquals(false, ConfigPersistenceManager.getRecommendationInput(null, null));
-	}
-
-	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);

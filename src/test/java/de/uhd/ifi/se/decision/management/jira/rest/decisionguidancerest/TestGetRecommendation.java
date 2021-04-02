@@ -39,7 +39,7 @@ public class TestGetRecommendation extends TestSetUp {
 	public void testGetRecommendation() {
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString(), true);
+		decisionGuidanceRest.setRecommendationInput(request, "TEST", RecommenderType.KEYWORD.toString(), true);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 	}

@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestDecisionGuidanceConfiguration {
@@ -27,9 +26,9 @@ public class TestDecisionGuidanceConfiguration {
 	}
 
 	@Test
-	public void testSetAndGetRecommendationInputAsMap() {
+	public void testSetAndGetRecommendationInput() {
 		config.setRecommendationInput("KEYWORD", true);
-		assertEquals(RecommenderType.values().length, config.getInputTypes().size());
+		assertEquals(1, config.getInputTypes().size());
 	}
 
 	@Test

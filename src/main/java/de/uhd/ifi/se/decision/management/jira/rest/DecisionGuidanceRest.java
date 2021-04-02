@@ -244,7 +244,11 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
-		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRecommendationInput(recommendationInput, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
+
 		return Response.ok().build();
 	}
 
