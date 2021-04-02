@@ -93,7 +93,7 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	@Test
 	public void testSetProjectKnowledgeSources() {
 		config.setProjectKnowledgeSources(new ArrayList<>());
-		assertEquals(0, config.getAllActivatedKnowledgeSources());
+		assertEquals(0, config.getAllActivatedKnowledgeSources().size());
 	}
 
 	@Test
