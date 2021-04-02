@@ -99,7 +99,7 @@ public abstract class BaseRecommender<T> {
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement knowledgeElement,
 			String keyword) {
 		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
-		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager.getAllActivatedKnowledgeSources(projectKey);
+		List<KnowledgeSource> knowledgeSources = config.getAllActivatedKnowledgeSources();
 		List<BaseRecommender> recommenders = new ArrayList<>();
 
 		for (RecommenderType recommenderType : config.getInputTypes()) {

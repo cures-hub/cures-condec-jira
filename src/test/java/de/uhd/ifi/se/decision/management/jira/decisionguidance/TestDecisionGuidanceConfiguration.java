@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestDecisionGuidanceConfiguration {
 
@@ -58,8 +57,8 @@ public class TestDecisionGuidanceConfiguration {
 		assertEquals("Number of Knowledge sources should be 1", 1, config.getRdfKnowledgeSources().size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
-		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
-		rdfSource = ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().get(0);
+		config.updateKnowledgeSource("RDF Name", rdfSourceUpdated);
+		rdfSource = config.getRdfKnowledgeSources().get(0);
 		assertEquals("service2", rdfSource.getService());
 		assertEquals("query2", rdfSource.getQueryString());
 		assertEquals("10000", rdfSource.getTimeout());
@@ -71,14 +70,33 @@ public class TestDecisionGuidanceConfiguration {
 				config.getRdfKnowledgeSources().size());
 
 		// Test deactivation
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
-		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().get(0).isActivated());
+		config.setRdfKnowledgeSourceActivation("RDF Name2", false);
+		assertFalse("The knowledge source should be dectivated!", config.getRdfKnowledgeSources().get(0).isActivated());
 
 		// Delete KnowledgeSource
-		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
-		assertEquals("The knowledge source should be 0!", 0,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
+		config.deleteKnowledgeSource("RDF Name2");
+		assertEquals("The knowledge source should be 0!", 0, config.getRdfKnowledgeSources().size());
+	}
+
+	@Test
+	public void testGetAllKnowledgeSources() {
+		assertEquals(1, config.getAllKnowledgeSources().size());
+	}
+
+	@Test
+	public void testSetAndGetProjectKnowledgeSources() {
+		config.setProjectSource("OTHERPRORJECT", true);
+		assertTrue(config.getProjectSource("OTHERPRORJECT"));
+		config.setProjectSource("OTHERPRORJECT", false);
+		assertFalse(config.getProjectSource("OTHERPRORJECT"));
+	}
+
+	@Test
+	public void testGetActiveProjects() {
+		config.setProjectSource("TEST", true);
+		assertEquals(1, config.getProjectKnowledgeSources().size());
+		config.setProjectSource("TEST", false);
+		assertEquals(0, config.getProjectKnowledgeSources().size());
 	}
 
 }

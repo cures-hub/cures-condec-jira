@@ -483,57 +483,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetProjectKnowledgeSources() {
-		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", true);
-		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
-		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", false);
-		assertFalse(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
-	}
-
-	@Test
-	public void testGetProjectSourceIfInitial() {
-		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
-	}
-
-	@Test
-	public void testGetActiveProjects() {
-		ConfigPersistenceManager.setProjectSource("TEST", "TEST", true);
-		assertEquals(1, ConfigPersistenceManager.getProjectSourcesForActiveProjects("TEST").size());
-	}
-
-	@Test
-	public void testGetActiveProjectsSourcesInvalid() {
-		assertEquals(0, ConfigPersistenceManager.getProjectSourcesForActiveProjects("PROJECT DOES NOT EXIST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSources() {
-		assertEquals(1, ConfigPersistenceManager.getAllKnowledgeSources("TEST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesInvalidProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("PROJECT DOES NOT EXIST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesEmptyProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesNullProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources(null).size());
-	}
-
-	@Test
-	public void testGetAllActivatedKnowledgeSourcesNullProject() {
-		assertEquals(1, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
-		ConfigPersistenceManager.setProjectSource("TEST", "TEST", false);
-		assertEquals(0, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
-	}
-
-	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
@@ -84,6 +85,28 @@ public class DecisionGuidanceConfiguration {
 		rdfKnowledgeSources.add(rdfSource);
 	}
 
+	public void deleteKnowledgeSource(String knowledgeSourceName) {
+		rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
+	}
+
+	public void updateKnowledgeSource(String knowledgeSourceName, RDFSource rdfSource) {
+		for (int i = 0; i < rdfKnowledgeSources.size(); ++i) {
+			if (rdfKnowledgeSources.get(i).getName().equals(knowledgeSourceName)) {
+				rdfKnowledgeSources.set(i, rdfSource);
+				break;
+			}
+		}
+	}
+
+	public void setRdfKnowledgeSourceActivation(String rdfSourceName, boolean isActivated) {
+		for (int i = 0; i < rdfKnowledgeSources.size(); ++i) {
+			if (rdfSourceName.equals(rdfKnowledgeSources.get(i).getName())) {
+				rdfKnowledgeSources.get(i).setActivated(isActivated);
+				break;
+			}
+		}
+	}
+
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		return projectKnowledgeSources;
 	}
@@ -91,6 +114,25 @@ public class DecisionGuidanceConfiguration {
 	@JsonProperty
 	public void setProjectKnowledgeSources(List<ProjectSource> projectKnowledgeSources) {
 		this.projectKnowledgeSources = projectKnowledgeSources;
+	}
+
+	public boolean getProjectSource(String projectSourceKey) {
+		for (ProjectSource projectSource : projectKnowledgeSources) {
+			if (projectSource.getName().equals(projectSourceKey)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setProjectSource(String projectSourceKey, boolean isActivated) {
+		for (ProjectSource projectSource : projectKnowledgeSources) {
+			if (projectSource.getName().equals(projectSourceKey)) {
+				projectSource.setActivated(isActivated);
+				return;
+			}
+		}
+		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, projectSourceKey, isActivated));
 	}
 
 	public Set<RecommenderType> getInputTypes() {
@@ -109,6 +151,21 @@ public class DecisionGuidanceConfiguration {
 		} else {
 			this.inputTypes.remove(type);
 		}
+	}
+
+	public List<KnowledgeSource> getAllKnowledgeSources() {
+		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
+
+		knowledgeSources.addAll(rdfKnowledgeSources);
+		knowledgeSources.addAll(projectKnowledgeSources);
+		// New KnowledgeSources could be added here.
+		return knowledgeSources;
+	}
+
+	public List<KnowledgeSource> getAllActivatedKnowledgeSources() {
+		List<KnowledgeSource> knowledgeSources = getAllKnowledgeSources();
+		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
+		return knowledgeSources;
 	}
 
 }

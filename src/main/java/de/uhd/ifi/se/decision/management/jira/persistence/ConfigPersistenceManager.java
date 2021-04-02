@@ -25,9 +25,6 @@ import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -383,69 +380,6 @@ public class ConfigPersistenceManager {
 			return new DecisionGuidanceConfiguration();
 		}
 		return decisionGuidanceConfiguration;
-	}
-
-	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
-		for (int i = 0; i < rdfSources.size(); ++i) {
-			if (rdfSources.get(i).getName().equals(knowledgeSourceName)) {
-				rdfSources.set(i, rdfSource);
-				break;
-			}
-		}
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
-		rdfSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
-
-		for (int i = 0; i < rdfSources.size(); ++i) {
-			if (rdfSourceName.equals(rdfSources.get(i).getName())) {
-				rdfSources.get(i).setActivated(isActivated);
-				break;
-			}
-		}
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
-	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
-		setValue(projectKey, "projectSource." + projectSourceKey, Boolean.toString(isActivated));
-	}
-
-	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
-		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
-	}
-
-	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		List<ProjectSource> projectSources = decisionGuidanceConfiguration.getProjectKnowledgeSources();
-		return projectSources;
-	}
-
-	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-
-		knowledgeSources.addAll(decisionGuidanceConfiguration.getRdfKnowledgeSources());
-		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
-		// New KnowledgeSources could be added here.
-
-		return knowledgeSources;
-	}
-
-	public static List<KnowledgeSource> getAllActivatedKnowledgeSources(String projectKey) {
-		List<KnowledgeSource> knowledgeSources = getAllKnowledgeSources(projectKey);
-		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
-		return knowledgeSources;
 	}
 
 	/* **************************************/

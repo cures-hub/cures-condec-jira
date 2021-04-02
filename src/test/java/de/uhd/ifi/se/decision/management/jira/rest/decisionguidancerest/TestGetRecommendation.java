@@ -98,10 +98,10 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
+		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, projectKey, validKeyword, 1, "s").getStatus());
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
+		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
 	}
 
 	/*

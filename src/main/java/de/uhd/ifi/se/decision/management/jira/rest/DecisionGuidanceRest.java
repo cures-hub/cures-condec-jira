@@ -161,7 +161,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.deleteKnowledgeSource(knowledgeSourceName);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -182,7 +185,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.updateKnowledgeSource(projectKey, knowledgeSourceName, rdfSource);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.updateKnowledgeSource(knowledgeSourceName, rdfSource);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -200,7 +206,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRdfKnowledgeSourceActivation(knowledgeSourceName, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -216,7 +225,10 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
-		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setProjectSource(projectSourceKey, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -326,7 +338,8 @@ public class DecisionGuidanceRest {
 			return checkIfDataIsValidResponse;
 		}
 
-		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
+		List<KnowledgeSource> allKnowledgeSources = config.getAllKnowledgeSources();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 
