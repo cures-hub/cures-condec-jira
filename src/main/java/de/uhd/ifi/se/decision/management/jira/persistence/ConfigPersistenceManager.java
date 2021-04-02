@@ -385,17 +385,6 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	// TODO Remove all these methods here
-	public static void addRdfKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		if (rdfSource == null) {
-			return;
-		}
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
-		rdfSource.setActivated(true); // default: activated
-		decisionGuidanceConfiguration.getRdfKnowledgeSources().add(rdfSource);
-		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-	}
-
 	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
 		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();

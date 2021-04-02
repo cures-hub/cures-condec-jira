@@ -54,9 +54,8 @@ public class TestDecisionGuidanceConfiguration {
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
-		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", rdfSource);
-		assertEquals("Number of Knowledge sources should be 1", 1,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
+		config.addRdfKnowledgeSource(rdfSource);
+		assertEquals("Number of Knowledge sources should be 1", 1, config.getRdfKnowledgeSources().size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
 		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
@@ -67,9 +66,9 @@ public class TestDecisionGuidanceConfiguration {
 		assertEquals("RDF Name2", rdfSource.getName());
 
 		// Test invalid Source
-		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", null);
+		config.addRdfKnowledgeSource(null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
+				config.getRdfKnowledgeSources().size());
 
 		// Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);

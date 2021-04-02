@@ -16,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
@@ -481,37 +480,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		 * ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST",
 		 * consistencyEvent));
 		 */
-	}
-
-	@Test
-	public void testSetAndGetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
-		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", rdfSource);
-		assertEquals("Number of Knowledge sources should be 1", 1,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
-
-		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
-		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
-		rdfSource = ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().get(0);
-		assertEquals("service2", rdfSource.getService());
-		assertEquals("query2", rdfSource.getQueryString());
-		assertEquals("10000", rdfSource.getTimeout());
-		assertEquals("RDF Name2", rdfSource.getName());
-
-		// Test invalid Source
-		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", null);
-		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
-
-		// Test deactivation
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
-		assertFalse("The knowledge source should be dectivated!", ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().get(0).isActivated());
-
-		// Delete KnowledgeSource
-		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
-		assertEquals("The knowledge source should be 0!", 0,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getRdfKnowledgeSources().size());
 	}
 
 	@Test

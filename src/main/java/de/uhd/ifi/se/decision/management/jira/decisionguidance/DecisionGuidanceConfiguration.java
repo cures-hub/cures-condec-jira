@@ -76,6 +76,14 @@ public class DecisionGuidanceConfiguration {
 		this.rdfKnowledgeSources = rdfKnowledgeSources;
 	}
 
+	public void addRdfKnowledgeSource(RDFSource rdfSource) {
+		if (rdfSource == null) {
+			return;
+		}
+		rdfSource.setActivated(true); // default: activated
+		rdfKnowledgeSources.add(rdfSource);
+	}
+
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		return projectKnowledgeSources;
 	}
