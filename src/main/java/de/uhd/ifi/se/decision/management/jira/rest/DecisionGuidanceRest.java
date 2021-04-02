@@ -129,7 +129,7 @@ public class DecisionGuidanceRest {
 						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
 		}
 
-		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
+		ConfigPersistenceManager.addRdfKnowledgeSource(projectKey, rdfSource);
 		return Response.ok().build();
 	}
 

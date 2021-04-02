@@ -414,66 +414,42 @@ public class ConfigPersistenceManager {
 		return getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords();
 	}
 
-	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		List<RDFSource> rdfSources = getRDFKnowledgeSources(projectKey);
-		Type type = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		if (rdfSource != null) {
-			rdfSource.setActivated(true); // default: activated
-			rdfSources.add(rdfSource);
-			saveObject(projectKey, "rdfKnowledgeSources", rdfSources, type);
+	public static void addRdfKnowledgeSource(String projectKey, RDFSource rdfSource) {
+		if (rdfSource == null) {
+			return;
 		}
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		rdfSource.setActivated(true); // default: activated
+		decisionGuidanceConfiguration.getRdfKnowledgeSources().add(rdfSource);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<RDFSource> getRDFKnowledgeSources(String projectKey) {
-		if (projectKey == null) {
-			return new ArrayList<>();
-		}
-		Type type = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		List<RDFSource> rdfSources = (List<RDFSource>) getSavedObject(projectKey, "rdfKnowledgeSources", type);
-		if (rdfSources == null) {
-			return new ArrayList<>();
-		}
-		for (RDFSource source : rdfSources) {
-			source.setLimit(getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations());
-		}
-		return rdfSources;
+		return getDecisionGuidanceConfiguration(projectKey).getRdfKnowledgeSources();
 	}
 
 	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
-		List<RDFSource> rdfSources = getRDFKnowledgeSources(projectKey);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
 		for (int i = 0; i < rdfSources.size(); ++i) {
 			if (rdfSources.get(i).getName().equals(knowledgeSourceName)) {
 				rdfSources.set(i, rdfSource);
 				break;
 			}
 		}
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfKnowledgeSources", rdfSources, listType);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSources(projectKey);
-		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfKnowledgeSources", rdfSourceList, listType);
-	}
-
-	public static void deleteAllKnowledgeSources(String projectKey) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfKnowledgeSources", rdfSourceList, listType);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
+		rdfSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
-		List<RDFSource> rdfSources = getRDFKnowledgeSources(projectKey);
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		List<RDFSource> rdfSources = decisionGuidanceConfiguration.getRdfKnowledgeSources();
 
 		for (int i = 0; i < rdfSources.size(); ++i) {
 			if (rdfSourceName.equals(rdfSources.get(i).getName())) {
@@ -481,7 +457,7 @@ public class ConfigPersistenceManager {
 				break;
 			}
 		}
-		saveObject(projectKey, "rdfKnowledgeSources", rdfSources, listType);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
@@ -535,12 +511,14 @@ public class ConfigPersistenceManager {
 		return knowledgeSources;
 	}
 
-	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
-		setValue(projectKey, "addRecommendationDirectly", addRecommendationDirectly.toString());
+	public static void setAddRecommendationDirectly(String projectKey, boolean addRecommendationDirectly) {
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRecommendationAddedToKnowledgeGraph(addRecommendationDirectly);
+		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
 	public static boolean getAddRecommendationDirectly(String projectKey) {
-		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
+		return getDecisionGuidanceConfiguration(projectKey).isRecommendationAddedToKnowledgeGraph();
 	}
 
 	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {

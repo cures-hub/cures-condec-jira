@@ -487,7 +487,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
-		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
+		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1,
 				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
 
@@ -499,7 +499,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals("RDF Name2", ConfigPersistenceManager.getRDFKnowledgeSources("TEST").get(0).getName());
 
 		// Test invalid Source
-		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
+		ConfigPersistenceManager.addRdfKnowledgeSource("TEST", null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
 				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
 
