@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -86,8 +87,11 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 	@Test
 	public void testEvaluationExecute() {
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration("TEST");
+		decisionGuidanceConfiguration.setRecommendationInput("KEYWORD", true);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration("TEST", decisionGuidanceConfiguration);
 
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(testElement)
 				.withKnowledgeSource(knowledgeSources, "TEST").execute();
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -97,17 +98,14 @@ public abstract class BaseRecommender<T> {
 
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement knowledgeElement,
 			String keyword) {
-		List<KnowledgeSource> knowledgeSources = ConfigPersistenceManager.getAllActivatedKnowledgeSources(projectKey);
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
+		List<KnowledgeSource> knowledgeSources = config.getAllActivatedKnowledgeSources();
 		List<BaseRecommender> recommenders = new ArrayList<>();
 
-		for (RecommenderType recommenderType : RecommenderType.values()) {
-			boolean isTypeActivated = ConfigPersistenceManager.getRecommendationInput(projectKey,
-					recommenderType.toString());
-			if (isTypeActivated) {
-				BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
-				recommender.addKnowledgeSource(knowledgeSources);
-				recommenders.add(recommender);
-			}
+		for (RecommenderType recommenderType : config.getInputTypes()) {
+			BaseRecommender recommender = RecommenderFactory.getRecommender(recommenderType);
+			recommender.addKnowledgeSource(knowledgeSources);
+			recommenders.add(recommender);
 		}
 
 		List<Recommendation> recommendations = new ArrayList<>();

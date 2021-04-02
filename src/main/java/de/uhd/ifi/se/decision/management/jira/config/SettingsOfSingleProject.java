@@ -64,19 +64,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("minLengthDuplicate", ConfigPersistenceManager.getFragmentLength(projectKey));
 		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
 
-		velocityParameters.put("maxNumberRecommendations",
-				ConfigPersistenceManager.getMaxNumberRecommendations(projectKey));
-
-		velocityParameters.put("rdfSources", ConfigPersistenceManager.getRDFKnowledgeSources(projectKey));
-		velocityParameters.put("projectSources",
-				ConfigPersistenceManager.getProjectSourcesForActiveProjects(projectKey));
-
-		velocityParameters.put("addRecommendationDirectly",
-				ConfigPersistenceManager.getAddRecommendationDirectly(projectKey));
-		velocityParameters.put("recommendationInput", ConfigPersistenceManager.getRecommendationInputAsMap(projectKey));
-		velocityParameters.put("similarityThreshold", ConfigPersistenceManager.getSimilarityThreshold(projectKey));
-		velocityParameters.put("irrelevantWords", ConfigPersistenceManager.getIrrelevantWords(projectKey));
-
 		return velocityParameters;
 	}
 

@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -52,7 +53,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The maximum number of results cannot be smaller 0.")).build();
 		}
 
-		ConfigPersistenceManager.setMaxNumberRecommendations(projectKey, maxNumberRecommendations);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setMaxNumberOfRecommendations(maxNumberRecommendations);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -69,7 +73,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The threshold must be between 0 and 1.")).build();
 		}
 
-		ConfigPersistenceManager.setSimilarityThreshold(projectKey, threshold);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
@@ -86,7 +93,10 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		ConfigPersistenceManager.setIrrelevantWords(projectKey, words);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setIrrelevantWords(words);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
@@ -123,13 +133,17 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
 		}
 
-		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSources(projectKey)) {
+		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+				.getRDFKnowledgeSources()) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
 				return Response.status(Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
 		}
 
-		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.addRDFKnowledgeSource(rdfSource);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -147,7 +161,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.deleteRDFKnowledgeSource(knowledgeSourceName);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -168,7 +185,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.updateKnowledgeSource(projectKey, knowledgeSourceName, rdfSource);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.updateRDFKnowledgeSource(knowledgeSourceName, rdfSource);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -186,7 +206,10 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
 		}
 
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRDFKnowledgeSourceActivation(knowledgeSourceName, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -202,7 +225,10 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
-		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setProjectKnowledgeSource(projectSourceKey, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -210,13 +236,16 @@ public class DecisionGuidanceRest {
 	@POST
 	public Response setAddRecommendationDirectly(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("addRecommendationDirectly") String addRecommendationDirectly) {
+			@QueryParam("addRecommendationDirectly") boolean addRecommendationDirectly) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
-		ConfigPersistenceManager.setAddRecommendationDirectly(projectKey, Boolean.valueOf(addRecommendationDirectly));
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRecommendationAddedToKnowledgeGraph(addRecommendationDirectly);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
 
@@ -230,7 +259,11 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
-		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput, isActivated);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRecommendationInput(recommendationInput, isActivated);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
+
 		return Response.ok().build();
 	}
 
@@ -286,7 +319,8 @@ public class DecisionGuidanceRest {
 		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueId, documentationLocation);
 		List<Recommendation> recommendations = BaseRecommender.getAllRecommendations(projectKey, knowledgeElement,
 				keyword);
-		if (ConfigPersistenceManager.getAddRecommendationDirectly(projectKey))
+		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+				.isRecommendationAddedToKnowledgeGraph())
 			BaseRecommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey,
 					recommendations);
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
@@ -304,7 +338,8 @@ public class DecisionGuidanceRest {
 			return checkIfDataIsValidResponse;
 		}
 
-		List<KnowledgeSource> allKnowledgeSources = ConfigPersistenceManager.getAllKnowledgeSources(projectKey);
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
+		List<KnowledgeSource> allKnowledgeSources = config.getAllKnowledgeSources();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 

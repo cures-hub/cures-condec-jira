@@ -12,6 +12,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
@@ -38,7 +39,7 @@ public class TestGetRecommendation extends TestSetUp {
 	public void testGetRecommendation() {
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString(), true);
+		decisionGuidanceRest.setRecommendationInput(request, "TEST", RecommenderType.KEYWORD.toString(), true);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
@@ -75,11 +76,15 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationGetRecommender() {
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.KEYWORD.toString(), true);
-		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.KEYWORD.toString(), true);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
+
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
-		ConfigPersistenceManager.setRecommendationInput("TEST", RecommenderType.ISSUE.toString(), true);
+		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.ISSUE.toString(), true);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
@@ -93,10 +98,10 @@ public class TestGetRecommendation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, false);
+		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendation(request, projectKey, validKeyword, 1, "s").getStatus());
-		ConfigPersistenceManager.setProjectSource(projectKey, projectKey, true);
+		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
 	}
 
 	/*

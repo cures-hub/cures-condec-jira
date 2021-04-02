@@ -31,7 +31,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	public List<Recommendation> getRecommendations(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		THRESHOLD = ConfigPersistenceManager.getSimilarityThreshold(projectKey); // TODO refactor to other location
+		THRESHOLD = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getSimilarityThreshold();
 
 		this.queryDatabase();
 		if (knowledgeElements == null || inputs == null)
@@ -104,7 +104,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	private String cleanInput(String input) {
 		List<String> inputTokens = Arrays.asList(input.split(" "));
 		BagOfIrrelevantWords bagOfIrrelevantWords = new BagOfIrrelevantWords(
-				ConfigPersistenceManager.getIrrelevantWords(projectKey));
+				ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords());
 		return bagOfIrrelevantWords.cleanSentence(inputTokens);
 	}
 
