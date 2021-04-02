@@ -11,7 +11,7 @@ public class DecisionGuidanceConfiguration {
 
 	public DecisionGuidanceConfiguration() {
 		this.setRecommendationAddedToKnowledgeGraph(false);
-		this.setMaxNumberOfRecommendations(10);
+		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.setIrrelevantWords("");
 	}
