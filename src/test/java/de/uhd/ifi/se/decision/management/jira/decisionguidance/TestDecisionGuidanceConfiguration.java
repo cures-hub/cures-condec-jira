@@ -4,17 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 
-public class TestDecisionGuidanceConfiguration {
+public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 	private DecisionGuidanceConfiguration config;
 
 	@Before
 	public void setUp() {
+		init();
 		config = new DecisionGuidanceConfiguration();
 	}
 
@@ -28,6 +35,8 @@ public class TestDecisionGuidanceConfiguration {
 	public void testSetAndGetRecommendationInput() {
 		config.setRecommendationInput("KEYWORD", true);
 		assertEquals(1, config.getInputTypes().size());
+		config.setRecommendationInput("KEYWORD", false);
+		assertEquals(0, config.getInputTypes().size());
 	}
 
 	@Test
@@ -51,53 +60,65 @@ public class TestDecisionGuidanceConfiguration {
 	}
 
 	@Test
+	public void testSetAndGetRDFKnowledgeSources() {
+		List<RDFSource> rdfSources = new ArrayList<>();
+		rdfSources.add(new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, ""));
+		config.setRDFKnowledgeSources(rdfSources);
+		assertEquals(1, config.getRDFKnowledgeSources().size());
+	}
+
+	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
-		config.addRdfKnowledgeSource(rdfSource);
-		assertEquals(1, config.getRdfKnowledgeSources().size());
+		config.addRDFKnowledgeSource(rdfSource);
+		assertEquals(1, config.getRDFKnowledgeSources().size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
-		config.updateKnowledgeSource("RDF Name", rdfSourceUpdated);
-		rdfSource = config.getRdfKnowledgeSources().get(0);
+		config.updateRDFKnowledgeSource("RDF Name", rdfSourceUpdated);
+		rdfSource = config.getRDFKnowledgeSources().get(0);
 		assertEquals("service2", rdfSource.getService());
 		assertEquals("query2", rdfSource.getQueryString());
 		assertEquals("10000", rdfSource.getTimeout());
 		assertEquals("RDF Name2", rdfSource.getName());
 
 		// Test deactivation
-		config.setRdfKnowledgeSourceActivation("RDF Name2", false);
-		assertFalse(config.getRdfKnowledgeSources().get(0).isActivated());
+		config.setRDFKnowledgeSourceActivation("RDF Name2", false);
+		assertFalse(config.getRDFKnowledgeSources().get(0).isActivated());
 
 		// Delete KnowledgeSource
-		config.deleteKnowledgeSource("RDF Name2");
-		assertEquals(0, config.getRdfKnowledgeSources().size());
+		config.deleteRDFKnowledgeSource("RDF Name2");
+		assertEquals(0, config.getRDFKnowledgeSources().size());
+	}
+
+	@Test
+	public void testSetProjectKnowledgeSources() {
+		config.setProjectKnowledgeSources(new ArrayList<>());
+		assertEquals(0, config.getProjectKnowledgeSources().size());
 	}
 
 	@Test
 	public void testAddRDFKnowledgeSourceNull() {
-		config.addRdfKnowledgeSource(null);
-		assertEquals(0, config.getRdfKnowledgeSources().size());
+		config.addRDFKnowledgeSource(null);
+		assertEquals(0, config.getRDFKnowledgeSources().size());
 	}
 
 	@Test
 	public void testGetAllKnowledgeSources() {
-		assertEquals(0, config.getAllKnowledgeSources().size());
+		assertEquals(1, config.getAllKnowledgeSources().size());
+		assertEquals(0, config.getAllActivatedKnowledgeSources().size());
 	}
 
 	@Test
-	public void testSetAndGetProjectKnowledgeSources() {
-		config.setProjectSource("OTHERPRORJECT", true);
+	public void testSetAndGetProjectKnowledgeSource() {
+		config.setProjectKnowledgeSource("OTHERPRORJECT", true);
 		assertTrue(config.getProjectSource("OTHERPRORJECT").isActivated());
-		config.setProjectSource("OTHERPRORJECT", false);
+		config.setProjectKnowledgeSource("OTHERPRORJECT", false);
 		assertFalse(config.getProjectSource("OTHERPRORJECT").isActivated());
 	}
 
 	@Test
-	public void testGetActiveProjects() {
-		config.setProjectSource("TEST", true);
-		assertEquals(1, config.getProjectKnowledgeSources().size());
-		config.setProjectSource("TEST", false);
-		assertEquals(0, config.getProjectKnowledgeSources().size());
+	public void testSetAndGetInputTypes() {
+		config.setInputTypes(Set.of(RecommenderType.values()));
+		assertEquals(3, config.getInputTypes().size());
 	}
-
 }

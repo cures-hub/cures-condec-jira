@@ -134,7 +134,7 @@ public class DecisionGuidanceRest {
 		}
 
 		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.getRdfKnowledgeSources()) {
+				.getRDFKnowledgeSources()) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
 				return Response.status(Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
@@ -142,7 +142,7 @@ public class DecisionGuidanceRest {
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.addRdfKnowledgeSource(rdfSource);
+		decisionGuidanceConfiguration.addRDFKnowledgeSource(rdfSource);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
@@ -163,7 +163,7 @@ public class DecisionGuidanceRest {
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.deleteKnowledgeSource(knowledgeSourceName);
+		decisionGuidanceConfiguration.deleteRDFKnowledgeSource(knowledgeSourceName);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
@@ -187,7 +187,7 @@ public class DecisionGuidanceRest {
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.updateKnowledgeSource(knowledgeSourceName, rdfSource);
+		decisionGuidanceConfiguration.updateRDFKnowledgeSource(knowledgeSourceName, rdfSource);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
@@ -208,7 +208,7 @@ public class DecisionGuidanceRest {
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setRdfKnowledgeSourceActivation(knowledgeSourceName, isActivated);
+		decisionGuidanceConfiguration.setRDFKnowledgeSourceActivation(knowledgeSourceName, isActivated);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
@@ -227,7 +227,7 @@ public class DecisionGuidanceRest {
 		}
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setProjectSource(projectSourceKey, isActivated);
+		decisionGuidanceConfiguration.setProjectKnowledgeSource(projectSourceKey, isActivated);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}

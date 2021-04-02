@@ -72,16 +72,16 @@ public class DecisionGuidanceConfiguration {
 		this.irrelevantWords = irrelevantWords;
 	}
 
-	public List<RDFSource> getRdfKnowledgeSources() {
+	public List<RDFSource> getRDFKnowledgeSources() {
 		return rdfKnowledgeSources;
 	}
 
 	@JsonProperty
-	public void setRdfKnowledgeSources(List<RDFSource> rdfKnowledgeSources) {
+	public void setRDFKnowledgeSources(List<RDFSource> rdfKnowledgeSources) {
 		this.rdfKnowledgeSources = rdfKnowledgeSources;
 	}
 
-	public void addRdfKnowledgeSource(RDFSource rdfSource) {
+	public void addRDFKnowledgeSource(RDFSource rdfSource) {
 		if (rdfSource == null) {
 			return;
 		}
@@ -89,11 +89,11 @@ public class DecisionGuidanceConfiguration {
 		rdfKnowledgeSources.add(rdfSource);
 	}
 
-	public void deleteKnowledgeSource(String knowledgeSourceName) {
+	public void deleteRDFKnowledgeSource(String knowledgeSourceName) {
 		rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 	}
 
-	public void updateKnowledgeSource(String knowledgeSourceName, RDFSource rdfSource) {
+	public void updateRDFKnowledgeSource(String knowledgeSourceName, RDFSource rdfSource) {
 		for (int i = 0; i < rdfKnowledgeSources.size(); ++i) {
 			if (rdfKnowledgeSources.get(i).getName().equals(knowledgeSourceName)) {
 				rdfKnowledgeSources.set(i, rdfSource);
@@ -102,7 +102,7 @@ public class DecisionGuidanceConfiguration {
 		}
 	}
 
-	public void setRdfKnowledgeSourceActivation(String rdfSourceName, boolean isActivated) {
+	public void setRDFKnowledgeSourceActivation(String rdfSourceName, boolean isActivated) {
 		for (int i = 0; i < rdfKnowledgeSources.size(); ++i) {
 			if (rdfSourceName.equals(rdfKnowledgeSources.get(i).getName())) {
 				rdfKnowledgeSources.get(i).setActivated(isActivated);
@@ -112,11 +112,10 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	public List<ProjectSource> getProjectKnowledgeSources() {
-		projectKnowledgeSources.removeIf(projectSource -> !projectSource.isActivated());
 		return projectKnowledgeSources;
 	}
 
-	public List<ProjectSource> getProjectSourcesForActiveProjects() {
+	public List<ProjectSource> getAllProjectKnowledgeSources() {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
@@ -138,7 +137,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	public ProjectSource getProjectSource(String projectSourceKey) {
-		for (ProjectSource projectSource : projectKnowledgeSources) {
+		for (ProjectSource projectSource : getProjectKnowledgeSources()) {
 			if (projectSource.getProjectKey().equals(projectSourceKey)) {
 				return projectSource;
 			}
@@ -146,7 +145,7 @@ public class DecisionGuidanceConfiguration {
 		return null;
 	}
 
-	public void setProjectSource(String projectSourceKey, boolean isActivated) {
+	public void setProjectKnowledgeSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
 			if (projectSource.getProjectKey().equals(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
@@ -176,9 +175,8 @@ public class DecisionGuidanceConfiguration {
 
 	public List<KnowledgeSource> getAllKnowledgeSources() {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-
 		knowledgeSources.addAll(rdfKnowledgeSources);
-		knowledgeSources.addAll(projectKnowledgeSources);
+		knowledgeSources.addAll(getAllProjectKnowledgeSources());
 		// New KnowledgeSources could be added here.
 		return knowledgeSources;
 	}
