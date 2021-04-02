@@ -1,6 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 
 public class DecisionGuidanceConfiguration {
 
@@ -8,12 +14,16 @@ public class DecisionGuidanceConfiguration {
 	private int maxNumberOfRecommendations;
 	private double similarityThreshold;
 	private String irrelevantWords;
+	private List<RDFSource> rdfKnowledgeSources;
+	private List<ProjectSource> projectKnowledgeSources;
 
 	public DecisionGuidanceConfiguration() {
 		this.setRecommendationAddedToKnowledgeGraph(false);
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.setIrrelevantWords("");
+		this.rdfKnowledgeSources = new ArrayList<>();
+		this.projectKnowledgeSources = new ArrayList<>();
 	}
 
 	public boolean isRecommendationAddedToKnowledgeGraph() {
@@ -50,6 +60,24 @@ public class DecisionGuidanceConfiguration {
 	@JsonProperty
 	public void setIrrelevantWords(String irrelevantWords) {
 		this.irrelevantWords = irrelevantWords;
+	}
+
+	public List<RDFSource> getRdfKnowledgeSources() {
+		return rdfKnowledgeSources;
+	}
+
+	@JsonProperty
+	public void setRdfKnowledgeSources(List<RDFSource> rdfKnowledgeSources) {
+		this.rdfKnowledgeSources = rdfKnowledgeSources;
+	}
+
+	public List<ProjectSource> getProjectKnowledgeSources() {
+		return projectKnowledgeSources;
+	}
+
+	@JsonProperty
+	public void setProjectKnowledgeSources(List<ProjectSource> projectKnowledgeSources) {
+		this.projectKnowledgeSources = projectKnowledgeSources;
 	}
 
 }

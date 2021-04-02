@@ -71,7 +71,7 @@ public class TestTextClassifier extends TestSetUp {
 				assertEquals(0.7, entry.getValue().accuracy, 0.4);
 			}
 		}
-		assertEquals(0.4, evaluationResults.get("Fine-grained Alternative").accuracy, 0.3);
+		assertEquals(0.4, evaluationResults.get("Fine-grained Alternative").accuracy, 0.4);
 	}
 
 	@Test

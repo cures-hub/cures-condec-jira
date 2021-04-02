@@ -1,5 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
@@ -11,20 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @issue How can we enable that settings can be set during testing?
  * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
- * to enable that settings can be set during testing!
+ *           to enable that settings can be set during testing!
  * @see MockPluginSettings
  * @see MockPluginSettingsFactory
  */
@@ -370,9 +371,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetGitRepos() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP",
-			"user", "secret👀");
+				"user", "secret👀");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-			"githubuser", "token👀");
+				"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -394,9 +395,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetEmptyOrCorruptConfInfo() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "",
-			"");
+				"");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-			"githubuser", "token👀");
+				"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -444,7 +445,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		double input = 0.4;
 		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
 		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
-			0.0);
+				0.0);
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
 		/*
@@ -460,16 +461,16 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		String consistencyEvent = "done";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
 		assertTrue("Activated should be true.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
 		assertFalse("Activated should be false.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		String otherConsistencyEvent = "none";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
 		assertFalse("Activated for 'done' should still be false.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
@@ -488,7 +489,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
 		assertEquals("Number of Knowledge sources should be 1", 1,
-			ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
+				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
 		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
@@ -500,17 +501,17 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		// Test invalid Source
 		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
 		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-			ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
+				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
 
 		// Test deactivation
 		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
 		assertFalse("The knowledge source should be dectivated!",
-			ConfigPersistenceManager.getRDFKnowledgeSources("TEST").get(0).isActivated());
+				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").get(0).isActivated());
 
 		// Delete KnowledgeSource
 		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
 		assertEquals("The knowledge source should be 0!", 0,
-			ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
+				ConfigPersistenceManager.getRDFKnowledgeSources("TEST").size());
 	}
 
 	@Test
@@ -529,7 +530,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetMaxRecommendations() {
 		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
-		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
+		assertEquals(10,
+				ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").getMaxNumberOfRecommendations());
 	}
 
 	@Test
@@ -592,7 +594,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
 		assertNotNull(ConfigPersistenceManager.getRecommendationInputAsMap("TEST"));
 		assertEquals(RecommenderType.values().length,
-			ConfigPersistenceManager.getRecommendationInputAsMap("TEST").size());
+				ConfigPersistenceManager.getRecommendationInputAsMap("TEST").size());
 	}
 
 	@Test
@@ -606,7 +608,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ConfigPersistenceManager.setIrrelevantWords("TEST", "WHICH;WHAT;COULD;SHOULD");
 		assertEquals("WHICH;WHAT;COULD;SHOULD", ConfigPersistenceManager.getIrrelevantWords("TEST"));
 	}
-
 
 	@Test
 	public void testSetAndGetDefinitionOfDone() {
@@ -649,9 +650,11 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(9, settings.getLinkImpact().size());
 		settings.setDecayValue(0.75f);
 		settings.setThreshold(0.2f);
-		settings.setLinkImpact(new HashMap<>() {{
-			put("comment", 0.5f);
-		}});
+		settings.setLinkImpact(new HashMap<>() {
+			{
+				put("comment", 0.5f);
+			}
+		});
 		ConfigPersistenceManager.setCiaSettings("TEST", settings);
 		CiaSettings loaded = ConfigPersistenceManager.getCiaSettings("TEST");
 		assertEquals(0.75, loaded.getDecayValue(), 0.01);

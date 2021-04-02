@@ -394,10 +394,6 @@ public class ConfigPersistenceManager {
 		saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 	}
 
-	public static int getMaxNumberRecommendations(String projectKey) {
-		return getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
-	}
-
 	public static void setSimilarityThreshold(String projectKey, double threshold) {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
 		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
@@ -441,7 +437,7 @@ public class ConfigPersistenceManager {
 			return new ArrayList<>();
 		}
 		for (RDFSource source : rdfSources) {
-			source.setLimit(getMaxNumberRecommendations(projectKey));
+			source.setLimit(getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations());
 		}
 		return rdfSources;
 	}

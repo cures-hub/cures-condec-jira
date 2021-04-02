@@ -131,7 +131,7 @@
     </div>
 </div>
 
-#foreach ($rdfSource in $rdfSources)
+#foreach ($rdfSource in $decisionGuidanceConfig.getRdfKnowledgeSources())
 
 <div class="field-group">
     <label>$rdfSource.getName() activated?</label>    
@@ -264,7 +264,7 @@
     	</tr>
 	</thead>
 	<tbody>
-    #foreach($projectSource in $projectSources)
+    #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
     	<tr>
         	<td>$projectSource.getName()</td>
         	<td>

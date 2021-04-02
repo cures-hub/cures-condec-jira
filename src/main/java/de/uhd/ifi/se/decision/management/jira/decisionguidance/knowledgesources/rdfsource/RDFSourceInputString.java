@@ -224,6 +224,6 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	}
 
 	private int getLimit() {
-		return ConfigPersistenceManager.getMaxNumberRecommendations(this.projectKey);
+		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
 	}
 }
