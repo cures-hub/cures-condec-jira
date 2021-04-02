@@ -73,7 +73,7 @@
                 <a id="query-help-trigger"><span
                     class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
                 <div id="query-help">
-                    "%variable%" is a placeholder for your search in the jira issue view.
+                    "%variable%" is a placeholder for your search in the Jira issue view.
                     The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
                     and ?url. <br>
                     E.g.
@@ -264,7 +264,7 @@
     	</tr>
 	</thead>
 	<tbody>
-    #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
+    #foreach($projectSource in $decisionGuidanceConfig.getProjectSourcesForActiveProjects())
     	<tr>
         	<td>$projectSource.getName()</td>
         	<td>

@@ -7,10 +7,14 @@ import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 public class DecisionGuidanceConfiguration {
 
@@ -110,6 +114,22 @@ public class DecisionGuidanceConfiguration {
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		projectKnowledgeSources.removeIf(projectSource -> !projectSource.isActivated());
 		return projectKnowledgeSources;
+	}
+
+	public List<ProjectSource> getProjectSourcesForActiveProjects() {
+		List<ProjectSource> projectSources = new ArrayList<>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
+			if (!jiraProject.isActivated()) {
+				continue;
+			}
+			ProjectSource projectSource = getProjectSource(jiraProject.getProjectKey());
+			if (projectSource == null) {
+				projectSource = new ProjectSource(jiraProject.getProjectKey(), jiraProject.getProjectName(), false);
+			}
+			projectSources.add(projectSource);
+		}
+		return projectSources;
 	}
 
 	@JsonProperty

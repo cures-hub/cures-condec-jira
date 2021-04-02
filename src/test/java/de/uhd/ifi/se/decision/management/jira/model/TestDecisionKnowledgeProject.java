@@ -180,12 +180,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is commented by"));
 	}
 
-	@AfterClass
-	public static void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
-	}
-
 	@Test
 	public void testGetDefinitionOfDone() {
 		assertFalse(project.getDefinitionOfDone().isIssueIsLinkedToAlternative());
@@ -196,4 +190,9 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertFalse(project.getDecisionGuidanceConfiguration().isRecommendationAddedToKnowledgeGraph());
 	}
 
+	@AfterClass
+	public static void tearDown() {
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
+	}
 }
