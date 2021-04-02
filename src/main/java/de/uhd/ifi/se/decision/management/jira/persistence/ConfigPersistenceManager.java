@@ -15,7 +15,6 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -32,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
@@ -469,24 +467,8 @@ public class ConfigPersistenceManager {
 	}
 
 	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
-		if (projectKey == null)
-			return new ArrayList<>();
-
-		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		if (currentProject == null) {
-			return new ArrayList<>();
-		}
-		List<ProjectSource> projectSources = new ArrayList<>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-					jiraProject.getProjectKey());
-			if (jiraProject.isActivated()) {
-				ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-						projectSourceActivation);
-				projectSources.add(projectSource);
-			}
-		}
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = getDecisionGuidanceConfiguration(projectKey);
+		List<ProjectSource> projectSources = decisionGuidanceConfiguration.getProjectKnowledgeSources();
 		return projectSources;
 	}
 
@@ -501,12 +483,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static List<KnowledgeSource> getAllActivatedKnowledgeSources(String projectKey) {
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-
-		knowledgeSources.addAll(getRDFKnowledgeSources(projectKey));
-		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
-		// New KnowledgeSources could be added here.
-
+		List<KnowledgeSource> knowledgeSources = getAllKnowledgeSources(projectKey);
 		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
 		return knowledgeSources;
 	}
