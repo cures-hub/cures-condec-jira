@@ -18,7 +18,7 @@
         <!-- Dropdown -->
         <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown"
            aria-haspopup="true"
-           class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledgesources</a>
+           class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledge Sources</a>
         <label for="knowledgesource-evaluation-dropdown">Knowledge Sources</label>
 
         <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
@@ -26,18 +26,16 @@
                 <div class="aui-dropdown2-heading">
                     <strong>RDF Sources</strong>
                 </div>
-                #foreach ($rdfSource in $rdfSources)
-                <aui-item-checkbox interactive>$rdfSource.getName()
-                </aui-item-checkbox>
+                #foreach ($rdfSource in $decisionGuidanceConfig.getRDFKnowledgeSources())
+                <aui-item-checkbox interactive>$rdfSource.getName()</aui-item-checkbox>
                 #end
             </div>
             <div class="aui-dropdown2-section">
                 <div class="aui-dropdown2-heading">
                     <strong>Project Sources</strong>
                 </div>
-                #foreach($projectSource in $projectSources)
-                <aui-item-checkbox interactive>$projectSource.getName()
-                </aui-item-checkbox>
+                #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
+                <aui-item-checkbox interactive>$projectSource.getName()</aui-item-checkbox>
                 #end
             </div>
         </aui-dropdown-menu>
@@ -117,7 +115,7 @@
         const spinner = $("#loading-spinner-recommendation");
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults, documentationLocations[issueID],  function(eval, error) {
+            conDecDecisionGuidanceAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults, documentationLocations[issueID],  function(eval, error) {
                 if(eval) {
                     var metrics = ""
                     eval.metrics.forEach(metric => {
