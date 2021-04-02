@@ -54,7 +54,7 @@ public class TestDecisionGuidanceConfiguration {
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
 		config.addRdfKnowledgeSource(rdfSource);
-		assertEquals("Number of Knowledge sources should be 1", 1, config.getRdfKnowledgeSources().size());
+		assertEquals(1, config.getRdfKnowledgeSources().size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
 		config.updateKnowledgeSource("RDF Name", rdfSourceUpdated);
@@ -64,31 +64,32 @@ public class TestDecisionGuidanceConfiguration {
 		assertEquals("10000", rdfSource.getTimeout());
 		assertEquals("RDF Name2", rdfSource.getName());
 
-		// Test invalid Source
-		config.addRdfKnowledgeSource(null);
-		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-				config.getRdfKnowledgeSources().size());
-
 		// Test deactivation
 		config.setRdfKnowledgeSourceActivation("RDF Name2", false);
-		assertFalse("The knowledge source should be dectivated!", config.getRdfKnowledgeSources().get(0).isActivated());
+		assertFalse(config.getRdfKnowledgeSources().get(0).isActivated());
 
 		// Delete KnowledgeSource
 		config.deleteKnowledgeSource("RDF Name2");
-		assertEquals("The knowledge source should be 0!", 0, config.getRdfKnowledgeSources().size());
+		assertEquals(0, config.getRdfKnowledgeSources().size());
+	}
+
+	@Test
+	public void testAddRDFKnowledgeSourceNull() {
+		config.addRdfKnowledgeSource(null);
+		assertEquals(0, config.getRdfKnowledgeSources().size());
 	}
 
 	@Test
 	public void testGetAllKnowledgeSources() {
-		assertEquals(1, config.getAllKnowledgeSources().size());
+		assertEquals(0, config.getAllKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSetAndGetProjectKnowledgeSources() {
 		config.setProjectSource("OTHERPRORJECT", true);
-		assertTrue(config.getProjectSource("OTHERPRORJECT"));
+		assertTrue(config.getProjectSource("OTHERPRORJECT").isActivated());
 		config.setProjectSource("OTHERPRORJECT", false);
-		assertFalse(config.getProjectSource("OTHERPRORJECT"));
+		assertFalse(config.getProjectSource("OTHERPRORJECT").isActivated());
 	}
 
 	@Test

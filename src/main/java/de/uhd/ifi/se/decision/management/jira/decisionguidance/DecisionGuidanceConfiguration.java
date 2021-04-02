@@ -108,6 +108,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	public List<ProjectSource> getProjectKnowledgeSources() {
+		projectKnowledgeSources.removeIf(projectSource -> !projectSource.isActivated());
 		return projectKnowledgeSources;
 	}
 
@@ -116,18 +117,18 @@ public class DecisionGuidanceConfiguration {
 		this.projectKnowledgeSources = projectKnowledgeSources;
 	}
 
-	public boolean getProjectSource(String projectSourceKey) {
+	public ProjectSource getProjectSource(String projectSourceKey) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getName().equals(projectSourceKey)) {
-				return true;
+			if (projectSource.getProjectKey().equals(projectSourceKey)) {
+				return projectSource;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public void setProjectSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getName().equals(projectSourceKey)) {
+			if (projectSource.getProjectKey().equals(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
 				return;
 			}

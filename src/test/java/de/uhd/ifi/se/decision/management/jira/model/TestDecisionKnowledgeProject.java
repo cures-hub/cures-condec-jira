@@ -1,6 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
@@ -9,17 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for a Jira project with the configuration settings used in this
@@ -102,11 +105,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetCodeFileEndings() {
-        Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-        codeFileEndingMap.put("JAVA_C", "java, c++, C");
-        codeFileEndingMap.put("PYTHON", "py");
-        codeFileEndingMap.put("HTML", "js, ts");
-        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+		codeFileEndingMap.put("JAVA_C", "java, c++, C");
+		codeFileEndingMap.put("PYTHON", "py");
+		codeFileEndingMap.put("HTML", "js, ts");
+		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 		List<String> codeFileEndingsJavaC = Arrays.asList(project.getCodeFileEndings("JAVA_C").split(", "));
 		List<String> codeFileEndingsPython = Arrays.asList(project.getCodeFileEndings("PYTHON").split(", "));
 		List<String> codeFileEndingsHTML = Arrays.asList(project.getCodeFileEndings("HTML").split(", "));
@@ -160,7 +163,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
 		assertEquals(1, DecisionKnowledgeProject
-			.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
+				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
 	}
 
 	@Test
@@ -181,6 +184,16 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public static void tearDown() {
 		// reset plugin settings to default settings
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
+	}
+
+	@Test
+	public void testGetDefinitionOfDone() {
+		assertFalse(project.getDefinitionOfDone().isIssueIsLinkedToAlternative());
+	}
+
+	@Test
+	public void testGetDecisionGuidanceConfiguration() {
+		assertFalse(project.getDecisionGuidanceConfiguration().isRecommendationAddedToKnowledgeGraph());
 	}
 
 }
