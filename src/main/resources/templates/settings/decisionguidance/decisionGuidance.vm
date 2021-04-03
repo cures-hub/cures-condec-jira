@@ -52,7 +52,6 @@ $(document).ready(function() {
        const constraint = $("#create-constraint-knowledgesource");
 
        var rdfSourceJSON = {
-            "projectKey": "$projectKey",
             "name": name.val(),
             "service": service.val(),
             "queryString": queryString.val(),

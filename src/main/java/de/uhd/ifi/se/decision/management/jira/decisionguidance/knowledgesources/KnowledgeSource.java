@@ -4,8 +4,11 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 
 /**
- * Contains basic data to identifiy a knowledge source. Knowledge sources can be
+ * Contains basic data to identify a knowledge source. Knowledge sources can be
  * Jira projects or DBPedia.
+ * 
+ * The knowledge sources are used to recommend solution options for decision
+ * problems to the developers, i.e. for decision guidance.
  * 
  * @see ProjectSource
  * @see RDFSource

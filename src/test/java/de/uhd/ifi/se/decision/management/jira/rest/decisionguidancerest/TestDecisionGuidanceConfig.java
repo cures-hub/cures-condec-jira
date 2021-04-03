@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -42,33 +41,29 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@DisplayName("Tests the method setRDFSource with valid value.")
 	public void testSetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("NAME", "SERVICE", "QUERY", "30000", 10, "");
-		Gson gson = new Gson();
-		assertEquals(200, decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource))
-				.getStatus());
+		assertEquals(200,
+				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, rdfSource).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourceInvalidProject() {
 		RDFSource rdfSource = new RDFSource("NAME2", "SERVICE", "QUERY", "30000", 10, "");
-		Gson gson = new Gson();
-		assertEquals(400, decisionGuidanceRest
-				.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, gson.toJson(rdfSource)).getStatus());
+		assertEquals(400,
+				decisionGuidanceRest.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, rdfSource).getStatus());
 	}
 
-	@Test(expected = JsonSyntaxException.class)
 	@DisplayName("Tests the method setRDFSource with invalid value.")
-	public void testSetRDFKnowledgeSourceInvalidJSON() {
-		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, "-123").getStatus());
+	public void testSetRDFKnowledgeSourceRDFSourceNull() {
+		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, null).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourcBlankName() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", "30000", 10, "");
-		Gson gson = new Gson();
-		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, gson.toJson(rdfSource))
-				.getStatus());
+		assertEquals(400,
+				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, rdfSource).getStatus());
 	}
 
 	/**

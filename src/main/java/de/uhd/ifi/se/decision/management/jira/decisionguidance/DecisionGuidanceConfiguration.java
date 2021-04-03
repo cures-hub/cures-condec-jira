@@ -196,7 +196,7 @@ public class DecisionGuidanceConfiguration {
 			}
 			ProjectSource projectSource = getProjectSource(jiraProject.getProjectKey());
 			if (projectSource == null) {
-				projectSource = new ProjectSource(jiraProject.getProjectKey(), jiraProject.getProjectName(), false);
+				projectSource = new ProjectSource(jiraProject);
 			}
 			projectSources.add(projectSource);
 		}

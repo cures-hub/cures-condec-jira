@@ -103,18 +103,12 @@ public class DecisionGuidanceRest {
 	@Path("/setRDFKnowledgeSource")
 	@POST
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
+			@QueryParam("projectKey") String projectKey, RDFSource rdfSource) {
 
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-
-		// TODO Remove JSON conversion and directly pass RDFSource object instead of
-		// String (see setDefinitionOfDone method)
-		Gson gson = new Gson();
-		// TODO Please avoid acronyms like "RDF" and rather write complete names
-		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
 
 		if (rdfSource == null || rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
