@@ -182,17 +182,18 @@
 		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
 
-	function buildScore(scoreObject, ID) {
-		var scoreControl = "<a data-aui-trigger aria-controls='score-explanation-" + ID + "'>" +
-			+ scoreObject.totalScore.toFixed(2) + "%" +
-			"</a>";
-
+	function buildScore(scoreObject, ID) {		
+		var scoreControl = document.getElementById("score");
+		scoreControl.innerText = scoreObject.totalScore.toFixed(2) + "%";
+		
 		var columns = "";		
 		scoreObject.partScores.forEach(partScore => {
 			columns += "<tr><td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td></tr>";
 		})
 		document.getElementById("score-explanation-table-body").innerHTML = columns;
-		return scoreControl + document.getElementById("score-explanation").outerHTML.replace("score-explanation", "score-explanation-" + ID);
+		
+		var scoreExplanation = scoreControl.outerHTML + document.getElementById("score-explanation").outerHTML;
+		return scoreExplanation.replace(/score-explanation/g, "score-explanation-" + ID);
 	}
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();

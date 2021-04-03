@@ -26,8 +26,10 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
     </tbody>
 </table>
 
+<div style="display:none">
 #parse("templates/tabs/decisiontable/quickRecommendation.vm")
 #parse("templates/tabs/decisiontable/scoreExplanation.vm")
+</div>
 
 <script>
     conDecDecisionGuidance.initView();

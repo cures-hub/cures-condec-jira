@@ -1,3 +1,4 @@
+<a data-aui-trigger aria-controls="score-explanation" id="score"></a>
 <aui-inline-dialog id="score-explanation" responds-to="hover">
 <div class="description">The Score is composed of different aspects. 
 	The table gives an overview of the used components, that are used to calculate the score.
