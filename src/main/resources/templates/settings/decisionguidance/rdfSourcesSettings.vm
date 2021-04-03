@@ -1,0 +1,217 @@
+<h3>Configure Knowledge Sources via Resource Description Framework (RDF)</h3>
+<div>
+<a class="aui-expander-trigger" aria-controls="create-knowledgesource-expander">
+	<span class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source via RDF</span> Add
+</a>
+<div id="create-knowledgesource-expander" class="aui-expander-content">
+    <div class="field-group">
+        <label for="create-name-knowledgesource">Name*</label>
+        <input id="create-name-knowledgesource" class="text long-field" name="name-knowledgesource">
+        <div class="description">Name your knowledge source.</div>
+    </div>
+    <div class="field-group">
+        <label for="create-uri-knowledgesource">Select RDF-Service</label>
+        <select class="select medium-field" id="select-rdf-service">
+            <option value="DBPedia">DBPedia</option>
+            <option value="OtherSource">Other</option>
+        </select>
+        <div class="description">Select an RDF Service.</div>
+    </div>
+    <div class="field-group">
+        <label for="create-uri-knowledgesource">RDF-Service</label>
+        <input id="create-uri-knowledgesource" class="text long-field" name="uri-knowledgesource"
+               placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql">
+        <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
+    </div>
+    <div class="field-group">
+        <label for="create-query-knowledgesource">SPARQL-Query</label>
+        <div style="display:flex;">
+        <textarea id="create-query-knowledgesource"
+                  placeholder="SPARQL-Query" class="textarea
+                  large-field"></textarea>
+
+            <div style="padding: 5px; max-width:300px;text-align: left;">
+                <a id="query-help-trigger"><span
+                    class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
+                <div id="query-help">
+                    "%variable%" is a placeholder for your search in the Jira issue view.
+                    The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
+                    and ?url. <br>
+                    E.g.
+                    &lt;http://dbpedia.org/resources/%variable%> <br>
+                    %variable% = MySQL <br>
+                    &lt;http://dbpedia.org/resources/MySQL><br>
+                    <div
+                        style="border: 1px solid; border-radius:3px; background:whitesmoke; padding:6px; margin: 6px; line-height: 100%">
+                        //Example Query <br>
+                        PREFIX dbo: &lt;http://dbpedia.org/ontology/> <br>
+                        PREFIX dct: &lt;http://purl.org/dc/terms/> <br>
+                        PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> <br>
+                        PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#> <br> <br>
+                        PREFIX foaf:&lt;//xmlns.com/foaf/0.1/>
+
+
+                        select distinct ?alternative ?url ?link where { <br>
+                        %variable% dbo:genre ?genre. <br>
+                        ?sameGenre dbo:genre ?genre. <br>
+                        ?sameGenre rdfs:label ?alternative. <br>
+                        ?sameGenre foaf:isPrimaryTopicOf ?url. <br>
+                        FILTER(LANG(?alternative) = "en"). <br>
+                        ?sameGenre dbo:wikiPageExternalLink ?link. <br>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="description">Enter a SPARQL-Query.</div>
+        <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
+        <button class="aui-button" id="insert-frameworks">Frameworks</button>
+        <div class="description">Choose an example query.</div>
+    </div>
+    <div class="field-group">
+        <label for="create-param-knowledgesource">Timeout</label>
+        <input type="number" min="1" value="30000" id="create-param-knowledgesource"
+               class="text short-field"
+               name="param-knowledgesource">
+        <div class="description">Enter the timeout in milliseconds.</div>
+    </div>
+    <div class="field-group">
+        <label for="create-constraint-knowledgesource">Constraint</label>
+        <input type="text" id="create-constraint-knowledgesource"
+               class="text long-field"
+               name="constraint-knowledgesource">
+        <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+            multiple values with "&".
+        </div>
+    </div>
+    <div class="field-group">
+        <button class="aui-button-primary aui-button" id="create-rdf-source">
+                Create
+            </button>
+        </div>
+    </div>
+</div>
+
+#foreach ($rdfSource in $decisionGuidanceConfig.getRDFKnowledgeSources())
+
+<div class="field-group">
+    <label>$rdfSource.getName() activated?</label>    
+    <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()" label="$rdfSource.getName() activated?"
+		#if ($rdfSource.isActivated())
+        checked
+        #end
+        ></aui-toggle>
+    <a style="right: 16px; top:16px;" class="aui-expander-trigger" aria-controls="$rdfSource.toString()">
+   		<span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
+	</a>
+    <div class="description">Enables or disables the knowledge source for alternative recommendations
+        for this project.
+    </div>    
+</div>
+
+<div id="$rdfSource.toString()" class="aui-item settings-border aui-expander-content">
+<!--RDF SOURCE FORM -->
+<div class="field-group">
+    <label>Name*</label>
+    <input class="name-knowledgesource text long-field" id="$rdfSource.toString()-name"
+		name="name-knowledgesource"
+        value="$rdfSource.getName()"></input>
+    <div class="description">Name your knowledge source.</div>
+</div>
+<div class="field-group">
+    <label>RDF-Service</label>
+    <input class="uri-knowledgesource text long-field" name="uri-knowledgesource"
+		id="$rdfSource.toString()-service"
+        placeholder="http://dbpedia.org/sparql" value="$rdfSource.getService()"></input>
+    <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
+</div>
+<div class="field-group">
+    <label>SPARQL-Query</label>
+    <textarea class="query-knowledgesource textarea
+		large-field"
+		id="$rdfSource.toString()-query"
+		placeholder=$i18n.getText("condec.label.description")>$rdfSource.getQueryString()</textarea>
+    <div class="description">Enter a SPARQL-Query.</div>
+</div>
+<div class="field-group">
+    <label>Timeout</label>
+    <input class="param-knowledgesource text short-field" name="param-knowledgesource"
+		id="$rdfSource.toString()-timeout"
+		value="$rdfSource.getTimeout()"></input>
+    <div class="description">Enter the timeout in milliseconds.</div>
+</div>
+<div class="field-group">
+    <label>Constraint</label>
+    <input class="constraint-knowledgesource text long-field" name="constraint-knowledgesource"
+           id="$rdfSource.toString()-constraint"
+           value="$rdfSource.getConstraint()"></input>
+    <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
+        multiple values with "&".
+    </div>
+</div>
+<div class="field-group">
+    <label for="update-rdf-source">Update</label>
+    <button id="update-rdf-source" class="aui-button update-knowledgesource" data-prefix="$rdfSource.toString()"
+            name="$rdfSource.getName()">
+        <span class="aui-icon aui-icon-small aui-iconfont-refresh">Updates a RDF Knowledge Source</span>
+        Update
+    </button>
+    <div class="description">Updates the knowledge source.</div>
+</div>
+<div class="field-group">
+    <label for="delete-rdf-source">Delete?</label>
+    <button id="delete-rdf-source" class="aui-button-primary aui-button delete-knowledgesource" name="$rdfSource.getName()">
+        <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span> Delete
+    </button>
+    <div class="description">Deletes the knowledge source permanently from the system.</div>
+    </div>
+</div>
+#end
+
+<div class="field-group">
+	<label for="max-recommendation">Maximum number of results</label>
+	<input class="text short-field"
+		type="number"
+		data-aui-validation-field
+		value="$decisionGuidanceConfig.getMaxNumberOfRecommendations()"
+		id="max-recommendation"
+		name="max-recommendation"/>
+	<button id="save-max-recommendation-btn" class='aui-button aui-button-primary aui-button-compact'>
+    	Save
+	</button>
+	<div class="description">Set the maximum number of results of recommendations from a rdf source that should be
+		displayed in the Jira issue view.
+	</div>
+</div>
+
+<div class="field-group">
+	<label for="similarity-threshold">Similarity Score of Issues (%)</label>
+	<input class="text short-field"
+       	type="number"
+       	min="0"
+       	max="1"
+       	step="0.1"
+       	data-aui-validation-field
+       	value="$decisionGuidanceConfig.getSimilarityThreshold()"
+       	id="similarity-threshold"
+       	name="similarity-threshold"/>
+	<button id="save-similarity-threshold" class='aui-button aui-button-primary aui-button-compact'>
+    	Save
+	</button>
+	<div class="description">Set the similarity score for textual similarity.</div>
+</div>
+
+<div class="field-group">
+	<label for="irrelevant-words">Irrelevant Words</label>
+	<input class="text long-field"
+       	type="text"
+       	data-aui-validation-field
+       	value="$decisionGuidanceConfig.getIrrelevantWords()"
+       	id="irrelevant-words"
+       	name="irrelevant-words"/>
+	<button id="save-irrelevant-words" class='aui-button aui-button-primary aui-button-compact'>
+    	Save
+	</button>
+	<div class="description">Set irrelevant words that should not be involved in the score calculation.
+</div>
+</div>

@@ -1,0 +1,34 @@
+<div class="field-group">
+	<label>Add Recommendations directly?</label>
+	<aui-toggle id="add-recommendation-directly" label="Add Recommendations directly?"
+		#if($decisionGuidanceConfig.isRecommendationAddedToKnowledgeGraph())
+		checked
+		#end
+		></aui-toggle>
+	<div class="description">If enabled, all recommendations for a decision problem are directly added to the knowledge graph.</div>
+</div>
+
+<h3>Input Method for Recommendation 
+<a data-aui-trigger aria-controls='input-method-help' href='input-method-help'>
+	<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span></a></h3>
+<aui-inline-dialog id='input-method-help' responds-to='hover'>
+	Choose the input on which to base a recommendation. The inputs can be combined and deliver various results.
+</aui-inline-dialog>
+<fieldset class="group">
+	<legend>Keyword-based</legend>
+	<aui-toggle id="keyword-toggle" value="KEYWORD" label="Keyword-based"
+		#if ($decisionGuidanceConfig.getInputTypes().toString().contains("KEYWORD"))
+		checked
+		#end
+		></aui-toggle>
+	<div class="description">Keyword-based recommendations use keywords from the input field.</div>
+</fieldset>
+<fieldset class="group">
+	<legend>Decision problem-based</legend>
+	<aui-toggle id="issue-toggle" value="ISSUE" label="Decision problem-based"
+		#if ($decisionGuidanceConfig.getInputTypes().toString().contains("ISSUE"))
+		checked
+		#end
+		></aui-toggle>
+	<div class="description">Issue-based recommendations uses the decision problem (issue) itself and already documented solution options.</div>
+</fieldset>
