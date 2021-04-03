@@ -3,16 +3,7 @@
  */
 (function(global) {
 
-	var recommendations;
-	var globalCounter;
-	var idOfExistingElement;
-	var documentationLocationOfExistingElement;
-
 	let ConDecDecisionGuidance = function() {
-		this.globalCounter = 0;
-		this.recommendations = []
-		this.idOfExistingElement = 0;
-		this.documentationLocationOfExistingElement = "s";
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
@@ -59,7 +50,6 @@
 	};
 
 	function buildRecommendationTable(results) {
-		conDecDecisionGuidance.recommendations = results;
 		const table = $("#recommendation-container tbody");
 
 		let counter = 0;
@@ -69,7 +59,6 @@
 		});
 
 		sortedByScore.forEach((recommendation) => {
-			const localCounter = counter;
 			counter += 1;
 			let tableRow = "";
 
@@ -90,12 +79,8 @@
 			table.append(tableRow);
 
 			$(" #row_" + counter).click(function() {
-				conDecDecisionGuidance.globalCounter = localCounter;
 				const currentIssue = conDecDecisionTable.getCurrentIssue();
 				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
-					conDecDecisionGuidance.idOfExistingElement = id;
-					conDecDecisionGuidance.documentationLocationOfExistingElement = documentationLocation;
-
 					recommendation.arguments.forEach(argument => {
 						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
 							conDecAPI.showFlag("success", "Recommendation was added successfully!");
@@ -105,12 +90,9 @@
 			});
 		});
 		conDecAPI.showFlag("success", "Results: " + counter);
-		//Since the data is added later, the table must be set to sortable afterwards
-		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
 
 	function buildQuickRecommendationTable(results, currentIssue) {
-		conDecDecisionGuidance.recommendations = results;
 		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
 
 		let counter = 0;
@@ -118,7 +100,7 @@
 		sortedByScore.sort(function(a, b) {
 			return b.score.totalScore - a.score.totalScore;
 		});
-		
+
 		var columns = "";
 
 		var topResults = sortedByScore.slice(0, 4);
@@ -131,7 +113,7 @@
 			tableRow += "</tr>";
 			columns += tableRow;
 		});
-		
+
 		document.getElementById("quick-recommendations-table-body").innerHTML = columns;
 
 		AJS.flag({
@@ -143,12 +125,8 @@
 		var i = 1;
 		topResults.forEach(recommendation => {
 			$("#row_quick_" + i).click(function() {
-				conDecDecisionGuidance.globalCounter = i;
 				const currentIssue = conDecDecisionTable.getCurrentIssue();
 				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
-					conDecDecisionGuidance.idOfExistingElement = id;
-					conDecDecisionGuidance.documentationLocationOfExistingElement = documentationLocation;
-
 					recommendation.arguments.forEach(argument => {
 						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
 							conDecAPI.showFlag("success", "Recommendation was added successfully!");
@@ -163,7 +141,7 @@
 		$("#more-recommendations").click(function(event) {
 			const currentIssue = conDecDecisionTable.getCurrentIssue();
 			$(this).prop("disabled", true);
-			$("#recommendation-container tbody tr").remove() //TODO the rows are kept in the cache, but they should be removed completly
+			$("#recommendation-container tbody tr").remove();
 			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
@@ -174,24 +152,20 @@
 				}
 				$("#recommendation-button").prop("disabled", false);
 				spinner.hide();
-
 			});
 		});
-
-		//Since the data is added later, the table must be set to sortable afterwards
-		AJS.tablessortable.setTableSortable(AJS.$("#recommendation-container"));
 	}
 
-	function buildScore(scoreObject, ID) {		
-		var scoreControl = document.getElementById("score");
+	function buildScore(scoreObject, ID) {
+		var scoreControl = document.getElementById("control-score-explanation");
 		scoreControl.innerText = scoreObject.totalScore.toFixed(2) + "%";
-		
-		var columns = "";		
+
+		var columns = "";
 		scoreObject.partScores.forEach(partScore => {
 			columns += "<tr><td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td></tr>";
 		})
 		document.getElementById("score-explanation-table-body").innerHTML = columns;
-		
+
 		var scoreExplanation = scoreControl.outerHTML + document.getElementById("score-explanation").outerHTML;
 		return scoreExplanation.replace(/score-explanation/g, "score-explanation-" + ID);
 	}

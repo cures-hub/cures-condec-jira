@@ -11,5 +11,5 @@
 	<tbody id="quick-recommendations-table-body">		
 	</tbody>
 </table>
-<a href="#recommendation-container" style='width:100%' id='more-recommendations' class='aui-button-link aui-button'>More</a>
+<a href="#recommendation-container" style="width:100%" id="more-recommendations" class="aui-button-link">More</a>
 </div>
