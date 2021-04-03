@@ -31,7 +31,7 @@ public class TestRDFSource extends TestSetUp {
 	private final static String QUERY = PREFIX + " select distinct ?subject ?url count(?link)   where { "
 			+ "%variable% dbo:genre ?genre. " + "?subject dbo:genre ?genre. " + "?subject foaf:isPrimaryTopicOf ?url. "
 			+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
-	private final static String TIMEOUT = "50000";
+	private final static int TIMEOUT = 50000;
 	private final static int LIMIT = 1;
 
 	@Before
@@ -106,7 +106,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "10000", 10, "");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", 10000, 10, "");
 		assertEquals("TEST", rdfSource.getService());
 		assertEquals("TEST", rdfSource.getQueryString());
 		assertEquals("TEST", rdfSource.getName());
@@ -115,14 +115,14 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testHashCode() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "10000", 10, "");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", 10000, 10, "");
 		assertEquals(Objects.hash("TEST"), rdfSource.hashCode());
 	}
 
 	@Test
 	public void testEquals() {
-		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", "10000", 10, "");
-		RDFSource rdfSourceother = new RDFSource("TEST", "TEST", "TEST", "10000", 10, "");
+		RDFSource rdfSource = new RDFSource("TEST", "TEST", "TEST", 10000, 10, "");
+		RDFSource rdfSourceother = new RDFSource("TEST", "TEST", "TEST", 10000, 10, "");
 		assertTrue(rdfSourceother.equals(rdfSource));
 		assertTrue(rdfSourceother.equals(rdfSourceother));
 		assertFalse(rdfSourceother.equals(null));

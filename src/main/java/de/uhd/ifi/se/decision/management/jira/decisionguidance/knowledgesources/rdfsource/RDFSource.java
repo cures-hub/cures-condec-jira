@@ -12,7 +12,7 @@ public class RDFSource extends KnowledgeSource {
 
 	protected String service;
 	protected String queryString;
-	protected String timeout;
+	protected int timeout;
 	protected int limit;
 	protected String constraint;
 
@@ -30,7 +30,7 @@ public class RDFSource extends KnowledgeSource {
 				+ "?subject foaf:isPrimaryTopicOf ?url. "
 				+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
 		this.name = "DBPedia";
-		this.timeout = "30000";
+		this.timeout = 30000;
 		this.limit = 10;
 		this.isActivated = true;
 		this.icon = "aui-iconfont-download";
@@ -49,7 +49,7 @@ public class RDFSource extends KnowledgeSource {
 	 * @param timeout
 	 *            in milliseconds.
 	 */
-	public RDFSource(String name, String service, String queryString, String timeout, int limit, String constraint) {
+	public RDFSource(String name, String service, String queryString, int timeout, int limit, String constraint) {
 		this.service = service;
 		this.queryString = queryString;
 		this.name = name;
@@ -76,11 +76,11 @@ public class RDFSource extends KnowledgeSource {
 		this.queryString = queryString;
 	}
 
-	public String getTimeout() {
+	public int getTimeout() {
 		return timeout;
 	}
 
-	public void setTimeout(String timeout) {
+	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
 

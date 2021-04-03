@@ -24,7 +24,7 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	protected String name;
 	protected String service;
 	protected String queryString;
-	protected String timeout;
+	protected int timeout;
 	protected int limit;
 
 	@Override

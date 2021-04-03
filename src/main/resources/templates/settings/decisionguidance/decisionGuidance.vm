@@ -48,17 +48,17 @@ $(document).ready(function() {
        const name = $("#create-name-knowledgesource");
        const service = $("#create-uri-knowledgesource");
        const queryString = $("#create-query-knowledgesource");
-       const timeout = $("#create-param-knowledgesource");
+       const timeout = $("#create-timeout-knowledgesource");
        const constraint = $("#create-constraint-knowledgesource");
 
-       var rdfSourceJSON = {
+       var rdfSource = {
             "name": name.val(),
             "service": service.val(),
             "queryString": queryString.val(),
             "timeout": timeout.val(),
             "constraint" : constraint.val()
        }
-       conDecDecisionGuidanceAPI.setRDFKnowledgeSource("$projectKey", rdfSourceJSON);
+       conDecDecisionGuidanceAPI.setRDFKnowledgeSource("$projectKey", rdfSource);
     });
 
     var updateButtons = $(".update-knowledgesource");
@@ -73,16 +73,15 @@ $(document).ready(function() {
                const timeout = $(prefix + "-timeout");
                const constraint = $(prefix + "-constraint");
 
-               var rdfSourceJSON = {
-                    "projectKey": "$projectKey",
+               var rdfSource = {
                     "name": name.val(),
                     "service": service.val(),
                     "queryString": queryString.val(),
                     "timeout": timeout.val(),
                     "constraint" : constraint.val()
                }
-               console.log(rdfSourceJSON);
-               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey",knowledgeSourceName, rdfSourceJSON);
+               console.log(rdfSource);
+               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
     });
 
@@ -171,12 +170,12 @@ $(document).ready(function() {
 	});
 
 	$("#select-rdf-service").change(function() {
-           var value = $(this).val();
-           if(value == "DBPedia") {
-                $("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")
-           } else {
-                $("#create-uri-knowledgesource").val("")
-           }
+		var value = $(this).val();
+		if(value == "DBPedia") {
+			$("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")
+		} else {
+			$("#create-uri-knowledgesource").val("")
+		}
 	});
 
 	$("#query-help-trigger").click( event => {

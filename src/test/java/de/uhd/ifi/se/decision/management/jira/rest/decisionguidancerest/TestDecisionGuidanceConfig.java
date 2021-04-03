@@ -40,7 +40,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with valid value.")
 	public void testSetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("NAME", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("NAME", "SERVICE", "QUERY", 30000, 10, "");
 		assertEquals(200,
 				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, rdfSource).getStatus());
 	}
@@ -48,7 +48,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourceInvalidProject() {
-		RDFSource rdfSource = new RDFSource("NAME2", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("NAME2", "SERVICE", "QUERY", 30000, 10, "");
 		assertEquals(400,
 				decisionGuidanceRest.setRDFKnowledgeSource(request, INVALID_PROJECT_KEY, rdfSource).getStatus());
 	}
@@ -61,7 +61,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setRDFSource with invalid value.")
 	public void testSetRDFKnowledgeSourcBlankName() {
-		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
 		assertEquals(400,
 				decisionGuidanceRest.setRDFKnowledgeSource(request, VALID_PROJECT_KEY, rdfSource).getStatus());
 	}
@@ -105,7 +105,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void tesUpdateRDFKnowledgeSourceValid() {
-		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, 10, "");
 		Gson gson = new Gson();
 		assertEquals(200, decisionGuidanceRest
 				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
@@ -114,7 +114,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKnowledgeSourceInValid() {
-		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
 		Gson gson = new Gson();
 		assertEquals(400, decisionGuidanceRest
 				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
@@ -123,7 +123,7 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
-		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", "30000", 10, "");
+		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
 		Gson gson = new Gson();
 		assertEquals(400, decisionGuidanceRest
 				.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());

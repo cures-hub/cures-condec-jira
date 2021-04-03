@@ -6,7 +6,7 @@
 <div id="create-knowledgesource-expander" class="aui-expander-content">
     <div class="field-group">
         <label for="create-name-knowledgesource">Name*</label>
-        <input id="create-name-knowledgesource" class="text long-field" name="name-knowledgesource">
+        <input id="create-name-knowledgesource" class="text long-field">
         <div class="description">Name your knowledge source.</div>
     </div>
     <div class="field-group">
@@ -19,8 +19,8 @@
     </div>
     <div class="field-group">
         <label for="create-uri-knowledgesource">RDF-Service</label>
-        <input id="create-uri-knowledgesource" class="text long-field" name="uri-knowledgesource"
-               placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql">
+        <input id="create-uri-knowledgesource" class="text long-field" 
+        	placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql" />
         <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
     </div>
     <div class="field-group">
@@ -69,17 +69,13 @@
         <div class="description">Choose an example query.</div>
     </div>
     <div class="field-group">
-        <label for="create-param-knowledgesource">Timeout</label>
-        <input type="number" min="1" value="30000" id="create-param-knowledgesource"
-               class="text short-field"
-               name="param-knowledgesource">
+        <label for="create-timeout-knowledgesource">Timeout</label>
+        <input type="number" min="1" value="30000" id="create-timeout-knowledgesource" class="text short-field" />
         <div class="description">Enter the timeout in milliseconds.</div>
     </div>
     <div class="field-group">
         <label for="create-constraint-knowledgesource">Constraint</label>
-        <input type="text" id="create-constraint-knowledgesource"
-               class="text long-field"
-               name="constraint-knowledgesource">
+        <input type="text" id="create-constraint-knowledgesource" class="text long-field" />
         <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
             multiple values with "&".
         </div>

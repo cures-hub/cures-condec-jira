@@ -114,19 +114,10 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
-
-		try {
-			int timeout = Integer.parseInt(rdfSource.getTimeout());
-			if (timeout <= 0) {
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
-			}
-
-		} catch (NumberFormatException e) {
+		if (rdfSource.getTimeout() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
+					.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
 		}
-
 		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.getRDFKnowledgeSources()) {
 			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
