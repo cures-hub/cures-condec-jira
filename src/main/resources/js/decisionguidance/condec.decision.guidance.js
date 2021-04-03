@@ -1,5 +1,5 @@
 /**
- * This module implements the solution option recommendation.
+ * This module implements the solution option recommendation for decision problems.
  */
 (function(global) {
 
@@ -12,7 +12,7 @@
 		this.globalCounter = 0;
 		this.recommendations = []
 		this.idOfExistingElement = 0;
-		this.documentationLocationOfExistingElement = "s"
+		this.documentationLocationOfExistingElement = "s";
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
@@ -42,7 +42,7 @@
 			event.preventDefault();
 			const currentIssue = conDecDecisionTable.getCurrentIssue();
 			$(this).prop("disabled", true);
-			$("#recommendation-container tbody tr").remove() //TODO the rows are kept in the cache, but they should be removed completly
+			$("#recommendation-container tbody tr").remove();
 			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
@@ -111,48 +111,32 @@
 
 	function buildQuickRecommendationTable(results, currentIssue) {
 		conDecDecisionGuidance.recommendations = results;
-
-		var quickPopUp = "";
-		quickPopUp += "<div id='quick-recommendations'>";
-		quickPopUp += "<h4>" + currentIssue.summary + "</h4>";
-		quickPopUp += "<table id='recommendation-container-short' class='aui'>";
-		quickPopUp += "<thead>";
-		quickPopUp += "<tr>";
-		quickPopUp += "<th>Recommendation</th>";
-		quickPopUp += "<th class='aui-table-column-issue-key'>Score</th>";
-		quickPopUp += "<th class='aui-table-column-unsortable'>Option</th>";
-		quickPopUp += "</tr>";
-		quickPopUp += "</thead>";
-		quickPopUp += "<tbody>";
+		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
 
 		let counter = 0;
 		var sortedByScore = results.slice(0);
 		sortedByScore.sort(function(a, b) {
 			return b.score.totalScore - a.score.totalScore;
 		});
+		
+		var columns = "";
 
 		var topResults = sortedByScore.slice(0, 4);
-
 		topResults.forEach((recommendation) => {
 			counter += 1;
-			let tableRow = "";
-
-			tableRow += "<tr>";
+			let tableRow = "<tr>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link aui-button accept-solution-button aui-button-compact'>Accept</button></td>";
 			tableRow += "</tr>";
-			quickPopUp += tableRow;
+			columns += tableRow;
 		});
-
-		quickPopUp += "</tbody>"
-		quickPopUp += "</table>"
-		quickPopUp += "<a href='#recommendation-container' style='width:100%' id='more-recommendations' class='aui-button-link aui-button'>More</a>"
-		quickPopUp += "</div>"
+		
+		document.getElementById("quick-recommendations-table-body").innerHTML = columns;
 
 		AJS.flag({
-			type: 'success',
-			body: quickPopUp,
+			type: "info",
+			body: document.getElementById("quick-recommendations").innerHTML,
 			title: "Quick Recommendation"
 		});
 
@@ -199,31 +183,23 @@
 	}
 
 	function buildScore(scoreObject, ID) {
-		const scoreControl = "<a data-aui-trigger aria-controls='" + ID + "' href='" + ID + "'>" +
+		const scoreControl = "<a data-aui-trigger aria-controls='score-explanation' href='score-explanation'>" +
 			+ scoreObject.totalScore.toFixed(2) + "%" +
 			"</a>";
 
-		var inlineDialog = "<aui-inline-dialog id='" + ID + "' responds-to='hover'>";
-		inlineDialog += "<div class='description'>The Score is composed by different aspects. The table gives an overview of the used components, that are used to calculate the score</div>";
-		inlineDialog += "<table>";
-		inlineDialog += "<thead>";
-		inlineDialog += "<th>Description</th>";
-		inlineDialog += "<th>Score</th>";
-		inlineDialog += "</thead>";
-		inlineDialog += "<tbody>";
+		var columns = "";		
+
 		scoreObject.partScores.forEach(partScore => {
-			inlineDialog += "<tr>";
-			inlineDialog += "<td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td>";
-			inlineDialog += "</tr>";
+			columns += "<tr>";
+			columns += "<td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td>";
+			columns += "</tr>";
 		})
-		inlineDialog += "</tbody>";
-		inlineDialog += "</table>";
-		inlineDialog += "<span class='project-config-webpanel-column-content'></span>";
-		inlineDialog += "<p><b>Score: " + scoreObject.totalScore.toFixed(2) + "%</b></p>";
+		
+		var tableBody = document.getElementById("score-explanation-table-body");
+		tableBody.innerHTML = columns;
+		tableBody.insertAdjacentHTML("afterend", "<p><b>Score: " + scoreObject.totalScore.toFixed(2) + " %</b></p>"); 
 
-		inlineDialog += "</aui-inline-dialog>";
-
-		return scoreControl + inlineDialog;
+		return scoreControl + document.getElementById("score-explanation").outerHTML;
 	}
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();

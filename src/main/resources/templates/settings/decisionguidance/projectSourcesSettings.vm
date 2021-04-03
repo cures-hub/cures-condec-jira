@@ -11,7 +11,7 @@
     	<tr>
         	<td>$projectSource.getName()</td>
         	<td>
-            <aui-toggle class="activation-knowledgesource-project" name="$projectSource.getName()" label="$projectSource.getName()"
+            <aui-toggle class="activation-knowledgesource-project" label="$projectSource.getName()"
 				#if ($projectSource.isActivated())
                 checked
                 #end
@@ -21,3 +21,13 @@
     #end
     </tbody>
 </table>
+
+<script>
+$(".activation-knowledgesource-project").each(function() {
+	$(this).change(function() {
+		const projectKey =  $(this).attr("label");
+		const isActivated = $(this).prop("checked");
+		conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectKey, isActivated);
+	})
+});
+</script>

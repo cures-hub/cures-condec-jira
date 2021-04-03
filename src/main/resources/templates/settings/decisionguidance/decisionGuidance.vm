@@ -1,5 +1,4 @@
 <h2>Decision Guidance: Recommendation of Solution Options for Decision Problems</h2>
-
 #set($decisionGuidanceConfig = $project.getDecisionGuidanceConfiguration())
 
 #parse("templates/settings/decisionguidance/basicDecisionGuidanceSettings.vm")
@@ -8,7 +7,11 @@
 #parse("templates/settings/decisionguidance/decisionGuidanceEvaluation.vm")
 
 <script>
-$(document).ready(function() {	
+	$("#add-recommendation-directly").change(function() {
+		const isActivated = $(this).prop("checked");
+		conDecDecisionGuidanceAPI.setAddRecommendationDirectly("$projectKey", isActivated);
+	})
+
     $("#keyword-toggle").change(function() {
         var value= $(this).val();
         const isActivated = $(this).prop("checked");
@@ -21,7 +24,7 @@ $(document).ready(function() {
         conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
     });
 
-	$('input[type=radio][name=radiobuttons-input]').change(function() {
+	$("input[type=radio][name=radiobuttons-input]").change(function() {
         conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", this.value);
     });
 
@@ -42,144 +45,4 @@ $(document).ready(function() {
        const value = $("#irrelevant-words").val();
        conDecDecisionGuidanceAPI.setIrrelevantWords("$projectKey", value);
 	})
-
-    $("#create-rdf-source").click((event) => {
-       event.preventDefault();
-       const name = $("#create-name-knowledgesource");
-       const service = $("#create-uri-knowledgesource");
-       const queryString = $("#create-query-knowledgesource");
-       const timeout = $("#create-timeout-knowledgesource");
-       const constraint = $("#create-constraint-knowledgesource");
-
-       var rdfSource = {
-            "name": name.val(),
-            "service": service.val(),
-            "queryString": queryString.val(),
-            "timeout": timeout.val(),
-            "constraint" : constraint.val()
-       }
-       conDecDecisionGuidanceAPI.setRDFKnowledgeSource("$projectKey", rdfSource);
-    });
-
-    var updateButtons = $(".update-knowledgesource");
-    updateButtons.each(function() {
-        $(this).click((event) => {
-               event.preventDefault();
-               let prefix = "#" + $(this).data("prefix");
-               const knowledgeSourceName = $(this).attr("name");
-               const name = $(prefix + "-name");
-               const service = $(prefix + "-service");
-               const queryString = $(prefix + "-query");
-               const timeout = $(prefix + "-timeout");
-               const constraint = $(prefix + "-constraint");
-
-               var rdfSource = {
-                    "name": name.val(),
-                    "service": service.val(),
-                    "queryString": queryString.val(),
-                    "timeout": timeout.val(),
-                    "constraint" : constraint.val()
-               }
-               console.log(rdfSource);
-               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
-        });
-    });
-
-	const activations = $(".activation-knowledgesource");
-
-	activations.each(function() {
-		$(this).change(function() {
-			const knowledgeSourceName =  $(this).attr("name");
-			const isActivated = $(this).prop("checked");
-			conDecDecisionGuidanceAPI.setKnowledgeSourceActivated("$projectKey", knowledgeSourceName, isActivated);
-		})
-	});
-
-	$("#add-recommendation-directly").change(function() {
-		const isActivated = $(this).prop("checked");
-		conDecDecisionGuidanceAPI.setAddRecommendationDirectly("$projectKey", isActivated);
-	})
-
-	const deletions = $(".delete-knowledgesource");
-
-	deletions.each(function() {
-		$(this).click((event) => {
-			event.preventDefault();
-            var confirm = window.confirm("Do you really want to delete this knowledge source?");
-            if(confirm) {
-                const knowledgeSourceName = $(this).attr("name");
-                conDecDecisionGuidanceAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName, function() {
-                	location.reload();
-                });
-            }
-        })
-	});
-
-	$("#add-project-source").click((event) => {
-        event.preventDefault();
-        const projectSourceKey = $("#select-projects").val();
-        conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectSourceKey);
-        $("#project-source-table tbody").append(
-        	"<tr>"+
-            	"<td>" + projectSourceKey + "</td>"+
-           		"<td><aui-toggle label='projectSourceKey'></aui-toggle>"+
-        	"</tr>");
-	});
-
-	const activationsProjects = $(".activation-knowledgesource-project");
-
-	activationsProjects.each(function() {
-	$(this).change(function() {
-		const projectKey =  $(this).attr("name");
-		const isActivated = $(this).prop("checked");
-		conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectKey, isActivated);
-		})
-	});
-
-    const DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-                        "PREFIX dct: <http://purl.org/dc/terms/>\n"+
-                        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                        "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\n";
-
-    const FACTORYPATTERN =
-           "select distinct ?subject ?url count(?links) where {\n" +
-            "%variable% dct:subject ?concept.\n" +
-            "?subject dct:subject ?concept.\n " +
-            "?url foaf:primaryTopic ?subject.\n " +
-           "FILTER(regex(?concept, 'pattern', 'i')).\n" +
-           "?subject  dbo:wikiPageExternalLink ?links.\n" +
-           "} GROUP BY ?subject ?url";
-
-    const FRAMEWORKS = "select distinct ?subject ?url count(?link)   where { \n" +
-                        "%variable% dbo:genre ?genre.\n" +
-                        "?subject dbo:genre ?genre.\n" +
-                        "?subject foaf:isPrimaryTopicOf ?url.\n" +
-                        "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url";
-
-	$("#insert-design-patterns").click(function(event) {
-        event.preventDefault();
-        var currentText = $("#create-query-knowledgesource").val();
-		$("#create-query-knowledgesource").val(DBPEDIAPREFIX + FACTORYPATTERN);
-	});
-
-    $("#insert-frameworks").click(function(event) {
-        event.preventDefault();
-        var currentText = $("#create-query-knowledgesource").val();
-        $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FRAMEWORKS);
-	});
-
-	$("#select-rdf-service").change(function() {
-		var value = $(this).val();
-		if(value == "DBPedia") {
-			$("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")
-		} else {
-			$("#create-uri-knowledgesource").val("")
-		}
-	});
-
-	$("#query-help-trigger").click( event => {
-		$("#query-help").toggle();
-	});
-});
 </script>

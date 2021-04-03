@@ -1,0 +1,15 @@
+<div id="quick-recommendations">
+<h4 id="decision-problem-summary"></h4>
+<table id="recommendation-container-short" class="aui">
+	<thead>
+		<tr>
+			<th>Recommendation</th>
+			<th class="aui-table-column-issue-key">Score</th>
+			<th class="aui-table-column-unsortable">Option</th>
+		</tr>
+	</thead>
+	<tbody id="quick-recommendations-table-body">		
+	</tbody>
+</table>
+<a href="#recommendation-container" style='width:100%' id='more-recommendations' class='aui-button-link aui-button'>More</a>
+</div>
