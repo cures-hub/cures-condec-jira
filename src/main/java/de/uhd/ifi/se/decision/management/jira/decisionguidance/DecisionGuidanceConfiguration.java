@@ -18,8 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the recommendation of knowledge
- * elements from external knowledge sources for one Jira project (see
- * {@link DecisionKnowledgeProject}).
+ * elements from external knowledge sources (i.e. decision guidance) for one
+ * Jira project (see {@link DecisionKnowledgeProject}).
  * 
  * For example, specifies the {@link RDFSource}s and {@link ProjectSource}s that
  * are used as external knowledge sources.

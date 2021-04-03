@@ -19,7 +19,7 @@
 	</div>
 </div>
 #parse("templates/tabs/decisiontable/decisionTable.vm")
-#parse("templates/tabs/recommendationTable.vm")
+#parse("templates/tabs/decisiontable/recommendationTable.vm")
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
