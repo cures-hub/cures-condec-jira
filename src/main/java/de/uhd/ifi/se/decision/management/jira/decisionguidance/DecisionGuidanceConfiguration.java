@@ -229,7 +229,6 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
-	 * 
 	 * @param projectSourceKey
 	 *            Jira project key.
 	 * @param isActivated

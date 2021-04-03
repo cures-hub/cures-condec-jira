@@ -7,6 +7,8 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
  */
 public class ProjectSource extends KnowledgeSource {
 
+	protected String projectKey;
+
 	public ProjectSource(String projectKey) {
 		this.projectKey = projectKey;
 		this.isActivated = false;
@@ -17,5 +19,21 @@ public class ProjectSource extends KnowledgeSource {
 		this.name = projectSourceName;
 		this.isActivated = isActivated;
 		this.icon = "aui-iconfont-jira";
+	}
+
+	/**
+	 * @return Jira project key of the Jira project that is used as the knowledge
+	 *         source.
+	 */
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	/**
+	 * @param projectKey
+	 *            of the Jira project that is used as the knowledge source.
+	 */
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
 	}
 }

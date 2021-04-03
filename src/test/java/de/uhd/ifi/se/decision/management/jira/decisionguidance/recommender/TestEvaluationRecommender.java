@@ -45,7 +45,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
 		// in the same
 		// project
-		rdfSource = new RDFSource(JiraProjects.getTestProject().getKey());
+		rdfSource = new RDFSource();
 
 		knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);

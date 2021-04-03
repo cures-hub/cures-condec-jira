@@ -22,12 +22,8 @@ public class RDFSource extends KnowledgeSource {
 
 	/**
 	 * Creates a default knowledge source for DBPedia.
-	 * 
-	 * @param projectKey
-	 *            of the Jira project.
 	 */
-	public RDFSource(String projectKey) {
-		this.projectKey = projectKey;
+	public RDFSource() {
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = PREFIX + " select distinct ?subject ?url count(?link)   where { "
 				+ "%variable% dbo:genre ?genre. " + "?subject dbo:genre ?genre. "
@@ -53,9 +49,7 @@ public class RDFSource extends KnowledgeSource {
 	 * @param timeout
 	 *            in milliseconds.
 	 */
-	public RDFSource(String projectKey, String service, String queryString, String name, String timeout, int limit,
-			String constraint) {
-		this.projectKey = projectKey;
+	public RDFSource(String name, String service, String queryString, String timeout, int limit, String constraint) {
 		this.service = service;
 		this.queryString = queryString;
 		this.name = name;

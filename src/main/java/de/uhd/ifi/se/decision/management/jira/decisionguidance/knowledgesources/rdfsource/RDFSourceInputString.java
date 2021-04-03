@@ -53,7 +53,6 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	@Override
 	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = knowledgeSource.getProjectKey();
 		this.name = knowledgeSource.getName();
 		this.service = knowledgeSource.getService();
 		this.queryString = knowledgeSource.getQueryString();

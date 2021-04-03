@@ -30,7 +30,6 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	@Override
 	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = knowledgeSource.getProjectKey();
 		this.name = knowledgeSource.getName();
 		this.service = knowledgeSource.getService();
 		this.queryString = knowledgeSource.getQueryString();
