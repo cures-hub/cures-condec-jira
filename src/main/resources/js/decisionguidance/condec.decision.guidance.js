@@ -122,12 +122,12 @@
 		var columns = "";
 
 		var topResults = sortedByScore.slice(0, 4);
-		topResults.forEach((recommendation) => {
+		topResults.forEach(recommendation => {
 			counter += 1;
 			let tableRow = "<tr>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
-			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link aui-button accept-solution-button aui-button-compact'>Accept</button></td>";
+			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link'>Accept</button></td>";
 			tableRow += "</tr>";
 			columns += tableRow;
 		});
@@ -136,7 +136,7 @@
 
 		AJS.flag({
 			type: "info",
-			body: document.getElementById("quick-recommendations").innerHTML,
+			body: document.getElementById("quick-recommendations").outerHTML,
 			title: "Quick Recommendation"
 		});
 
@@ -145,7 +145,7 @@
 			$("#row_quick_" + i).click(function() {
 				conDecDecisionGuidance.globalCounter = i;
 				const currentIssue = conDecDecisionTable.getCurrentIssue();
-				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", ecommendation.recommendation, "", function(id, documentationLocation) {
+				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
 					conDecDecisionGuidance.idOfExistingElement = id;
 					conDecDecisionGuidance.documentationLocationOfExistingElement = documentationLocation;
 
@@ -183,23 +183,16 @@
 	}
 
 	function buildScore(scoreObject, ID) {
-		const scoreControl = "<a data-aui-trigger aria-controls='score-explanation' href='score-explanation'>" +
+		var scoreControl = "<a data-aui-trigger aria-controls='score-explanation-" + ID + "'>" +
 			+ scoreObject.totalScore.toFixed(2) + "%" +
 			"</a>";
 
 		var columns = "";		
-
 		scoreObject.partScores.forEach(partScore => {
-			columns += "<tr>";
-			columns += "<td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td>";
-			columns += "</tr>";
+			columns += "<tr><td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td></tr>";
 		})
-		
-		var tableBody = document.getElementById("score-explanation-table-body");
-		tableBody.innerHTML = columns;
-		tableBody.insertAdjacentHTML("afterend", "<p><b>Score: " + scoreObject.totalScore.toFixed(2) + " %</b></p>"); 
-
-		return scoreControl + document.getElementById("score-explanation").outerHTML;
+		document.getElementById("score-explanation-table-body").innerHTML = columns;
+		return scoreControl + document.getElementById("score-explanation").outerHTML.replace("score-explanation", "score-explanation-" + ID);
 	}
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
