@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -106,27 +105,24 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void tesUpdateRDFKnowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, 10, "");
-		Gson gson = new Gson();
 		assertEquals(200, decisionGuidanceRest
-				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", gson.toJson(rdfSource)).getStatus());
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", rdfSource).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKnowledgeSourceInValid() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
-		Gson gson = new Gson();
 		assertEquals(400, decisionGuidanceRest
-				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", rdfSource).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method updateKnowledgeSource with valid value.")
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
-		Gson gson = new Gson();
-		assertEquals(400, decisionGuidanceRest
-				.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", gson.toJson(rdfSource)).getStatus());
+		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", rdfSource)
+				.getStatus());
 	}
 
 	/**

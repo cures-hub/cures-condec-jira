@@ -18,7 +18,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
@@ -104,29 +103,24 @@ public class DecisionGuidanceRest {
 	@POST
 	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, RDFSource rdfSource) {
-
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-
 		if (rdfSource == null || rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
+					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty!")).build();
 		}
 		if (rdfSource.getTimeout() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
+					.entity(ImmutableMap.of("error", "The timeout must be a number greater than zero!")).build();
 		}
-		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.getRDFKnowledgeSources()) {
-			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
-		}
-
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
+		if (decisionGuidanceConfiguration.containsRDFKnowledgeSource(rdfSource.getName())) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The name of the knowledge source already exists.")).build();
+		}
 		decisionGuidanceConfiguration.addRDFKnowledgeSource(rdfSource);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
@@ -157,14 +151,12 @@ public class DecisionGuidanceRest {
 	@POST
 	public Response updateKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
-			String rdfSourceJSON) {
+			RDFSource rdfSource) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
-		Gson gson = new Gson();
-		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
 		if (rdfSource.getName().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();

@@ -110,7 +110,7 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals("TEST", rdfSource.getService());
 		assertEquals("TEST", rdfSource.getQueryString());
 		assertEquals("TEST", rdfSource.getName());
-		assertEquals("10000", rdfSource.getTimeout());
+		assertEquals(10000, rdfSource.getTimeout());
 	}
 
 	@Test

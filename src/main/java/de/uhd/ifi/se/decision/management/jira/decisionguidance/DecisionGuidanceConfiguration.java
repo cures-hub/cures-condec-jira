@@ -144,6 +144,14 @@ public class DecisionGuidanceConfiguration {
 		rdfKnowledgeSources.add(rdfSource);
 	}
 
+	public boolean containsRDFKnowledgeSource(String rdfSourceName) {
+		for (RDFSource rdfSourceCheck : rdfKnowledgeSources) {
+			if (rdfSourceCheck.getName().equals(rdfSourceName))
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * @param knowledgeSourceName
 	 *            of an {@link RDFSource}.

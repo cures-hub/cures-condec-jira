@@ -78,7 +78,7 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		rdfSource = config.getRDFKnowledgeSources().get(0);
 		assertEquals("service2", rdfSource.getService());
 		assertEquals("query2", rdfSource.getQueryString());
-		assertEquals("10000", rdfSource.getTimeout());
+		assertEquals(10000, rdfSource.getTimeout());
 		assertEquals("RDF Name2", rdfSource.getName());
 
 		// Test deactivation
