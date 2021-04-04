@@ -11,13 +11,12 @@
 	};
 
 	ConDecDecisionGuidance.prototype.updateView = function() {
-		conDecDecisionTable.updateView();
+		// nothing is done here because this view is updated already with the decision table view
 	};
 
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
 		const keyword = $("#recommendation-keyword");
-		$("#recommendation-error").hide();
-		conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation,
+		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation,
 			function(recommendations, error) {
 				if (error === null && recommendations.length > 0) {
 					buildQuickRecommendationTable(recommendations, currentIssue);
@@ -37,11 +36,10 @@
 			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
-			$("#recommendation-error").hide();
-			conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,
-				currentIssue.documentationLocation, function(results, error) {
+			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,
+				currentIssue.documentationLocation, function(recommendations, error) {
 					if (error === null) {
-						buildRecommendationTable(results);
+						buildRecommendationTable(recommendations, currentIssue);
 					}
 					$("#recommendation-button").prop("disabled", false);
 					spinner.hide();
@@ -49,16 +47,16 @@
 		});
 	};
 
-	function buildRecommendationTable(results) {
+	function buildRecommendationTable(recommendations, currentIssue) {
 		const table = $("#recommendation-container tbody");
 
 		let counter = 0;
-		var sortedByScore = results.slice(0);
+		var sortedByScore = recommendations.slice(0);
 		sortedByScore.sort(function(a, b) {
 			return b.score.totalScore - a.score.totalScore;
 		});
 
-		sortedByScore.forEach((recommendation) => {
+		sortedByScore.forEach(recommendation => {
 			counter += 1;
 			let tableRow = "";
 
@@ -78,8 +76,7 @@
 			tableRow += "</tr>";
 			table.append(tableRow);
 
-			$(" #row_" + counter).click(function() {
-				const currentIssue = conDecDecisionTable.getCurrentIssue();
+			$("#row_" + counter).click(function() {
 				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
 					recommendation.arguments.forEach(argument => {
 						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
@@ -89,14 +86,14 @@
 				});
 			});
 		});
-		conDecAPI.showFlag("success", "Results: " + counter);
+		conDecAPI.showFlag("success", "#Recommendations: " + counter);
 	}
 
-	function buildQuickRecommendationTable(results, currentIssue) {
+	function buildQuickRecommendationTable(recommendations, currentIssue) {
 		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
 
 		let counter = 0;
-		var sortedByScore = results.slice(0);
+		var sortedByScore = recommendations.slice(0);
 		sortedByScore.sort(function(a, b) {
 			return b.score.totalScore - a.score.totalScore;
 		});
@@ -125,7 +122,6 @@
 		var i = 1;
 		topResults.forEach(recommendation => {
 			$("#row_quick_" + i).click(function() {
-				const currentIssue = conDecDecisionTable.getCurrentIssue();
 				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
 					recommendation.arguments.forEach(argument => {
 						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
@@ -139,20 +135,9 @@
 		});
 
 		$("#more-recommendations").click(function(event) {
-			const currentIssue = conDecDecisionTable.getCurrentIssue();
 			$(this).prop("disabled", true);
 			$("#recommendation-container tbody tr").remove();
-			const keyword = $("#recommendation-keyword");
-			const spinner = $("#loading-spinner-recommendation");
-			spinner.show();
-			$("#recommendation-error").hide();
-			conDecDecisionGuidanceAPI.getRecommendation(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation, function(results, error) {
-				if (error === null) {
-					buildRecommendationTable(results);
-				}
-				$("#recommendation-button").prop("disabled", false);
-				spinner.hide();
-			});
+			buildRecommendationTable(recommendations, currentIssue);				
 		});
 	}
 

@@ -276,10 +276,10 @@ public class DecisionGuidanceRest {
 		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
 	}
 
-	@Path("/getRecommendation")
+	@Path("/getRecommendations")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getRecommendation(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("keyword") String keyword, @QueryParam("issueId") int issueId,
 			@QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);

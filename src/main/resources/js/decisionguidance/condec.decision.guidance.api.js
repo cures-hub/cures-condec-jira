@@ -28,10 +28,10 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendation = function(projectKey, keyword, issueId, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
-			function(error, results) {
-				callback(results, error);
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(projectKey, keyword, issueId, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/getRecommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
+			function(error, recommendations) {
+				callback(recommendations, error);
 			});
 	};
 

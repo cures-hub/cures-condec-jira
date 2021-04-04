@@ -143,7 +143,7 @@
 			
 			for (selectedCriterion of selectedCriteria) {
 				var isCriteriaAlreadyShown = decisionTableData["criteria"].find(item => item.id === selectedCriterion.id) ? true : false;
-				if (!isCriteriaAlreadyShown) {
+				if (!isCriteriaAlreadyShown) { 
 					decisionTableData["criteria"].push(selectedCriterion);
 				}
 			}
