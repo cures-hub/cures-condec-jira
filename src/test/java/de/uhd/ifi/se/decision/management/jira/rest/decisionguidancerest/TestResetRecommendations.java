@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -31,7 +31,7 @@ public class TestResetRecommendations extends TestSetUp {
 	}
 
 	@Test
-	public void testResetRecommendationsInvalidIssueID() {
+	public void testResetRecommendationsInvalidIssueId() {
 		assertEquals(Status.NOT_FOUND.getStatusCode(),
 				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, 119283L).getStatus());
 	}
@@ -43,7 +43,7 @@ public class TestResetRecommendations extends TestSetUp {
 	}
 
 	@Test
-	public void testResetRecommendationsJiraIssueIDNull() {
+	public void testResetRecommendationsJiraIssueIdNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, null).getStatus());
 	}

@@ -57,7 +57,7 @@
 		});
 
 		sortedByScore.forEach(recommendation => {
-			counter += 1;
+			counter++;
 			let tableRow = "";
 
 			tableRow += "<tr>";
@@ -66,7 +66,7 @@
 			tableRow += "<td>" + buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" + "Accept" + "</button></td>";
 			tableRow += "<td><ul>";
-			recommendation.arguments.forEach((argument) => {
+			recommendation.arguments.forEach(argument => {
 				if (argument) {
 					tableRow += "<li><img src='" + argument.image + "'/>";
 					tableRow += argument.summary + "</li>";
@@ -77,13 +77,7 @@
 			table.append(tableRow);
 
 			$("#row_" + counter).click(function() {
-				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
-					recommendation.arguments.forEach(argument => {
-						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
-							conDecAPI.showFlag("success", "Recommendation was added successfully!");
-						});
-					});
-				});
+				onAcceptClicked(recommendation, currentIssue);
 			});
 		});
 		conDecAPI.showFlag("success", "#Recommendations: " + counter);
@@ -102,7 +96,7 @@
 
 		var topResults = sortedByScore.slice(0, 4);
 		topResults.forEach(recommendation => {
-			counter += 1;
+			counter++;
 			let tableRow = "<tr>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
@@ -114,30 +108,31 @@
 		document.getElementById("quick-recommendations-table-body").innerHTML = columns;
 
 		AJS.flag({
-			type: "info",
 			body: document.getElementById("quick-recommendations").outerHTML,
-			title: "Quick Recommendation"
+			title: "Recommendations for Decision Problem"
 		});
 
-		var i = 1;
+		var i = 0;
 		topResults.forEach(recommendation => {
+			i++;
 			$("#row_quick_" + i).click(function() {
-				conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
-					recommendation.arguments.forEach(argument => {
-						conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
-							conDecAPI.showFlag("success", "Recommendation was added successfully!");
-						});
-					});
-				});
+				onAcceptClicked(recommendation, currentIssue);
 			});
-
-			i = i + 1;
 		});
 
 		$("#more-recommendations").click(function(event) {
-			$(this).prop("disabled", true);
 			$("#recommendation-container tbody tr").remove();
-			buildRecommendationTable(recommendations, currentIssue);				
+			buildRecommendationTable(recommendations, currentIssue);
+		});
+	}
+
+	function onAcceptClicked(recommendation, currentIssue) {
+		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
+			recommendation.arguments.forEach(argument => {
+				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
+					conDecAPI.showFlag("success", "Recommendation was added successfully!");
+				});
+			});
 		});
 	}
 

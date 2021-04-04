@@ -8,6 +8,47 @@
 	<div class="description">If enabled, all recommendations for a decision problem are directly added to the knowledge graph.</div>
 </div>
 
+<div class="field-group">
+	<label for="max-recommendation">Maximum Number of Recommendations</label>
+	<input class="text short-field"
+		type="number"
+		data-aui-validation-field
+		value="$decisionGuidanceConfig.getMaxNumberOfRecommendations()"
+		id="max-recommendation"
+		name="max-recommendation"/>
+	<button id="save-max-recommendation-btn" class='aui-button'>Save</button>
+	<div class="description">Set the maximum number of recommendations from the activated knowledge sources that should be
+		displayed in the Jira issue view.
+	</div>
+</div>
+
+<div class="field-group">
+	<label for="similarity-threshold">Similarity Score</label>
+	<input class="text short-field"
+       	type="number"
+       	min="0"
+       	max="1"
+       	step="0.1"
+       	data-aui-validation-field
+       	value="$decisionGuidanceConfig.getSimilarityThreshold()"
+       	id="similarity-threshold"
+       	name="similarity-threshold"/>
+	<button id="save-similarity-threshold" class='aui-button'>Save</button>
+	<div class="description">Set the similarity score for textual similarity.</div>
+</div>
+
+<div class="field-group">
+	<label for="irrelevant-words">Irrelevant Words</label>
+	<input class="text long-field"
+       	type="text"
+       	data-aui-validation-field
+       	value="$decisionGuidanceConfig.getIrrelevantWords()"
+       	id="irrelevant-words"
+       	name="irrelevant-words"/>
+	<button id="save-irrelevant-words" class='aui-button'>Save</button>
+	<div class="description">Set irrelevant words that should not be involved in the score calculation.</div>
+</div>
+
 <h3>Input Method for Recommendation 
 <a data-aui-trigger aria-controls='input-method-help' href='input-method-help'>
 	<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span></a></h3>
@@ -32,3 +73,39 @@
 		></aui-toggle>
 	<div class="description">Issue-based recommendations uses the decision problem (issue) itself and already documented solution options.</div>
 </fieldset>
+
+<script>
+	$("#add-recommendation-directly").change(function() {
+		const isActivated = $(this).prop("checked");
+		conDecDecisionGuidanceAPI.setAddRecommendationDirectly("$projectKey", isActivated);
+	})
+
+    $("#keyword-toggle").change(function() {
+        var value= $(this).val();
+        const isActivated = $(this).prop("checked");
+        conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
+    });
+    
+    $("#issue-toggle").change(function() {
+        var value= $(this).val();
+        const isActivated = $(this).prop("checked");
+        conDecDecisionGuidanceAPI.setRecommendationInput("$projectKey", value, isActivated);
+    });
+
+    $("#save-max-recommendation-btn").click(event => {
+		event.preventDefault();
+		conDecDecisionGuidanceAPI.setMaxNumberOfRecommendations("$projectKey", $("#max-recommendation").val());
+    })
+
+	$("#save-similarity-threshold").click((event) => {
+       event.preventDefault();
+       const value = $("#similarity-threshold").val();
+       conDecDecisionGuidanceAPI.setSimilarityThreshold("$projectKey", value);
+	})
+
+	$("#save-irrelevant-words").click((event) => {
+       event.preventDefault();
+       const value = $("#irrelevant-words").val();
+       conDecDecisionGuidanceAPI.setIrrelevantWords("$projectKey", value);
+	})
+</script>

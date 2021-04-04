@@ -184,21 +184,21 @@ public class TestDecisionGuidanceConfig extends TestSetUp {
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations valid Value")
 	public void testSetMaxRecommendationsValid() {
-		assertEquals(200, decisionGuidanceRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, 20).getStatus());
+		assertEquals(200, decisionGuidanceRest.setMaxNumberOfRecommendations(request, VALID_PROJECT_KEY, 20).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations invalid Value")
 	public void testSetMaxRecommendationsInvalidValue() {
 		assertEquals(400,
-				decisionGuidanceRest.setMaxNumberRecommendations(request, VALID_PROJECT_KEY, -20).getStatus());
+				decisionGuidanceRest.setMaxNumberOfRecommendations(request, VALID_PROJECT_KEY, -20).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method setMaxRecommendations invalid project")
 	public void testSetMaxRecommendationsInvalidProject() {
 		assertEquals(400,
-				decisionGuidanceRest.setMaxNumberRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
+				decisionGuidanceRest.setMaxNumberOfRecommendations(request, INVALID_PROJECT_KEY, 20).getStatus());
 	}
 
 	@Test

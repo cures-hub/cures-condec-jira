@@ -48,11 +48,11 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setMaxNumberRecommendations = function(projectKey, maxNumberRecommendations) {
-		generalApi.postJSON(this.restPrefix + "/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function(
+	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function(
 			error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations);
+				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);
 			}
 		});
 	};

@@ -38,23 +38,23 @@ import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendati
 @Path("/decisionguidance")
 public class DecisionGuidanceRest {
 
-	@Path("/setMaxNumberRecommendations")
+	@Path("/setMaxNumberOfRecommendations")
 	@POST
-	public Response setMaxNumberRecommendations(@Context HttpServletRequest request,
+	public Response setMaxNumberOfRecommendations(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
+			@QueryParam("maxNumberOfRecommendations") int maxNumberOfRecommendations) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (maxNumberRecommendations < 0) {
+		if (maxNumberOfRecommendations < 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The maximum number of results cannot be smaller 0.")).build();
 		}
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setMaxNumberOfRecommendations(maxNumberRecommendations);
+		decisionGuidanceConfiguration.setMaxNumberOfRecommendations(maxNumberOfRecommendations);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok().build();
 	}
