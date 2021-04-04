@@ -71,7 +71,6 @@
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
-		<resource type="download" name="settings.css" location="/css/settings.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
 		<resource type="download" name="vis-network.css"
 			location="/js/lib/vis-network/dist/dist/vis-network.css" />

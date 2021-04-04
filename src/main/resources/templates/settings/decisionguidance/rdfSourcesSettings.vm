@@ -101,7 +101,7 @@
     </div>    
 </div>
 
-<div id="$rdfSource.toString()" class="aui-item settings-border aui-expander-content">
+<div id="$rdfSource.toString()" class="aui-item aui-expander-content">
 <!--RDF SOURCE FORM -->
 <div class="field-group">
     <label>Name*</label>
