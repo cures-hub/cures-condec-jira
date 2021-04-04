@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view.decisionguidance;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
 

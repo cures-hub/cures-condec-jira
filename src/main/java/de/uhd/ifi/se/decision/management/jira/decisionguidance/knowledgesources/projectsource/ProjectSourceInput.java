@@ -3,11 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 public abstract class ProjectSourceInput<T> implements InputMethod<T, ProjectSource> {
 

@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -20,8 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 public class TestEvaluationRecommender extends TestSetUp {
 

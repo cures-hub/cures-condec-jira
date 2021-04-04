@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -29,8 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 /**
  * REST resource for configuration and usage of decision guidance

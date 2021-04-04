@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 import java.util.List;
 

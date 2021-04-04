@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
@@ -19,8 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
