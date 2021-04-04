@@ -30,22 +30,28 @@ public class TestRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendation() {
-
-		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
+		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "TEST URL");
 		recommendation.setUrl("TEST URL");
 		recommendation.setScore(new RecommendationScore(123, ""));
 		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
-		assertEquals("TEST", recommendation.getSummary());
+		assertEquals("MySQL", recommendation.getSummary());
 		assertEquals("TEST URL", recommendation.getUrl());
 		assertEquals(123, recommendation.getScore(), 0.0);
 		assertEquals(0, recommendation.getArguments().size());
 	}
 
 	@Test
+	public void testSetAndGetKnowledgeSource() {
+		Recommendation recommendation = new Recommendation();
+		recommendation.setKnowledgeSource(knowledgeSource);
+		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
+	}
+
+	@Test
 	public void testAddArgument() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setDescription("Test");
-		knowledgeElement.setSummary("Test");
+		knowledgeElement.setDescription("Test Argument");
+		knowledgeElement.setSummary("Test Argument");
 		knowledgeElement.setDocumentationLocation("i");
 		knowledgeElement.setType(KnowledgeType.CON);
 		List<Argument> arguments = new ArrayList<>();
@@ -68,7 +74,6 @@ public class TestRecommendation extends TestSetUp {
 	public void testHashCode() {
 		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
-
 	}
 
 	@Test
@@ -81,23 +86,4 @@ public class TestRecommendation extends TestSetUp {
 
 		assertEquals(recommendationA, recommendationB);
 	}
-
-	@Test
-	public void testArgument() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setSummary("Test Argument");
-		knowledgeElement.setId(123);
-		knowledgeElement.setDocumentationLocation("i");
-		knowledgeElement.setType(KnowledgeType.ARGUMENT);
-
-		Argument argument = new Argument(knowledgeElement);
-		assertEquals("Test Argument", argument.getSummary());
-
-		KnowledgeElement knowledgeElement1 = new KnowledgeElement();
-		knowledgeElement1.setSummary("Test Argument");
-		knowledgeElement1.setId(123);
-		knowledgeElement1.setDocumentationLocation("i");
-		knowledgeElement1.setType(KnowledgeType.ARGUMENT);
-	}
-
 }

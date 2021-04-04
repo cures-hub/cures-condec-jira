@@ -14,7 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 public class TestKeywordBasedRecommender extends TestSetUp {
@@ -90,10 +89,8 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "Source A", true);
 
-		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", new RecommendationScore(0, ""),
-				"");
-		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1",
-				new RecommendationScore(0, ""), "");
+		Recommendation recommendation = new Recommendation(knowledgeSource, "SUMMARY 1", "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSource, "SUMMARY 1", "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
@@ -111,10 +108,8 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		KnowledgeSource knowledgeSourceA = new ProjectSource("TEST", "Source A", true);
 		KnowledgeSource knowledgeSourceB = new ProjectSource("TEST", "Source B", true);
 
-		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1",
-				new RecommendationScore(0, ""), "");
-		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1",
-				new RecommendationScore(0, ""), "");
+		Recommendation recommendation = new Recommendation(knowledgeSourceA, "SUMMARY 1", "");
+		Recommendation recommendation2 = new Recommendation(knowledgeSourceB, "SUMMARY 1", "");
 
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);

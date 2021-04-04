@@ -33,21 +33,15 @@ public class Recommendation extends KnowledgeElement {
 	protected RecommendationScore score;
 
 	public Recommendation() {
-
-	}
-
-	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, String url) {
-		this.project = new DecisionKnowledgeProject("");
-		this.knowledgeSource = knowledgeSource;
-		this.setSummary(recommendation);
-		this.url = url;
 		this.arguments = new ArrayList<>();
 	}
 
-	public Recommendation(KnowledgeSource knowledgeSource, String recommendation, RecommendationScore score,
-			String url) {
-		this(knowledgeSource, recommendation, url);
-		this.score = score;
+	public Recommendation(KnowledgeSource knowledgeSource, String summary, String url) {
+		this();
+		this.project = new DecisionKnowledgeProject("");
+		this.knowledgeSource = knowledgeSource;
+		this.setSummary(summary);
+		this.url = url;
 	}
 
 	@XmlElement
@@ -90,16 +84,11 @@ public class Recommendation extends KnowledgeElement {
 	}
 
 	public void addArguments(List<Argument> arguments) {
-		if (this.arguments == null)
-			this.arguments = new ArrayList<>();
 		this.arguments.addAll(arguments);
 		this.arguments = this.arguments.stream().distinct().collect(Collectors.toList());
 	}
 
 	public void addArgument(Argument argument) {
-		if (arguments == null) {
-			arguments = new ArrayList<>();
-		}
 		arguments.add(argument);
 	}
 
