@@ -18,12 +18,6 @@ public class TestUpdateKnowledgeSource extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 
-	protected static String INVALID_PROJECT_KEY = "";
-	protected static String VALID_PROJECT_KEY = "TEST";
-
-	protected static String VALID_VALUE = "valid_value";
-	protected static String INVALID_VALUE = "";
-
 	@Before
 	public void setUp() {
 		init();
@@ -33,23 +27,23 @@ public class TestUpdateKnowledgeSource extends TestSetUp {
 	}
 
 	@Test
-	public void tesUpdateRDFKnowledgeSourceValid() {
+	public void testUpdateRDFKnowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, 10, "");
-		assertEquals(200, decisionGuidanceRest
-				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURC", rdfSource).getStatus());
+		assertEquals(200, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
+				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceProjectKeyInvalid() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
-		assertEquals(400, decisionGuidanceRest
-				.updateKnowledgeSource(request, VALID_PROJECT_KEY, "VALID SOURCE", rdfSource).getStatus());
+		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
+				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
-		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(null, VALID_PROJECT_KEY, "VALID SOURCE", rdfSource)
+		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(null, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 }

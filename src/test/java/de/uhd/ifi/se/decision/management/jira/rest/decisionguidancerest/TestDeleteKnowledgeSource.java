@@ -17,12 +17,6 @@ public class TestDeleteKnowledgeSource extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 
-	protected static String INVALID_PROJECT_KEY = "";
-	protected static String VALID_PROJECT_KEY = "TEST";
-
-	protected static String VALID_VALUE = "valid_value";
-	protected static String INVALID_VALUE = "";
-
 	@Before
 	public void setUp() {
 		init();
@@ -34,24 +28,16 @@ public class TestDeleteKnowledgeSource extends TestSetUp {
 	@Test
 	public void testDeleteRDFKnowledgeSourceValid() {
 		assertEquals(200,
-				decisionGuidanceRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, VALID_VALUE).getStatus());
+				decisionGuidanceRest.deleteKnowledgeSource(request, "TEST", "DBPedia - Frameworks").getStatus());
 	}
 
 	@Test
 	public void testDeleteRDFKnowledgeSourceInvalidValue() {
-		assertEquals(400,
-				decisionGuidanceRest.deleteKnowledgeSource(request, VALID_PROJECT_KEY, INVALID_VALUE).getStatus());
+		assertEquals(400, decisionGuidanceRest.deleteKnowledgeSource(request, "TEST", "").getStatus());
 	}
 
 	@Test
 	public void testDeleteRDFKnowledgeSourceInvalidProject() {
-		assertEquals(400,
-				decisionGuidanceRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, VALID_VALUE).getStatus());
-	}
-
-	@Test
-	public void testDeleteRDFKnowledgeSourceInvalidProjectInvalidValue() {
-		assertEquals(400,
-				decisionGuidanceRest.deleteKnowledgeSource(request, INVALID_PROJECT_KEY, INVALID_VALUE).getStatus());
+		assertEquals(400, decisionGuidanceRest.deleteKnowledgeSource(request, "", "DBPedia - Frameworks").getStatus());
 	}
 }
