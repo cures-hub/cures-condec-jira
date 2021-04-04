@@ -6,7 +6,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * A RecommendationScore consists of a total score value and an explanation.
+ * The score represents the predicted relevance of a recommendation, i.e., how
+ * likely it is that the user accepts the recommendation. The score can be used
+ * to rank/sort the recommendations.
+ * 
+ * The score can be composed of various criteria. It consists of a total score
+ * value and an explanation.
  */
 public class RecommendationScore {
 
@@ -20,7 +25,7 @@ public class RecommendationScore {
 		this.partScores = new ArrayList<>();
 	}
 
-	@XmlElement(name = "totalScore")
+	@XmlElement
 	public float getTotalScore() {
 		return totalScore;
 	}
@@ -29,11 +34,18 @@ public class RecommendationScore {
 		this.totalScore = totalScore;
 	}
 
-	@XmlElement(name = "explanation")
+	/**
+	 * @return explanation on how the score was calculated.
+	 */
+	@XmlElement
 	public String getExplanation() {
 		return explanation;
 	}
 
+	/**
+	 * @param explanation
+	 *            on how the score was calculated.
+	 */
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
 	}
@@ -52,8 +64,8 @@ public class RecommendationScore {
 	}
 
 	@XmlElement(name = "partScores")
-	public List<RecommendationScore> getComposeDScore() {
-		return this.partScores;
+	public List<RecommendationScore> getComposedScores() {
+		return partScores;
 	}
 
 }

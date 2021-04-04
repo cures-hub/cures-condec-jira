@@ -28,9 +28,7 @@ public class Recommendation extends KnowledgeElement {
 	private KnowledgeSource knowledgeSource;
 	private String url;
 	private List<Argument> arguments;
-
-	@XmlElement
-	protected RecommendationScore score;
+	private RecommendationScore score;
 
 	public Recommendation() {
 		this.arguments = new ArrayList<>();
@@ -44,50 +42,97 @@ public class Recommendation extends KnowledgeElement {
 		this.url = url;
 	}
 
+	/**
+	 * @return {@link KnowledgeSource} that this recommendation is taken from.
+	 * @see ProjectSource
+	 * @see RDFSource
+	 */
 	@XmlElement
 	public KnowledgeSource getKnowledgeSource() {
 		return knowledgeSource;
 	}
 
+	/**
+	 * @param knowledgeSource
+	 *            {@link KnowledgeSource} that this recommendation is taken from.
+	 * @see ProjectSource
+	 * @see RDFSource
+	 */
 	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 	}
 
+	/**
+	 * @return URL to the source location of the recommendation, e.g., to a
+	 *         Wikipedia page or to a Jira issue of another Jira project.
+	 */
 	@XmlElement
 	public String getUrl() {
 		return url;
 	}
 
+	/**
+	 * @param url
+	 *            to the source location of the recommendation, e.g., to a Wikipedia
+	 *            page or to a Jira issue of another Jira project.
+	 */
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public RecommendationScore getRecommendationScore() {
-		return this.score;
+	/**
+	 * @return score that represents the predicted relevance of a recommendation,
+	 *         i.e., how likely it is that the user accepts the recommendation. The
+	 *         score can be used to rank/sort the recommendations.
+	 */
+	@XmlElement
+	public RecommendationScore getScore() {
+		return score;
 	}
 
-	public float getScore() {
-		return score.getTotalScore();
-	}
-
+	/**
+	 * @param score
+	 *            that represents the predicted relevance of a recommendation, i.e.,
+	 *            how likely it is that the user accepts the recommendation. The
+	 *            score can be used to rank/sort the recommendations.
+	 */
 	public void setScore(RecommendationScore score) {
 		this.score = score;
 	}
 
+	/**
+	 * @return arguments (pro and cons) that either support or attack the
+	 *         recommended solution option.
+	 */
 	@XmlElement
 	public List<Argument> getArguments() {
 		return arguments;
 	}
 
+	/**
+	 * @param arguments
+	 *            (pro and cons) that either support or attack the recommended
+	 *            solution option.
+	 */
 	public void setArguments(List<Argument> arguments) {
 		this.arguments = arguments;
 	}
 
+	/**
+	 * @param arguments
+	 *            (pro and cons) that either support or attack the recommended
+	 *            solution option.
+	 */
 	public void addArguments(List<Argument> arguments) {
 		this.arguments.addAll(arguments);
 		this.arguments = this.arguments.stream().distinct().collect(Collectors.toList());
 	}
 
+	/**
+	 * @param argument
+	 *            (pro or con) that either supports or attacks the recommended
+	 *            solution option.
+	 */
 	public void addArgument(Argument argument) {
 		arguments.add(argument);
 	}
@@ -100,9 +145,9 @@ public class Recommendation extends KnowledgeElement {
 		if (object == null || getClass() != object.getClass()) {
 			return false;
 		}
-		Recommendation recommendation = (Recommendation) object;
-		return this.knowledgeSource.getName().equals(recommendation.knowledgeSource.getName())
-				&& this.getSummary().equals(recommendation.getSummary());
+		Recommendation otherRecommendation = (Recommendation) object;
+		return this.knowledgeSource.getName().equals(otherRecommendation.knowledgeSource.getName())
+				&& this.getSummary().equals(otherRecommendation.getSummary());
 	}
 
 	@Override

@@ -53,9 +53,9 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 			for (Recommendation recommendation1 : recommendations) {
 				if (recommendation.equals(recommendation1)) {
 					numberDuplicates += 1;
-					meanScore += recommendation1.getScore();
+					meanScore += recommendation1.getScore().getTotalScore();
 					meanRecommendationScore
-							.setComposedScore(recommendation1.getRecommendationScore().getComposeDScore());
+							.setComposedScore(recommendation1.getScore().getComposedScores());
 				}
 			}
 			meanRecommendationScore.setTotalScore(meanScore / numberDuplicates);

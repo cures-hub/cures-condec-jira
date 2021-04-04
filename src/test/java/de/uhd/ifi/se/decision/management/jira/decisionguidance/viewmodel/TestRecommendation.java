@@ -36,7 +36,7 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
 		assertEquals("MySQL", recommendation.getSummary());
 		assertEquals("TEST URL", recommendation.getUrl());
-		assertEquals(123, recommendation.getScore(), 0.0);
+		assertEquals(123, recommendation.getScore().getTotalScore(), 0.0);
 		assertEquals(0, recommendation.getArguments().size());
 	}
 
