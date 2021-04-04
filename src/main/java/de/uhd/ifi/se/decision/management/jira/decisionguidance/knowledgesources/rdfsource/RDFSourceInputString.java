@@ -42,7 +42,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	protected String name;
 	protected String service;
 	protected String queryString;
-	protected String timeout;
+	protected int timeout;
 	protected int limit;
 	protected Map<String, String> constraints;
 
@@ -53,7 +53,6 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 	@Override
 	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = knowledgeSource.getProjectKey();
 		this.name = knowledgeSource.getName();
 		this.service = knowledgeSource.getService();
 		this.queryString = knowledgeSource.getQueryString();
@@ -130,7 +129,8 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
-			ResultSet resultSet = queryDatabase(queryStringWithInput, service, new Params.Pair("timeout", timeout));
+			ResultSet resultSet = queryDatabase(queryStringWithInput, service,
+					new Params.Pair("timeout", timeout + ""));
 
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
@@ -181,7 +181,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 				PREFIX + " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }",
 				resource);
 
-		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout));
+		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout + ""));
 
 		String label = "";
 		while (arguments != null && arguments.hasNext()) {
@@ -197,7 +197,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 				+ " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}",
 				resource, constraint.getValue());
 
-		ResultSet arguments = queryDatabase(query, service, new Params.Pair("timeout", this.timeout));
+		ResultSet arguments = queryDatabase(query, service, new Params.Pair("timeout", this.timeout + ""));
 
 		List<Argument> argumentsList = new ArrayList<>();
 

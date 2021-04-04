@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetRecommendation extends TestSetUp {
+public class TestGetRecommendations extends TestSetUp {
 
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
@@ -36,57 +36,57 @@ public class TestGetRecommendation extends TestSetUp {
 	}
 
 	@Test
-	public void testGetRecommendation() {
+	public void testGetRecommendations() {
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 		decisionGuidanceRest.setRecommendationInput(request, "TEST", RecommenderType.KEYWORD.toString(), true);
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationEmptyKeyword() {
+	public void testGetRecommendationsEmptyKeyword() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "TEST", invalidKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "TEST", invalidKeyword, 1, "s").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationEmptyProject() {
+	public void testGetRecommendationsEmptyProject() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "", validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "", validKeyword, 1, "s").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationProjectKeyNull() {
+	public void testGetRecommendationsProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, null, validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, null, validKeyword, 1, "s").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationRequestNull() {
+	public void testGetRecommendationsRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(null, projectKey, validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(null, projectKey, validKeyword, 1, "s").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationNoKnowledgeSourceConfigured() {
+	public void testGetRecommendationsNoKnowledgeSourceConfigured() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-				.getRecommendation(request, "Project does not exist", validKeyword, 1, "s").getStatus());
+				.getRecommendations(request, "Project does not exist", validKeyword, 1, "s").getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationGetRecommender() {
+	public void testGetRecommendationsGetRecommender() {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
 		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.KEYWORD.toString(), true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "s").getStatus());
 		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.ISSUE.toString(), true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, "TEST", validKeyword, 1, "i").getStatus());
+				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
 
 	// @Test
@@ -100,35 +100,7 @@ public class TestGetRecommendation extends TestSetUp {
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendation(request, projectKey, validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, projectKey, validKeyword, 1, "s").getStatus());
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
-	}
-
-	/*
-	 * Test Evaluation
-	 */
-
-	@Test
-	public void testGetRecommendationEvaluationActiveSource() {
-		assertEquals(Status.OK.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, projectKey, validKeyword, 2, "TEST", 5, "i").getStatus());
-	}
-
-	@Test
-	public void testGetRecommendationEvaluationINVALIDISSUE() {
-		assertEquals(Status.NOT_FOUND.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, projectKey, validKeyword, -12354, "TEST", 5, "s").getStatus());
-	}
-
-	@Test
-	public void testGetRecommendationEvaluationInvalidProject() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, "", validKeyword, 1, "TEST", 5, "s").getStatus());
-	}
-
-	@Test
-	public void testGetRecommendationEvaluationRequestNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(null, projectKey, validKeyword, 1, "TEST", 5, "s").getStatus());
 	}
 }

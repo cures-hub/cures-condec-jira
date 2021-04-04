@@ -12,7 +12,7 @@ public class RDFSource extends KnowledgeSource {
 
 	protected String service;
 	protected String queryString;
-	protected String timeout;
+	protected int timeout;
 	protected int limit;
 	protected String constraint;
 
@@ -22,19 +22,15 @@ public class RDFSource extends KnowledgeSource {
 
 	/**
 	 * Creates a default knowledge source for DBPedia.
-	 * 
-	 * @param projectKey
-	 *            of the Jira project.
 	 */
-	public RDFSource(String projectKey) {
-		this.projectKey = projectKey;
+	public RDFSource() {
 		this.service = "http://dbpedia.org/sparql";
 		this.queryString = PREFIX + " select distinct ?subject ?url count(?link)   where { "
 				+ "%variable% dbo:genre ?genre. " + "?subject dbo:genre ?genre. "
 				+ "?subject foaf:isPrimaryTopicOf ?url. "
 				+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
 		this.name = "DBPedia";
-		this.timeout = "30000";
+		this.timeout = 30000;
 		this.limit = 10;
 		this.isActivated = true;
 		this.icon = "aui-iconfont-download";
@@ -53,9 +49,7 @@ public class RDFSource extends KnowledgeSource {
 	 * @param timeout
 	 *            in milliseconds.
 	 */
-	public RDFSource(String projectKey, String service, String queryString, String name, String timeout, int limit,
-			String constraint) {
-		this.projectKey = projectKey;
+	public RDFSource(String name, String service, String queryString, int timeout, int limit, String constraint) {
 		this.service = service;
 		this.queryString = queryString;
 		this.name = name;
@@ -82,11 +76,11 @@ public class RDFSource extends KnowledgeSource {
 		this.queryString = queryString;
 	}
 
-	public String getTimeout() {
+	public int getTimeout() {
 		return timeout;
 	}
 
-	public void setTimeout(String timeout) {
+	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
 

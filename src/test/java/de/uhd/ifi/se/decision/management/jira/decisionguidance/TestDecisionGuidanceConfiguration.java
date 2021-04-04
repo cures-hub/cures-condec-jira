@@ -62,23 +62,23 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	@Test
 	public void testSetAndGetRDFKnowledgeSources() {
 		List<RDFSource> rdfSources = new ArrayList<>();
-		rdfSources.add(new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, ""));
+		rdfSources.add(new RDFSource("RDF Name", "service", "query", 30000, 100, ""));
 		config.setRDFKnowledgeSources(rdfSources);
 		assertEquals(1, config.getRDFKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
+		RDFSource rdfSource = new RDFSource("RDF Name", "service", "query", 30000, 100, "");
 		config.addRDFKnowledgeSource(rdfSource);
 		assertEquals(1, config.getRDFKnowledgeSources().size());
 
-		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
+		RDFSource rdfSourceUpdated = new RDFSource("RDF Name2", "service2", "query2", 10000, 100, "");
 		config.updateRDFKnowledgeSource("RDF Name", rdfSourceUpdated);
 		rdfSource = config.getRDFKnowledgeSources().get(0);
 		assertEquals("service2", rdfSource.getService());
 		assertEquals("query2", rdfSource.getQueryString());
-		assertEquals("10000", rdfSource.getTimeout());
+		assertEquals(10000, rdfSource.getTimeout());
 		assertEquals("RDF Name2", rdfSource.getName());
 
 		// Test deactivation

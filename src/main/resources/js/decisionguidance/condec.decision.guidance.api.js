@@ -28,10 +28,10 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendation = function(projectKey, keyword, issueId, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
-			function(error, results) {
-				callback(results, error);
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(projectKey, keyword, issueId, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/getRecommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
+			function(error, recommendations) {
+				callback(recommendations, error);
 			});
 	};
 
@@ -48,11 +48,11 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setMaxNumberRecommendations = function(projectKey, maxNumberRecommendations) {
-		generalApi.postJSON(this.restPrefix + "/setMaxNumberRecommendations.json?projectKey=" + projectKey + "&maxNumberRecommendations=" + maxNumberRecommendations, null, function(
+	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function(
 			error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberRecommendations);
+				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);
 			}
 		});
 	};
@@ -84,13 +84,13 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setRDFKnowledgeSource = function(projectKey, rdfSource) {
-		generalApi.postJSON(this.restPrefix + "/setRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The Knowledgesource is successfully created. <b>Please refresh the page.</b> ");
-			}
-		});
+	ConDecDecisionGuidanceAPI.prototype.createRDFKnowledgeSource = function(projectKey, rdfSource) {
+		generalApi.postJSON(this.restPrefix + "/createRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The knowledge source is successfully created. <b>Please refresh the page.</b> ");
+				}
+			});
 	};
 
 	/*

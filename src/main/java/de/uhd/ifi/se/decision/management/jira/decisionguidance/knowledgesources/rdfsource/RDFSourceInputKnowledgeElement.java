@@ -24,13 +24,12 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	protected String name;
 	protected String service;
 	protected String queryString;
-	protected String timeout;
+	protected int timeout;
 	protected int limit;
 
 	@Override
 	public void setKnowledgeSource(RDFSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
-		this.projectKey = knowledgeSource.getProjectKey();
 		this.name = knowledgeSource.getName();
 		this.service = knowledgeSource.getService();
 		this.queryString = knowledgeSource.getQueryString();

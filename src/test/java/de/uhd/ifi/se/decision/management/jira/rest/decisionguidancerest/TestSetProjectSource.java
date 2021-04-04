@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -9,11 +9,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestResetRecommendations extends TestSetUp {
+public class TestSetProjectSource extends TestSetUp {
+
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
 
@@ -22,29 +25,25 @@ public class TestResetRecommendations extends TestSetUp {
 		init();
 		decisionGuidanceRest = new DecisionGuidanceRest();
 		request = new MockHttpServletRequest();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		request.setAttribute("user", user);
 	}
 
 	@Test
-	public void testResetRecommendations() {
+	public void testSetProjectSourceValid() {
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, 1L).getStatus());
+				decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true).getStatus());
 	}
 
 	@Test
-	public void testResetRecommendationsInvalidIssueId() {
-		assertEquals(Status.NOT_FOUND.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, 119283L).getStatus());
-	}
-
-	@Test
-	public void testResetRecommendationRequestNull() {
+	public void testSetProjectSourceInvalidProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(null, 1L).getStatus());
+				decisionGuidanceRest.setProjectSource(request, "", "TEST", false).getStatus());
 	}
 
 	@Test
-	public void testResetRecommendationsJiraIssueIdNull() {
+	public void testSetProjectSourceInvalidProjectKeyOfKnowledgeSource() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, null).getStatus());
+				decisionGuidanceRest.setProjectSource(request, "TEST", "", false).getStatus());
 	}
 }

@@ -59,7 +59,7 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testKnowledgeSource() {
-		KnowledgeSource knowledgeSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		ProjectSource knowledgeSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
 		assertEquals("TEST", knowledgeSource.getName());
 		assertEquals("TEST", knowledgeSource.getProjectKey());
 		assertEquals(true, knowledgeSource.isActivated());

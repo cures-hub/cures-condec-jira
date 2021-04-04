@@ -18,8 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the recommendation of knowledge
- * elements from external knowledge sources for one Jira project (see
- * {@link DecisionKnowledgeProject}).
+ * elements from external knowledge sources (i.e. decision guidance) for one
+ * Jira project (see {@link DecisionKnowledgeProject}).
  * 
  * For example, specifies the {@link RDFSource}s and {@link ProjectSource}s that
  * are used as external knowledge sources.
@@ -144,6 +144,14 @@ public class DecisionGuidanceConfiguration {
 		rdfKnowledgeSources.add(rdfSource);
 	}
 
+	public boolean containsRDFKnowledgeSource(String rdfSourceName) {
+		for (RDFSource rdfSourceCheck : rdfKnowledgeSources) {
+			if (rdfSourceCheck.getName().equals(rdfSourceName))
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * @param knowledgeSourceName
 	 *            of an {@link RDFSource}.
@@ -196,7 +204,7 @@ public class DecisionGuidanceConfiguration {
 			}
 			ProjectSource projectSource = getProjectSource(jiraProject.getProjectKey());
 			if (projectSource == null) {
-				projectSource = new ProjectSource(jiraProject.getProjectKey(), jiraProject.getProjectName(), false);
+				projectSource = new ProjectSource(jiraProject);
 			}
 			projectSources.add(projectSource);
 		}
@@ -229,7 +237,6 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
-	 * 
 	 * @param projectSourceKey
 	 *            Jira project key.
 	 * @param isActivated
