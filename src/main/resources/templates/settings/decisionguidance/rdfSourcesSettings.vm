@@ -176,7 +176,7 @@
             "timeout": timeout.val(),
             "constraint" : constraint.val()
 		}
-		conDecDecisionGuidanceAPI.setRDFKnowledgeSource("$projectKey", rdfSource);
+		conDecDecisionGuidanceAPI.createRDFKnowledgeSource("$projectKey", rdfSource);
 	});
 
     $(".update-knowledgesource").each(function() {

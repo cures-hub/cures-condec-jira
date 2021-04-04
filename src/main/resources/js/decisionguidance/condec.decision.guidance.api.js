@@ -84,8 +84,8 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setRDFKnowledgeSource = function(projectKey, rdfSource) {
-		generalApi.postJSON(this.restPrefix + "/setRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource,
+	ConDecDecisionGuidanceAPI.prototype.createRDFKnowledgeSource = function(projectKey, rdfSource) {
+		generalApi.postJSON(this.restPrefix + "/createRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource,
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The knowledge source is successfully created. <b>Please refresh the page.</b> ");

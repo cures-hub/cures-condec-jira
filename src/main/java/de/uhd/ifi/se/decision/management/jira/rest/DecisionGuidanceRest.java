@@ -99,9 +99,9 @@ public class DecisionGuidanceRest {
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/setRDFKnowledgeSource")
+	@Path("/createRDFKnowledgeSource")
 	@POST
-	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
+	public Response createRDFKnowledgeSource(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, RDFSource rdfSource) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
