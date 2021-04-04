@@ -31,7 +31,7 @@ public class TestProjectSource extends TestSetUp {
 				.getRecommendations("How can we implement the feature");
 
 		assertEquals(2, recommendations.size());
-		assertEquals("TEST", recommendations.get(0).getKnowledgeSourceName());
+		assertEquals("TEST", recommendations.get(0).getKnowledgeSource().getName());
 
 		assertEquals("aui-iconfont-jira", projectSource.getIcon());
 		projectSource.setIcon("TEST");

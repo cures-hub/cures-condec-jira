@@ -63,9 +63,9 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 		List<Recommendation> recommendations = new ArrayList<>();
 		Recommendation recommendation = new Recommendation();
-		recommendation.setRecommendations("Test Alternative");
+		recommendation.setSummary("Test Alternative");
 		Recommendation recommendation2 = new Recommendation();
-		recommendation2.setRecommendations("Test Decision");
+		recommendation2.setSummary("Test Decision");
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 	}

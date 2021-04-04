@@ -61,8 +61,8 @@
 			let tableRow = "";
 
 			tableRow += "<tr>";
-			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
+			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
+			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" + "Accept" + "</button></td>";
 			tableRow += "<td><ul>";
@@ -98,7 +98,7 @@
 		topResults.forEach(recommendation => {
 			counter++;
 			let tableRow = "<tr>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
+			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link'>Accept</button></td>";
 			tableRow += "</tr>";
@@ -127,7 +127,7 @@
 	}
 
 	function onAcceptClicked(recommendation, currentIssue) {
-		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
+		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function(id, documentationLocation) {
 			recommendation.arguments.forEach(argument => {
 				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
 					conDecAPI.showFlag("success", "Recommendation was added successfully!");

@@ -22,8 +22,8 @@ public class TruePositives extends EvaluationMethod {
 		int intersectedDecided = 0;
 
 		for (Recommendation recommendation : recommendations) {
-			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.IDEA);
-			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getRecommendation(), KnowledgeStatus.DECIDED);
+			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getSummary(), KnowledgeStatus.IDEA);
+			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getSummary(), KnowledgeStatus.DECIDED);
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;

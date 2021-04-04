@@ -20,8 +20,8 @@ public class ReciprocalRank extends EvaluationMethod {
 		int maxResults = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < maxResults; i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getRecommendation().trim()) ||
-					recommendations.get(i).getRecommendation().trim().contains(solutionOption.getSummary().trim())) {
+				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim()) ||
+					recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					sum_RR += (1.0 / (i + 1));
 					return !Double.isNaN(sum_RR) ? sum_RR : 0.0;
 				}

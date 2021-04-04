@@ -21,8 +21,8 @@ public class AveragePrecision extends EvaluationMethod {
 		int k = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < k; i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getRecommendation().trim()) ||
-					recommendations.get(i).getRecommendation().trim().contains(solutionOption.getSummary().trim())) {
+				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim()) ||
+					recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					relevantItems += 1.0;
 					precisionK += (relevantItems / (i + 1.0));
 				}

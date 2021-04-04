@@ -84,7 +84,7 @@ public abstract class BaseRecommender<T> {
 			// Set information
 			alternative.setId(id);
 			id += 1;
-			alternative.setSummary(recommendation.getRecommendation());
+			alternative.setSummary(recommendation.getSummary());
 			alternative.setType(KnowledgeType.ALTERNATIVE);
 			alternative.setDescription("");
 			alternative.setProject(projectKey);
