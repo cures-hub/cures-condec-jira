@@ -39,6 +39,19 @@ public class TestCreateRDFKnowledgeSource extends TestSetUp {
 	}
 
 	@Test
+	public void testCreateRDFKnowledgeSourceInvalidTimeout() {
+		RDFSource rdfSource = new RDFSource("NAME2", "SERVICE", "QUERY", -1, 10, "");
+		assertEquals(400, decisionGuidanceRest.createRDFKnowledgeSource(request, "TEST", rdfSource).getStatus());
+	}
+
+	@Test
+	public void testCreateRDFKnowledgeSourceAlreadyExisting() {
+		RDFSource rdfSource = new RDFSource("NAME2", "SERVICE", "QUERY", 30000, 10, "");
+		assertEquals(200, decisionGuidanceRest.createRDFKnowledgeSource(request, "TEST", rdfSource).getStatus());
+		assertEquals(400, decisionGuidanceRest.createRDFKnowledgeSource(request, "TEST", rdfSource).getStatus());
+	}
+
+	@Test
 	public void testCreateRDFKnowledgeSourceRDFSourceNull() {
 		assertEquals(400, decisionGuidanceRest.createRDFKnowledgeSource(request, "TEST", null).getStatus());
 	}
@@ -48,5 +61,4 @@ public class TestCreateRDFKnowledgeSource extends TestSetUp {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
 		assertEquals(400, decisionGuidanceRest.createRDFKnowledgeSource(request, "TEST", rdfSource).getStatus());
 	}
-
 }
