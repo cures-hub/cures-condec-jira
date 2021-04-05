@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.EvaluationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.FScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.TruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.TruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
