@@ -125,6 +125,6 @@ public class TestKeywordBasedRecommender extends TestSetUp {
 		assertEquals(RecommenderType.ISSUE, RecommenderType.getTypeByString("ISSUE"));
 		assertEquals(RecommenderType.KEYWORD, RecommenderType.getTypeByString("INVALID"));
 
-		assertEquals(3, RecommenderType.getRecommenderTypes().size());
+		assertEquals(2, RecommenderType.getRecommenderTypes().size());
 	}
 }

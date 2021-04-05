@@ -81,10 +81,10 @@ public abstract class EvaluationMetric {
 	 *            list of already documented solution options whose summary is
 	 *            matched against the recommendation.
 	 * @param matchingString
-	 *            summary of recommendandation.
+	 *            summary of one single recommendation.
 	 * @return number of matches.
 	 */
-	protected static int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString) {
+	protected static int countMatches(List<KnowledgeElement> knowledgeElements, String matchingString) {
 		int counter = 0;
 		for (KnowledgeElement knowledgeElement : knowledgeElements) {
 			if (isMatching(knowledgeElement, matchingString)) {
@@ -95,10 +95,7 @@ public abstract class EvaluationMetric {
 	}
 
 	protected static boolean isMatching(KnowledgeElement knowledgeElement, String matchingString) {
-		if (knowledgeElement.getSummary().toLowerCase().contains(matchingString.toLowerCase().trim())
-				|| matchingString.toLowerCase().contains(knowledgeElement.getSummary().toLowerCase().trim())) {
-			return true;
-		}
-		return false;
+		return knowledgeElement.getSummary().toLowerCase().contains(matchingString.toLowerCase().trim())
+				|| matchingString.toLowerCase().contains(knowledgeElement.getSummary().toLowerCase().trim());
 	}
 }

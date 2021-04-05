@@ -119,6 +119,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	@Test
 	public void testSetAndGetInputTypes() {
 		config.setInputTypes(Set.of(RecommenderType.values()));
-		assertEquals(3, config.getInputTypes().size());
+		assertEquals(2, config.getInputTypes().size());
 	}
 }

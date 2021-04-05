@@ -38,7 +38,7 @@ public class NumberOfTruePositives extends EvaluationMetric {
 	public double calculateMetric() {
 		int numberOfTruePositives = 0;
 		for (Recommendation recommendation : recommendations) {
-			if (countIntersections(documentedSolutionOptions, recommendation.getSummary()) > 0) {
+			if (countMatches(documentedSolutionOptions, recommendation.getSummary()) > 0) {
 				numberOfTruePositives++;
 			}
 		}
