@@ -966,19 +966,6 @@
 	};
 
 	/*
-	 * external references: decisionGuidanceEvaluation.vm
-	 */
-	ConDecAPI.prototype.getAllIssues = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/getAllIssues.json?projectKey="
-			+ projectKey, function(error,
-				result) {
-			if (error === null) {
-				callback(error, result);
-			}
-		});
-	};
-
-	/*
 	 * external references: condec.export,
 	 * condec.gitdiffviewer, relatedIssuesTab.vm
 	 */

@@ -76,22 +76,15 @@
     </table>
 </div>
 <script>
-    var init = false;
     var documentationLocations = {}
-    $("#evaluation-container").mouseenter(function() {
-        if(!init) {
-        conDecAPI.getAllIssues("$projectKey", function(error, results) {
-            if (results !== null && results.length > 0) {
-                results.forEach(issue => {
-                     documentationLocations[issue.id] = issue.documentationLocation;
-                     $("#select2-issues").append("<option value='" + issue.id + "'>" + issue.summary + "</option>");
-                });
-		    }
-        });
-        init = true
-        AJS.$("#select2-issues").auiSelect2();
-        }
-    });
+    var filterSettings = {"knowledgeTypes" : ["Issue", "Problem", "Goal"]};
+	conDecAPI.getKnowledgeElements(filterSettings, function (decisionProblems) {
+		decisionProblems.forEach(issue => {
+			documentationLocations[issue.id] = issue.documentationLocation;
+			$("#select2-issues").append("<option value='" + issue.id + "'>" + issue.summary + "</option>");
+		});
+	});        
+    AJS.$("#select2-issues").auiSelect2();
 
     let activeSources = []
     var sources = $("#knowledgesource-evaluation-dropdown")

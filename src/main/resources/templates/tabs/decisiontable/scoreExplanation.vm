@@ -3,7 +3,7 @@
 	<p>This table gives an overview of the criteria that are used to calculate the score.
 		The score can be composed of different sub-scores. 
 	</p>
-	<table class="aui">
+	<table class="aui aui-table-list">
 		<thead>
 			<th>Description</th>
 			<th>Score</th>
