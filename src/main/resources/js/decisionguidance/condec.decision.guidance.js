@@ -49,14 +49,8 @@
 
 	function buildRecommendationTable(recommendations, currentIssue) {
 		const table = $("#recommendation-container tbody");
-
 		let counter = 0;
-		var sortedByScore = recommendations.slice(0);
-		sortedByScore.sort(function(a, b) {
-			return b.score.totalScore - a.score.totalScore;
-		});
-
-		sortedByScore.forEach(recommendation => {
+		recommendations.forEach(recommendation => {
 			counter++;
 			let tableRow = "";
 
@@ -85,16 +79,9 @@
 
 	function buildQuickRecommendationTable(recommendations, currentIssue) {
 		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
-
 		let counter = 0;
-		var sortedByScore = recommendations.slice(0);
-		sortedByScore.sort(function(a, b) {
-			return b.score.totalScore - a.score.totalScore;
-		});
-
 		var columns = "";
-
-		var topResults = sortedByScore.slice(0, 4);
+		var topResults = recommendations.slice(0, 4);
 		topResults.forEach(recommendation => {
 			counter++;
 			let tableRow = "<tr>";
@@ -138,11 +125,11 @@
 
 	function buildScore(scoreObject, ID) {
 		var scoreControl = document.getElementById("control-score-explanation");
-		scoreControl.innerText = scoreObject.totalScore.toFixed(2) + "%";
+		scoreControl.innerText = scoreObject.value.toFixed(2) + "% " + scoreObject.explanation;
 
 		var columns = "";
-		scoreObject.partScores.forEach(partScore => {
-			columns += "<tr><td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td></tr>";
+		scoreObject.subScores.forEach(subScore => {
+			columns += "<tr><td>" + subScore.explanation + "</td><td>" + subScore.value.toFixed(2) + "</td></tr>";
 		})
 		document.getElementById("score-explanation-table-body").innerHTML = columns;
 

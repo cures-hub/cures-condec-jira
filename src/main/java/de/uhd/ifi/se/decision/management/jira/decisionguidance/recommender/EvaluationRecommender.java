@@ -60,7 +60,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		}
 
 		recommendationsFromKnowledgeSource.sort(
-				Comparator.comparingDouble(recommendation -> recommendation.getScore().getTotalScore()));
+				Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
 		List<KnowledgeElement> alternatives = knowledgeElement.getLinks().stream()

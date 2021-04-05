@@ -31,6 +31,9 @@
 	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(projectKey, keyword, issueId, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/getRecommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
 			function(error, recommendations) {
+				recommendations.sort(function(recommendation1, recommendation2) {
+					return recommendation2.score.value - recommendation1.score.value;
+				});
 				callback(recommendations, error);
 			});
 	};

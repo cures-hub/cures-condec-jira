@@ -21,16 +21,16 @@ public class TestRecommendationScore extends TestSetUp {
 
 	@Test
 	public void testScore() {
-		assertEquals(0, score.getComposedScores().size());
-		score.composeScore(new RecommendationScore(0.5f, "First Score"));
-		score.composeScore(new RecommendationScore(0.5f, "Second Score"));
-		assertEquals(2, score.getComposedScores().size());
+		assertEquals(0, score.getSubScores().size());
+		score.addSubScore(new RecommendationScore(0.5f, "First Score"));
+		score.addSubScore(new RecommendationScore(0.5f, "Second Score"));
+		assertEquals(2, score.getSubScores().size());
 
-		score.setTotalScore(1.5f);
-		assertEquals(1.5, score.getTotalScore(), 0.0);
+		score.setValue(1.5f);
+		assertEquals(1.5, score.getValue(), 0.0);
 
-		score.setComposedScore(new ArrayList<>());
-		assertEquals(2, score.getComposedScores().size());
+		score.setSubScore(new ArrayList<>());
+		assertEquals(2, score.getSubScores().size());
 
 		score.setExplanation("TEST EXPLANATION");
 		assertEquals("TEST EXPLANATION", score.getExplanation());

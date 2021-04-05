@@ -216,10 +216,10 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 	private RecommendationScore getScore(int maxValue, int actualValue) {
 		RecommendationScore recommendationScore = new RecommendationScore(0.0f, "Recommendation with most links");
-		recommendationScore.composeScore(new RecommendationScore(maxValue, "Recommendation with most links"));
-		recommendationScore.composeScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
+		recommendationScore.addSubScore(new RecommendationScore(maxValue, "Recommendation with most links"));
+		recommendationScore.addSubScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
 		float totalScore = (actualValue * 1.0f / maxValue) * 100f;
-		recommendationScore.setTotalScore(totalScore);
+		recommendationScore.setValue(totalScore);
 		return recommendationScore;
 	}
 

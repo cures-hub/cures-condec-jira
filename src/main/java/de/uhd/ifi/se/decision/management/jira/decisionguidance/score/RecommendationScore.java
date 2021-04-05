@@ -10,28 +10,40 @@ import javax.xml.bind.annotation.XmlElement;
  * likely it is that the user accepts the recommendation. The score can be used
  * to rank/sort the recommendations.
  * 
- * The score can be composed of various criteria. It consists of a total score
- * value and an explanation.
+ * The score consists of a value and an explanation. Besides, the score can be
+ * composed of various sub-scores ({@link this#getComposedScores()}) for the
+ * criteria that were used to calculate the score.
  */
 public class RecommendationScore {
 
-	private float totalScore;
+	private float value;
 	private String explanation;
-	private List<RecommendationScore> partScores;
+	private List<RecommendationScore> subScores;
 
 	public RecommendationScore(float totalScore, String explanation) {
-		this.totalScore = totalScore;
+		this.value = totalScore;
 		this.explanation = explanation;
-		this.partScores = new ArrayList<>();
+		this.subScores = new ArrayList<>();
 	}
 
+	/**
+	 * @return score value. If the score is composed of sub-scores, the value is
+	 *         calculated using these sub-scores. It might be normalized to enable
+	 *         recommendation ranking.
+	 */
 	@XmlElement
-	public float getTotalScore() {
-		return totalScore;
+	public float getValue() {
+		return value;
 	}
 
-	public void setTotalScore(float totalScore) {
-		this.totalScore = totalScore;
+	/**
+	 * @param value
+	 *            of the score. If the score is composed of sub-scores, the value is
+	 *            calculated using these sub-scores. It might be normalized to
+	 *            enable recommendation ranking.
+	 */
+	public void setValue(float value) {
+		this.value = value;
 	}
 
 	/**
@@ -51,21 +63,26 @@ public class RecommendationScore {
 	}
 
 	/**
-	 * Adds the part scores which composes the total score.
-	 * 
-	 * @param score
+	 * @param subScore
+	 *            sub-score which this score is composed of.
 	 */
-	public void composeScore(RecommendationScore score) {
-		this.partScores.add(score);
+	public void addSubScore(RecommendationScore subScore) {
+		this.subScores.add(subScore);
 	}
 
-	public void setComposedScore(List<RecommendationScore> recommendationScores) {
-		this.partScores.addAll(recommendationScores);
+	/**
+	 * @param subScores
+	 *            sub-scores which this score is composed of.
+	 */
+	public void setSubScore(List<RecommendationScore> subScores) {
+		this.subScores.addAll(subScores);
 	}
 
-	@XmlElement(name = "partScores")
-	public List<RecommendationScore> getComposedScores() {
-		return partScores;
+	/**
+	 * @return sub-scores which this score is composed of.
+	 */
+	@XmlElement
+	public List<RecommendationScore> getSubScores() {
+		return subScores;
 	}
-
 }

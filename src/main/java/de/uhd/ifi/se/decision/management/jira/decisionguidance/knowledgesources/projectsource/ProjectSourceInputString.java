@@ -69,7 +69,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityScore.toString());
 
 		double jc = this.calculateSimilarity(similarityScore, keywords, parentIssue.getSummary());
-		score.composeScore(new RecommendationScore((float) jc,
+		score.addSubScore(new RecommendationScore((float) jc,
 				"<b>" + keywords + "</b> is similar to <b>" + parentIssue.getSummary() + "</b>"));
 
 		float numberProArguments = 0;
@@ -78,11 +78,11 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		for (Argument argument : arguments) {
 			if (argument.getType().equals(KnowledgeType.PRO.toString())) {
 				numberProArguments += 1;
-				score.composeScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
+				score.addSubScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
 			}
 			if (argument.getType().equals(KnowledgeType.CON.toString())) {
 				numberConArguments += 1;
-				score.composeScore(new RecommendationScore(-.01f, argument.getType() + " : " + argument.getSummary()));
+				score.addSubScore(new RecommendationScore(-.01f, argument.getType() + " : " + argument.getSummary()));
 			}
 		}
 
@@ -91,7 +91,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments) * argumentWeight))
 				/ (1 + arguments.size() * argumentWeight) * 100f; // TODO find better formula
 
-		score.setTotalScore(scoreJC);
+		score.setValue(scoreJC);
 
 		return score;
 	}
