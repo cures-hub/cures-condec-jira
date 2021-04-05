@@ -48,7 +48,6 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	}
 
 	public RecommendationEvaluation execute() {
-
 		List<Recommendation> recommendationsFromKnowledgeSource;
 		RecommenderType recommenderType = RecommenderType.ISSUE;
 		if (!keywords.isBlank()) {

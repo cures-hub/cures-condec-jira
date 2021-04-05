@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods;
 
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-import java.util.List;
-
 public class AveragePrecision extends EvaluationMethod {
 
-	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
+	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
+			int topKResults) {
 		this.recommendations = recommendations;
 		this.solutionOptions = solutionOptions;
 		this.topKResults = topKResults;
@@ -21,10 +22,10 @@ public class AveragePrecision extends EvaluationMethod {
 		int k = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < k; i++) {
 			for (KnowledgeElement solutionOption : solutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim()) ||
-					recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
+				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
+						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					relevantItems += 1.0;
-					precisionK += (relevantItems / (i + 1.0));
+					precisionK += relevantItems / (i + 1.0);
 				}
 			}
 		}

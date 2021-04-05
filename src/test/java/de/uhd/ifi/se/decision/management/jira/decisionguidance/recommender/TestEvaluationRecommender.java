@@ -99,7 +99,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(RecommenderType.ISSUE.toString(), recommendationEvaluation.getRecommenderType());
+		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
 		assertEquals(2, recommendationEvaluation.getNumberOfResults());
 		assertNotNull(recommendationEvaluation.getMetrics());
 
@@ -108,7 +108,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		recommendationEvaluation = recommender2.evaluate(KnowledgeElements.getTestKnowledgeElement())
 				.withKnowledgeSource(knowledgeSources, "TEST").execute();
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(RecommenderType.KEYWORD.toString(), recommendationEvaluation.getRecommenderType());
+		assertEquals(RecommenderType.KEYWORD, recommendationEvaluation.getRecommenderType());
 
 	}
 
@@ -129,7 +129,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		recommendationEvaluation.setNumberOfResults(2);
 		recommendationEvaluation.setRecommenderType(RecommenderType.KEYWORD);
 
-		assertEquals(RecommenderType.KEYWORD.toString(), recommendationEvaluation.getRecommenderType());
+		assertEquals(RecommenderType.KEYWORD, recommendationEvaluation.getRecommenderType());
 		assertEquals("DBPedia", recommendationEvaluation.getKnowledgeSource().getName());
 		assertEquals(2, recommendationEvaluation.getNumberOfResults());
 	}
