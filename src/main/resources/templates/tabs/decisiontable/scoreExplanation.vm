@@ -1,14 +1,14 @@
 <a data-aui-trigger aria-controls="score-explanation" id="control-score-explanation" href=""></a>
 <aui-inline-dialog id="score-explanation" responds-to="hover">
-	<div class="description">The score is composed of different aspects. 
-		This table gives an overview of the criteria that are used to calculate the score.
-	</div>
+	<p>This table gives an overview of the criteria that are used to calculate the score.
+		The score can be composed of different sub-scores. 
+	</p>
 	<table class="aui">
 		<thead>
 			<th>Description</th>
 			<th>Score</th>
 		</thead>
-		<tbody id="score-explanation-table-body">		
+		<tbody id="score-explanation-table-body">					
 		</tbody>
 	</table>
 	<span class="project-config-webpanel-column-content"></span>

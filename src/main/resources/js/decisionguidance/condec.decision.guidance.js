@@ -123,12 +123,12 @@
 		});
 	}
 
-	function buildScore(scoreObject, ID) {
+	function buildScore(score, ID) {
 		var scoreControl = document.getElementById("control-score-explanation");
-		scoreControl.innerText = scoreObject.value.toFixed(2) + "% " + scoreObject.explanation;
+		scoreControl.innerText = score.value.toFixed(0) + "%";
 
-		var columns = "";
-		scoreObject.subScores.forEach(subScore => {
+		var columns = "<tr style='background-color: #e8e8e8;'><td>" + score.explanation + "</td><td>" + score.value.toFixed(2) + "%</td></tr>";
+		score.subScores.forEach(subScore => {
 			columns += "<tr><td>" + subScore.explanation + "</td><td>" + subScore.value.toFixed(2) + "</td></tr>";
 		})
 		document.getElementById("score-explanation-table-body").innerHTML = columns;

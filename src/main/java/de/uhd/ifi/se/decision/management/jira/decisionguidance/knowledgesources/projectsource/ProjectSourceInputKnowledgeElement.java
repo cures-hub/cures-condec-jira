@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * linked elements.
  * 
  * For example, a decision problem with alternatives and arguments already
- * documented can be used to query DBPedia.
+ * documented can be used to query the other Jira project.
  */
 public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<KnowledgeElement> {
 
@@ -54,8 +54,7 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 				if (recommendation.equals(recommendation1)) {
 					numberDuplicates += 1;
 					meanScore += recommendation1.getScore().getValue();
-					meanRecommendationScore
-							.setSubScore(recommendation1.getScore().getSubScores());
+					meanRecommendationScore.setSubScore(recommendation1.getScore().getSubScores());
 				}
 			}
 			meanRecommendationScore.setValue(meanScore / numberDuplicates);
