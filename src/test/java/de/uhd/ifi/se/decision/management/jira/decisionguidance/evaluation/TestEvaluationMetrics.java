@@ -70,7 +70,6 @@ public class TestEvaluationMetrics extends TestSetUp {
 		averagePrecision = new AveragePrecision(recommendations, solutionOptions, 5);
 		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions, 5);
 		numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions, 5);
-
 	}
 
 	@Test

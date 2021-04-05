@@ -6,7 +6,9 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Measures the average precision (AP) within the top-k results.
+ * Measures the average precision (AP) within the top-k results. Takes the total
+ * number of ground truth positives into account, i.e. the number of the
+ * solution options already documented.
  * 
  * https://towardsdatascience.com/breaking-down-mean-average-precision-map-ae462f623a52
  */
@@ -42,6 +44,8 @@ public class AveragePrecision extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "Measures the average precision within the top-k results.";
+		return "Measures the average precision within the top-k results. Takes the total"
+				+ "number of ground truth positives into account, i.e. the number of the "
+				+ "solution options already documented.";
 	}
 }
