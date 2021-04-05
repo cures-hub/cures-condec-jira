@@ -70,10 +70,10 @@ public abstract class EvaluationMetric {
 	 *         {@link RecommendationScore}s.
 	 */
 	private static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
-		if (k < allRecommendations.size()) {
-			return allRecommendations.subList(0, k);
+		if (k <= 0 || k >= allRecommendations.size()) {
+			return allRecommendations;
 		}
-		return allRecommendations;
+		return allRecommendations.subList(0, k);
 	}
 
 	/**

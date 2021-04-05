@@ -39,11 +39,13 @@
     <input class="text short-field"
            type="number"
            data-aui-validation-field
+           min="0"
            value="5"
            id="k-results"
            name="k-results"/>
     <div class="description">Set the top-k recommendations that should be used for the metric calculation. 
-    	Only the top-k recommendations with the highest score are used in the table below.
+    	Only the top-k recommendations with the highest score are used in the table below.<br/> 
+    	<b>Set this value to "0" if all recommendations should be used during metric calculation.</b>
     </div>
 </div>
 

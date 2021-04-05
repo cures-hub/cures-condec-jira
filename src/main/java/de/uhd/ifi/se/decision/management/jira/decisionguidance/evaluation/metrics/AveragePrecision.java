@@ -5,6 +5,11 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Measures the average precision (AP) within the top-k results.
+ * 
+ * https://towardsdatascience.com/breaking-down-mean-average-precision-map-ae462f623a52
+ */
 public class AveragePrecision extends EvaluationMetric {
 
 	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
@@ -14,10 +19,20 @@ public class AveragePrecision extends EvaluationMetric {
 
 	@Override
 	public double calculateMetric() {
-		double numberOfTruePositives = new NumberOfTruePositives(recommendations, documentedSolutionOptions)
-				.calculateMetric();
-		double precision = numberOfTruePositives / recommendations.size();
-		return !Double.isNaN(precision) ? precision : 0.0;
+		int numberOfMatches = 0;
+		double precisionAtK = 0.0;
+		// GTP refers to the total number of ground truth positives
+		double numberOfGroundTruthPositives = documentedSolutionOptions.size();
+
+		for (int i = 0; i < recommendations.size(); i++) {
+			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
+				if (isMatching(solutionOption, recommendations.get(i).getSummary())) {
+					precisionAtK += ++numberOfMatches / (i + 1.0);
+				}
+			}
+		}
+		double averagePrecision = precisionAtK / numberOfGroundTruthPositives;
+		return !Double.isNaN(averagePrecision) ? averagePrecision : 0.0;
 	}
 
 	@Override
@@ -27,7 +42,6 @@ public class AveragePrecision extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "Measures the average precision within the top-k results, i.e. "
-				+ "the fraction of relevant recommendations among the retrieved recommendations.";
+		return "Measures the average precision within the top-k results.";
 	}
 }
