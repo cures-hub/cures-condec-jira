@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceC
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -82,13 +83,12 @@ public abstract class BaseRecommender<T> {
 			KnowledgeElement alternative = new KnowledgeElement();
 
 			// Set information
-			alternative.setId(id);
-			id += 1;
+			alternative.setId(id++);
 			alternative.setSummary(recommendation.getSummary());
 			alternative.setType(KnowledgeType.ALTERNATIVE);
 			alternative.setDescription("");
 			alternative.setProject(projectKey);
-			alternative.setDocumentationLocation("s");
+			alternative.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
 
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);

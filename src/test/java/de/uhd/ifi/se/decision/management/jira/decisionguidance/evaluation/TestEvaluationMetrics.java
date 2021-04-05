@@ -73,7 +73,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	@Test
 	public void testCalculations() {
 		assertEquals(0.5, fScore.calculateMetric(), 0.0);
-		assertEquals(1.0, averagePrecision.calculateMetric(), 0.0);
+		assertEquals(0.5, averagePrecision.calculateMetric(), 0.0);
 		assertEquals(1.0, reciprocalRank.calculateMetric(), 0.0);
 		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
 	}

@@ -8,7 +8,7 @@ import java.util.List;
  * elements.
  */
 public enum RecommenderType {
-	KEYWORD, ISSUE, EVALUATION;
+	KEYWORD, ISSUE;
 
 	/**
 	 * @return default (i.e. simple) recommender type.

@@ -19,6 +19,11 @@ public class NumberOfTruePositives extends EvaluationMetric {
 		super(recommendations, solutionOptions, topKResults);
 	}
 
+	public NumberOfTruePositives(List<Recommendation> recommendations,
+			List<KnowledgeElement> documentedSolutionOptions) {
+		super(recommendations, documentedSolutionOptions);
+	}
+
 	@Override
 	public String getName() {
 		return "#True Positives";
@@ -38,24 +43,5 @@ public class NumberOfTruePositives extends EvaluationMetric {
 			}
 		}
 		return numberOfTruePositives;
-	}
-
-	/**
-	 * @param knowledgeElements
-	 *            list of already documented solution options whose summary is
-	 *            matched against the recommendation.
-	 * @param matchingString
-	 *            summary of recommendandation.
-	 * @return number of matches.
-	 */
-	private int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString) {
-		int counter = 0;
-		for (KnowledgeElement knowledgeElement : knowledgeElements) {
-			if (knowledgeElement.getSummary().toLowerCase().contains(matchingString.toLowerCase().trim())
-					|| matchingString.toLowerCase().contains(knowledgeElement.getSummary().toLowerCase().trim())) {
-				counter++;
-			}
-		}
-		return counter;
 	}
 }

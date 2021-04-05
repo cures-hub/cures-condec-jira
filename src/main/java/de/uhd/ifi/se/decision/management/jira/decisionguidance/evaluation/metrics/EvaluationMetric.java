@@ -27,6 +27,18 @@ public abstract class EvaluationMetric {
 	 *            DBPedia or a Jira project.
 	 * @param solutionOptions
 	 *            gold standard/ground truth that was already documented.
+	 */
+	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		this.recommendations = recommendations;
+		this.documentedSolutionOptions = solutionOptions;
+	}
+
+	/**
+	 * @param recommendations
+	 *            {@link Recommendation}s from a {@link KnowledgeSource}, such as
+	 *            DBPedia or a Jira project.
+	 * @param solutionOptions
+	 *            gold standard/ground truth that was already documented.
 	 * @param topKResults
 	 *            number of {@link Recommendation}s with the highest
 	 *            {@link RecommendationScore} included in the evaluation. All other
@@ -34,8 +46,7 @@ public abstract class EvaluationMetric {
 	 */
 	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
 			int topKResults) {
-		this.recommendations = getTopKRecommendations(recommendations, topKResults);
-		this.documentedSolutionOptions = solutionOptions;
+		this(getTopKRecommendations(recommendations, topKResults), solutionOptions);
 	}
 
 	@XmlElement(name = "value")
@@ -63,5 +74,31 @@ public abstract class EvaluationMetric {
 			return allRecommendations.subList(0, k);
 		}
 		return allRecommendations;
+	}
+
+	/**
+	 * @param knowledgeElements
+	 *            list of already documented solution options whose summary is
+	 *            matched against the recommendation.
+	 * @param matchingString
+	 *            summary of recommendandation.
+	 * @return number of matches.
+	 */
+	protected static int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString) {
+		int counter = 0;
+		for (KnowledgeElement knowledgeElement : knowledgeElements) {
+			if (isMatching(knowledgeElement, matchingString)) {
+				counter++;
+			}
+		}
+		return counter;
+	}
+
+	protected static boolean isMatching(KnowledgeElement knowledgeElement, String matchingString) {
+		if (knowledgeElement.getSummary().toLowerCase().contains(matchingString.toLowerCase().trim())
+				|| matchingString.toLowerCase().contains(knowledgeElement.getSummary().toLowerCase().trim())) {
+			return true;
+		}
+		return false;
 	}
 }

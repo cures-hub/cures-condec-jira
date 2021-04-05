@@ -13,8 +13,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.EvaluationRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -28,8 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestEvaluationRecommender extends TestSetUp {
 
-	private ProjectSource projectSource;
-	private RDFSource rdfSource;
 	private List<KnowledgeSource> knowledgeSources;
 	private List<KnowledgeElement> solutionOptions;
 	private EvaluationRecommender recommender;
@@ -45,10 +41,9 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 		recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "", 5);
 
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
-		// in the same
-		// project
-		rdfSource = new RDFSource();
+		// search for solutions in the same project
+		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		RDFSource rdfSource = new RDFSource();
 		rdfSource.setName("DBPedia");
 
 		knowledgeSources = new ArrayList<>();
@@ -111,7 +106,6 @@ public class TestEvaluationRecommender extends TestSetUp {
 				.withKnowledgeSource(knowledgeSources, "TEST").execute();
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
 		assertEquals(RecommenderType.KEYWORD, recommendationEvaluation.getRecommenderType());
-
 	}
 
 	@Test
@@ -123,25 +117,10 @@ public class TestEvaluationRecommender extends TestSetUp {
 	}
 
 	@Test
-	public void testRecommendationEvaluation() {
-		RecommendationEvaluation recommendationEvaluation = new RecommendationEvaluation(RecommenderType.ISSUE,
-				knowledgeSources.get(0), 6, null);
-
-		recommendationEvaluation.setKnowledgeSource(knowledgeSources.get(1));
-		recommendationEvaluation.setNumberOfResults(2);
-		recommendationEvaluation.setRecommenderType(RecommenderType.KEYWORD);
-
-		assertEquals(RecommenderType.KEYWORD, recommendationEvaluation.getRecommenderType());
-		assertEquals("DBPedia", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(2, recommendationEvaluation.getNumberOfResults());
-	}
-
-	@Test
 	public void testgetResultsFromKnowledgeSource() {
 		BaseRecommender<KnowledgeElement> recommender = new EvaluationRecommender(
 				KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
 		assertNotNull(recommender.getRecommendations(knowledgeSource));
 	}
-
 }

@@ -14,20 +14,10 @@ public class AveragePrecision extends EvaluationMetric {
 
 	@Override
 	public double calculateMetric() {
-		double precisionK = 0.0;
-		double relevantItems = 0.0;
-
-		for (int i = 0; i < recommendations.size(); i++) {
-			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
-						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
-					relevantItems += 1.0;
-					precisionK += relevantItems / (i + 1.0);
-				}
-			}
-		}
-		double AP = precisionK / relevantItems;
-		return !Double.isNaN(AP) ? AP : 0.0;
+		double numberOfTruePositives = new NumberOfTruePositives(recommendations, documentedSolutionOptions)
+				.calculateMetric();
+		double precision = numberOfTruePositives / recommendations.size();
+		return !Double.isNaN(precision) ? precision : 0.0;
 	}
 
 	@Override
@@ -37,6 +27,7 @@ public class AveragePrecision extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "Measures the average precision with the top k results.";
+		return "Measures the average precision within the top-k results, i.e. "
+				+ "the fraction of relevant recommendations among the retrieved recommendations.";
 	}
 }
