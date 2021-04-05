@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,14 +9,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.EvaluationMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.TruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.EvaluationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.FScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.TruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -59,8 +60,8 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 					.getRecommendations(this.knowledgeElement);
 		}
 
-		recommendationsFromKnowledgeSource.sort(
-				Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
+		recommendationsFromKnowledgeSource
+				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
 		List<KnowledgeElement> alternatives = knowledgeElement.getLinks().stream()
@@ -89,7 +90,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new TruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 
-		return new RecommendationEvaluation(recommenderType.toString(), this.knowledgeSources.get(0).getName(),
+		return new RecommendationEvaluation(recommenderType, this.knowledgeSources.get(0),
 				recommendationsFromKnowledgeSource.size(), metrics);
 	}
 

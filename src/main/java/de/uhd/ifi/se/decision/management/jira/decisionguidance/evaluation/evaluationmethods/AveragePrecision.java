@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;

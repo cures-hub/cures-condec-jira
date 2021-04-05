@@ -74,8 +74,8 @@
 	});        
     AJS.$("#select2-issues").auiSelect2();
 
-    let activeSources = []
-    var sources = $("#knowledgesource-evaluation-dropdown")
+    let activeSources = [];
+    var sources = $("#knowledgesource-evaluation-dropdown");
     sources.change(function(e) {
         var isChecked = e.target.hasAttribute('checked');
         if (isChecked) {
@@ -85,7 +85,7 @@
         }
     });
 
-    let buildTableHeader = false;
+    let isTableHeaderForMetricsExiting = false;
     $("#evaluation-knowledgesource-button").click(function(event) {
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
@@ -96,32 +96,34 @@
         activeSources.forEach(function(sourceName) {
             spinner.show();
             conDecDecisionGuidanceAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults, documentationLocations[issueID], 
-            	function(eval, error) {
-                	var metrics = ""
-                	eval.metrics.forEach(metric => {
-                    	metrics += "<td>" + metric.value.toFixed(2) + "</td>";
-	                    if(!buildTableHeader) {
-	                        $("#evaluation-results-table thead tr").append("<th>" + metric.name +
-	                         "<a data-aui-trigger aria-controls='"+ metric.name +"' href='"+ metric.name +"'> " +
-	                         "<span class='aui-icon aui-icon-small aui-iconfont-question-circle'>Insert meaningful text here for accessibility</span>" +
-	                         "</a>" +
-	                         "<aui-inline-dialog id='" + metric.name + "' responds-to='hover'>" +
-	                         "<p>" + metric.description + "</p>" +
-	                         "</aui-inline-dialog>" +
-	                         "</th>");
-	                    }
+            	function(evaluation, error) {
+            		if (!isTableHeaderForMetricsExiting) {
+						$("#evaluation-results-table thead tr").append(createHeaderCellsForMetrics(evaluation.metrics));
+	                }
+                	var metricValues = ""
+                	evaluation.metrics.forEach(metric => {
+                    	metricValues += "<td>" + metric.value.toFixed(2) + "</td>"; 
 	                });
 	
-	                buildTableHeader = true;
+	                isTableHeaderForMetricsExiting = true;
 	
 	                $("#evaluation-results-table tbody").append(
-	                "<tr><td>" + eval.recommenderType + "</td>" +
-	                "<td>" + eval.knowledgeSourceName + "</td>" +
-	                "<td>" +  eval.numberOfResults +"</td>" +
-	                metrics +
-	                "</tr>");
+	                	"<tr><td>" + evaluation.recommenderType + "</td>" +
+						"<td>" + evaluation.knowledgeSource.name + "</td>" +
+						"<td>" + evaluation.numberOfResults +"</td>" + metricValues + "</tr>");
 	                spinner.hide();
-	            });
-        	});
-    	});
+			});
+        });
+    });
+    
+    function createHeaderCellsForMetrics(metrics) {
+    	headerCells = "";
+    	metrics.forEach(metric => {
+    		headerCells += "<th>" + metric.name + "<a data-aui-trigger aria-controls='" + metric.name + "'> " 
+				+ "<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span></a>" 
+				+ "<aui-inline-dialog id='" + metric.name + "' responds-to='hover'>" + metric.description 
+				+ "</aui-inline-dialog></th>";
+		});
+    	return headerCells;
+    }
 </script>

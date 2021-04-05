@@ -2,10 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationmetric
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.FScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluationframework.evaluationmethods.TruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.FScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.ReciprocalRank;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.evaluationmethods.TruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
