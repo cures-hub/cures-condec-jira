@@ -19,9 +19,8 @@ public class NumberOfTruePositives extends EvaluationMetric {
 		super(recommendations, solutionOptions, topKResults);
 	}
 
-	public NumberOfTruePositives(List<Recommendation> recommendations,
-			List<KnowledgeElement> documentedSolutionOptions) {
-		super(recommendations, documentedSolutionOptions);
+	public NumberOfTruePositives(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		super(recommendations, solutionOptions);
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class NumberOfTruePositives extends EvaluationMetric {
 	public double calculateMetric() {
 		int numberOfTruePositives = 0;
 		for (Recommendation recommendation : recommendations) {
-			if (countMatches(documentedSolutionOptions, recommendation.getSummary()) > 0) {
+			if (countMatches(groundTruthSolutionOptions, recommendation.getSummary()) > 0) {
 				numberOfTruePositives++;
 			}
 		}

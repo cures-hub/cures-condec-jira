@@ -16,10 +16,9 @@ public class ReciprocalRank extends EvaluationMetric {
 	public double calculateMetric() {
 		double sum_RR = 0.0;
 		for (int i = 0; i < recommendations.size(); i++) {
-			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
-						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
-					sum_RR += (1.0 / (i + 1));
+			for (KnowledgeElement solutionOption : groundTruthSolutionOptions) {
+				if (isMatching(solutionOption, recommendations.get(i))) {
+					sum_RR += 1.0 / (i + 1);
 					return !Double.isNaN(sum_RR) ? sum_RR : 0.0;
 				}
 			}

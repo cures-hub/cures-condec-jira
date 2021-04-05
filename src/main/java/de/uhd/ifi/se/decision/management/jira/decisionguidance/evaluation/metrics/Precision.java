@@ -13,7 +13,7 @@ public class Precision extends EvaluationMetric {
 
 	@Override
 	public double calculateMetric() {
-		double numberOfTruePositives = new NumberOfTruePositives(recommendations, documentedSolutionOptions)
+		double numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
 				.calculateMetric();
 		double precision = numberOfTruePositives / recommendations.size();
 		return !Double.isNaN(precision) ? precision : 0.0;

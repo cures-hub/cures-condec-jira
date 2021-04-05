@@ -20,18 +20,18 @@ public class FScore extends EvaluationMetric {
 		int intersectedRejected = 0;
 
 		for (Recommendation recommendation : recommendations) {
-			intersectingIdeas += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
+			intersectingIdeas += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.IDEA);
-			intersectingDiscarded += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
+			intersectingDiscarded += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.DISCARDED);
-			intersectedDecided += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
+			intersectedDecided += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.DECIDED);
-			intersectedRejected += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
+			intersectedRejected += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.REJECTED);
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;
-		int falseNegative = (documentedSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded
+		int falseNegative = (groundTruthSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded
 				- intersectedDecided - intersectedRejected;
 		int falsePositive = intersectingDiscarded + intersectedRejected;
 

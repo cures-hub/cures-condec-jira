@@ -18,19 +18,19 @@ public abstract class EvaluationMetric {
 	/**
 	 * Gold standard/ground truth that is already documented.
 	 */
-	protected List<KnowledgeElement> documentedSolutionOptions;
+	protected List<KnowledgeElement> groundTruthSolutionOptions;
 	protected List<Recommendation> recommendations;
 
 	/**
 	 * @param recommendations
 	 *            {@link Recommendation}s from a {@link KnowledgeSource}, such as
 	 *            DBPedia or a Jira project.
-	 * @param solutionOptions
+	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> groundTruthSolutionOptions) {
 		this.recommendations = recommendations;
-		this.documentedSolutionOptions = solutionOptions;
+		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
 
 	/**
@@ -87,15 +87,19 @@ public abstract class EvaluationMetric {
 	protected static int countMatches(List<KnowledgeElement> knowledgeElements, String matchingString) {
 		int counter = 0;
 		for (KnowledgeElement knowledgeElement : knowledgeElements) {
-			if (isMatching(knowledgeElement, matchingString)) {
+			if (isMatching(knowledgeElement.getSummary(), matchingString)) {
 				counter++;
 			}
 		}
 		return counter;
 	}
 
-	protected static boolean isMatching(KnowledgeElement knowledgeElement, String matchingString) {
-		return knowledgeElement.getSummary().toLowerCase().contains(matchingString.toLowerCase().trim())
-				|| matchingString.toLowerCase().contains(knowledgeElement.getSummary().toLowerCase().trim());
+	protected static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
+		return isMatching(knowledgeElement.getSummary(), recommendation.getSummary());
+	}
+
+	protected static boolean isMatching(String summaryA, String summaryB) {
+		return summaryA.toLowerCase().contains(summaryB.toLowerCase().trim())
+				|| summaryB.toLowerCase().contains(summaryA.toLowerCase().trim());
 	}
 }
