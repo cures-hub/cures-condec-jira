@@ -9,9 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 public class FScore extends EvaluationMetric {
 
 	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
-		this.recommendations = recommendations;
-		this.documentedSolutionOptions = solutionOptions;
-		this.topKResults = topKResults;
+		super(recommendations, solutionOptions, topKResults);
 	}
 
 	@Override
@@ -33,8 +31,8 @@ public class FScore extends EvaluationMetric {
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;
-		int falseNegative = (documentedSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided
-				- intersectedRejected;
+		int falseNegative = (documentedSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded
+				- intersectedDecided - intersectedRejected;
 		int falsePositive = intersectingDiscarded + intersectedRejected;
 
 		double fScore = truePositive / (truePositive + .5 * (falsePositive + falseNegative));

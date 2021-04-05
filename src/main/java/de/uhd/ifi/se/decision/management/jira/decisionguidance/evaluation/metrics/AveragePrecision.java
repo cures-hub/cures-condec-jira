@@ -9,9 +9,7 @@ public class AveragePrecision extends EvaluationMetric {
 
 	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
 			int topKResults) {
-		this.recommendations = recommendations;
-		this.documentedSolutionOptions = solutionOptions;
-		this.topKResults = topKResults;
+		super(recommendations, solutionOptions, topKResults);
 	}
 
 	@Override
@@ -19,8 +17,7 @@ public class AveragePrecision extends EvaluationMetric {
 		double precisionK = 0.0;
 		double relevantItems = 0.0;
 
-		int k = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
-		for (int i = 0; i < k; i++) {
+		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
 				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
 						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {

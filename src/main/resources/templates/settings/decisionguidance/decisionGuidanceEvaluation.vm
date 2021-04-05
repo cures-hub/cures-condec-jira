@@ -42,7 +42,9 @@
            value="5"
            id="k-results"
            name="k-results"/>
-    <div class="description">Set the top-k results that should be used for the metric calculation</div>
+    <div class="description">Set the top-k recommendations that should be used for the metric calculation. 
+    	Only the top-k recommendations with the highest score are used in the table below.
+    </div>
 </div>
 
 <div class="field-group">
@@ -56,7 +58,16 @@
     <tr>
         <th>Input</th>
         <th>Knowledge Source</th>
-        <th>#Recommendations</th>
+        <th>
+        	#Recommendations 
+        	<a data-aui-trigger aria-controls='numRecommendations'>     
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='numRecommendations' responds-to='hover'>
+        		Note that only the top-k recommendations are used for the evaluation!
+        		This number represents the total amount of recommendations generated from the knowledge source.
+        	</aui-inline-dialog>
+        </th>
     </tr>
     </thead>
     <tbody></tbody>

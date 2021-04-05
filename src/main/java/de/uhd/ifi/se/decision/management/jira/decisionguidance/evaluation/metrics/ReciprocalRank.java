@@ -1,27 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics;
 
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-import java.util.List;
-
 public class ReciprocalRank extends EvaluationMetric {
 
-	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
-		this.recommendations = recommendations;
-		this.documentedSolutionOptions = solutionOptions;
-		this.topKResults = topKResults;
+	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
+			int topKResults) {
+		super(recommendations, solutionOptions, topKResults);
 	}
 
 	@Override
 	public double calculateMetric() {
 		double sum_RR = 0.0;
-
-		int maxResults = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
-		for (int i = 0; i < maxResults; i++) {
+		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
-				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim()) ||
-					recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
+				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
+						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					sum_RR += (1.0 / (i + 1));
 					return !Double.isNaN(sum_RR) ? sum_RR : 0.0;
 				}
