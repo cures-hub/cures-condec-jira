@@ -5,11 +5,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 import java.util.List;
 
-public class ReciprocalRank extends EvaluationMethod {
+public class ReciprocalRank extends EvaluationMetric {
 
 	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
 		this.recommendations = recommendations;
-		this.solutionOptions = solutionOptions;
+		this.documentedSolutionOptions = solutionOptions;
 		this.topKResults = topKResults;
 	}
 
@@ -19,7 +19,7 @@ public class ReciprocalRank extends EvaluationMethod {
 
 		int maxResults = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < maxResults; i++) {
-			for (KnowledgeElement solutionOption : solutionOptions) {
+			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
 				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim()) ||
 					recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					sum_RR += (1.0 / (i + 1));

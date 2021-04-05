@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 
@@ -20,10 +20,10 @@ public class RecommendationEvaluation {
 	private RecommenderType recommenderType;
 	private KnowledgeSource knowledgeSource;
 	private int numberOfResults;
-	private List<EvaluationMethod> metrics;
+	private List<EvaluationMetric> metrics;
 
 	public RecommendationEvaluation(RecommenderType recommenderType, KnowledgeSource knowledgeSource,
-			int numberOfResults, List<EvaluationMethod> metrics) {
+			int numberOfResults, List<EvaluationMetric> metrics) {
 		this.recommenderType = recommenderType;
 		this.knowledgeSource = knowledgeSource;
 		this.numberOfResults = numberOfResults;
@@ -74,7 +74,7 @@ public class RecommendationEvaluation {
 	}
 
 	@XmlElement
-	public List<EvaluationMethod> getMetrics() {
+	public List<EvaluationMetric> getMetrics() {
 		return metrics;
 	}
 }

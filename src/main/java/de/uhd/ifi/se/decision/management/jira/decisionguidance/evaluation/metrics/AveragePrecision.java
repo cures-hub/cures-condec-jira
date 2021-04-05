@@ -5,12 +5,12 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-public class AveragePrecision extends EvaluationMethod {
+public class AveragePrecision extends EvaluationMetric {
 
 	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
 			int topKResults) {
 		this.recommendations = recommendations;
-		this.solutionOptions = solutionOptions;
+		this.documentedSolutionOptions = solutionOptions;
 		this.topKResults = topKResults;
 	}
 
@@ -21,7 +21,7 @@ public class AveragePrecision extends EvaluationMethod {
 
 		int k = recommendations.size() <= topKResults ? recommendations.size() : topKResults;
 		for (int i = 0; i < k; i++) {
-			for (KnowledgeElement solutionOption : solutionOptions) {
+			for (KnowledgeElement solutionOption : documentedSolutionOptions) {
 				if (solutionOption.getSummary().trim().contains(recommendations.get(i).getSummary().trim())
 						|| recommendations.get(i).getSummary().trim().contains(solutionOption.getSummary().trim())) {
 					relevantItems += 1.0;

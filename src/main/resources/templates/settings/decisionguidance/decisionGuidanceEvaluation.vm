@@ -56,7 +56,7 @@
     <tr>
         <th>Input</th>
         <th>Knowledge Source</th>
-        <th>Results</th>
+        <th>#Recommendations</th>
     </tr>
     </thead>
     <tbody></tbody>

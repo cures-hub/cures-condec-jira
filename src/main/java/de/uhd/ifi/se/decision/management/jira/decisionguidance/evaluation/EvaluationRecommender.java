@@ -10,10 +10,10 @@ import javax.annotation.Nonnull;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.TruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
@@ -83,11 +83,11 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		List<EvaluationMethod> metrics = new ArrayList<>();
+		List<EvaluationMetric> metrics = new ArrayList<>();
 		metrics.add(new FScore(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new ReciprocalRank(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new TruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new NumberOfTruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 
 		return new RecommendationEvaluation(recommenderType, this.knowledgeSources.get(0),
 				recommendationsFromKnowledgeSource.size(), metrics);

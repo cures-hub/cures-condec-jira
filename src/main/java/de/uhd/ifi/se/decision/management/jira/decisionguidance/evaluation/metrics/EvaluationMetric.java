@@ -7,11 +7,19 @@ import javax.xml.bind.annotation.XmlElement;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-public abstract class EvaluationMethod {
+/**
+ * Abstract superclass for evaluation metrics, such as {@link NumberOfTruePositives} and
+ * {@link ReciprocalRank}.
+ */
+public abstract class EvaluationMetric {
 
 	protected List<Recommendation> recommendations;
-	protected List<KnowledgeElement> solutionOptions;
 	protected int topKResults;
+
+	/**
+	 * Gold standard/ground truth that is already documented.
+	 */
+	protected List<KnowledgeElement> documentedSolutionOptions;
 
 	@XmlElement(name = "value")
 	public abstract double calculateMetric();
@@ -21,5 +29,4 @@ public abstract class EvaluationMethod {
 
 	@XmlElement
 	public abstract String getDescription();
-
 }

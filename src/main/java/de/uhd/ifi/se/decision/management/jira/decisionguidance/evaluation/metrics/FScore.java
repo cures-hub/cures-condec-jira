@@ -6,11 +6,11 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
-public class FScore extends EvaluationMethod {
+public class FScore extends EvaluationMetric {
 
 	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
 		this.recommendations = recommendations;
-		this.solutionOptions = solutionOptions;
+		this.documentedSolutionOptions = solutionOptions;
 		this.topKResults = topKResults;
 	}
 
@@ -22,18 +22,18 @@ public class FScore extends EvaluationMethod {
 		int intersectedRejected = 0;
 
 		for (Recommendation recommendation : recommendations) {
-			intersectingIdeas += this.countIntersections(solutionOptions, recommendation.getSummary(),
+			intersectingIdeas += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.IDEA);
-			intersectingDiscarded += this.countIntersections(solutionOptions, recommendation.getSummary(),
+			intersectingDiscarded += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.DISCARDED);
-			intersectedDecided += this.countIntersections(solutionOptions, recommendation.getSummary(),
+			intersectedDecided += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.DECIDED);
-			intersectedRejected += this.countIntersections(solutionOptions, recommendation.getSummary(),
+			intersectedRejected += this.countIntersections(documentedSolutionOptions, recommendation.getSummary(),
 					KnowledgeStatus.REJECTED);
 		}
 
 		int truePositive = intersectingIdeas + intersectedDecided;
-		int falseNegative = (solutionOptions.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided
+		int falseNegative = (documentedSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded - intersectedDecided
 				- intersectedRejected;
 		int falsePositive = intersectingDiscarded + intersectedRejected;
 
