@@ -18,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -27,13 +26,16 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Evaluates one ore more {@link KnowledgeSource}s for a given input
+ * Evaluates one ore more {@link KnowledgeSource}s for given inputs. Creates
+ * {@link RecommendationEvaluation}s as output.
  */
-public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
+public class EvaluationRecommender {
 
 	private KnowledgeElement knowledgeElement;
 	private final String keywords;
 	private int topKResults;
+	protected List<Recommendation> recommendations;
+	protected List<KnowledgeSource> knowledgeSources;
 
 	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, int topKResults) {
 		this.recommendations = new ArrayList<>();
@@ -43,7 +45,6 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		this.topKResults = topKResults;
 	}
 
-	@Override
 	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
 		return InputMethod.getIssueBasedIn(knowledgeSource).getRecommendations(this.knowledgeElement);
 	}
@@ -129,7 +130,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
 			if (knowledgeSource.getName().equalsIgnoreCase(knowledgeSourceName.trim())) {
 				knowledgeSource.setActivated(true);
-				addKnowledgeSource(knowledgeSource);
+				this.knowledgeSources.add(knowledgeSource);
 			}
 		}
 		return this;
@@ -141,11 +142,6 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	public void setKnowledgeElement(KnowledgeElement knowledgeElement) {
 		this.knowledgeElement = knowledgeElement;
-	}
-
-	@Override
-	public RecommenderType getRecommenderType() {
-		return null;
 	}
 
 	/**
@@ -165,5 +161,9 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 			return allRecommendations;
 		}
 		return allRecommendations.subList(0, k);
+	}
+
+	public List<KnowledgeSource> getKnowledgeSources() {
+		return knowledgeSources;
 	}
 }

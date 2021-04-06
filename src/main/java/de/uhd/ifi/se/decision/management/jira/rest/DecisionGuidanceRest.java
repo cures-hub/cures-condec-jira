@@ -244,10 +244,10 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/resetRecommendationsForKnowledgeElement")
+	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response resetRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
+	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
@@ -276,7 +276,7 @@ public class DecisionGuidanceRest {
 		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
 	}
 
-	@Path("/getRecommendations")
+	@Path("/recommendations")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -303,7 +303,7 @@ public class DecisionGuidanceRest {
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
 
-	@Path("/getRecommendationEvaluation")
+	@Path("/recommendationEvaluation")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,

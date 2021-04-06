@@ -13,7 +13,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 
-public class TestResetRecommendations extends TestSetUp {
+public class TestRemoveRecommendations extends TestSetUp {
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
 
@@ -25,26 +25,26 @@ public class TestResetRecommendations extends TestSetUp {
 	}
 
 	@Test
-	public void testResetRecommendations() {
+	public void testValid() {
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, 1L).getStatus());
+				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(request, 1L).getStatus());
 	}
 
 	@Test
-	public void testResetRecommendationsInvalidIssueId() {
+	public void testInvalidJiraIssueId() {
 		assertEquals(Status.NOT_FOUND.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, 119283L).getStatus());
+				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(request, 119283L).getStatus());
 	}
 
 	@Test
-	public void testResetRecommendationRequestNull() {
+	public void testRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(null, 1L).getStatus());
+				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(null, 1L).getStatus());
 	}
 
 	@Test
-	public void testResetRecommendationsJiraIssueIdNull() {
+	public void testJiraIssueIdNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.resetRecommendationsForKnowledgeElement(request, null).getStatus());
+				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(request, null).getStatus());
 	}
 }

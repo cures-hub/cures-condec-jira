@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -117,9 +116,9 @@ public class TestEvaluationRecommender extends TestSetUp {
 	}
 
 	@Test
-	public void testgetResultsFromKnowledgeSource() {
-		BaseRecommender<KnowledgeElement> recommender = new EvaluationRecommender(
-				KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5);
+	public void testGetResultsFromKnowledgeSource() {
+		EvaluationRecommender recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(),
+				"Not blank", 5);
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
 		assertNotNull(recommender.getRecommendations(knowledgeSource));
 	}

@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.Recom
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Represents the evaluation result for one {@link KnowledgeSource} with given
+ * Represents the evaluation result for one {@link KnowledgeSource} for given
  * inputs. Calculated by the {@link EvaluationRecommender}.
  * 
  * Comprises the ground truth solution options, the {@link Recommendation}s, and
