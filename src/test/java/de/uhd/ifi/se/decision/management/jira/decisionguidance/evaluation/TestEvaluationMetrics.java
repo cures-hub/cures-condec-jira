@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Recall;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
@@ -25,6 +26,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	protected FScore fScore;
 	protected Precision precision;
+	protected Recall recall;
 	protected AveragePrecision averagePrecision;
 	protected ReciprocalRank reciprocalRank;
 	protected NumberOfTruePositives numberOfTruePositives;
@@ -67,6 +69,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 		fScore = new FScore(recommendations, solutionOptions, 5);
 		precision = new Precision(recommendations, solutionOptions, 5);
+		recall = new Recall(recommendations, solutionOptions, 5);
 		averagePrecision = new AveragePrecision(recommendations, solutionOptions, 5);
 		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions, 5);
 		numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions, 5);
@@ -76,6 +79,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	public void testCalculations() {
 		assertEquals(0.5, fScore.calculateMetric(), 0.0);
 		assertEquals(0.5, precision.calculateMetric(), 0.0);
+		assertEquals(0.33, recall.calculateMetric(), 0.1);
 		assertEquals(0.33, averagePrecision.calculateMetric(), 0.1);
 		assertEquals(1.0, reciprocalRank.calculateMetric(), 0.0);
 		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
@@ -85,6 +89,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	public void testLabels() {
 		assertEquals("F-Score", fScore.getName());
 		assertEquals("Precision(@k)", precision.getName());
+		assertEquals("Recall(@k)", recall.getName());
 		assertEquals("Average Precision", averagePrecision.getName());
 		assertEquals("Reciprocal Rank", reciprocalRank.getName());
 		assertEquals("#True Positives", numberOfTruePositives.getName());
@@ -94,6 +99,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	public void testDescriptions() {
 		assertEquals(false, fScore.getDescription().isBlank());
 		assertEquals(false, precision.getDescription().isBlank());
+		assertEquals(false, recall.getDescription().isBlank());
 		assertEquals(false, averagePrecision.getDescription().isBlank());
 		assertEquals(false, reciprocalRank.getDescription().isBlank());
 		assertEquals(false, numberOfTruePositives.getDescription().isBlank());

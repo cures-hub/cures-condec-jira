@@ -5,6 +5,11 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Measures the precision (positive predictive value) within the top-k results,
+ * i.e. the fraction of relevant recommendations (that match the solution
+ * options in the ground truth) among the retrieved recommendations.
+ */
 public class Precision extends EvaluationMetric {
 
 	public Precision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
@@ -26,7 +31,8 @@ public class Precision extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "Measures the precision within the top-k results, i.e. "
-				+ "the fraction of relevant recommendations among the retrieved recommendations.";
+		return "Measures the precision (positive predictive value) within the top-k results, i.e. "
+				+ "the fraction of relevant recommendations (that match the solution "
+				+ "options in the ground truth) among the retrieved recommendations.";
 	}
 }

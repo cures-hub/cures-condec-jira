@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Recall;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
@@ -88,6 +89,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		metrics.add(new FScore(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new ReciprocalRank(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new Precision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new Recall(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 		metrics.add(new NumberOfTruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
 
