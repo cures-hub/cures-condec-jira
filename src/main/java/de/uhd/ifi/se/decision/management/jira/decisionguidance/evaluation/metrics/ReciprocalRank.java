@@ -5,6 +5,12 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Measures the position of the first correct recommendation. For example: If
+ * the first recommendation is relevant, the reciprocal rank is 1. If the first
+ * recommendation is irrelevant and the second recommendation is relevant, the
+ * reciprocal rank is 0.5.
+ */
 public class ReciprocalRank extends EvaluationMetric {
 
 	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
@@ -13,12 +19,10 @@ public class ReciprocalRank extends EvaluationMetric {
 
 	@Override
 	public double calculateMetric() {
-		double sum_RR = 0.0;
 		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : groundTruthSolutionOptions) {
 				if (isMatching(solutionOption, recommendations.get(i))) {
-					sum_RR += 1.0 / (i + 1);
-					return !Double.isNaN(sum_RR) ? sum_RR : 0.0;
+					return 1.0 / (i + 1);
 				}
 			}
 		}
@@ -32,6 +36,6 @@ public class ReciprocalRank extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "Measures the position of the first correct result";
+		return "Measures the position of the first correct recommendation.";
 	}
 }

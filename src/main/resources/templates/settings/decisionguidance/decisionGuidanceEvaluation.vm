@@ -98,7 +98,7 @@
         }
     });
 
-    let isTableHeaderForMetricsExiting = false;
+	let isTableHeaderForMetricsExiting = false;
     $("#evaluation-knowledgesource-button").click(function(event) {
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
@@ -113,12 +113,12 @@
             		if (!isTableHeaderForMetricsExiting) {
 						$("#evaluation-results-table thead tr").append(createHeaderCellsForMetrics(evaluation.metrics));
 	                }
+	                isTableHeaderForMetricsExiting = true;
+	                
                 	var metricValues = ""
                 	evaluation.metrics.forEach(metric => {
                     	metricValues += "<td>" + metric.value.toFixed(2) + "</td>"; 
-	                });
-	
-	                isTableHeaderForMetricsExiting = true;
+	                });	                
 	
 	                $("#evaluation-results-table tbody").append(
 	                	"<tr><td>" + evaluation.recommenderType + "</td>" +

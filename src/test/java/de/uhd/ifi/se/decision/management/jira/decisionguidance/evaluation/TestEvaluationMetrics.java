@@ -79,7 +79,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 	}
 
 	@Test
-	public void testCalculations() {
+	public void testAllMetricsCalculations() {
 		assertEquals(0.5, fScore.calculateMetric(), 0.0);
 		assertEquals(0.5, precision.calculateMetric(), 0.0);
 		assertEquals(0.33, recall.calculateMetric(), 0.1);
@@ -128,5 +128,11 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 		recall = new Recall(5, -1);
 		assertEquals(1.0, recall.calculateMetric(), 0.0);
+	}
+
+	@Test
+	public void testReciprocalRank() {
+		ReciprocalRank reciprocalRank = new ReciprocalRank(new ArrayList<>(), new ArrayList<>());
+		assertEquals(0.0, reciprocalRank.calculateMetric(), 0.0);
 	}
 }
