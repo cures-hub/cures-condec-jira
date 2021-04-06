@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -282,6 +283,12 @@ public class DecisionGuidanceConfiguration {
 		List<KnowledgeSource> knowledgeSources = getAllKnowledgeSources();
 		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
 		return knowledgeSources;
+	}
+
+	public KnowledgeSource getKnowledgeSourceByName(String knowledgeSourceName) {
+		Optional<KnowledgeSource> knowledgeSourceWithName = getAllActivatedKnowledgeSources().stream()
+				.filter(source -> source.getName().equals(knowledgeSourceName)).findAny();
+		return knowledgeSourceWithName.isPresent() ? knowledgeSourceWithName.get() : null;
 	}
 
 }

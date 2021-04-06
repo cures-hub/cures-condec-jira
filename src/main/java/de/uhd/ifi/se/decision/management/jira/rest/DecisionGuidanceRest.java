@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceC
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -315,8 +314,6 @@ public class DecisionGuidanceRest {
 			return checkIfDataIsValidResponse;
 		}
 
-		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
-		List<KnowledgeSource> allKnowledgeSources = config.getAllKnowledgeSources();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 
@@ -325,9 +322,8 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		Evaluator recommender = new Evaluator(issue, keyword, kResults);
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
-				.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
+		Evaluator recommender = new Evaluator(issue, keyword, kResults, knowledgeSourceName);
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue).execute();
 
 		return Response.ok(recommendationEvaluation).build();
 	}

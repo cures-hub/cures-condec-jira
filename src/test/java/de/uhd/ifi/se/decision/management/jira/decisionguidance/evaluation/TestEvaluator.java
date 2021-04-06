@@ -38,10 +38,10 @@ public class TestEvaluator extends TestSetUp {
 		testElement.setId(123);
 		testElement.setSummary("How can we implement the feature");
 
-		recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "", 5);
-
 		// search for solutions in the same project
 		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "", 5, projectSource);
+
 		RDFSource rdfSource = new RDFSource();
 		rdfSource.setName("DBPedia");
 
@@ -79,8 +79,6 @@ public class TestEvaluator extends TestSetUp {
 		recommender.getKnowledgeElement();
 		assertEquals(KnowledgeElements.getTestKnowledgeElement().getId(),
 				recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).getKnowledgeElement().getId());
-		assertEquals("TEST",
-				recommender.withKnowledgeSource(knowledgeSources, "TEST").getKnowledgeSources().get(0).getName());
 	}
 
 	@Test
@@ -90,8 +88,7 @@ public class TestEvaluator extends TestSetUp {
 		decisionGuidanceConfiguration.setRecommendationInput("KEYWORD", true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration("TEST", decisionGuidanceConfiguration);
 
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(testElement)
-				.withKnowledgeSource(knowledgeSources, "TEST").execute();
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(testElement).execute();
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
@@ -99,12 +96,10 @@ public class TestEvaluator extends TestSetUp {
 		assertEquals(2, recommendationEvaluation.getRecommendations().size());
 		assertNotNull(recommendationEvaluation.getMetrics());
 
-		Evaluator recommender2 = new Evaluator(KnowledgeElements.getTestKnowledgeElement(),
-				"Not blank", 5);
-		recommendationEvaluation = recommender2.evaluate(KnowledgeElements.getTestKnowledgeElement())
-				.withKnowledgeSource(knowledgeSources, "TEST").execute();
+		Evaluator recommender2 = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5, "TEST");
+		recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).execute();
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(RecommenderType.KEYWORD, recommendationEvaluation.getRecommenderType());
+		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
 	}
 
 	@Test
@@ -117,8 +112,7 @@ public class TestEvaluator extends TestSetUp {
 
 	@Test
 	public void testGetResultsFromKnowledgeSource() {
-		Evaluator recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(),
-				"Not blank", 5);
+		Evaluator recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5, "TEST");
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
 		assertNotNull(recommender.getRecommendations(knowledgeSource));
 	}
