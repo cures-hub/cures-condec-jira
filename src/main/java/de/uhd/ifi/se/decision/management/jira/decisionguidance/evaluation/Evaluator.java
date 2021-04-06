@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * Evaluates one ore more {@link KnowledgeSource}s for given inputs. Creates
  * {@link RecommendationEvaluation}s as output.
  */
-public class EvaluationRecommender {
+public class Evaluator {
 
 	private KnowledgeElement knowledgeElement;
 	private final String keywords;
@@ -37,7 +37,7 @@ public class EvaluationRecommender {
 	protected List<Recommendation> recommendations;
 	protected List<KnowledgeSource> knowledgeSources;
 
-	public EvaluationRecommender(KnowledgeElement knowledgeElement, String keywords, int topKResults) {
+	public Evaluator(KnowledgeElement knowledgeElement, String keywords, int topKResults) {
 		this.recommendations = new ArrayList<>();
 		this.knowledgeSources = new ArrayList<>();
 		this.knowledgeElement = knowledgeElement;
@@ -49,7 +49,7 @@ public class EvaluationRecommender {
 		return InputMethod.getIssueBasedIn(knowledgeSource).getRecommendations(this.knowledgeElement);
 	}
 
-	public EvaluationRecommender evaluate(@Nonnull KnowledgeElement issue) {
+	public Evaluator evaluate(@Nonnull KnowledgeElement issue) {
 		this.knowledgeElement = issue;
 		return this;
 	}
@@ -90,7 +90,7 @@ public class EvaluationRecommender {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		List<Recommendation> topKRecommendations = EvaluationRecommender
+		List<Recommendation> topKRecommendations = Evaluator
 				.getTopKRecommendations(recommendationsFromKnowledgeSource, topKResults);
 
 		List<EvaluationMetric> metrics = new ArrayList<>();
@@ -125,7 +125,7 @@ public class EvaluationRecommender {
 	 * @param knowledgeSourceName
 	 * @return
 	 */
-	public EvaluationRecommender withKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources,
+	public Evaluator withKnowledgeSource(List<? extends KnowledgeSource> knowledgeSources,
 			String knowledgeSourceName) {
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
 			if (knowledgeSource.getName().equalsIgnoreCase(knowledgeSourceName.trim())) {

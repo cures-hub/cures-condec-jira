@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.EvaluationRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Abstract superclass for evaluation metrics, such as
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
  * 
- * Use {@link EvaluationRecommender#getTopKRecommendations(List, int)} to trim
+ * Use {@link Evaluator#getTopKRecommendations(List, int)} to trim
  * the list of {@link Recommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {

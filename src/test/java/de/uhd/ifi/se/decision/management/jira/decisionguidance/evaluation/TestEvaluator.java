@@ -23,11 +23,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestEvaluationRecommender extends TestSetUp {
+public class TestEvaluator extends TestSetUp {
 
 	private List<KnowledgeSource> knowledgeSources;
 	private List<KnowledgeElement> solutionOptions;
-	private EvaluationRecommender recommender;
+	private Evaluator recommender;
 	private KnowledgeElement testElement;
 
 	@Before
@@ -38,7 +38,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		testElement.setId(123);
 		testElement.setSummary("How can we implement the feature");
 
-		recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(), "", 5);
+		recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "", 5);
 
 		// search for solutions in the same project
 		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
@@ -99,7 +99,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 		assertEquals(2, recommendationEvaluation.getRecommendations().size());
 		assertNotNull(recommendationEvaluation.getMetrics());
 
-		EvaluationRecommender recommender2 = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(),
+		Evaluator recommender2 = new Evaluator(KnowledgeElements.getTestKnowledgeElement(),
 				"Not blank", 5);
 		recommendationEvaluation = recommender2.evaluate(KnowledgeElements.getTestKnowledgeElement())
 				.withKnowledgeSource(knowledgeSources, "TEST").execute();
@@ -117,7 +117,7 @@ public class TestEvaluationRecommender extends TestSetUp {
 
 	@Test
 	public void testGetResultsFromKnowledgeSource() {
-		EvaluationRecommender recommender = new EvaluationRecommender(KnowledgeElements.getTestKnowledgeElement(),
+		Evaluator recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(),
 				"Not blank", 5);
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
 		assertNotNull(recommender.getRecommendations(knowledgeSource));

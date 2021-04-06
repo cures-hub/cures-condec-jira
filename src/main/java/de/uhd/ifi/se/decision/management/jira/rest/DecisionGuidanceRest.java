@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.EvaluationRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
@@ -325,7 +325,7 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		EvaluationRecommender recommender = new EvaluationRecommender(issue, keyword, kResults);
+		Evaluator recommender = new Evaluator(issue, keyword, kResults);
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
 				.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
 

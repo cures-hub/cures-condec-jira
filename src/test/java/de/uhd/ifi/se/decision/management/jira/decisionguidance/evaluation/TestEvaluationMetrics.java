@@ -60,7 +60,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		groundTruthSolutionOptions.add(alternativeDiscarded);
 		groundTruthSolutionOptions.add(decision);
 
-		recommendations = EvaluationRecommender.getTopKRecommendations(recommendations, 5);
+		recommendations = Evaluator.getTopKRecommendations(recommendations, 5);
 	}
 
 	@Test
