@@ -1,13 +1,13 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
 public class TestRecommendationScore extends TestSetUp {
 
@@ -34,7 +34,6 @@ public class TestRecommendationScore extends TestSetUp {
 
 		score.setExplanation("TEST EXPLANATION");
 		assertEquals("TEST EXPLANATION", score.getExplanation());
-
 
 	}
 }
