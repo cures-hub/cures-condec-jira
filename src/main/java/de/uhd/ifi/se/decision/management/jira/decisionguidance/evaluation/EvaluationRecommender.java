@@ -97,7 +97,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		metrics.add(new AveragePrecision(topKRecommendations, solutionOptions));
 
 		return new RecommendationEvaluation(recommenderType, this.knowledgeSources.get(0),
-				recommendationsFromKnowledgeSource.size(), metrics);
+				recommendationsFromKnowledgeSource, metrics, solutionOptions);
 	}
 
 	/**

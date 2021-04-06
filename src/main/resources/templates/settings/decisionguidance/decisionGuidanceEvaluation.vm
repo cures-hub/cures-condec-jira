@@ -61,13 +61,22 @@
         <th>Input</th>
         <th>Knowledge Source</th>
         <th>
-        	#Recommendations 
+        	All Recommendations 
         	<a data-aui-trigger aria-controls='numRecommendations'>     
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>
         	<aui-inline-dialog id='numRecommendations' responds-to='hover'>
         		Note that only the top-k recommendations are used for the evaluation!
         		This number represents the total amount of recommendations generated from the knowledge source.
+        	</aui-inline-dialog>
+        </th>
+        <th>
+        	Ground Truth 
+        	<a data-aui-trigger aria-controls='groundTruth'>     
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='groundTruth' responds-to='hover'>
+        		All knowledge elements (solution options) used as the ground truth/gold standard.
         	</aui-inline-dialog>
         </th>
     </tr>
@@ -123,7 +132,8 @@
 	                $("#evaluation-results-table tbody").append(
 	                	"<tr><td>" + evaluation.recommenderType + "</td>" +
 						"<td>" + evaluation.knowledgeSource.name + "</td>" +
-						"<td>" + evaluation.numberOfResults +"</td>" + metricValues + "</tr>");
+						"<td>" + createTooltip(evaluation.recommendations) + "</td>" + 
+						"<td>" + createTooltip(evaluation.groundTruthSolutionOptions) + "</td>" + metricValues + "</tr>");
 	                spinner.hide();
 			});
         });
@@ -139,4 +149,15 @@
 		});
     	return headerCells;
     }
+    
+    function createTooltip(knowledgeElements) {
+    	var id = knowledgeElements.length;
+    	var tooltip = "<a data-aui-trigger aria-controls='knowledgeElements-" + id + "'>"    
+        	+ knowledgeElements.length
+        	+ "</a><aui-inline-dialog id='knowledgeElements-" + id + "' responds-to='hover'>";        	
+        knowledgeElements.forEach(element => {
+        	tooltip += element.summary + "; ";
+        });
+        return tooltip + "</aui-inline-dialog>";
+    }    
 </script>

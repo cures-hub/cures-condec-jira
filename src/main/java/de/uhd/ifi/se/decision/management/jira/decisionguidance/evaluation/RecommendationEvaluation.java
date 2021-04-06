@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Represents the evaluation result for one knowledge source with given inputs.
@@ -19,15 +20,18 @@ public class RecommendationEvaluation {
 
 	private RecommenderType recommenderType;
 	private KnowledgeSource knowledgeSource;
-	private int numberOfResults;
+	private List<Recommendation> recommendations;
 	private List<EvaluationMetric> metrics;
+	private List<KnowledgeElement> groundTruthSolutionOptions;
 
 	public RecommendationEvaluation(RecommenderType recommenderType, KnowledgeSource knowledgeSource,
-			int numberOfResults, List<EvaluationMetric> metrics) {
+			List<Recommendation> recommendations, List<EvaluationMetric> metrics,
+			List<KnowledgeElement> solutionOptions) {
 		this.recommenderType = recommenderType;
 		this.knowledgeSource = knowledgeSource;
-		this.numberOfResults = numberOfResults;
+		this.recommendations = recommendations;
 		this.metrics = metrics;
+		this.groundTruthSolutionOptions = solutionOptions;
 	}
 
 	/**
@@ -51,8 +55,8 @@ public class RecommendationEvaluation {
 	 *         {@link KnowledgeSource}.
 	 */
 	@XmlElement
-	public int getNumberOfResults() {
-		return numberOfResults;
+	public List<Recommendation> getRecommendations() {
+		return recommendations;
 	}
 
 	/**
@@ -60,8 +64,8 @@ public class RecommendationEvaluation {
 	 *            number of {@link Recommendation}s generated from the
 	 *            {@link KnowledgeSource}.
 	 */
-	public void setNumberOfResults(int numberOfResults) {
-		this.numberOfResults = numberOfResults;
+	public void setRecommendations(List<Recommendation> recommendations) {
+		this.recommendations = recommendations;
 	}
 
 	@XmlElement
@@ -76,5 +80,13 @@ public class RecommendationEvaluation {
 	@XmlElement
 	public List<EvaluationMetric> getMetrics() {
 		return metrics;
+	}
+
+	/**
+	 * @return gold standard/ground truth that was already documented.
+	 */
+	@XmlElement
+	public List<KnowledgeElement> getGroundTruthSolutionOptions() {
+		return groundTruthSolutionOptions;
 	}
 }

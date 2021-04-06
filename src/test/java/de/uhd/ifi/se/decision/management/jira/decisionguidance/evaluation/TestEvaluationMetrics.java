@@ -135,7 +135,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		reciprocalRank = new ReciprocalRank(new ArrayList<>(), new ArrayList<>());
 		assertEquals(0.0, reciprocalRank.calculateMetric(), 0.0);
 
-		reciprocalRank = new ReciprocalRank(recommendations, new ArrayList<>());
+		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions.subList(1, 2));
 		assertEquals(0.0, reciprocalRank.calculateMetric(), 0.0);
 	}
 }

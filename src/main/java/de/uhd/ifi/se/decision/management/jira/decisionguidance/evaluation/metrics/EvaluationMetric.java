@@ -18,9 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public abstract class EvaluationMetric {
 
-	/**
-	 * Gold standard/ground truth that is already documented.
-	 */
 	protected List<KnowledgeElement> groundTruthSolutionOptions;
 	protected List<Recommendation> recommendations;
 

@@ -53,8 +53,6 @@ public class Recall extends EvaluationMetric {
 	@Override
 	public String getDescription() {
 		return "Measures the recall (true positive rate/sensitivity) within the top-k results, i.e. "
-				+ "the fraction of the solution options in the ground truth that are successfully recommended. "
-				+ "The ground truth size (number of documented solution options) is "
-				+ groundTruthSolutionOptions.size();
+				+ "the fraction of the solution options in the ground truth that are successfully recommended.";
 	}
 }
