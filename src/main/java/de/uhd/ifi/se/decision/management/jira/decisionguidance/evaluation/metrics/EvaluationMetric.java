@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Abstract superclass for evaluation metrics, such as
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
  * 
- * Use {@link EvaluationRecommender#getTopKRecommendations(List, int)} to trim the list of
- * {@link Recommendation}s to the top-k results.
+ * Use {@link EvaluationRecommender#getTopKRecommendations(List, int)} to trim
+ * the list of {@link Recommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {
 
@@ -75,11 +75,11 @@ public abstract class EvaluationMetric {
 		return counter;
 	}
 
-	protected static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
+	public static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
 		return isMatching(knowledgeElement.getSummary(), recommendation.getSummary());
 	}
 
-	protected static boolean isMatching(String summaryA, String summaryB) {
+	public static boolean isMatching(String summaryA, String summaryB) {
 		return summaryA.toLowerCase().contains(summaryB.toLowerCase().trim())
 				|| summaryB.toLowerCase().contains(summaryA.toLowerCase().trim());
 	}

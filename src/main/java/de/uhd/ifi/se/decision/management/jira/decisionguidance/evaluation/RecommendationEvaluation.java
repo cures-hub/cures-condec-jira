@@ -6,15 +6,18 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Represents the evaluation result for one knowledge source with given inputs.
- * Calculated by the {@link EvaluationRecommender}.
+ * Represents the evaluation result for one {@link KnowledgeSource} with given
+ * inputs. Calculated by the {@link EvaluationRecommender}.
  * 
- * Comprises various metrics.
+ * Comprises the ground truth solution options, the {@link Recommendation}s, and
+ * various {@link EvaluationMetric}s.
  */
 public class RecommendationEvaluation {
 
@@ -77,6 +80,11 @@ public class RecommendationEvaluation {
 		this.recommenderType = recommenderType;
 	}
 
+	/**
+	 * @return all metrics calculated using the ground truth solution options and
+	 *         the recommendations, such as {@link NumberOfTruePositives} and
+	 *         {@link ReciprocalRank}.
+	 */
 	@XmlElement
 	public List<EvaluationMetric> getMetrics() {
 		return metrics;

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
@@ -62,6 +64,12 @@ public class TestEvaluationMetrics extends TestSetUp {
 	}
 
 	@Test
+	public void testIsMatching() {
+		assertTrue(EvaluationMetric.isMatching(groundTruthSolutionOptions.get(0), recommendations.get(0)));
+		assertTrue(EvaluationMetric.isMatching("MySQL", "MySQL@en"));
+	}
+
+	@Test
 	public void testFScore() {
 		FScore fScore = new FScore(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.4, fScore.calculateMetric(), 0.0);
@@ -77,7 +85,8 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testNumberOfTruePositives() {
-		NumberOfTruePositives numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions);
+		NumberOfTruePositives numberOfTruePositives = new NumberOfTruePositives(recommendations,
+				groundTruthSolutionOptions);
 		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
 		assertEquals("#True Positives", numberOfTruePositives.getName());
 		assertEquals(false, numberOfTruePositives.getDescription().isBlank());

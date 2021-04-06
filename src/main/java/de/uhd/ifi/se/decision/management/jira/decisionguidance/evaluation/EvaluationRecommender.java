@@ -26,6 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+/**
+ * Evaluates one ore more {@link KnowledgeSource}s for a given input
+ */
 public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 
 	private KnowledgeElement knowledgeElement;
