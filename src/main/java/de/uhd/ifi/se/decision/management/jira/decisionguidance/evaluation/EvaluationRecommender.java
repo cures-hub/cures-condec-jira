@@ -85,13 +85,16 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
+		List<Recommendation> topKRecommendations = EvaluationMetric
+				.getTopKRecommendations(recommendationsFromKnowledgeSource, topKResults);
+
 		List<EvaluationMetric> metrics = new ArrayList<>();
-		metrics.add(new FScore(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new ReciprocalRank(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new Precision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new Recall(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new AveragePrecision(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
-		metrics.add(new NumberOfTruePositives(recommendationsFromKnowledgeSource, solutionOptions, topKResults));
+		metrics.add(new NumberOfTruePositives(topKRecommendations, solutionOptions));
+		metrics.add(new FScore(topKRecommendations, solutionOptions));
+		metrics.add(new ReciprocalRank(topKRecommendations, solutionOptions));
+		metrics.add(new Precision(topKRecommendations, solutionOptions));
+		metrics.add(new Recall(topKRecommendations, solutionOptions));
+		metrics.add(new AveragePrecision(topKRecommendations, solutionOptions));
 
 		return new RecommendationEvaluation(recommenderType, this.knowledgeSources.get(0),
 				recommendationsFromKnowledgeSource.size(), metrics);

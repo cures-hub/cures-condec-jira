@@ -11,6 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
@@ -67,12 +68,14 @@ public class TestEvaluationMetrics extends TestSetUp {
 		solutionOptions.add(alternativeDiscarded);
 		solutionOptions.add(decision);
 
-		fScore = new FScore(recommendations, solutionOptions, 5);
-		precision = new Precision(recommendations, solutionOptions, 5);
-		recall = new Recall(recommendations, solutionOptions, 5);
-		averagePrecision = new AveragePrecision(recommendations, solutionOptions, 5);
-		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions, 5);
-		numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions, 5);
+		recommendations = EvaluationMetric.getTopKRecommendations(recommendations, 5);
+
+		fScore = new FScore(recommendations, solutionOptions);
+		numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions);
+		precision = new Precision(recommendations, solutionOptions);
+		recall = new Recall(recommendations, solutionOptions);
+		averagePrecision = new AveragePrecision(recommendations, solutionOptions);
+		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions);
 	}
 
 	@Test
@@ -103,5 +106,18 @@ public class TestEvaluationMetrics extends TestSetUp {
 		assertEquals(false, averagePrecision.getDescription().isBlank());
 		assertEquals(false, reciprocalRank.getDescription().isBlank());
 		assertEquals(false, numberOfTruePositives.getDescription().isBlank());
+	}
+
+	@Test
+	public void testPrecision() {
+		Precision precision = new Precision(recommendations, 2);
+		assertEquals(2, recommendations.size());
+		assertEquals(1.0, precision.calculateMetric(), 0.0);
+	}
+
+	@Test
+	public void testRecall() {
+		Recall recall = new Recall(1, 1);
+		assertEquals(0.5, recall.calculateMetric(), 0.0);
 	}
 }

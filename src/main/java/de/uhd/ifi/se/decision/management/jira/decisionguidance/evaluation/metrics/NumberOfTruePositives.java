@@ -14,11 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 
-	public NumberOfTruePositives(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
-			int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
-	}
-
 	public NumberOfTruePositives(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}

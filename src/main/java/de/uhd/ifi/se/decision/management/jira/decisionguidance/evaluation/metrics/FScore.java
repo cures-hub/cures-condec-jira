@@ -8,8 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
 public class FScore extends EvaluationMetric {
 
-	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
+	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		super(recommendations, solutionOptions);
 	}
 
 	@Override

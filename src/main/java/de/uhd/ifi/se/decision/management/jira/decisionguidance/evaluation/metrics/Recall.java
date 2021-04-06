@@ -15,15 +15,24 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class Recall extends EvaluationMetric {
 
-	public Recall(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
+	private double numberOfTruePositives;
+	private double numberOfFalseNegatives;
+
+	public Recall(List<Recommendation> recommendations, List<KnowledgeElement> groundTruthSolutionOptions) {
+		super(recommendations, groundTruthSolutionOptions);
+		this.numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
+				.calculateMetric();
+		this.numberOfFalseNegatives = groundTruthSolutionOptions.size() - numberOfTruePositives;
+	}
+
+	public Recall(double numberOfTruePositives, double numberOfFalseNegatives) {
+		super(null);
+		this.numberOfTruePositives = numberOfTruePositives;
+		this.numberOfFalseNegatives = numberOfFalseNegatives;
 	}
 
 	@Override
 	public double calculateMetric() {
-		double numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
-				.calculateMetric();
-		double numberOfFalseNegatives = groundTruthSolutionOptions.size() - numberOfTruePositives;
 		double recall = numberOfTruePositives / (numberOfTruePositives + numberOfFalseNegatives);
 		return !Double.isNaN(recall) ? recall : 0.0;
 	}

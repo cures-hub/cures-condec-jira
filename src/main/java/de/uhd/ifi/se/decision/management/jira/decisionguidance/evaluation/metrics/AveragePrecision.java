@@ -14,9 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class AveragePrecision extends EvaluationMetric {
 
-	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
-			int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
+	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		super(recommendations, solutionOptions);
 	}
 
 	@Override

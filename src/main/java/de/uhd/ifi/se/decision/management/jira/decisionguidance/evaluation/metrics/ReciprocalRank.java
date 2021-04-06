@@ -7,9 +7,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class ReciprocalRank extends EvaluationMetric {
 
-	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
-			int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
+	public ReciprocalRank(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		super(recommendations, solutionOptions);
 	}
 
 	@Override

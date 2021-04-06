@@ -12,6 +12,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 /**
  * Abstract superclass for evaluation metrics, such as
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
+ * 
+ * Use {@link #getTopKRecommendations(List, int)} to trim the list of
+ * {@link Recommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {
 
@@ -21,6 +24,10 @@ public abstract class EvaluationMetric {
 	protected List<KnowledgeElement> groundTruthSolutionOptions;
 	protected List<Recommendation> recommendations;
 
+	public EvaluationMetric(List<Recommendation> recommendations) {
+		this.recommendations = recommendations;
+	}
+
 	/**
 	 * @param recommendations
 	 *            {@link Recommendation}s from a {@link KnowledgeSource}, such as
@@ -29,47 +36,47 @@ public abstract class EvaluationMetric {
 	 *            gold standard/ground truth that was already documented.
 	 */
 	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> groundTruthSolutionOptions) {
-		this.recommendations = recommendations;
+		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
 
 	/**
-	 * @param recommendations
-	 *            {@link Recommendation}s from a {@link KnowledgeSource}, such as
-	 *            DBPedia or a Jira project.
-	 * @param solutionOptions
-	 *            gold standard/ground truth that was already documented.
-	 * @param topKResults
-	 *            number of {@link Recommendation}s with the highest
-	 *            {@link RecommendationScore} included in the evaluation. All other
-	 *            recommendations are ignored.
+	 * @return metric value, e.g. for {@link Precision} or {@link ReciprocalRank}.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions,
-			int topKResults) {
-		this(getTopKRecommendations(recommendations, topKResults), solutionOptions);
-	}
-
 	@XmlElement(name = "value")
 	public abstract double calculateMetric();
 
+	/**
+	 * @return name of the metric that is shown in the user interface (settings
+	 *         page).
+	 */
 	@XmlElement
 	public abstract String getName();
 
+	/**
+	 * @return description of the metric that is shown in the user interface
+	 *         (settings page).
+	 */
 	@XmlElement
 	public abstract String getDescription();
 
+	public List<Recommendation> getRecommendations() {
+		return recommendations;
+	}
+
 	/**
-	 * 
 	 * @param allRecommendations
 	 *            all {@link Recommendation}s generated from the
 	 *            {@link KnowledgeSource} sorted by their
 	 *            {@link RecommendationScore}.
 	 * @param k
-	 *            for the top-k recommendations.
+	 *            number of {@link Recommendation}s with the highest
+	 *            {@link RecommendationScore} included in the evaluation. All other
+	 *            recommendations are ignored.
 	 * @return the top-k {@link Recommendation}s with the hightest
 	 *         {@link RecommendationScore}s.
 	 */
-	private static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
+	public static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
 		if (k <= 0 || k >= allRecommendations.size()) {
 			return allRecommendations;
 		}

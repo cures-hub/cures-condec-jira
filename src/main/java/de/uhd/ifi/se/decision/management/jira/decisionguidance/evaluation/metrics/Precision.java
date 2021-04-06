@@ -12,14 +12,21 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class Precision extends EvaluationMetric {
 
-	public Precision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions, int topKResults) {
-		super(recommendations, solutionOptions, topKResults);
+	private double numberOfTruePositives;
+
+	public Precision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+		super(recommendations, solutionOptions);
+		this.numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
+				.calculateMetric();
+	}
+
+	public Precision(List<Recommendation> recommendations, double numberOfTruePositives) {
+		super(recommendations);
+		this.numberOfTruePositives = numberOfTruePositives;
 	}
 
 	@Override
 	public double calculateMetric() {
-		double numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
-				.calculateMetric();
 		double precision = numberOfTruePositives / recommendations.size();
 		return !Double.isNaN(precision) ? precision : 0.0;
 	}
