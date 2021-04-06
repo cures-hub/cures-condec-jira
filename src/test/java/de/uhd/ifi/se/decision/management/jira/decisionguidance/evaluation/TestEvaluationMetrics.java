@@ -113,11 +113,20 @@ public class TestEvaluationMetrics extends TestSetUp {
 		Precision precision = new Precision(recommendations, 2);
 		assertEquals(2, recommendations.size());
 		assertEquals(1.0, precision.calculateMetric(), 0.0);
+
+		precision = new Precision(new ArrayList<>(), 0);
+		assertEquals(0.0, precision.calculateMetric(), 0.0);
 	}
 
 	@Test
 	public void testRecall() {
 		Recall recall = new Recall(1, 1);
 		assertEquals(0.5, recall.calculateMetric(), 0.0);
+
+		recall = new Recall(0, 0);
+		assertEquals(0.0, recall.calculateMetric(), 0.0);
+
+		recall = new Recall(5, -1);
+		assertEquals(1.0, recall.calculateMetric(), 0.0);
 	}
 }

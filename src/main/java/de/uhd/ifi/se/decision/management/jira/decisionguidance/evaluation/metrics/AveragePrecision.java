@@ -28,7 +28,7 @@ public class AveragePrecision extends EvaluationMetric {
 		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : groundTruthSolutionOptions) {
 				if (isMatching(solutionOption, recommendations.get(i))) {
-					precisionAtK += ++numberOfMatches / (i + 1.0);
+					precisionAtK += (++numberOfMatches / (i + 1.0));
 				}
 			}
 		}

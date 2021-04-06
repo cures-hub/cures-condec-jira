@@ -27,7 +27,7 @@ public class Precision extends EvaluationMetric {
 
 	@Override
 	public double calculateMetric() {
-		double precision = numberOfTruePositives / recommendations.size();
+		double precision = numberOfTruePositives / (recommendations.size());
 		return !Double.isNaN(precision) ? precision : 0.0;
 	}
 

@@ -34,7 +34,15 @@ public class Recall extends EvaluationMetric {
 	@Override
 	public double calculateMetric() {
 		double recall = numberOfTruePositives / (numberOfTruePositives + numberOfFalseNegatives);
-		return !Double.isNaN(recall) ? recall : 0.0;
+		if (Double.isNaN(recall)) {
+			return 0.0;
+		}
+		if (recall > 1.0) {
+			// number of true positives is higher than the ground truth size,
+			// because various recommendations matched to the same solution option
+			return 1.0;
+		}
+		return recall;
 	}
 
 	@Override
@@ -45,6 +53,8 @@ public class Recall extends EvaluationMetric {
 	@Override
 	public String getDescription() {
 		return "Measures the recall (true positive rate/sensitivity) within the top-k results, i.e. "
-				+ "the fraction of the solution options in the ground truth that are successfully recommended.";
+				+ "the fraction of the solution options in the ground truth that are successfully recommended. "
+				+ "The ground truth size (number of documented solution options) is "
+				+ groundTruthSolutionOptions.size();
 	}
 }
