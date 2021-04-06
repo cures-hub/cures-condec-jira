@@ -7,16 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Measures the harmonic mean of {@link Precision} and {@Recall}.
- * 
- * @issue Should the recommendation of rejected decisions and discarded
- *        alternatives be counted as true positives?
- * @alternative Do not count recommendations that recommend rejected decisions
- *              or discarded alternatives as true positives.
- * @con Harder to implement.
- * @decision Count recommendations that recommend rejected decisions or
- *           discarded alternatives as true positives.
- * @pro Makes the collection of solution options that might solve a decision
- *      problem more complete.
  */
 public class FScore extends EvaluationMetric {
 

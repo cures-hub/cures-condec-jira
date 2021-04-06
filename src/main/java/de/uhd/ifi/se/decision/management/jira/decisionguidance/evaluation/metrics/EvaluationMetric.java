@@ -5,15 +5,15 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.EvaluationRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Abstract superclass for evaluation metrics, such as
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
  * 
- * Use {@link #getTopKRecommendations(List, int)} to trim the list of
+ * Use {@link EvaluationRecommender#getTopKRecommendations(List, int)} to trim the list of
  * {@link Recommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {
@@ -56,29 +56,6 @@ public abstract class EvaluationMetric {
 	 */
 	@XmlElement
 	public abstract String getDescription();
-
-	public List<Recommendation> getRecommendations() {
-		return recommendations;
-	}
-
-	/**
-	 * @param allRecommendations
-	 *            all {@link Recommendation}s generated from the
-	 *            {@link KnowledgeSource} sorted by their
-	 *            {@link RecommendationScore}.
-	 * @param k
-	 *            number of {@link Recommendation}s with the highest
-	 *            {@link RecommendationScore} included in the evaluation. All other
-	 *            recommendations are ignored.
-	 * @return the top-k {@link Recommendation}s with the hightest
-	 *         {@link RecommendationScore}s.
-	 */
-	public static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
-		if (k <= 0 || k >= allRecommendations.size()) {
-			return allRecommendations;
-		}
-		return allRecommendations.subList(0, k);
-	}
 
 	/**
 	 * @param knowledgeElements

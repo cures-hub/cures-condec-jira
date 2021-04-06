@@ -11,6 +11,16 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
  * Counts the number of true positives under the top-k results, i.e. the number
  * of {@link Recommendation}s from a {@link KnowledgeSource} that were already
  * documented in the {@link KnowledgeGraph}.
+ * 
+ * @issue Should the recommendation of rejected decisions and discarded
+ *        alternatives be counted as true positives?
+ * @alternative Do not count recommendations that recommend rejected decisions
+ *              or discarded alternatives as true positives.
+ * @con Harder to implement.
+ * @decision Count recommendations that recommend rejected decisions or
+ *           discarded alternatives as true positives.
+ * @pro Makes the collection of solution options that might solve a decision
+ *      problem more complete.
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 

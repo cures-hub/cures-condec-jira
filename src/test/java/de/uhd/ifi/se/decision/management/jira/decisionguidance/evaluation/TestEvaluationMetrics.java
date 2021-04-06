@@ -11,7 +11,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
@@ -26,20 +25,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class TestEvaluationMetrics extends TestSetUp {
 
 	protected List<Recommendation> recommendations;
-	protected List<KnowledgeElement> solutionOptions;
+	protected List<KnowledgeElement> groundTruthSolutionOptions;
 
 	@Before
 	public void setUp() {
 		init();
-
 		recommendations = new ArrayList<>();
-		solutionOptions = new ArrayList<>();
+		groundTruthSolutionOptions = new ArrayList<>();
 
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", true);
-
 		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "Test Url");
 		Recommendation recommendation2 = new Recommendation(knowledgeSource, "PostgreSQL", "Test Url");
-
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
@@ -55,19 +51,19 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 		KnowledgeElement decision = new KnowledgeElement();
 		decision.setType(KnowledgeType.ALTERNATIVE);
-		decision.setSummary("We will use simple text files to store the data!"); // false Negative
+		decision.setSummary("We will use simple text files to store the data!"); // false negative
 		decision.setStatus(KnowledgeStatus.DECIDED);
 
-		solutionOptions.add(alternativeIdea);
-		solutionOptions.add(alternativeDiscarded);
-		solutionOptions.add(decision);
+		groundTruthSolutionOptions.add(alternativeIdea);
+		groundTruthSolutionOptions.add(alternativeDiscarded);
+		groundTruthSolutionOptions.add(decision);
 
-		recommendations = EvaluationMetric.getTopKRecommendations(recommendations, 5);
+		recommendations = EvaluationRecommender.getTopKRecommendations(recommendations, 5);
 	}
 
 	@Test
 	public void testFScore() {
-		FScore fScore = new FScore(recommendations, solutionOptions);
+		FScore fScore = new FScore(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.4, fScore.calculateMetric(), 0.0);
 		assertEquals("F-Score", fScore.getName());
 		assertEquals(false, fScore.getDescription().isBlank());
@@ -81,7 +77,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testNumberOfTruePositives() {
-		NumberOfTruePositives numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions);
+		NumberOfTruePositives numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions);
 		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
 		assertEquals("#True Positives", numberOfTruePositives.getName());
 		assertEquals(false, numberOfTruePositives.getDescription().isBlank());
@@ -89,7 +85,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testPrecision() {
-		Precision precision = new Precision(recommendations, solutionOptions);
+		Precision precision = new Precision(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.5, precision.calculateMetric(), 0.0);
 		assertEquals("Precision(@k)", precision.getName());
 		assertEquals(false, precision.getDescription().isBlank());
@@ -104,7 +100,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testRecall() {
-		Recall recall = new Recall(recommendations, solutionOptions);
+		Recall recall = new Recall(recommendations, groundTruthSolutionOptions);
 		assertEquals("Recall(@k)", recall.getName());
 		assertEquals(0.33, recall.calculateMetric(), 0.1);
 		assertEquals(false, recall.getDescription().isBlank());
@@ -121,7 +117,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testAveragePrecision() {
-		AveragePrecision averagePrecision = new AveragePrecision(recommendations, solutionOptions);
+		AveragePrecision averagePrecision = new AveragePrecision(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.33, averagePrecision.calculateMetric(), 0.1);
 		assertEquals("Average Precision", averagePrecision.getName());
 		assertEquals(false, averagePrecision.getDescription().isBlank());
@@ -132,7 +128,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 	@Test
 	public void testReciprocalRank() {
-		ReciprocalRank reciprocalRank = new ReciprocalRank(recommendations, solutionOptions);
+		ReciprocalRank reciprocalRank = new ReciprocalRank(recommendations, groundTruthSolutionOptions);
 		assertEquals(1.0, reciprocalRank.calculateMetric(), 0.0);
 		assertEquals("Reciprocal Rank", reciprocalRank.getName());
 		assertEquals(false, reciprocalRank.getDescription().isBlank());
@@ -140,7 +136,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		reciprocalRank = new ReciprocalRank(new ArrayList<>(), new ArrayList<>());
 		assertEquals(0.0, reciprocalRank.calculateMetric(), 0.0);
 
-		reciprocalRank = new ReciprocalRank(recommendations, solutionOptions.subList(1, 2));
+		reciprocalRank = new ReciprocalRank(recommendations, groundTruthSolutionOptions.subList(1, 2));
 		assertEquals(0.0, reciprocalRank.calculateMetric(), 0.0);
 	}
 }

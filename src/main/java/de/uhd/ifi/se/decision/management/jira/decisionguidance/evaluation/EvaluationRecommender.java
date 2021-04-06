@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -85,7 +86,7 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 		solutionOptions.addAll(decided);
 		solutionOptions.addAll(rejected);
 
-		List<Recommendation> topKRecommendations = EvaluationMetric
+		List<Recommendation> topKRecommendations = EvaluationRecommender
 				.getTopKRecommendations(recommendationsFromKnowledgeSource, topKResults);
 
 		List<EvaluationMetric> metrics = new ArrayList<>();
@@ -142,5 +143,24 @@ public class EvaluationRecommender extends BaseRecommender<KnowledgeElement> {
 	@Override
 	public RecommenderType getRecommenderType() {
 		return null;
+	}
+
+	/**
+	 * @param allRecommendations
+	 *            all {@link Recommendation}s generated from the
+	 *            {@link KnowledgeSource} sorted by their
+	 *            {@link RecommendationScore}.
+	 * @param k
+	 *            number of {@link Recommendation}s with the highest
+	 *            {@link RecommendationScore} included in the evaluation. All other
+	 *            recommendations are ignored.
+	 * @return the top-k {@link Recommendation}s with the hightest
+	 *         {@link RecommendationScore}s.
+	 */
+	public static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
+		if (k <= 0 || k >= allRecommendations.size()) {
+			return allRecommendations;
+		}
+		return allRecommendations.subList(0, k);
 	}
 }
