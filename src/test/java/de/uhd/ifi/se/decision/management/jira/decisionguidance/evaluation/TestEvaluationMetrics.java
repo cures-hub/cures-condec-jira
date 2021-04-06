@@ -25,9 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestEvaluationMetrics extends TestSetUp {
 
-	protected FScore fScore;
-	protected AveragePrecision averagePrecision;
-	protected NumberOfTruePositives numberOfTruePositives;
 	protected List<Recommendation> recommendations;
 	protected List<KnowledgeElement> solutionOptions;
 
@@ -66,30 +63,27 @@ public class TestEvaluationMetrics extends TestSetUp {
 		solutionOptions.add(decision);
 
 		recommendations = EvaluationMetric.getTopKRecommendations(recommendations, 5);
-
-		fScore = new FScore(recommendations, solutionOptions);
-		numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions);
-		averagePrecision = new AveragePrecision(recommendations, solutionOptions);
 	}
 
 	@Test
-	public void testAllMetricsCalculations() {
-		assertEquals(0.5, fScore.calculateMetric(), 0.0);
-		assertEquals(0.33, averagePrecision.calculateMetric(), 0.1);
-		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
-	}
-
-	@Test
-	public void testLabels() {
+	public void testFScore() {
+		FScore fScore = new FScore(recommendations, solutionOptions);
+		assertEquals(0.4, fScore.calculateMetric(), 0.0);
 		assertEquals("F-Score", fScore.getName());
-		assertEquals("Average Precision", averagePrecision.getName());
-		assertEquals("#True Positives", numberOfTruePositives.getName());
+		assertEquals(false, fScore.getDescription().isBlank());
+
+		fScore = new FScore(0.5, 0.5);
+		assertEquals(0.5, fScore.calculateMetric(), 0.0);
+
+		fScore = new FScore(new ArrayList<>(), new ArrayList<>());
+		assertEquals(0.0, fScore.calculateMetric(), 0.0);
 	}
 
 	@Test
-	public void testDescriptions() {
-		assertEquals(false, fScore.getDescription().isBlank());
-		assertEquals(false, averagePrecision.getDescription().isBlank());
+	public void testNumberOfTruePositives() {
+		NumberOfTruePositives numberOfTruePositives = new NumberOfTruePositives(recommendations, solutionOptions);
+		assertEquals(1.0, numberOfTruePositives.calculateMetric(), 0.0);
+		assertEquals("#True Positives", numberOfTruePositives.getName());
 		assertEquals(false, numberOfTruePositives.getDescription().isBlank());
 	}
 
@@ -123,6 +117,17 @@ public class TestEvaluationMetrics extends TestSetUp {
 
 		recall = new Recall(5, -1);
 		assertEquals(1.0, recall.calculateMetric(), 0.0);
+	}
+
+	@Test
+	public void testAveragePrecision() {
+		AveragePrecision averagePrecision = new AveragePrecision(recommendations, solutionOptions);
+		assertEquals(0.33, averagePrecision.calculateMetric(), 0.1);
+		assertEquals("Average Precision", averagePrecision.getName());
+		assertEquals(false, averagePrecision.getDescription().isBlank());
+
+		averagePrecision = new AveragePrecision(new ArrayList<>(), new ArrayList<>());
+		assertEquals(0.0, averagePrecision.calculateMetric(), 0.0);
 	}
 
 	@Test

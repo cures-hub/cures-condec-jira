@@ -4,53 +4,41 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 
+/**
+ * Measures the harmonic mean of {@link Precision} and {@Recall}.
+ * 
+ * @issue Should the recommendation of rejected decisions and discarded
+ *        alternatives be counted as true positives?
+ * @alternative Do not count recommendations that recommend rejected decisions
+ *              or discarded alternatives as true positives.
+ * @con Harder to implement.
+ * @decision Count recommendations that recommend rejected decisions or
+ *           discarded alternatives as true positives.
+ * @pro Makes the collection of solution options that might solve a decision
+ *      problem more complete.
+ */
 public class FScore extends EvaluationMetric {
+
+	double precision;
+	double recall;
 
 	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
 		super(recommendations, solutionOptions);
+		this.precision = new Precision(recommendations, solutionOptions).calculateMetric();
+		this.recall = new Recall(recommendations, solutionOptions).calculateMetric();
+	}
+
+	public FScore(double precision, double recall) {
+		super(null);
+		this.precision = precision;
+		this.recall = recall;
 	}
 
 	@Override
 	public double calculateMetric() {
-		int intersectingIdeas = 0;
-		int intersectingDiscarded = 0;
-		int intersectedDecided = 0;
-		int intersectedRejected = 0;
-
-		for (Recommendation recommendation : recommendations) {
-			intersectingIdeas += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
-					KnowledgeStatus.IDEA);
-			intersectingDiscarded += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
-					KnowledgeStatus.DISCARDED);
-			intersectedDecided += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
-					KnowledgeStatus.DECIDED);
-			intersectedRejected += this.countIntersections(groundTruthSolutionOptions, recommendation.getSummary(),
-					KnowledgeStatus.REJECTED);
-		}
-
-		int truePositive = intersectingIdeas + intersectedDecided;
-		int falseNegative = (groundTruthSolutionOptions.size()) - intersectingIdeas - intersectingDiscarded
-				- intersectedDecided - intersectedRejected;
-		int falsePositive = intersectingDiscarded + intersectedRejected;
-
-		double fScore = truePositive / (truePositive + .5 * (falsePositive + falseNegative));
-		if (Double.isNaN(fScore))
-			fScore = 0.0;
-		return fScore;
-	}
-
-	public int countIntersections(List<KnowledgeElement> knowledgeElements, String matchingString,
-			KnowledgeStatus status) {
-		int counter = 0;
-		for (KnowledgeElement knowledgeElement : knowledgeElements) {
-			if ((knowledgeElement.getSummary().toLowerCase().trim().contains(matchingString.toLowerCase().trim())
-					|| matchingString.toLowerCase().trim().contains(knowledgeElement.getSummary().toLowerCase().trim()))
-					&& knowledgeElement.getStatus().equals(status))
-				counter += 1;
-		}
-		return counter;
+		double fScore = 2 * precision * recall / (precision + recall);
+		return !Double.isNaN(fScore) ? fScore : 0.0;
 	}
 
 	@Override
@@ -60,6 +48,6 @@ public class FScore extends EvaluationMetric {
 
 	@Override
 	public String getDescription() {
-		return "F-Score";
+		return "Measures the harmonic mean of precision and recall. Uses the top-k results!";
 	}
 }
