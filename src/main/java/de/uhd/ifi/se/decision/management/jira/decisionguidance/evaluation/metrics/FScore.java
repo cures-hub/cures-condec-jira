@@ -10,8 +10,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class FScore extends EvaluationMetric {
 
-	double precision;
-	double recall;
+	private double precision;
+	private double recall;
 
 	public FScore(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
 		super(recommendations, solutionOptions);

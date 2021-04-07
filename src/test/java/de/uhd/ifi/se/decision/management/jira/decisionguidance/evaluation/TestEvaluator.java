@@ -93,11 +93,6 @@ public class TestEvaluator extends TestSetUp {
 		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
 		assertEquals(2, recommendationEvaluation.getRecommendations().size());
 		assertNotNull(recommendationEvaluation.getMetrics());
-
-		Evaluator recommender2 = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5, "TEST");
-		recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).execute();
-		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
 	}
 
 	@Test

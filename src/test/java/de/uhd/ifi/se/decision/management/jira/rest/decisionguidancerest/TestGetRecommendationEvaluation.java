@@ -34,6 +34,7 @@ public class TestGetRecommendationEvaluation extends TestSetUp {
 		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true);
 		assertEquals(Status.OK.getStatusCode(), decisionGuidanceRest
 				.getRecommendationEvaluation(request, "TEST", "keyword", "TEST", 5, 2, "i").getStatus());
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
 	}
 
 	@Test
