@@ -307,8 +307,8 @@ public class DecisionGuidanceRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-			@QueryParam("issueId") int issueId, @QueryParam("knowledgeSource") String knowledgeSourceName,
-			@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
+			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults,
+			@QueryParam("issueId") int issueId, @QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfDataIsValidResponse;

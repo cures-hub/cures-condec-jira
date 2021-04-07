@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -21,9 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -38,12 +34,6 @@ public class Evaluator {
 	protected List<Recommendation> recommendations;
 	protected KnowledgeSource knowledgeSource;
 
-	public Evaluator(KnowledgeElement decisionProblem, String keywords, int topKResults, String knowledgeSourceName) {
-		this(decisionProblem, keywords, topKResults,
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration(decisionProblem.getProject().getProjectKey())
-						.getKnowledgeSourceByName(knowledgeSourceName));
-	}
-
 	public Evaluator(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
 		this.recommendations = new ArrayList<>();
@@ -51,6 +41,15 @@ public class Evaluator {
 		this.decisionProblem = decisionProblem;
 		this.keywords = keywords;
 		this.topKResults = topKResults;
+	}
+
+	public Evaluator(KnowledgeElement decisionProblem, String keywords, int topKResults, String knowledgeSourceName) {
+		this(decisionProblem, keywords, topKResults, getKnowledgeSource(decisionProblem, knowledgeSourceName));
+	}
+
+	private static KnowledgeSource getKnowledgeSource(KnowledgeElement decisionProblem, String knowledgeSourceName) {
+		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(decisionProblem.getProject().getProjectKey())
+				.getKnowledgeSourceByName(knowledgeSourceName);
 	}
 
 	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
@@ -72,7 +71,7 @@ public class Evaluator {
 			recommendationsFromKnowledgeSource = InputMethod.getIssueBasedIn(knowledgeSource)
 					.getRecommendations(this.decisionProblem);
 		}
-		List<KnowledgeElement> solutionOptions = getGroundTruthSolutionOptions(decisionProblem);
+		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
 		recommendationsFromKnowledgeSource
 				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
@@ -85,29 +84,14 @@ public class Evaluator {
 
 	}
 
-	private static List<KnowledgeElement> getGroundTruthSolutionOptions(KnowledgeElement decisionProblem) {
-		List<KnowledgeElement> alternatives = decisionProblem.getLinks().stream()
-				.filter(link -> link.getSource().getType() == KnowledgeType.ALTERNATIVE).collect(Collectors.toList())
-				.stream().map(Link::getSource).collect(Collectors.toList());
-
-		List<KnowledgeElement> decisions = decisionProblem.getLinks().stream()
-				.filter(link -> link.getSource().getType() == KnowledgeType.DECISION).collect(Collectors.toList())
-				.stream().map(Link::getSource).collect(Collectors.toList());
-
-		List<KnowledgeElement> ideas = getElementsWithStatus(alternatives, KnowledgeStatus.IDEA);
-		List<KnowledgeElement> discarded = getElementsWithStatus(alternatives, KnowledgeStatus.DISCARDED);
-
-		List<KnowledgeElement> decided = getElementsWithStatus(decisions, KnowledgeStatus.DECIDED);
-		List<KnowledgeElement> rejected = getElementsWithStatus(decisions, KnowledgeStatus.REJECTED);
-
-		List<KnowledgeElement> solutionOptions = new ArrayList<>();
-		solutionOptions.addAll(ideas);
-		solutionOptions.addAll(discarded);
-		solutionOptions.addAll(decided);
-		solutionOptions.addAll(rejected);
-		return solutionOptions;
-	}
-
+	/**
+	 * @param recommendations
+	 *            either all or top-k {@link Recommendation}s.
+	 * @param groundTruthSolutionOptions
+	 *            alternatives and decisions for a decision problem that are treated
+	 *            as the ground truth.
+	 * @return list of {@link EvaluationMetric}s such
+	 */
 	private static List<EvaluationMetric> calculateMetrics(List<Recommendation> recommendations,
 			List<KnowledgeElement> groundTruthSolutionOptions) {
 		List<EvaluationMetric> metrics = new ArrayList<>();
@@ -120,19 +104,6 @@ public class Evaluator {
 		return metrics;
 	}
 
-	/**
-	 * @param knowledgeElements
-	 * @param status
-	 * @return a list of elements with a given status
-	 */
-	public static List<KnowledgeElement> getElementsWithStatus(List<KnowledgeElement> knowledgeElements,
-			KnowledgeStatus status) {
-		if (knowledgeElements == null)
-			return new ArrayList<>();
-		return knowledgeElements.stream().filter(element -> element.getStatus().equals(status))
-				.collect(Collectors.toList());
-	}
-
 	public KnowledgeElement getKnowledgeElement() {
 		return decisionProblem;
 	}
@@ -143,13 +114,12 @@ public class Evaluator {
 
 	/**
 	 * @param allRecommendations
-	 *            all {@link Recommendation}s generated from the
-	 *            {@link KnowledgeSource} sorted by their
+	 *            all {@link Recommendation}s sorted by their
 	 *            {@link RecommendationScore}.
 	 * @param k
 	 *            number of {@link Recommendation}s with the highest
-	 *            {@link RecommendationScore} included in the evaluation. All other
-	 *            recommendations are ignored.
+	 *            {@link RecommendationScore} that should be included in the
+	 *            evaluation. All other recommendations are ignored.
 	 * @return the top-k {@link Recommendation}s with the hightest
 	 *         {@link RecommendationScore}s.
 	 */

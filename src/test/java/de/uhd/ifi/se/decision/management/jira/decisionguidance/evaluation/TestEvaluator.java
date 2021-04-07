@@ -28,15 +28,13 @@ public class TestEvaluator extends TestSetUp {
 	private List<KnowledgeSource> knowledgeSources;
 	private List<KnowledgeElement> solutionOptions;
 	private Evaluator recommender;
-	private KnowledgeElement testElement;
+	private KnowledgeElement decisionProblem;
 
 	@Before
 	public void setUp() {
 		init();
 
-		testElement = new KnowledgeElement();
-		testElement.setId(123);
-		testElement.setSummary("How can we implement the feature");
+		decisionProblem = KnowledgeElements.getTestKnowledgeElements().get(4);
 
 		// search for solutions in the same project
 		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
@@ -88,7 +86,7 @@ public class TestEvaluator extends TestSetUp {
 		decisionGuidanceConfiguration.setRecommendationInput("KEYWORD", true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration("TEST", decisionGuidanceConfiguration);
 
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(testElement).execute();
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(decisionProblem).execute();
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
@@ -100,14 +98,6 @@ public class TestEvaluator extends TestSetUp {
 		recommendationEvaluation = recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).execute();
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
 		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
-	}
-
-	@Test
-	public void testGetElementWithStatus() {
-		assertEquals(1, recommender.getElementsWithStatus(solutionOptions, KnowledgeStatus.IDEA).size());
-		assertEquals(1, recommender.getElementsWithStatus(solutionOptions, KnowledgeStatus.DECIDED).size());
-		assertEquals(0, recommender.getElementsWithStatus(solutionOptions, null).size());
-		assertEquals(0, recommender.getElementsWithStatus(null, KnowledgeStatus.IDEA).size());
 	}
 
 	@Test

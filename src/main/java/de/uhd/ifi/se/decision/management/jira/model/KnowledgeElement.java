@@ -727,4 +727,16 @@ public class KnowledgeElement {
 	public int hashCode() {
 		return Objects.hash(id, getDocumentationLocation());
 	}
+
+	/**
+	 * @return linked solution options (alternatives, decisions, solutions, claims).
+	 *         Assumes that this knowledge element is a decision problem
+	 *         (=issue/question).
+	 */
+	public List<KnowledgeElement> getLinkedSolutionOptions() {
+		List<KnowledgeElement> solutionOptions = getLinks().stream()
+				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.SOLUTION)
+				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
+		return solutionOptions;
+	}
 }
