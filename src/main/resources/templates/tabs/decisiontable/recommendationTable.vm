@@ -12,7 +12,7 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
         <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
 </form>
 
-<table id="recommendation-container" class="aui">
+<table id="recommendation-container" class="aui aui-table-list">
     <thead>
     <tr>
         <th>$i18n.getText("condec.decision.guidance.recommendations")</th>

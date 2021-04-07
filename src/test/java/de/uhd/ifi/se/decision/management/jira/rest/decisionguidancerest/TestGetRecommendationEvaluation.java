@@ -31,25 +31,27 @@ public class TestGetRecommendationEvaluation extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationEvaluationActiveSource() {
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true);
 		assertEquals(Status.OK.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, "TEST", "keyword", 2, "TEST", 5, "i").getStatus());
+				.getRecommendationEvaluation(request, "TEST", "keyword", "TEST", 5, 2, "i").getStatus());
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationINVALIDISSUE() {
 		assertEquals(Status.NOT_FOUND.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, "TEST", "keyword", -12354, "TEST", 5, "s").getStatus());
+				.getRecommendationEvaluation(request, "TEST", "keyword", "TEST", 5, -12354, "s").getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationInvalidProject() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(request, "", "keyword", 1, "TEST", 5, "s").getStatus());
+				.getRecommendationEvaluation(request, "", "keyword", "TEST", 5, 1, "s").getStatus());
 	}
 
 	@Test
 	public void testGetRecommendationEvaluationRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-				.getRecommendationEvaluation(null, "TEST", "keyword", 1, "TEST", 5, "s").getStatus());
+				.getRecommendationEvaluation(null, "TEST", "keyword", "TEST", 5, 1, "s").getStatus());
 	}
 }

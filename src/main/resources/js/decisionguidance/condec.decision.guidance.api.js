@@ -13,24 +13,14 @@
 	};
 
 	/*
-	 * external references: jiraIssueModule.vm
-	 */
-	ConDecDecisionGuidanceAPI.prototype.resetRecommendationForKnowledgeElement = function(jiraIssueId, callback) {
-		generalApi.postJSON(this.restPrefix + "/resetRecommendationsForKnowledgeElement.json", jiraIssueId,
-			function(error, numberOfElements) {
-				if (error === null) {
-					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
-					callback();
-				}
-			});
-	};
-
-	/*
 	 * external references: condec.decision.guidance
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(projectKey, keyword, issueId, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
+		generalApi.getJSON(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
 			function(error, recommendations) {
+				recommendations.sort(function(recommendation1, recommendation2) {
+					return recommendation2.score.value - recommendation1.score.value;
+				});
 				callback(recommendations, error);
 			});
 	};
@@ -39,7 +29,7 @@
 	 * external references: condec.decision.guidance
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/getRecommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
+		generalApi.getJSON(this.restPrefix + "/recommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
 			function(error, results) {
 				callback(results, error);
 			});
@@ -175,6 +165,19 @@
 				conDecAPI.showFlag("success", "The knowledge source was successfully updated.");
 			}
 		});
+	};
+	
+	/*
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecDecisionGuidanceAPI.prototype.removeRecommendationForKnowledgeElement = function(jiraIssueId, callback) {
+		generalApi.postJSON(this.restPrefix + "/removeRecommendationsForKnowledgeElement.json", jiraIssueId,
+			function(error, numberOfElements) {
+				if (error === null) {
+					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					callback();
+				}
+			});
 	};
 
 	global.conDecDecisionGuidanceAPI = new ConDecDecisionGuidanceAPI();

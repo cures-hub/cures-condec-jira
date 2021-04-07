@@ -20,12 +20,12 @@ import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import com.google.common.base.Splitter;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 /**
@@ -216,10 +216,10 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 	private RecommendationScore getScore(int maxValue, int actualValue) {
 		RecommendationScore recommendationScore = new RecommendationScore(0.0f, "Recommendation with most links");
-		recommendationScore.composeScore(new RecommendationScore(maxValue, "Recommendation with most links"));
-		recommendationScore.composeScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
+		recommendationScore.addSubScore(new RecommendationScore(maxValue, "Recommendation with most links"));
+		recommendationScore.addSubScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
 		float totalScore = (actualValue * 1.0f / maxValue) * 100f;
-		recommendationScore.setTotalScore(totalScore);
+		recommendationScore.setValue(totalScore);
 		return recommendationScore;
 	}
 

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -570,25 +569,5 @@ public class KnowledgeRest {
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.status(Status.OK).entity(elements.size()).build();
-	}
-
-	@Path("/getAllIssues")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		List<KnowledgeElement> allElements = manager.getKnowledgeElements();
-
-		List<KnowledgeElement> allIssues = allElements.stream()
-				.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-				.collect(Collectors.toList());
-
-		return Response.status(Status.OK).entity(allIssues).build();
 	}
 }

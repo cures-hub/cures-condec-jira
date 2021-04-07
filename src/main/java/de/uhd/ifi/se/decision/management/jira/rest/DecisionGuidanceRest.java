@@ -21,16 +21,15 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.EvaluationRecommender;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.RecommendationEvaluation;
 
 /**
  * REST resource for configuration and usage of decision guidance
@@ -244,10 +243,10 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/resetRecommendationsForKnowledgeElement")
+	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response resetRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
+	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
@@ -276,7 +275,7 @@ public class DecisionGuidanceRest {
 		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
 	}
 
-	@Path("/getRecommendations")
+	@Path("/recommendations")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -303,20 +302,18 @@ public class DecisionGuidanceRest {
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
 
-	@Path("/getRecommendationEvaluation")
+	@Path("/recommendationEvaluation")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-			@QueryParam("issueId") int issueId, @QueryParam("knowledgeSource") String knowledgeSourceName,
-			@QueryParam("kResults") int kResults, @QueryParam("documentationLocation") String documentationLocation) {
+			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults,
+			@QueryParam("issueId") int issueId, @QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfDataIsValidResponse;
 		}
 
-		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
-		List<KnowledgeSource> allKnowledgeSources = config.getAllKnowledgeSources();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 
@@ -325,9 +322,8 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		EvaluationRecommender recommender = new EvaluationRecommender(issue, keyword, kResults);
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue)
-				.withKnowledgeSource(allKnowledgeSources, knowledgeSourceName).execute();
+		Evaluator recommender = new Evaluator(issue, keyword, kResults, knowledgeSourceName);
+		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue).execute();
 
 		return Response.ok(recommendationEvaluation).build();
 	}

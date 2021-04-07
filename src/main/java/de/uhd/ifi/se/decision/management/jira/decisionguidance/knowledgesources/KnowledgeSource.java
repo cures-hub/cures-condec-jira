@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 
@@ -23,6 +25,7 @@ public abstract class KnowledgeSource {
 	 * @return name of the knowledge source, e.g. the name of a Jira project or a
 	 *         topic in DBPedia such as "Frameworks".
 	 */
+	@XmlElement
 	public String getName() {
 		return name;
 	}
@@ -58,6 +61,7 @@ public abstract class KnowledgeSource {
 	 *         Icons need to be available via Atlassian User Interace (AUI), e.g.
 	 *         "aui-iconfont-download".
 	 */
+	@XmlElement
 	public String getIcon() {
 		return icon;
 	}

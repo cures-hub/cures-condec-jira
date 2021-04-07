@@ -1,21 +1,22 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.viewmodel;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -27,25 +28,30 @@ public class TestRecommendation extends TestSetUp {
 		knowledgeSource = new ProjectSource("TEST", "TEST", true);
 	}
 
-
 	@Test
 	public void testRecommendation() {
-
-		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
+		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "TEST URL");
 		recommendation.setUrl("TEST URL");
 		recommendation.setScore(new RecommendationScore(123, ""));
-		assertEquals("TEST", recommendation.getKnowledgeSourceName());
-		assertEquals("TEST", recommendation.getRecommendation());
+		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
+		assertEquals("MySQL", recommendation.getSummary());
 		assertEquals("TEST URL", recommendation.getUrl());
-		assertEquals(123, recommendation.getScore(), 0.0);
+		assertEquals(123, recommendation.getScore().getValue(), 0.0);
 		assertEquals(0, recommendation.getArguments().size());
+	}
+
+	@Test
+	public void testSetAndGetKnowledgeSource() {
+		Recommendation recommendation = new Recommendation();
+		recommendation.setKnowledgeSource(knowledgeSource);
+		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
 	}
 
 	@Test
 	public void testAddArgument() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setDescription("Test");
-		knowledgeElement.setSummary("Test");
+		knowledgeElement.setDescription("Test Argument");
+		knowledgeElement.setSummary("Test Argument");
 		knowledgeElement.setDocumentationLocation("i");
 		knowledgeElement.setType(KnowledgeType.CON);
 		List<Argument> arguments = new ArrayList<>();
@@ -68,7 +74,6 @@ public class TestRecommendation extends TestSetUp {
 	public void testHashCode() {
 		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
-
 	}
 
 	@Test
@@ -80,24 +85,6 @@ public class TestRecommendation extends TestSetUp {
 		Recommendation recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
 
 		assertEquals(recommendationA, recommendationB);
+		assertNotEquals(recommendationA, new RDFSource());
 	}
-
-	@Test
-	public void testArgument() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setSummary("Test Argument");
-		knowledgeElement.setId(123);
-		knowledgeElement.setDocumentationLocation("i");
-		knowledgeElement.setType(KnowledgeType.ARGUMENT);
-
-		Argument argument = new Argument(knowledgeElement);
-		assertEquals("Test Argument", argument.getSummary());
-
-		KnowledgeElement knowledgeElement1 = new KnowledgeElement();
-		knowledgeElement1.setSummary("Test Argument");
-		knowledgeElement1.setId(123);
-		knowledgeElement1.setDocumentationLocation("i");
-		knowledgeElement1.setType(KnowledgeType.ARGUMENT);
-	}
-
 }

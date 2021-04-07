@@ -46,16 +46,20 @@ public class KnowledgeElement {
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 
-	/** 
+	/**
 	 * @issue Where shall we store the line count of a code file knowledge element?
 	 * @alternative In the ChangedFile class!
 	 * @pro Only files have a line count, not other knowledge elements.
-	 * @con The line count needs to be handled by the CodeClassPersistenceManager, which uses KnowledgeElement instead of ChangedFile in many cases.
-	 * @con The CodeCompletenessCheck class (using the lineCount) implements the CompletenessCheck interface, which works with KnowledgeElements, not ChangedFiles.
+	 * @con The line count needs to be handled by the CodeClassPersistenceManager,
+	 *      which uses KnowledgeElement instead of ChangedFile in many cases.
+	 * @con The CodeCompletenessCheck class (using the lineCount) implements the
+	 *      CompletenessCheck interface, which works with KnowledgeElements, not
+	 *      ChangedFiles.
 	 * @con Converting a KnowledgeElement into a ChangedFile performs very badly.
 	 * @decision In the KnowledgeElement class!
 	 * @con Not all knowledge elements have a line count.
-	 * @pro Many functions using the lineCount already work with KnowledgeElements, not ChangedFiles.
+	 * @pro Many functions using the lineCount already work with KnowledgeElements,
+	 *      not ChangedFiles.
 	 */
 	private int lineCount;
 
@@ -128,7 +132,7 @@ public class KnowledgeElement {
 	 *         When using Jira issues to persist knowledge, this id is different to
 	 *         the project internal id that is part of the key.
 	 */
-	@XmlElement(name = "id")
+	@XmlElement
 	public long getId() {
 		return id;
 	}
@@ -147,7 +151,7 @@ public class KnowledgeElement {
 	 * @return summary of the knowledge element. The summary is a short description
 	 *         of the element.
 	 */
-	@XmlElement(name = "summary")
+	@XmlElement
 	public String getSummary() {
 		return summary;
 	}
@@ -166,7 +170,7 @@ public class KnowledgeElement {
 	 *         details about the element. When using Jira issues to persist
 	 *         knowledge, it can include images and other fancy stuff.
 	 */
-	@XmlElement(name = "description")
+	@XmlElement
 	public String getDescription() {
 		return description;
 	}
@@ -329,7 +333,7 @@ public class KnowledgeElement {
 	 * @return key of the knowledge element. The key is composed of
 	 *         projectKey-project internal id.
 	 */
-	@XmlElement(name = "key")
+	@XmlElement
 	public String getKey() {
 		if (this.key == null && this.project != null) {
 			return this.project.getProjectKey() + "-" + this.id;
@@ -409,7 +413,7 @@ public class KnowledgeElement {
 	/**
 	 * @return an URL of the knowledge element as String.
 	 */
-	@XmlElement(name = "url")
+	@XmlElement
 	public String getUrl() {
 		String key = this.getKey();
 		// TODO Recognize code classes
@@ -425,7 +429,7 @@ public class KnowledgeElement {
 	/**
 	 * @return creation date of the knowledge element.
 	 */
-	@XmlElement(name = "creationDate")
+	@XmlElement
 	public Date getCreationDate() {
 		if (creationDate == null) {
 			return new Date();
@@ -444,7 +448,7 @@ public class KnowledgeElement {
 	/**
 	 * @return date of last update of the knowledge element.
 	 */
-	@XmlElement(name = "updatingDate")
+	@XmlElement
 	public Date getUpdatingDate() {
 		if (updatingDate == null) {
 			return getCreationDate();
@@ -535,8 +539,7 @@ public class KnowledgeElement {
 	public Set<KnowledgeElement> getNeighborsOfType(KnowledgeType knowledgeType) {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
-		return neighbors.stream().filter(element -> element.getType().getSuperType() == knowledgeType.getSuperType())
-				.collect(Collectors.toSet());
+		return neighbors.stream().filter(element -> element.getType() == knowledgeType).collect(Collectors.toSet());
 	}
 
 	/**
@@ -722,5 +725,17 @@ public class KnowledgeElement {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, getDocumentationLocation());
+	}
+
+	/**
+	 * @return linked solution options (alternatives, decisions, solutions, claims).
+	 *         Assumes that this knowledge element is a decision problem
+	 *         (=issue/question).
+	 */
+	public List<KnowledgeElement> getLinkedSolutionOptions() {
+		List<KnowledgeElement> solutionOptions = getLinks().stream()
+				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.SOLUTION)
+				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
+		return solutionOptions;
 	}
 }

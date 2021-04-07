@@ -49,20 +49,14 @@
 
 	function buildRecommendationTable(recommendations, currentIssue) {
 		const table = $("#recommendation-container tbody");
-
 		let counter = 0;
-		var sortedByScore = recommendations.slice(0);
-		sortedByScore.sort(function(a, b) {
-			return b.score.totalScore - a.score.totalScore;
-		});
-
-		sortedByScore.forEach(recommendation => {
+		recommendations.forEach(recommendation => {
 			counter++;
 			let tableRow = "";
 
 			tableRow += "<tr>";
-			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></td>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSourceName + "<span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span></div></td>";
+			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
+			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" + "Accept" + "</button></td>";
 			tableRow += "<td><ul>";
@@ -85,20 +79,13 @@
 
 	function buildQuickRecommendationTable(recommendations, currentIssue) {
 		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
-
 		let counter = 0;
-		var sortedByScore = recommendations.slice(0);
-		sortedByScore.sort(function(a, b) {
-			return b.score.totalScore - a.score.totalScore;
-		});
-
 		var columns = "";
-
-		var topResults = sortedByScore.slice(0, 4);
+		var topResults = recommendations.slice(0, 4);
 		topResults.forEach(recommendation => {
 			counter++;
 			let tableRow = "<tr>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.recommendation + "</a></div></td>";
+			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></div></td>";
 			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link'>Accept</button></td>";
 			tableRow += "</tr>";
@@ -127,7 +114,7 @@
 	}
 
 	function onAcceptClicked(recommendation, currentIssue) {
-		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.recommendation, "", function(id, documentationLocation) {
+		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function(id, documentationLocation) {
 			recommendation.arguments.forEach(argument => {
 				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
 					conDecAPI.showFlag("success", "Recommendation was added successfully!");
@@ -136,13 +123,13 @@
 		});
 	}
 
-	function buildScore(scoreObject, ID) {
+	function buildScore(score, ID) {
 		var scoreControl = document.getElementById("control-score-explanation");
-		scoreControl.innerText = scoreObject.totalScore.toFixed(2) + "%";
+		scoreControl.innerText = score.value.toFixed(0) + "%";
 
-		var columns = "";
-		scoreObject.partScores.forEach(partScore => {
-			columns += "<tr><td>" + partScore.explanation + "</td><td>" + partScore.totalScore.toFixed(2) + "</td></tr>";
+		var columns = "<tr style='background-color: #e8e8e8;'><td>" + score.explanation + "</td><td>" + score.value.toFixed(2) + "%</td></tr>";
+		score.subScores.forEach(subScore => {
+			columns += "<tr><td>" + subScore.explanation + "</td><td>" + subScore.value.toFixed(2) + "</td></tr>";
 		})
 		document.getElementById("score-explanation-table-body").innerHTML = columns;
 

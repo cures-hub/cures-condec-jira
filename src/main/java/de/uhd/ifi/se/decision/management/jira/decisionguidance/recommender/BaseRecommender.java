@@ -7,14 +7,15 @@ import java.util.stream.Collectors;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.factory.RecommenderFactory;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 /**
  * Takes the input from the UI and passes it to the configured knowledge
@@ -82,13 +83,12 @@ public abstract class BaseRecommender<T> {
 			KnowledgeElement alternative = new KnowledgeElement();
 
 			// Set information
-			alternative.setId(id);
-			id += 1;
-			alternative.setSummary(recommendation.getRecommendation());
+			alternative.setId(id++);
+			alternative.setSummary(recommendation.getSummary());
 			alternative.setType(KnowledgeType.ALTERNATIVE);
 			alternative.setDescription("");
 			alternative.setProject(projectKey);
-			alternative.setDocumentationLocation("s");
+			alternative.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
 
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);

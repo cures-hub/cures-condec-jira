@@ -171,6 +171,8 @@ public enum KnowledgeType {
 			return KnowledgeType.PROBLEM;
 		case ALTERNATIVE:
 			return KnowledgeType.SOLUTION;
+		case DECISION:
+			return KnowledgeType.SOLUTION;
 		case CLAIM:
 			return KnowledgeType.SOLUTION;
 		case CONSTRAINT:

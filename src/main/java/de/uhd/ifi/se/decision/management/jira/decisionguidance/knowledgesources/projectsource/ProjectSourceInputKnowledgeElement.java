@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.score.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.view.decisionguidance.Recommendation;
 
 /**
  * Queries another Jira project for a given {@link KnowledgeElement} and its
  * linked elements.
  * 
  * For example, a decision problem with alternatives and arguments already
- * documented can be used to query DBPedia.
+ * documented can be used to query the other Jira project.
  */
 public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<KnowledgeElement> {
 
@@ -53,12 +53,11 @@ public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<Knowl
 			for (Recommendation recommendation1 : recommendations) {
 				if (recommendation.equals(recommendation1)) {
 					numberDuplicates += 1;
-					meanScore += recommendation1.getScore();
-					meanRecommendationScore
-							.setComposedScore(recommendation1.getRecommendationScore().getComposeDScore());
+					meanScore += recommendation1.getScore().getValue();
+					meanRecommendationScore.setSubScore(recommendation1.getScore().getSubScores());
 				}
 			}
-			meanRecommendationScore.setTotalScore(meanScore / numberDuplicates);
+			meanRecommendationScore.setValue(meanScore / numberDuplicates);
 			meanScoreRecommendation.setScore(meanRecommendationScore);
 			filteredRecommendations.add(meanScoreRecommendation);
 		}
