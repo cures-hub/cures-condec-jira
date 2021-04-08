@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Queries another Jira project for a given {@link KnowledgeElement} and its
@@ -20,24 +18,19 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class ProjectSourceInputKnowledgeElement extends ProjectSourceInput<KnowledgeElement> {
 
 	@Override
-	public List<Recommendation> getRecommendations(KnowledgeElement knowledgeElement) {
-		if (knowledgeElement == null) {
+	public List<Recommendation> getRecommendations(KnowledgeElement decisionProblem) {
+		if (decisionProblem == null) {
 			return new ArrayList<>();
 		}
 		List<Recommendation> recommendations = new ArrayList<>();
 		ProjectSourceInputString projectSourceInputString = new ProjectSourceInputString();
 		projectSourceInputString.setKnowledgeSource(knowledgeSource);
-		recommendations.addAll(projectSourceInputString.getRecommendations(knowledgeElement.getSummary()));
+		recommendations.addAll(projectSourceInputString.getRecommendations(decisionProblem.getSummary()));
 
-		for (Link link : knowledgeElement.getLinks()) {
-			for (KnowledgeElement linkedElement : link.getBothElements()) {
-				if (linkedElement.getType().equals(KnowledgeType.ALTERNATIVE)
-						|| linkedElement.getType().equals(KnowledgeType.DECISION)) {
-					List<Recommendation> recommendationFromAlternative = projectSourceInputString
-							.getRecommendations(linkedElement.getSummary());
-					recommendations.addAll(recommendationFromAlternative);
-				}
-			}
+		for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
+			List<Recommendation> recommendationFromAlternative = projectSourceInputString
+					.getRecommendations(linkedElement.getSummary());
+			recommendations.addAll(recommendationFromAlternative);
 		}
 		return calculateMeanScore(recommendations).stream().distinct().collect(Collectors.toList());
 	}

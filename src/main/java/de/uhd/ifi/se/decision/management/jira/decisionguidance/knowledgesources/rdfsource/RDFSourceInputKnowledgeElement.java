@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Queries an RDF knowledge source (e.g. DBPedia) for a given
@@ -38,23 +36,17 @@ public class RDFSourceInputKnowledgeElement implements InputMethod<KnowledgeElem
 	}
 
 	@Override
-	public List<Recommendation> getRecommendations(KnowledgeElement knowledgeElement) {
-		if (knowledgeElement == null) {
+	public List<Recommendation> getRecommendations(KnowledgeElement decisionProblem) {
+		if (decisionProblem == null) {
 			return new ArrayList<>();
 		}
 		List<Recommendation> recommendations = new ArrayList<>();
 		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
 		rdfSourceInputString.setKnowledgeSource(knowledgeSource);
-
-		for (Link link : knowledgeElement.getLinks()) {
-			for (KnowledgeElement linkedElement : link.getBothElements()) {
-				if (linkedElement.getType() == KnowledgeType.ALTERNATIVE
-						|| linkedElement.getType() == KnowledgeType.DECISION) {
-					List<Recommendation> recommendationFromAlternative = rdfSourceInputString
-							.getRecommendations(linkedElement.getSummary());
-					recommendations.addAll(recommendationFromAlternative);
-				}
-			}
+		for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
+			List<Recommendation> recommendationFromAlternative = rdfSourceInputString
+					.getRecommendations(linkedElement.getSummary());
+			recommendations.addAll(recommendationFromAlternative);
 		}
 
 		return recommendations.stream().distinct().collect(Collectors.toList());
