@@ -738,4 +738,17 @@ public class KnowledgeElement {
 				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
 		return solutionOptions;
 	}
+
+	/**
+	 * @param knowledgeTypes
+	 *            one ore more {@link KnowledgeType}s.
+	 * @return true if the element has one of the given {@link KnowledgeType}s.
+	 */
+	public boolean isMatchingKnowledgeType(KnowledgeType... knowledgeTypes) {
+		for (KnowledgeType knowledgeType : knowledgeTypes) {
+			if (this.getType() == knowledgeType)
+				return true;
+		}
+		return false;
+	}
 }

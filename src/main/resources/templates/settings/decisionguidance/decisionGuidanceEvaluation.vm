@@ -112,12 +112,14 @@
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
         const issueID = $("#select2-issues").val();
+        console.log(issueID);
+        const documentationLocation = documentationLocations[issueID];
         const kResults = $("#k-results").val();
         $("#evaluation-results-table tbody tr").remove();
         const spinner = $("#loading-spinner-recommendation");
         activeSources.forEach(function(sourceName) {
             spinner.show();
-            conDecDecisionGuidanceAPI.getRecommendationEvaluation("$projectKey", keywords, issueID , sourceName, kResults, documentationLocations[issueID], 
+            conDecDecisionGuidanceAPI.getRecommendationEvaluation("$projectKey", keywords, issueID, sourceName, kResults, documentationLocation, 
             	function(evaluation, error) {
             		if (!isTableHeaderForMetricsExiting) {
 						$("#evaluation-results-table thead tr").append(createHeaderCellsForMetrics(evaluation.metrics));

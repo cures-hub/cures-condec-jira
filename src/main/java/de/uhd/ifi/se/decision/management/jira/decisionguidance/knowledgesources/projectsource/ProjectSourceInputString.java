@@ -24,14 +24,14 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  */
 public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
-	private double THRESHOLD;
 	private static final JaroWinklerDistance similarityScore = new JaroWinklerDistance();
 
 	@Override
 	public List<Recommendation> getRecommendations(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		THRESHOLD = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getSimilarityThreshold();
+		double THRESHOLD = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+				.getSimilarityThreshold();
 
 		this.queryDatabase();
 		if (knowledgeElements == null || inputs == null)
@@ -39,10 +39,10 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 		// get all issues that are similar to the given input
 		knowledgeElements.forEach(issue -> {
-			if (this.calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHOLD) {
+			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHOLD) {
 
 				issue.getLinkedElements(5).stream().filter(
-						element -> this.isMatchingIssueType(element, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+						element -> element.isMatchingKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 						.forEach(child -> {
 
 							Recommendation recommendation = this.createRecommendation(child, KnowledgeType.ALTERNATIVE,
@@ -115,16 +115,6 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		}
 
 		return null;
-	}
-
-	protected boolean isMatchingIssueType(KnowledgeElement knowledgeElement, KnowledgeType... knowledgeTypes) {
-		int numberOfMatchingTypes = 0;
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (knowledgeElement.getType() == knowledgeType)
-				numberOfMatchingTypes += 1;
-		}
-
-		return numberOfMatchingTypes > 0;
 	}
 
 	protected List<Argument> getArguments(KnowledgeElement knowledgeElement) {
