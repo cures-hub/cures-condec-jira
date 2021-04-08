@@ -42,9 +42,10 @@ public class Recommendation extends KnowledgeElement {
 	}
 
 	public Recommendation(KnowledgeElement knowledgeElement) {
+		this();
+		this.project = knowledgeElement.getProject();
 		this.setSummary(knowledgeElement.getSummary());
 		this.url = knowledgeElement.getUrl();
-		this.project = knowledgeElement.getProject();
 	}
 
 	/**

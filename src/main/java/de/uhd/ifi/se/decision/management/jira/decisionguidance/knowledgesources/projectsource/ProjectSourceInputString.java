@@ -39,25 +39,20 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 		// get all issues that are similar to the given input
 		knowledgeElements.forEach(issue -> {
-			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > similarityThreshold) {
-
-				issue.getLinkedElements(5).stream()
-						.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
-						.forEach(child -> {
-
-							Recommendation recommendation = new Recommendation(child);
-							recommendation.setKnowledgeSource(knowledgeSource);
-							recommendation.addArguments(this.getArguments(child));
-
-							if (recommendation != null) {
-								RecommendationScore score = calculateScore(inputs, issue,
-										recommendation.getArguments());
-								recommendation.setScore(score);
-								recommendations.add(recommendation);
-							}
-
-						});
+			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) <= similarityThreshold) {
+				return;
 			}
+			issue.getLinkedElements(5).stream()
+					.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+					.forEach(element -> {
+						Recommendation recommendation = new Recommendation(element);
+						recommendation.setKnowledgeSource(knowledgeSource);
+						recommendation.addArguments(this.getArguments(element));
+
+						RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
+						recommendation.setScore(score);
+						recommendations.add(recommendation);
+					});
 		});
 
 		return recommendations.stream().distinct().collect(Collectors.toList());
