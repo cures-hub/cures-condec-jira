@@ -112,7 +112,7 @@ public class RDFSourceRecommender extends Recommender {
 		for (String combinedKeyword : combinedKeywords) {
 
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
-			String queryStringWithInput = knowledgeSource.getQueryString().replaceAll("%variable%", uri)
+			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri)
 					.replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 

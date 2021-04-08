@@ -28,21 +28,21 @@ public class TestUpdateKnowledgeSource extends TestSetUp {
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceValid() {
-		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, 10, "");
+		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, "");
 		assertEquals(200, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceProjectKeyInvalid() {
-		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
+		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, "");
 		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
-		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, 10, "");
+		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, "");
 		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(null, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
