@@ -16,15 +16,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 /**
  * Takes the input from the UI and passes it to the knowledge sources.
  */
-public abstract class Recommender {
+public abstract class Recommender<T extends KnowledgeSource> {
 
-	protected KnowledgeSource knowledgeSource;
+	protected String projectKey;
+	protected T knowledgeSource;
 
-	public KnowledgeSource getKnowledgeSource() {
-		return knowledgeSource;
+	public Recommender(String projectKey, T knowledgeSource) {
+		this.knowledgeSource = knowledgeSource;
+		this.projectKey = projectKey;
 	}
-
-	public abstract void setKnowledgeSource(KnowledgeSource knowledgeSource);
 
 	public abstract List<Recommendation> getRecommendations(String keywords);
 
@@ -118,4 +118,19 @@ public abstract class Recommender {
 		}
 	}
 
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
+	public T getKnowledgeSource() {
+		return knowledgeSource;
+	}
+
+	public void setKnowledgeSource(T knowledgeSource) {
+		this.knowledgeSource = knowledgeSource;
+	}
 }

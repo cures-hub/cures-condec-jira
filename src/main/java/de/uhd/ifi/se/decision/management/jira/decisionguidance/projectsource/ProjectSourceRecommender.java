@@ -10,7 +10,6 @@ import org.apache.commons.text.similarity.SimilarityScore;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.BagOfIrrelevantWords;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
@@ -26,19 +25,12 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * For example, a decision problem can be input by the user and used to query
  * the other Jira project.
  */
-public class ProjectSourceRecommender extends Recommender {
+public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
-	protected String projectKey;
-	protected ProjectSource knowledgeSource;
 
 	public ProjectSourceRecommender(String projectKey, ProjectSource projectSource) {
-		this.knowledgeSource = (ProjectSource) projectSource;
-		this.projectKey = projectKey;
-	}
-
-	public void setKnowledgeSource(KnowledgeSource projectSource) {
-		this.knowledgeSource = (ProjectSource) projectSource;
+		super(projectKey, projectSource);
 	}
 
 	@Override

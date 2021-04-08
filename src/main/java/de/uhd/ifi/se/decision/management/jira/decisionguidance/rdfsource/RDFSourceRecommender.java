@@ -18,7 +18,6 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
@@ -34,22 +33,10 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * For example, a decision problem can be input by the user and used to query
  * DBPedia.
  */
-public class RDFSourceRecommender extends Recommender {
-
-	protected RDFSource knowledgeSource;
-	protected String projectKey;
-
-	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>"
-			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
+public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 	public RDFSourceRecommender(String projectKey, RDFSource rdfSource) {
-		this.knowledgeSource = (RDFSource) rdfSource;
-		this.projectKey = projectKey;
-	}
-
-	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-		this.knowledgeSource = (RDFSource) knowledgeSource;
+		super(projectKey, rdfSource);
 	}
 
 	private List<String> combineKeywords(List<String> keywords) {
@@ -124,8 +111,7 @@ public class RDFSourceRecommender extends Recommender {
 
 				String label = this.getLabel(row.get("?subject").toString());
 
-				Recommendation recommendation = new Recommendation(this.knowledgeSource, label,
-						row.get("?url").toString());
+				Recommendation recommendation = new Recommendation(knowledgeSource, label, row.get("?url").toString());
 
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
@@ -135,7 +121,7 @@ public class RDFSourceRecommender extends Recommender {
 				List<Argument> arguments = new ArrayList<>();
 
 				for (Map.Entry<String, String> constraint : knowledgeSource.getConstraintMap().entrySet()) {
-					arguments.addAll(this.getArgument(row.get("?subject").toString(), constraint));
+					arguments.addAll(getArgument(row.get("?subject").toString(), constraint));
 				}
 
 				recommendation.addArguments(arguments);
@@ -165,7 +151,8 @@ public class RDFSourceRecommender extends Recommender {
 	private String getLabel(String resource) {
 
 		String query = String.format(
-				PREFIX + " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }",
+				RDFSource.PREFIX
+						+ " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }",
 				resource);
 
 		ResultSet arguments = this.queryDatabase(query, knowledgeSource.getService(),
@@ -181,7 +168,7 @@ public class RDFSourceRecommender extends Recommender {
 
 	private List<Argument> getArgument(String resource, Map.Entry<String, String> constraint) {
 
-		String query = String.format(PREFIX
+		String query = String.format(RDFSource.PREFIX
 				+ " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}",
 				resource, constraint.getValue());
 
