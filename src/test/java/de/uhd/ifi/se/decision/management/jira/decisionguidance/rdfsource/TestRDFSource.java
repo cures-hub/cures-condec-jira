@@ -31,6 +31,7 @@ public class TestRDFSource extends TestSetUp {
 			+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
 	private final static int TIMEOUT = 50000;
 	private final static int LIMIT = 1;
+	private RDFSource rdfSource;
 
 	@Before
 	public void setUp() {
@@ -39,7 +40,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceConstructor() {
-		RDFSource rdfSource = new RDFSource();
+		rdfSource = new RDFSource();
 		assertNotNull(rdfSource);
 		rdfSource.setService(SERVICE);
 		rdfSource.setQueryString(QUERY);
@@ -57,7 +58,7 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceWithStringInput() {
-		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender();
+		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender("TEST", rdfSource);
 		rdfSourceInputString
 				.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
 		assertEquals(34, rdfSourceInputString.getRecommendations("MySQL").size());
@@ -79,7 +80,7 @@ public class TestRDFSource extends TestSetUp {
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(PROJECTKEY);
 		graph.addEdge(link);
-		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender();
+		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender("TEST", rdfSource);
 		rdfSourceInputString.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, LIMIT, ""));
 		assertEquals(34, rdfSourceInputString.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size());
 		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());

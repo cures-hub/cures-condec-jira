@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,15 +37,6 @@ public class ProjectSourceRecommender extends Recommender {
 		this.projectKey = projectKey;
 	}
 
-	public List<KnowledgeElement> queryDatabase() {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
-		KnowledgeGraph knowledgeGraph = KnowledgeGraph.getInstance(projectKey);
-		if (knowledgeGraph != null) {
-			knowledgeElements = knowledgeGraph.getElements(KnowledgeType.ISSUE);
-		}
-		return knowledgeElements;
-	}
-
 	public void setKnowledgeSource(KnowledgeSource projectSource) {
 		this.knowledgeSource = (ProjectSource) projectSource;
 	}
@@ -55,15 +47,8 @@ public class ProjectSourceRecommender extends Recommender {
 			return new ArrayList<>();
 		}
 		List<Recommendation> recommendations = new ArrayList<>();
-		List<KnowledgeElement> knowledgeElements = queryDatabase();
-		double similarityThreshold = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.getSimilarityThreshold();
-
-		// get all issues that are similar to the given input
-		knowledgeElements.forEach(issue -> {
-			if (calculateSimilarity(issue.getSummary(), inputs.trim()) <= similarityThreshold) {
-				return;
-			}
+		List<KnowledgeElement> similarElements = findSimilarElements(inputs);
+		similarElements.forEach(issue -> {
 			issue.getLinkedElements(5).stream()
 					.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 					.forEach(element -> {
@@ -78,6 +63,24 @@ public class ProjectSourceRecommender extends Recommender {
 		});
 
 		return recommendations.stream().distinct().collect(Collectors.toList());
+	}
+
+	/**
+	 * @return get all knowledge elements that are similar to the given input
+	 */
+	public List<KnowledgeElement> findSimilarElements(String text) {
+		return findSimilarElements(text, KnowledgeGraph.getInstance(projectKey).vertexSet());
+	}
+
+	/**
+	 * @return get all knowledge elements that are similar to the given input
+	 */
+	public List<KnowledgeElement> findSimilarElements(String text, Collection<KnowledgeElement> inputElements) {
+		double similarityThreshold = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+				.getSimilarityThreshold();
+		return inputElements.stream()
+				.filter(issue -> calculateSimilarity(issue.getSummary(), text) > similarityThreshold)
+				.collect(Collectors.toList());
 	}
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement decisionProblem,
@@ -114,7 +117,7 @@ public class ProjectSourceRecommender extends Recommender {
 		return score;
 	}
 
-	private double calculateSimilarity(String left, String right) {
+	public double calculateSimilarity(String left, String right) {
 		return similarityScore.apply(cleanInput(left), cleanInput(right));
 	}
 

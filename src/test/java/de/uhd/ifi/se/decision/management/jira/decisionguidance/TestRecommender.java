@@ -40,10 +40,10 @@ public class TestRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
 
 		List<Recommendation> recommendations = new ArrayList<>();
-		Recommender.getAllRecommendations(knowledgeSources, knowledgeElement, "");
+		Recommender.getAllRecommendations("TEST", knowledgeSources, knowledgeElement, "");
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
 		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
@@ -51,6 +51,6 @@ public class TestRecommender extends TestSetUp {
 		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST", recommendations);
 
-		assertEquals(19, manager.getKnowledgeElements().size());
+		assertEquals(18, manager.getKnowledgeElements().size());
 	}
 }

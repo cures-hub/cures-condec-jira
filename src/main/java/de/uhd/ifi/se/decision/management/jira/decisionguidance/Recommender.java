@@ -52,14 +52,14 @@ public abstract class Recommender {
 			String keywords) {
 		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
 		List<KnowledgeSource> knowledgeSources = config.getAllActivatedKnowledgeSources();
-		return getAllRecommendations(knowledgeSources, decisionProblem, keywords);
+		return getAllRecommendations(projectKey, knowledgeSources, decisionProblem, keywords);
 	}
 
-	public static List<Recommendation> getAllRecommendations(List<KnowledgeSource> knowledgeSources,
+	public static List<Recommendation> getAllRecommendations(String projectKey, List<KnowledgeSource> knowledgeSources,
 			KnowledgeElement decisionProblem, String keywords) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			Recommender recommender = RecommenderFactory.getRecommender(knowledgeSource);
+			Recommender recommender = RecommenderFactory.getRecommender(projectKey, knowledgeSource);
 			recommender.knowledgeSource = knowledgeSource;
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}

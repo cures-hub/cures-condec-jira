@@ -26,15 +26,22 @@ public class TestProjectSourceRecommender extends TestSetUp {
 
 	@Test
 	public void testKeywordOnly() {
-		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations("MySQL");
-
+		List<Recommendation> recommendations = projectSourceRecommender
+				.getRecommendations("How can we implement the feature?");
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
 	public void testDecisionProblem() {
-		KnowledgeElement decisionProblem = KnowledgeElements.getTestKnowledgeElements().get(5);
+		KnowledgeElement decisionProblem = KnowledgeElements.getTestKnowledgeElements().get(4);
 		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertEquals(2, recommendations.size());
+	}
+
+	@Test
+	public void testTextSimilarity() {
+		assertEquals(0.96, projectSourceRecommender.calculateSimilarity("MySQL", "MySQL@en"), 0.1);
+		assertEquals(1.0, projectSourceRecommender.calculateSimilarity("How can we implement the feature?",
+				"How to implement the feature?"), 0.0);
 	}
 }

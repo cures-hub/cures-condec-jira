@@ -79,9 +79,6 @@ public class TestGetRecommendations extends TestSetUp {
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "s").getStatus());
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
 

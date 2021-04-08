@@ -57,8 +57,9 @@ public class Evaluator {
 	}
 
 	public RecommendationEvaluation execute() {
-		List<Recommendation> recommendationsFromKnowledgeSource = RecommenderFactory.getRecommender(knowledgeSource)
-				.getRecommendations(keywords, decisionProblem);
+		String projectKey = decisionProblem.getProject().getProjectKey();
+		List<Recommendation> recommendationsFromKnowledgeSource = RecommenderFactory
+				.getRecommender(projectKey, knowledgeSource).getRecommendations(keywords, decisionProblem);
 
 		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
 		recommendationsFromKnowledgeSource

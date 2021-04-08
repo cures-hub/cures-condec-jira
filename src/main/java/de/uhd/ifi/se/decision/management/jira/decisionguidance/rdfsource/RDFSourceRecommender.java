@@ -43,6 +43,11 @@ public class RDFSourceRecommender extends Recommender {
 			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
 
+	public RDFSourceRecommender(String projectKey, RDFSource rdfSource) {
+		this.knowledgeSource = (RDFSource) rdfSource;
+		this.projectKey = projectKey;
+	}
+
 	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSource = (RDFSource) knowledgeSource;
 	}
