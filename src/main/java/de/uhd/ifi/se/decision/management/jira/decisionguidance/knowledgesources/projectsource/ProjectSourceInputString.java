@@ -47,9 +47,9 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 					.forEach(element -> {
 						Recommendation recommendation = new Recommendation(element);
 						recommendation.setKnowledgeSource(knowledgeSource);
-						recommendation.addArguments(this.getArguments(element));
+						recommendation.addArguments(element.getLinkedArguments());
 
-						RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
+						RecommendationScore score = calculateScore(inputs, issue, recommendation.getLinkedArguments());
 						recommendation.setScore(score);
 						recommendations.add(recommendation);
 					});
@@ -101,18 +101,6 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		BagOfIrrelevantWords bagOfIrrelevantWords = new BagOfIrrelevantWords(
 				ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords());
 		return bagOfIrrelevantWords.cleanSentence(inputTokens);
-	}
-
-	protected List<Argument> getArguments(KnowledgeElement knowledgeElement) {
-		List<Argument> arguments = new ArrayList<>();
-
-		for (KnowledgeElement element : knowledgeElement.getLinkedElements(1)) {
-			if (element.getType().equals(KnowledgeType.PRO) || element.getType().equals(KnowledgeType.CON)) {
-				arguments.add(new Argument(element));
-			}
-		}
-
-		return arguments;
 	}
 
 }

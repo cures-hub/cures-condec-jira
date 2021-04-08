@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,
@@ -737,6 +739,21 @@ public class KnowledgeElement {
 				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.SOLUTION)
 				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
 		return solutionOptions;
+	}
+
+	/**
+	 * @return linked arguments (pros, cons). Assumes that this knowledge element is
+	 *         a solution option (=alternative/decision/solution/claim).
+	 */
+	public List<Argument> getLinkedArguments() {
+		List<Argument> arguments = new ArrayList<>();
+		for (KnowledgeElement element : getLinkedElements(1)) {
+			if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
+					|| element.getType() == KnowledgeType.ARGUMENT) {
+				arguments.add(new Argument(element));
+			}
+		}
+		return arguments;
 	}
 
 	/**

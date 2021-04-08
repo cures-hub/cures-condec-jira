@@ -37,7 +37,7 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals("MySQL", recommendation.getSummary());
 		assertEquals("TEST URL", recommendation.getUrl());
 		assertEquals(123, recommendation.getScore().getValue(), 0.0);
-		assertEquals(0, recommendation.getArguments().size());
+		assertEquals(0, recommendation.getLinkedArguments().size());
 	}
 
 	@Test
@@ -60,14 +60,14 @@ public class TestRecommendation extends TestSetUp {
 
 		Recommendation recommendation = new Recommendation();
 		recommendation.addArguments(arguments);
-		assertEquals(1, recommendation.getArguments().size());
+		assertEquals(1, recommendation.getLinkedArguments().size());
 
 		recommendation.setArguments(arguments);
-		assertEquals(1, recommendation.getArguments().size());
+		assertEquals(1, recommendation.getLinkedArguments().size());
 
 		Recommendation emptyArguments = new Recommendation();
 		emptyArguments.addArgument(argument);
-		assertEquals(1, emptyArguments.getArguments().size());
+		assertEquals(1, emptyArguments.getLinkedArguments().size());
 	}
 
 	@Test
