@@ -41,6 +41,12 @@ public class Recommendation extends KnowledgeElement {
 		this.url = url;
 	}
 
+	public Recommendation(KnowledgeElement knowledgeElement) {
+		this.setSummary(knowledgeElement.getSummary());
+		this.url = knowledgeElement.getUrl();
+		this.project = knowledgeElement.getProject();
+	}
+
 	/**
 	 * @return {@link KnowledgeSource} that this recommendation is taken from.
 	 * @see ProjectSource

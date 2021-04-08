@@ -30,7 +30,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	public List<Recommendation> getRecommendations(String inputs) {
 		List<Recommendation> recommendations = new ArrayList<>();
 
-		double THRESHOLD = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+		double similarityThreshold = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.getSimilarityThreshold();
 
 		this.queryDatabase();
@@ -39,14 +39,14 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 
 		// get all issues that are similar to the given input
 		knowledgeElements.forEach(issue -> {
-			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHOLD) {
+			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > similarityThreshold) {
 
-				issue.getLinkedElements(5).stream().filter(
-						element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+				issue.getLinkedElements(5).stream()
+						.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 						.forEach(child -> {
 
-							Recommendation recommendation = this.createRecommendation(child, KnowledgeType.ALTERNATIVE,
-									KnowledgeType.DECISION);
+							Recommendation recommendation = new Recommendation(child);
+							recommendation.setKnowledgeSource(knowledgeSource);
 							recommendation.addArguments(this.getArguments(child));
 
 							if (recommendation != null) {
@@ -106,15 +106,6 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		BagOfIrrelevantWords bagOfIrrelevantWords = new BagOfIrrelevantWords(
 				ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords());
 		return bagOfIrrelevantWords.cleanSentence(inputTokens);
-	}
-
-	protected Recommendation createRecommendation(KnowledgeElement element, KnowledgeType... knowledgeTypes) {
-		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (element.getType() == knowledgeType)
-				return new Recommendation(this.knowledgeSource, element.getSummary(), element.getUrl());
-		}
-
-		return null;
 	}
 
 	protected List<Argument> getArguments(KnowledgeElement knowledgeElement) {
