@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,9 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSourceInputString;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -59,12 +57,12 @@ public class TestRDFSource extends TestSetUp {
 
 	@Test
 	public void testRDFSourceWithStringInput() {
-		RDFSourceInputString rdfSourceInputString = new RDFSourceInputString();
+		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender();
 		rdfSourceInputString
 				.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, LIMIT, "Lizenz=dbo:license"));
 		assertEquals(34, rdfSourceInputString.getRecommendations("MySQL").size());
 		assertEquals(0, rdfSourceInputString.getRecommendations("").size());
-		assertEquals(0, rdfSourceInputString.getRecommendations(null).size());
+		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());
 
 		rdfSourceInputString
 				.setKnowledgeSource(new RDFSource(NAME, "WRONG SERVICE", "INVALID QUERY", TIMEOUT, LIMIT, ""));
@@ -81,12 +79,11 @@ public class TestRDFSource extends TestSetUp {
 		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), alternative);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(PROJECTKEY);
 		graph.addEdge(link);
-		RDFSourceInputKnowledgeElement rdfSourceInputKnowledgeElement = new RDFSourceInputKnowledgeElement();
-		rdfSourceInputKnowledgeElement.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, LIMIT, ""));
-		assertEquals(34,
-				rdfSourceInputKnowledgeElement.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size());
-		assertEquals(0, rdfSourceInputKnowledgeElement.getRecommendations(null).size());
-		assertEquals(0, rdfSourceInputKnowledgeElement.getRecommendations(new KnowledgeElement()).size());
+		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender();
+		rdfSourceInputString.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, LIMIT, ""));
+		assertEquals(34, rdfSourceInputString.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size());
+		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());
+		assertEquals(0, rdfSourceInputString.getRecommendations(new KnowledgeElement()).size());
 	}
 
 	@Test

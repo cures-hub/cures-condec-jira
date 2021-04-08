@@ -4,12 +4,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
@@ -21,16 +20,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class RecommendationEvaluation {
 
-	private RecommenderType recommenderType;
 	private KnowledgeSource knowledgeSource;
 	private List<Recommendation> recommendations;
 	private List<EvaluationMetric> metrics;
 	private List<KnowledgeElement> groundTruthSolutionOptions;
 
-	public RecommendationEvaluation(RecommenderType recommenderType, KnowledgeSource knowledgeSource,
-			List<Recommendation> recommendations, List<EvaluationMetric> metrics,
-			List<KnowledgeElement> solutionOptions) {
-		this.recommenderType = recommenderType;
+	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
+			List<EvaluationMetric> metrics, List<KnowledgeElement> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
 		this.metrics = metrics;
@@ -69,15 +65,6 @@ public class RecommendationEvaluation {
 	 */
 	public void setRecommendations(List<Recommendation> recommendations) {
 		this.recommendations = recommendations;
-	}
-
-	@XmlElement
-	public RecommenderType getRecommenderType() {
-		return recommenderType;
-	}
-
-	public void setRecommenderType(RecommenderType recommenderType) {
-		this.recommenderType = recommenderType;
 	}
 
 	/**

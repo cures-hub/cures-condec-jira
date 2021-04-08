@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,10 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -21,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestIBaseRecommender extends TestSetUp {
+public class TestRecommender extends TestSetUp {
 
 	private ProjectSource projectSource;
 	private RDFSource rdfSource;
@@ -44,24 +42,15 @@ public class TestIBaseRecommender extends TestSetUp {
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 
-		BaseRecommender<KnowledgeElement> recommender = new IssueBasedRecommender(knowledgeElement);
-		recommender.addKnowledgeSource(knowledgeSources);
-
-		recommender.recommendations.add(new Recommendation());
-		recommender.recommendations.add(new Recommendation());
+		List<Recommendation> recommendations = new ArrayList<>();
+		Recommender.getAllRecommendations(knowledgeSources, knowledgeElement, "");
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
 		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
 
-		BaseRecommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
-				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST", recommender.recommendations);
+		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
+				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST", recommendations);
 
 		assertEquals(19, manager.getKnowledgeElements().size());
 	}
-
-	@Test
-	public void testRecommenderDefaultType() {
-		assertEquals(RecommenderType.KEYWORD, RecommenderType.getDefault());
-	}
-
 }

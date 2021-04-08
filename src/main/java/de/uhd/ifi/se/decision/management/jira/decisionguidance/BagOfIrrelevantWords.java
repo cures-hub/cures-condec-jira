@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import java.util.ArrayList;
 import java.util.Arrays;

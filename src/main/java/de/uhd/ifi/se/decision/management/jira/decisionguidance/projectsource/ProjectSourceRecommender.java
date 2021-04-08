@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,13 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.apache.commons.text.similarity.SimilarityScore;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.BagOfIrrelevantWords;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.BagOfIrrelevantWords;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
@@ -22,20 +25,39 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * For example, a decision problem can be input by the user and used to query
  * the other Jira project.
  */
-public class ProjectSourceInputString extends ProjectSourceInput<String> {
+public class ProjectSourceRecommender extends Recommender {
 
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
+	protected String projectKey;
+	protected ProjectSource knowledgeSource;
+
+	public ProjectSourceRecommender(String projectKey, ProjectSource projectSource) {
+		this.knowledgeSource = (ProjectSource) projectSource;
+		this.projectKey = projectKey;
+	}
+
+	public List<KnowledgeElement> queryDatabase() {
+		List<KnowledgeElement> knowledgeElements = new ArrayList<>();
+		KnowledgeGraph knowledgeGraph = KnowledgeGraph.getInstance(projectKey);
+		if (knowledgeGraph != null) {
+			knowledgeElements = knowledgeGraph.getElements(KnowledgeType.ISSUE);
+		}
+		return knowledgeElements;
+	}
+
+	public void setKnowledgeSource(KnowledgeSource projectSource) {
+		this.knowledgeSource = (ProjectSource) projectSource;
+	}
 
 	@Override
 	public List<Recommendation> getRecommendations(String inputs) {
+		if (inputs == null) {
+			return new ArrayList<>();
+		}
 		List<Recommendation> recommendations = new ArrayList<>();
-
+		List<KnowledgeElement> knowledgeElements = queryDatabase();
 		double similarityThreshold = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.getSimilarityThreshold();
-
-		this.queryDatabase();
-		if (knowledgeElements == null || inputs == null)
-			return recommendations;
 
 		// get all issues that are similar to the given input
 		knowledgeElements.forEach(issue -> {
@@ -92,7 +114,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 		return score;
 	}
 
-	private Double calculateSimilarity(String left, String right) {
+	private double calculateSimilarity(String left, String right) {
 		return similarityScore.apply(cleanInput(left), cleanInput(right));
 	}
 

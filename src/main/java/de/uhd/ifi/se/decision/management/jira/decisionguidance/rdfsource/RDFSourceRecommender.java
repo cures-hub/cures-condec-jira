@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +18,10 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -33,30 +34,17 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * For example, a decision problem can be input by the user and used to query
  * DBPedia.
  */
-public class RDFSourceInputString implements InputMethod<String, RDFSource> {
+public class RDFSourceRecommender extends Recommender {
 
 	protected RDFSource knowledgeSource;
 	protected String projectKey;
-	protected String name;
-	protected String service;
-	protected String queryString;
-	protected int timeout;
-	protected int limit;
-	protected Map<String, String> constraints;
 
 	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>"
 			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
 
-	@Override
-	public void setKnowledgeSource(RDFSource knowledgeSource) {
-		this.knowledgeSource = knowledgeSource;
-		this.name = knowledgeSource.getName();
-		this.service = knowledgeSource.getService();
-		this.queryString = knowledgeSource.getQueryString();
-		this.timeout = knowledgeSource.getTimeout();
-		this.limit = knowledgeSource.getLimit();
-		this.constraints = knowledgeSource.getConstraintMap();
+	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
+		this.knowledgeSource = (RDFSource) knowledgeSource;
 	}
 
 	private List<String> combineKeywords(List<String> keywords) {
@@ -119,11 +107,12 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		for (String combinedKeyword : combinedKeywords) {
 
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
-			String queryStringWithInput = this.queryString.replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
+			String queryStringWithInput = knowledgeSource.getQueryString().replaceAll("%variable%", uri)
+					.replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
-			ResultSet resultSet = queryDatabase(queryStringWithInput, service,
-					new Params.Pair("timeout", timeout + ""));
+			ResultSet resultSet = queryDatabase(queryStringWithInput, knowledgeSource.getService(),
+					new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
 
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
@@ -140,7 +129,7 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 				List<Argument> arguments = new ArrayList<>();
 
-				for (Map.Entry<String, String> constraint : this.constraints.entrySet()) {
+				for (Map.Entry<String, String> constraint : knowledgeSource.getConstraintMap().entrySet()) {
 					arguments.addAll(this.getArgument(row.get("?subject").toString(), constraint));
 				}
 
@@ -174,7 +163,8 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 				PREFIX + " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }",
 				resource);
 
-		ResultSet arguments = this.queryDatabase(query, service, new Params.Pair("timeout", this.timeout + ""));
+		ResultSet arguments = this.queryDatabase(query, knowledgeSource.getService(),
+				new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
 
 		String label = "";
 		while (arguments != null && arguments.hasNext()) {
@@ -190,7 +180,8 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 				+ " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}",
 				resource, constraint.getValue());
 
-		ResultSet arguments = queryDatabase(query, service, new Params.Pair("timeout", this.timeout + ""));
+		ResultSet arguments = queryDatabase(query, knowledgeSource.getService(),
+				new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
 
 		List<Argument> argumentsList = new ArrayList<>();
 

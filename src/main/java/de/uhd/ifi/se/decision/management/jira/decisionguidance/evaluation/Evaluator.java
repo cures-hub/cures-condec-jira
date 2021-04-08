@@ -7,8 +7,10 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommenderFactory;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
@@ -16,9 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Precision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Recall;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -52,25 +51,15 @@ public class Evaluator {
 				.getKnowledgeSourceByName(knowledgeSourceName);
 	}
 
-	public List<Recommendation> getRecommendations(KnowledgeSource knowledgeSource) {
-		return InputMethod.getIssueBasedIn(knowledgeSource).getRecommendations(this.decisionProblem);
-	}
-
 	public Evaluator evaluate(@Nonnull KnowledgeElement issue) {
 		this.decisionProblem = issue;
 		return this;
 	}
 
 	public RecommendationEvaluation execute() {
-		List<Recommendation> recommendationsFromKnowledgeSource;
-		RecommenderType recommenderType = RecommenderType.determineType(decisionProblem, keywords);
-		if (!keywords.isBlank()) {
-			recommendationsFromKnowledgeSource = InputMethod.getKeywordBasedIn(knowledgeSource)
-					.getRecommendations(this.keywords);
-		} else {
-			recommendationsFromKnowledgeSource = InputMethod.getIssueBasedIn(knowledgeSource)
-					.getRecommendations(this.decisionProblem);
-		}
+		List<Recommendation> recommendationsFromKnowledgeSource = RecommenderFactory.getRecommender(knowledgeSource)
+				.getRecommendations(keywords, decisionProblem);
+
 		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
 		recommendationsFromKnowledgeSource
 				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
@@ -79,8 +68,8 @@ public class Evaluator {
 		List<Recommendation> topKRecommendations = Evaluator.getTopKRecommendations(recommendationsFromKnowledgeSource,
 				topKResults);
 		List<EvaluationMetric> metrics = calculateMetrics(topKRecommendations, solutionOptions);
-		return new RecommendationEvaluation(recommenderType, this.knowledgeSource, recommendationsFromKnowledgeSource,
-				metrics, solutionOptions);
+		return new RecommendationEvaluation(knowledgeSource, recommendationsFromKnowledgeSource, metrics,
+				solutionOptions);
 
 	}
 

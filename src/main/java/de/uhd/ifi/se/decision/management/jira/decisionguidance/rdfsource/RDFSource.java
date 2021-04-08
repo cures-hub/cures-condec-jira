@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import com.google.common.base.Splitter;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 
 /**
  * Knowledge source identified using the Resource Description Framework (RDF)

@@ -13,7 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -39,7 +38,6 @@ public class TestGetRecommendations extends TestSetUp {
 	public void testGetRecommendations() {
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
-		decisionGuidanceRest.setRecommendationInput(request, "TEST", RecommenderType.KEYWORD.toString(), true);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
@@ -78,12 +76,10 @@ public class TestGetRecommendations extends TestSetUp {
 	public void testGetRecommendationsGetRecommender() {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.KEYWORD.toString(), true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "s").getStatus());
-		decisionGuidanceConfiguration.setRecommendationInput(RecommenderType.ISSUE.toString(), true);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());

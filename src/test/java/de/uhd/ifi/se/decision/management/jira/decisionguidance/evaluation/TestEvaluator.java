@@ -11,15 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
@@ -81,24 +78,11 @@ public class TestEvaluator extends TestSetUp {
 
 	@Test
 	public void testEvaluationExecute() {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration("TEST");
-		decisionGuidanceConfiguration.setRecommendationInput("KEYWORD", true);
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration("TEST", decisionGuidanceConfiguration);
-
 		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(decisionProblem).execute();
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());
-		assertEquals(RecommenderType.ISSUE, recommendationEvaluation.getRecommenderType());
 		assertEquals(2, recommendationEvaluation.getRecommendations().size());
 		assertNotNull(recommendationEvaluation.getMetrics());
-	}
-
-	@Test
-	public void testGetResultsFromKnowledgeSource() {
-		Evaluator recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "Not blank", 5, "TEST");
-		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", false);
-		assertNotNull(recommender.getRecommendations(knowledgeSource));
 	}
 }
