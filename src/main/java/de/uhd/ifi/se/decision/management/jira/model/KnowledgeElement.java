@@ -744,7 +744,7 @@ public class KnowledgeElement {
 	 *            one ore more {@link KnowledgeType}s.
 	 * @return true if the element has one of the given {@link KnowledgeType}s.
 	 */
-	public boolean isMatchingKnowledgeType(KnowledgeType... knowledgeTypes) {
+	public boolean hasKnowledgeType(KnowledgeType... knowledgeTypes) {
 		for (KnowledgeType knowledgeType : knowledgeTypes) {
 			if (this.getType() == knowledgeType)
 				return true;

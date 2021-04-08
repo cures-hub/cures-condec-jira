@@ -42,7 +42,7 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 			if (calculateSimilarity(similarityScore, issue.getSummary(), inputs.trim()) > THRESHOLD) {
 
 				issue.getLinkedElements(5).stream().filter(
-						element -> element.isMatchingKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+						element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 						.forEach(child -> {
 
 							Recommendation recommendation = this.createRecommendation(child, KnowledgeType.ALTERNATIVE,

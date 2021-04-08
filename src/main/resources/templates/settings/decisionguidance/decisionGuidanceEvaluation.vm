@@ -112,8 +112,7 @@
         event.preventDefault();
         const keywords = $("#evaluation-keywords").val();
         const issueID = $("#select2-issues").val();
-        console.log(issueID);
-        const documentationLocation = documentationLocations[issueID];
+       	const documentationLocation = documentationLocations[issueID];
         const kResults = $("#k-results").val();
         $("#evaluation-results-table tbody tr").remove();
         const spinner = $("#loading-spinner-recommendation");
@@ -154,6 +153,9 @@
     
     function createTooltip(knowledgeElements) {
     	var id = knowledgeElements.length;
+    	if (id === 0) {
+			return id;
+    	}
     	var tooltip = "<a data-aui-trigger aria-controls='knowledgeElements-" + id + "'>"    
         	+ knowledgeElements.length
         	+ "</a><aui-inline-dialog id='knowledgeElements-" + id + "' responds-to='hover'>";        	
