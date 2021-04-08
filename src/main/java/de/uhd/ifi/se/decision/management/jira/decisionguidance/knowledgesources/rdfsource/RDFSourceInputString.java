@@ -18,8 +18,6 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
-import com.google.common.base.Splitter;
-
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.InputMethod;
@@ -58,15 +56,10 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 		this.queryString = knowledgeSource.getQueryString();
 		this.timeout = knowledgeSource.getTimeout();
 		this.limit = knowledgeSource.getLimit();
-		try {
-			this.constraints = Splitter.on("&").withKeyValueSeparator("=").split(knowledgeSource.getConstraint());
-		} catch (IllegalArgumentException e) {
-			this.constraints = new HashMap<>();
-		}
+		this.constraints = knowledgeSource.getConstraintMap();
 	}
 
 	private List<String> combineKeywords(List<String> keywords) {
-
 		List<String> combinedKeywords = new ArrayList<>();
 		combinedKeywords.addAll(keywords);
 
@@ -114,11 +107,11 @@ public class RDFSourceInputString implements InputMethod<String, RDFSource> {
 
 	@Override
 	public List<Recommendation> getRecommendations(String inputs) {
+		if (inputs == null) {
+			return new ArrayList<>();
+		}
 		List<Recommendation> recommendations = new ArrayList<>();
 		Map<Recommendation, Integer> scoreMap = new HashMap<>();
-
-		if (inputs == null)
-			return recommendations;
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		final List<String> combinedKeywords = this.combineKeywords(keywords);

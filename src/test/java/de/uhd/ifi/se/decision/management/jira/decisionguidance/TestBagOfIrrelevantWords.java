@@ -1,21 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.BagOfIrrelevantWords;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.BagOfIrrelevantWords;
 
-import static org.junit.Assert.assertEquals;
-
-public class TestBagOfIrrelevantWords {
+public class TestBagOfIrrelevantWords extends TestSetUp {
 
 	private BagOfIrrelevantWords bagOfIrrelevantWords;
 	private final static String WORDS = "WHICH;WHAT;COULD;SHOULD";
 
 	@Before
 	public void setUp() {
+		init();
 		bagOfIrrelevantWords = new BagOfIrrelevantWords(WORDS);
 	}
 
@@ -35,9 +36,7 @@ public class TestBagOfIrrelevantWords {
 
 	@Test
 	public void testCleanSentence() {
-		List<String> tokens = Arrays.asList("Which database could we choose?".split(" "));
-		assertEquals("database we choose?", bagOfIrrelevantWords.cleanSentence(tokens).trim());
-
+		String[] tokens = Preprocessor.getInstance().tokenize("Which database could we choose?");
+		assertEquals("database we choose ?", bagOfIrrelevantWords.cleanSentence(tokens).trim());
 	}
-
 }

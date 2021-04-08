@@ -1,6 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import java.util.Map;
 import java.util.Objects;
+
+import com.google.common.base.Splitter;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
 
@@ -14,7 +17,7 @@ public class RDFSource extends KnowledgeSource {
 	protected String queryString;
 	protected int timeout;
 	protected int limit;
-	protected String constraint;
+	protected String constraints;
 
 	private static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>"
 			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
@@ -34,7 +37,7 @@ public class RDFSource extends KnowledgeSource {
 		this.limit = 10;
 		this.isActivated = true;
 		this.icon = "aui-iconfont-download";
-		this.constraint = "";
+		this.constraints = "";
 	}
 
 	/**
@@ -57,7 +60,7 @@ public class RDFSource extends KnowledgeSource {
 		this.isActivated = true;
 		this.limit = limit;
 		this.icon = "aui-iconfont-download";
-		this.constraint = constraint;
+		this.constraints = constraint;
 	}
 
 	public String getService() {
@@ -92,12 +95,23 @@ public class RDFSource extends KnowledgeSource {
 		this.limit = limit;
 	}
 
-	public String getConstraint() {
-		return constraint;
+	/**
+	 * @return e.g. License=dbo:license. Multiple values are separated with "&".
+	 */
+	public String getConstraints() {
+		return constraints;
 	}
 
-	public void setConstraints(String constraint) {
-		this.constraint = constraint;
+	public Map<String, String> getConstraintMap() {
+		return Splitter.on("&").withKeyValueSeparator("=").split(getConstraints());
+	}
+
+	/**
+	 * @param constraints
+	 *            e.g. License=dbo:license. Multiple values are separated with "&".
+	 */
+	public void setConstraints(String constraints) {
+		this.constraints = constraints;
 	}
 
 	@Override

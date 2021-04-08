@@ -16,7 +16,7 @@ public class BagOfIrrelevantWords {
 		return !irrelevantWords.contains(word.toUpperCase().trim());
 	}
 
-	public String cleanSentence(List<String> tokens) {
+	public String cleanSentence(String[] tokens) {
 		List<String> cleanedTokens = new ArrayList<>();
 
 		for (String token : tokens) {

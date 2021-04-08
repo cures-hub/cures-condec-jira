@@ -83,13 +83,19 @@ public class TestRecommendation extends TestSetUp {
 		KnowledgeSource sourceA = new ProjectSource("TEST", "Source", true);
 		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
 
-		KnowledgeSource sourceB = new ProjectSource("TEST", "Source", true);
-		Recommendation recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
-		Recommendation recommendationC = new Recommendation(sourceB, "Recommendation with other summary", "TESTURL");
-
+		Recommendation recommendationB = new Recommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
-		assertFalse(recommendationA.equals(recommendationC));
+
+		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceB", true);
+		recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
+		assertFalse(recommendationA.equals(recommendationB));
+
+		recommendationB = null;
+		assertFalse(recommendationA.equals(recommendationB));
+
+		recommendationB = new Recommendation(sourceA, "Recommendation with other summary", "TESTURL");
+		assertFalse(recommendationA.equals(recommendationB));
+
 		assertFalse(recommendationA.equals(new RDFSource()));
-		assertFalse(recommendationA.equals(null));
 	}
 }
