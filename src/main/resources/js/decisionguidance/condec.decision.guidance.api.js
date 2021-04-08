@@ -96,22 +96,6 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setRecommendationInput = function(projectKey, recommendationInput, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/setRecommendationInput.json?projectKey=" + projectKey + "&recommendationInput=" + recommendationInput + "&isActivated=" + isActivated, null,
-			function(error, results) {
-				if (error) {
-					conDecAPI.showFlag("error", error);
-				} else if (isActivated) {
-					conDecAPI.showFlag("success", "Recommendation input has been successfully <b>activated</b>");
-				} else {
-					conDecAPI.showFlag("success", "Recommendation input has been successfully <b>deactivated</b>");
-				}
-			});
-	};
-
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
-	 */
 	ConDecDecisionGuidanceAPI.prototype.setKnowledgeSourceActivated = function(projectKey, knowledgeSourceName, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated, null, function(
 			error, response) {
@@ -133,9 +117,8 @@
 			error, response) {
 			if (error === null) {
 				if (isActivated) {
-					conDecAPI.showFlag("success", "The project  <b>" + projectSourceKey + "</b> is now  <b>activated</b> as a knowledge source!!");
-				}
-				else {
+					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>activated</b> as a knowledge source!!");
+				} else {
 					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
 				}
 			}
@@ -166,7 +149,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: jiraIssueModule.vm
 	 */

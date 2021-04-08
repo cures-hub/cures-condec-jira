@@ -58,7 +58,6 @@
 <table id="evaluation-results-table" class="aui aui-table-list">
     <thead>
     <tr>
-        <th>Input</th>
         <th>Knowledge Source</th>
         <th>
         	All Recommendations 
@@ -131,8 +130,7 @@
 	                });	                
 	
 	                $("#evaluation-results-table tbody").append(
-	                	"<tr><td>" + evaluation.recommenderType + "</td>" +
-						"<td>" + evaluation.knowledgeSource.name + "</td>" +
+	                	"<tr><td>" + evaluation.knowledgeSource.name + "</td>" +
 						"<td>" + createTooltip(evaluation.recommendations) + "</td>" + 
 						"<td>" + createTooltip(evaluation.groundTruthSolutionOptions) + "</td>" + metricValues + "</tr>");
 	                spinner.hide();
