@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,15 +77,19 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
-		KnowledgeSource sourceA = new ProjectSource("TEST", "SourceA", true);
+		KnowledgeSource sourceA = new ProjectSource("TEST", "Source", true);
 		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
 
-		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceA", true);
+		KnowledgeSource sourceB = new ProjectSource("TEST", "Source", true);
 		Recommendation recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
+		Recommendation recommendationC = new Recommendation(sourceB, "Recommendation with other summary", "TESTURL");
 
-		assertEquals(recommendationA, recommendationB);
-		assertNotEquals(recommendationA, new RDFSource());
+		assertTrue(recommendationA.equals(recommendationB));
+		assertFalse(recommendationA.equals(recommendationC));
+		assertFalse(recommendationA.equals(new RDFSource()));
+		assertFalse(recommendationA.equals(null));
 	}
 }

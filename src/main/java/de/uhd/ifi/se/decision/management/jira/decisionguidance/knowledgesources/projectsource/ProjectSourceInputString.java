@@ -61,7 +61,8 @@ public class ProjectSourceInputString extends ProjectSourceInput<String> {
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement parentIssue,
 			List<Argument> arguments) {
 
-		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityScore.toString());
+		RecommendationScore score = new RecommendationScore(0,
+				"Similarity based on " + similarityScore.getClass().getName());
 
 		double jc = this.calculateSimilarity(similarityScore, keywords, parentIssue.getSummary());
 		score.addSubScore(new RecommendationScore((float) jc,
