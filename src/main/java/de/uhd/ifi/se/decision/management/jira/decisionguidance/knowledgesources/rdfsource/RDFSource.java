@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -103,7 +104,11 @@ public class RDFSource extends KnowledgeSource {
 	}
 
 	public Map<String, String> getConstraintMap() {
-		return Splitter.on("&").withKeyValueSeparator("=").split(getConstraints());
+		try {
+			return Splitter.on("&").withKeyValueSeparator("=").split(getConstraints());
+		} catch (IllegalArgumentException e) {
+			return new HashMap<>();
+		}
 	}
 
 	/**
