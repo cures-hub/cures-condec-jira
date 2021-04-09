@@ -21,7 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 /**
  * Evaluates one {@link KnowledgeSource} for a given decision problem and
- * keywords. Creates a {@link RecommendationEvaluation} object as output.
+ * keywords. Uses the solution options documented for the decision problem as
+ * the ground truth/gold standard. Creates a {@link RecommendationEvaluation}
+ * object as output.
  */
 public class Evaluator {
 
