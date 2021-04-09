@@ -115,7 +115,7 @@ public class Recommendation extends KnowledgeElement {
 	 *         recommended solution option.
 	 */
 	@XmlElement
-	public List<Argument> getLinkedArguments() {
+	public List<Argument> getArguments() {
 		return arguments;
 	}
 

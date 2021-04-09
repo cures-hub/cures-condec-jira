@@ -44,9 +44,9 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 					.forEach(element -> {
 						Recommendation recommendation = new Recommendation(element);
 						recommendation.setKnowledgeSource(knowledgeSource);
-						recommendation.addArguments(element.getLinkedArguments());
+						recommendation.addArguments(element.getArguments());
 
-						RecommendationScore score = calculateScore(inputs, issue, recommendation.getLinkedArguments());
+						RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
 						recommendation.setScore(score);
 						recommendations.add(recommendation);
 					});
@@ -87,11 +87,11 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		float numberConArguments = 0;
 
 		for (Argument argument : arguments) {
-			if (argument.getType().equals(KnowledgeType.PRO.toString())) {
+			if (argument.getType() == KnowledgeType.PRO) {
 				numberProArguments += 1;
 				score.addSubScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
 			}
-			if (argument.getType().equals(KnowledgeType.CON.toString())) {
+			if (argument.getType() == KnowledgeType.CON) {
 				numberConArguments += 1;
 				score.addSubScore(new RecommendationScore(-.01f, argument.getType() + " : " + argument.getSummary()));
 			}

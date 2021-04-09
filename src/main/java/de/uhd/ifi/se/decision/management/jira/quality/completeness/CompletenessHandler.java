@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -34,6 +35,9 @@ public final class CompletenessHandler {
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
 	public static boolean checkForCompleteness(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement instanceof Recommendation) {
+			return true;
+		}
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
 		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
 	}

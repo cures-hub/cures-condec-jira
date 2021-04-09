@@ -745,7 +745,7 @@ public class KnowledgeElement {
 	 * @return linked arguments (pros, cons). Assumes that this knowledge element is
 	 *         a solution option (=alternative/decision/solution/claim).
 	 */
-	public List<Argument> getLinkedArguments() {
+	public List<Argument> getArguments() {
 		List<Argument> arguments = new ArrayList<>();
 		for (KnowledgeElement element : getLinkedElements(1)) {
 			if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON

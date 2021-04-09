@@ -26,21 +26,21 @@ public class TestCriterion extends TestSetUp {
 		knowledgeElement.setSummary(summary1);
 		knowledgeElement.setType(KnowledgeType.OTHER);
 		knowledgeElement.setDocumentationLocation(documentationLocation);
-		this.criterion1 = new Criterion(knowledgeElement);	
-		
+		this.criterion1 = new Criterion(knowledgeElement);
+
 		knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setId(1);
 		this.criterion2 = new Criterion(knowledgeElement);
 	}
-	
+
 	@Test
 	public void getCriterionProperties() {
 		assertEquals(this.criterion1.getId(), 0);
 		assertEquals(this.criterion1.getSummary(), summary1);
-		assertEquals(this.criterion1.getDocumentationLocation(), documentationLocation.getIdentifier());
+		assertEquals(this.criterion1.getDocumentationLocation(), documentationLocation);
 		assertEquals(this.criterion1.getUrl(), criterionUrl);
 	}
-	
+
 	@Test
 	public void compareCriteria() {
 		Criterion tmpCriterion = null;
@@ -49,5 +49,5 @@ public class TestCriterion extends TestSetUp {
 		assertEquals(this.criterion1.equals(tmpCriterion), false);
 		assertEquals(this.criterion2.getUrl(), criterionUrl);
 	}
-	
+
 }

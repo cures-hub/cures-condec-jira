@@ -34,12 +34,10 @@ public class DecisionTable {
 
 	private KnowledgeGraph graph;
 	private KnowledgePersistenceManager persistenceManager;
-
-	@XmlElement
 	private List<KnowledgeElement> issues;
 
 	@XmlElement
-	private Map<String, List<DecisionTableElement>> decisionTableData;
+	private Map<String, List<KnowledgeElement>> decisionTableData;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
 
@@ -92,8 +90,8 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		decisionTableData.put("alternatives", new ArrayList<DecisionTableElement>());
-		decisionTableData.put("criteria", new ArrayList<DecisionTableElement>());
+		decisionTableData.put("alternatives", new ArrayList<KnowledgeElement>());
+		decisionTableData.put("criteria", new ArrayList<KnowledgeElement>());
 
 		// TODO Check link type. A decision that leads to a new decision problem should
 		// not be shown as solution option for this derived decision problem.
@@ -132,7 +130,7 @@ public class DecisionTable {
 		}
 	}
 
-	public void getArgumentCriteria(Argument argument, List<DecisionTableElement> criteria) {
+	public void getArgumentCriteria(Argument argument, List<KnowledgeElement> criteria) {
 		// TODO Make Argument class extend KnowledgeElement and remove calling
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
@@ -153,9 +151,10 @@ public class DecisionTable {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return all decision problems for a certain Jira issue or for the entire
+	 *         project.
 	 */
+	@XmlElement
 	public List<KnowledgeElement> getIssues() {
 		return issues;
 	}
@@ -164,7 +163,7 @@ public class DecisionTable {
 	 * 
 	 * @return
 	 */
-	public Map<String, List<DecisionTableElement>> getDecisionTableData() {
+	public Map<String, List<KnowledgeElement>> getDecisionTableData() {
 		return decisionTableData;
 	}
 }

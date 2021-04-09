@@ -65,7 +65,7 @@ public class TestDecisionTable extends TestSetUp {
 		request.setAttribute("user", user);
 		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(4);
 		decisionTable.setDecisionTableForIssue(issue, user);
-		Map<String, List<DecisionTableElement>> decisionTableData = decisionTable.getDecisionTableData();
+		Map<String, List<KnowledgeElement>> decisionTableData = decisionTable.getDecisionTableData();
 
 		assertTrue(decisionTableData.get("alternatives").size() > 0);
 
@@ -83,7 +83,7 @@ public class TestDecisionTable extends TestSetUp {
 	@Test
 	public void testGetArgumentsOnIssueDirectly() {
 		KnowledgeElement knowledgeElement;
-		Map<String, List<DecisionTableElement>> decisionTableData = new HashMap<>();
+		Map<String, List<KnowledgeElement>> decisionTableData = new HashMap<>();
 		decisionTableData.put("alternatives", new ArrayList<>());
 		decisionTableData.put("criteria", new ArrayList<>());
 
@@ -102,7 +102,7 @@ public class TestDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetArgumentCriteriaOnIssueDirectly() {
-		List<DecisionTableElement> criteriaList = new ArrayList<>();
+		List<KnowledgeElement> criteriaList = new ArrayList<>();
 		Argument argument;
 		argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
 		decisionTable.getArgumentCriteria(argument, criteriaList);
