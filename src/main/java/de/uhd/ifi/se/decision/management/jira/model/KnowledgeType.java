@@ -181,6 +181,8 @@ public enum KnowledgeType {
 			return KnowledgeType.CONTEXT;
 		case IMPLICATION:
 			return KnowledgeType.CONTEXT;
+		case CONTEXT:
+			return KnowledgeType.CONTEXT;
 		case ARGUMENT:
 			return KnowledgeType.RATIONALE;
 		case ASSESSMENT:

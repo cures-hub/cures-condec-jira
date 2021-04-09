@@ -31,17 +31,22 @@ public class Argument extends KnowledgeElement {
 		this.image = KnowledgeType.getIconUrl(argument, link.getTypeAsString());
 	}
 
-	@XmlElement
 	public List<KnowledgeElement> getCriteria() {
 		List<KnowledgeElement> criteria = new ArrayList<>();
 		for (Link currentLink : getLinks()) {
 			KnowledgeElement element = currentLink.getOppositeElement(this);
 			// TODO Make checking criteria type more explicit
-			if (element.getType() == KnowledgeType.OTHER) {
+			if (element.getType().getSuperType() == KnowledgeType.CONTEXT) {
 				criteria.add(element);
 			}
 		}
 		return criteria;
+	}
+
+	@XmlElement
+	public KnowledgeElement getCriterion() {
+		List<KnowledgeElement> criteria = getCriteria();
+		return criteria.isEmpty() ? null : criteria.get(0);
 	}
 
 	@XmlElement

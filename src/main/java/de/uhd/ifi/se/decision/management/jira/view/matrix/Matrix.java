@@ -1,5 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -7,15 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Creates an adjacency matrix of the {@link KnowledgeGraph}. The matrix can
@@ -30,10 +32,7 @@ import java.util.TreeMap;
  */
 public class Matrix {
 
-	@XmlElement
 	private Set<KnowledgeElement> headerElements;
-
-	@XmlElement
 	private Map<Long, String> colorMap;
 
 	private int size;
@@ -63,6 +62,7 @@ public class Matrix {
 		});
 	}
 
+	@XmlElement
 	public Set<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
@@ -100,9 +100,9 @@ public class Matrix {
 	 * Used to plot the legend for relationship types in the frontend.
 	 *
 	 * @return map of link type names and colors. Also contains Jira issue link
-	 * types.
+	 *         types.
 	 */
-	@XmlElement(name = "linkTypesWithColor")
+	@XmlElement
 	public Map<String, String> getLinkTypesWithColor() {
 		Map<String, String> linkTypesWithColor = new TreeMap<>();
 		for (String linkTypeName : DecisionKnowledgeProject.getNamesOfLinkTypes()) {
@@ -112,6 +112,7 @@ public class Matrix {
 		return linkTypesWithColor;
 	}
 
+	@XmlElement
 	public Map<Long, String> getColorMap() {
 		return colorMap;
 	}
