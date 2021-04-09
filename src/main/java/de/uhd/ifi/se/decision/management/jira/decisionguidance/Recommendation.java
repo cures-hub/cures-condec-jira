@@ -19,7 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * DBPedia ({@link RDFSource} or another Jira project ({@link ProjectSource}).
  * 
  * The recommendation can contain a list of arguments (pro and cons) that either
- * support or attack this recommended solution option.
+ * support or attack this recommended solution option. The relevance of the
+ * recommendation is represented by the {@link RecommendationScore}.
  */
 public class Recommendation extends KnowledgeElement {
 

@@ -5,12 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommenderFactory;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.FScore;
@@ -22,44 +20,26 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Evaluates one ore more {@link KnowledgeSource}s for given inputs. Creates
- * {@link RecommendationEvaluation}s as output.
+ * Evaluates one {@link KnowledgeSource} for a given decision problem and
+ * keywords. Creates a {@link RecommendationEvaluation} object as output.
  */
 public class Evaluator {
 
-	private KnowledgeElement decisionProblem;
-	private String keywords;
-	private int topKResults;
-	protected List<Recommendation> recommendations;
-	protected KnowledgeSource knowledgeSource;
-
-	public Evaluator(KnowledgeElement decisionProblem, String keywords, int topKResults,
+	/**
+	 * @param decisionProblem
+	 * @param keywords
+	 * @param topKResults
+	 * @param knowledgeSource
+	 *            {@link KnowledgeSource}
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
+	 *         for one {@link KnowledgeSource} for a given decision problem and
+	 *         keywords.
+	 */
+	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
-		this.recommendations = new ArrayList<>();
-		this.knowledgeSource = knowledgeSource;
-		this.decisionProblem = decisionProblem;
-		this.keywords = keywords;
-		this.topKResults = topKResults;
-	}
-
-	public Evaluator(KnowledgeElement decisionProblem, String keywords, int topKResults, String knowledgeSourceName) {
-		this(decisionProblem, keywords, topKResults, getKnowledgeSource(decisionProblem, knowledgeSourceName));
-	}
-
-	private static KnowledgeSource getKnowledgeSource(KnowledgeElement decisionProblem, String knowledgeSourceName) {
-		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(decisionProblem.getProject().getProjectKey())
-				.getKnowledgeSourceByName(knowledgeSourceName);
-	}
-
-	public Evaluator evaluate(@Nonnull KnowledgeElement issue) {
-		this.decisionProblem = issue;
-		return this;
-	}
-
-	public RecommendationEvaluation execute() {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		List<Recommendation> recommendationsFromKnowledgeSource = RecommenderFactory
-				.getRecommender(projectKey, knowledgeSource).getRecommendations(keywords, decisionProblem);
+		List<Recommendation> recommendationsFromKnowledgeSource = Recommender.newInstance(projectKey, knowledgeSource)
+				.getRecommendations(keywords, decisionProblem);
 
 		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
 		recommendationsFromKnowledgeSource
@@ -71,7 +51,22 @@ public class Evaluator {
 		List<EvaluationMetric> metrics = calculateMetrics(topKRecommendations, solutionOptions);
 		return new RecommendationEvaluation(knowledgeSource, recommendationsFromKnowledgeSource, metrics,
 				solutionOptions);
+	}
 
+	/**
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
+	 *         for one {@link KnowledgeSource} for a given decision problem and
+	 *         keywords.
+	 */
+	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
+			String knowledgeSourceName) {
+		KnowledgeSource knowledgeSource = getKnowledgeSource(decisionProblem, knowledgeSourceName);
+		return evaluate(decisionProblem, keywords, topKResults, knowledgeSource);
+	}
+
+	private static KnowledgeSource getKnowledgeSource(KnowledgeElement decisionProblem, String knowledgeSourceName) {
+		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(decisionProblem.getProject().getProjectKey())
+				.getKnowledgeSourceByName(knowledgeSourceName);
 	}
 
 	/**
@@ -92,14 +87,6 @@ public class Evaluator {
 		metrics.add(new Recall(recommendations, groundTruthSolutionOptions));
 		metrics.add(new AveragePrecision(recommendations, groundTruthSolutionOptions));
 		return metrics;
-	}
-
-	public KnowledgeElement getKnowledgeElement() {
-		return decisionProblem;
-	}
-
-	public void setKnowledgeElement(KnowledgeElement knowledgeElement) {
-		this.decisionProblem = knowledgeElement;
 	}
 
 	/**

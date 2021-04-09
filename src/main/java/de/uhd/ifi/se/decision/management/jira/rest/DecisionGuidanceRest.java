@@ -304,8 +304,8 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		Evaluator recommender = new Evaluator(issue, keyword, kResults, knowledgeSourceName);
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue).execute();
+		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(issue, keyword, kResults,
+				knowledgeSourceName);
 
 		return Response.ok(recommendationEvaluation).build();
 	}

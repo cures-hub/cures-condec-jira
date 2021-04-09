@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,25 +16,21 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.Pro
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestEvaluator extends TestSetUp {
 
 	private List<KnowledgeSource> knowledgeSources;
-	private List<KnowledgeElement> solutionOptions;
-	private Evaluator recommender;
+	private List<KnowledgeElement> groundTruthSolutionOptions;
 	private KnowledgeElement decisionProblem;
 
 	@Before
 	public void setUp() {
 		init();
+		decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		decisionProblem = KnowledgeElements.getTestKnowledgeElements().get(4);
-
-		// search for solutions in the same project
-		ProjectSource projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
-		recommender = new Evaluator(KnowledgeElements.getTestKnowledgeElement(), "", 5, projectSource);
+		// search for solution options in the same project
+		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
 
 		RDFSource rdfSource = new RDFSource();
 		rdfSource.setName("DBPedia");
@@ -44,15 +39,15 @@ public class TestEvaluator extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		solutionOptions = new ArrayList<>();
+		groundTruthSolutionOptions = new ArrayList<>();
 		KnowledgeElement alternative = new KnowledgeElement();
 		alternative.setSummary("Test Alternative");
 		alternative.setStatus(KnowledgeStatus.IDEA);
 		KnowledgeElement decision = new KnowledgeElement();
 		decision.setSummary("Test Decision");
 		decision.setStatus(KnowledgeStatus.DECIDED);
-		solutionOptions.add(alternative);
-		solutionOptions.add(decision);
+		groundTruthSolutionOptions.add(alternative);
+		groundTruthSolutionOptions.add(decision);
 
 		List<Recommendation> recommendations = new ArrayList<>();
 		Recommendation recommendation = new Recommendation();
@@ -63,22 +58,22 @@ public class TestEvaluator extends TestSetUp {
 		recommendations.add(recommendation2);
 	}
 
-	@After
-	public void tearDown() throws Exception {
-		recommender = null;
-	}
-
 	@Test
-	public void testEvaluation() {
-		recommender.setKnowledgeElement(KnowledgeElements.getTestKnowledgeElement());
-		recommender.getKnowledgeElement();
-		assertEquals(KnowledgeElements.getTestKnowledgeElement().getId(),
-				recommender.evaluate(KnowledgeElements.getTestKnowledgeElement()).getKnowledgeElement().getId());
+	public void testTopKResults() {
+		List<Recommendation> recommendations = new ArrayList<>();
+		Recommendation recommendation = new Recommendation();
+		recommendation.setSummary("Test Alternative");
+		Recommendation recommendation2 = new Recommendation();
+		recommendation2.setSummary("Test Decision");
+		recommendations.add(recommendation);
+		recommendations.add(recommendation2);
+		assertEquals(1, Evaluator.getTopKRecommendations(recommendations, 1).size());
 	}
 
 	@Test
 	public void testEvaluationExecute() {
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(decisionProblem).execute();
+		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
+		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(decisionProblem, "", 5, projectSource);
 
 		assertNotNull(recommendationEvaluation);
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());

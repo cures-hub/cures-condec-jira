@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSourceRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSourceRecommender;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -24,6 +28,18 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	public Recommender(String projectKey, T knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 		this.projectKey = projectKey;
+	}
+
+	/**
+	 * Creates a concrete Recommender instance based on the subclass of the
+	 * {@link KnowledgeSource} (either {@link RDFSourceRecommender} or
+	 * {@link ProjectSourceRecommender}).
+	 */
+	public static Recommender<?> newInstance(String projectKey, KnowledgeSource knowledgeSource) {
+		if (knowledgeSource instanceof ProjectSource) {
+			return new ProjectSourceRecommender(projectKey, (ProjectSource) knowledgeSource);
+		}
+		return new RDFSourceRecommender(projectKey, (RDFSource) knowledgeSource);
 	}
 
 	public abstract List<Recommendation> getRecommendations(String keywords);
@@ -59,7 +75,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			KnowledgeElement decisionProblem, String keywords) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			Recommender<?> recommender = RecommenderFactory.getRecommender(projectKey, knowledgeSource);
+			Recommender<?> recommender = Recommender.newInstance(projectKey, knowledgeSource);
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());

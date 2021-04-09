@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSour
  * Jira projects or DBPedia.
  * 
  * The knowledge sources are used to recommend solution options for decision
- * problems to the developers, i.e. for decision guidance.
+ * problems to the developers for decision guidance.
  * 
  * @see ProjectSource
  * @see RDFSource

@@ -44,7 +44,8 @@ public class DecisionGuidanceConfiguration {
 
 	/**
 	 * @return true if all recommendations for a decision problem are directly added
-	 *         to the knowledge graph.
+	 *         to the knowledge graph. Currently, new Jira issue comments are
+	 *         created for every recommendation!
 	 */
 	public boolean isRecommendationAddedToKnowledgeGraph() {
 		return isRecommendationAddedToKnowledgeGraph;

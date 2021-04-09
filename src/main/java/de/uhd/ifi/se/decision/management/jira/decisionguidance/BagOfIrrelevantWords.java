@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO Move to preprocessor
 public class BagOfIrrelevantWords {
 
 	private List<String> irrelevantWords;
