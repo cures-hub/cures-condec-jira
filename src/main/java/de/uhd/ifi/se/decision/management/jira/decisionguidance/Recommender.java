@@ -12,8 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSour
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSourceRecommender;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -25,31 +24,33 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	protected String projectKey;
 	protected T knowledgeSource;
 
-	public Recommender(String projectKey, T knowledgeSource) {
+	protected Recommender(String projectKey, T knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 		this.projectKey = projectKey;
 	}
 
 	/**
-	 * Creates a concrete Recommender instance based on the subclass of the
-	 * {@link KnowledgeSource} (either {@link RDFSourceRecommender} or
-	 * {@link ProjectSourceRecommender}).
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param knowledgeSource
+	 *            object of either {@link RDFSource} or {@link ProjectSource}.
+	 * @return concrete Recommender, either {@link RDFSourceRecommender} or
+	 *         {@link ProjectSourceRecommender}.
 	 */
-	public static Recommender<?> newInstance(String projectKey, KnowledgeSource knowledgeSource) {
+	public static Recommender<?> getRecommenderForKnowledgeSource(String projectKey, KnowledgeSource knowledgeSource) {
 		if (knowledgeSource instanceof ProjectSource) {
 			return new ProjectSourceRecommender(projectKey, (ProjectSource) knowledgeSource);
 		}
 		return new RDFSourceRecommender(projectKey, (RDFSource) knowledgeSource);
 	}
 
+	/**
+	 * @param keywords
+	 *            used to query the {@link KnowledgeSource} (either
+	 *            {@link RDFSource} or {@link ProjectSource}).
+	 * @return list of {@link Recommendation}s matching the keywords.
+	 */
 	public abstract List<Recommendation> getRecommendations(String keywords);
-
-	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
-		List<Recommendation> recommendations = new ArrayList<>();
-		recommendations.addAll(getRecommendations(keywords));
-		recommendations.addAll(getRecommendations(decisionProblem));
-		return recommendations;
-	}
 
 	public List<Recommendation> getRecommendations(KnowledgeElement decisionProblem) {
 		if (decisionProblem == null) {
@@ -60,8 +61,19 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			List<Recommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
 			recommendations.addAll(recommendationFromAlternative);
 		}
-
 		return recommendations.stream().distinct().collect(Collectors.toList());
+	}
+
+	/**
+	 * @param keywords
+	 * @param decisionProblem
+	 * @return list of {@link Recommendation}s matching the keywords.
+	 */
+	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
+		List<Recommendation> recommendations = new ArrayList<>();
+		recommendations.addAll(getRecommendations(decisionProblem));
+		recommendations.addAll(getRecommendations(keywords));
+		return recommendations;
 	}
 
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement decisionProblem,
@@ -75,7 +87,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			KnowledgeElement decisionProblem, String keywords) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			Recommender<?> recommender = Recommender.newInstance(projectKey, knowledgeSource);
+			Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource(projectKey, knowledgeSource);
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
@@ -108,28 +120,26 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * Adds all recommendation to the knowledge graph with the status "recommended".
 	 * The recommendations will be appended to the root element
 	 *
-	 * @param rootElement
+	 * @param decisionProblem
+	 *            to which the recommended solution options should be linked in the
+	 *            {@link KnowledgeGraph}.
 	 * @param user
+	 *            authenticated Jira {@link ApplicationUser}.
 	 * @param projectKey
+	 *            of a Jira project.
+	 * @param recommendations
+	 *            list of recommended solution options ({@link Recommendation}s)
+	 *            that should be linked in the {@link KnowledgeGraph}.
 	 */
-	public static void addToKnowledgeGraph(KnowledgeElement rootElement, ApplicationUser user, String projectKey,
+	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
 			List<Recommendation> recommendations) {
+		String projectKey = decisionProblem.getProject().getProjectKey();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		int id = 0;
 		for (Recommendation recommendation : recommendations) {
-			KnowledgeElement alternative = new KnowledgeElement();
-
-			// Set information
-			alternative.setId(id++);
-			alternative.setSummary(recommendation.getSummary());
-			alternative.setType(KnowledgeType.ALTERNATIVE);
-			alternative.setDescription("");
-			alternative.setProject(projectKey);
-			alternative.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-			alternative.setStatus(KnowledgeStatus.RECOMMENDED);
-
-			KnowledgeElement insertedElement = manager.insertKnowledgeElement(alternative, user, rootElement);
-			manager.insertLink(rootElement, insertedElement, user);
+			recommendation.setProject(projectKey);
+			recommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+			KnowledgeElement insertedElement = manager.insertKnowledgeElement(recommendation, user, decisionProblem);
+			manager.insertLink(decisionProblem, insertedElement, user);
 		}
 	}
 
@@ -141,10 +151,17 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		this.projectKey = projectKey;
 	}
 
+	/**
+	 * @return either {@link RDFSource} or {@link ProjectSource}.
+	 */
 	public T getKnowledgeSource() {
 		return knowledgeSource;
 	}
 
+	/**
+	 * @param knowledgeSource
+	 *            either {@link RDFSource} or {@link ProjectSource}.
+	 */
 	public void setKnowledgeSource(T knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 	}

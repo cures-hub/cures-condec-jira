@@ -20,10 +20,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 /**
- * Queries another Jira project for a given String (for keyword-based search).
- * 
- * For example, a decision problem can be input by the user and used to query
- * the other Jira project.
+ * Queries another Jira project ({@link ProjectSource}) to generate
+ * {@link Recommendation}s.
  */
 public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 

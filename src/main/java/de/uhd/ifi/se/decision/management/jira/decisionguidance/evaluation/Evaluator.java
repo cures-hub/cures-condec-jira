@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
@@ -29,10 +30,16 @@ public class Evaluator {
 
 	/**
 	 * @param decisionProblem
+	 *            with existing solution options (alternatives, decision, solution,
+	 *            claims) used as the ground truth/gold standard for the evaluation.
 	 * @param keywords
+	 *            additional keywords used to query the knowledge source.
 	 * @param topKResults
+	 *            number of {@link Recommendation}s with the highest
+	 *            {@link RecommendationScore} that should be included in the
+	 *            evaluation. All other recommendations are ignored.
 	 * @param knowledgeSource
-	 *            {@link KnowledgeSource}
+	 *            {@link KnowledgeSource} that is evaluated.
 	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
 	 *         for one {@link KnowledgeSource} for a given decision problem and
 	 *         keywords.
@@ -40,7 +47,7 @@ public class Evaluator {
 	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		List<Recommendation> recommendationsFromKnowledgeSource = Recommender.newInstance(projectKey, knowledgeSource)
+		List<Recommendation> recommendationsFromKnowledgeSource = Recommender.getRecommenderForKnowledgeSource(projectKey, knowledgeSource)
 				.getRecommendations(keywords, decisionProblem);
 
 		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
@@ -56,6 +63,18 @@ public class Evaluator {
 	}
 
 	/**
+	 * @param decisionProblem
+	 *            with existing solution options (alternatives, decision, solution,
+	 *            claims) used as the ground truth/gold standard for the evaluation.
+	 * @param keywords
+	 *            additional keywords used to query the knowledge source.
+	 * @param topKResults
+	 *            number of {@link Recommendation}s with the highest
+	 *            {@link RecommendationScore} that should be included in the
+	 *            evaluation. All other recommendations are ignored.
+	 * @param knowledgeSourceName
+	 *            name of the {@link KnowledgeSource} that is evaluated. It most be
+	 *            existing in the {@link DecisionGuidanceConfiguration}.
 	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
 	 *         for one {@link KnowledgeSource} for a given decision problem and
 	 *         keywords.

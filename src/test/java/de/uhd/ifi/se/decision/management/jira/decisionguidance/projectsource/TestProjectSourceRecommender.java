@@ -24,17 +24,31 @@ public class TestProjectSourceRecommender extends TestSetUp {
 	}
 
 	@Test
-	public void testKeywordOnly() {
+	public void testKeywordsOnly() {
 		List<Recommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?");
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
+	public void testKeywordsNull() {
+		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations((String) null);
+		assertEquals(0, recommendations.size());
+	}
+
+	@Test
 	public void testDecisionProblem() {
-		KnowledgeElement decisionProblem = KnowledgeElements.getTestKnowledgeElements().get(4);
+		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertEquals(2, recommendations.size());
+	}
+
+	@Test
+	public void testDecisionProblemAndKeywords() {
+		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
+		List<Recommendation> recommendations = projectSourceRecommender
+				.getRecommendations("How can we implement the feature?", decisionProblem);
+		assertEquals(4, recommendations.size());
 	}
 
 	@Test

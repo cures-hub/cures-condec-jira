@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 
 /**
  * Knowledge source identified using the Resource Description Framework (RDF)
- * format. Is used to model DBPedia.
+ * format. Is used to query DBPedia.
  */
 public class RDFSource extends KnowledgeSource {
 

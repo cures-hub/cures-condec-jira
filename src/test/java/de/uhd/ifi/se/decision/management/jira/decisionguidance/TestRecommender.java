@@ -49,7 +49,7 @@ public class TestRecommender extends TestSetUp {
 		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
 
 		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
-				JiraUsers.SYS_ADMIN.getApplicationUser(), "TEST", recommendations);
+				JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 
 		assertEquals(18, manager.getKnowledgeElements().size());
 	}

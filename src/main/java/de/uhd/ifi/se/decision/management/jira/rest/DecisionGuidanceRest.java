@@ -274,12 +274,11 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueId, documentationLocation);
-		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, knowledgeElement, keyword);
+		KnowledgeElement decisionProblem = manager.getKnowledgeElement(issueId, documentationLocation);
+		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, decisionProblem, keyword);
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
-			Recommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey,
-					recommendations);
+			Recommender.addToKnowledgeGraph(decisionProblem, AuthenticationManager.getUser(request), recommendations);
 		}
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
