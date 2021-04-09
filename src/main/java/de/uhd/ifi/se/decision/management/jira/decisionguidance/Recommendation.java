@@ -9,11 +9,11 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 /**
  * Models a recommendation of a solution option for a decision problem. The

@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 /**
  * Models knowledge elements, e.g., decision knowledge elements, requirements,

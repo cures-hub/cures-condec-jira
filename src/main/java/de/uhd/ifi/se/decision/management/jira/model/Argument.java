@@ -1,10 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
+package de.uhd.ifi.se.decision.management.jira.model;
 
 import javax.xml.bind.annotation.XmlElement;
-
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class Argument extends KnowledgeElement {
 

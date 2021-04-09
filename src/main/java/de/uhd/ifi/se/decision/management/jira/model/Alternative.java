@@ -1,13 +1,16 @@
-package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
+package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-
+/**
+ * Models a solution option for a decision problem (alternative, decision,
+ * solution, or claim), {@link KnowledgeType}. Enables to easily retrieve the
+ * {@link Argument}s for the solution option
+ * ({@link Alternative#getArguments()}).
+ */
 public class Alternative extends KnowledgeElement {
 
 	private List<Argument> arguments = new ArrayList<>();

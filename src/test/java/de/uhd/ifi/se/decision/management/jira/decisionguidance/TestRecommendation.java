@@ -14,9 +14,9 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 public class TestRecommendation extends TestSetUp {
 
