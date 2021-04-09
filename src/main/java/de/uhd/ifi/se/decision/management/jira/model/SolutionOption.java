@@ -39,10 +39,10 @@ public class SolutionOption extends KnowledgeElement {
 	@XmlElement
 	public List<Argument> getArguments() {
 		List<Argument> arguments = new ArrayList<>();
-		for (KnowledgeElement element : getLinkedElements(1)) {
-			if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
-					|| element.getType() == KnowledgeType.ARGUMENT) {
-				arguments.add(new Argument(element));
+		for (Link currentLink : getLinks()) {
+			KnowledgeElement oppositeElement = currentLink.getOppositeElement(this);
+			if (oppositeElement.getType().replaceProAndConWithArgument() == KnowledgeType.ARGUMENT) {
+				arguments.add(new Argument(oppositeElement, currentLink));
 			}
 		}
 		return arguments;

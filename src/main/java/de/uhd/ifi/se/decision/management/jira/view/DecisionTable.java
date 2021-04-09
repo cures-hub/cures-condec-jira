@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -16,7 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -27,17 +27,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 
 public class DecisionTable {
 
-	private KnowledgeGraph graph;
-	private KnowledgePersistenceManager persistenceManager;
+	private String projectKey;
 	private List<KnowledgeElement> issues;
 	private List<SolutionOption> alternatives;
-	private List<KnowledgeElement> criteria;
+	private Set<KnowledgeElement> criteria;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
 
 	public DecisionTable(String projectKey) {
-		graph = KnowledgeGraph.getInstance(projectKey);
-		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		this.projectKey = projectKey;
 	}
 
 	/**
@@ -68,6 +66,8 @@ public class DecisionTable {
 	 */
 	public List<KnowledgeElement> getDecisionTableCriteria(ApplicationUser user) {
 		List<KnowledgeElement> criteria = new ArrayList<>();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
 		for (Issue jiraIssue : queryHandler.getJiraIssuesFromQuery()) {
@@ -77,34 +77,15 @@ public class DecisionTable {
 	}
 
 	/**
-	 * @param rootElement
+	 * @param decisionProblem
 	 *            decision problem as a {@link KnowledgeElement} object.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
-	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		alternatives = rootElement.getLinkedSolutionOptions();
-		criteria = new ArrayList<KnowledgeElement>();
-	}
-
-	public void getArgumentCriteria(Argument argument, List<KnowledgeElement> criteria) {
-		// TODO Make Argument class extend KnowledgeElement and remove calling
-		// persistenceManager
-		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
-				argument.getDocumentationLocation());
-		Set<Link> linksOfArgument = graph.edgesOf(rootElement);
-
-		for (Link currentLink : linksOfArgument) {
-			KnowledgeElement elem = currentLink.getOppositeElement(rootElement);
-			// TODO Make checking criteria type more explicit
-			if (elem.getType() == KnowledgeType.OTHER) {
-				argument.setCriterion(elem);
-				// TODO Use set and equals method in Criterion
-				if (!criteria.contains(elem)) {
-					criteria.add(elem);
-				}
-			}
-		}
+	public void setDecisionTableForIssue(KnowledgeElement decisionProblem, ApplicationUser user) {
+		alternatives = decisionProblem.getLinkedSolutionOptions();
+		criteria = alternatives.stream().flatMap(alternative -> alternative.getArguments().stream())
+				.flatMap(argument -> argument.getCriteria().stream()).collect(Collectors.toSet());
 	}
 
 	/**
@@ -129,7 +110,7 @@ public class DecisionTable {
 	 *         can be non-functional requirements such as Performance.
 	 */
 	@XmlElement
-	public List<KnowledgeElement> getCriteria() {
+	public Set<KnowledgeElement> getCriteria() {
 		return criteria;
 	}
 }

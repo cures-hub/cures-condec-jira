@@ -36,23 +36,7 @@ public class TestArgument extends TestSetUp {
 	}
 
 	@Test
-	public void testGetEmptyCriterion() {
-		assertEquals(this.argument.getCriterion(), null);
-	}
-
-	@Test
-	public void testGetCriterion() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setProject(projectKey);
-		knowledgeElement.setType(KnowledgeType.OTHER);
-		knowledgeElement.setSummary(criterionSummary);
-		knowledgeElement.setDocumentationLocation(criterionDocumentationLocation);
-
-		this.argument.setCriterion(knowledgeElement);
-
-		assertEquals(this.argument.getCriterion().getId(), knowledgeElement.getId());
-		assertEquals(this.argument.getCriterion().getSummary(), knowledgeElement.getSummary());
-		assertEquals(this.argument.getCriterion().getDocumentationLocation(),
-				knowledgeElement.getDocumentationLocation());
+	public void testGetEmptyCriteria() {
+		assertEquals(0, this.argument.getCriteria().size());
 	}
 }

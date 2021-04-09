@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -8,7 +11,6 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Argument extends KnowledgeElement {
 
-	private KnowledgeElement criterion;
 	private String image;
 
 	/**
@@ -30,12 +32,16 @@ public class Argument extends KnowledgeElement {
 	}
 
 	@XmlElement
-	public KnowledgeElement getCriterion() {
-		return criterion;
-	}
-
-	public void setCriterion(KnowledgeElement criterion) {
-		this.criterion = criterion;
+	public List<KnowledgeElement> getCriteria() {
+		List<KnowledgeElement> criteria = new ArrayList<>();
+		for (Link currentLink : getLinks()) {
+			KnowledgeElement element = currentLink.getOppositeElement(this);
+			// TODO Make checking criteria type more explicit
+			if (element.getType() == KnowledgeType.OTHER) {
+				criteria.add(element);
+			}
+		}
+		return criteria;
 	}
 
 	@XmlElement
