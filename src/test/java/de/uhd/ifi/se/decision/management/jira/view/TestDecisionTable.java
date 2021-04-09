@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,7 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.Alternative;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -67,7 +67,7 @@ public class TestDecisionTable extends TestSetUp {
 		decisionTable.setDecisionTableForIssue(issue, user);
 		assertTrue(decisionTable.getAlternatives().size() > 0);
 
-		Alternative alternative1 = decisionTable.getAlternatives().get(0);
+		SolutionOption alternative1 = decisionTable.getAlternatives().get(0);
 
 		assertNotNull(alternative1);
 

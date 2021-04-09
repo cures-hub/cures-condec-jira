@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
  * Models a solution option for a decision problem (alternative, decision,
  * solution, or claim), {@link KnowledgeType}. Enables to easily retrieve the
  * {@link Argument}s for the solution option
- * ({@link Alternative#getArguments()}).
+ * ({@link SolutionOption#getArguments()}).
  */
-public class Alternative extends KnowledgeElement {
+public class SolutionOption extends KnowledgeElement {
 
 	private List<Argument> arguments = new ArrayList<>();
 
@@ -19,7 +19,7 @@ public class Alternative extends KnowledgeElement {
 	 * @issue How to create an object of a superclass from an object of its
 	 *        subclass?
 	 */
-	public Alternative(KnowledgeElement alternative) {
+	public SolutionOption(KnowledgeElement alternative) {
 		this.project = alternative.getProject();
 		this.id = alternative.getId();
 		this.type = alternative.getType();

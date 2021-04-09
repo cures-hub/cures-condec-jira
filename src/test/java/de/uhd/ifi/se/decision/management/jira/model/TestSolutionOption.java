@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
-public class TestAlternative extends TestSetUp {
+public class TestSolutionOption extends TestSetUp {
 
-	private Alternative alternative;
+	private SolutionOption alternative;
 	final private String projectKey = "TEST";
 	final private String summary = "Do it this way!";
 	final private DocumentationLocation documentationLocation = DocumentationLocation.JIRAISSUETEXT;
@@ -22,7 +22,7 @@ public class TestAlternative extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		knowledgeElement.setSummary(summary);
 		knowledgeElement.setDocumentationLocation(documentationLocation);
-		this.alternative = new Alternative(knowledgeElement);
+		this.alternative = new SolutionOption(knowledgeElement);
 	}
 
 	@Test
