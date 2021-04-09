@@ -59,8 +59,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			KnowledgeElement decisionProblem, String keywords) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
-			Recommender recommender = RecommenderFactory.getRecommender(projectKey, knowledgeSource);
-			recommender.knowledgeSource = knowledgeSource;
+			Recommender<?> recommender = RecommenderFactory.getRecommender(projectKey, knowledgeSource);
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());

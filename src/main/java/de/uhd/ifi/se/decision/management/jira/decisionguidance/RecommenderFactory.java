@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSour
  */
 public class RecommenderFactory {
 
-	public static Recommender getRecommender(String projectKey, KnowledgeSource knowledgeSource) {
+	public static Recommender<?> getRecommender(String projectKey, KnowledgeSource knowledgeSource) {
 		if (knowledgeSource instanceof ProjectSource) {
 			return new ProjectSourceRecommender(projectKey, (ProjectSource) knowledgeSource);
 		}

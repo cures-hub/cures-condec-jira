@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.atlas.lib.Pair;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -15,7 +14,6 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.sparql.engine.http.Params;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
@@ -61,24 +59,16 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 	/**
 	 * @param queryString
-	 * @param service
-	 * @param params
+	 *            in SPARQL language (SPARQL Protocol And RDF Query Language).
 	 * @return
 	 */
-	protected ResultSet queryDatabase(String queryString, String service, Pair<String, String>... params) {
+	protected ResultSet queryDatabase(String queryString) {
 		try {
 			Query query = QueryFactory.create(queryString);
+			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(knowledgeSource.getService(), query);
+			((QueryEngineHTTP) queryExecution).addParam("timeout", knowledgeSource.getTimeout() + "");
 
-			// Remote execution.
-			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(service, query);
-			// Add Paramaters
-			for (Pair<String, String> parameter : params) {
-				((QueryEngineHTTP) queryExecution).addParam(parameter.getLeft(), parameter.getRight());
-			}
-
-			// Execute.
 			ResultSet resultSet = queryExecution.execSelect();
-
 			return resultSet;
 		} catch (Exception e) {
 		}
@@ -103,8 +93,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 					.replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
-			ResultSet resultSet = queryDatabase(queryStringWithInput, knowledgeSource.getService(),
-					new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
+			ResultSet resultSet = queryDatabase(queryStringWithInput);
 
 			while (resultSet != null && resultSet.hasNext()) {
 				QuerySolution row = resultSet.nextSolution();
@@ -155,8 +144,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 						+ " select distinct ?label where { <%s> rdfs:label ?label.  FILTER(LANG(?label) = 'en'). }",
 				resource);
 
-		ResultSet arguments = this.queryDatabase(query, knowledgeSource.getService(),
-				new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
+		ResultSet arguments = this.queryDatabase(query);
 
 		String label = "";
 		while (arguments != null && arguments.hasNext()) {
@@ -172,8 +160,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				+ " select distinct ?argument where { <%s> %s ?subject. ?subject rdfs:label ?argument. FILTER(LANG(?argument) = 'en').}",
 				resource, constraint.getValue());
 
-		ResultSet arguments = queryDatabase(query, knowledgeSource.getService(),
-				new Params.Pair("timeout", knowledgeSource.getTimeout() + ""));
+		ResultSet arguments = queryDatabase(query);
 
 		List<Argument> argumentsList = new ArrayList<>();
 
