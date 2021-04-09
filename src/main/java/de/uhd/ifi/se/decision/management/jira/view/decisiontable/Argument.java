@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class Argument extends KnowledgeElement {
 
-	private Criterion criterion;
+	private KnowledgeElement criterion;
 	private String image;
 
 	/**
@@ -30,12 +30,12 @@ public class Argument extends KnowledgeElement {
 	}
 
 	@XmlElement
-	public Criterion getCriterion() {
+	public KnowledgeElement getCriterion() {
 		return criterion;
 	}
 
 	public void setCriterion(KnowledgeElement criterion) {
-		this.criterion = new Criterion(criterion);
+		this.criterion = criterion;
 	}
 
 	@XmlElement

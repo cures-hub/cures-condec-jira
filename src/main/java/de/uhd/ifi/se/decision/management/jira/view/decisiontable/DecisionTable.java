@@ -29,7 +29,7 @@ public class DecisionTable {
 	private KnowledgePersistenceManager persistenceManager;
 	private List<KnowledgeElement> issues;
 	private List<Alternative> alternatives;
-	private List<Criterion> criteria;
+	private List<KnowledgeElement> criteria;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
 
@@ -64,12 +64,12 @@ public class DecisionTable {
 	 * @return all available criteria (e.g. quality attributes, non-functional
 	 *         requirements) for a project.
 	 */
-	public List<Criterion> getDecisionTableCriteria(ApplicationUser user) {
-		List<Criterion> criteria = new ArrayList<>();
+	public List<KnowledgeElement> getDecisionTableCriteria(ApplicationUser user) {
+		List<KnowledgeElement> criteria = new ArrayList<>();
 		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
 		for (Issue jiraIssue : queryHandler.getJiraIssuesFromQuery()) {
-			criteria.add(new Criterion(new KnowledgeElement(jiraIssue)));
+			criteria.add(new KnowledgeElement(jiraIssue));
 		}
 		return criteria;
 	}
@@ -82,7 +82,7 @@ public class DecisionTable {
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
 		alternatives = new ArrayList<Alternative>();
-		criteria = new ArrayList<Criterion>();
+		criteria = new ArrayList<KnowledgeElement>();
 
 		// TODO Check link type. A decision that leads to a new decision problem should
 		// not be shown as solution option for this derived decision problem.
@@ -117,7 +117,7 @@ public class DecisionTable {
 		}
 	}
 
-	public void getArgumentCriteria(Argument argument, List<Criterion> criteria) {
+	public void getArgumentCriteria(Argument argument, List<KnowledgeElement> criteria) {
 		// TODO Make Argument class extend KnowledgeElement and remove calling
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
@@ -130,8 +130,8 @@ public class DecisionTable {
 			if (elem.getType() == KnowledgeType.OTHER) {
 				argument.setCriterion(elem);
 				// TODO Use set and equals method in Criterion
-				if (!criteria.contains(new Criterion(elem))) {
-					criteria.add(new Criterion(elem));
+				if (!criteria.contains(elem)) {
+					criteria.add(elem);
 				}
 			}
 		}
@@ -152,7 +152,7 @@ public class DecisionTable {
 	}
 
 	@XmlElement
-	public List<Criterion> getCriteria() {
+	public List<KnowledgeElement> getCriteria() {
 		return criteria;
 	}
 }

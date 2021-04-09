@@ -78,7 +78,7 @@ public class TestDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetArgumentCriteriaOnIssueDirectly() {
-		List<Criterion> criteria = new ArrayList<>();
+		List<KnowledgeElement> criteria = new ArrayList<>();
 		Argument argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
 		decisionTable.getArgumentCriteria(argument, criteria);
 		assertNotNull(argument.getCriterion());
