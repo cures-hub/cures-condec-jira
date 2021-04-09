@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
 
 public class TestRDFSource extends TestSetUp {
 
@@ -61,12 +62,17 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals(Objects.hash(RDFSource.DEFAULT_NAME), rdfSource.hashCode());
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
-		RDFSource rdfSourceother = new RDFSource();
+		RDFSource rdfSourceother = null;
+		assertFalse(rdfSource.equals(rdfSourceother));
+
+		assertFalse(rdfSource.equals(new ProjectSource("TEST")));
+
+		rdfSourceother = new RDFSource();
 		assertTrue(rdfSourceother.equals(rdfSource));
 		assertTrue(rdfSourceother.equals(rdfSourceother));
-		assertFalse(rdfSourceother.equals(null));
 	}
 
 	@Test

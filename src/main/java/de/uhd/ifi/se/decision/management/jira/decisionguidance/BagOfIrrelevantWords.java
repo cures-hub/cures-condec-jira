@@ -6,7 +6,7 @@ import java.util.List;
 
 public class BagOfIrrelevantWords {
 
-	List<String> irrelevantWords;
+	private List<String> irrelevantWords;
 
 	public BagOfIrrelevantWords(String irrelevantWordsString) {
 		irrelevantWords = Arrays.asList(irrelevantWordsString.split(";"));

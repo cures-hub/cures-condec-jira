@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 public class TestProjectSource extends TestSetUp {
 
-	ProjectSource projectSource;
+	private ProjectSource projectSource;
 
 	@Before
 	public void setUp() {

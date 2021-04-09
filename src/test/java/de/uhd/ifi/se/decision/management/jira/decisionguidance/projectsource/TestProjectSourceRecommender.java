@@ -14,13 +14,12 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestProjectSourceRecommender extends TestSetUp {
 
-	private ProjectSource projectSource;
 	private ProjectSourceRecommender projectSourceRecommender;
 
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource("TEST", "TEST", true);
+		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
 		projectSourceRecommender = new ProjectSourceRecommender("TEST", projectSource);
 	}
 
