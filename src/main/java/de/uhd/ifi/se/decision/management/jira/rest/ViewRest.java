@@ -153,7 +153,7 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		KnowledgeElement issue = filterSettings.getSelectedElement();
 		decisionTable.setDecisionTableForIssue(issue, user);
-		return Response.ok(decisionTable.getDecisionTableData()).build();
+		return Response.ok(decisionTable).build();
 	}
 
 	/**

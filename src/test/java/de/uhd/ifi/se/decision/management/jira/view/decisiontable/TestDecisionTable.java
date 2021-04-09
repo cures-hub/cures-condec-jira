@@ -5,9 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,11 +63,9 @@ public class TestDecisionTable extends TestSetUp {
 		request.setAttribute("user", user);
 		KnowledgeElement issue = KnowledgeElements.getTestKnowledgeElements().get(4);
 		decisionTable.setDecisionTableForIssue(issue, user);
-		Map<String, List<KnowledgeElement>> decisionTableData = decisionTable.getDecisionTableData();
+		assertTrue(decisionTable.getAlternatives().size() > 0);
 
-		assertTrue(decisionTableData.get("alternatives").size() > 0);
-
-		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
+		Alternative alternative1 = decisionTable.getAlternatives().get(0);
 
 		assertNotNull(alternative1);
 
@@ -81,32 +77,11 @@ public class TestDecisionTable extends TestSetUp {
 	}
 
 	@Test
-	public void testGetArgumentsOnIssueDirectly() {
-		KnowledgeElement knowledgeElement;
-		Map<String, List<KnowledgeElement>> decisionTableData = new HashMap<>();
-		decisionTableData.put("alternatives", new ArrayList<>());
-		decisionTableData.put("criteria", new ArrayList<>());
-
-		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
-		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(knowledgeElement);
-		Alternative alternative1 = (Alternative) decisionTableData.get("alternatives").get(0);
-		assertEquals(0, alternative1.getArguments().size());
-
-		knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(5);
-		decisionTableData.get("alternatives").add(new Alternative(knowledgeElement));
-		decisionTable.getArguments(knowledgeElement);
-		Alternative alternative2 = (Alternative) decisionTableData.get("alternatives").get(1);
-		assertEquals(0, alternative2.getArguments().size());
-	}
-
-	@Test
 	public void testGetArgumentCriteriaOnIssueDirectly() {
-		List<KnowledgeElement> criteriaList = new ArrayList<>();
-		Argument argument;
-		argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
-		decisionTable.getArgumentCriteria(argument, criteriaList);
+		List<Criterion> criteria = new ArrayList<>();
+		Argument argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
+		decisionTable.getArgumentCriteria(argument, criteria);
 		assertNotNull(argument.getCriterion());
-		assertEquals(2, criteriaList.size());
+		assertEquals(2, criteria.size());
 	}
 }

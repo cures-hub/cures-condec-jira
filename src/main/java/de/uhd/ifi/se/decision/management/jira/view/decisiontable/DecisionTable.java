@@ -1,15 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jgrapht.Graph;
 import org.slf4j.Logger;
@@ -28,23 +23,19 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
-@XmlRootElement(name = "decisiontable")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class DecisionTable {
 
 	private KnowledgeGraph graph;
 	private KnowledgePersistenceManager persistenceManager;
 	private List<KnowledgeElement> issues;
-
-	@XmlElement
-	private Map<String, List<KnowledgeElement>> decisionTableData;
+	private List<Alternative> alternatives;
+	private List<Criterion> criteria;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionTable.class);
 
 	public DecisionTable(String projectKey) {
 		graph = KnowledgeGraph.getInstance(projectKey);
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		decisionTableData = new HashMap<>();
 	}
 
 	/**
@@ -90,8 +81,8 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		decisionTableData.put("alternatives", new ArrayList<KnowledgeElement>());
-		decisionTableData.put("criteria", new ArrayList<KnowledgeElement>());
+		alternatives = new ArrayList<Alternative>();
+		criteria = new ArrayList<Criterion>();
 
 		// TODO Check link type. A decision that leads to a new decision problem should
 		// not be shown as solution option for this derived decision problem.
@@ -100,7 +91,7 @@ public class DecisionTable {
 			if (oppositeElement.getType() == KnowledgeType.ALTERNATIVE
 					|| oppositeElement.getType() == KnowledgeType.DECISION
 					|| oppositeElement.getType() == KnowledgeType.SOLUTION) {
-				decisionTableData.get("alternatives").add(new Alternative(oppositeElement));
+				alternatives.add(new Alternative(oppositeElement));
 				getArguments(oppositeElement);
 			}
 		}
@@ -112,25 +103,21 @@ public class DecisionTable {
 	 *            object.
 	 */
 	public void getArguments(KnowledgeElement solutionOption) {
-		if (decisionTableData.get("alternatives") == null) {
-			return;
-		}
-		int numberOfAlternatives = decisionTableData.get("alternatives").size();
+		int numberOfAlternatives = alternatives.size();
 		Set<Link> incomingLinks = graph.incomingEdgesOf(solutionOption);
 
 		for (Link currentLink : incomingLinks) {
 			KnowledgeElement sourceElement = currentLink.getSource();
 			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
-				Alternative alternative = (Alternative) decisionTableData.get("alternatives")
-						.get(numberOfAlternatives - 1);
+				Alternative alternative = alternatives.get(numberOfAlternatives - 1);
 				Argument argument = new Argument(sourceElement, currentLink);
-				getArgumentCriteria(argument, decisionTableData.get("criteria"));
+				getArgumentCriteria(argument, criteria);
 				alternative.addArgument(argument);
 			}
 		}
 	}
 
-	public void getArgumentCriteria(Argument argument, List<KnowledgeElement> criteria) {
+	public void getArgumentCriteria(Argument argument, List<Criterion> criteria) {
 		// TODO Make Argument class extend KnowledgeElement and remove calling
 		// persistenceManager
 		KnowledgeElement rootElement = persistenceManager.getKnowledgeElement(argument.getId(),
@@ -159,11 +146,13 @@ public class DecisionTable {
 		return issues;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public Map<String, List<KnowledgeElement>> getDecisionTableData() {
-		return decisionTableData;
+	@XmlElement
+	public List<Alternative> getAlternatives() {
+		return alternatives;
+	}
+
+	@XmlElement
+	public List<Criterion> getCriteria() {
+		return criteria;
 	}
 }

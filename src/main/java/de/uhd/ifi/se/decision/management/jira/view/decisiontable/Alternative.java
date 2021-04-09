@@ -12,6 +12,10 @@ public class Alternative extends KnowledgeElement {
 
 	private List<Argument> arguments = new ArrayList<>();
 
+	/**
+	 * @issue How to create an object of a superclass from an object of its
+	 *        subclass?
+	 */
 	public Alternative(KnowledgeElement alternative) {
 		this.project = alternative.getProject();
 		this.id = alternative.getId();

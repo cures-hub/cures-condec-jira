@@ -4,7 +4,6 @@
 	};
 
 	let issues = [];
-	let decisionTableData = [];
 	let currentIssue;
 	
 	ConDecDecisionTable.prototype.initView = function (isJiraIssueView = false) {		
@@ -126,13 +125,13 @@
 	}
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function (viewIdentifier) {
-		showAddCriterionToDecisionTableDialog(decisionTableData["criteria"], function (selectedCriteria) {					
-			var removedCriteria = decisionTableData["criteria"].filter(criterion => !selectedCriteria.find(item => item.id === criterion.id));
+		showAddCriterionToDecisionTableDialog(decisionTableData.criteria, function (selectedCriteria) {					
+			var removedCriteria = decisionTableData.criteria.filter(criterion => !selectedCriteria.find(item => item.id === criterion.id));
 			for (removedCriterion of removedCriteria) {
-				const index = decisionTableData["criteria"].findIndex(criterion => criterion.id === removedCriterion.id);
-				decisionTableData["criteria"].splice(index, index >= 0 ? 1 : 0);
+				const index = decisionTableData.criteria.findIndex(criterion => criterion.id === removedCriterion.id);
+				decisionTableData.criteria.splice(index, index >= 0 ? 1 : 0);
 				
-				for (alternative of decisionTableData["alternatives"]) {
+				for (alternative of decisionTableData.alternatives) {
 					for (argument of alternative.arguments) {
 						if (argument.hasOwnProperty("criterion") && argument.criterion.id == removedCriterion.id) {
 							deleteLink(argument, argument.criterion);
@@ -142,9 +141,9 @@
 			}
 			
 			for (selectedCriterion of selectedCriteria) {
-				var isCriteriaAlreadyShown = decisionTableData["criteria"].find(item => item.id === selectedCriterion.id) ? true : false;
+				var isCriteriaAlreadyShown = decisionTableData.criteria.find(item => item.id === selectedCriterion.id) ? true : false;
 				if (!isCriteriaAlreadyShown) { 
-					decisionTableData["criteria"].push(selectedCriterion);
+					decisionTableData.criteria.push(selectedCriterion);
 				}
 			}
 
@@ -201,10 +200,10 @@
 	function buildDecisionTable(decisionTable, viewIdentifier = "decision-table") {
 		decisionTableData = decisionTable;
 
-		addCriteriaToToDecisionTable(decisionTable["criteria"], viewIdentifier);
-		addAlternativesToDecisionTable(decisionTable["alternatives"], decisionTable["criteria"], viewIdentifier);
+		addCriteriaToToDecisionTable(decisionTable.criteria, viewIdentifier);
+		addAlternativesToDecisionTable(decisionTable.alternatives, decisionTable.criteria, viewIdentifier);
 		addDragAndDropSupportForArguments();
-		buildCreateArgumentsButton(decisionTable["alternatives"], viewIdentifier);
+		buildCreateArgumentsButton(decisionTable.alternatives, viewIdentifier);
 
 		addContextMenuToElements("argument");
 		addContextMenuToElements("alternative");
@@ -326,7 +325,7 @@
 					let tmpIDs = this.id.split(":");
 					let argumentID = tmpIDs[1];
 					let alternativeID = tmpIDs[0];
-					object = decisionTableData["alternatives"].find(alternative => alternative.id == alternativeID).arguments.find(
+					object = decisionTableData.alternatives.find(alternative => alternative.id == alternativeID).arguments.find(
 							argument => argument.id == argumentID);
 				} else {
 					object = getElementObj(this.id);
@@ -393,7 +392,7 @@
 		if (source.toLowerCase().includes("unknown") && target.toLowerCase().includes("unknown")) {
 			const sourceAlternative = getElementObj(source);
 			const targetAlternative = getElementObj(target);			
-			const argument = decisionTableData["alternatives"]
+			const argument = decisionTableData.alternatives
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			deleteLink(sourceAlternative, argument);
@@ -403,7 +402,7 @@
 			const targetInformation = getElementObj(target);
 			const targetAlternative = targetInformation[0];
 			const criteria = targetInformation[1];
-			const argument = decisionTableData["alternatives"]
+			const argument = decisionTableData.alternatives
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
@@ -418,7 +417,7 @@
 			const sourceAlternative = sourceInformation[0];
 			const targetAlternative = getElementObj(target);
 			const criteria = sourceInformation[1];
-			const argument = decisionTableData["alternatives"]
+			const argument = decisionTableData.alternatives
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
@@ -434,7 +433,7 @@
 			const sourceCriteria = sourceInformation[1];
 			const targetAlternative = targetInformation[0];
 			const targetCriteria = targetInformation[1];
-			const argument = decisionTableData["alternatives"]
+			const argument = decisionTableData.alternatives
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
 			if (sourceAlternative.id !== targetAlternative.id) {
@@ -449,15 +448,15 @@
 	function getElementObj(element) {
 		if (element.toLowerCase().includes("unknown")) {
 			let alternativeId = element.replace("cellUnknown", "");
-			return decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId);
+			return decisionTableData.alternatives.find(alternative => alternative.id == alternativeId);
 		} else if (element.includes("cell")) {
 			let concatinated = element.replace("cell", "").split(":");
 			let alternativeId = concatinated[0];
 			let criteriaId = concatinated[1];
-			return [decisionTableData["alternatives"].find(alternative => alternative.id == alternativeId), 
-				decisionTableData["criteria"].find(criteria => criteria.id == criteriaId)];
+			return [decisionTableData.alternatives.find(alternative => alternative.id == alternativeId), 
+				decisionTableData.criteria.find(criteria => criteria.id == criteriaId)];
 		} else {
-			return decisionTableData["alternatives"].find(object => object.id == element);
+			return decisionTableData.alternatives.find(object => object.id == element);
 		}
 	}
 

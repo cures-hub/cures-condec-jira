@@ -11,6 +11,10 @@ public class Argument extends KnowledgeElement {
 	private Criterion criterion;
 	private String image;
 
+	/**
+	 * @issue How to create an object of a superclass from an object of its
+	 *        subclass?
+	 */
 	public Argument(KnowledgeElement argument) {
 		this.project = argument.getProject();
 		this.id = argument.getId();
