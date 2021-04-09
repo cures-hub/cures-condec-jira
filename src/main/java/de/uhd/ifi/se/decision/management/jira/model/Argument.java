@@ -2,6 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Models a pro- or con-argument that supports or attacks a
+ * {@link SolutionOption}.
+ */
 public class Argument extends KnowledgeElement {
 
 	private KnowledgeElement criterion;

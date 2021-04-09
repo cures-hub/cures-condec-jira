@@ -16,12 +16,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
-import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -83,40 +83,8 @@ public class DecisionTable {
 	 *            authenticated Jira {@link ApplicationUser}.
 	 */
 	public void setDecisionTableForIssue(KnowledgeElement rootElement, ApplicationUser user) {
-		alternatives = new ArrayList<SolutionOption>();
+		alternatives = rootElement.getLinkedSolutionOptions();
 		criteria = new ArrayList<KnowledgeElement>();
-
-		// TODO Check link type. A decision that leads to a new decision problem should
-		// not be shown as solution option for this derived decision problem.
-		for (Link currentLink : graph.edgesOf(rootElement)) {
-			KnowledgeElement oppositeElement = currentLink.getOppositeElement(rootElement);
-			if (oppositeElement.getType() == KnowledgeType.ALTERNATIVE
-					|| oppositeElement.getType() == KnowledgeType.DECISION
-					|| oppositeElement.getType() == KnowledgeType.SOLUTION) {
-				alternatives.add(new SolutionOption(oppositeElement));
-				getArguments(oppositeElement);
-			}
-		}
-	}
-
-	/**
-	 * @param solutionOption
-	 *            either an alternative or decision as a {@link KnowledgeElement}
-	 *            object.
-	 */
-	public void getArguments(KnowledgeElement solutionOption) {
-		int numberOfAlternatives = alternatives.size();
-		Set<Link> incomingLinks = graph.incomingEdgesOf(solutionOption);
-
-		for (Link currentLink : incomingLinks) {
-			KnowledgeElement sourceElement = currentLink.getSource();
-			if (KnowledgeType.replaceProAndConWithArgument(sourceElement.getType()) == KnowledgeType.ARGUMENT) {
-				SolutionOption alternative = alternatives.get(numberOfAlternatives - 1);
-				Argument argument = new Argument(sourceElement, currentLink);
-				getArgumentCriteria(argument, criteria);
-				alternative.addArgument(argument);
-			}
-		}
 	}
 
 	public void getArgumentCriteria(Argument argument, List<KnowledgeElement> criteria) {

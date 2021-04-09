@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Represents the evaluation result for one {@link KnowledgeSource} for given
@@ -23,10 +23,10 @@ public class RecommendationEvaluation {
 	private KnowledgeSource knowledgeSource;
 	private List<Recommendation> recommendations;
 	private List<EvaluationMetric> metrics;
-	private List<KnowledgeElement> groundTruthSolutionOptions;
+	private List<SolutionOption> groundTruthSolutionOptions;
 
 	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
-			List<EvaluationMetric> metrics, List<KnowledgeElement> solutionOptions) {
+			List<EvaluationMetric> metrics, List<SolutionOption> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
 		this.metrics = metrics;
@@ -81,7 +81,7 @@ public class RecommendationEvaluation {
 	 * @return gold standard/ground truth that was already documented.
 	 */
 	@XmlElement
-	public List<KnowledgeElement> getGroundTruthSolutionOptions() {
+	public List<SolutionOption> getGroundTruthSolutionOptions() {
 		return groundTruthSolutionOptions;
 	}
 }

@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -44,7 +45,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 					.forEach(element -> {
 						Recommendation recommendation = new Recommendation(element);
 						recommendation.setKnowledgeSource(knowledgeSource);
-						recommendation.addArguments(element.getArguments());
+						recommendation.addArguments(new SolutionOption(element).getArguments());
 
 						RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
 						recommendation.setScore(score);

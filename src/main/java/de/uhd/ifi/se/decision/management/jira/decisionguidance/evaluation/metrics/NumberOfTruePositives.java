@@ -4,8 +4,8 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Counts the number of true positives under the top-k results, i.e. the number
@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 
-	public NumberOfTruePositives(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+	public NumberOfTruePositives(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 

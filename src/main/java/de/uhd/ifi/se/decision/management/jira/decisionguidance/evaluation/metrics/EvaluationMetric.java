@@ -8,17 +8,18 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Abstract superclass for evaluation metrics, such as
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
  * 
- * Use {@link Evaluator#getTopKRecommendations(List, int)} to trim
- * the list of {@link Recommendation}s to the top-k results.
+ * Use {@link Evaluator#getTopKRecommendations(List, int)} to trim the list of
+ * {@link Recommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {
 
-	protected List<KnowledgeElement> groundTruthSolutionOptions;
+	protected List<SolutionOption> groundTruthSolutionOptions;
 	protected List<Recommendation> recommendations;
 
 	public EvaluationMetric(List<Recommendation> recommendations) {
@@ -32,7 +33,7 @@ public abstract class EvaluationMetric {
 	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<KnowledgeElement> groundTruthSolutionOptions) {
+	public EvaluationMetric(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
@@ -65,7 +66,7 @@ public abstract class EvaluationMetric {
 	 *            summary of one single recommendation.
 	 * @return number of matches.
 	 */
-	protected static int countMatches(List<KnowledgeElement> knowledgeElements, String matchingString) {
+	protected static int countMatches(List<SolutionOption> knowledgeElements, String matchingString) {
 		int counter = 0;
 		for (KnowledgeElement knowledgeElement : knowledgeElements) {
 			if (isMatching(knowledgeElement.getSummary(), matchingString)) {

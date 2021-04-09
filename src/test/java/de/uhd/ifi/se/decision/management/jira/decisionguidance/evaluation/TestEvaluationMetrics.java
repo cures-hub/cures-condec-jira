@@ -20,14 +20,14 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Recall;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 public class TestEvaluationMetrics extends TestSetUp {
 
 	protected List<Recommendation> recommendations;
-	protected List<KnowledgeElement> groundTruthSolutionOptions;
+	protected List<SolutionOption> groundTruthSolutionOptions;
 
 	@Before
 	public void setUp() {
@@ -41,17 +41,17 @@ public class TestEvaluationMetrics extends TestSetUp {
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
-		KnowledgeElement alternativeIdea = new KnowledgeElement();
+		SolutionOption alternativeIdea = new SolutionOption();
 		alternativeIdea.setType(KnowledgeType.ALTERNATIVE);
 		alternativeIdea.setStatus(KnowledgeStatus.IDEA);
 		alternativeIdea.setSummary("We could use MySQL"); // true positive
 
-		KnowledgeElement alternativeDiscarded = new KnowledgeElement();
+		SolutionOption alternativeDiscarded = new SolutionOption();
 		alternativeDiscarded.setType(KnowledgeType.ALTERNATIVE);
 		alternativeDiscarded.setStatus(KnowledgeStatus.DISCARDED);
 		alternativeDiscarded.setSummary("We could use a NoSQL database such as Cassandra"); // false positive
 
-		KnowledgeElement decision = new KnowledgeElement();
+		SolutionOption decision = new SolutionOption();
 		decision.setType(KnowledgeType.ALTERNATIVE);
 		decision.setSummary("We will use simple text files to store the data!"); // false negative
 		decision.setStatus(KnowledgeStatus.DECIDED);

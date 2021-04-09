@@ -37,11 +37,10 @@ public class TestSolutionOption extends TestSetUp {
 		knowledgeElement.setProject(projectKey);
 		knowledgeElement.setType(KnowledgeType.PRO);
 
-		Argument argument = new Argument(knowledgeElement);
-		this.alternative.addArgument(argument);
-		assertEquals(this.alternative.getArguments().size(), 1);
+		assertEquals(0, this.alternative.getArguments().size());
 		assertEquals(this.alternative.getImage(), KnowledgeType.ALTERNATIVE.getIconUrl());
-		assertEquals(this.alternative.getArguments().get(0).getImage(), KnowledgeType.PRO.getIconUrl());
+		// assertEquals(this.alternative.getArguments().get(0).getImage(),
+		// KnowledgeType.PRO.getIconUrl());
 
 	}
 

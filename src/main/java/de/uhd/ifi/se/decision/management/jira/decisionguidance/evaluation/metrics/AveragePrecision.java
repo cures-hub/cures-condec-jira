@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Measures the average precision (AP) within the top-k results. Takes the total
@@ -14,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class AveragePrecision extends EvaluationMetric {
 
-	public AveragePrecision(List<Recommendation> recommendations, List<KnowledgeElement> solutionOptions) {
+	public AveragePrecision(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 

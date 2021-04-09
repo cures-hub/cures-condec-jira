@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metric
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.Recall;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -47,10 +48,11 @@ public class Evaluator {
 	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		List<Recommendation> recommendationsFromKnowledgeSource = Recommender.getRecommenderForKnowledgeSource(projectKey, knowledgeSource)
+		List<Recommendation> recommendationsFromKnowledgeSource = Recommender
+				.getRecommenderForKnowledgeSource(projectKey, knowledgeSource)
 				.getRecommendations(keywords, decisionProblem);
 
-		List<KnowledgeElement> solutionOptions = decisionProblem.getLinkedSolutionOptions();
+		List<SolutionOption> solutionOptions = decisionProblem.getLinkedSolutionOptions();
 		recommendationsFromKnowledgeSource
 				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
@@ -99,7 +101,7 @@ public class Evaluator {
 	 * @return list of {@link EvaluationMetric}s such
 	 */
 	private static List<EvaluationMetric> calculateMetrics(List<Recommendation> recommendations,
-			List<KnowledgeElement> groundTruthSolutionOptions) {
+			List<SolutionOption> groundTruthSolutionOptions) {
 		List<EvaluationMetric> metrics = new ArrayList<>();
 		metrics.add(new NumberOfTruePositives(recommendations, groundTruthSolutionOptions));
 		metrics.add(new FScore(recommendations, groundTruthSolutionOptions));

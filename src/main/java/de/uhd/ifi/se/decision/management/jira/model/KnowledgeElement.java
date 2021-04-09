@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -733,26 +732,11 @@ public class KnowledgeElement {
 	 *         Assumes that this knowledge element is a decision problem
 	 *         (=issue/question).
 	 */
-	public List<KnowledgeElement> getLinkedSolutionOptions() {
-		List<KnowledgeElement> solutionOptions = getLinks().stream()
+	public List<SolutionOption> getLinkedSolutionOptions() {
+		List<SolutionOption> solutionOptions = getLinks().stream()
 				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.SOLUTION)
-				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
+				.map(link -> new SolutionOption(link.getOppositeElement(this))).collect(Collectors.toList());
 		return solutionOptions;
-	}
-
-	/**
-	 * @return linked arguments (pros, cons). Assumes that this knowledge element is
-	 *         a solution option (=alternative/decision/solution/claim).
-	 */
-	public List<Argument> getArguments() {
-		List<Argument> arguments = new ArrayList<>();
-		for (KnowledgeElement element : getLinkedElements(1)) {
-			if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON
-					|| element.getType() == KnowledgeType.ARGUMENT) {
-				arguments.add(new Argument(element));
-			}
-		}
-		return arguments;
 	}
 
 	/**
