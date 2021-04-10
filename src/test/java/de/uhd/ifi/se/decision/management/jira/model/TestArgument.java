@@ -1,12 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 public class TestArgument extends TestSetUp {
 
@@ -37,17 +40,27 @@ public class TestArgument extends TestSetUp {
 	@Test
 	public void testGetEmptyCriteria() {
 		assertEquals(0, argument.getCriteria().size());
+		assertNull(argument.getCriterion());
 	}
 
 	@Test
 	public void testGetNonEmptyCriteria() {
 		Argument argument = new Argument(KnowledgeElements.getProArgument());
 		assertEquals(1, argument.getCriteria().size());
+		assertEquals("NFR: Usability", argument.getCriterion().getSummary());
 	}
 
 	@Test
 	public void testGetCriteriaTypes() {
 		assertEquals(1, Argument.getCriteriaTypes("TEST").size());
 		assertEquals("Non functional requirement", Argument.getCriteriaTypes("TEST").iterator().next());
+	}
+
+	@Test
+	public void testConstructorWithLink() {
+		Argument argument = new Argument(KnowledgeElements.getProArgument(), Links.getTestLink());
+		// Link type "relates" has no effect, supports and attacks would change the
+		// image to pro or con
+		assertTrue(argument.getImage().contains("argument.png"));
 	}
 }

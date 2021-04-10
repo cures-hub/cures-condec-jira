@@ -115,7 +115,7 @@ public class JiraQueryHandler {
 		// issuetype = Decision
 		if (queryPartContainingTypes.contains("=")) {
 			String split[] = queryPartContainingTypes.split("=");
-			types.add(split[1].trim());
+			types.add(split[1].trim().replaceAll("\"", ""));
 			return types;
 		}
 

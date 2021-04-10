@@ -50,6 +50,7 @@ public class TestDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetCriteriaQuery() {
-		assertEquals("project=CONDEC and type = Non functional requirement", DecisionTable.getCriteriaQuery("TEST"));
+		assertEquals("project=CONDEC and type = \"Non functional requirement\"",
+				DecisionTable.getCriteriaQuery("TEST"));
 	}
 }

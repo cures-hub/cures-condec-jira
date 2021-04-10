@@ -38,10 +38,10 @@ public class Argument extends KnowledgeElement {
 	public List<KnowledgeElement> getCriteria() {
 		List<KnowledgeElement> criteria = new ArrayList<>();
 		Set<String> criteriaTypes = getCriteriaTypes(project.getProjectKey());
-
 		for (Link currentLink : getLinks()) {
 			KnowledgeElement element = currentLink.getOppositeElement(this);
-			if (criteriaTypes.contains(element.getTypeAsString())) {
+			String type = element.getTypeAsString();
+			if (criteriaTypes.stream().anyMatch(criterion -> criterion.equalsIgnoreCase(type))) {
 				criteria.add(element);
 			}
 		}
