@@ -52,9 +52,10 @@ public class DecisionTable {
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return all available criteria (e.g. quality requirements, non-functional
-	 *         requirements) for a project.
+	 *         requirements) for a project. This can be much more criteria than the
+	 *         criteria used for one specific decision problem.
 	 */
-	public List<KnowledgeElement> getDecisionTableCriteria(ApplicationUser user) {
+	public List<KnowledgeElement> getAllDecisionTableCriteriaForProject(ApplicationUser user) {
 		List<KnowledgeElement> criteria = new ArrayList<>();
 		String query = getCriteriaQuery(projectKey);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
@@ -77,7 +78,7 @@ public class DecisionTable {
 	}
 
 	/**
-	 * @return all criteria used in the decision table, i.e. the columns. Criteria
+	 * @return all criteria used in this decision table, i.e. the columns. Criteria
 	 *         can be non-functional requirements such as performance.
 	 */
 	@XmlElement

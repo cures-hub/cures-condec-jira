@@ -173,7 +173,7 @@ public class ViewRest {
 		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		return Response.ok(decisionTable.getDecisionTableCriteria(user)).build();
+		return Response.ok(decisionTable.getAllDecisionTableCriteriaForProject(user)).build();
 	}
 
 	@Path("/getTreant")
