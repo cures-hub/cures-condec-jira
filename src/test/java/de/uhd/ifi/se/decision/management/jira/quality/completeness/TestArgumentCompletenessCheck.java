@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.jgrapht.Graphs;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +25,6 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestArgumentCompletenessCheck extends TestSetUp {
 
-	private List<KnowledgeElement> elements;
 	private KnowledgeElement proArgument;
 	private ApplicationUser user;
 	private ArgumentCompletenessCheck argumentCompletenessCheck;
@@ -36,9 +33,8 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		elements = KnowledgeElements.getTestKnowledgeElements();
 		argumentCompletenessCheck = new ArgumentCompletenessCheck();
-		proArgument = elements.get(11);
+		proArgument = KnowledgeElements.getProArgument();
 	}
 
 	@Test
@@ -46,7 +42,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToDecision() {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
 		assertEquals(5, proArgument.getId());
-		KnowledgeElement decision = elements.get(10);
+		KnowledgeElement decision = KnowledgeElements.getDecision();
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
@@ -70,7 +66,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsNeitherLinkedToDecisionNorToAlternative() {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
 		assertEquals(5, proArgument.getId());
-		KnowledgeElement decision = elements.get(10);
+		KnowledgeElement decision = KnowledgeElements.getDecision();
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 

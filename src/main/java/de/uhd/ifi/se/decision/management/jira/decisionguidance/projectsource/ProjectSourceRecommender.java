@@ -88,7 +88,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		float numberConArguments = 0;
 
 		for (Argument argument : arguments) {
-			if (argument.getType() == KnowledgeType.PRO || argument.getType() == KnowledgeType.ARGUMENT) {
+			if (argument.getType() == KnowledgeType.PRO) {
 				numberProArguments += 1;
 				score.addSubScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
 			}
@@ -100,7 +100,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 		float argumentWeight = .1f; // TODO make the weight of an argument changeable in the UI
 
-		float scoreJC = ((float) jc + ((numberProArguments - numberConArguments) * argumentWeight))
+		float scoreJC = ((float) jc + (numberProArguments - numberConArguments) * argumentWeight)
 				/ (1 + arguments.size() * argumentWeight) * 100f; // TODO find better formula
 
 		score.setValue(scoreJC);

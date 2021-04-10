@@ -39,6 +39,10 @@ public class KnowledgeElements {
 		return getTestKnowledgeElements().get(11);
 	}
 
+	public static KnowledgeElement getDecision() {
+		return getTestKnowledgeElements().get(10);
+	}
+
 	private static List<KnowledgeElement> createKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<Issue> jiraIssues = JiraIssues.getTestJiraIssues();
