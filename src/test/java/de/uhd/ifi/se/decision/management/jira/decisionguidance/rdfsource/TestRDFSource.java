@@ -82,4 +82,12 @@ public class TestRDFSource extends TestSetUp {
 		assertEquals("One-Two-Three", source.toString());
 	}
 
+	@Test
+	public void testConstraints() {
+		RDFSource source = new RDFSource();
+		source.setConstraints("License=dbo:license");
+		assertTrue(source.getConstraintMap().containsKey("License"));
+		assertTrue(source.getConstraintMap().containsValue("dbo:license"));
+	}
+
 }
