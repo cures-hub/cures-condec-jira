@@ -4,13 +4,12 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metrics.ReciprocalRank;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Represents the evaluation result for one {@link KnowledgeSource} for given
@@ -21,16 +20,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class RecommendationEvaluation {
 
-	private RecommenderType recommenderType;
 	private KnowledgeSource knowledgeSource;
 	private List<Recommendation> recommendations;
 	private List<EvaluationMetric> metrics;
-	private List<KnowledgeElement> groundTruthSolutionOptions;
+	private List<SolutionOption> groundTruthSolutionOptions;
 
-	public RecommendationEvaluation(RecommenderType recommenderType, KnowledgeSource knowledgeSource,
-			List<Recommendation> recommendations, List<EvaluationMetric> metrics,
-			List<KnowledgeElement> solutionOptions) {
-		this.recommenderType = recommenderType;
+	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
+			List<EvaluationMetric> metrics, List<SolutionOption> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
 		this.metrics = metrics;
@@ -71,15 +67,6 @@ public class RecommendationEvaluation {
 		this.recommendations = recommendations;
 	}
 
-	@XmlElement
-	public RecommenderType getRecommenderType() {
-		return recommenderType;
-	}
-
-	public void setRecommenderType(RecommenderType recommenderType) {
-		this.recommenderType = recommenderType;
-	}
-
 	/**
 	 * @return all metrics calculated using the ground truth solution options and
 	 *         the recommendations, such as {@link NumberOfTruePositives} and
@@ -94,7 +81,7 @@ public class RecommendationEvaluation {
 	 * @return gold standard/ground truth that was already documented.
 	 */
 	@XmlElement
-	public List<KnowledgeElement> getGroundTruthSolutionOptions() {
+	public List<SolutionOption> getGroundTruthSolutionOptions() {
 		return groundTruthSolutionOptions;
 	}
 }

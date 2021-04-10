@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestKnowledgeElementJiraIssue extends TestSetUp {
@@ -98,5 +100,11 @@ public class TestKnowledgeElementJiraIssue extends TestSetUp {
 
 		decisionKnowledgeElement.setUpdatingDate(new Date());
 		assertNotNull(decisionKnowledgeElement.getUpdatingDate());
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	@Test
+	public void testEqualsOtherType() {
+		assertFalse(decisionKnowledgeElement.equals(new Link()));
 	}
 }

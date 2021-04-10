@@ -149,11 +149,8 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		DecisionTable decisionTable = new DecisionTable(projectKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		KnowledgeElement issue = filterSettings.getSelectedElement();
-		decisionTable.setDecisionTableForIssue(issue, user);
-		return Response.ok(decisionTable.getDecisionTableData()).build();
+		KnowledgeElement decisionProblem = filterSettings.getSelectedElement();
+		return Response.ok(new DecisionTable(decisionProblem)).build();
 	}
 
 	/**
@@ -176,7 +173,7 @@ public class ViewRest {
 		}
 		DecisionTable decisionTable = new DecisionTable(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		return Response.ok(decisionTable.getDecisionTableCriteria(user)).build();
+		return Response.ok(decisionTable.getAllDecisionTableCriteriaForProject(user)).build();
 	}
 
 	@Path("/getTreant")

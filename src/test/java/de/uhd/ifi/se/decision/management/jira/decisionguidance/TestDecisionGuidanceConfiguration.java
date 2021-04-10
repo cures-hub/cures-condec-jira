@@ -6,14 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 
 public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
@@ -29,14 +27,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	public void testSetAndGetMaxRecommendations() {
 		config.setMaxNumberOfRecommendations(10);
 		assertEquals(10, config.getMaxNumberOfRecommendations());
-	}
-
-	@Test
-	public void testSetAndGetRecommendationInput() {
-		config.setRecommendationInput("KEYWORD", true);
-		assertEquals(1, config.getInputTypes().size());
-		config.setRecommendationInput("KEYWORD", false);
-		assertEquals(0, config.getInputTypes().size());
 	}
 
 	@Test
@@ -62,22 +52,22 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	@Test
 	public void testSetAndGetRDFKnowledgeSources() {
 		List<RDFSource> rdfSources = new ArrayList<>();
-		rdfSources.add(new RDFSource("RDF Name", "service", "query", 30000, 100, ""));
+		rdfSources.add(new RDFSource("RDF Name", "service", "query", 30000, ""));
 		config.setRDFKnowledgeSources(rdfSources);
 		assertEquals(1, config.getRDFKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSetAndGetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("RDF Name", "service", "query", 30000, 100, "");
+		RDFSource rdfSource = new RDFSource("RDF Name", "service", "query", 30000, "");
 		config.addRDFKnowledgeSource(rdfSource);
 		assertEquals(1, config.getRDFKnowledgeSources().size());
 
-		RDFSource rdfSourceUpdated = new RDFSource("RDF Name2", "service2", "query2", 10000, 100, "");
+		RDFSource rdfSourceUpdated = new RDFSource("RDF Name2", "service2", "query2", 10000, "");
 		config.updateRDFKnowledgeSource("RDF Name", rdfSourceUpdated);
 		rdfSource = config.getRDFKnowledgeSources().get(0);
 		assertEquals("service2", rdfSource.getService());
-		assertEquals("query2", rdfSource.getQueryString());
+		assertEquals("query2", rdfSource.getQuery());
 		assertEquals(10000, rdfSource.getTimeout());
 		assertEquals("RDF Name2", rdfSource.getName());
 
@@ -114,11 +104,5 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		assertTrue(config.getProjectSource("OTHERPRORJECT").isActivated());
 		config.setProjectKnowledgeSource("OTHERPRORJECT", false);
 		assertFalse(config.getProjectSource("OTHERPRORJECT").isActivated());
-	}
-
-	@Test
-	public void testSetAndGetInputTypes() {
-		config.setInputTypes(Set.of(RecommenderType.values()));
-		assertEquals(3, config.getInputTypes().size());
 	}
 }

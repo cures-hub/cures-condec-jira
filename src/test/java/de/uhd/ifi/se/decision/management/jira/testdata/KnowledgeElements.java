@@ -27,6 +27,22 @@ public class KnowledgeElements {
 		return getTestKnowledgeElements().get(0);
 	}
 
+	public static KnowledgeElement getSolvedDecisionProblem() {
+		return getTestKnowledgeElements().get(4);
+	}
+
+	public static KnowledgeElement getAlternative() {
+		return getTestKnowledgeElements().get(7);
+	}
+
+	public static KnowledgeElement getProArgument() {
+		return getTestKnowledgeElements().get(11);
+	}
+
+	public static KnowledgeElement getDecision() {
+		return getTestKnowledgeElements().get(10);
+	}
+
 	private static List<KnowledgeElement> createKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<Issue> jiraIssues = JiraIssues.getTestJiraIssues();
@@ -34,66 +50,65 @@ public class KnowledgeElements {
 			elements.add(new KnowledgeElement(jiraIssue));
 		}
 
-		String stringThatIsNotDone = "public class ClassThatIsNotDone {\n" + 
-		"    // This file must be larger than 50 lines,\n" + 
-		"    // must not be named \"test\" at the beginning,\n" + 
-		"    // and must not be linked to a decision knowledge element.\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"}";
+		String stringThatIsNotDone = "public class ClassThatIsNotDone {\n"
+				+ "    // This file must be larger than 50 lines,\n"
+				+ "    // must not be named \"test\" at the beginning,\n"
+				+ "    // and must not be linked to a decision knowledge element.\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "}";
 		ChangedFile fileThatIsNotDone = new ChangedFile(stringThatIsNotDone);
 		fileThatIsNotDone.setTreeWalkPath("ClassThatIsNotDone.java");
 		fileThatIsNotDone.setId(100);
 		fileThatIsNotDone.setProject("TEST");
 		elements.add(fileThatIsNotDone);
 
-		String smallStringThatIsDone = "public class SmallClassThatIsDone {\n" + 
-		"    // This file is smaller than 50 lines,\n" + 
-		"    // must not be named \"test\" at the beginning,\n" + 
-		"    // and must not be linked to a decision knowledge element.\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"}";
+		String smallStringThatIsDone = "public class SmallClassThatIsDone {\n"
+				+ "    // This file is smaller than 50 lines,\n"
+				+ "    // must not be named \"test\" at the beginning,\n"
+				+ "    // and must not be linked to a decision knowledge element.\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "}";
 		ChangedFile smallFileThatIsDone = new ChangedFile(smallStringThatIsDone);
 		smallFileThatIsDone.setTreeWalkPath("SmallClassThatIsDone.java");
 		smallFileThatIsDone.setId(101);
 		smallFileThatIsDone.setProject("TEST");
 		elements.add(smallFileThatIsDone);
 
-		String testStringThatIsDone = "public class TestClassThatIsDone {\n" + 
-		"    // This file must be larger than 50 lines,\n" + 
-		"    // is named \"test\" at the beginning,\n" + 
-		"    // and must not be linked to a decision knowledge element.\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"}";
+		String testStringThatIsDone = "public class TestClassThatIsDone {\n"
+				+ "    // This file must be larger than 50 lines,\n" + "    // is named \"test\" at the beginning,\n"
+				+ "    // and must not be linked to a decision knowledge element.\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "}";
 		ChangedFile testFileThatIsDone = new ChangedFile(testStringThatIsDone);
 		testFileThatIsDone.setTreeWalkPath("TestClassThatIsDone.java");
 		testFileThatIsDone.setId(102);
 		testFileThatIsDone.setProject("TEST");
 		elements.add(testFileThatIsDone);
 
-		String linkedStringThatIsDone = "public class LinkedClassThatIsDone {\n" + 
-		"    // This file must be larger than 50 lines,\n" + 
-		"    // must not be named \"test\" at the beginning,\n" + 
-		"    // and is linked to a decision knowledge element.\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n" + 
-		"}";
+		String linkedStringThatIsDone = "public class LinkedClassThatIsDone {\n"
+				+ "    // This file must be larger than 50 lines,\n"
+				+ "    // must not be named \"test\" at the beginning,\n"
+				+ "    // and is linked to a decision knowledge element.\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
+				+ "}";
 		ChangedFile linkedFileThatIsDone = new ChangedFile(linkedStringThatIsDone);
 		linkedFileThatIsDone.setTreeWalkPath("LinkedClassThatIsDone.java");
 		linkedFileThatIsDone.setId(103);

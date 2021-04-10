@@ -1,16 +1,16 @@
-package de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources;
+package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 
 /**
  * Contains basic data to identify a knowledge source. Knowledge sources can be
  * Jira projects or DBPedia.
  * 
  * The knowledge sources are used to recommend solution options for decision
- * problems to the developers, i.e. for decision guidance.
+ * problems to the developers for decision guidance.
  * 
  * @see ProjectSource
  * @see RDFSource

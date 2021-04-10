@@ -7,12 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Models a recommendation of a solution option for a decision problem. The
@@ -20,7 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
  * DBPedia ({@link RDFSource} or another Jira project ({@link ProjectSource}).
  * 
  * The recommendation can contain a list of arguments (pro and cons) that either
- * support or attack this recommended solution option.
+ * support or attack this recommended solution option. The relevance of the
+ * recommendation is represented by the {@link RecommendationScore}.
  */
 public class Recommendation extends KnowledgeElement {
 
@@ -31,6 +33,8 @@ public class Recommendation extends KnowledgeElement {
 
 	public Recommendation() {
 		this.arguments = new ArrayList<>();
+		this.status = KnowledgeStatus.RECOMMENDED;
+		this.type = KnowledgeType.ALTERNATIVE;
 	}
 
 	public Recommendation(KnowledgeSource knowledgeSource, String summary, String url) {
@@ -39,6 +43,13 @@ public class Recommendation extends KnowledgeElement {
 		this.knowledgeSource = knowledgeSource;
 		this.setSummary(summary);
 		this.url = url;
+	}
+
+	public Recommendation(KnowledgeElement knowledgeElement) {
+		this();
+		this.project = knowledgeElement.getProject();
+		this.setSummary(knowledgeElement.getSummary());
+		this.url = knowledgeElement.getUrl();
 	}
 
 	/**

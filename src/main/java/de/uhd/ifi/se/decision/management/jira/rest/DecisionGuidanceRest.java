@@ -22,10 +22,10 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.BaseRecommender;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -225,24 +225,6 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setRecommendationInput")
-	@POST
-	public Response setRecommendationInput(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("recommendationInput") String recommendationInput,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setRecommendationInput(recommendationInput, isActivated);
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-
-		return Response.ok().build();
-	}
-
 	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -292,13 +274,12 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(issueId, documentationLocation);
-		List<Recommendation> recommendations = BaseRecommender.getAllRecommendations(projectKey, knowledgeElement,
-				keyword);
+		KnowledgeElement decisionProblem = manager.getKnowledgeElement(issueId, documentationLocation);
+		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, decisionProblem, keyword);
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.isRecommendationAddedToKnowledgeGraph())
-			BaseRecommender.addToKnowledgeGraph(knowledgeElement, AuthenticationManager.getUser(request), projectKey,
-					recommendations);
+				.isRecommendationAddedToKnowledgeGraph()) {
+			Recommender.addToKnowledgeGraph(decisionProblem, AuthenticationManager.getUser(request), recommendations);
+		}
 		return Response.ok(recommendations.stream().distinct().collect(Collectors.toList())).build();
 	}
 
@@ -322,8 +303,8 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 
-		Evaluator recommender = new Evaluator(issue, keyword, kResults, knowledgeSourceName);
-		RecommendationEvaluation recommendationEvaluation = recommender.evaluate(issue).execute();
+		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(issue, keyword, kResults,
+				knowledgeSourceName);
 
 		return Response.ok(recommendationEvaluation).build();
 	}

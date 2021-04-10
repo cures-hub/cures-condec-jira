@@ -1,7 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.view.decisiontable.Argument;
 
 public class TestRecommendation extends TestSetUp {
 
@@ -76,15 +76,25 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
-		KnowledgeSource sourceA = new ProjectSource("TEST", "SourceA", true);
+		KnowledgeSource sourceA = new ProjectSource("TEST", "Source", true);
 		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
 
-		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceA", true);
-		Recommendation recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
+		Recommendation recommendationB = new Recommendation(sourceA, "Recommendation", "TESTURL");
+		assertTrue(recommendationA.equals(recommendationB));
 
-		assertEquals(recommendationA, recommendationB);
-		assertNotEquals(recommendationA, new RDFSource());
+		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceB", true);
+		recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
+		assertFalse(recommendationA.equals(recommendationB));
+
+		recommendationB = null;
+		assertFalse(recommendationA.equals(recommendationB));
+
+		recommendationB = new Recommendation(sourceA, "Recommendation with other summary", "TESTURL");
+		assertFalse(recommendationA.equals(recommendationB));
+
+		assertFalse(recommendationA.equals(new RDFSource()));
 	}
 }

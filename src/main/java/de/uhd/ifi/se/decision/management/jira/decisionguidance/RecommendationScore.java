@@ -6,9 +6,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * The score represents the predicted relevance of a recommendation, i.e., how
- * likely it is that the user accepts the recommendation. The score can be used
- * to rank/sort the recommendations.
+ * The score represents the predicted relevance of a {@link Recommendation},
+ * i.e., how likely it is that the user accepts the recommendation. The score
+ * can be used to rank/sort the recommendations.
  * 
  * The score consists of a value and an explanation. Besides, the score can be
  * composed of various sub-scores ({@link this#getComposedScores()}) for the

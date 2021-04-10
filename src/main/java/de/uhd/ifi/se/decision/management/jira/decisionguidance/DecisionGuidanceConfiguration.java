@@ -1,20 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
@@ -33,7 +29,6 @@ public class DecisionGuidanceConfiguration {
 	private String irrelevantWords;
 	private List<RDFSource> rdfKnowledgeSources;
 	private List<ProjectSource> projectKnowledgeSources;
-	private Set<RecommenderType> inputTypes;
 
 	/**
 	 * Constructs an object with default values.
@@ -45,12 +40,12 @@ public class DecisionGuidanceConfiguration {
 		this.setIrrelevantWords("");
 		this.rdfKnowledgeSources = new ArrayList<>();
 		this.projectKnowledgeSources = new ArrayList<>();
-		this.inputTypes = new HashSet<>();
 	}
 
 	/**
 	 * @return true if all recommendations for a decision problem are directly added
-	 *         to the knowledge graph.
+	 *         to the knowledge graph. Currently, new Jira issue comments are
+	 *         created for every recommendation!
 	 */
 	public boolean isRecommendationAddedToKnowledgeGraph() {
 		return isRecommendationAddedToKnowledgeGraph;
@@ -251,24 +246,6 @@ public class DecisionGuidanceConfiguration {
 			}
 		}
 		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, projectSourceKey, isActivated));
-	}
-
-	public Set<RecommenderType> getInputTypes() {
-		return inputTypes;
-	}
-
-	@JsonProperty
-	public void setInputTypes(Set<RecommenderType> inputTypes) {
-		this.inputTypes = inputTypes;
-	}
-
-	public void setRecommendationInput(String recommendationInput, boolean isActivated) {
-		RecommenderType type = RecommenderType.valueOf(recommendationInput);
-		if (isActivated) {
-			this.inputTypes.add(type);
-		} else {
-			this.inputTypes.remove(type);
-		}
 	}
 
 	public List<KnowledgeSource> getAllKnowledgeSources() {

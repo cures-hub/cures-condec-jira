@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.metri
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 
 /**
  * Measures the recall (true positive rate/sensitivity) within the top-k
@@ -18,7 +18,7 @@ public class Recall extends EvaluationMetric {
 	private double numberOfTruePositives;
 	private double numberOfFalseNegatives;
 
-	public Recall(List<Recommendation> recommendations, List<KnowledgeElement> groundTruthSolutionOptions) {
+	public Recall(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		super(recommendations, groundTruthSolutionOptions);
 		this.numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
 				.calculateMetric();

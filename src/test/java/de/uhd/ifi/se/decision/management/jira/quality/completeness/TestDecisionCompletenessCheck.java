@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
@@ -27,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionCompletenessCheck extends TestSetUp {
-	private List<KnowledgeElement> elements;
 	private KnowledgeElement decision;
 	private ApplicationUser user;
 	private DecisionCompletenessCheck decisionCompletenessCheck;
@@ -36,8 +34,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		elements = KnowledgeElements.getTestKnowledgeElements();
-		decision = elements.get(10);
+		decision = KnowledgeElements.getDecision();
 		decisionCompletenessCheck = new DecisionCompletenessCheck();
 	}
 
@@ -46,7 +43,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToIssue() {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
-		KnowledgeElement issue = elements.get(4);
+		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(decision.getLink(issue));

@@ -122,17 +122,6 @@ public enum KnowledgeType {
 
 	/**
 	 * @param type
-	 *            of decision knowledge as a String.
-	 * @return the decision knowledge type. If it is a pro-argument or con-argument,
-	 *         the argument knowledge type is returned.
-	 */
-	public static KnowledgeType replaceProAndConWithArgument(String type) {
-		KnowledgeType knowledgeType = getKnowledgeType(type);
-		return replaceProAndConWithArgument(knowledgeType);
-	}
-
-	/**
-	 * @param type
 	 *            of decision knowledge.
 	 * @return parent knowledge type of a knowledge type for link creation in the
 	 *         knowledge graph. For example, the parent type of argument is decision
@@ -180,6 +169,8 @@ public enum KnowledgeType {
 		case ASSUMPTION:
 			return KnowledgeType.CONTEXT;
 		case IMPLICATION:
+			return KnowledgeType.CONTEXT;
+		case CONTEXT:
 			return KnowledgeType.CONTEXT;
 		case ARGUMENT:
 			return KnowledgeType.RATIONALE;
