@@ -36,6 +36,11 @@ public class TestGetDecisionTable extends TestSetUp {
 	}
 
 	@Test
+	public void testRequestValidFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getDecisionTable(request, null).getStatus());
+	}
+
+	@Test
 	public void testRequestValidFilterSettingsValid() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElement("TEST-2");

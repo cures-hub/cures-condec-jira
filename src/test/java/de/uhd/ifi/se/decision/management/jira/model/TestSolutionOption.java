@@ -6,11 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestSolutionOption extends TestSetUp {
 
 	private SolutionOption alternative;
-	final private String summary = "Do it this way!";
+	final private String summary = "We could use a NoSQL database!";
 	final private DocumentationLocation documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 
 	@Before
@@ -21,41 +22,26 @@ public class TestSolutionOption extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		knowledgeElement.setSummary(summary);
 		knowledgeElement.setDocumentationLocation(documentationLocation);
-		this.alternative = new SolutionOption(knowledgeElement);
+		alternative = new SolutionOption(knowledgeElement);
+	}
+
+	@Test
+	public void testGetAlternativeProperties() {
+		assertEquals(0, alternative.getId());
+		assertEquals(summary, alternative.getSummary());
+		assertEquals(documentationLocation, alternative.getDocumentationLocation());
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		assertEquals(KnowledgeType.ALTERNATIVE.getIconUrl(), alternative.getImage());
 	}
 
 	@Test
 	public void testGetEmptyArguments() {
-		assertEquals(this.alternative.getArguments().size(), 0);
-		assertEquals(this.alternative.getImage(), KnowledgeType.ALTERNATIVE.getIconUrl());
+		assertEquals(0, alternative.getArguments().size());
 	}
 
 	@Test
-	public void testGetArguments() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setProject("TEST");
-		knowledgeElement.setType(KnowledgeType.PRO);
-
-		assertEquals(0, this.alternative.getArguments().size());
-		assertEquals(this.alternative.getImage(), KnowledgeType.ALTERNATIVE.getIconUrl());
-		// assertEquals(this.alternative.getArguments().get(0).getImage(),
-		// KnowledgeType.PRO.getIconUrl());
-
-	}
-
-	@Test
-	public void testGetAlternativeId() {
-		this.alternative.getArguments().clear();
-		assertEquals(0, this.alternative.getId());
-	}
-
-	@Test
-	public void testGetAlternativeSummary() {
-		assertEquals(summary, alternative.getSummary());
-	}
-
-	@Test
-	public void testGetAlternativeDocumentationLocation() {
-		assertEquals(documentationLocation, this.alternative.getDocumentationLocation());
+	public void testGetNonEmptyArguments() {
+		alternative = new SolutionOption(KnowledgeElements.getAlternative());
+		assertEquals(1, alternative.getArguments().size());
 	}
 }
