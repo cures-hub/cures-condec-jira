@@ -10,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 public class TestSolutionOption extends TestSetUp {
 
 	private SolutionOption alternative;
-	final private String projectKey = "TEST";
 	final private String summary = "Do it this way!";
 	final private DocumentationLocation documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 
@@ -18,7 +17,7 @@ public class TestSolutionOption extends TestSetUp {
 	public void setUp() {
 		init();
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setProject(projectKey);
+		knowledgeElement.setProject("TEST");
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		knowledgeElement.setSummary(summary);
 		knowledgeElement.setDocumentationLocation(documentationLocation);
@@ -34,7 +33,7 @@ public class TestSolutionOption extends TestSetUp {
 	@Test
 	public void testGetArguments() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		knowledgeElement.setProject(projectKey);
+		knowledgeElement.setProject("TEST");
 		knowledgeElement.setType(KnowledgeType.PRO);
 
 		assertEquals(0, this.alternative.getArguments().size());

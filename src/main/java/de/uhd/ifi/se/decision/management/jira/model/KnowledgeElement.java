@@ -93,13 +93,6 @@ public class KnowledgeElement {
 	}
 
 	public KnowledgeElement(long id, String summary, String description, String type, String projectKey, String key,
-			String documentationLocation, String status) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
-				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation),
-				KnowledgeStatus.getKnowledgeStatus(status));
-	}
-
-	public KnowledgeElement(long id, String summary, String description, String type, String projectKey, String key,
 			DocumentationLocation documentationLocation, String status) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation,
 				KnowledgeStatus.getKnowledgeStatus(status));
@@ -719,7 +712,7 @@ public class KnowledgeElement {
 			return false;
 		}
 		KnowledgeElement element = (KnowledgeElement) object;
-		return this.id == element.getId() && this.getDocumentationLocation() == element.getDocumentationLocation();
+		return id == element.getId() && getDocumentationLocation() == element.getDocumentationLocation();
 	}
 
 	@Override
