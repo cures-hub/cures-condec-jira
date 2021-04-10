@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -30,29 +30,6 @@ public class TestDecisionTable extends TestSetUp {
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setLinkDistance(3);
-	}
-
-	@Test
-	public void testGetEmptyDecisionIssues() {
-		filterSettings.setSelectedElement("TEST-30");
-		filterSettings.setLinkDistance(0);
-		decisionTable.setIssues(filterSettings, user);
-		assertEquals(0, decisionTable.getIssues().size());
-	}
-
-	@Test
-	public void testGetDecisionIssueOnIssueDirectly() {
-		filterSettings.setSelectedElement("TEST-1");
-		decisionTable.setIssues(filterSettings, user);
-		assertEquals(2, decisionTable.getIssues().size());
-	}
-
-	@Test
-	public void testGetDecisionIssueLinkDistanceZero() {
-		filterSettings.setSelectedElement("TEST-1");
-		filterSettings.setLinkDistance(0);
-		decisionTable.setIssues(filterSettings, user);
-		assertEquals(0, decisionTable.getIssues().size());
 	}
 
 	@Test
