@@ -93,29 +93,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	public List<Recommendation> calculateMeanScore(List<Recommendation> recommendations) {
-		List<Recommendation> filteredRecommendations = new ArrayList<>();
-
-		for (Recommendation recommendation : recommendations) {
-			RecommendationScore meanRecommendationScore = new RecommendationScore(0, "Mean Score");
-			Recommendation meanScoreRecommendation = recommendation;
-			int numberDuplicates = 0;
-			int meanScore = 0;
-			for (Recommendation recommendation1 : recommendations) {
-				if (recommendation.equals(recommendation1)) {
-					numberDuplicates++;
-					meanScore += recommendation1.getScore().getValue();
-					meanRecommendationScore.setSubScore(recommendation1.getScore().getSubScores());
-				}
-			}
-			meanRecommendationScore.setValue(meanScore / numberDuplicates);
-			meanScoreRecommendation.setScore(meanRecommendationScore);
-			filteredRecommendations.add(meanScoreRecommendation);
-		}
-
-		return filteredRecommendations;
-	}
-
 	/**
 	 * Adds all recommendation to the knowledge graph with the status "recommended".
 	 * The recommendations will be appended to the root element
@@ -145,10 +122,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 
 	public String getProjectKey() {
 		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
 	}
 
 	/**

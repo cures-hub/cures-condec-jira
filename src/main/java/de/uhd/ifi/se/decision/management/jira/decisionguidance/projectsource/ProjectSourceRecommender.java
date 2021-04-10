@@ -88,13 +88,13 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		float numberConArguments = 0;
 
 		for (Argument argument : arguments) {
-			if (argument.getType() == KnowledgeType.PRO) {
+			if (argument.getType() == KnowledgeType.PRO || argument.getType() == KnowledgeType.ARGUMENT) {
 				numberProArguments += 1;
-				score.addSubScore(new RecommendationScore(.01f, argument.getType() + " : " + argument.getSummary()));
+				score.addSubScore(new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary()));
 			}
 			if (argument.getType() == KnowledgeType.CON) {
 				numberConArguments += 1;
-				score.addSubScore(new RecommendationScore(-.01f, argument.getType() + " : " + argument.getSummary()));
+				score.addSubScore(new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary()));
 			}
 		}
 

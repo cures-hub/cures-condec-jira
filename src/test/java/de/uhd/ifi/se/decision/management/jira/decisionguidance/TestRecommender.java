@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource.Pro
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -40,17 +39,24 @@ public class TestRecommender extends TestSetUp {
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
 
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElements().get(4);
+		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		List<Recommendation> recommendations = new ArrayList<>();
-		Recommender.getAllRecommendations("TEST", knowledgeSources, knowledgeElement, "");
+		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
+				decisionProblem, "");
+		assertEquals(2, recommendations.size());
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
-		assertEquals(JiraIssues.getTestJiraIssueCount(), manager.getKnowledgeElements().size());
-
 		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 
-		assertEquals(18, manager.getKnowledgeElements().size());
+		assertEquals(20, manager.getKnowledgeElements().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testRecommenderProperties() {
+		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
+		assertEquals("TEST", recommender.getProjectKey());
+		assertEquals(projectSource, recommender.getKnowledgeSource());
 	}
 }
