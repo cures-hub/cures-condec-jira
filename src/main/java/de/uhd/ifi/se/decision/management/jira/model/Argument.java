@@ -37,20 +37,19 @@ public class Argument extends KnowledgeElement {
 
 	public List<KnowledgeElement> getCriteria() {
 		List<KnowledgeElement> criteria = new ArrayList<>();
+		Set<String> criteriaTypes = getCriteriaTypes(project.getProjectKey());
 
 		for (Link currentLink : getLinks()) {
 			KnowledgeElement element = currentLink.getOppositeElement(this);
-			// TODO Make checking criteria type more explicit
-			if (element.getType().getSuperType() == KnowledgeType.CONTEXT
-					|| getCriteriaTypes().contains(element.getTypeAsString())) {
+			if (criteriaTypes.contains(element.getTypeAsString())) {
 				criteria.add(element);
 			}
 		}
 		return criteria;
 	}
 
-	public Set<String> getCriteriaTypes() {
-		String query = DecisionTable.getCriteriaQuery(this.getProject().getProjectKey());
+	public static Set<String> getCriteriaTypes(String projectKey) {
+		String query = DecisionTable.getCriteriaQuery(projectKey);
 		return JiraQueryHandler.getNamesOfJiraIssueTypesInQuery(query);
 	}
 

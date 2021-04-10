@@ -49,12 +49,6 @@ public class TestDecisionTable extends TestSetUp {
 	}
 
 	@Test
-	public void testGetArgumentCriteriaOnIssueDirectly() {
-		Argument argument = new Argument(KnowledgeElements.getProArgument());
-		assertEquals(1, argument.getCriteria().size());
-	}
-
-	@Test
 	public void testGetCriteriaQuery() {
 		assertEquals("project=CONDEC and type = Non functional requirement", DecisionTable.getCriteriaQuery("TEST"));
 	}
