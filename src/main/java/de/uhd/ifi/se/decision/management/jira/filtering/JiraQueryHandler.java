@@ -1,17 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.issue.search.SearchResults;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.query.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +9,19 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.bc.issue.search.SearchService.ParseResult;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 
 /**
  * Handles queries in Jira, either written in Jira Query Language (JQL) or as a
@@ -70,8 +71,8 @@ public class JiraQueryHandler {
 	}
 
 	/**
-	 * The searchTerm might start with "abc§" but should start with "?". This method
-	 * replaces "abc§" with "?".
+	 * The searchTerm might start with "abc§" but should start with "?". This
+	 * method replaces "abc§" with "?".
 	 */
 	private String getRawQuery(String searchString) {
 		if (searchString == null || searchString.isEmpty()) {
@@ -95,11 +96,20 @@ public class JiraQueryHandler {
 	 *         "type != null".
 	 */
 	public Set<String> getNamesOfJiraIssueTypesInQuery() {
-		if (!query.contains("issuetype")) {
+		return getNamesOfJiraIssueTypesInQuery(query);
+	}
+
+	/**
+	 * @return names of the Jira issue types explicitly mentioned in the query. e.g.
+	 *         "issuetype in (Decision, Issue)". Returns an empty list for the query
+	 *         "type != null".
+	 */
+	public static Set<String> getNamesOfJiraIssueTypesInQuery(String query) {
+		if (!query.contains("type")) {
 			return new HashSet<String>();
 		}
 		Set<String> types = new LinkedHashSet<String>();
-		String queryPartContainingTypes = query.split("issuetype")[1];
+		String queryPartContainingTypes = query.split("type")[1];
 		queryPartContainingTypes = queryPartContainingTypes.split("AND")[0];
 
 		// issuetype = Decision

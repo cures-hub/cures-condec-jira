@@ -44,13 +44,18 @@ public class TestDecisionTable extends TestSetUp {
 		assertEquals(1, alternative.getArguments().size());
 
 		Argument argument = alternative.getArguments().get(0);
-		assertEquals(2, argument.getCriteria().size());
-		assertEquals("NFR: Usability", argument.getCriteria().get(1).getSummary());
+		assertEquals(1, argument.getCriteria().size());
+		assertEquals("NFR: Usability", argument.getCriteria().get(0).getSummary());
 	}
 
 	@Test
 	public void testGetArgumentCriteriaOnIssueDirectly() {
-		Argument argument = new Argument(KnowledgeElements.getTestKnowledgeElements().get(7));
-		assertEquals(2, argument.getCriteria().size());
+		Argument argument = new Argument(KnowledgeElements.getProArgument());
+		assertEquals(1, argument.getCriteria().size());
+	}
+
+	@Test
+	public void testGetCriteriaQuery() {
+		assertEquals("project=CONDEC and type = Non functional requirement", DecisionTable.getCriteriaQuery("TEST"));
 	}
 }

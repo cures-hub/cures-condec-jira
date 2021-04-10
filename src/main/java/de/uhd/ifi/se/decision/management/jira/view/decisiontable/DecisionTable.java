@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class DecisionTable {
 
@@ -40,14 +39,16 @@ public class DecisionTable {
 	 */
 	public List<KnowledgeElement> getDecisionTableCriteria(ApplicationUser user) {
 		List<KnowledgeElement> criteria = new ArrayList<>();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		String query = ConfigPersistenceManager.getDecisionTableCriteriaQuery(persistenceManager.getProjectKey());
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, persistenceManager.getProjectKey(), "?jql=" + query);
+		String query = getCriteriaQuery(projectKey);
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
 		for (Issue jiraIssue : queryHandler.getJiraIssuesFromQuery()) {
 			criteria.add(new KnowledgeElement(jiraIssue));
 		}
 		return criteria;
+	}
+
+	public static String getCriteriaQuery(String projectKey) {
+		return ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
 	}
 
 	/**

@@ -10,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 public class TestArgument extends TestSetUp {
 
 	private Argument argument;
-	final private String projectKey = "TEST";
 	final private String summary = "Increases usability";
 	final private DocumentationLocation documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	final private String criterionSummary = "NFR: Usability";
@@ -23,6 +22,7 @@ public class TestArgument extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.PRO);
 		knowledgeElement.setSummary(summary);
 		knowledgeElement.setDocumentationLocation(documentationLocation);
+		knowledgeElement.setProject("TEST");
 		this.argument = new Argument(knowledgeElement);
 	}
 
@@ -38,5 +38,11 @@ public class TestArgument extends TestSetUp {
 	@Test
 	public void testGetEmptyCriteria() {
 		assertEquals(0, this.argument.getCriteria().size());
+	}
+
+	@Test
+	public void testGetCriteriaTypes() {
+		assertEquals(1, this.argument.getCriteriaTypes().size());
+		assertEquals("Non functional requirement", this.argument.getCriteriaTypes().iterator().next());
 	}
 }

@@ -2,8 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 
 /**
  * Models a pro- or con-argument that supports or attacks a
@@ -33,14 +37,21 @@ public class Argument extends KnowledgeElement {
 
 	public List<KnowledgeElement> getCriteria() {
 		List<KnowledgeElement> criteria = new ArrayList<>();
+
 		for (Link currentLink : getLinks()) {
 			KnowledgeElement element = currentLink.getOppositeElement(this);
 			// TODO Make checking criteria type more explicit
-			if (element.getType().getSuperType() == KnowledgeType.CONTEXT) {
+			if (element.getType().getSuperType() == KnowledgeType.CONTEXT
+					|| getCriteriaTypes().contains(element.getTypeAsString())) {
 				criteria.add(element);
 			}
 		}
 		return criteria;
+	}
+
+	public Set<String> getCriteriaTypes() {
+		String query = DecisionTable.getCriteriaQuery(this.getProject().getProjectKey());
+		return JiraQueryHandler.getNamesOfJiraIssueTypesInQuery(query);
 	}
 
 	@XmlElement
