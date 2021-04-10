@@ -37,7 +37,7 @@ public class TestDecisionTable extends TestSetUp {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
-		decisionTable.setDecisionTableForIssue(issue, user);
+		decisionTable = new DecisionTable(issue);
 		assertTrue(decisionTable.getAlternatives().size() > 0);
 
 		SolutionOption alternative = decisionTable.getAlternatives().get(0);

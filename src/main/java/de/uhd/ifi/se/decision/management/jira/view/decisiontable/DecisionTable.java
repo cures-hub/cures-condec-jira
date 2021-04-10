@@ -18,6 +18,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
+/**
+ * Builds a table for one selected decision problem. The rows of the table are
+ * the {@link SolutionOption}s for the decision problem. The columns of the
+ * table are criteria, e.g. non-functional requirements such as performance. The
+ * cells of the table comprise {@link Argument}s.
+ */
 public class DecisionTable {
 
 	private String projectKey;
@@ -29,6 +35,17 @@ public class DecisionTable {
 	public DecisionTable(String projectKey) {
 		LOGGER.info("Decision table");
 		this.projectKey = projectKey;
+	}
+
+	/**
+	 * @param decisionProblem
+	 *            decision problem as a {@link KnowledgeElement} object.
+	 */
+	public DecisionTable(KnowledgeElement decisionProblem) {
+		this(decisionProblem.getProject().getProjectKey());
+		alternatives = decisionProblem.getLinkedSolutionOptions();
+		criteria = alternatives.stream().flatMap(alternative -> alternative.getArguments().stream())
+				.flatMap(argument -> argument.getCriteria().stream()).collect(Collectors.toSet());
 	}
 
 	/**
@@ -52,18 +69,6 @@ public class DecisionTable {
 	}
 
 	/**
-	 * @param decisionProblem
-	 *            decision problem as a {@link KnowledgeElement} object.
-	 * @param user
-	 *            authenticated Jira {@link ApplicationUser}.
-	 */
-	public void setDecisionTableForIssue(KnowledgeElement decisionProblem, ApplicationUser user) {
-		alternatives = decisionProblem.getLinkedSolutionOptions();
-		criteria = alternatives.stream().flatMap(alternative -> alternative.getArguments().stream())
-				.flatMap(argument -> argument.getCriteria().stream()).collect(Collectors.toSet());
-	}
-
-	/**
 	 * @return all solution options for a specific decision problem (=issue).
 	 */
 	@XmlElement
@@ -73,7 +78,7 @@ public class DecisionTable {
 
 	/**
 	 * @return all criteria used in the decision table, i.e. the columns. Criteria
-	 *         can be non-functional requirements such as Performance.
+	 *         can be non-functional requirements such as performance.
 	 */
 	@XmlElement
 	public Set<KnowledgeElement> getCriteria() {

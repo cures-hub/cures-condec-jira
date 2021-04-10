@@ -51,7 +51,7 @@ public class TestSolutionOption extends TestSetUp {
 
 	@Test
 	public void testGetAlternativeSummary() {
-		assertEquals(summary, this.alternative.getSummary());
+		assertEquals(summary, alternative.getSummary());
 	}
 
 	@Test
