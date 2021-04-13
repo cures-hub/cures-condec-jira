@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -26,15 +27,15 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private String projectKey;
-	private FilterSettings filterSettings;
+	private FilteringManager filteringManager;
 	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, String projectKey, FilterSettings filterSettings) {
-		this.graph = KnowledgeGraph.getInstance(projectKey);
-		this.projectKey = projectKey;
-		this.filterSettings = filterSettings;
+	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+		this.filteringManager = new FilteringManager(user, filterSettings);
+		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
+		this.projectKey = filterSettings.getProjectKey();
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}

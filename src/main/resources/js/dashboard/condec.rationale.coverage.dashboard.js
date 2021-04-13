@@ -433,14 +433,14 @@ define('dashboard/rationaleCoverage', [], function () {
 				var projectKey = preferences['projectKey'];
 				var issueType = preferences['issueType'];
 				var knowledgeTypes = preferences['knowledgeTypes'];
+				var documentationLocations = preferences['documentationLocations'];
+				var knowledgeStatus = preferences['knowledgeStatus'];
+				var linkTypes = preferences['linkTypes'];
 				var linkDistance = preferences['linkDistance'];
 				var minDegree = preferences['minDegree'];
 				var maxDegree = preferences['maxDegree'];
 				var startDate = preferences['startDate'];
 				var endDate = preferences['endDate'];
-				var documentationLocations = preferences['documentationLocations'];
-				var knowledgeStatus = preferences['knowledgeStatus'];
-				var linkTypes = preferences['linkTypes'];
 				var decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
 				var testCodeShown = preferences['testCodeShown'];
 				var incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
@@ -617,17 +617,17 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		if (preferences['decisionKnowledgeShown']) {
 			var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-decisionknowledge-checkbox");
-			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown']
+			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
 			var testCodeNode = document.getElementById("condec-dashboard-rationale-coverage-testcode-checkbox");
-			testCodeNode.checked = preferences['testCodeShown']
+			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
 			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-incompleteknowledge-checkbox");
-			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown']
+			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
 		}
 	}
 
@@ -638,15 +638,44 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
-		//filterSettings.knowledgeTypes = knowledgeTypes;
-		//filterSettings.documentationLocations = documentationLocations;
-		//filterSettings.status = knowledgeStatus;
-		//filterSettings.linkTypes = linkTypes;
-		filterSettings.linkDistance = linkDistance;
-		filterSettings.minDegree = minDegree;
-		filterSettings.maxDegree = maxDegree;
-		filterSettings.startDate = new Date(startDate).getTime();
-		filterSettings.endDate = new Date(endDate).getTime();
+
+		var knowledgeTypesList = getList(knowledgeTypes)
+		if (Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
+			filterSettings.knowledgeTypes = knowledgeTypesList;
+		}
+
+		var documentationLocationsList = getList(documentationLocations);
+		if (Array.isArray(documentationLocationsList) && documentationLocationsList.length) {
+			filterSettings.documentationLocations = documentationLocationsList;
+		}
+
+		var knowledgeStatusList = getList(knowledgeStatus);
+		if (Array.isArray(knowledgeStatusList) && knowledgeStatusList.length) {
+			filterSettings.status = knowledgeStatusList;
+		}
+
+		var linkTypesList = getList(linkTypes);
+		if (Array.isArray(linkTypesList) && linkTypesList.length) {
+			filterSettings.linkTypes = linkTypesList;
+		}
+
+		if (Number.isInteger(linkDistance)) {
+			filterSettings.linkDistance = linkDistance;
+		}
+		if (Number.isInteger(minDegree)) {
+			filterSettings.minDegree = minDegree;
+		}
+		if (Number.isInteger(maxDegree)) {
+			filterSettings.maxDegree = maxDegree;
+		}
+
+		if (startDate) {
+			filterSettings.startDate = new Date(startDate).getTime();
+		}
+		if (endDate) {
+			filterSettings.endDate = new Date(endDate).getTime();
+		}
+
 		filterSettings.isOnlyDecisionKnowledgeShown = decisionKnowledgeShown;
 		filterSettings.isTestCodeShown = testCodeShown;
 		filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
@@ -679,6 +708,21 @@ define('dashboard/rationaleCoverage', [], function () {
 				}
 			}
 		}
+	}
+
+	function getList(jsonString) {
+		if (jsonString === "") {
+			return null;
+		}
+
+		if (Array.isArray(jsonString)) {
+			return jsonString;
+		}
+
+		jsonString = jsonString.replace("\[", "").replace("\]", "");
+		jsonString = jsonString.replaceAll("\"", "");
+
+		return jsonString.split(",");
 	}
 
 	return ConDecRationaleCoverageDashboardItem;

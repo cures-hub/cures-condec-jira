@@ -27,7 +27,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new GeneralMetricCalculator(user, projectKey, filterSettings);
+		calculator = new GeneralMetricCalculator(user, filterSettings);
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 

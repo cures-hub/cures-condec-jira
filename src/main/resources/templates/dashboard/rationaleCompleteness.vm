@@ -85,7 +85,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
                 <label for="condec-dashboard-rationale-completeness-testcode-checkbox"> Show Test Code</label><br>
                 <input type="checkbox" id="condec-dashboard-rationale-completeness-incompleteknowledge-checkbox" value="incompleteKnowledgeShown">
                 <label for="condec-dashboard-rationale-completeness-incompleteknowledge-checkbox"> Show Incomplete Knowledge</label><br>
-                </select>
             </div>
         </div>
         <div class="buttons-container">

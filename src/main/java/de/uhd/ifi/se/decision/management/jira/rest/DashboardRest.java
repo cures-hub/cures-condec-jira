@@ -47,11 +47,10 @@ public class DashboardRest {
 				.build();
 		}
 
-		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
-
 		Map<String, Object> metrics = new LinkedHashMap<>();
-		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, projectKey, filterSettings);
+
+		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings);
 
 		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
 		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
@@ -72,10 +71,10 @@ public class DashboardRest {
 				.build();
 		}
 
-		String projectKey = filterSettings.getProjectKey();
+		ApplicationUser user = AuthenticationManager.getUser(request);
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(projectKey, filterSettings);
+		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(user, filterSettings);
 
 		metrics.put("issuesSolvedByDecision", rationaleCompletenessCalculator
 			.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
@@ -103,14 +102,12 @@ public class DashboardRest {
 				.build();
 		}
 
-		String projectKey = filterSettings.getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
-
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
 		if (jiraIssueType != null) {
-			RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, projectKey, filterSettings);
+			RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
 			metrics.put("decisionsPerJiraIssue",
 				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));

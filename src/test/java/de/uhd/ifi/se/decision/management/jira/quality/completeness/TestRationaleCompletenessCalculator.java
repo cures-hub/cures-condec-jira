@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -21,9 +24,10 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new RationaleCompletenessCalculator(projectKey, filterSettings);
+		calculator = new RationaleCompletenessCalculator(user, filterSettings);
 	}
 
 	@Test

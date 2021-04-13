@@ -7,7 +7,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -20,19 +23,19 @@ public class RationaleCompletenessCalculator {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	private String projectKey;
-	private FilterSettings filterSettings;
+	private FilteringManager filteringManager;
 
-	public RationaleCompletenessCalculator(String projectKey, FilterSettings filterSettings) {
-		this.projectKey = projectKey;
-		this.filterSettings = filterSettings;
+	public RationaleCompletenessCalculator(ApplicationUser user, FilterSettings filterSettings) {
+		this.projectKey = filterSettings.getProjectKey();
+		this.filteringManager = new FilteringManager(user, filterSettings);
 	}
 
 	public Map<String, String> getElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
-		List<KnowledgeElement> allSourceElements = KnowledgeGraph.getInstance(projectKey)
-			.getElements(sourceElementType);
+		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		List<KnowledgeElement> allSourceElements = graph.getElements(sourceElementType);
 		String sourceElementsWithTargetTypeLinked = "";
 		String sourceElementsWithoutTargetTypeLinked = "";
 

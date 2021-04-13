@@ -28,7 +28,7 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new RationaleCoverageCalculator(user, projectKey, filterSettings);
+		calculator = new RationaleCoverageCalculator(user, filterSettings);
 	}
 
 	@Test
