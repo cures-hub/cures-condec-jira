@@ -22,11 +22,9 @@ public class RationaleCompletenessCalculator {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
-	private String projectKey;
 	private FilteringManager filteringManager;
 
 	public RationaleCompletenessCalculator(ApplicationUser user, FilterSettings filterSettings) {
-		this.projectKey = filterSettings.getProjectKey();
 		this.filteringManager = new FilteringManager(user, filterSettings);
 	}
 

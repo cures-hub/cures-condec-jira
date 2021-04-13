@@ -589,7 +589,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
 
-		var knowledgeTypesList = getList(knowledgeTypes)
+		var knowledgeTypesList = getList(knowledgeTypes);
 		if (Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
 			filterSettings.knowledgeTypes = knowledgeTypesList;
 		}
