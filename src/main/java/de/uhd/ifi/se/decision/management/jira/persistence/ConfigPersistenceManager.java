@@ -15,25 +15,21 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
@@ -231,6 +227,33 @@ public class ConfigPersistenceManager {
 		return gitRepositoryConfigurations;
 	}
 
+	public static void setCodeFileEndings(String projectKey, Map<String, String> codeFileEndingMap) {
+		Type type = new TypeToken<Map<String, CommentStyleType>>() {
+		}.getType();
+		Map<String, CommentStyleType> codeFileEndings = new HashMap<String, CommentStyleType>();
+		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
+			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
+			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ")
+					.split(" ");
+			for (String fileEnding : fileEndings) {
+				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
+			}
+		}
+		saveObject(projectKey, "codeFileEndings", codeFileEndings, type);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
+		Type type = new TypeToken<Map<String, CommentStyleType>>() {
+		}.getType();
+		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(projectKey,
+				"codeFileEndings", type);
+		if (codeFileEndings == null) {
+			return new HashMap<String, CommentStyleType>();
+		}
+		return codeFileEndings;
+	}
+
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
@@ -341,194 +364,22 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static void setMaxNumberRecommendations(String projectKey, int maxNumberRecommendation) {
-		setValue(projectKey, "maxNumberRecommendations", Integer.toString(maxNumberRecommendation));
-	}
-
-	public static int getMaxNumberRecommendations(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "maxNumberRecommendations"), 100);
-	}
-
-	public static void setSimilarityThreshold(String projectKey, double threshold) {
-		setValue(projectKey, "similarityThreshold", Double.toString(threshold));
-	}
-
-	public static double getSimilarityThreshold(String projectKey) {
-		return NumberUtils.toDouble(getValue(projectKey, "similarityThreshold"), 0.85);
-	}
-
-	public static void setIrrelevantWords(String projectKey, String words) {
-		setValue(projectKey, "bagOfIrrelevantWords", words);
-	}
-
-	public static String getIrrelevantWords(String projectKey) {
-		return getValue(projectKey, "bagOfIrrelevantWords");
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void setRDFKnowledgeSource(String projectKey, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
-		Type type = new TypeToken<List<RDFSource>>() {
+	public static void saveDecisionGuidanceConfiguration(String projectKey,
+			DecisionGuidanceConfiguration decisionGuidanceConfiguration) {
+		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
 		}.getType();
-		if (rdfSource != null) {
-			try {
-				rdfSourceList = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
-				if (rdfSourceList == null)
-					rdfSourceList = new ArrayList<>();
-			} catch (Exception e) {
-				rdfSourceList = new ArrayList<>();
-				saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
-			}
-
-			rdfSource.setActivated(true); // default: activated
-			rdfSourceList.add(rdfSource);
-
-			saveObject(projectKey, "rdfsource.list", rdfSourceList, type);
-
-		}
-
+		saveObject(projectKey, "decisionGuidanceConfiguration", decisionGuidanceConfiguration, type);
 	}
 
-	@SuppressWarnings({ "unchecked", "finally" })
-	public static List<RDFSource> getRDFKnowledgeSource(String projectKey) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
-		List<RDFSource> temp = new ArrayList<>();
-		if (projectKey == null)
-			return rdfSourceList;
-
-		Type type = new TypeToken<List<RDFSource>>() {
+	public static DecisionGuidanceConfiguration getDecisionGuidanceConfiguration(String projectKey) {
+		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
 		}.getType();
-		try {
-			temp = (List<RDFSource>) getSavedObject(projectKey, "rdfsource.list", type);
-			if (temp != null) {
-				for (RDFSource source : temp) {
-					source.setLimit(getMaxNumberRecommendations(projectKey));
-					rdfSourceList.add(source);
-				}
-			}
-		} catch (JsonSyntaxException e) {
-		} finally {
-			return rdfSourceList == null ? new ArrayList<>() : rdfSourceList;
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = (DecisionGuidanceConfiguration) getSavedObject(
+				projectKey, "decisionGuidanceConfiguration", type);
+		if (decisionGuidanceConfiguration == null) {
+			return new DecisionGuidanceConfiguration();
 		}
-	}
-
-	public static void updateKnowledgeSource(String projectKey, String knowledgeSourceName, RDFSource rdfSource) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
-		for (int i = 0; i < rdfSourceList.size(); ++i) {
-			if (rdfSourceList.get(i).getName().equals(knowledgeSourceName)) {
-				rdfSourceList.set(i, rdfSource);
-				break;
-			}
-		}
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
-	}
-
-	public static void deleteKnowledgeSource(String projectKey, String knowledgeSourceName) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
-		rdfSourceList.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
-	}
-
-	public static void deleteAllKnowledgeSource(String projectKey) {
-		List<RDFSource> rdfSourceList = new ArrayList<>();
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
-	}
-
-	public static void setRDFKnowledgeSourceActivation(String projectKey, String rdfSourceName, boolean isActivated) {
-		List<RDFSource> rdfSourceList = getRDFKnowledgeSource(projectKey);
-		Type listType = new TypeToken<List<RDFSource>>() {
-		}.getType();
-
-		for (int i = 0; i < rdfSourceList.size(); ++i) {
-			if (rdfSourceName.equals(rdfSourceList.get(i).getName())) {
-				rdfSourceList.get(i).setActivated(isActivated);
-				break;
-			}
-		}
-
-		saveObject(projectKey, "rdfsource.list", rdfSourceList, listType);
-	}
-
-	public static void setProjectSource(String projectKey, String projectSourceKey, boolean isActivated) {
-		setValue(projectKey, "projectSource." + projectSourceKey, Boolean.toString(isActivated));
-	}
-
-	public static boolean getProjectSource(String projectKey, String projectSourceKey) {
-		return Boolean.valueOf(getValue(projectKey, "projectSource." + projectSourceKey));
-	}
-
-	public static List<ProjectSource> getProjectSourcesForActiveProjects(String projectKey) {
-		List<ProjectSource> projectSources = new ArrayList<>();
-		if (projectKey == null)
-			return projectSources;
-
-		Project currentProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		if (currentProject != null) {
-			for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-				DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-				boolean projectSourceActivation = ConfigPersistenceManager.getProjectSource(projectKey,
-						jiraProject.getProjectKey());
-				if (jiraProject.isActivated()) {
-					ProjectSource projectSource = new ProjectSource(projectKey, jiraProject.getProjectKey(),
-							projectSourceActivation);
-					projectSources.add(projectSource);
-				}
-			}
-		}
-		return projectSources;
-	}
-
-	public static List<KnowledgeSource> getAllKnowledgeSources(String projectKey) {
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-
-		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
-		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
-		// New KnowledgeSources could be added here.
-
-		return knowledgeSources;
-	}
-
-	public static List<KnowledgeSource> getAllActivatedKnowledgeSources(String projectKey) {
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-
-		knowledgeSources.addAll(getRDFKnowledgeSource(projectKey));
-		knowledgeSources.addAll(getProjectSourcesForActiveProjects(projectKey));
-		// New KnowledgeSources could be added here.
-
-		knowledgeSources.removeIf(knowledgeSource -> !knowledgeSource.isActivated());
-		return knowledgeSources;
-	}
-
-	public static void setAddRecommendationDirectly(String projectKey, Boolean addRecommendationDirectly) {
-		setValue(projectKey, "addRecommendationDirectly", addRecommendationDirectly.toString());
-	}
-
-	public static boolean getAddRecommendationDirectly(String projectKey) {
-		return Boolean.valueOf(getValue(projectKey, "addRecommendationDirectly"));
-	}
-
-	public static void setRecommendationInput(String projectKey, String recommendationInput, boolean isActivated) {
-		setValue(projectKey, "recommendationInput." + recommendationInput, String.valueOf(isActivated));
-	}
-
-	public static boolean getRecommendationInput(String projectKey, String recommenderInput) {
-		String value = getValue(projectKey, "recommendationInput." + recommenderInput);
-		return Boolean.valueOf(value);
-	}
-
-	public static Map<String, Boolean> getRecommendationInputAsMap(String projectKey) {
-		Map<String, Boolean> recommenderTypes = new HashMap<>();
-		for (RecommenderType recommenderType : RecommenderType.values()) {
-			recommenderTypes.put(recommenderType.toString(),
-					Boolean.valueOf(getValue(projectKey, "recommendationInput." + recommenderType.toString())));
-		}
-		return recommenderTypes;
+		return decisionGuidanceConfiguration;
 	}
 
 	/* **************************************/
@@ -536,7 +387,6 @@ public class ConfigPersistenceManager {
 	/* Configuration for Rationale Backlog */
 	/*										*/
 	/* **************************************/
-
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
@@ -565,6 +415,28 @@ public class ConfigPersistenceManager {
 
 	public static boolean getActivationStatusOfQualityEvent(String projectKey, String eventKey) {
 		return "true".equals(getValue(projectKey, eventKey));
+	}
+
+	/* **************************************/
+	/*										*/
+	/* Configuration for Change Impact Analysis (CIA) Settings */
+	/*										*/
+	/* **************************************/
+
+	public static void setCiaSettings(String projectKey, CiaSettings ciaSettings) {
+		Type type = new TypeToken<CiaSettings>() {
+		}.getType();
+		saveObject(projectKey, "ciaSettings", ciaSettings, type);
+	}
+
+	public static CiaSettings getCiaSettings(String projectKey) {
+		Type type = new TypeToken<CiaSettings>() {
+		}.getType();
+		CiaSettings ciaSettings = (CiaSettings) getSavedObject(projectKey, "ciaSettings", type);
+		if (ciaSettings == null) {
+			ciaSettings = new CiaSettings();
+		}
+		return ciaSettings;
 	}
 
 }

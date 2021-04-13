@@ -35,6 +35,7 @@ public class MockPluginSettings implements PluginSettings {
 		settings.put(subfix + "webhookSecret", "myhoneybee");
 		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "users", "user");
+		settings.put(subfix + "criteriaQuery", "project=CONDEC and type = \"Non functional requirement\"");
 		return settings;
 	}
 

@@ -76,11 +76,25 @@
 </div>
 
 <div class="field-group">
+    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <div class="description">
+    	Classifies the text in the description and the comments of all Jira issues for this project. 
+    	This is used for the retrospective identification of decision knowledge/rationale. <br/>
+    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
+    </div>
+    <div class="aui-progress-indicator">
+        <span id="classify-whole-project-progress-bar"></span>
+    </div>
+</div>
+
+<div class="field-group">
     <label for="saveTrainingFile-button">Create a Training File</label>
     <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
-    <div class="description">Creates a training file (in csv format) of <b>human-validated</b> text data
+    <div class="description">Creates a training file (in csv format) of <b>manually approved</b> (i.e. human-validated) text data
         for the current project that can be used to train the classifier.
-        This file is saved in the Jira home directory in data/condec-plugin/project-key. You can download it from there.
+        This file is saved in the Jira home directory in data/condec-plugin/classifier. 
+        You can download it from there. The file name consists of the project-key and the current data and time. 
         If you want to train the classifier with this file you need to reload this page to access the file.
     </div>
 </div>
@@ -97,9 +111,19 @@
                 $trainingFile</option>
         #end
     </select>
+    Binary:
+    <select id="select-classifier-type-binary" class="select medium-field">
+    	<option value="LR" selected>Logistic Regression</option>
+    	<option value="SVM">Support Vector Machine</option>
+    </select>
+    Fine-grained:
+    <select id="select-classifier-type-fine-grained" class="select medium-field">
+    	<option value="LR">Logistic Regression</option>
+    	<option value="SVM">Support Vector Machine</option>
+    </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
     <div class="description">
-        Trains the text classifier on the selected data file.<br/>
+        Trains the text classifier on the selected data file. The text classifier consists of a binary and a fine-grained classifier.<br/>
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this initial
         training can be very resource expensive!
     </div>
@@ -109,14 +133,16 @@
 </div>
 
 <div class="field-group">
-    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
-    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <label for="evaluateTextClassifier-button">Evaluate the Text Classifier using k-fold Cross-Validation</label>
+  	<input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
+    Number of folds k: 
+    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
     <div class="description">
-    	Classifies the text in the description and the comments of all Jira issues for this project. <br/>
-    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
-    </div>
-    <div class="aui-progress-indicator">
-        <span id="classify-whole-project-progress-bar"></span>
+        Trains and evaluates the binary and fine-grained classifiers on the selected data file and the algorithms from above via k-fold cross-validation 
+        (splits the data into training and evaluation parts).<br/>
+        If the classifier was trained before, the training will be restored after the evaluation finished.<br/>
+        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this 
+        evaluation can be very resource expensive!<br/>       
     </div>
 </div>
 
@@ -128,19 +154,6 @@
         <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span>
         The selected data file <b>should be different from the data file that the classifier was trained on</b>.
         Otherwise, use k-fold cross-validation to train and evaluate the classifier on the same data.
-    </div>
-</div>
-
-<div class="field-group">
-    <label for="evaluateTextClassifier-button">Evaluate the Text Classifier using k-fold Cross-Validation</label>
-  	<input type="button" class="aui-button" id="evaluateTextClassifier-button" value="Evaluate Classifier using k-fold Cross-Validation"/>
-    Number of folds k: 
-    <input type="number" id="number-of-folds-input" value="3" min="0" class="text short-field"/> 
-    <div class="description">
-        Trains and evaluates the classifier on the selected data file via k-fold cross-validation (splits the data into training and evaluation parts).<br/>
-        If the classifier was trained before, the training will be restored after the evaluation finished.<br/>
-        <span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> Please note that this 
-        evaluation can be very resource expensive!<br/>       
     </div>
 </div>
 
@@ -199,11 +212,13 @@
     });
 
 	var trainDataSelect = document.getElementById("select-training-file");
+	var binaryTypeSelect = document.getElementById("select-classifier-type-binary");
+	var fineGrainedTypeSelect = document.getElementById("select-classifier-type-fine-grained");
 	var animatedElement = document.getElementById("train-classifier-progress");
     const trainClassifier = document.getElementById("trainClassifier-button");
     trainClassifier.addEventListener("click", function () {
         if (confirm("Are you sure you want to retrain the classifier?")) {                        
-            conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, animatedElement);
+            conDecAPI.trainClassifier("$projectKey", trainDataSelect.value, binaryTypeSelect.value, fineGrainedTypeSelect.value, animatedElement);
         }
     });
     
@@ -212,13 +227,13 @@
     	var numberOfFoldsInput = document.getElementById("number-of-folds-input");
     	if (confirm("Are you sure you want to evaluate the classifier using " + numberOfFoldsInput.value + "-fold cross-validation?")) {    
         	conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, numberOfFoldsInput.value, 
-        	animatedElement, saveToFile("evaluation_results.json"));
+        	binaryTypeSelect.value, fineGrainedTypeSelect.value, animatedElement, saveToFile("evaluation_results.json"));
         }
     });
     
     const evaluateTrainedTextClassifierButton = document.getElementById("evaluateTrainedTextClassifier-button");
     evaluateTrainedTextClassifierButton.addEventListener("click", function () {
-        conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, -1, animatedElement, saveToFile("evaluation_results.json"));
+        conDecAPI.evaluateTextClassifier("$projectKey", trainDataSelect.value, -1, null, null, animatedElement, saveToFile("evaluation_results.json"));
     });
     
     const testClassifierWithTextBtn = document.getElementById("testClassifierWithText-button");

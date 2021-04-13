@@ -1,14 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestVisGraphNode extends TestSetUp {
 
@@ -84,5 +83,16 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetColor() {
 		VisNode node = new VisNode(element, false, 1);
 		assertEquals("#ffffff", node.getColor());
+		assertEquals("#ffffff", node.getColorMap().get("background"));
+	}
+
+	@Test
+	public void testGetAndSetKnowledgeElement() {
+		KnowledgeElement element = new KnowledgeElement();
+		VisNode node = new VisNode(element, false, 1);
+		assertEquals(node.getElement(), element);
+		KnowledgeElement newElement = new KnowledgeElement();
+		node.setElement(newElement);
+		assertEquals(node.getElement(), newElement);
 	}
 }

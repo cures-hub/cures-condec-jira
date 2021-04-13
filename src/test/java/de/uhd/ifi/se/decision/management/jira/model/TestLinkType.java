@@ -52,4 +52,9 @@ public class TestLinkType {
 		assertEquals("#bd3525", LinkType.getLinkTypeColor("jira_subtask_link"));
 		assertEquals("#15ceb6", LinkType.getLinkTypeColor("clones"));
 	}
+
+	@Test
+	public void testDefaultTypes() {
+		assertEquals(2, LinkType.getDefaultTypes().size());
+	}
 }

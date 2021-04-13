@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class TestFineGrainedClassifier extends TestSetUp {
 	public void testSaveToAndLoadFromFile() {
 		File file = fineGrainedClassifier.saveToFile();
 		assertTrue(file.exists());
-		assertTrue(fineGrainedClassifier.loadFromFile());
+		assertNotNull(fineGrainedClassifier.loadFromFile());
 		assertTrue(fineGrainedClassifier.isTrained());
 		file.delete();
 	}

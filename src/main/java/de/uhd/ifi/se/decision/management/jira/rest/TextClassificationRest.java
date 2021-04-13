@@ -23,6 +23,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -76,7 +77,9 @@ public class TextClassificationRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("trainingFileName") String trainingFileName) {
+			@QueryParam("trainingFileName") String trainingFileName,
+			@QueryParam("binaryClassifierType") String binaryClassifierType,
+			@QueryParam("fineGrainedClassifierType") String fineGrainedClassifierType) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -87,7 +90,8 @@ public class TextClassificationRest {
 		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
-		if (classifier.train(trainingFileName)) {
+		if (classifier.train(trainingFileName, ClassifierType.valueOfOrDefault(binaryClassifierType),
+				ClassifierType.valueOfOrDefault(fineGrainedClassifierType))) {
 			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -98,7 +102,9 @@ public class TextClassificationRest {
 	@POST
 	public Response evaluateTextClassifier(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("trainingFileName") String trainingFileName,
-			@QueryParam("numberOfFolds") int numberOfFolds) {
+			@QueryParam("numberOfFolds") int numberOfFolds,
+			@QueryParam("binaryClassifierType") String binaryClassifierType,
+			@QueryParam("fineGrainedClassifierType") String fineGrainedClassifierType) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -106,7 +112,9 @@ public class TextClassificationRest {
 
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		classifier.setGroundTruthFile(trainingFileName);
-		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds);
+		Map<String, ClassificationMetrics> evaluationResults = classifier.evaluate(numberOfFolds,
+				ClassifierType.valueOfOrDefault(binaryClassifierType),
+				ClassifierType.valueOfOrDefault(fineGrainedClassifierType));
 		String evaluationResultsMessage = "Ground truth file name: " + trainingFileName + System.lineSeparator();
 		String trainedClassifierName = "Name of trained classifier: " + ConfigPersistenceManager
 				.getTextClassificationConfiguration(projectKey).getSelectedTrainedClassifier();

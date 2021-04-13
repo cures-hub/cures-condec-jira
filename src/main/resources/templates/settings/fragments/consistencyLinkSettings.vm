@@ -6,7 +6,7 @@
            type="number"
            data-aui-validation-field
            value="$minProbabilityLink"
-           step="0.1" min="0" max="1"
+           step="0.25" min="0" max="1"
            id="min-probability-link"
            name="min-probability-link">
 

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
@@ -198,6 +200,10 @@ public class ChangedFile extends KnowledgeElement {
 		return name;
 	}
 
+	public String getFileEnding() {
+		return this.getName().substring(this.getName().lastIndexOf(".") + 1).toLowerCase();
+	}
+
 	@Override
 	public String getSummary() {
 		return getName();
@@ -357,7 +363,14 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public CommentStyleType getCommentStyleType() {
-		return CommentStyleType.getCommentStyleTypeByFileName(getName());
+		if (getProject() == null) {
+			return CommentStyleType.NONE;
+		}
+		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager.getCodeFileEndings(getProject().getProjectKey());
+		if (codeFileEndings.containsKey(this.getFileEnding())) {
+			return codeFileEndings.get(this.getFileEnding());
+		}
+		return CommentStyleType.NONE;
 	}
 
 	public boolean isCorrect() {

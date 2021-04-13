@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uhd.ifi.se.decision</groupId>
 	<artifactId>management.jira</artifactId>
-	<version>2.3.0</version>
+	<version>2.3.2</version>
 	<organization>
 		<name>Software Engineering Research Group, Heidelberg University</name>
 		<url>https://github.com/cures-hub</url>
@@ -109,12 +109,12 @@
 
 	<dependencies>
 		<!-- Jira -->
-		<dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-core</artifactId>
-			<version>8.5.3</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-core</artifactId>
+            <version>8.8.1</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.atlassian.jira.plugins</groupId>
 			<artifactId>jira-greenhopper-plugin</artifactId>
@@ -305,7 +305,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	</dependencies>
+    </dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
 		<plugins>
@@ -319,15 +319,15 @@
 					<extractDependencies>false
 					</extractDependencies> <!-- If enabled, external .jar files will be unzipped into the final .jar 
 						file -->
-					<productVersion>${jira.version}</productVersion>
-					<productDataVersion>${jira.version}</productDataVersion>
-					<enableQuickReload>true</enableQuickReload>
-					<instructions>
-						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-						<Import-Package>org.springframework.osgi.*;resolution:="optional",
-							org.eclipse.gemini.blueprint.*;resolution:="optional",
-							*;resolution:=optional
-						</Import-Package>
+                    <productVersion>${jira.version}</productVersion>
+                    <productDataVersion>${jira.version}</productDataVersion>
+                    <enableQuickReload>true</enableQuickReload>
+                    <instructions>
+                        <Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
+                        <Import-Package>org.springframework.osgi.*;resolution:="optional",
+                            org.eclipse.gemini.blueprint.*;resolution:="optional",
+                            *;resolution:=optional
+                        </Import-Package>
 						<Export-Package />
 						<Spring-Context>*</Spring-Context>
 					</instructions>
@@ -408,15 +408,15 @@
 							</execution>
 						</executions>
 						<configuration>
-							<excludes>
-								<exclude>**/persistence/tables/*</exclude>
-							</excludes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+                            <excludes>
+                                <exclude>**/persistence/tables/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 	<properties>
 		<jira.version>8.15.0</jira.version>

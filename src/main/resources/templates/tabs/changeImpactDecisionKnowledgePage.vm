@@ -1,0 +1,69 @@
+<form class="aui condec-filter">
+    #set ($viewIdentifier = "change-impact-decision-knowledge")
+    #parse("templates/filter/text.vm")
+    #parse("templates/filter/knowledgeType.vm")
+    #parse("templates/filter/status.vm")
+    #parse("templates/filter/documentationDate.vm")
+  	#parse("templates/filter/decisionGroup.vm")
+	#parse("templates/filter/linkDistance.vm")
+	#parse("templates/filter/degree.vm")
+	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+    #parse("templates/filter/isTransitiveLinks.vm")
+</form>
+<div class="aui-group">
+    <div id="resizable" class="left">
+        <div id="change-impact-decision-knowledge-tree"></div>
+    </div>
+    <div class="right">
+        #set ($viewIdentifier = "cia")
+        #parse("templates/tabs/changeImpactIssueTab.vm")
+    </div>
+</div>
+<script>
+
+    function updateView(nodeId) {
+        var filterSettings = conDecFiltering.getFilterSettings("change-impact-decision-knowledge");
+
+        filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
+
+        conDecTreeViewer.buildTreeViewer(filterSettings, "#change-impact-decision-knowledge-tree", "#search-input-change-impact-decision-knowledge", "change-impact-decision-knowledge-tree");
+        if (nodeId === undefined) {
+            var rootElement = treant.getCurrentRootElement();
+            if (rootElement) {
+                conDecTreeViewer.selectNodeInTreeViewer(rootElement.id, "#change-impact-decision-knowledge-tree");
+            }
+        } else {
+            conDecTreeViewer.selectNodeInTreeViewer(nodeId, "#change-impact-decision-knowledge-tree");
+        }
+        addSelectNodeEventListenerToTreeViewer();
+    }
+
+    function addSelectNodeEventListenerToTreeViewer() {
+        jQuery("#change-impact-decision-knowledge-tree").on("select_node.jstree", function (error, tree) {
+            var filterSettings = conDecFiltering.getFilterSettings("change-impact-decision-knowledge");
+            var node = tree.node.data;
+            filterSettings["status"] = null;
+            filterSettings["selectedElement"] = node.key;
+            jQuery("#jstree-change-impact-decision-knowledge").on("loaded.jstree", function () {
+                jQuery("#jstree-change-impact-decision-knowledge").jstree("open_all");
+            });
+            conDecCia.selectedElement = node.key
+        });
+    }
+
+    /* Inits rationale backlog as the default tab */
+    $(document).ready(function () {
+        conDecFiltering.initDropdown("knowledge-type-dropdown-change-impact-decision-knowledge", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue", "Argument"]);
+        conDecFiltering.initDropdown("status-dropdown-change-impact-decision-knowledge", conDecAPI.rationaleBacklogItemStatus);
+        conDecFiltering.fillDecisionGroupSelect("select2-decision-group-change-impact-decision-knowledge");
+        conDecFiltering.fillDatePickers("rationale-backlog", 30);
+
+        // Add event listeners on filter HTML elements
+        conDecFiltering.addOnChangeEventToFilterElements("change-impact-decision-knowledge", conDecRationaleBacklog.updateView, false);
+
+        // Register/subscribe this view as an observer
+        conDecObservable.subscribe(this);
+        updateView(null);
+        conDecCia.initView();
+    });
+</script>

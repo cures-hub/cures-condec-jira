@@ -43,7 +43,7 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
 - [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/installed_plugin.png)
-- Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png)
+- Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/config_plugin.png)
 
 ## ConDec Views and Features
 
@@ -53,39 +53,39 @@ The user can choose the type of the top level knowledge element, e.g., to unders
 The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
-![Jira ConDec plug-in](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry.png)
+![Jira ConDec plug-in](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry.png)
 *TreeViewer (left) and tree view of a single decision (right)*
 
 The *Tree* view enables the user to explore decision knowledge related to the selected decision knowledge element.
 The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
 
-The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_context_menu.png).
+The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
 
 ### Jira Issue Module
-Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_issue_module.png).
+Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
 
 ### Configuration
-The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png) enables the user to:
+The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
 - Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
 - Configure the features listed below
 
 ### Features
 ConDec offers the following features:
-- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic_text_classification.md)
+- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
 
 ## Implementation Details
 
 ### Model
 The [model interfaces and classes](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
 
-![Model](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/model.png)
+![Model](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/model.png)
 *Model interfaces and classes*
 
 ### Persistence Strategies
 The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
 
-![Persistence strategies](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/decision_storage_strategies.png)
+![Persistence strategies](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/decision_storage_strategies.png)
 *Persistence strategies*
 
 The issue strategy represents decision knowledge elements as Jira issues.

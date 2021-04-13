@@ -30,8 +30,8 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		classifier.train();
 		classificationManager = new ClassificationManagerForJiraIssueText("TEST");
-		sentences = JiraIssues.getSentencesForCommentText(
-				"The quick brown fox jumps over the lazy dog. We expect this to be irrelevant. "
+		sentences = JiraIssues
+				.getSentencesForCommentText("Thanks for updating the unit tests! We expect this to be irrelevant. "
 						+ "How can we implement? The previous sentence should be much more relevant");
 		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
 	}
@@ -50,7 +50,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testBinaryClassification() {
 		sentences = classificationManager.classifySentencesBinary(sentences);
-		assertEquals("The quick brown fox jumps over the lazy dog.", sentences.get(0).getDescription());
+		assertEquals("Thanks for updating the unit tests!", sentences.get(0).getDescription());
 		assertFalse(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
 

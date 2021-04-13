@@ -30,9 +30,9 @@ public class TestEvaluateTextClassifier extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestNullProjectKeyNullGroundTruthNull() {
+	public void testRequestNullProjectKeyNullGroundTruthNullDefaultClassifierTypes() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				classificationRest.evaluateTextClassifier(null, null, null, 3).getStatus());
+				classificationRest.evaluateTextClassifier(null, null, null, 3, null, null).getStatus());
 	}
 
 	@Test
@@ -40,13 +40,19 @@ public class TestEvaluateTextClassifier extends TestSetUp {
 		TextClassifier trainer = TextClassifier.getInstance("TEST");
 		trainer.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
 		trainer.train();
-		assertEquals(Response.Status.OK.getStatusCode(),
-				classificationRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", -1).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), classificationRest
+				.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", -1, null, null).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectKeyGroundTruthValidThreeFoldCrossValidation() {
-		assertEquals(Response.Status.OK.getStatusCode(),
-				classificationRest.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3).getStatus());
+	public void testRequestValidProjectKeyGroundTruthValidThreeFoldCrossValidationDefaultClassifierTypes() {
+		assertEquals(Response.Status.OK.getStatusCode(), classificationRest
+				.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3, null, "").getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyGroundTruthValidThreeFoldCrossValidationSVMClassifiers() {
+		assertEquals(Response.Status.OK.getStatusCode(), classificationRest
+				.evaluateTextClassifier(request, "TEST", "defaultTrainingData.csv", 3, "SVM", "SVM").getStatus());
 	}
 }

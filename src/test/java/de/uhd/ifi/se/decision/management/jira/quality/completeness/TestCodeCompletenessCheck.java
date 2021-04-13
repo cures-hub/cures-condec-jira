@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -44,6 +45,10 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@NonTransactional
 	public void testIsDoneSmallFile() {
 		assertTrue(codeCompletenessCheck.execute(smallFileThatIsDone));
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		definitionOfDone.setLineNumbersInCodeFile(10);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(codeCompletenessCheck.execute(smallFileThatIsDone));
 	}
 
 	@Test
@@ -56,5 +61,9 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@NonTransactional
 	public void testIsDoneLinkedFile() {
 		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		definitionOfDone.setLinkDistanceFromCodeFileToDecision(1);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
 }

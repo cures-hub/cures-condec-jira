@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -23,16 +24,16 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  * either be created on the entire graph or on a subgraph matching the giving
  * {@link FilterSettings}. The subgraph is provided by the
  * {@link FilteringManager}.
- * 
+ *
  * Each matrix cell contains a {@link Link} object or null if no link exists.
- * 
+ *
  * If you want to change the shown (sub-)graph, do not change this class but
  * change the {@link FilteringManager} and/or the {@link KnowledgeGraph}.
  */
 public class Matrix {
 
-	@XmlElement
 	private Set<KnowledgeElement> headerElements;
+	private Map<Long, String> colorMap;
 
 	private int size;
 
@@ -41,13 +42,27 @@ public class Matrix {
 	public Matrix(Set<KnowledgeElement> elements) {
 		headerElements = elements;
 		size = headerElements.size();
+		colorMap = new HashMap<>();
+		headerElements.forEach(entry -> {
+			colorMap.put(entry.getId(), "#ffffff");
+		});
+	}
+
+	public Matrix(Set<KnowledgeElement> elements, Map<Long, String> colorMap) {
+		headerElements = elements;
+		size = headerElements.size();
+		this.colorMap = colorMap;
 	}
 
 	public Matrix(FilterSettings filterSettings) {
 		this(new FilteringManager(filterSettings).getSubgraphMatchingFilterSettings().vertexSet());
 		LOGGER.info(filterSettings.toString());
+		headerElements.forEach(entry -> {
+			colorMap.put(entry.getId(), "#ffffff");
+		});
 	}
 
+	@XmlElement
 	public Set<KnowledgeElement> getHeaderElements() {
 		return headerElements;
 	}
@@ -83,11 +98,11 @@ public class Matrix {
 
 	/**
 	 * Used to plot the legend for relationship types in the frontend.
-	 * 
+	 *
 	 * @return map of link type names and colors. Also contains Jira issue link
 	 *         types.
 	 */
-	@XmlElement(name = "linkTypesWithColor")
+	@XmlElement
 	public Map<String, String> getLinkTypesWithColor() {
 		Map<String, String> linkTypesWithColor = new TreeMap<>();
 		for (String linkTypeName : DecisionKnowledgeProject.getNamesOfLinkTypes()) {
@@ -95,5 +110,14 @@ public class Matrix {
 			linkTypesWithColor.put(linkTypeName, color);
 		}
 		return linkTypesWithColor;
+	}
+
+	@XmlElement
+	public Map<Long, String> getColorMap() {
+		return colorMap;
+	}
+
+	public void setColorMap(Map<Long, String> colorMap) {
+		this.colorMap = colorMap;
 	}
 }

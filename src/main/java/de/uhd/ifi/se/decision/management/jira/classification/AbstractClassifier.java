@@ -16,12 +16,15 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import smile.classification.Classifier;
 import smile.classification.OnlineClassifier;
 import smile.validation.ClassificationMetrics;
 
 /**
- * Abstract superclass for the {@link BinaryClassifier} and
+ * The {@link TextClassifier} comprises a binary and a fine-grained classifier.
+ * This is the abstract superclass for the {@link BinaryClassifier} and
  * {@link FineGrainedClassifier}.
  */
 public abstract class AbstractClassifier {
@@ -35,18 +38,24 @@ public abstract class AbstractClassifier {
 	protected double fitTime;
 
 	/**
-	 * Reads the classifier from file if it was already trained and saved to file
-	 * system.
+	 * Constructs a new classifier instance. Reads the classifier from file if it
+	 * was already trained and saved to file system.
 	 * 
 	 * @param numClasses
 	 *            2 for the binary classifier and > 2 for the fine grained
 	 *            classifier.
+	 * @param namePrefix
+	 *            to identify the ground truth data that the classifier was trained
+	 *            on, e.g. "defaultTrainingData" or a project key.
 	 */
 	public AbstractClassifier(int numClasses, String namePrefix) {
 		this.numClasses = numClasses;
 		this.isCurrentlyTraining = false;
 		this.namePrefix = namePrefix;
-		loadFromFile();
+		Classifier<double[]> modelFromFile = loadFromFile();
+		if (modelFromFile != null) {
+			this.model = modelFromFile;
+		}
 	}
 
 	/**
@@ -63,15 +72,41 @@ public abstract class AbstractClassifier {
 	}
 
 	/**
-	 * Trains the model using supervised training data, features and labels.
+	 * Trains the model using supervised training data. Preprocesses the training
+	 * data to extract features and labels for training. Saves the model to file
+	 * afterwards.
 	 *
 	 * @param trainingData
+	 *            {@link GroundTruthData} that the classifier should be trained on.
+	 *            Is read from csv file (see {@link #readDataFrameFromCSVFile(File)}
+	 *            and can be created from the current {@link KnowledgeGraph}).
+	 * @param classifierType
+	 *            machine learning algorithm, e.g. support vector machine or
+	 *            logistic regression (see {@link ClassifierType}).
 	 */
-	public abstract void train(GroundTruthData trainingData);
+	public abstract void train(GroundTruthData trainingData, ClassifierType classifierType);
+
+	/**
+	 * @param trainingSamples
+	 *            features for training (e.g. numerical representation of n-grams,
+	 *            see {@link Preprocessor}).
+	 * @param trainingLabels
+	 *            labels for training, either for the binary relevance or the
+	 *            knowledge type.
+	 * @param classifierType
+	 *            machine learning algorithm, e.g. support vector machine or
+	 *            logistic regression (see {@link ClassifierType}).
+	 * @return {@link Classifier} instance.
+	 */
+	public abstract Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels,
+			ClassifierType classifierType);
 
 	/**
 	 * @param sample
-	 * @return probabilities of the labels
+	 *            feature that should be classified (e.g. numerical representation
+	 *            of n-gram, see {@link Preprocessor}).
+	 * @return classification label (e.g. -1 for irrelevant or 1 for relevant during
+	 *         binary classification).
 	 */
 	protected int predict(double[] sample) {
 		return model.predict(sample);
@@ -82,11 +117,12 @@ public abstract class AbstractClassifier {
 	 * training. That means that manually approved parts of text are directly used
 	 * for training.
 	 *
-	 * @param trainingSample
-	 *            feature for training.
+	 * @param trainingSamples
+	 *            features for training (e.g. numerical representation of n-grams,
+	 *            see {@link Preprocessor}).
 	 * @param trainingLabel
-	 *            label for training, e.g. for the binary relevance or the knowledge
-	 *            type.
+	 *            label for training, either for the binary relevance or the
+	 *            knowledge type.
 	 */
 	public void update(double[][] trainingSample, int trainingLabel) {
 		isCurrentlyTraining = true;
@@ -104,9 +140,10 @@ public abstract class AbstractClassifier {
 	 * @param groundTruthData
 	 *            {@link GroundTruthData} used for training and evaluation in k-fold
 	 *            cross-validation.
-	 * @return map of evaluation results.
+	 * @return map of evaluation results (of k-fold cross validation).
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k,
+			GroundTruthData groundTruthData, ClassifierType classifierType);
 
 	/**
 	 * @param groundTruthData
@@ -114,13 +151,14 @@ public abstract class AbstractClassifier {
 	 *            to be already trained on different data!
 	 * @return map of evaluation results (e.g. of cross-project validation).
 	 */
-	public abstract Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData);
+	public abstract Map<String, ClassificationMetrics> evaluateTrainedClassifier(GroundTruthData groundTruthData);
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
 	 *
 	 * @param filePathAndName
 	 *            absolute path to the classifier file that should be saved.
+	 * @return {@link File} object that was created.
 	 */
 	public File saveToFile(String filePathAndName) {
 		try {
@@ -136,16 +174,19 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * Saves model to a file, so that it can be loaded at a later time.
+	 * 
+	 * @return {@link File} object that was created.
 	 */
 	public File saveToFile() {
 		return saveToFile(TextClassifier.CLASSIFIER_DIRECTORY + getNameWithPrefix());
 	}
 
 	/**
-	 * Loads pre-trained classifier from file.
+	 * Loads a pre-trained classifier from file.
 	 *
 	 * @param filePathAndName
 	 *            absolute path to the classifier file that should be loaded.
+	 * @return {@link Classifier} instance.
 	 */
 	@SuppressWarnings("unchecked")
 	public static Classifier<double[]> loadFromFile(String filePathAndName) {
@@ -163,14 +204,11 @@ public abstract class AbstractClassifier {
 
 	/**
 	 * Loads pre-trained classifier from file.
+	 * 
+	 * @return {@link Classifier} instance.
 	 */
-	public boolean loadFromFile() {
-		Classifier<double[]> newModel = loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getNameWithPrefix());
-		if (newModel != null) {
-			model = newModel;
-			return true;
-		}
-		return false;
+	public Classifier<double[]> loadFromFile() {
+		return loadFromFile(TextClassifier.CLASSIFIER_DIRECTORY + getNameWithPrefix());
 	}
 
 	/**

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.template.TemplateSource.File;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
@@ -15,6 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.classification.OneVersusRest;
+import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
 
@@ -27,6 +29,17 @@ import smile.validation.ClassificationValidation;
  */
 public class FineGrainedClassifier extends AbstractClassifier {
 
+	/**
+	 * Constructs a new fine-grained classifier instance. Reads the classifier from
+	 * file if it was already trained and saved to file system.
+	 * 
+	 * @param numClasses
+	 *            2 for the binary classifier and > 2 for the fine grained
+	 *            classifier.
+	 * @param namePrefix
+	 *            to identify the ground truth data that the classifier was trained
+	 *            on, e.g. "defaultTrainingData" or a project key.
+	 */
 	public FineGrainedClassifier(int numClasses, String namePrefix) {
 		super(numClasses, namePrefix);
 	}
@@ -36,43 +49,33 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		return "fineGrainedClassifier.model";
 	}
 
-	/**
-	 * Trains the fine grained classifier.
-	 *
-	 * @param trainingData
-	 *            {@link GroundTruthData} read from csv file (see
-	 *            {@link #readDataFrameFromCSVFile(File)} or created from the
-	 *            current {@link KnowledgeGraph).
-	 */
 	@Override
-	public void train(GroundTruthData trainingData) {
+	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
 		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, true);
-		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels);
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.updatedLabels, classifierType);
 		fitTime = (System.nanoTime() - start) / 1E6;
 		isCurrentlyTraining = false;
 		saveToFile();
 	}
 
-	/**
-	 * Trains the model using supervised training data, features and labels.
-	 *
-	 * @param trainingSamples
-	 * @param trainingLabels
-	 * @return
-	 */
-	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels) {
-		// return OneVersusRest.fit(trainingSamples, trainingLabels,
-		// (x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
-		return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+	@Override
+	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		switch (classifierType) {
+		case SVM:
+			return OneVersusRest.fit(trainingSamples, trainingLabels,
+					(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		default:
+			return LogisticRegression.multinomial(trainingSamples, trainingLabels);
+		}
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluate(int k, GroundTruthData groundTruthData) {
-		Map<GroundTruthData, GroundTruthData> splitData = GroundTruthData.splitForKFoldCrossValidation(k,
-				groundTruthData.getDecisionKnowledgeElements());
-		Classifier<double[]> oldModel = model;
+	public Map<String, ClassificationMetrics> evaluateUsingKFoldCrossValidation(int k, GroundTruthData groundTruthData,
+			ClassifierType classifierType) {
+		Map<GroundTruthData, GroundTruthData> splitData = groundTruthData.splitForFineGrainedKFoldCrossValidation(k);
+		Classifier<double[]> entireModel = model;
 
 		int[] truth = new int[0];
 		int[] prediction = new int[0];
@@ -80,7 +83,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		double scoreTime = 0;
 		for (Map.Entry<GroundTruthData, GroundTruthData> entry : splitData.entrySet()) {
 			long start = System.nanoTime();
-			train(entry.getKey());
+			train(entry.getKey(), classifierType);
 			fitTime += (System.nanoTime() - start) / 1E6;
 			start = System.nanoTime();
 			String[] sentences = entry.getValue().getRelevantSentences();
@@ -93,12 +96,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			truth = PreprocessedData.concatenate(truth, truthForFold);
 			prediction = PreprocessedData.concatenate(prediction, predictionForFold);
 		}
-		model = oldModel;
-		return calculateEvaluationMetrics(truth, prediction, fitTime, scoreTime);
+		Map<String, ClassificationMetrics> fineGrainedEvaluationResults = calculateEvaluationMetrics(truth, prediction,
+				fitTime, scoreTime);
+		model = entireModel;
+		return fineGrainedEvaluationResults;
 	}
 
 	@Override
-	public Map<String, ClassificationMetrics> evaluateClassifier(GroundTruthData groundTruthData) {
+	public Map<String, ClassificationMetrics> evaluateTrainedClassifier(GroundTruthData groundTruthData) {
 		long start = System.nanoTime();
 		String[] sentences = groundTruthData.getRelevantSentences();
 		int[] truth = groundTruthData.getKnowledgeTypeLabelsForRelevantSentences();
@@ -116,7 +121,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
 				model, truth, prediction, fitTime, scoreTime);
-		resultsMap.put("Fine-grained Overall", validationOverall.metrics);
+		resultsMap.put("Fine-grained Overall " + model.getClass().getName(), validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
 			KnowledgeType type = FineGrainedClassifier.mapIndexToKnowledgeType(classLabel);
@@ -224,5 +229,4 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			return -1;
 		}
 	}
-
 }

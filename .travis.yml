@@ -25,10 +25,7 @@ deploy:
   token: "$GITHUB_TOKEN"
   on:
     tags: true
-    branch: develop
+    repo: cures-hub/cures-condec-jira
   overwrite: true
 after_success:
 - bash <(curl -s https://codecov.io/bash) -f $TRAVIS_BUILD_DIR/target/site/jacoco/jacoco.xml
-env:
-  global:
-  - secure: jByw8On1E7BSq8T5vLUBbTmhC8WxrZSGkl7a0kl9twfrozLS+o8ovZb1qZ/YVAF3hiZhUa0sqjh12vzg7zvmr2u25Fvjkto/aCDqhtRlEAaML2MI3MuXu2JKUNGQdEj4J+V3otPtvbwVc4eVggS3Ve1oY93tH70mTJcWtH+ophH8AtLMR6yVC5JW++ZDOtGuM7sRrQdEgrfjb5/y9kqNdP33JUhP/d+UIdlYVIqSAfFbjKwUCWD6iyyL1r9n7YfTV3TDXhrxsQd1kQBoeSOtRGoGKOOfOhpu6o+Vhvvme0ysPppRtX1iMz+7MLh62su//N7ia8RBAYDgeu7LFSYvQpnAtauTy6Io5r6GOIftaLJhZUJL6g5DMCPqpQKvQ/BERMrzbOD+OQgQFRmvETni96AMdx7QAg2ElYA6cng+avJJSSZY3cyWROo7guBrRaLep1gflD7njYuayPajHUXqqlFW3RzemcVFsRCIfc+kGlsf3EN+mfnqJ3dyzJZqTwH1PiFti2lLtODtZbB+LhvnmWzsnETScGykHOxwSl5gG3T6dP4QnoIaGkuNcmlRx+uw5p/e4FI7OCpBWXS5ZVwJHSxi/D71tFeTm1EZOxcXU7xuimeDOdTxJkfsWJz4ILCUdfzBKa/xPDS7Stb9aEWOIKnAGdQnULEMDSnZu8Hlr+4=

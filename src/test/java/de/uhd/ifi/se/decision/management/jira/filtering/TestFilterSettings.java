@@ -1,26 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -233,6 +235,11 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetSelectedElement() {
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		Set<KnowledgeElement> vertexSet = new HashSet<KnowledgeElement>();
+		vertexSet.addAll(graph.vertexSet());
+		graph.removeAllVertices(vertexSet);
+
 		filterSettings.setSelectedElement("TEST-1");
 		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
 
@@ -248,9 +255,9 @@ public class TestFilterSettings extends TestSetUp {
 
 		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
 		elementNotInDatabase.setProject("TEST");
-		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementNotInDatabase);
-		filterSettings.setSelectedElement("TEST:graph:-2");
-		assertEquals("TEST:graph:-2", filterSettings.getSelectedElement().getKey());
+		elementNotInDatabase = KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementNotInDatabase);
+		filterSettings.setSelectedElement(elementNotInDatabase.getKey());
+		assertEquals(elementNotInDatabase.getKey(), filterSettings.getSelectedElement().getKey());
 	}
 
 	@Test
@@ -271,6 +278,69 @@ public class TestFilterSettings extends TestSetUp {
 		assertTrue(filterSettings.isIrrelevantTextShown());
 		assertTrue(filterSettings.getKnowledgeTypes().contains("Other"));
 	}
+
+	@Test
+	public void testContext() {
+		// default value
+		assertEquals(0, filterSettings.getContext());
+		filterSettings.setContext(1);
+		assertEquals(1, filterSettings.getContext());
+	}
+
+	@Test
+	public void testDisplayType() {
+		// default value
+		assertEquals("", filterSettings.getDisplayType());
+		filterSettings.setDisplayType("graph");
+		assertEquals("graph", filterSettings.getDisplayType());
+	}
+
+	@Test
+	public void testLinkImpact() {
+		// default value
+		assertEquals(9, filterSettings.getLinkImpact().size());
+		filterSettings.setLinkImpact(new HashMap<>() {{
+			put("test", 1.0f);
+		}});
+		assertEquals(1, filterSettings.getLinkImpact().size());
+	}
+
+	@Test
+	public void testDecayValue() {
+		// default value
+		assertEquals(0.75, filterSettings.getDecayValue(), 0.01);
+		filterSettings.setDecayValue(0.8f);
+		assertEquals(0.8, filterSettings.getDecayValue(), 0.01);
+	}
+
+	@Test
+	public void testThresholdValue() {
+		// default value
+		assertEquals(0.25, filterSettings.getThreshold(), 0.01);
+		filterSettings.setThreshold(0.2);
+		assertEquals(0.2, filterSettings.getThreshold(), 0.01);
+	}
+
+	@Test
+	public void testCiaRequest() {
+		// default value
+		assertFalse(filterSettings.isCiaRequest());
+		filterSettings.setCiaRequest(true);
+		assertTrue(filterSettings.isCiaRequest());
+	}
+
+	@Test
+	public void testPropagationRule() {
+		// default value
+		assertEquals(0, filterSettings.getPropagationRule().size());
+		filterSettings.setPropagationRule(new LinkedList<>() {{
+			add(PassRule.UNDEFINED.getTranslation());
+		}});
+		assertEquals(1, filterSettings.getPropagationRule().size());
+		filterSettings.setPropagationRule(null);
+		assertEquals(0, filterSettings.getPropagationRule().size());
+	}
+
 
 	@Test
 	public void testToString() {

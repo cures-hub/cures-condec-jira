@@ -18,27 +18,27 @@
 	<!-- Web Resources -->
 	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
 		<description>
-			Provides the style sheets and icons used in this plug-in.
-		</description>
-		<context>atl.general</context>
-		<!-- general icons -->
-		<resource type="download" name="add.png" location="/images/add.png" />
-		<resource type="download" name="delete.png" location="/images/delete.png" />
-		<resource type="download" name="open.png" location="/images/open.png" />
-		<resource type="download" name="edit.png" location="/images/edit.png" />
-		<resource type="download" name="32px.png" location="/images/32px.png" />
-		<resource type="download" name="40px.png" location="/images/40px.png" />
-		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />		
-		<!-- default knowledge icons -->
-		<resource type="download" name="decision.png" location="/images/decision.png" />
-		<resource type="download" name="issue.png" location="/images/issue.png" />
-		<resource type="download" name="alternative.png" location="/images/alternative.png" />
-		<resource type="download" name="solution.png" location="/images/solution.png" />
-		<resource type="download" name="argument.png" location="/images/argument.png" />
-		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
-		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
-		<resource type="download" name="other.png" location="/images/other.png" />
-		<resource type="download" name="code.png" location="/images/code.png" />
+            Provides the style sheets and icons used in this plug-in.
+        </description>
+        <context>atl.general</context>
+        <!-- general icons -->
+        <resource type="download" name="add.png" location="/images/add.png"/>
+        <resource type="download" name="delete.png" location="/images/delete.png"/>
+        <resource type="download" name="open.png" location="/images/open.png"/>
+        <resource type="download" name="edit.png" location="/images/edit.png"/>
+        <resource type="download" name="32px.png" location="/images/32px.png"/>
+        <resource type="download" name="40px.png" location="/images/40px.png"/>
+        <resource type="download" name="throbber.gif" location="/images/throbber.gif"/>
+        <!-- default knowledge icons -->
+        <resource type="download" name="decision.png" location="/images/decision.png"/>
+        <resource type="download" name="issue.png" location="/images/issue.png"/>
+        <resource type="download" name="alternative.png" location="/images/alternative.png"/>
+        <resource type="download" name="solution.png" location="/images/solution.png"/>
+        <resource type="download" name="argument.png" location="/images/argument.png"/>
+        <resource type="download" name="argument_pro.png" location="/images/argument_pro.png"/>
+        <resource type="download" name="argument_con.png" location="/images/argument_con.png"/>
+        <resource type="download" name="other.png" location="/images/other.png"/>
+        <resource type="download" name="code.png" location="/images/code.png"/>
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
@@ -71,7 +71,6 @@
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
-		<resource type="download" name="settings.css" location="/css/settings.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
 		<resource type="download" name="vis-network.css"
 			location="/js/lib/vis-network/dist/dist/vis-network.css" />
@@ -140,6 +139,7 @@
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
 		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
+        <resource type="download" name="condec.cia.js" location="/js/condec.cia.js"/>
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
 		<resource type="download" name="condec.decision.groups.js"
 			location="/js/condec.decision.groups.js" />
@@ -157,8 +157,10 @@
                   location="/js/settings/condec.settings.quality.js" />
 		<resource type="download" name="condec.jira.issue.module.consistency.js"
 			location="/js/condec.jira.issue.module.consistency.js" />
+		<resource type="download" name="condec.decision.guidance.api.js"
+			location="/js/decisionguidance/condec.decision.guidance.api.js" />
 		<resource type="download" name="condec.decision.guidance.js"
-			location="/js/condec.decision.guidance.js" />
+			location="/js/decisionguidance/condec.decision.guidance.js" />		
 	</web-resource>
 
 	<web-resource key="release-notes-resources"
@@ -171,8 +173,8 @@
 			location="/js/releasenotes/condec.release.notes.api.js" />
 		<resource type="download" name="condec.release.notes.page.js"
 			location="/js/releasenotes/condec.release.notes.page.js" />
-		<resource type="download" name="condec.release.notes.dialog.js"
-			location="/js/releasenotes/condec.release.notes.dialog.js" />		
+        <resource type="download" name="condec.release.notes.dialog.js"
+                  location="/js/releasenotes/condec.release.notes.dialog.js"/>
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />
@@ -199,6 +201,8 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="defaultTrainingData.csv"
 			location="/classifier/defaultTrainingData.csv" />
+		<resource type="download" name="CONDEC-NLP4RE2021.csv"
+			location="/classifier/CONDEC-NLP4RE2021.csv" />
 
 		<!-- Language models -->
 		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
@@ -302,26 +306,35 @@
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-rationalebacklog"
-		name="Menu Item for ConDec Plug-in Project Settings of Rationale Backlog"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-		<description>Adds the "Rationale backlog" menu item.</description>
-		<label key="condec.project.settings.menu.item.rationale.backlog" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
-		</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-git"
-		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
-		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
-		<description>Adds the "Git connection" menu item.</description>
-		<label key="condec.project.settings.menu.item.git" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
-	<web-item key="condec-project-settings-menu-item-classification"
-		name="Menu Item for ConDec Plug-in Project Settings of Classification"
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-rationalebacklog"
+              name="Menu Item for ConDec Plug-in Project Settings of Rationale Backlog"
+              section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+        <description>Adds the "Rationale backlog" menu item.</description>
+        <label key="condec.project.settings.menu.item.rationale.backlog"/>
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleBacklog
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-cia"
+              name="Menu Item for ConDec Plug-in Project Settings of CIA Settings"
+              section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+        <description>Adds the "CIA Settings" menu item.</description>
+        <label key="condec.project.settings.menu.item.rationale.cia"/>
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=cia
+        </link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-git"
+              name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
+              section="atl.jira.proj.config/condec-project-settings-section" weight="18">
+        <description>Adds the "Git connection" menu item.</description>
+        <label key="condec.project.settings.menu.item.git"/>
+        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
+        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
+    </web-item>
+    <web-item key="condec-project-settings-menu-item-classification"
+              name="Menu Item for ConDec Plug-in Project Settings of Classification"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
 		<description>Adds the "Text classification" menu item.</description>
 		<label key="condec.project.settings.menu.item.classification" />
@@ -341,7 +354,7 @@
 	<web-item key="condec-project-settings-menu-item-decisionguidance"
 		name="Menu Item for ConDec Plug-in Project Settings of Decision Guidance"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="21">
-		<description>Adds the "Decision guidance" menu item.</description>
+		<description>Adds the "Decision Guidance" menu item.</description>
 		<label key="condec.project.settings.menu.item.decision.guidance" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=decisionGuidance
 		</link>
@@ -422,7 +435,7 @@
 		<link linkId="export-as-table-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	
+
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="reset-decision-knowledge-from-text-item"
 		name="Menu Item for Rereading the Decision Knowledge Documented in Jira Issue Description and Comments" section="operations-operations">
@@ -508,7 +521,9 @@
         <resource type="download" name="condec.rationale.coverage.dashboard.js"
                   location="js/dashboard/condec.rationale.coverage.dashboard.js" />
         <resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
-                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
+                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" 
+        <resource type="download" name="condec.code.coverage.dashboard.js"
+                  location="js/dashboard/condec.code.coverage.dashboard.js" />/>
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
@@ -551,15 +566,15 @@
                     configurable="true">
         <definition>
             <title key="condec.dashboard.generalmetrics.title" />
-            <categories>
-                <category>Jira</category>
-            </categories>
-            <author>
-                <name>ConDec team</name>
-            </author>
-            <thumbnail
-                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-        </definition>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
         <description key="condec.dashboard.generalmetrics.description" />
         <resource name="view" type="velocity"
                   location="/templates/dashboard/generalMetrics.vm" />
@@ -573,15 +588,15 @@
                     configurable="true">
         <definition>
             <title key="condec.dashboard.rationalecompleteness.title" />
-            <categories>
-                <category>Jira</category>
-            </categories>
-            <author>
-                <name>ConDec team</name>
-            </author>
-            <thumbnail
-                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-        </definition>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
         <description key="condec.dashboard.rationalecompleteness.description" />
         <resource name="view" type="velocity"
                   location="/templates/dashboard/rationaleCompleteness.vm" />
@@ -595,15 +610,15 @@
                     configurable="true">
         <definition>
             <title key="condec.dashboard.rationalecoverage.title" />
-            <categories>
-                <category>Jira</category>
-            </categories>
-            <author>
-                <name>ConDec team</name>
-            </author>
-            <thumbnail
-                location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-        </definition>
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
         <description key="condec.dashboard.rationalecoverage.description" />
         <resource name="view" type="velocity"
                   location="/templates/dashboard/rationaleCoverage.vm" />
@@ -611,4 +626,29 @@
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
         <amd-module>dashboard/rationaleCoverage</amd-module>
     </dashboard-item>
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/rationaleCoverage.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
+	</dashboard-item>
+
+    <dashboard-item key="condec-code-coverage-dashboard-item"
+		name="ConDec Dashboard for Code Coverage">
+		<definition>
+            <title key="condec.dashboard.codecoverage.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+		</definition>
+        <description key="condec.dashboard.codecoverage.description" />
+		<resource name="view" type="velocity"
+			location="/templates/dashboard/codeCoverage.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.CodeCoverageDashboardItem" />
+	</dashboard-item>
 </atlassian-plugin>

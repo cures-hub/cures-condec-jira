@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -35,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -571,70 +569,5 @@ public class KnowledgeRest {
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.status(Status.OK).entity(elements.size()).build();
-	}
-
-	@Path("/resetRecommendationsForKnowledgeElement")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response resetRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
-		if (request == null || jiraIssueId == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
-					.build();
-		}
-		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
-		if (jiraIssue == null) {
-			return Response.status(Status.NOT_FOUND)
-					.entity(ImmutableMap.of("error", "Resetting all recommendations for this Jira issue failed "
-							+ "because the Jira issue could not be found."))
-					.build();
-		}
-		String projectKey = jiraIssue.getProjectObject().getKey();
-
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		KnowledgeElement knowledgeElement = manager.getKnowledgeElement(jiraIssueId, "i");
-
-		List<KnowledgeElement> knowledgeElements = manager.getKnowledgeElements();
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		for (KnowledgeElement knowledgeElement1 : knowledgeElements) {
-
-			if (knowledgeElement1.getKey().contains(knowledgeElement.getKey())
-					&& knowledgeElement1.getStatus().equals(KnowledgeStatus.RECOMMENDED)) {
-				manager.deleteKnowledgeElement(knowledgeElement1, user);
-			}
-		}
-
-		// JiraIssueTextPersistenceManager persistenceManager =
-		// KnowledgePersistenceManager.getOrCreate(projectKey)
-		// .getJiraIssueTextManager();
-		// List<Comment> comments =
-		// ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		// comments.forEach(comment ->
-		// persistenceManager.deleteElementsInComment(comment));
-
-		return Response.status(Status.OK).build();
-	}
-
-	@Path("/getAllIssues")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-
-		List<KnowledgeElement> allElements = manager.getKnowledgeElements();
-
-		List<KnowledgeElement> allIssues = allElements.stream()
-				.filter(knowledgeElement -> knowledgeElement.getType() == KnowledgeType.ISSUE)
-				.collect(Collectors.toList());
-
-		return Response.status(Status.OK).entity(allIssues).build();
 	}
 }

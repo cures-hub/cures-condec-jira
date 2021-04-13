@@ -1,0 +1,165 @@
+<h3>Evaluation of Knowledge Sources</h3>
+<form class="aui">
+<div class="field-group">
+    <label for="evaluation-keywords">Keywords</label>
+    <input id="evaluation-keywords" class="text long-field" placeholder="e.g. databases"/>
+    <div class="description">Enter some keywords.</div>
+</div>
+
+<div class="field-group">
+	<label for="select2-issues">Issue</label>
+	<select id="select2-issues" placeholder="Select a decision problem..." class="select long-field"></select>
+	<div class="description">Select a decision problem for the evaluation.</div>    
+</div>
+
+<div class="field-group">
+    <a href="#knowledgesource-evaluation-dropdown" aria-owns="knowledgesource-evaluation-dropdown" aria-haspopup="true"
+       class="aui-button aui-style-default aui-dropdown2-trigger">Select Knowledge Sources</a>
+    <label for="knowledgesource-evaluation-dropdown">Knowledge Sources</label>
+
+    <aui-dropdown-menu id="knowledgesource-evaluation-dropdown" class="aui-style-default aui-dropdown2">
+        <div class="aui-dropdown2-section">
+            <div class="aui-dropdown2-heading"><strong>RDF Sources</strong></div>
+            #foreach ($rdfSource in $decisionGuidanceConfig.getRDFKnowledgeSources())
+            <aui-item-checkbox interactive>$rdfSource.getName()</aui-item-checkbox>
+            #end
+        </div>
+        <div class="aui-dropdown2-section">
+            <div class="aui-dropdown2-heading"><strong>Project Sources</strong></div>
+            #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
+            <aui-item-checkbox interactive>$projectSource.getName()</aui-item-checkbox>
+            #end
+        </div>
+    </aui-dropdown-menu>
+    <div class="description">Select knowledge sources that you want to evaluate.</div>
+</div>
+
+<div class="field-group">
+    <label for="k-results">Top-k Results</label>
+    <input class="text short-field"
+           type="number"
+           data-aui-validation-field
+           min="0"
+           value="5"
+           id="k-results"
+           name="k-results"/>
+    <div class="description">Set the top-k recommendations that should be used for the metric calculation. 
+    	Only the top-k recommendations with the highest score are used in the table below.<br/> 
+    	<b>Set this value to "0" if all recommendations should be used during metric calculation.</b>
+    </div>
+</div>
+
+<div class="field-group">
+	<input type="button" class="aui-button-primary aui-button" id="evaluation-knowledgesource-button" value="Evaluate"/>
+    <div class="description">Evaluates the selected knowledge source(s) for the given input.</div>
+</div>
+</form>
+
+<table id="evaluation-results-table" class="aui aui-table-list">
+    <thead>
+    <tr>
+        <th>Knowledge Source</th>
+        <th>
+        	All Recommendations 
+        	<a data-aui-trigger aria-controls='numRecommendations'>     
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='numRecommendations' responds-to='hover'>
+        		Note that only the top-k recommendations are used for the evaluation!
+        		This number represents the total amount of recommendations generated from the knowledge source.
+        	</aui-inline-dialog>
+        </th>
+        <th>
+        	Ground Truth 
+        	<a data-aui-trigger aria-controls='groundTruth'>     
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='groundTruth' responds-to='hover'>
+        		All knowledge elements (solution options) used as the ground truth/gold standard.
+        	</aui-inline-dialog>
+        </th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<aui-spinner id="loading-spinner-recommendation" style="display:none;"></aui-spinner>
+    
+<script>
+    var documentationLocations = {}
+    var filterSettings = {"knowledgeTypes" : ["Issue", "Problem", "Goal"]};
+	conDecAPI.getKnowledgeElements(filterSettings, function (decisionProblems) {
+		decisionProblems.forEach(issue => {
+			documentationLocations[issue.id] = issue.documentationLocation;
+			$("#select2-issues").append("<option value='" + issue.id + "'>" + issue.summary + "</option>");
+		});
+	});        
+    AJS.$("#select2-issues").auiSelect2();
+
+    let activeSources = [];
+    var sources = $("#knowledgesource-evaluation-dropdown");
+    sources.change(function(e) {
+        var isChecked = e.target.hasAttribute('checked');
+        if (isChecked) {
+           activeSources.push(e.target.textContent);
+        } else {
+            activeSources.splice(activeSources.indexOf(e.target.textContent), 1);
+        }
+    });
+
+	let isTableHeaderForMetricsExiting = false;
+    $("#evaluation-knowledgesource-button").click(function(event) {
+        event.preventDefault();
+        const keywords = $("#evaluation-keywords").val();
+        const issueID = $("#select2-issues").val();
+       	const documentationLocation = documentationLocations[issueID];
+        const kResults = $("#k-results").val();
+        $("#evaluation-results-table tbody tr").remove();
+        const spinner = $("#loading-spinner-recommendation");
+        activeSources.forEach(function(sourceName) {
+            spinner.show();
+            conDecDecisionGuidanceAPI.getRecommendationEvaluation("$projectKey", keywords, issueID, sourceName, kResults, documentationLocation, 
+            	function(evaluation, error) {
+            		if (!isTableHeaderForMetricsExiting) {
+						$("#evaluation-results-table thead tr").append(createHeaderCellsForMetrics(evaluation.metrics));
+	                }
+	                isTableHeaderForMetricsExiting = true;
+	                
+                	var metricValues = ""
+                	evaluation.metrics.forEach(metric => {
+                    	metricValues += "<td>" + metric.value.toFixed(2) + "</td>"; 
+	                });	                
+	
+	                $("#evaluation-results-table tbody").append(
+	                	"<tr><td>" + evaluation.knowledgeSource.name + "</td>" +
+						"<td>" + createTooltip(evaluation.recommendations) + "</td>" + 
+						"<td>" + createTooltip(evaluation.groundTruthSolutionOptions) + "</td>" + metricValues + "</tr>");
+	                spinner.hide();
+			});
+        });
+    });
+    
+    function createHeaderCellsForMetrics(metrics) {
+    	headerCells = "";
+    	metrics.forEach(metric => {
+    		headerCells += "<th>" + metric.name + "<a data-aui-trigger aria-controls='" + metric.name + "'> " 
+				+ "<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span></a>" 
+				+ "<aui-inline-dialog id='" + metric.name + "' responds-to='hover'>" + metric.description 
+				+ "</aui-inline-dialog></th>";
+		});
+    	return headerCells;
+    }
+    
+    function createTooltip(knowledgeElements) {
+    	var id = knowledgeElements.length;
+    	if (id === 0) {
+			return id;
+    	}
+    	var tooltip = "<a data-aui-trigger aria-controls='knowledgeElements-" + id + "'>"    
+        	+ knowledgeElements.length
+        	+ "</a><aui-inline-dialog id='knowledgeElements-" + id + "' responds-to='hover'>";        	
+        knowledgeElements.forEach(element => {
+        	tooltip += element.summary + "; ";
+        });
+        return tooltip + "</aui-inline-dialog>";
+    }    
+</script>

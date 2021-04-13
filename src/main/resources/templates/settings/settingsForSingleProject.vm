@@ -30,9 +30,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 #elseif( $category == "consistency" )
     #parse("templates/settings/consistencySettings.vm")
 #elseif( $category == "decisionGuidance" )
-    #parse("templates/settings/decisionGuidance.vm")
+    #parse("templates/settings/decisionguidance/decisionGuidance.vm")
 #elseif( $category == "rationaleBacklog" )
     #parse("templates/settings/rationaleBacklogSettings.vm")
+#elseif( $category == "cia" )
+    #parse("templates/settings/ciaSettings.vm")
 #else
 	#parse("templates/settings/basicSettings.vm")
 #end

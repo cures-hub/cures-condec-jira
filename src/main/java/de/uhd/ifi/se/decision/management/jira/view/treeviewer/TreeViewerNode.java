@@ -1,17 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.annotation.XmlElement;
-
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Model class for Tree Viewer nodes
@@ -93,11 +91,27 @@ public class TreeViewerNode {
 		this.children = children;
 	}
 
-	public Object getElement() {
+	public KnowledgeElement getElement() {
 		return element;
 	}
 
 	public String getIcon() {
 		return icon;
+	}
+
+	public Map<String, String> getAttr() {
+		return a_attr;
+	}
+
+	public void setAttr(Map<String, String> a_attr) {
+		this.a_attr = a_attr;
+	}
+
+	public Map<String, String> getLiAttr() {
+		return li_attr;
+	}
+
+	public void setLiAttr(Map<String, String> li_attr) {
+		this.li_attr = li_attr;
 	}
 }

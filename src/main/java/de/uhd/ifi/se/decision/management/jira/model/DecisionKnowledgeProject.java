@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,9 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
@@ -28,10 +31,10 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
  * Models a Jira project and its configuration. The Jira project is extended
  * with settings for this plug-in, for example, whether the plug-in is activated
  * for the project.
- * 
+ *
  * This class provides read-only access to the settings. To change the settings,
  * use the {@link ConfigPersistenceManager}.
- * 
+ *
  * @issue Should the DecisionKnowledgeProject class extend the Jira project
  *        class?
  * @decision The DecisionKnowledgeProject does not extend the Jira project class
@@ -162,6 +165,25 @@ public class DecisionKnowledgeProject {
 		return ConfigPersistenceManager.getGitRepositoryConfigurations(getProjectKey());
 	}
 
+	public Map<String, CommentStyleType> getCodeFileEndings() {
+		return ConfigPersistenceManager.getCodeFileEndings(getProjectKey());
+	}
+
+	public String getCodeFileEndings(String commentStyleTypeString) {
+		Map<String, CommentStyleType> codeFileEndingMap = this.getCodeFileEndings();
+		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
+		String codeFileEndings = "";
+		for (String codeFileEnding : codeFileEndingMap.keySet()) {
+			if (codeFileEndingMap.get(codeFileEnding) == commentStyleType) {
+				codeFileEndings += codeFileEnding + ", ";
+			}
+		}
+		if (!codeFileEndings.isEmpty()) {
+			return codeFileEndings.substring(0, codeFileEndings.length() - 2); // remove last ", "
+		}
+		return codeFileEndings;
+	}
+
 	/**
 	 * @return true if the webhook is enabled for this project.
 	 */
@@ -201,6 +223,14 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
+	 * @return configuration for the recommendation of knowledge elements from
+	 *         external knowledge sources.
+	 */
+	public DecisionGuidanceConfiguration getDecisionGuidanceConfiguration() {
+		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(getProjectKey());
+	}
+
+	/**
 	 * @return Jira issue types available in the project.
 	 */
 	public Set<IssueType> getJiraIssueTypes() {
@@ -227,6 +257,17 @@ public class DecisionKnowledgeProject {
 		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
 		Set<String> namesOfJiraIssueLinkTypes = types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
 		Set<String> allLinkTypes = namesOfJiraIssueLinkTypes;
+		// In the future, there will also be a "transitive" link type for transitive
+		// link creation.
+		allLinkTypes.add("Other");
+		return allLinkTypes;
+	}
+
+	public static Set<String> getAllNamesOfLinkTypes() {
+		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
+		Set<String> allLinkTypes = new HashSet<>();
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getInward).collect(Collectors.toSet()));
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getOutward).collect(Collectors.toSet()));
 		// In the future, there will also be a "transitive" link type for transitive
 		// link creation.
 		allLinkTypes.add("Other");

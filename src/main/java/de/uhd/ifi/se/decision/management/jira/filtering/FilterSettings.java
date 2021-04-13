@@ -1,25 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -27,10 +13,25 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -60,12 +61,20 @@ public class FilterSettings {
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
 	private boolean createTransitiveLinks;
+	private boolean isCiaRequest;
+	private Map<String, Float> linkImpact;
+	private List<PassRule> passRule;
+	private long context;
+	private double decayValue;
+	private double threshold;
+
+	private String displayType;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-			@JsonProperty("searchTerm") String searchTerm) {
+						  @JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 		setSearchTerm(searchTerm);
 
@@ -86,6 +95,18 @@ public class FilterSettings {
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
+		this.setIrrelevantTextShown(false);
+
+		this.linkImpact = new HashMap<>();
+		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
+			linkImpact.put(entry, 1.0f);
+		});
+		this.displayType = "";
+		this.passRule = new LinkedList<>();
+		this.decayValue = 0.75;
+		this.threshold = 0.25;
+		this.context = 0;
+		this.isCiaRequest = false;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -302,7 +323,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
-	@XmlElement(name = "linkDistance")
+  @XmlElement(name = "linkDistance")
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -313,7 +334,7 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
-	@JsonProperty("linkDistance")
+  @JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
 	}
@@ -322,7 +343,7 @@ public class FilterSettings {
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-	@XmlElement(name = "minDegree")
+  @XmlElement(name = "minDegree")
 	public int getMinDegree() {
 		return minDegree;
 	}
@@ -332,7 +353,7 @@ public class FilterSettings {
 	 *            minimal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-	@JsonProperty("minDegree")
+  @JsonProperty("minDegree")
 	public void setMinDegree(int minDegree) {
 		this.minDegree = minDegree;
 	}
@@ -341,7 +362,7 @@ public class FilterSettings {
 	 * @return maximal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-	@XmlElement(name = "maxDegree")
+  @XmlElement(name = "maxDegree")
 	public int getMaxDegree() {
 		return maxDegree;
 	}
@@ -351,7 +372,7 @@ public class FilterSettings {
 	 *            maximal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-	@JsonProperty("maxDegree")
+  @JsonProperty("maxDegree")
 	public void setMaxDegree(int maxDegree) {
 		this.maxDegree = maxDegree;
 	}
@@ -376,7 +397,7 @@ public class FilterSettings {
 	/**
 	 * @return true if incompletely documented knowledge elements are shown in the
 	 *         filtered graph.
-	 * 
+	 *
 	 * @see CompletenessCheck
 	 */
 	public boolean isIncompleteKnowledgeShown() {
@@ -387,7 +408,7 @@ public class FilterSettings {
 	 * @param isIncompleteKnowledgeShown
 	 *            true if incompletely documented knowledge elements should be shown
 	 *            in the filtered graph.
-	 * 
+	 *
 	 * @see CompletenessCheck
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
@@ -421,10 +442,10 @@ public class FilterSettings {
 	 *            (e.g. as root element in the knowlegde tree view). For example,
 	 *            this can be the key of a Jira issue such as a work item, bug
 	 *            report or requirement, e.g. CONDEC-123.
-	 * 
+	 *
 	 * @issue How can we identify knowledge elements from different documentation
 	 *        locations?
-	 * 
+	 *
 	 *        TODO Solve this issue and make code class recognition more explicit
 	 */
 	@JsonProperty("selectedElement")
@@ -543,5 +564,76 @@ public class FilterSettings {
 			LOGGER.error(e.getMessage());
 		}
 		return filterSettingsAsJson;
+	}
+
+	public long getContext() {
+		return context;
+	}
+
+	@JsonProperty("context")
+	public void setContext(long context) {
+		this.context = context;
+	}
+
+	public String getDisplayType() {
+		return displayType;
+	}
+
+	@JsonProperty("displayType")
+	public void setDisplayType(String displayType) {
+		this.displayType = displayType;
+	}
+
+	public Map<String, Float> getLinkImpact() {
+		return linkImpact;
+	}
+
+	@JsonProperty("linkImpact")
+	public void setLinkImpact(Map<String, Float> linkImpact) {
+		this.linkImpact = linkImpact;
+	}
+
+	public double getDecayValue() {
+		return decayValue;
+	}
+
+	@JsonProperty("decayValue")
+	public void setDecayValue(double decayValue) {
+		this.decayValue = decayValue;
+	}
+
+	public double getThreshold() {
+		return threshold;
+	}
+
+	@JsonProperty("threshold")
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
+	}
+
+	public boolean isCiaRequest() {
+		return isCiaRequest;
+	}
+
+	@JsonProperty("isCiaRequest")
+	public void setCiaRequest(boolean ciaRequest) {
+		isCiaRequest = ciaRequest;
+	}
+
+	@XmlElement(name = "propagationRule")
+	public List<PassRule> getPropagationRule() {
+		return passRule;
+	}
+
+	@JsonProperty("propagationRule")
+	public void setPropagationRule(List<String> rule) {
+		if (rule == null) {
+			passRule.clear();
+			return;
+		}
+		passRule.clear();
+		for (String stringRule : rule) {
+			passRule.add(PassRule.getPropagationRule(stringRule));
+		}
 	}
 }

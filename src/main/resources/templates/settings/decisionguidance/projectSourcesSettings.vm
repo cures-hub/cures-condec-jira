@@ -1,0 +1,33 @@
+<h3>Configure Project Knowledge Sources</h3>
+<table id="project-source-table" class="aui aui-table-list">
+	<thead>
+    	<tr>
+        	<th>Project</th>
+        	<th>Activate?</th>
+    	</tr>
+	</thead>
+	<tbody>
+    #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
+    	<tr>
+        	<td>$projectSource.getName()</td>
+        	<td>
+            <aui-toggle class="activation-knowledgesource-project" label="$projectSource.getName()"
+				#if ($projectSource.isActivated())
+                checked
+                #end
+                ></aui-toggle>
+        	</td>
+    	</tr>
+    #end
+    </tbody>
+</table>
+
+<script>
+$(".activation-knowledgesource-project").each(function() {
+	$(this).change(function() {
+		const projectKey =  $(this).attr("label");
+		const isActivated = $(this).prop("checked");
+		conDecDecisionGuidanceAPI.setProjectSource("$projectKey", projectKey, isActivated);
+	})
+});
+</script>

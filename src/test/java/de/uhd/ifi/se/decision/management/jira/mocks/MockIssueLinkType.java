@@ -1,16 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import java.sql.Timestamp;
-
+import com.atlassian.jira.issue.link.IssueLinkType;
 import org.ofbiz.core.entity.GenericValue;
 
-import com.atlassian.jira.issue.link.IssueLinkType;
+import java.sql.Timestamp;
 
 public class MockIssueLinkType implements IssueLinkType {
+
 	private Long id;
 	private String name;
+	private String inward;
+	private String outward;
 
 	public MockIssueLinkType(Long id) {
+		this.id = id;
+	}
+
+	public MockIssueLinkType(Long id, String name, String inward, String outward) {
+		this.name = name;
+		this.inward = inward;
+		this.outward = outward;
 		this.id = id;
 	}
 
@@ -54,7 +63,7 @@ public class MockIssueLinkType implements IssueLinkType {
 
 	@Override
 	public String getInward() {
-		return null;
+		return inward;
 	}
 
 	@Override
@@ -68,7 +77,7 @@ public class MockIssueLinkType implements IssueLinkType {
 
 	@Override
 	public String getOutward() {
-		return null;
+		return outward;
 	}
 
 	@Override

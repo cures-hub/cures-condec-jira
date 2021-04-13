@@ -8,7 +8,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -63,6 +65,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 			return;
 		}
 		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST", new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+        Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+        codeFileEndingMap.put("JAVA_C", "java");
+        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 		gitClient = GitClient.getOrCreate("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;

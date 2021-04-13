@@ -1,24 +1,29 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.recommender.RecommenderType;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -26,7 +31,7 @@ import static org.junit.Assert.*;
  *
  * @issue How can we enable that settings can be set during testing?
  * @decision Implement MockPluginSettings and MockPluginSettingsFactory classes
- * to enable that settings can be set during testing!
+ *           to enable that settings can be set during testing!
  * @see MockPluginSettings
  * @see MockPluginSettingsFactory
  */
@@ -364,9 +369,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetGitRepos() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP",
-			"user", "secret👀");
+				"user", "secret👀");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-			"githubuser", "token👀");
+				"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -388,9 +393,9 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testGetEmptyOrCorruptConfInfo() {
 		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "",
-			"");
+				"");
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-			"githubuser", "token👀");
+				"githubuser", "token👀");
 
 		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
 
@@ -438,7 +443,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		double input = 0.4;
 		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
 		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
-			0.0);
+				0.0);
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
 		/*
@@ -454,16 +459,16 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		String consistencyEvent = "done";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
 		assertTrue("Activated should be true.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
 		assertFalse("Activated should be false.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		String otherConsistencyEvent = "none";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
 		assertFalse("Activated for 'done' should still be false.",
-			ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
+				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
 
 		// Cannot be tested because the MockPluginSettingsFactory does not support
 		// multiple projects
@@ -478,140 +483,57 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetRDFKnowledgeSource() {
-		RDFSource rdfSource = new RDFSource("TEST", "service", "query", "RDF Name", "30000", 100, "");
-		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", rdfSource);
-		assertEquals("Number of Knowledge sources should be 1", 1,
-			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
-
-		RDFSource rdfSourceUpdated = new RDFSource("TEST", "service2", "query2", "RDF Name2", "10000", 100, "");
-		ConfigPersistenceManager.updateKnowledgeSource("TEST", "RDF Name", rdfSourceUpdated);
-		assertEquals("service2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getService());
-		assertEquals("query2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getQueryString());
-		assertEquals("10000", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getTimeout());
-		assertEquals("RDF Name2", ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).getName());
-
-		// Test invalid Source
-		ConfigPersistenceManager.setRDFKnowledgeSource("TEST", null);
-		assertEquals("Size of existing Knowledge sources should be 1: No error!", 1,
-			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
-
-		// Test deactivation
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation("TEST", "RDF Name2", false);
-		assertFalse("The knowledge source should be dectivated!",
-			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").get(0).isActivated());
-
-		// Delete KnowledgeSource
-		ConfigPersistenceManager.deleteKnowledgeSource("TEST", "RDF Name2");
-		assertEquals("The knowledge source should be 0!", 0,
-			ConfigPersistenceManager.getRDFKnowledgeSource("TEST").size());
-	}
-
-	@Test
-	public void testSetAndGetProjectKnowledgeSources() {
-		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", true);
-		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
-		ConfigPersistenceManager.setProjectSource("TEST", "OTHERPRORJECT", false);
-		assertFalse(ConfigPersistenceManager.getProjectSource("TEST", "OTHERPRORJECT"));
-	}
-
-	@Test
-	public void testGetProjectSourceIfInitial() {
-		assertTrue(ConfigPersistenceManager.getProjectSource("TEST", "THIS PROJECT DOES NOT EXIST"));
-	}
-
-	@Test
-	public void testSetAndGetMaxRecommendations() {
-		ConfigPersistenceManager.setMaxNumberRecommendations("TEST", 10);
-		assertEquals(10, ConfigPersistenceManager.getMaxNumberRecommendations("TEST"));
-	}
-
-	@Test
-	public void testGetActiveProjects() {
-		ConfigPersistenceManager.setProjectSource("TEST", "TEST", true);
-		assertEquals(1, ConfigPersistenceManager.getProjectSourcesForActiveProjects("TEST").size());
-	}
-
-	@Test
-	public void testGetActiveProjectsSourcesInvalid() {
-		assertEquals(0, ConfigPersistenceManager.getProjectSourcesForActiveProjects("PROJECT DOES NOT EXIST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSources() {
-		assertEquals(1, ConfigPersistenceManager.getAllKnowledgeSources("TEST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesInvalidProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("PROJECT DOES NOT EXIST").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesEmptyProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources("").size());
-	}
-
-	@Test
-	public void testGetAllKnowledgeSourcesNullProject() {
-		assertEquals(0, ConfigPersistenceManager.getAllKnowledgeSources(null).size());
-	}
-
-	@Test
-	public void testGetAllActivatedKnowledgeSourcesNullProject() {
-		assertEquals(1, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
-		ConfigPersistenceManager.setProjectSource("TEST", "TEST", false);
-		assertEquals(0, ConfigPersistenceManager.getAllActivatedKnowledgeSources("TEST").size());
-	}
-
-	@Test
-	public void testSetAndGetAddRecommendationDirectly() {
-		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", true);
-		assertTrue(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
-		ConfigPersistenceManager.setAddRecommendationDirectly("TEST", false);
-		assertFalse(ConfigPersistenceManager.getAddRecommendationDirectly("TEST"));
-	}
-
-	@Test
-	public void testSetAndGetRecommendationInput() {
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
-		assertEquals(true, ConfigPersistenceManager.getRecommendationInput("TEST", "KEYWORD"));
-		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
-		assertEquals(false, ConfigPersistenceManager.getRecommendationInput(null, null));
-	}
-
-	@Test
-	public void testSetAndGetRecommendationInputAsMap() {
-		ConfigPersistenceManager.setRecommendationInput("TEST", "KEYWORD", true);
-		ConfigPersistenceManager.setRecommendationInput(null, "KEYWORD", true);
-		assertNotNull(ConfigPersistenceManager.getRecommendationInputAsMap("TEST"));
-		assertEquals(RecommenderType.values().length,
-			ConfigPersistenceManager.getRecommendationInputAsMap("TEST").size());
-	}
-
-	@Test
-	public void testSetAndGetSimilarityThreshold() {
-		ConfigPersistenceManager.setSimilarityThreshold("TEST", 0.5);
-		assertEquals(0.5, ConfigPersistenceManager.getSimilarityThreshold("TEST"), 0.0);
-	}
-
-	@Test
-	public void testSetAndGetIrrelevantWords() {
-		ConfigPersistenceManager.setIrrelevantWords("TEST", "WHICH;WHAT;COULD;SHOULD");
-		assertEquals("WHICH;WHAT;COULD;SHOULD", ConfigPersistenceManager.getIrrelevantWords("TEST"));
-	}
-
-
-	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
+		assertEquals(50, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
+		assertEquals(4, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
 		definitionOfDone.setAlternativeLinkedToArgument(true);
+		definitionOfDone.setDecisionLinkedToPro(true);
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		definitionOfDone.setLineNumbersInCodeFile(20);
+		definitionOfDone.setLinkDistanceFromCodeFileToDecision(3);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
+		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
+		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
+		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
+		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
+		definitionOfDone.setAlternativeLinkedToArgument(false);
+		definitionOfDone.setDecisionLinkedToPro(false);
+		definitionOfDone.setIssueLinkedToAlternative(false);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		Map<String, Integer> expectedCriteriaMap = new HashMap<String, Integer>();
+		expectedCriteriaMap.put("issueIsLinkedToAlternative", 0);
+		expectedCriteriaMap.put("decisionIsLinkedToPro", 0);
+		expectedCriteriaMap.put("alternativeIsLinkedToArgument", 0);
+		expectedCriteriaMap.put("linkDistanceFromCodeFileToDecision", 3);
+		expectedCriteriaMap.put("lineNumbersInCodeFile", 20);
+		assertEquals(expectedCriteriaMap, ConfigPersistenceManager.getDefinitionOfDone("TEST").getCriteriaMap());
+	}
+
+	@Test
+	public void testSetAndGetCiaSettings() {
+		CiaSettings settings = new CiaSettings();
+		assertEquals(0.75, settings.getDecayValue(), 0.01);
+		assertEquals(0.25, settings.getThreshold(), 0.01);
+		assertEquals(9, settings.getLinkImpact().size());
+		settings.setDecayValue(0.75f);
+		settings.setThreshold(0.2f);
+		settings.setLinkImpact(new HashMap<>() {
+			{
+				put("comment", 0.5f);
+			}
+		});
+		ConfigPersistenceManager.setCiaSettings("TEST", settings);
+		CiaSettings loaded = ConfigPersistenceManager.getCiaSettings("TEST");
+		assertEquals(0.75, loaded.getDecayValue(), 0.01);
+		assertEquals(0.2, loaded.getThreshold(), 0.01);
+		assertEquals(1, loaded.getLinkImpact().size());
+		assertEquals(0.5f, loaded.getLinkImpact().getOrDefault("comment", 0.0f), 0.01);
 	}
 
 	@AfterClass

@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CodeCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
@@ -118,6 +119,32 @@ public class DashboardRest {
 
 		return Response.status(Status.OK).entity(metrics).build();
 	}
+  
+  @Path("/codeCoverage")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getCodeCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("linkDistance") String linkDistance) {
+		if (request == null || projectKey == null || linkDistance == null) {
+      return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+				.build();
+		}
+    
+    Map<String, Object> metrics = new LinkedHashMap<>();
+
+		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(projectKey, Integer.parseInt(linkDistance));
+
+		metrics.put("issuesPerCodeFile",
+			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
+		metrics.put("decisionsPerCodeFile",
+			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
+		metrics.put("decisionDocumentedForCodeFile",
+			codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
+		metrics.put("issueDocumentedForCodeFile",
+			codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
+
+		return Response.status(Status.OK).entity(metrics).build();
+  }
 
 	@Path("/documentationLocations")
 	@GET

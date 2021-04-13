@@ -84,8 +84,11 @@ public class GitClient {
 			instances.put(projectKey, gitClient);
 		}
 
-		gitClient.fetchOrCloneRepositories();
-		return gitClient;
+		if (gitClient.fetchOrCloneRepositories()) {
+			return gitClient;
+		} else {
+			return null;
+		}
 	}
 
 	private GitClient(String projectKey) {

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class TestBinaryClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testPredictSingleSentence() {
-		assertFalse(binaryClassifier.predict("The quick brown fox jumps over the lazy dog."));
+		assertFalse(binaryClassifier.predict("Maybe we can talk about that tomorrow."));
 		assertTrue(binaryClassifier.predict("How can we implement?"));
 	}
 
@@ -38,7 +39,7 @@ public class TestBinaryClassifier extends TestSetUp {
 	@NonTransactional
 	public void testPredictSentences() {
 		List<String> sentences = new ArrayList<>();
-		sentences.add("The quick brown fox jumps over the lazy dog.");
+		sentences.add("Thanks for updating the unit tests!");
 		sentences.add("The code will be less clear.");
 		assertFalse(binaryClassifier.predict(sentences)[0]);
 		assertTrue(binaryClassifier.predict(sentences)[1]);
@@ -49,7 +50,7 @@ public class TestBinaryClassifier extends TestSetUp {
 	public void testSaveToAndLoadFromFile() {
 		File file = binaryClassifier.saveToFile();
 		assertTrue(file.exists());
-		assertTrue(binaryClassifier.loadFromFile());
+		assertNotNull(binaryClassifier.loadFromFile());
 		assertTrue(binaryClassifier.isTrained());
 		file.delete();
 	}

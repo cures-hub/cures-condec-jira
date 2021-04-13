@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-
-import com.atlassian.jira.issue.link.IssueLinkType;
-import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
 public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 	private boolean notInit;
@@ -49,17 +49,10 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 			return new HashSet<>();
 		}
 		Collection<IssueLinkType> issueLinkTypes = new HashSet<>();
-		ArrayList<String> types = new ArrayList<>();
-
-		types.add("contain");
-		types.add("attack");
-		types.add("support");
-		types.add("comment");
-		for (String type : types) {
-			IssueLinkType lt = new MockIssueLinkType((long) 1);
-			((MockIssueLinkType) lt).setName(type);
-			issueLinkTypes.add(lt);
-		}
+		issueLinkTypes.add(new MockIssueLinkType((long) 1, "contain", "contains", "is contained by"));
+		issueLinkTypes.add(new MockIssueLinkType((long) 2, "attack", "attacks", "is attacked by"));
+		issueLinkTypes.add(new MockIssueLinkType((long) 3, "support", "supports", "is supported by"));
+		issueLinkTypes.add(new MockIssueLinkType((long) 4, "comment", "comments", "is commented by"));
 		return issueLinkTypes;
 	}
 

@@ -1,0 +1,7 @@
+<h2>Decision Guidance: Recommendation of Solution Options for Decision Problems</h2>
+#set($decisionGuidanceConfig = $project.getDecisionGuidanceConfiguration())
+
+#parse("templates/settings/decisionguidance/basicDecisionGuidanceSettings.vm")
+#parse("templates/settings/decisionguidance/rdfSourcesSettings.vm")
+#parse("templates/settings/decisionguidance/projectSourcesSettings.vm")
+#parse("templates/settings/decisionguidance/decisionGuidanceEvaluation.vm")

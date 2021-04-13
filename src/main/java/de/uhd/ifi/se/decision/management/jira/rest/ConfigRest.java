@@ -1,17 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -25,12 +30,10 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.knowledgesources.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
@@ -41,6 +44,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -48,6 +52,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -288,6 +293,25 @@ public class ConfigRest {
 		return Response.ok(linkTypes).build();
 	}
 
+	@Path("/getAllLinkTypes")
+	@GET
+	public Response getAllLinkTypes(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Set<String> linkTypes = DecisionKnowledgeProject.getAllNamesOfLinkTypes();
+		return Response.ok(linkTypes).build();
+	}
+
+	@Path("/getPropagationRules")
+	@GET
+	public Response getPropagationRules() {
+		Set<String> propagationRulesAsString = Arrays.stream(PassRule.values()).map(PassRule::getTranslation)
+				.filter(entry -> !entry.equals("undefined")).collect(Collectors.toSet());
+		return Response.ok(propagationRulesAsString).build();
+	}
+
 	// TODO Refactor: too many ifs
 	@Path("/getDecisionGroups")
 	@GET
@@ -483,7 +507,11 @@ public class ConfigRest {
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories
-			GitClient.getOrCreate(projectKey);
+			if (GitClient.getOrCreate(projectKey) == null) {
+				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
+			}
 			// read all code files, decision knowledge elements and links from the default
 			// branch
 			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
@@ -552,10 +580,27 @@ public class ConfigRest {
 		if (gitRepositoryConfigurations == null
 				|| !GitRepositoryConfiguration.areAllGitRepositoryConfigurationsValid(gitRepositoryConfigurations)) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Git repository configurations could not be set because it is null."))
+					ImmutableMap.of("error", "Git repository configurations could not be set because they are null."))
 					.build();
 		}
 		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
+		return Response.ok().build();
+	}
+
+	@Path("/setCodeFileEndings")
+	@POST
+	public Response setCodeFileEndings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			Map<String, String> codeFileEndings) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (codeFileEndings == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Code file endings could not be set because they are null."))
+					.build();
+		}
+		ConfigPersistenceManager.setCodeFileEndings(projectKey, codeFileEndings);
 		return Response.ok().build();
 	}
 
@@ -616,204 +661,39 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Decision Guidance */
+	/* Configuration for Change Impact Analysis */
 	/*										*/
 	/* **************************************/
 
-	@Path("/setMaxNumberRecommendations")
+	@Path("/setCiaSettings")
 	@POST
-	public Response setMaxNumberRecommendations(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("maxNumberRecommendations") int maxNumberRecommendations) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (maxNumberRecommendations < 0) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The maximum number of results cannot be smaller 0.")).build();
-		}
-
-		ConfigPersistenceManager.setMaxNumberRecommendations(projectKey, maxNumberRecommendations);
-		return Response.ok().build();
-	}
-
-	@Path("/setSimilarityThreshold")
-	@POST
-	public Response setSimilarityThreshold(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("threshold") double threshold) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (threshold < 0 || threshold > 1) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The threshold must be between 0 and 1.")).build();
-		}
-
-		ConfigPersistenceManager.setSimilarityThreshold(projectKey, threshold);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	@Path("/setIrrelevantWords")
-	@POST
-	public Response setIrrelevantWords(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("words") String words) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (words.isBlank()) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The words should not be blank"))
-					.build();
-		}
-
-		ConfigPersistenceManager.setIrrelevantWords(projectKey, words);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	@Path("/setRDFKnowledgeSource")
-	@POST
-	public Response setRDFKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, String rdfSourceJSON) {
-
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response setCiaSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			CiaSettings ciaSettings) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
 		}
 
-		// TODO Remove JSON conversion and directly pass RDFSource object instead of
-		// String (see setDefinitionOfDone method)
-		Gson gson = new Gson();
-		// TODO Please avoid acronyms like "RDF" and rather write complete names
-		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
-
-		if (rdfSource == null || rdfSource.getName().isBlank()) {
+		if (ciaSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
-		try {
-			int timeout = Integer.parseInt(rdfSource.getTimeout());
-			if (timeout <= 0) {
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "The timeout must be greater zero!")).build();
-			}
-
-		} catch (NumberFormatException e) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The timeout must be an Integer")).build();
-		}
-
-		for (RDFSource rdfSourceCheck : ConfigPersistenceManager.getRDFKnowledgeSource(projectKey)) {
-			if (rdfSourceCheck.getName().equals(rdfSource.getName()))
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "The name of the knowledge already exists.")).build();
-		}
-
-		ConfigPersistenceManager.setRDFKnowledgeSource(projectKey, rdfSource);
-		return Response.ok().build();
+		ConfigPersistenceManager.setCiaSettings(projectKey, ciaSettings);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
-	@Path("/deleteKnowledgeSource")
-	@POST
-	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
+	@GET
+	@Path("/getCiaSettings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCiaSettings(@QueryParam("projectKey") String projectKey) {
+
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
-		if (knowledgeSourceName.isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
-		}
-
-		ConfigPersistenceManager.deleteKnowledgeSource(projectKey, knowledgeSourceName);
-		return Response.ok().build();
-	}
-
-	@Path("/updateKnowledgeSource")
-	@POST
-	public Response updateKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
-			String rdfSourceJSON) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		Gson gson = new Gson();
-		RDFSource rdfSource = gson.fromJson(rdfSourceJSON, RDFSource.class);
-		if (rdfSource.getName().isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
-		}
-
-		ConfigPersistenceManager.updateKnowledgeSource(projectKey, knowledgeSourceName, rdfSource);
-		return Response.ok().build();
-	}
-
-	@Path("/setKnowledgeSourceActivated")
-	@POST
-	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (knowledgeSourceName.isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
-		}
-
-		ConfigPersistenceManager.setRDFKnowledgeSourceActivation(projectKey, knowledgeSourceName, isActivated);
-		return Response.ok().build();
-	}
-
-	@Path("/setProjectSource")
-	@POST
-	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (projectSourceKey.isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
-		}
-		ConfigPersistenceManager.setProjectSource(projectKey, projectSourceKey, isActivated);
-		return Response.ok().build();
-	}
-
-	@Path("/setAddRecommendationDirectly")
-	@POST
-	public Response setAddRecommendationDirectly(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("addRecommendationDirectly") String addRecommendationDirectly) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		ConfigPersistenceManager.setAddRecommendationDirectly(projectKey, Boolean.valueOf(addRecommendationDirectly));
-		return Response.ok().build();
-	}
-
-	@Path("/setRecommendationInput")
-	@POST
-	public Response setRecommendationInput(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("recommendationInput") String recommendationInput,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		ConfigPersistenceManager.setRecommendationInput(projectKey, recommendationInput, isActivated);
-		return Response.ok().build();
+		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
 	}
 
 	/* **************************************/

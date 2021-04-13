@@ -1,62 +1,40 @@
 package de.uhd.ifi.se.decision.management.jira.model.git;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-
 public enum CommentStyleType {
 
-    NONE(new ArrayList<String>(), null, null, null), 
-    JAVA_C(Arrays.asList(
-            "java",
-            "cpp",
-            "c++",
-            "c",
-            "hpp",
-            "h++",
-            "h"),
-            "//", "/*", "*/"), 
-    PYTHON(Arrays.asList(
-            "py",
-            "sh"),
-            "#", null, null), 
-    HTML(Arrays.asList(
-            "xml",
-            "js",
-            "vm",
-            "html",
-            "htm",
-            "css",
-            "php"),
-            null, "<!--", "-->"),
-    TEX(Arrays.asList(
-            "tex"),
-            "%", null, null);
+    NONE(null, null, null), 
+    JAVA_C("//", "/*", "*/"), 
+    PYTHON("#", null, null), 
+    HTML(null, "<!--", "-->"),
+    TEX("%", null, null);
 
-    private List<String> fileEndings;
     private String singleLineCommentChar;
     private String multiLineCommentCharStart;
     private String multiLineCommentCharEnd;
 
-    private CommentStyleType(List<String> fileEndings, String singleLineCommentChar, String multiLineCommentCharStart, String multiLineCommentCharEnd) {
-        this.fileEndings = fileEndings;
+    public static CommentStyleType getFromString(String commentStyleTypeString) {
+        switch (commentStyleTypeString.toUpperCase()) {
+            case "JAVA_C":
+                return CommentStyleType.JAVA_C;
+
+            case "PYTHON":
+                return CommentStyleType.PYTHON;
+
+            case "HTML":
+                return CommentStyleType.HTML;
+
+            case "TEX":
+                return CommentStyleType.TEX;
+
+            default:
+                return CommentStyleType.NONE;
+        }
+    }
+
+    private CommentStyleType(String singleLineCommentChar, String multiLineCommentCharStart, String multiLineCommentCharEnd) {
         this.singleLineCommentChar = singleLineCommentChar;
         this.multiLineCommentCharStart = multiLineCommentCharStart;
         this.multiLineCommentCharEnd = multiLineCommentCharEnd;
-    
-    }
-
-    public static CommentStyleType getCommentStyleTypeByFileName(String fileName) {
-        return getCommentStyleTypeByFileEnding(fileName.substring(fileName.lastIndexOf(".") + 1));
-    }
-
-    public static CommentStyleType getCommentStyleTypeByFileEnding(String fileEnding) {
-        for (CommentStyleType commentStyleType : CommentStyleType.values()) {
-            if (commentStyleType.fileEndings.contains(fileEnding.toLowerCase())) {
-                return commentStyleType;
-            }
-        }
-        return CommentStyleType.NONE;
     }
 
     public String getSingleLineCommentChar() {
