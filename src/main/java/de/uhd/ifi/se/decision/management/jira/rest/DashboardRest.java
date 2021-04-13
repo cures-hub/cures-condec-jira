@@ -1,13 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.IOException;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -29,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCove
 
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 /**

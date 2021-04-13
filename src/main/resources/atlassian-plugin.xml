@@ -495,12 +495,20 @@
 			location="/css/condec.dashboard.css" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
+        <resource type="download" name="condec.git.branches.dashboard.configuration.js"
+                  location="js/dashboard/condec.git.branches.dashboard.configuration.js" />
         <resource type="download" name="condec.general.metrics.dashboard.js"
             location="js/dashboard/condec.general.metrics.dashboard.js" />
+        <resource type="download" name="condec.general.metrics.dashboard.configuration.js"
+                  location="js/dashboard/condec.general.metrics.dashboard.configuration.js" />
         <resource type="download" name="condec.rationale.completeness.dashboard.js"
                   location="js/dashboard/condec.rationale.completeness.dashboard.js" />
+        <resource type="download" name="condec.rationale.completeness.dashboard.configuration.js"
+                  location="js/dashboard/condec.rationale.completeness.dashboard.configuration.js" />
         <resource type="download" name="condec.rationale.coverage.dashboard.js"
                   location="js/dashboard/condec.rationale.coverage.dashboard.js" />
+        <resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
+                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
