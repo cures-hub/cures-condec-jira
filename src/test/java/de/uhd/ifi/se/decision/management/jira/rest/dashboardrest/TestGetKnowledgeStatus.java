@@ -30,13 +30,13 @@ public class TestGetKnowledgeStatus extends TestSetUp {
 
 	@Test
 	public void testGetKnowledgeStatus() {
-		Response response = dashboardRest.getDocumentationLocations(request);
+		Response response = dashboardRest.getKnowledgeStatus(request);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
 	public void testGetKnowledgeStatusReponseNull() {
-		Response response = dashboardRest.getDocumentationLocations(null);
+		Response response = dashboardRest.getKnowledgeStatus(null);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

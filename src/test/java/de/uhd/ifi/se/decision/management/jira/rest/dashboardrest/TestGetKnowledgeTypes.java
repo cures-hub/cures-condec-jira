@@ -30,13 +30,22 @@ public class TestGetKnowledgeTypes extends TestSetUp {
 
 	@Test
 	public void testGetKnowledgeTypes() {
-		Response response = dashboardRest.getDocumentationLocations(request);
+		String projectKey = "TEST";
+		Response response = dashboardRest.getKnowledgeTypes(request, projectKey);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
+	public void testGetKnowledgeTypesNull() {
+		String projectKey = null;
+		Response response = dashboardRest.getKnowledgeTypes(request, projectKey);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
+
+	@Test
 	public void testGetKnowledgeTypesResponseNull() {
-		Response response = dashboardRest.getDocumentationLocations(null);
+		String projectKey = "TEST";
+		Response response = dashboardRest.getKnowledgeTypes(null, projectKey);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }
