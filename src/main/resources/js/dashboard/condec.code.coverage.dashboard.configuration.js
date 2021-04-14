@@ -1,4 +1,4 @@
-define('dashboard/rationaleCompleteness', [], function () {
+define('dashboard/codeCoverage', [], function () {
 	var dashboardAPI;
 
 	var dashboardFilterNode;
@@ -8,7 +8,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecRationaleCompletenessDashboardItem = function (API) {
+	var ConDecCodeCoverageDashboardItem = function (API) {
 		dashboardAPI = API;
 	};
 
@@ -18,7 +18,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 	 * @param context The surrounding <div/> context that this items should render into.
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
-	ConDecRationaleCompletenessDashboardItem.prototype.render = function (context, preferences) {
+	ConDecCodeCoverageDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			var projectKey = preferences['projectKey'];
 			var knowledgeTypes = preferences['knowledgeTypes'];
@@ -38,19 +38,19 @@ define('dashboard/rationaleCompleteness', [], function () {
 				linkDistance, minDegree, maxDegree, startDate, endDate,
 				decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
 
-			conDecRationaleCompletenessDashboard.init(filterSettings);
+			conDecCodeCoverageDashboard.init(filterSettings);
 			dashboardAPI.resize();
 		});
 	};
 
-	ConDecRationaleCompletenessDashboardItem.prototype.renderEdit = function (context, preferences) {
+	ConDecCodeCoverageDashboardItem.prototype.renderEdit = function (context, preferences) {
 		$(document).ready(function() {
-			getHTMLNodes("condec-rationale-completeness-dashboard-configproject"
-				, "condec-rationale-completeness-dashboard-contents-container"
-				, "condec-rationale-completeness-dashboard-contents-data-error"
-				, "condec-rationale-completeness-dashboard-no-project"
-				, "condec-rationale-completeness-dashboard-processing"
-				, "condec-rationale-completeness-dashboard-nogit-error");
+			getHTMLNodes("condec-code-coverage-dashboard-configproject"
+				, "condec-code-coverage-dashboard-contents-container"
+				, "condec-code-coverage-dashboard-contents-data-error"
+				, "condec-code-coverage-dashboard-no-project"
+				, "condec-code-coverage-dashboard-processing"
+				, "condec-code-coverage-dashboard-nogit-error");
 
 			showDashboardSection(dashboardFilterNode);
 
@@ -81,7 +81,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 
 				if (projectKey) {
 					dashboardAPI.savePreferences(preferences);
-					conDecRationaleCompletenessDashboard.init(filterSettings);
+					conDecCodeCoverageDashboard.init(filterSettings);
 				}
 
 				dashboardAPI.resize();
@@ -93,19 +93,19 @@ define('dashboard/rationaleCompleteness', [], function () {
 			}
 
 			function onSelectProject(event) {
-				conDecRationaleCompletenessDashboard.setKnowledgeTypes(preferences['projectKey']);
-				conDecRationaleCompletenessDashboard.setDocumentationLocations();
-				conDecRationaleCompletenessDashboard.setKnowledgeStatus();
-				conDecRationaleCompletenessDashboard.setLinkTypes();
+				conDecCodeCoverageDashboard.setKnowledgeTypes(preferences['projectKey']);
+				conDecCodeCoverageDashboard.setDocumentationLocations();
+				conDecCodeCoverageDashboard.setKnowledgeStatus();
+				conDecCodeCoverageDashboard.setLinkTypes();
 			}
 
-			saveButton = document.getElementById("rationale-completeness-save-button");
+			saveButton = document.getElementById("code-coverage-save-button");
 			saveButton.addEventListener("click", onSaveButton);
 
-			cancelButton = document.getElementById("rationale-completeness-cancel-button");
+			cancelButton = document.getElementById("code-coverage-cancel-button");
 			cancelButton.addEventListener("click", onCancelButton);
 
-			projectKeyNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+			projectKeyNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
 			projectKeyNode.addEventListener("change", onSelectProject);
 		});
 	};
@@ -133,43 +133,43 @@ define('dashboard/rationaleCompleteness', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+		var projectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
 		preferences['projectKey'] = projectNode.value;
 
-		var knowledgeTypesNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgetypes-input");
+		var knowledgeTypesNode = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
 		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
 
-		var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-completeness-documentationlocation-input");
+		var documentationLocationsNode = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
 		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
 		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
 
-		var linkTypesNode = document.getElementById("condec-dashboard-rationale-completeness-linktypes-input");
+		var linkTypesNode = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
 		preferences['linkTypes'] = getSelectValues(linkTypesNode);
 
-		var linkDistanceNode = document.getElementById("condec-dashboard-rationale-completeness-linkdistance-input");
+		var linkDistanceNode = document.getElementById("condec-dashboard-code-coverage-linkdistance-input");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
-		var minDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-mindegree-input");
+		var minDegreeNode = document.getElementById("condec-dashboard-code-coverage-mindegree-input");
 		preferences['minDegree'] = minDegreeNode.value;
 
-		var maxDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-maxdegree-input");
+		var maxDegreeNode = document.getElementById("condec-dashboard-code-coverage-maxdegree-input");
 		preferences['maxDegree'] = maxDegreeNode.value;
 
-		var startDateNode = document.getElementById("condec-dashboard-rationale-completeness-startdate-input");
+		var startDateNode = document.getElementById("condec-dashboard-code-coverage-startdate-input");
 		preferences['startDate'] = startDateNode.value;
 
-		var endDateNode = document.getElementById("condec-dashboard-rationale-completeness-enddate-input");
+		var endDateNode = document.getElementById("condec-dashboard-code-coverage-enddate-input");
 		preferences['endDate'] = endDateNode.value;
 
-		var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-decisionknowledge-checkbox");
+		var decisionKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-decisionknowledge-checkbox");
 		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
 
-		var testCodeNode = document.getElementById("condec-dashboard-rationale-completeness-testcode-checkbox");
+		var testCodeNode = document.getElementById("condec-dashboard-code-coverage-testcode-checkbox");
 		preferences['testCodeShown'] = testCodeNode.checked;
 
-		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-incompleteknowledge-checkbox");
+		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-incompleteknowledge-checkbox");
 		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
 
 		return preferences;
@@ -177,75 +177,75 @@ define('dashboard/rationaleCompleteness', [], function () {
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+			var projectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
 			projectNode.value = preferences['projectKey'];
 		}
 
-		conDecRationaleCompletenessDashboard.setKnowledgeTypes(preferences['projectKey']);
+		conDecCodeCoverageDashboard.setKnowledgeTypes(preferences['projectKey']);
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgetypes-input");
+			var KnowledgeTypesNode = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
 			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
-		conDecRationaleCompletenessDashboard.setDocumentationLocations();
+		conDecCodeCoverageDashboard.setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-completeness-documentationlocation-input");
+			var documentationLocationsNode = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
 			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
 		}
 
-		conDecRationaleCompletenessDashboard.setKnowledgeStatus();
+		conDecCodeCoverageDashboard.setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgestatus-input");
+			var knowledgeStatusNode = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
 			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
-		conDecRationaleCompletenessDashboard.setLinkTypes();
+		conDecCodeCoverageDashboard.setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("condec-dashboard-rationale-completeness-linktypes-input");
+			var linkTypesNode = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
 			setSelectValues(linkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("condec-dashboard-rationale-completeness-linkdistance-input");
+			var linkDistanceNode = document.getElementById("condec-dashboard-code-coverage-linkdistance-input");
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-mindegree-input");
+			var minDegreeNode = document.getElementById("condec-dashboard-code-coverage-mindegree-input");
 			minDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-maxdegree-input");
+			var maxDegreeNode = document.getElementById("condec-dashboard-code-coverage-maxdegree-input");
 			maxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("condec-dashboard-rationale-completeness-startdate-input");
+			var startDateNode = document.getElementById("condec-dashboard-code-coverage-startdate-input");
 			startDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("condec-dashboard-rationale-completeness-enddate-input");
+			var endDateNode = document.getElementById("condec-dashboard-code-coverage-enddate-input");
 			endDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-decisionknowledge-checkbox");
+			var decisionKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-decisionknowledge-checkbox");
 			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("condec-dashboard-rationale-completeness-testcode-checkbox");
+			var testCodeNode = document.getElementById("condec-dashboard-code-coverage-testcode-checkbox");
 			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-incompleteknowledge-checkbox");
+			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-incompleteknowledge-checkbox");
 			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
 		}
 	}
@@ -344,5 +344,5 @@ define('dashboard/rationaleCompleteness', [], function () {
 		return jsonString.split(",");
 	}
 
-	return ConDecRationaleCompletenessDashboardItem;
+	return ConDecCodeCoverageDashboardItem;
 });

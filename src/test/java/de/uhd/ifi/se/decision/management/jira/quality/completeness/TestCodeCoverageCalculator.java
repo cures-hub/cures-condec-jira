@@ -7,9 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -24,11 +27,14 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		String projectKey = "TEST";
         List<KnowledgeElement> knowledgeElements = KnowledgeElements.getTestKnowledgeElements();
         assertEquals(22, knowledgeElements.size());
         int linkDistance = 3;
-		calculator = new CodeCoverageCalculator(projectKey, linkDistance);
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		filterSettings.setLinkDistance(linkDistance);
+		calculator = new CodeCoverageCalculator(user, filterSettings);
 	}
 
 	@Test

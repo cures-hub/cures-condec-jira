@@ -94,7 +94,6 @@ define('dashboard/generalMetrics', [], function () {
 
 			function onSelectProject(event) {
 				conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
-				conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
 				conDecGeneralMetricsDashboard.setDocumentationLocations();
 				conDecGeneralMetricsDashboard.setKnowledgeStatus();
 				conDecGeneralMetricsDashboard.setLinkTypes();

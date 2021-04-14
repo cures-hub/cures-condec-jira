@@ -521,9 +521,11 @@
         <resource type="download" name="condec.rationale.coverage.dashboard.js"
                   location="js/dashboard/condec.rationale.coverage.dashboard.js" />
         <resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
-                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" 
+                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
         <resource type="download" name="condec.code.coverage.dashboard.js"
-                  location="js/dashboard/condec.code.coverage.dashboard.js" />/>
+                  location="js/dashboard/condec.code.coverage.dashboard.js" />
+        <resource type="download" name="condec.code.coverage.dashboard.configuration.js"
+                  location="js/dashboard/condec.code.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
@@ -625,15 +627,11 @@
         <context-provider
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
         <amd-module>dashboard/rationaleCoverage</amd-module>
-    </dashboard-item>
-		<resource name="view" type="velocity"
-			location="/templates/dashboard/rationaleCoverage.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
 	</dashboard-item>
 
     <dashboard-item key="condec-code-coverage-dashboard-item"
-		name="ConDec Dashboard for Code Coverage">
+		            name="ConDec Dashboard for Code Coverage"
+                    configurable="true">
 		<definition>
             <title key="condec.dashboard.codecoverage.title" />
 			<categories>
@@ -647,8 +645,9 @@
 		</definition>
         <description key="condec.dashboard.codecoverage.description" />
 		<resource name="view" type="velocity"
-			location="/templates/dashboard/codeCoverage.vm" />
+			      location="/templates/dashboard/codeCoverage.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.CodeCoverageDashboardItem" />
+        <amd-module>dashboard/codeCoverage</amd-module>
 	</dashboard-item>
 </atlassian-plugin>

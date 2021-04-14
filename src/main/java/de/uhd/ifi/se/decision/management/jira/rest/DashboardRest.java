@@ -120,19 +120,19 @@ public class DashboardRest {
 		return Response.status(Status.OK).entity(metrics).build();
 	}
   
-  @Path("/codeCoverage")
-	@GET
+	@Path("/codeCoverage")
+	@POST
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getCodeCoverage(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("linkDistance") String linkDistance) {
-		if (request == null || projectKey == null || linkDistance == null) {
-      return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+	public Response getCodeCoverage(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 				.build();
 		}
-    
-    Map<String, Object> metrics = new LinkedHashMap<>();
 
-		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(projectKey, Integer.parseInt(linkDistance));
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		Map<String, Object> metrics = new LinkedHashMap<>();
+
+		CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(user, filterSettings);
 
 		metrics.put("issuesPerCodeFile",
 			codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
@@ -144,7 +144,7 @@ public class DashboardRest {
 			codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
 
 		return Response.status(Status.OK).entity(metrics).build();
-  }
+  	}
 
 	@Path("/documentationLocations")
 	@GET

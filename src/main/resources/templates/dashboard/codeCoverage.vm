@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-<div id="configproject" class="condec-dashboard-contents filtering">
+<div id="condec-code-coverage-dashboard-configproject" class="condec-dashboard-contents filtering hidden">
     <form class="aui">
         <div class="field-group">
             <label for="condec-dashboard-code-coverage-project-selection">Project:</label>
@@ -19,10 +19,78 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
                     </option>
                 #end
             </select>
-            <div id="condec-dashboard-code-coverage-linkdistance-selection" class="condec-filter-distance hidden">
-                <label for="condec-dashboard-code-coverage-link-distance-input">Link Distance:</label>
-                <input name="linkDistance" id="condec-dashboard-code-coverage-link-distance-input" class="text short-field"
-                type="number" value="3" min="0" placeholder="Enter distance">
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-knowledgetypes-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-knowledgetypes-input">Knowledge Types:</label>
+                <select name="knowledgeType" id="condec-dashboard-code-coverage-knowledgetypes-input" class="select"
+                        multiple size="3">
+                </select>
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-documentationlocation-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-documentationlocation-input">Documentation Locations:</label>
+                <select name="documentationLocation" id="condec-dashboard-code-coverage-documentationlocation-input" class="select"
+                        multiple size="3">
+                </select>
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-knowledgestatus-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-knowledgestatus-input">Knowledge Status:</label>
+                <select name="knowledgeStatus" id="condec-dashboard-code-coverage-knowledgestatus-input" class="select"
+                        multiple size="3">
+                </select>
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-linktypes-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-linktypes-input">Jira Issue Link Types:</label>
+                <select name="linkType" id="condec-dashboard-code-coverage-linktypes-input" class="select"
+                        multiple size="3">
+                </select>
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-linkdistance-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-linkdistance-input">Link Distance:</label>
+                <input name="linkDistance" id="condec-dashboard-code-coverage-linkdistance-input" class="text short-field"
+                       type="number" value="3" min="0" placeholder="Enter distance">
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-degree-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-mindegree-input">Minimum Degree:</label>
+                <input name="minDegree" id="condec-dashboard-code-coverage-mindegree-input" class="text short-field"
+                       type="number" value="" min="0" placeholder="Enter minimum degree">
+                <label for="condec-dashboard-code-coverage-maxdegree-input">Maximum Degree:</label>
+                <input name="maxDegree" id="condec-dashboard-code-coverage-maxdegree-input" class="text short-field"
+                       type="number" value="" min="0" placeholder="Enter maximum degree">
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-date-selection" class="condec-dashboard-filter">
+                <label for="condec-dashboard-code-coverage-startdate-input">Start Date:</label>
+                <input type="date" id="condec-dashboard-code-coverage-startdate-input" name="startDate">
+                <label for="condec-dashboard-code-coverage-enddate-input">End Date:</label>
+                <input type="date" id="condec-dashboard-code-coverage-enddate-input" name="endDate">
+            </div>
+        </div>
+        <div class="field-group">
+            <div id="condec-dashboard-code-coverage-checkboxes-selection" class="condec-dashboard-filter">
+                <input type="checkbox" id="condec-dashboard-code-coverage-decisionknowledge-checkbox" value="decisionKnowledgeShown">
+                <label for="condec-dashboard-code-coverage-decisionknowledge-checkbox"> Show Only Decision Knowledge</label><br>
+                <input type="checkbox" id="condec-dashboard-code-coverage-testcode-checkbox" value="testCodeShown">
+                <label for="condec-dashboard-code-coverage-testcode-checkbox"> Show Test Code</label><br>
+                <input type="checkbox" id="condec-dashboard-code-coverage-incompleteknowledge-checkbox" value="incompleteKnowledgeShown">
+                <label for="condec-dashboard-code-coverage-incompleteknowledge-checkbox"> Show Incomplete Knowledge</label><br>
+            </div>
+        </div>
+        <div class="buttons-container">
+            <div class="buttons">
+                <input id="code-coverage-save-button" class="button" type="button" value="Save">
+                <input id="code-coverage-cancel-button" class="button" type="button" value="Cancel">
             </div>
         </div>
     </form>
@@ -32,7 +100,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     $i18n.getText("condec.dashboard.codecoverage.project.data.error")
 </div>
 
-<div id="condec-code-coverage-dashboard-no-project" class="condec-dashboard-contents init">
+<div id="condec-code-coverage-dashboard-no-project" class="condec-dashboard-contents init hidden">
     $i18n.getText("condec.dashboard.codecoverage.project.selection.not.done")
 </div>
 
@@ -56,31 +124,3 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")
-
-<script>
-    $(document).ready(function() {
-        function projectSelectOrOnChange(event) {
-            var projectKey = event.target.value;
-            var selectedOptionIndex = event.target.options.selectedIndex;
-            var selectedOption = event.target.options[selectedOptionIndex];
-            var linkDistanceNode = document.getElementById("condec-dashboard-code-coverage-link-distance-input");
-            var linkDistance = linkDistanceNode.value;
-
-            conDecCodeCoverageDashboard.init(projectKey, linkDistance);
-        }
-
-        selectProjectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
-        selectProjectNode.addEventListener("change", projectSelectOrOnChange);
-    });
-</script>
-
-#if ($projectKey && $linkDistance)
-<script>
-    $(document).ready(function() {
-        conDecCodeCoverageDashboard.init("$projectKey", "$linkDistance");
-
-        ConDecReqDash.setJiraBaseUrl("$jiraBaseUrl");
-        selectNode.value = "$projectKey";
-    });
-</script>
-#end
