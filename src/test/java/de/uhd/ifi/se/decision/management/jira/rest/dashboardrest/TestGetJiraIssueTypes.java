@@ -42,4 +42,11 @@ public class TestGetJiraIssueTypes extends TestSetUp {
 		Response response = dashboardRest.getJiraIssueTypes(request, projectKey);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetJiraIssueTypesResponseNull() {
+		this.projectKey = "TEST";
+		Response response = dashboardRest.getJiraIssueTypes(null, projectKey);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

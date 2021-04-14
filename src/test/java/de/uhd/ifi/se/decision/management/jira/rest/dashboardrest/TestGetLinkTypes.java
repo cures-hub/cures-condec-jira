@@ -33,4 +33,10 @@ public class TestGetLinkTypes extends TestSetUp {
 		Response response = dashboardRest.getDocumentationLocations(request);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetLinkTypesResponseNull() {
+		Response response = dashboardRest.getDocumentationLocations(null);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

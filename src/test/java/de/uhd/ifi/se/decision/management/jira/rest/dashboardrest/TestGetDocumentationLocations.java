@@ -33,4 +33,10 @@ public class TestGetDocumentationLocations extends TestSetUp {
 		Response response = dashboardRest.getDocumentationLocations(request);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetDocumentationLocationsResponseNull() {
+		Response response = dashboardRest.getDocumentationLocations(null);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

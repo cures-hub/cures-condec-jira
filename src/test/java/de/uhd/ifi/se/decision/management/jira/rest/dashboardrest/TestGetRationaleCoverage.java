@@ -33,9 +33,7 @@ public class TestGetRationaleCoverage extends TestSetUp {
 	public void testGetRationaleCoverage() {
 		String projectKey = "TEST";
 		String issueType = "TEST";
-		int linkDistance = 3;
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		filterSettings.setLinkDistance(linkDistance);
 		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
@@ -45,6 +43,24 @@ public class TestGetRationaleCoverage extends TestSetUp {
 		FilterSettings filterSettings = null;
 		String issueType = "TEST";
 		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testGetRationaleCoverageIssueTypeNull() {
+		String projectKey = "TEST";
+		String issueType = null;
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testGetRationaleCoverageResponseNull() {
+		String projectKey = "TEST";
+		String issueType = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getRationaleCoverage(null, filterSettings, issueType);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

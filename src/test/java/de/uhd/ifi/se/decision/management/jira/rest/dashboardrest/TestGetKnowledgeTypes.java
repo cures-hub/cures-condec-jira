@@ -33,4 +33,10 @@ public class TestGetKnowledgeTypes extends TestSetUp {
 		Response response = dashboardRest.getDocumentationLocations(request);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetKnowledgeTypesResponseNull() {
+		Response response = dashboardRest.getDocumentationLocations(null);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

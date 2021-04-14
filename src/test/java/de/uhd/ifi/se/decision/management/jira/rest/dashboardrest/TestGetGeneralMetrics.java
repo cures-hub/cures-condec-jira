@@ -44,4 +44,12 @@ public class TestGetGeneralMetrics extends TestSetUp {
 		Response response = dashboardRest.getGeneralMetrics(request, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetGeneralMetricsResponseNull() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getGeneralMetrics(null, filterSettings);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

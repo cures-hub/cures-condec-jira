@@ -43,4 +43,12 @@ public class TestGetRationaleCompleteness extends TestSetUp {
 		Response response = dashboardRest.getRationaleCompleteness(request, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetRationaleCompletenessReponseNull() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getRationaleCompleteness(null, filterSettings);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }

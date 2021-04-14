@@ -43,4 +43,12 @@ public class TestGetCodeCoverage extends TestSetUp {
 		Response response = dashboardRest.getCodeCoverage(request, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
+
+	@Test
+	public void testGetCodeCoverageNoRequest() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getCodeCoverage(null, filterSettings);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
 }
