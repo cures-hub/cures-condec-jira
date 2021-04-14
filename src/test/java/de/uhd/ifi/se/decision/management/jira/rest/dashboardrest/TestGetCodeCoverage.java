@@ -30,7 +30,7 @@ public class TestGetCodeCoverage extends TestSetUp {
 	}
 
 	@Test
-	public void testGetRationaleCoverage() {
+	public void testGetCodeCoverage() {
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		Response response = dashboardRest.getCodeCoverage(request, filterSettings);
@@ -38,9 +38,8 @@ public class TestGetCodeCoverage extends TestSetUp {
 	}
 
 	@Test
-	public void testGetRationaleCoverageNull() {
-		String projectKey = null;
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+	public void testGetCodeCoverageNull() {
+		FilterSettings filterSettings = null;
 		Response response = dashboardRest.getCodeCoverage(request, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}

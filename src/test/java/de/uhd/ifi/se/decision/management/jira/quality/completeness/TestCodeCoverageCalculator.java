@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 		assertTrue(calculation.containsKey("No links from Code File to Issue"));
 		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-ClassThatIsNotDone.java"));
 		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-SmallClassThatIsDone.java"));
-		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-TestClassThatIsDone.java"));
+		assertFalse(calculation.get("No links from Code File to Issue").contains("TEST-TestClassThatIsDone.java"));
 
 		calculation = calculator
 				.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION);
@@ -64,7 +65,7 @@ public class TestCodeCoverageCalculator extends TestSetUp {
 		assertTrue(calculation.containsKey("No links from Code File to Decision"));
 		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-ClassThatIsNotDone.java"));
 		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-SmallClassThatIsDone.java"));
-		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-TestClassThatIsDone.java"));
+		assertFalse(calculation.get("No links from Code File to Decision").contains("TEST-TestClassThatIsDone.java"));
     }
 
 	@Test
@@ -76,8 +77,8 @@ public class TestCodeCoverageCalculator extends TestSetUp {
     @Test
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForCodeFilesFilled() {
-		assertEquals(4, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
-		assertEquals(4, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION).size());
+		assertEquals(3, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
+		assertEquals(3, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION).size());
 	}
 
 }
