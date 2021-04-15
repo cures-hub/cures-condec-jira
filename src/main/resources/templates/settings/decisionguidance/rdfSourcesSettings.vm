@@ -161,18 +161,18 @@
 #end
 
 <script>
-	$("#create-rdf-source").click((event) => {
+	$("#create-rdf-source").click(event => {
 		event.preventDefault();
 		const name = $("#create-name-knowledgesource");
 		const service = $("#create-uri-knowledgesource");
-		const queryString = $("#create-query-knowledgesource");
+		const query = $("#create-query-knowledgesource");
 		const timeout = $("#create-timeout-knowledgesource");
 		const constraint = $("#create-constraint-knowledgesource");
 
 		var rdfSource = {
 			"name": name.val(),
             "service": service.val(),
-            "queryString": queryString.val(),
+            "query": query.val(),
             "timeout": timeout.val(),
             "constraint" : constraint.val()
 		}
@@ -180,20 +180,20 @@
 	});
 
     $(".update-knowledgesource").each(function() {
-        $(this).click((event) => {
+        $(this).click(event => {
                event.preventDefault();
                let prefix = "#" + $(this).data("prefix");
                const knowledgeSourceName = $(this).attr("name");
                const name = $(prefix + "-name");
                const service = $(prefix + "-service");
-               const queryString = $(prefix + "-query");
+               const query = $(prefix + "-query");
                const timeout = $(prefix + "-timeout");
                const constraint = $(prefix + "-constraint");
 
                var rdfSource = {
                     "name": name.val(),
                     "service": service.val(),
-                    "queryString": queryString.val(),
+                    "query": query.val(),
                     "timeout": timeout.val(),
                     "constraint" : constraint.val()
                }
