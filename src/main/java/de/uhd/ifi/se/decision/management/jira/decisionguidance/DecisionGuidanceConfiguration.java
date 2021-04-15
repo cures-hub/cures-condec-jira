@@ -240,7 +240,7 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public void setProjectKnowledgeSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equals(projectSourceKey)) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
 				return;
 			}
