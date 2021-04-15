@@ -60,42 +60,29 @@
 #end
 
 <script>
+	function readRdfSourceSettings(rdfId) {
+		var rdfSource = {
+			"name": $("#rdf-name-" + rdfId).val(),
+			"service": $("#rdf-service-" + rdfId).val(),
+			"query": $("#rdf-query-" + rdfId).val(),
+ 			"timeout": $("#rdf-timeout-" + rdfId).val(),
+			"constraints" : $("#rdf-constraints-" + rdfId).val()
+		}
+		return rdfSource;
+    }
+
 	$("#create-rdf-source").click(event => {
 		event.preventDefault();
-		const name = $("#rdf-name-");
-		const service = $("#rdf-service-");
-		const query = $("#rdf-query-");
-		const timeout = $("#rdf-timeout-");
-		const constraints = $("#rdf-constraint-");
-
-		var rdfSource = {
-			"name": name.val(),
-            "service": service.val(),
-            "query": query.val(),
-            "timeout": timeout.val(),
-            "constraints" : constraints.val()
-		}
+        var rdfSource = readRdfSourceSettings("");
 		conDecDecisionGuidanceAPI.createRDFKnowledgeSource("$projectKey", rdfSource);
 	});
 
     $(".update-knowledgesource").each(function() {
         $(this).click(event => {
                event.preventDefault();
-               let prefix = "#" + $(this).data("prefix");
+               let rdfId = $(this).data("prefix");
                const knowledgeSourceName = $(this).attr("name");
-               const name = $("rdf-name-" + prefix);
-               const service = $("rdf-service-" + prefix);
-               const query = $("rdf-query-" + prefix);
-               const timeout = $("rdf-timeout-" + prefix);
-               const constraints = $("rdf-constraints-" + prefix);
-
-               var rdfSource = {
-                    "name": name.val(),
-                    "service": service.val(),
-                    "query": query.val(),
-                    "timeout": timeout.val(),
-                    "constraints" : constraints.val()
-               }
+               var rdfSource = readRdfSourceSettings(rdfId);
                console.log(rdfSource);
                conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
