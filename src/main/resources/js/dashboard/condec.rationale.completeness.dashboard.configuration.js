@@ -36,7 +36,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 				if (preferences['knowledgeTypes']) {
 					knowledgeTypes = preferences['knowledgeTypes'];
 				}
-				var documentationLocations
+				var documentationLocations;
 				if (preferences['documentationLocations']) {
 					documentationLocations = preferences['documentationLocations'];
 				}
@@ -48,7 +48,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 				if (preferences['linkTypes']) {
 					linkTypes = preferences['linkTypes'];
 				}
-				var linkDistance
+				var linkDistance;
 				if (preferences['linkDistance']) {
 					linkDistance = preferences['linkDistance'];
 				}
