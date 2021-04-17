@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class TestProjectSourceRecommender extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
+		ProjectSource projectSource = new ProjectSource("TEST", true);
 		projectSourceRecommender = new ProjectSourceRecommender("TEST", projectSource);
 	}
 
@@ -53,7 +54,7 @@ public class TestProjectSourceRecommender extends TestSetUp {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 		List<Recommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?", decisionProblem);
-		assertEquals(4, recommendations.size());
+		assertEquals(2, recommendations.size());
 	}
 
 	@Test
@@ -72,9 +73,9 @@ public class TestProjectSourceRecommender extends TestSetUp {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
 		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
-		assertEquals(2, recommendations.size());
-		assertEquals(3, recommendations.get(0).getArguments().size());
-		assertEquals(1, recommendations.get(1).getArguments().size());
+		assertFalse(recommendations.isEmpty());
+		assertFalse(recommendations.get(0).getArguments().isEmpty());
+		assertFalse(recommendations.get(1).getArguments().isEmpty());
 	}
 
 	@Test

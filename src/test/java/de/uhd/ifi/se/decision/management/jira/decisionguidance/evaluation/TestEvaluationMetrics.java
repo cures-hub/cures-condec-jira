@@ -35,7 +35,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		recommendations = new ArrayList<>();
 		groundTruthSolutionOptions = new ArrayList<>();
 
-		KnowledgeSource knowledgeSource = new ProjectSource("TEST", "TEST", true);
+		KnowledgeSource knowledgeSource = new ProjectSource("TEST");
 		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "Test Url");
 		Recommendation recommendation2 = new Recommendation(knowledgeSource, "PostgreSQL", "Test Url");
 		recommendations.add(recommendation);

@@ -26,9 +26,8 @@ public class TestRecommender extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true); // search for solutions
-		// in the same
-		// project
+		// search for solutions in the same project
+		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), true);
 		rdfSource = new RDFSource();
 	}
 

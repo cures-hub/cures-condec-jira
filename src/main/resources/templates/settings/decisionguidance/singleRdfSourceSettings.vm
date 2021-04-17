@@ -1,0 +1,88 @@
+<div class="field-group">
+    <label>Name*</label>
+    <input class="name-knowledgesource text long-field" id="rdf-name-$rdfId"
+		name="name-knowledgesource"
+        value="$rdfName"></input>
+    <div class="description">Name your knowledge source.</div>
+</div>
+#if($rdfId == "")
+<div class="field-group">
+	<label>Select RDF-Service</label>
+	<select class="select medium-field" id="select-rdf-service">
+		<option value="DBPedia">DBPedia</option>
+		<option value="OtherSource">Other</option>
+	</select>
+	<div class="description">Select an RDF Service.</div>
+</div>
+#end
+<div class="field-group">
+    <label>RDF-Service</label>
+    <input class="uri-knowledgesource text long-field" name="uri-knowledgesource"
+		id="rdf-service-$rdfId"
+        placeholder="http://dbpedia.org/sparql" value="$rdfService"></input>
+    <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
+</div>
+<div class="field-group">
+    <label>SPARQL-Query</label>
+    <div style="display:flex;">
+    	<textarea id="rdf-query-$rdfId" placeholder="SPARQL-Query" class="textarea large-field" rows="15">
+			$rdfQuery
+		</textarea>
+		#if($rdfId == "")
+        <div style="padding: 5px">
+            <a id="query-help-trigger"><span
+                class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
+            <div id="query-help" style="display: none">
+                "%variable%" is a placeholder for your search in the Jira issue view.
+                The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
+                and ?url. <br>
+                E.g.
+                &lt;http://dbpedia.org/resources/%variable%> <br>
+                %variable% = MySQL <br>
+                &lt;http://dbpedia.org/resources/MySQL><br>
+                <div
+                    style="border: 1px solid; border-radius:3px; background:whitesmoke; padding:6px; margin: 6px; line-height: 100%">
+                    //Example Query <br>
+                    PREFIX dbo: &lt;http://dbpedia.org/ontology/> <br>
+                    PREFIX dct: &lt;http://purl.org/dc/terms/> <br>
+                    PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> <br>
+                    PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#> <br> <br>
+                    PREFIX foaf:&lt;//xmlns.com/foaf/0.1/>
+
+
+                    select distinct ?alternative ?url ?link where { <br>
+                    %variable% dbo:genre ?genre. <br>
+                    ?sameGenre dbo:genre ?genre. <br>
+                    ?sameGenre rdfs:label ?alternative. <br>
+                    ?sameGenre foaf:isPrimaryTopicOf ?url. <br>
+                    FILTER(LANG(?alternative) = "en"). <br>
+                    ?sameGenre dbo:wikiPageExternalLink ?link. <br>
+                    }
+                </div>
+            </div>           
+        </div>
+        #end
+    </div>
+    <div class="description">Enter a SPARQL-Query.</div>
+    #if($rdfId == "")
+    <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
+    <button class="aui-button" id="insert-frameworks">Frameworks</button>    
+    <div class="description">Choose an example query.</div>
+    #end
+</div>
+<div class="field-group">
+    <label>Timeout</label>
+    <input class="param-knowledgesource text short-field" name="param-knowledgesource"
+		id="rdf-timeout-$rdfId"
+		value="$rdfTimeout"></input>
+    <div class="description">Enter the timeout in milliseconds.</div>
+</div>
+<div class="field-group">
+    <label>Constraints</label>
+    <input class="constraint-knowledgesource text long-field" name="constraint-knowledgesource"
+           id="rdf-constraints-$rdfId"
+           value="$rdfConstraints"></input>
+    <div class="description">Enter constraints for the knowledgesource, e.g. License=dbo:license. Seperate
+        multiple values with "&".
+    </div>
+</div>

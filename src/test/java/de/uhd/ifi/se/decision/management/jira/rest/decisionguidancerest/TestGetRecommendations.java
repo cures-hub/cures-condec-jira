@@ -82,18 +82,19 @@ public class TestGetRecommendations extends TestSetUp {
 				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
 	}
 
-	// @Test
-	// public void testGetRecommendationAddDirectly() {
-	// ConfigPersistenceManager.setAddRecommendationDirectly("TEST",true);
-	// assertEquals(Status.OK.getStatusCode(), viewRest.getRecommendation(request,
-	// "TEST", validKeyword, 1).getStatus());
-	// }
+	@Test
+	public void testGetRecommendationsAddDirectly() {
+		decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey, true);
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, "TEST", validKeyword, 1, "i").getStatus());
+		decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey, false);
+	}
 
 	@Test
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendations(request, projectKey, validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, projectKey, validKeyword, 1, "i").getStatus());
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
 	}
 }

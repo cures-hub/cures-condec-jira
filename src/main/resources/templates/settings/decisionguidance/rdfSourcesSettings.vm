@@ -3,97 +3,34 @@
 	<span class="aui-icon aui-icon-small aui-iconfont-add">Create a Knowledge Source via RDF</span> Add
 </a>
 <div id="create-knowledgesource-expander" class="aui-expander-content">
-    <div class="field-group">
-        <label for="create-name-knowledgesource">Name*</label>
-        <input id="create-name-knowledgesource" class="text long-field">
-        <div class="description">Name your knowledge source.</div>
-    </div>
-    <div class="field-group">
-        <label for="create-uri-knowledgesource">Select RDF-Service</label>
-        <select class="select medium-field" id="select-rdf-service">
-            <option value="DBPedia">DBPedia</option>
-            <option value="OtherSource">Other</option>
-        </select>
-        <div class="description">Select an RDF Service.</div>
-    </div>
-    <div class="field-group">
-        <label for="create-uri-knowledgesource">RDF-Service</label>
-        <input id="create-uri-knowledgesource" class="text long-field" 
-        	placeholder="http://dbpedia.org/sparql" value="http://dbpedia.org/sparql" />
-        <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
-    </div>
-    <div class="field-group">
-        <label for="create-query-knowledgesource">SPARQL-Query</label>
-        <div style="display:flex;">
-        <textarea id="create-query-knowledgesource"
-                  placeholder="SPARQL-Query" class="textarea
-                  large-field"></textarea>
-
-            <div style="padding: 5px; max-width:300px;text-align: left;">
-                <a id="query-help-trigger"><span
-                    class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
-                <div id="query-help">
-                    "%variable%" is a placeholder for your search in the Jira issue view.
-                    The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
-                    and ?url. <br>
-                    E.g.
-                    &lt;http://dbpedia.org/resources/%variable%> <br>
-                    %variable% = MySQL <br>
-                    &lt;http://dbpedia.org/resources/MySQL><br>
-                    <div
-                        style="border: 1px solid; border-radius:3px; background:whitesmoke; padding:6px; margin: 6px; line-height: 100%">
-                        //Example Query <br>
-                        PREFIX dbo: &lt;http://dbpedia.org/ontology/> <br>
-                        PREFIX dct: &lt;http://purl.org/dc/terms/> <br>
-                        PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> <br>
-                        PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#> <br> <br>
-                        PREFIX foaf:&lt;//xmlns.com/foaf/0.1/>
-
-
-                        select distinct ?alternative ?url ?link where { <br>
-                        %variable% dbo:genre ?genre. <br>
-                        ?sameGenre dbo:genre ?genre. <br>
-                        ?sameGenre rdfs:label ?alternative. <br>
-                        ?sameGenre foaf:isPrimaryTopicOf ?url. <br>
-                        FILTER(LANG(?alternative) = "en"). <br>
-                        ?sameGenre dbo:wikiPageExternalLink ?link. <br>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="description">Enter a SPARQL-Query.</div>
-        <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
-        <button class="aui-button" id="insert-frameworks">Frameworks</button>
-        <div class="description">Choose an example query.</div>
-    </div>
-    <div class="field-group">
-        <label for="create-timeout-knowledgesource">Timeout</label>
-        <input type="number" min="1" value="30000" id="create-timeout-knowledgesource" class="text short-field" />
-        <div class="description">Enter the timeout in milliseconds.</div>
-    </div>
-    <div class="field-group">
-        <label for="create-constraint-knowledgesource">Constraint</label>
-        <input type="text" id="create-constraint-knowledgesource" class="text long-field" />
-        <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Sperate
-            multiple values with "&".
-        </div>
-    </div>
+	#set ($rdfId = "")
+	#set ($rdfName = "")
+	#set ($rdfService = "http://dbpedia.org/sparql/")
+	#set ($rdfQuery = "")
+	#set ($rdfTimeout = "30000")
+	#set ($rdfConstraints = "")
+   	#parse("templates/settings/decisionguidance/singleRdfSourceSettings.vm")
     <div class="field-group">
         <button class="aui-button-primary aui-button" id="create-rdf-source">Create</button>
     </div>
 </div>
 
 #foreach ($rdfSource in $decisionGuidanceConfig.getRDFKnowledgeSources())
+	#set ($rdfId = $rdfSource.toString())
+	#set ($rdfName = $rdfSource.getName())
+	#set ($rdfService = $rdfSource.getService())
+	#set ($rdfQuery = $rdfSource.getQuery())
+	#set ($rdfTimeout = $rdfSource.getTimeout())
+	#set ($rdfConstraints = $rdfSource.getConstraints())
 
 <div class="field-group">
-    <label>$rdfSource.getName() activated?</label>    
-    <aui-toggle class="activation-knowledgesource" name="$rdfSource.getName()" label="$rdfSource.getName() activated?"
+    <label>$rdfName activated?</label>    
+    <aui-toggle class="activation-knowledgesource" name="$rdfName" label="$rdfName activated?"
 		#if ($rdfSource.isActivated())
         checked
         #end
         ></aui-toggle>
-    <a style="right: 16px; top:16px;" class="aui-expander-trigger" aria-controls="$rdfSource.toString()">
+    <a style="right: 16px; top:16px;" class="aui-expander-trigger" aria-controls="$rdfId">
    		<span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit Knowledge Source</span>
 	</a>
     <div class="description">Enables or disables the knowledge source for alternative recommendations
@@ -101,104 +38,53 @@
     </div>    
 </div>
 
-<div id="$rdfSource.toString()" class="aui-item aui-expander-content">
-<!--RDF SOURCE FORM -->
-<div class="field-group">
-    <label>Name*</label>
-    <input class="name-knowledgesource text long-field" id="$rdfSource.toString()-name"
-		name="name-knowledgesource"
-        value="$rdfSource.getName()"></input>
-    <div class="description">Name your knowledge source.</div>
-</div>
-<div class="field-group">
-    <label>RDF-Service</label>
-    <input class="uri-knowledgesource text long-field" name="uri-knowledgesource"
-		id="$rdfSource.toString()-service"
-        placeholder="http://dbpedia.org/sparql" value="$rdfSource.getService()"></input>
-    <div class="description">Enter an RDF-Graph URI. The default location is DPPedia.</div>
-</div>
-<div class="field-group">
-    <label>SPARQL-Query</label>
-    <textarea class="query-knowledgesource textarea
-		large-field"
-		id="$rdfSource.toString()-query"
-		placeholder=$i18n.getText("condec.label.description")>$rdfSource.getQueryString()</textarea>
-    <div class="description">Enter a SPARQL-Query.</div>
-</div>
-<div class="field-group">
-    <label>Timeout</label>
-    <input class="param-knowledgesource text short-field" name="param-knowledgesource"
-		id="$rdfSource.toString()-timeout"
-		value="$rdfSource.getTimeout()"></input>
-    <div class="description">Enter the timeout in milliseconds.</div>
-</div>
-<div class="field-group">
-    <label>Constraint</label>
-    <input class="constraint-knowledgesource text long-field" name="constraint-knowledgesource"
-           id="$rdfSource.toString()-constraint"
-           value="$rdfSource.getConstraint()"></input>
-    <div class="description">Enter constraints for the knowledgesource. e.g. License=dbo:license. Seperate
-        multiple values with "&".
-    </div>
-</div>
-<div class="field-group">
-    <label for="update-rdf-source">Update</label>
-    <button id="update-rdf-source" class="aui-button update-knowledgesource" data-prefix="$rdfSource.toString()"
-            name="$rdfSource.getName()">
-        <span class="aui-icon aui-icon-small aui-iconfont-refresh">Updates a RDF Knowledge Source</span>
-        Update
-    </button>
-    <div class="description">Updates the knowledge source.</div>
-</div>
-<div class="field-group">
-    <label for="delete-rdf-source">Delete?</label>
-    <button id="delete-rdf-source" class="aui-button-primary aui-button delete-knowledgesource" name="$rdfSource.getName()">
-        <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span> Delete
-    </button>
-    <div class="description">Deletes the knowledge source permanently from the system.</div>
-</div>
+<div id="$rdfId" class="aui-item aui-expander-content">
+	#parse("templates/settings/decisionguidance/singleRdfSourceSettings.vm")
+	<div class="field-group">
+	    <label for="update-rdf-source">Update</label>
+	    <button id="update-rdf-source" class="aui-button update-knowledgesource" data-id="$rdfId"
+	            name="$rdfName">
+	        <span class="aui-icon aui-icon-small aui-iconfont-refresh">Updates a RDF Knowledge Source</span>
+	        Update
+	    </button>
+	    <div class="description">Updates the RDF knowledge source.</div>
+	</div>
+	<div class="field-group">
+	    <label for="delete-rdf-source">Delete?</label>
+	    <button id="delete-rdf-source" class="aui-button-primary aui-button delete-knowledgesource" name="$rdfName">
+	        <span class="aui-icon aui-icon-small aui-iconfont-trash">Deletes a RDF Knowledge Source</span> Delete
+	    </button>
+	    <div class="description">Deletes the knowledge source permanently from the system.</div>
+	</div>
 </div>
 #end
 
 <script>
-	$("#create-rdf-source").click((event) => {
-		event.preventDefault();
-		const name = $("#create-name-knowledgesource");
-		const service = $("#create-uri-knowledgesource");
-		const queryString = $("#create-query-knowledgesource");
-		const timeout = $("#create-timeout-knowledgesource");
-		const constraint = $("#create-constraint-knowledgesource");
-
+	function readRdfSourceSettings(rdfId) {
 		var rdfSource = {
-			"name": name.val(),
-            "service": service.val(),
-            "queryString": queryString.val(),
-            "timeout": timeout.val(),
-            "constraint" : constraint.val()
+			"name": $("#rdf-name-" + rdfId).val(),
+			"service": $("#rdf-service-" + rdfId).val(),
+			"query": $("#rdf-query-" + rdfId).val(),
+ 			"timeout": $("#rdf-timeout-" + rdfId).val(),
+			"constraints" : $("#rdf-constraints-" + rdfId).val()
 		}
+		return rdfSource;
+    }
+
+	$("#create-rdf-source").click(event => {
+		event.preventDefault();
+        var rdfSource = readRdfSourceSettings("");
 		conDecDecisionGuidanceAPI.createRDFKnowledgeSource("$projectKey", rdfSource);
 	});
 
     $(".update-knowledgesource").each(function() {
-        $(this).click((event) => {
-               event.preventDefault();
-               let prefix = "#" + $(this).data("prefix");
-               const knowledgeSourceName = $(this).attr("name");
-               const name = $(prefix + "-name");
-               const service = $(prefix + "-service");
-               const queryString = $(prefix + "-query");
-               const timeout = $(prefix + "-timeout");
-               const constraint = $(prefix + "-constraint");
-
-               var rdfSource = {
-                    "name": name.val(),
-                    "service": service.val(),
-                    "queryString": queryString.val(),
-                    "timeout": timeout.val(),
-                    "constraint" : constraint.val()
-               }
-               console.log(rdfSource);
-               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
+        $(this).click(event => {
+			event.preventDefault();
+			let rdfId = $(this).data("id");
+			const knowledgeSourceName = $(this).attr("name");
+			var rdfSource = readRdfSourceSettings(rdfId);
+			console.log(rdfSource);
+			conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
     });
 
@@ -211,7 +97,7 @@
 	});
 	
 	$(".delete-knowledgesource").each(function() {
-		$(this).click((event) => {
+		$(this).click(event => {
 			event.preventDefault();
             var confirm = window.confirm("Do you really want to delete this knowledge source?");
             if(confirm) {
@@ -246,26 +132,24 @@
 
 	$("#insert-design-patterns").click(function(event) {
         event.preventDefault();
-        var currentText = $("#create-query-knowledgesource").val();
-		$("#create-query-knowledgesource").val(DBPEDIAPREFIX + FACTORYPATTERN);
+		$("#rdf-query-").val(DBPEDIAPREFIX + FACTORYPATTERN);
 	});
 
     $("#insert-frameworks").click(function(event) {
         event.preventDefault();
-        var currentText = $("#create-query-knowledgesource").val();
-        $("#create-query-knowledgesource").val(DBPEDIAPREFIX + FRAMEWORKS);
+        $("#rdf-query-").val(DBPEDIAPREFIX + FRAMEWORKS);
 	});
 
+	$("#query-help-trigger").click(event => {
+		$("#query-help").toggle();
+	});
+	
 	$("#select-rdf-service").change(function() {
 		var value = $(this).val();
-		if(value == "DBPedia") {
-			$("#create-uri-knowledgesource").val("http://dbpedia.org/sparql/")
+		if (value == "DBPedia") {
+			$("#rdf-service-").val("http://dbpedia.org/sparql/")
 		} else {
-			$("#create-uri-knowledgesource").val("")
+			$("#rdf-service-").val("")
 		}
-	});
-
-	$("#query-help-trigger").click( event => {
-		$("#query-help").toggle();
 	});
 </script>

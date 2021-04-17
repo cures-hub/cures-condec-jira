@@ -28,6 +28,12 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
 
+	/**
+	 * @param projectKey
+	 *            of the current project (not of the external knowledge source).
+	 * @param projectSource
+	 *            {@link ProjectSource} instance.
+	 */
 	public ProjectSourceRecommender(String projectKey, ProjectSource projectSource) {
 		super(projectKey, projectSource);
 	}
@@ -60,7 +66,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	 * @return get all knowledge elements that are similar to the given input
 	 */
 	public List<KnowledgeElement> findSimilarElements(String text) {
-		return findSimilarElements(text, KnowledgeGraph.getInstance(projectKey).vertexSet());
+		return findSimilarElements(text, KnowledgeGraph.getInstance(knowledgeSource.getProjectKey()).vertexSet());
 	}
 
 	/**

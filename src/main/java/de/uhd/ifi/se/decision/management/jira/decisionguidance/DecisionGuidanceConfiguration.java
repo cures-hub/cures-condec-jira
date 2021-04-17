@@ -194,13 +194,13 @@ public class DecisionGuidanceConfiguration {
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			if (!jiraProject.isActivated()) {
+			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
+			if (!conDecProject.isActivated()) {
 				continue;
 			}
-			ProjectSource projectSource = getProjectSource(jiraProject.getProjectKey());
-			if (projectSource == null) {
-				projectSource = new ProjectSource(jiraProject);
+			ProjectSource projectSource = getProjectSource(conDecProject.getProjectKey());
+			if (projectSource == null || projectSource.getProjectKey().isBlank()) {
+				projectSource = new ProjectSource(project);
 			}
 			projectSources.add(projectSource);
 		}
@@ -225,7 +225,7 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equals(projectSourceKey)) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				return projectSource;
 			}
 		}
@@ -240,12 +240,12 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public void setProjectKnowledgeSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equals(projectSourceKey)) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
 				return;
 			}
 		}
-		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, projectSourceKey, isActivated));
+		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, isActivated));
 	}
 
 	public List<KnowledgeSource> getAllKnowledgeSources() {
@@ -263,7 +263,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	public KnowledgeSource getKnowledgeSourceByName(String knowledgeSourceName) {
-		Optional<KnowledgeSource> knowledgeSourceWithName = getAllActivatedKnowledgeSources().stream()
+		Optional<KnowledgeSource> knowledgeSourceWithName = getAllKnowledgeSources().stream()
 				.filter(source -> source.getName().equals(knowledgeSourceName)).findAny();
 		return knowledgeSourceWithName.isPresent() ? knowledgeSourceWithName.get() : null;
 	}

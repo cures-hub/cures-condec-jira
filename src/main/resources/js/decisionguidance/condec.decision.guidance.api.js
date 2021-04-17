@@ -117,9 +117,9 @@
 			error, response) {
 			if (error === null) {
 				if (isActivated) {
-					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>activated</b> as a knowledge source!!");
+					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>activated</b> as a knowledge source.");
 				} else {
-					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source!!");
+					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source.");
 				}
 			}
 		});
