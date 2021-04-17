@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -96,6 +97,14 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	public void testGetAllKnowledgeSources() {
 		assertEquals(1, config.getAllKnowledgeSources().size());
 		assertEquals(0, config.getAllActivatedKnowledgeSources().size());
+	}
+
+	@Test
+	public void testGetKnowledgeSourceByName() {
+		RDFSource rdfSource = new RDFSource("DBPedia Frameworks", "service", "query", 30000, "");
+		config.addRDFKnowledgeSource(rdfSource);
+		assertEquals(rdfSource, config.getKnowledgeSourceByName("DBPedia Frameworks"));
+		assertNull(config.getKnowledgeSourceByName("Unknown knowledge source"));
 	}
 
 	@Test

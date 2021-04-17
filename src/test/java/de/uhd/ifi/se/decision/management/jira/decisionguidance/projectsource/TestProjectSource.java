@@ -51,6 +51,15 @@ public class TestProjectSource extends TestSetUp {
 	public void testGetProjectKeyForUnknownProject() {
 		ProjectSource projectSource = new ProjectSource("NON-EXISTING-PROJECT");
 		assertEquals("NON-EXISTING-PROJECT", projectSource.getProjectKey());
+
+		projectSource = new ProjectSource("NON-EXISTING-PROJECT");
+		assertEquals("NON-EXISTING-PROJECT", projectSource.getProjectKey());
+	}
+
+	@Test
+	public void testGetProjectKeyWhenNull() {
+		ProjectSource projectSource = new ProjectSource((String) null);
+		assertEquals("", projectSource.getProjectKey());
 	}
 
 	@Test
