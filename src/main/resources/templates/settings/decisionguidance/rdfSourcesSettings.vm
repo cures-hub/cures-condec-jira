@@ -5,7 +5,7 @@
 <div id="create-knowledgesource-expander" class="aui-expander-content">
 	#set ($rdfId = "")
 	#set ($rdfName = "")
-	#set ($rdfService = "")
+	#set ($rdfService = "http://dbpedia.org/sparql/")
 	#set ($rdfQuery = "")
 	#set ($rdfTimeout = "30000")
 	#set ($rdfConstraints = "")
@@ -42,7 +42,7 @@
 	#parse("templates/settings/decisionguidance/singleRdfSourceSettings.vm")
 	<div class="field-group">
 	    <label for="update-rdf-source">Update</label>
-	    <button id="update-rdf-source" class="aui-button update-knowledgesource" data-prefix="$rdfId"
+	    <button id="update-rdf-source" class="aui-button update-knowledgesource" data-id="$rdfId"
 	            name="$rdfName">
 	        <span class="aui-icon aui-icon-small aui-iconfont-refresh">Updates a RDF Knowledge Source</span>
 	        Update
@@ -79,12 +79,12 @@
 
     $(".update-knowledgesource").each(function() {
         $(this).click(event => {
-               event.preventDefault();
-               let rdfId = $(this).data("prefix");
-               const knowledgeSourceName = $(this).attr("name");
-               var rdfSource = readRdfSourceSettings(rdfId);
-               console.log(rdfSource);
-               conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
+			event.preventDefault();
+			let rdfId = $(this).data("id");
+			const knowledgeSourceName = $(this).attr("name");
+			var rdfSource = readRdfSourceSettings(rdfId);
+			console.log(rdfSource);
+			conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
     });
 
@@ -97,7 +97,7 @@
 	});
 	
 	$(".delete-knowledgesource").each(function() {
-		$(this).click((event) => {
+		$(this).click(event => {
 			event.preventDefault();
             var confirm = window.confirm("Do you really want to delete this knowledge source?");
             if(confirm) {
@@ -140,6 +140,10 @@
         $("#rdf-query-").val(DBPEDIAPREFIX + FRAMEWORKS);
 	});
 
+	$("#query-help-trigger").click(event => {
+		$("#query-help").toggle();
+	});
+	
 	$("#select-rdf-service").change(function() {
 		var value = $(this).val();
 		if (value == "DBPedia") {
@@ -147,9 +151,5 @@
 		} else {
 			$("#rdf-service-").val("")
 		}
-	});
-
-	$("#query-help-trigger").click(event => {
-		$("#query-help").toggle();
 	});
 </script>

@@ -5,6 +5,7 @@
         value="$rdfName"></input>
     <div class="description">Name your knowledge source.</div>
 </div>
+#if($rdfId == "")
 <div class="field-group">
 	<label>Select RDF-Service</label>
 	<select class="select medium-field" id="select-rdf-service">
@@ -13,6 +14,7 @@
 	</select>
 	<div class="description">Select an RDF Service.</div>
 </div>
+#end
 <div class="field-group">
     <label>RDF-Service</label>
     <input class="uri-knowledgesource text long-field" name="uri-knowledgesource"
@@ -23,13 +25,14 @@
 <div class="field-group">
     <label>SPARQL-Query</label>
     <div style="display:flex;">
-    	<textarea id="rdf-query-$rdfId" placeholder="SPARQL-Query" class="textarea large-field">
+    	<textarea id="rdf-query-$rdfId" placeholder="SPARQL-Query" class="textarea large-field" rows="15">
 			$rdfQuery
 		</textarea>
-        <div style="padding: 5px; max-width:300px;text-align: left;">
+		#if($rdfId == "")
+        <div style="padding: 5px">
             <a id="query-help-trigger"><span
                 class="aui-icon aui-icon-small aui-iconfont-question-circle">Example RDF-Query</span></a>
-            <div id="query-help">
+            <div id="query-help" style="display: none">
                 "%variable%" is a placeholder for your search in the Jira issue view.
                 The variable will be replaced by a resource. Also provide the sparql-variables ?alternative
                 and ?url. <br>
@@ -56,13 +59,16 @@
                     ?sameGenre dbo:wikiPageExternalLink ?link. <br>
                     }
                 </div>
-            </div>
+            </div>           
         </div>
+        #end
     </div>
     <div class="description">Enter a SPARQL-Query.</div>
+    #if($rdfId == "")
     <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
-    <button class="aui-button" id="insert-frameworks">Frameworks</button>
+    <button class="aui-button" id="insert-frameworks">Frameworks</button>    
     <div class="description">Choose an example query.</div>
+    #end
 </div>
 <div class="field-group">
     <label>Timeout</label>
