@@ -31,12 +31,12 @@ define('dashboard/rationaleCoverage', [], function () {
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey'] && preferences['issueType']) {
-				createRender(preferences)
+				createRender(preferences);
 			}
 			else {
 				window.onload = function () {
 					createConfiguration(preferences);
-				}
+				};
 			}
 		});
 	};

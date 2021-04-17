@@ -31,12 +31,12 @@ define('dashboard/rationaleCompleteness', [], function () {
 	ConDecRationaleCompletenessDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey']) {
-				createRender(preferences)
+				createRender(preferences);
 			}
 			else {
 				window.onload = function () {
 					createConfiguration(preferences);
-				}
+				};
 			}
 		});
 	};
