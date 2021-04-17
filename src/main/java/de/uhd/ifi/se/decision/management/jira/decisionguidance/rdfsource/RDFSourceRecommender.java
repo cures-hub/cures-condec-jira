@@ -30,6 +30,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public class RDFSourceRecommender extends Recommender<RDFSource> {
 
+	/**
+	 * @param projectKey
+	 *            of the current project (not of the external knowledge source).
+	 * @param rdfSource
+	 *            {@link RDFSource} instance.
+	 */
 	public RDFSourceRecommender(String projectKey, RDFSource rdfSource) {
 		super(projectKey, rdfSource);
 	}

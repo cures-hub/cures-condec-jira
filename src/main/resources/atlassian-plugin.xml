@@ -95,6 +95,7 @@
 		<dependency>com.atlassian.auiplugin:aui-expander</dependency>
 		<dependency>com.atlassian.auiplugin:aui-table-sortable</dependency>
 		<dependency>com.atlassian.auiplugin:aui-page-layout</dependency>
+		<dependency>com.atlassian.auiplugin:aui-help</dependency>
 		<!-- Jira dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>

@@ -39,7 +39,7 @@ public class TestEvaluator extends TestSetUp {
 
 	@Test
 	public void testEvaluateProjectSourceSameProject() {
-		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
+		ProjectSource projectSource = new ProjectSource("TEST", true);
 		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(decisionProblem, "", 5, projectSource);
 
 		assertEquals("TEST", recommendationEvaluation.getKnowledgeSource().getName());

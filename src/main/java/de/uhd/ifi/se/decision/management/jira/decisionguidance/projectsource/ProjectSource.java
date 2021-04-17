@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -10,36 +14,37 @@ public class ProjectSource extends KnowledgeSource {
 
 	protected String projectKey;
 
-	/**
-	 * @param projectKey
-	 *            key of the other Jira project.
-	 */
-	public ProjectSource(String projectKey) {
-		this.projectKey = projectKey;
-		this.isActivated = false;
+	private ProjectSource() {
 		this.icon = "aui-iconfont-jira";
 	}
 
 	/**
 	 * @param projectKey
 	 *            key of the other Jira project.
-	 * @param projectSourceName
-	 *            name of the other Jira project.
+	 */
+	public ProjectSource(String projectKey) {
+		this();
+		this.projectKey = projectKey;
+	}
+
+	/**
+	 * @param projectKey
+	 *            key of the other Jira project.
 	 * @param isActivated
 	 *            true if recommendations should be generated from this source.
 	 */
-	public ProjectSource(String projectKey, String projectSourceName, boolean isActivated) {
+	public ProjectSource(String projectKey, boolean isActivated) {
 		this(projectKey);
-		this.name = projectSourceName;
 		this.isActivated = isActivated;
 	}
 
 	/**
 	 * @param jiraProject
-	 *            other Jira project as a {@link DecisionKnowledgeProject} object.
+	 *            other Jira project.
 	 */
-	public ProjectSource(DecisionKnowledgeProject jiraProject) {
-		this(jiraProject.getProjectKey(), jiraProject.getProjectName(), false);
+	public ProjectSource(Project jiraProject) {
+		this();
+		this.projectKey = jiraProject.getKey();
 	}
 
 	/**
@@ -47,14 +52,21 @@ public class ProjectSource extends KnowledgeSource {
 	 *         source.
 	 */
 	public String getProjectKey() {
-		return projectKey;
+		return projectKey != null ? projectKey : "";
 	}
 
 	/**
-	 * @param projectKey
-	 *            of the Jira project that is used as the knowledge source.
+	 * @return Jira project that is used as the knowledge source.
 	 */
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+	public Project getJiraProject() {
+		return new DecisionKnowledgeProject(projectKey).getJiraProject();
+	}
+
+	/**
+	 * @return name of the knowledge source, i.e. the name of a Jira project.
+	 */
+	@XmlElement
+	public String getName() {
+		return getJiraProject().getName();
 	}
 }

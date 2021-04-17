@@ -25,7 +25,7 @@ public class TestRecommendation extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		knowledgeSource = new ProjectSource("TEST", "TEST", true);
+		knowledgeSource = new ProjectSource("TEST", true);
 	}
 
 	@Test
@@ -79,13 +79,13 @@ public class TestRecommendation extends TestSetUp {
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
-		KnowledgeSource sourceA = new ProjectSource("TEST", "Source", true);
+		KnowledgeSource sourceA = new ProjectSource("TEST", true);
 		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
 
 		Recommendation recommendationB = new Recommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
 
-		KnowledgeSource sourceB = new ProjectSource("TEST", "SourceB", true);
+		KnowledgeSource sourceB = new RDFSource();
 		recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
 		assertFalse(recommendationA.equals(recommendationB));
 

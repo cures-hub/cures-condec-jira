@@ -24,6 +24,13 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	protected String projectKey;
 	protected T knowledgeSource;
 
+	/**
+	 * @param projectKey
+	 *            of the current project (not of the external knowledge source).
+	 * @param knowledgeSource
+	 *            {@link KnowledgeSource}, either {@link RDFSource} or
+	 *            {@link ProjectSource}.
+	 */
 	protected Recommender(String projectKey, T knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 		this.projectKey = projectKey;
@@ -72,8 +79,10 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
 		List<Recommendation> recommendations = new ArrayList<>();
 		recommendations.addAll(getRecommendations(decisionProblem));
-		recommendations.addAll(getRecommendations(keywords));
-		return recommendations;
+		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
+			recommendations.addAll(getRecommendations(keywords));
+		}
+		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement decisionProblem,

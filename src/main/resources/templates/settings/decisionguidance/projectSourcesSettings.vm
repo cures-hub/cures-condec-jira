@@ -1,17 +1,19 @@
 <h3>Configure Project Knowledge Sources</h3>
-<table id="project-source-table" class="aui aui-table-list">
+<table id="project-source-table" class="aui aui-table-list aui-table-sortable">
 	<thead>
     	<tr>
-        	<th>Project</th>
-        	<th>Activate?</th>
+    		<th>Project Key</th>
+        	<th>Project Name</th>        	
+        	<th>Activated?</th>
     	</tr>
 	</thead>
 	<tbody>
     #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
     	<tr>
+        	<td>$projectSource.getProjectKey()</td>
         	<td>$projectSource.getName()</td>
         	<td>
-            <aui-toggle class="activation-knowledgesource-project" label="$projectSource.getName()"
+            <aui-toggle class="activation-knowledgesource-project" label="$projectSource.getProjectKey()"
 				#if ($projectSource.isActivated())
                 checked
                 #end

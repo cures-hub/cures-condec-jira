@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 public class TestProjectSource extends TestSetUp {
@@ -17,13 +16,12 @@ public class TestProjectSource extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), true);
 	}
 
 	@Test
 	public void testConstructorWithProject() {
-		ProjectSource projectSourceFromProjectObject = new ProjectSource(
-				new DecisionKnowledgeProject(JiraProjects.getTestProject()));
+		ProjectSource projectSourceFromProjectObject = new ProjectSource(JiraProjects.getTestProject());
 		assertEquals(projectSource.getName(), projectSourceFromProjectObject.getName());
 	}
 
@@ -40,9 +38,28 @@ public class TestProjectSource extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetProjectKey() {
-		projectSource.setProjectKey("TEST-OTHER");
-		assertEquals("TEST-OTHER", projectSource.getProjectKey());
+	public void testGetProjectKey() {
+		assertEquals("TEST", projectSource.getProjectKey());
+	}
+
+	@Test
+	public void testGetJiraProject() {
+		assertEquals(JiraProjects.getTestProject(), projectSource.getJiraProject());
+	}
+
+	@Test
+	public void testGetProjectKeyForUnknownProject() {
+		ProjectSource projectSource = new ProjectSource("NON-EXISTING-PROJECT");
+		assertEquals("NON-EXISTING-PROJECT", projectSource.getProjectKey());
+
+		projectSource = new ProjectSource("NON-EXISTING-PROJECT");
+		assertEquals("NON-EXISTING-PROJECT", projectSource.getProjectKey());
+	}
+
+	@Test
+	public void testGetProjectKeyWhenNull() {
+		ProjectSource projectSource = new ProjectSource((String) null);
+		assertEquals("", projectSource.getProjectKey());
 	}
 
 	@Test
