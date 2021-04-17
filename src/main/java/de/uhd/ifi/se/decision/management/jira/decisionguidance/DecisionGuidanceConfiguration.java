@@ -245,7 +245,7 @@ public class DecisionGuidanceConfiguration {
 				return;
 			}
 		}
-		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, projectSourceKey, isActivated));
+		projectKnowledgeSources.add(new ProjectSource(projectSourceKey, isActivated));
 	}
 
 	public List<KnowledgeSource> getAllKnowledgeSources() {

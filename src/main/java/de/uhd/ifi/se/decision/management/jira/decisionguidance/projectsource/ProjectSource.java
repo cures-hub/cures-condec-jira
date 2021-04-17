@@ -35,6 +35,17 @@ public class ProjectSource extends KnowledgeSource {
 	}
 
 	/**
+	 * @param projectKey
+	 *            key of the other Jira project.
+	 * @param isActivated
+	 *            true if recommendations should be generated from this source.
+	 */
+	public ProjectSource(String projectKey, boolean isActivated) {
+		this(new DecisionKnowledgeProject(projectKey));
+		this.isActivated = isActivated;
+	}
+
+	/**
 	 * @param jiraProject
 	 *            other Jira project as a {@link DecisionKnowledgeProject} object.
 	 */
