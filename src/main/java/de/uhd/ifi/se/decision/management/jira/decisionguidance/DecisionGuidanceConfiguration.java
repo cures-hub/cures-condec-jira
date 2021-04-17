@@ -263,7 +263,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	public KnowledgeSource getKnowledgeSourceByName(String knowledgeSourceName) {
-		Optional<KnowledgeSource> knowledgeSourceWithName = getAllActivatedKnowledgeSources().stream()
+		Optional<KnowledgeSource> knowledgeSourceWithName = getAllKnowledgeSources().stream()
 				.filter(source -> source.getName().equals(knowledgeSourceName)).findAny();
 		return knowledgeSourceWithName.isPresent() ? knowledgeSourceWithName.get() : null;
 	}
