@@ -93,7 +93,7 @@ public class TestGetRecommendations extends TestSetUp {
 	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.getRecommendations(request, projectKey, validKeyword, 1, "s").getStatus());
+				decisionGuidanceRest.getRecommendations(request, projectKey, validKeyword, 1, "i").getStatus());
 		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
 	}
 }
