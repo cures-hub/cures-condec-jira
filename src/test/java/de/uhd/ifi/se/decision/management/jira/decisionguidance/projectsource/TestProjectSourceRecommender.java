@@ -25,7 +25,7 @@ public class TestProjectSourceRecommender extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ProjectSource projectSource = new ProjectSource("TEST", "TEST", true);
+		ProjectSource projectSource = new ProjectSource("TEST", true);
 		projectSourceRecommender = new ProjectSourceRecommender("TEST", projectSource);
 	}
 

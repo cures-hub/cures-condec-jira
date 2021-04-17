@@ -201,7 +201,6 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The Project Source must not be empty.")).build();
 		}
-		System.out.println(isActivated);
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
 		decisionGuidanceConfiguration.setProjectKnowledgeSource(projectSourceKey, isActivated);

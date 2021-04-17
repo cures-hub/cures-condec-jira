@@ -14,28 +14,17 @@ public class ProjectSource extends KnowledgeSource {
 
 	protected Project jiraProject;
 
-	/**
-	 * @param projectKey
-	 *            key of the other Jira project.
-	 */
-	public ProjectSource(String projectKey) {
-		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
-		this.isActivated = false;
+	private ProjectSource() {
 		this.icon = "aui-iconfont-jira";
 	}
 
 	/**
 	 * @param projectKey
 	 *            key of the other Jira project.
-	 * @param projectSourceName
-	 *            name of the other Jira project.
-	 * @param isActivated
-	 *            true if recommendations should be generated from this source.
 	 */
-	public ProjectSource(String projectKey, String projectSourceName, boolean isActivated) {
-		this(projectKey);
-		this.name = projectSourceName;
-		this.isActivated = isActivated;
+	public ProjectSource(String projectKey) {
+		this();
+		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
 	}
 
 	/**
@@ -54,6 +43,7 @@ public class ProjectSource extends KnowledgeSource {
 	 *            other Jira project.
 	 */
 	public ProjectSource(Project jiraProject) {
+		this();
 		this.jiraProject = jiraProject;
 	}
 
@@ -73,16 +63,7 @@ public class ProjectSource extends KnowledgeSource {
 	}
 
 	/**
-	 * @param projectKey
-	 *            of the Jira project that is used as the knowledge source.
-	 */
-	public void setProjectKey(String projectKey) {
-		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
-	}
-
-	/**
-	 * @return name of the knowledge source, e.g. the name of a Jira project or a
-	 *         topic in DBPedia such as "Frameworks".
+	 * @return name of the knowledge source, i.e. the name of a Jira project.
 	 */
 	@XmlElement
 	public String getName() {

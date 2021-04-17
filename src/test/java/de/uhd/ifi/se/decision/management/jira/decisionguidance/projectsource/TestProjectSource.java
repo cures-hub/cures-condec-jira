@@ -16,7 +16,7 @@ public class TestProjectSource extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), "TEST", true);
+		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), true);
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSetAndGetProjectKey() {
-		projectSource.setProjectKey("NON-EXISTING-PROJECT");
+		ProjectSource projectSource = new ProjectSource("NON-EXISTING-PROJECT");
 		assertEquals("", projectSource.getProjectKey());
 	}
 
