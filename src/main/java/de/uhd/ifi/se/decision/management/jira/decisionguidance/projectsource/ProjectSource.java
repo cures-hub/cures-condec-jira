@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.decisionguidance.projectsource;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import com.atlassian.jira.project.Project;
+
 import de.uhd.ifi.se.decision.management.jira.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -8,14 +12,14 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  */
 public class ProjectSource extends KnowledgeSource {
 
-	protected String projectKey;
+	protected Project jiraProject;
 
 	/**
 	 * @param projectKey
 	 *            key of the other Jira project.
 	 */
 	public ProjectSource(String projectKey) {
-		this.projectKey = projectKey;
+		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
 		this.isActivated = false;
 		this.icon = "aui-iconfont-jira";
 	}
@@ -41,16 +45,16 @@ public class ProjectSource extends KnowledgeSource {
 	 *            true if recommendations should be generated from this source.
 	 */
 	public ProjectSource(String projectKey, boolean isActivated) {
-		this(new DecisionKnowledgeProject(projectKey));
+		this(projectKey);
 		this.isActivated = isActivated;
 	}
 
 	/**
 	 * @param jiraProject
-	 *            other Jira project as a {@link DecisionKnowledgeProject} object.
+	 *            other Jira project.
 	 */
-	public ProjectSource(DecisionKnowledgeProject jiraProject) {
-		this(jiraProject.getProjectKey(), jiraProject.getProjectName(), false);
+	public ProjectSource(Project jiraProject) {
+		this.jiraProject = jiraProject;
 	}
 
 	/**
@@ -58,7 +62,14 @@ public class ProjectSource extends KnowledgeSource {
 	 *         source.
 	 */
 	public String getProjectKey() {
-		return projectKey;
+		return jiraProject.getKey();
+	}
+
+	/**
+	 * @return Jira project that is used as the knowledge source.
+	 */
+	public Project getJiraProject() {
+		return jiraProject;
 	}
 
 	/**
@@ -66,6 +77,15 @@ public class ProjectSource extends KnowledgeSource {
 	 *            of the Jira project that is used as the knowledge source.
 	 */
 	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
+	}
+
+	/**
+	 * @return name of the knowledge source, e.g. the name of a Jira project or a
+	 *         topic in DBPedia such as "Frameworks".
+	 */
+	@XmlElement
+	public String getName() {
+		return jiraProject.getName();
 	}
 }

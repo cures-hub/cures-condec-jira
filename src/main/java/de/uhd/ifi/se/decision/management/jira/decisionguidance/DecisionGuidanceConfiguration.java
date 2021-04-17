@@ -194,13 +194,13 @@ public class DecisionGuidanceConfiguration {
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			DecisionKnowledgeProject jiraProject = new DecisionKnowledgeProject(project);
-			if (!jiraProject.isActivated()) {
+			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
+			if (!conDecProject.isActivated()) {
 				continue;
 			}
-			ProjectSource projectSource = getProjectSource(jiraProject.getProjectKey());
+			ProjectSource projectSource = getProjectSource(conDecProject.getProjectKey());
 			if (projectSource == null) {
-				projectSource = new ProjectSource(jiraProject);
+				projectSource = new ProjectSource(project);
 			}
 			projectSources.add(projectSource);
 		}
@@ -225,7 +225,8 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equals(projectSourceKey)) {
+			if (projectSource.getJiraProject() != null
+					&& projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				return projectSource;
 			}
 		}
@@ -240,7 +241,8 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public void setProjectKnowledgeSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
+			if (projectSource.getJiraProject() != null
+					&& projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
 				return;
 			}

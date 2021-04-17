@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 public class TestProjectSource extends TestSetUp {
@@ -22,8 +21,7 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testConstructorWithProject() {
-		ProjectSource projectSourceFromProjectObject = new ProjectSource(
-				new DecisionKnowledgeProject(JiraProjects.getTestProject()));
+		ProjectSource projectSourceFromProjectObject = new ProjectSource(JiraProjects.getTestProject());
 		assertEquals(projectSource.getName(), projectSourceFromProjectObject.getName());
 	}
 
