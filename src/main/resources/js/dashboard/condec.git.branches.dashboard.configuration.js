@@ -31,16 +31,12 @@ define('dashboard/branches', [], function () {
 	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey']) {
-				var projectKey = preferences['projectKey'];
-
-				var filterSettings = getFilterSettings(projectKey);
-
-				conDecBranchesDashboard.init(filterSettings);
-
-				dashboardAPI.resize();
+				createRender(preferences)
 			}
 			else {
-				createConfiguration(context, preferences);
+				window.onload = function () {
+					createConfiguration(preferences);
+				}
 			}
 		});
 	};
@@ -48,7 +44,7 @@ define('dashboard/branches', [], function () {
 	ConDecBranchesDashboardItem.prototype.renderEdit = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['once']) {
-				createConfiguration(context, preferences);
+				createConfiguration(preferences);
 			}
 			else {
 				preferences['once'] = true;
@@ -58,7 +54,17 @@ define('dashboard/branches', [], function () {
 		});
 	};
 
-	function createConfiguration(context, preferences) {
+	function createRender(preferences) {
+		var projectKey = preferences['projectKey'];
+
+		var filterSettings = getFilterSettings(projectKey);
+
+		conDecBranchesDashboard.init(filterSettings);
+
+		dashboardAPI.resize();
+	}
+
+	function createConfiguration(preferences) {
 		getHTMLNodes("condec-branch-dashboard-configproject"
 			, "condec-branches-dashboard-contents-container"
 			, "condec-branches-dashboard-contents-data-error"

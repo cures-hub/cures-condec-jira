@@ -31,66 +31,12 @@ define('dashboard/rationaleCompleteness', [], function () {
 	ConDecRationaleCompletenessDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey']) {
-				var projectKey = preferences['projectKey'];
-				var knowledgeTypes;
-				if (preferences['knowledgeTypes']) {
-					knowledgeTypes = preferences['knowledgeTypes'];
-				}
-				var documentationLocations;
-				if (preferences['documentationLocations']) {
-					documentationLocations = preferences['documentationLocations'];
-				}
-				var knowledgeStatus;
-				if (preferences['knowledgeStatus']) {
-					knowledgeStatus = preferences['knowledgeStatus'];
-				}
-				var linkTypes;
-				if (preferences['linkTypes']) {
-					linkTypes = preferences['linkTypes'];
-				}
-				var linkDistance;
-				if (preferences['linkDistance']) {
-					linkDistance = preferences['linkDistance'];
-				}
-				var minDegree;
-				if (preferences['minDegree']) {
-					minDegree = preferences['minDegree'];
-				}
-				var maxDegree;
-				if (preferences['maxDegree']) {
-					maxDegree = preferences['maxDegree'];
-				}
-				var startDate;
-				if (preferences['startDate']) {
-					startDate = preferences['startDate'];
-				}
-				var endDate;
-				if (preferences['endDate']) {
-					endDate = preferences['endDate'];
-				}
-				var decisionKnowledgeShown;
-				if (preferences['decisionKnowledgeShown']) {
-					decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
-				}
-				var testCodeShown;
-				if (preferences['testCodeShown']) {
-					testCodeShown = preferences['testCodeShown'];
-				}
-				var incompleteKnowledgeShown;
-				if (preferences['incompleteKnowledgeShown']) {
-					incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
-				}
-
-				var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-					linkDistance, minDegree, maxDegree, startDate, endDate,
-					decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
-
-				conDecRationaleCompletenessDashboard.init(filterSettings);
-
-				dashboardAPI.resize();
+				createRender(preferences)
 			}
 			else {
-				createConfiguration(context, preferences);
+				window.onload = function () {
+					createConfiguration(preferences);
+				}
 			}
 		});
 	};
@@ -98,7 +44,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 	ConDecRationaleCompletenessDashboardItem.prototype.renderEdit = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['once']) {
-				createConfiguration(context, preferences);
+				createConfiguration(preferences);
 			}
 			else {
 				preferences['once'] = true;
@@ -108,7 +54,67 @@ define('dashboard/rationaleCompleteness', [], function () {
 		});
 	};
 
-	function createConfiguration(context, preferences) {
+	function createRender(preferences) {
+		var projectKey = preferences['projectKey'];
+		var knowledgeTypes;
+		if (preferences['knowledgeTypes']) {
+			knowledgeTypes = preferences['knowledgeTypes'];
+		}
+		var documentationLocations;
+		if (preferences['documentationLocations']) {
+			documentationLocations = preferences['documentationLocations'];
+		}
+		var knowledgeStatus;
+		if (preferences['knowledgeStatus']) {
+			knowledgeStatus = preferences['knowledgeStatus'];
+		}
+		var linkTypes;
+		if (preferences['linkTypes']) {
+			linkTypes = preferences['linkTypes'];
+		}
+		var linkDistance;
+		if (preferences['linkDistance']) {
+			linkDistance = preferences['linkDistance'];
+		}
+		var minDegree;
+		if (preferences['minDegree']) {
+			minDegree = preferences['minDegree'];
+		}
+		var maxDegree;
+		if (preferences['maxDegree']) {
+			maxDegree = preferences['maxDegree'];
+		}
+		var startDate;
+		if (preferences['startDate']) {
+			startDate = preferences['startDate'];
+		}
+		var endDate;
+		if (preferences['endDate']) {
+			endDate = preferences['endDate'];
+		}
+		var decisionKnowledgeShown;
+		if (preferences['decisionKnowledgeShown']) {
+			decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
+		}
+		var testCodeShown;
+		if (preferences['testCodeShown']) {
+			testCodeShown = preferences['testCodeShown'];
+		}
+		var incompleteKnowledgeShown;
+		if (preferences['incompleteKnowledgeShown']) {
+			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
+		}
+
+		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
+			linkDistance, minDegree, maxDegree, startDate, endDate,
+			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
+
+		conDecRationaleCompletenessDashboard.init(filterSettings);
+
+		dashboardAPI.resize();
+	}
+
+	function createConfiguration(preferences) {
 		getHTMLNodes("condec-rationale-completeness-dashboard-configproject"
 			, "condec-rationale-completeness-dashboard-contents-container"
 			, "condec-rationale-completeness-dashboard-contents-data-error"
