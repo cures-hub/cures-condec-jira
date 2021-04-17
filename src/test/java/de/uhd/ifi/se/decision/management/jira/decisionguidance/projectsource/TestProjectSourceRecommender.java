@@ -54,7 +54,7 @@ public class TestProjectSourceRecommender extends TestSetUp {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 		List<Recommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?", decisionProblem);
-		assertEquals(4, recommendations.size());
+		assertEquals(2, recommendations.size());
 	}
 
 	@Test
