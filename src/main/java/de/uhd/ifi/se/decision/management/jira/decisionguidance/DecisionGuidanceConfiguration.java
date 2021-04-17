@@ -199,7 +199,7 @@ public class DecisionGuidanceConfiguration {
 				continue;
 			}
 			ProjectSource projectSource = getProjectSource(conDecProject.getProjectKey());
-			if (projectSource == null) {
+			if (projectSource == null || projectSource.getProjectKey().isBlank()) {
 				projectSource = new ProjectSource(project);
 			}
 			projectSources.add(projectSource);
@@ -225,8 +225,7 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getJiraProject() != null
-					&& projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				return projectSource;
 			}
 		}
@@ -241,8 +240,7 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public void setProjectKnowledgeSource(String projectSourceKey, boolean isActivated) {
 		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getJiraProject() != null
-					&& projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				projectSource.setActivated(isActivated);
 				return;
 			}

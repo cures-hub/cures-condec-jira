@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  */
 public class ProjectSource extends KnowledgeSource {
 
-	protected Project jiraProject;
+	protected String projectKey;
 
 	private ProjectSource() {
 		this.icon = "aui-iconfont-jira";
@@ -24,7 +24,7 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	public ProjectSource(String projectKey) {
 		this();
-		this.jiraProject = new DecisionKnowledgeProject(projectKey).getJiraProject();
+		this.projectKey = projectKey;
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	public ProjectSource(Project jiraProject) {
 		this();
-		this.jiraProject = jiraProject;
+		this.projectKey = jiraProject.getKey();
 	}
 
 	/**
@@ -52,14 +52,14 @@ public class ProjectSource extends KnowledgeSource {
 	 *         source.
 	 */
 	public String getProjectKey() {
-		return jiraProject != null ? jiraProject.getKey() : "";
+		return projectKey != null ? projectKey : "";
 	}
 
 	/**
 	 * @return Jira project that is used as the knowledge source.
 	 */
 	public Project getJiraProject() {
-		return jiraProject;
+		return new DecisionKnowledgeProject(projectKey).getJiraProject();
 	}
 
 	/**
@@ -67,6 +67,6 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	@XmlElement
 	public String getName() {
-		return jiraProject.getName();
+		return getJiraProject().getName();
 	}
 }
