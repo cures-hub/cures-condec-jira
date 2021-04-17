@@ -39,8 +39,8 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSetAndGetProjectKey() {
-		projectSource.setProjectKey("TEST-OTHER");
-		assertEquals("TEST-OTHER", projectSource.getProjectKey());
+		projectSource.setProjectKey("NON-EXISTING-PROJECT");
+		assertEquals("", projectSource.getProjectKey());
 	}
 
 	@Test

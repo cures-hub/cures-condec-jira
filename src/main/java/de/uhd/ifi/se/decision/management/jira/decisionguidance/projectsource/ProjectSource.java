@@ -62,7 +62,7 @@ public class ProjectSource extends KnowledgeSource {
 	 *         source.
 	 */
 	public String getProjectKey() {
-		return jiraProject.getKey();
+		return jiraProject != null ? jiraProject.getKey() : "";
 	}
 
 	/**

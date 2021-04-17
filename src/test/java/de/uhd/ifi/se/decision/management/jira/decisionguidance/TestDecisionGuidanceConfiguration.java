@@ -100,9 +100,9 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 	@Test
 	public void testSetAndGetProjectKnowledgeSource() {
-		config.setProjectKnowledgeSource("OTHERPRORJECT", true);
-		assertTrue(config.getProjectSource("OTHERPRORJECT").isActivated());
-		config.setProjectKnowledgeSource("OTHERPRORJECT", false);
-		assertFalse(config.getProjectSource("OTHERPRORJECT").isActivated());
+		config.setProjectKnowledgeSource("TEST", true);
+		assertTrue(config.getProjectSource("TEST").isActivated());
+		config.setProjectKnowledgeSource("TEST", false);
+		assertFalse(config.getProjectSource("TEST").isActivated());
 	}
 }
