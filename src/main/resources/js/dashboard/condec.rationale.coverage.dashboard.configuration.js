@@ -31,25 +31,38 @@ define('dashboard/rationaleCoverage', [], function () {
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey'] && preferences['issueType']) {
-				createRender(preferences);
+				if (checkElementsExist()) {
+					createRender(preferences);
+				}
+				else {
+					dashboardAPI.once("afterRender",
+						function() {
+							createRender(preferences);
+						});
+				}
 			}
 			else {
-				window.onload = function () {
-					createConfiguration(preferences);
-				};
+				self.renderEdit(context, preferences);
 			}
 		});
 	};
 
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function (context, preferences) {
 		$(document).ready(function() {
-			if (preferences['once']) {
+			if (checkElementsExist()) {
 				createConfiguration(preferences);
 			}
 			else {
-				preferences['once'] = true;
-				dashboardAPI.savePreferences(preferences);
-				window.location.reload();
+				dashboardAPI.once("afterRender",
+					function() {
+						createConfiguration(preferences);
+					});
 			}
 		});
 	};
@@ -127,41 +140,21 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		setPreferences(preferences);
 
-		dashboardAPI.resize();
-
 		createSaveButton();
 
 		createCancelButton(preferences);
 
 		createListener();
+
+		dashboardAPI.resize();
 	}
 
 	function createSaveButton() {
 		function onSaveButton(event) {
 			var preferences = getPreferences();
 
-			var projectKey = preferences['projectKey'];
-			var issueType = preferences['issueType'];
-			var knowledgeTypes = preferences['knowledgeTypes'];
-			var documentationLocations = preferences['documentationLocations'];
-			var knowledgeStatus = preferences['knowledgeStatus'];
-			var linkTypes = preferences['linkTypes'];
-			var linkDistance = preferences['linkDistance'];
-			var minDegree = preferences['minDegree'];
-			var maxDegree = preferences['maxDegree'];
-			var startDate = preferences['startDate'];
-			var endDate = preferences['endDate'];
-			var decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
-			var testCodeShown = preferences['testCodeShown'];
-			var incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
-
-			var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-				linkDistance, minDegree, maxDegree, startDate, endDate,
-				decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
-
-			if (projectKey && issueType) {
+			if (preferences['projectKey']) {
 				dashboardAPI.savePreferences(preferences);
-				conDecRationaleCoverageDashboard.init(filterSettings, issueType);
 			}
 
 			dashboardAPI.resize();
@@ -196,6 +189,18 @@ define('dashboard/rationaleCoverage', [], function () {
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
+	function checkElementsExist() {
+		getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
+			, "condec-rationale-coverage-dashboard-contents-container"
+			, "condec-rationale-coverage-dashboard-contents-data-error"
+			, "condec-rationale-coverage-dashboard-no-project"
+			, "condec-rationale-coverage-dashboard-processing"
+			, "condec-rationale-coverage-dashboard-nogit-error");
+
+		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
+			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
+	}
+
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
@@ -218,8 +223,6 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function getPreferences() {
 		var preferences = {};
-
-		preferences['once'] = true;
 
 		var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
 		preferences['projectKey'] = projectNode.value;

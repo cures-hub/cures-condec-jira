@@ -31,25 +31,38 @@ define('dashboard/generalMetrics', [], function () {
 	ConDecGeneralMetricsDashboardItem.prototype.render = function (context, preferences) {
 		$(document).ready(function() {
 			if (preferences['projectKey']) {
-				createRender(preferences);
+				if (checkElementsExist()) {
+					createRender(preferences);
+				}
+				else {
+					dashboardAPI.once("afterRender",
+						function() {
+							createRender(preferences);
+						});
+				}
 			}
 			else {
-				window.onload = function () {
-					createConfiguration(preferences);
-				};
+				self.renderEdit(context, preferences);
 			}
 		});
 	};
 
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderEdit = function (context, preferences) {
 		$(document).ready(function() {
-			if (preferences['once']) {
+			if (checkElementsExist()) {
 				createConfiguration(preferences);
 			}
 			else {
-				preferences['once'] = true;
-				dashboardAPI.savePreferences(preferences);
-				window.location.reload();
+				dashboardAPI.once("afterRender",
+					function() {
+						createConfiguration(preferences);
+					});
 			}
 		});
 	};
@@ -126,40 +139,21 @@ define('dashboard/generalMetrics', [], function () {
 
 		setPreferences(preferences);
 
-		dashboardAPI.resize();
-
 		createSaveButton();
 
 		createCancelButton(preferences);
 
 		createListener();
+
+		dashboardAPI.resize();
 	}
 
 	function createSaveButton() {
 		function onSaveButton(event) {
 			var preferences = getPreferences();
 
-			var projectKey = preferences['projectKey'];
-			var knowledgeTypes = preferences['knowledgeTypes'];
-			var documentationLocations = preferences['documentationLocations'];
-			var knowledgeStatus = preferences['knowledgeStatus'];
-			var linkTypes = preferences['linkTypes'];
-			var linkDistance = preferences['linkDistance'];
-			var minDegree = preferences['minDegree'];
-			var maxDegree = preferences['maxDegree'];
-			var startDate = preferences['startDate'];
-			var endDate = preferences['endDate'];
-			var decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
-			var testCodeShown = preferences['testCodeShown'];
-			var incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
-
-			var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-				linkDistance, minDegree, maxDegree, startDate, endDate,
-				decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
-
-			if (projectKey) {
+			if (preferences['projectKey']) {
 				dashboardAPI.savePreferences(preferences);
-				conDecGeneralMetricsDashboard.init(filterSettings);
 			}
 
 			dashboardAPI.resize();
@@ -193,6 +187,18 @@ define('dashboard/generalMetrics', [], function () {
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
+	function checkElementsExist() {
+		getHTMLNodes("condec-general-metrics-dashboard-configproject"
+			, "condec-general-metrics-dashboard-contents-container"
+			, "condec-general-metrics-dashboard-contents-data-error"
+			, "condec-general-metrics-dashboard-no-project"
+			, "condec-general-metrics-dashboard-processing"
+			, "condec-general-metrics-dashboard-nogit-error");
+
+		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
+			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
+	}
+
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
@@ -215,8 +221,6 @@ define('dashboard/generalMetrics', [], function () {
 
 	function getPreferences() {
 		var preferences = {};
-
-		preferences['once'] = true;
 
 		var projectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
 		preferences['projectKey'] = projectNode.value;
