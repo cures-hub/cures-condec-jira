@@ -117,10 +117,14 @@ define('dashboard/generalMetrics', [], function () {
 		if (preferences['incompleteKnowledgeShown']) {
 			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
 		}
+		var transitiveLinksShown;
+		if (preferences['transitiveLinksShown']) {
+			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 			linkDistance, minDegree, maxDegree, startDate, endDate,
-			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
+			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecGeneralMetricsDashboard.init(filterSettings);
 
@@ -159,7 +163,7 @@ define('dashboard/generalMetrics', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("general-metrics-save-button");
+		var saveButton = document.getElementById("save-button-general-metrics");
 		saveButton.addEventListener("click", onSaveButton);
 	}
 
@@ -170,20 +174,20 @@ define('dashboard/generalMetrics', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("general-metrics-cancel-button");
+		var cancelButton = document.getElementById("cancel-button-general-metrics");
 		cancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+			var projectNode = document.getElementById("project-dropdown-general-metrics");
 			conDecGeneralMetricsDashboard.setKnowledgeTypes(projectNode.value);
 			conDecGeneralMetricsDashboard.setDocumentationLocations();
 			conDecGeneralMetricsDashboard.setKnowledgeStatus();
 			conDecGeneralMetricsDashboard.setLinkTypes();
 		}
 
-		var projectKeyNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+		var projectKeyNode = document.getElementById("project-dropdown-general-metrics");
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
@@ -222,126 +226,134 @@ define('dashboard/generalMetrics', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+		var projectNode = document.getElementById("project-dropdown-general-metrics");
 		preferences['projectKey'] = projectNode.value;
 
-		var knowledgeTypesNode = document.getElementById("condec-dashboard-general-metrics-knowledgetypes-input");
+		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-general-metrics");
 		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
 
-		var documentationLocationsNode = document.getElementById("condec-dashboard-general-metrics-documentationlocation-input");
+		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-general-metrics");
 		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-general-metrics-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
 		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
 
-		var linkTypesNode = document.getElementById("condec-dashboard-general-metrics-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
 		preferences['linkTypes'] = getSelectValues(linkTypesNode);
 
-		var linkDistanceNode = document.getElementById("condec-dashboard-general-metrics-linkdistance-input");
+		var linkDistanceNode = document.getElementById("link-distance-input-general-metrics");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
-		var minDegreeNode = document.getElementById("condec-dashboard-general-metrics-mindegree-input");
+		var minDegreeNode = document.getElementById("min-degree-input-general-metrics");
 		preferences['minDegree'] = minDegreeNode.value;
 
-		var maxDegreeNode = document.getElementById("condec-dashboard-general-metrics-maxdegree-input");
+		var maxDegreeNode = document.getElementById("max-degree-input-general-metrics");
 		preferences['maxDegree'] = maxDegreeNode.value;
 
-		var startDateNode = document.getElementById("condec-dashboard-general-metrics-startdate-input");
+		var startDateNode = document.getElementById("start-date-picker-general-metrics");
 		preferences['startDate'] = startDateNode.value;
 
-		var endDateNode = document.getElementById("condec-dashboard-general-metrics-enddate-input");
+		var endDateNode = document.getElementById("end-date-picker-general-metrics");
 		preferences['endDate'] = endDateNode.value;
 
-		var decisionKnowledgeNode = document.getElementById("condec-dashboard-general-metrics-decisionknowledge-checkbox");
+		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-general-metrics");
 		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
 
-		var testCodeNode = document.getElementById("condec-dashboard-general-metrics-testcode-checkbox");
+		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-general-metrics");
 		preferences['testCodeShown'] = testCodeNode.checked;
 
-		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-general-metrics-incompleteknowledge-checkbox");
+		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-general-metrics");
 		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
+
+		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-general-metrics");
+		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-general-metrics-project-selection");
+			var projectNode = document.getElementById("project-dropdown-general-metrics");
 			projectNode.value = preferences['projectKey'];
 
 			conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("condec-dashboard-general-metrics-knowledgetypes-input");
+			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-general-metrics");
 			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
 		conDecGeneralMetricsDashboard.setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("condec-dashboard-general-metrics-documentationlocation-input");
+			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-general-metrics");
 			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
 		}
 
 		conDecGeneralMetricsDashboard.setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("condec-dashboard-general-metrics-knowledgestatus-input");
+			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
 			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
 		conDecGeneralMetricsDashboard.setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("condec-dashboard-general-metrics-linktypes-input");
+			var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
 			setSelectValues(linkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("condec-dashboard-general-metrics-linkdistance-input");
+			var linkDistanceNode = document.getElementById("link-distance-input-general-metrics");
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("condec-dashboard-general-metrics-mindegree-input");
+			var minDegreeNode = document.getElementById("min-degree-input-general-metrics");
 			minDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("condec-dashboard-general-metrics-maxdegree-input");
+			var maxDegreeNode = document.getElementById("max-degree-input-general-metrics");
 			maxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("condec-dashboard-general-metrics-startdate-input");
+			var startDateNode = document.getElementById("start-date-picker-general-metrics");
 			startDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("condec-dashboard-general-metrics-enddate-input");
+			var endDateNode = document.getElementById("end-date-picker-general-metrics");
 			endDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("condec-dashboard-general-metrics-decisionknowledge-checkbox");
+			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-general-metrics");
 			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("condec-dashboard-general-metrics-testcode-checkbox");
+			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-general-metrics");
 			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-general-metrics-incompleteknowledge-checkbox");
+			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-general-metrics");
 			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+		}
+
+		if (preferences['transitiveLinksShown']) {
+			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-general-metrics");
+			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 							   linkDistance, minDegree, maxDegree, startDate, endDate,
-							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown) {
+							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
 		filterSettings.projectKey = projectKey;
@@ -392,6 +404,9 @@ define('dashboard/generalMetrics', [], function () {
 		}
 		if (incompleteKnowledgeShown) {
 			filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
+		}
+		if (transitiveLinksShown) {
+			filterSettings.createTransitiveLinks = transitiveLinksShown;
 		}
 
 		return JSON.stringify(filterSettings);

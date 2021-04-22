@@ -1,0 +1,10 @@
+<div id="dashboard-checkboxes-$viewIdentifier" class="condec-dashboard-filter">
+    <input type="checkbox" id="dashboard-checkbox-decisionknowledge-$viewIdentifier" value="decisionKnowledgeShown">
+    <label for="dashboard-checkbox-decisionknowledge-$viewIdentifier"> Show Only Decision Knowledge</label><br>
+    <input type="checkbox" id="dashboard-checkbox-testcode-$viewIdentifier" value="testCodeShown">
+    <label for="dashboard-checkbox-testcode-$viewIdentifier"> Show Test Code</label><br>
+    <input type="checkbox" id="dashboard-checkbox-incompleteknowledge-$viewIdentifier" value="incompleteKnowledgeShown">
+    <label for="dashboard-checkbox-incompleteknowledge-$viewIdentifier"> Show Incomplete Knowledge</label><br>
+    <input type="checkbox" id="dashboard-checkbox-transitivelinks-$viewIdentifier" value="transitiveLinksShown">
+    <label for="dashboard-checkbox-transitivelinks-$viewIdentifier"> Show Transitive Links</label><br>
+</div>

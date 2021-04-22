@@ -3,102 +3,39 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
 <div id="condec-rationale-coverage-dashboard-configproject" class="condec-dashboard-contents filtering hidden">
     <form class="aui">
+        #set ($viewIdentifier = "rationale-coverage")
         <div class="field-group">
-            <label for="condec-dashboard-rationale-coverage-project-selection">Project:</label>
-            <select name="project" id="condec-dashboard-rationale-coverage-project-selection" class="select long-field">
-                <option value="">
-                    $i18n.getText("condec.dashboard.rationalecoverage.project.selection.pickone")
-                </option>
-                #foreach ($project in $projects)
-                    <option value="$project.getKey()"
-                        #if ($projectsWithGit.indexOf($project) == -1)
-                            style="background-color:yellow"
-                        #end
-                    >
-                        $project.getKey() - $project.getName()
-                    </option>
-                #end
-            </select>
+            #parse("templates/filter/project.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-issuetype-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-issuetype-input">Jira Issue Type:</label>
-                <select name="issueType" id="condec-dashboard-rationale-coverage-issuetype-input" class="select">
-                </select>
-            </div>
+            #parse("templates/filter/issueType.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-knowledgetypes-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-knowledgetypes-input">Knowledge Types:</label>
-                <select name="knowledgeType" id="condec-dashboard-rationale-coverage-knowledgetypes-input" class="select"
-                        multiple size="3">
-                </select>
-            </div>
+            #parse("templates/filter/knowledgeTypeMulti.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-documentationlocation-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-documentationlocation-input">Documentation Locations:</label>
-                <select name="documentationLocation" id="condec-dashboard-rationale-coverage-documentationlocation-input" class="select"
-                        multiple size="3">
-                </select>
-            </div>
+            #parse("templates/filter/documentationLocationMulti.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-knowledgestatus-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-knowledgestatus-input">Knowledge Status:</label>
-                <select name="knowledgeStatus" id="condec-dashboard-rationale-coverage-knowledgestatus-input" class="select"
-                        multiple size="3">
-                </select>
-            </div>
+            #parse("templates/filter/knowledgeStatusMulti.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-linktypes-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-linktypes-input">Jira Issue Link Types:</label>
-                <select name="linkType" id="condec-dashboard-rationale-coverage-linktypes-input" class="select"
-                        multiple size="3">
-                </select>
-            </div>
+            #parse("templates/filter/linkTypeMulti.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-linkdistance-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-linkdistance-input">Link Distance:</label>
-                <input name="linkDistance" id="condec-dashboard-rationale-coverage-linkdistance-input" class="text short-field"
-                       type="number" value="3" min="0" placeholder="Enter distance">
-            </div>
+            #parse("templates/filter/linkDistance.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-degree-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-mindegree-input">Minimum Degree:</label>
-                <input name="minDegree" id="condec-dashboard-rationale-coverage-mindegree-input" class="text short-field"
-                       type="number" value="" min="0" placeholder="Enter minimum degree">
-                <label for="condec-dashboard-rationale-coverage-maxdegree-input">Maximum Degree:</label>
-                <input name="maxDegree" id="condec-dashboard-rationale-coverage-maxdegree-input" class="text short-field"
-                       type="number" value="" min="0" placeholder="Enter maximum degree">
-            </div>
+            #parse("templates/filter/degree.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-date-selection" class="condec-dashboard-filter">
-                <label for="condec-dashboard-rationale-coverage-startdate-input">Start Date:</label>
-                <input type="date" id="condec-dashboard-rationale-coverage-startdate-input" name="startDate">
-                <label for="condec-dashboard-rationale-coverage-enddate-input">End Date:</label>
-                <input type="date" id="condec-dashboard-rationale-coverage-enddate-input" name="endDate">
-            </div>
+            #parse("templates/filter/documentationDate.vm")
         </div>
         <div class="field-group">
-            <div id="condec-dashboard-rationale-coverage-checkboxes-selection" class="condec-dashboard-filter">
-                <input type="checkbox" id="condec-dashboard-rationale-coverage-decisionknowledge-checkbox" value="decisionKnowledgeShown">
-                <label for="condec-dashboard-rationale-coverage-decisionknowledge-checkbox"> Show Only Decision Knowledge</label><br>
-                <input type="checkbox" id="condec-dashboard-rationale-coverage-testcode-checkbox" value="testCodeShown">
-                <label for="condec-dashboard-rationale-coverage-testcode-checkbox"> Show Test Code</label><br>
-                <input type="checkbox" id="condec-dashboard-rationale-coverage-incompleteknowledge-checkbox" value="incompleteKnowledgeShown">
-                <label for="condec-dashboard-rationale-coverage-incompleteknowledge-checkbox"> Show Incomplete Knowledge</label><br>
-            </div>
+            #parse("templates/filter/dashboardCheckboxes.vm")
         </div>
-        <div class="buttons-container">
-            <div class="buttons">
-                <input id="rationale-coverage-save-button" class="button" type="button" value="Save">
-                <input id="rationale-coverage-cancel-button" class="button" type="button" value="Cancel">
-            </div>
+        <div class="field-group">
+            #parse("templates/filter/dashboardButtons.vm")
         </div>
     </form>
 </div>

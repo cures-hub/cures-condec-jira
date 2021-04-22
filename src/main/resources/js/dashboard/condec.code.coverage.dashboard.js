@@ -21,7 +21,7 @@
 	};
 
 	 ConDecCodeCoverageDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
-	 	var KnowledgeTypeSelection = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
+	 	var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-code-coverage");
 
 	 	removeOptions(KnowledgeTypeSelection);
 
@@ -29,7 +29,7 @@
 	 };
 
 	 ConDecCodeCoverageDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
-	 	var documentationLocationSelection = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
+	 	var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-code-coverage");
 
 	 	removeOptions(documentationLocationSelection);
 
@@ -37,7 +37,7 @@
 	 };
 
 	 ConDecCodeCoverageDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
-	 	var KnowledgeStatusSelection = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
+	 	var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-code-coverage");
 
 	 	removeOptions(KnowledgeStatusSelection);
 
@@ -45,7 +45,7 @@
 	 };
 
 	 ConDecCodeCoverageDashboard.prototype.setLinkTypes = function setLinkTypes() {
-	 	var LinkTypeSelection = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
+	 	var LinkTypeSelection = document.getElementById("linktype-multi-select-code-coverage");
 
 	 	removeOptions(LinkTypeSelection);
 
@@ -84,7 +84,7 @@
 	 ConDecCodeCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
 	 	var knowledgeTypes = getList(JSON.stringify(data));
 
-	 	var knowledgeTypeNode = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
+	 	var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-code-coverage");
 
 	 	for (i = 0; i < knowledgeTypes.length; i++) {
 	 		var knowledgeType = document.createElement('option');
@@ -115,7 +115,7 @@
 	 ConDecCodeCoverageDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
 		 var documentationLocations = getList(JSON.stringify(data));
 
-		 var documentationLocationNode = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
+		 var documentationLocationNode = document.getElementById("documentationlocation-multi-select-code-coverage");
 
 		 for (i = 0; i < documentationLocations.length; i++) {
 			 var documentationLocation = document.createElement('option');
@@ -146,7 +146,7 @@
 	 ConDecCodeCoverageDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
 		 var knowledgeStatuses = getList(JSON.stringify(data));
 
-		 var knowledgeStatusNode = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
+		 var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-code-coverage");
 
 		 for (i = 0; i < knowledgeStatuses.length; i++) {
 			 var knowledgeStatus = document.createElement('option');
@@ -177,7 +177,7 @@
 	 ConDecCodeCoverageDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
 		 var linkTypes = getList(JSON.stringify(data));
 
-		 var linkTypesNode = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
+		 var linkTypesNode = document.getElementById("linktype-multi-select-code-coverage");
 
 		 for (i = 0; i < linkTypes.length; i++) {
 			 var linkType = document.createElement('option');
@@ -195,7 +195,6 @@
 	 }
 
 	ConDecCodeCoverageDashboard.prototype.init = function init(filterSettings) {
-		document.getElementById("condec-dashboard-code-coverage-linkdistance-selection").classList.remove("hidden");
 		getHTMLNodes("condec-code-coverage-dashboard-configproject"
 			, "condec-code-coverage-dashboard-contents-container"
 			, "condec-code-coverage-dashboard-contents-data-error"

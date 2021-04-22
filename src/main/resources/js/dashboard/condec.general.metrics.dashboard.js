@@ -21,7 +21,7 @@
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
-		var KnowledgeTypeSelection = document.getElementById("condec-dashboard-general-metrics-knowledgetypes-input");
+		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
 
 		removeOptions(KnowledgeTypeSelection);
 
@@ -29,7 +29,7 @@
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
-		var documentationLocationSelection = document.getElementById("condec-dashboard-general-metrics-documentationlocation-input");
+		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		removeOptions(documentationLocationSelection);
 
@@ -37,7 +37,7 @@
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
-		var KnowledgeStatusSelection = document.getElementById("condec-dashboard-general-metrics-knowledgestatus-input");
+		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
 		removeOptions(KnowledgeStatusSelection);
 
@@ -45,7 +45,7 @@
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function setLinkTypes() {
-		var LinkTypeSelection = document.getElementById("condec-dashboard-general-metrics-linktypes-input");
+		var LinkTypeSelection = document.getElementById("linktype-multi-select-general-metrics");
 
 		removeOptions(LinkTypeSelection);
 
@@ -83,7 +83,7 @@
 	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
 		var knowledgeTypes = getList(JSON.stringify(data));
 
-		var knowledgeTypeNode = document.getElementById("condec-dashboard-general-metrics-knowledgetypes-input");
+		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
 
 		for (i = 0; i < knowledgeTypes.length; i++) {
 			var knowledgeType = document.createElement('option');
@@ -114,7 +114,7 @@
 	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
 		var documentationLocations = getList(JSON.stringify(data));
 
-		var documentationLocationNode = document.getElementById("condec-dashboard-general-metrics-documentationlocation-input");
+		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		for (i = 0; i < documentationLocations.length; i++) {
 			var documentationLocation = document.createElement('option');
@@ -145,7 +145,7 @@
 	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
 		var knowledgeStatuses = getList(JSON.stringify(data));
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-general-metrics-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
 		for (i = 0; i < knowledgeStatuses.length; i++) {
 			var knowledgeStatus = document.createElement('option');
@@ -176,7 +176,7 @@
 	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
 		var linkTypes = getList(JSON.stringify(data));
 
-		var linkTypesNode = document.getElementById("condec-dashboard-general-metrics-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
 
 		for (i = 0; i < linkTypes.length; i++) {
 			var linkType = document.createElement('option');

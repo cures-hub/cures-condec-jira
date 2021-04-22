@@ -117,10 +117,14 @@ define('dashboard/codeCoverage', [], function () {
 		if (preferences['incompleteKnowledgeShown']) {
 			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
 		}
+		var transitiveLinksShown;
+		if (preferences['transitiveLinksShown']) {
+			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 			linkDistance, minDegree, maxDegree, startDate, endDate,
-			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
+			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecCodeCoverageDashboard.init(filterSettings);
 
@@ -159,7 +163,7 @@ define('dashboard/codeCoverage', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("code-coverage-save-button");
+		var saveButton = document.getElementById("save-button-code-coverage");
 		saveButton.addEventListener("click", onSaveButton);
 	}
 
@@ -170,20 +174,20 @@ define('dashboard/codeCoverage', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("code-coverage-cancel-button");
+		var cancelButton = document.getElementById("cancel-button-code-coverage");
 		cancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
+			var projectNode = document.getElementById("project-dropdown-code-coverage");
 			conDecCodeCoverageDashboard.setKnowledgeTypes(projectNode.value);
 			conDecCodeCoverageDashboard.setDocumentationLocations();
 			conDecCodeCoverageDashboard.setKnowledgeStatus();
 			conDecCodeCoverageDashboard.setLinkTypes();
 		}
 
-		var projectKeyNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
+		var projectKeyNode = document.getElementById("project-dropdown-code-coverage");
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
@@ -222,126 +226,134 @@ define('dashboard/codeCoverage', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
+		var projectNode = document.getElementById("project-dropdown-code-coverage");
 		preferences['projectKey'] = projectNode.value;
 
-		var knowledgeTypesNode = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
+		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-code-coverage");
 		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
 
-		var documentationLocationsNode = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
+		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-code-coverage");
 		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-code-coverage");
 		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
 
-		var linkTypesNode = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-code-coverage");
 		preferences['linkTypes'] = getSelectValues(linkTypesNode);
 
-		var linkDistanceNode = document.getElementById("condec-dashboard-code-coverage-linkdistance-input");
+		var linkDistanceNode = document.getElementById("link-distance-input-code-coverage");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
-		var minDegreeNode = document.getElementById("condec-dashboard-code-coverage-mindegree-input");
+		var minDegreeNode = document.getElementById("min-degree-input-code-coverage");
 		preferences['minDegree'] = minDegreeNode.value;
 
-		var maxDegreeNode = document.getElementById("condec-dashboard-code-coverage-maxdegree-input");
+		var maxDegreeNode = document.getElementById("max-degree-input-code-coverage");
 		preferences['maxDegree'] = maxDegreeNode.value;
 
-		var startDateNode = document.getElementById("condec-dashboard-code-coverage-startdate-input");
+		var startDateNode = document.getElementById("start-date-picker-code-coverage");
 		preferences['startDate'] = startDateNode.value;
 
-		var endDateNode = document.getElementById("condec-dashboard-code-coverage-enddate-input");
+		var endDateNode = document.getElementById("end-date-picker-code-coverage");
 		preferences['endDate'] = endDateNode.value;
 
-		var decisionKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-decisionknowledge-checkbox");
+		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-code-coverage");
 		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
 
-		var testCodeNode = document.getElementById("condec-dashboard-code-coverage-testcode-checkbox");
+		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-code-coverage");
 		preferences['testCodeShown'] = testCodeNode.checked;
 
-		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-incompleteknowledge-checkbox");
+		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-code-coverage");
 		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
+
+		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-code-coverage");
+		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-code-coverage-project-selection");
+			var projectNode = document.getElementById("project-dropdown-code-coverage");
 			projectNode.value = preferences['projectKey'];
 
 			conDecCodeCoverageDashboard.setKnowledgeTypes(preferences['projectKey']);
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("condec-dashboard-code-coverage-knowledgetypes-input");
+			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-code-coverage");
 			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
 		conDecCodeCoverageDashboard.setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("condec-dashboard-code-coverage-documentationlocation-input");
+			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-code-coverage");
 			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
 		}
 
 		conDecCodeCoverageDashboard.setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("condec-dashboard-code-coverage-knowledgestatus-input");
+			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-code-coverage");
 			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
 		conDecCodeCoverageDashboard.setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("condec-dashboard-code-coverage-linktypes-input");
+			var linkTypesNode = document.getElementById("linktype-multi-select-code-coverage");
 			setSelectValues(linkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("condec-dashboard-code-coverage-linkdistance-input");
+			var linkDistanceNode = document.getElementById("link-distance-input-code-coverage");
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("condec-dashboard-code-coverage-mindegree-input");
+			var minDegreeNode = document.getElementById("min-degree-input-code-coverage");
 			minDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("condec-dashboard-code-coverage-maxdegree-input");
+			var maxDegreeNode = document.getElementById("max-degree-input-code-coverage");
 			maxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("condec-dashboard-code-coverage-startdate-input");
+			var startDateNode = document.getElementById("start-date-picker-code-coverage");
 			startDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("condec-dashboard-code-coverage-enddate-input");
+			var endDateNode = document.getElementById("end-date-picker-code-coverage");
 			endDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-decisionknowledge-checkbox");
+			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-code-coverage");
 			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("condec-dashboard-code-coverage-testcode-checkbox");
+			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-code-coverage");
 			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-code-coverage-incompleteknowledge-checkbox");
+			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-code-coverage");
 			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+		}
+
+		if (preferences['transitiveLinksShown']) {
+			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-code-coverage");
+			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 							   linkDistance, minDegree, maxDegree, startDate, endDate,
-							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown) {
+							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
 		filterSettings.projectKey = projectKey;
@@ -392,6 +404,9 @@ define('dashboard/codeCoverage', [], function () {
 		}
 		if (incompleteKnowledgeShown) {
 			filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
+		}
+		if (transitiveLinksShown) {
+			filterSettings.createTransitiveLinks = transitiveLinksShown;
 		}
 
 		return JSON.stringify(filterSettings);

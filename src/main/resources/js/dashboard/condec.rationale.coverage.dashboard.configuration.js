@@ -118,10 +118,14 @@ define('dashboard/rationaleCoverage', [], function () {
 		if (preferences['incompleteKnowledgeShown']) {
 			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
 		}
+		var transitiveLinksShown;
+		if (preferences['transitiveLinksShown']) {
+			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 			linkDistance, minDegree, maxDegree, startDate, endDate,
-			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
+			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecRationaleCoverageDashboard.init(filterSettings, issueType);
 
@@ -160,7 +164,7 @@ define('dashboard/rationaleCoverage', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("rationale-coverage-save-button");
+		var saveButton = document.getElementById("save-button-rationale-coverage");
 		saveButton.addEventListener("click", onSaveButton);
 	}
 
@@ -171,13 +175,13 @@ define('dashboard/rationaleCoverage', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("rationale-coverage-cancel-button");
+		var cancelButton = document.getElementById("cancel-button-rationale-coverage");
 		cancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+			var projectNode = document.getElementById("project-dropdown-rationale-coverage");
 			conDecRationaleCoverageDashboard.setJiraIssueTypes(projectNode.value);
 			conDecRationaleCoverageDashboard.setKnowledgeTypes(projectNode.value);
 			conDecRationaleCoverageDashboard.setDocumentationLocations();
@@ -185,7 +189,7 @@ define('dashboard/rationaleCoverage', [], function () {
 			conDecRationaleCoverageDashboard.setLinkTypes();
 		}
 
-		var projectKeyNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+		var projectKeyNode = document.getElementById("project-dropdown-rationale-coverage");
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
@@ -224,54 +228,57 @@ define('dashboard/rationaleCoverage', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+		var projectNode = document.getElementById("project-dropdown-rationale-coverage");
 		preferences['projectKey'] = projectNode.value;
 
-		var issueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+		var issueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
 		preferences['issueType'] = issueTypeNode.value;
 
-		var knowledgeTypesNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgetypes-input");
+		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
 
-		var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-coverage-documentationlocation-input");
+		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
 
-		var linkTypesNode = document.getElementById("condec-dashboard-rationale-coverage-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
 		preferences['linkTypes'] = getSelectValues(linkTypesNode);
 
-		var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-linkdistance-input");
+		var linkDistanceNode = document.getElementById("link-distance-input-rationale-coverage");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
-		var minDegreeNode = document.getElementById("condec-dashboard-rationale-coverage-mindegree-input");
+		var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
 		preferences['minDegree'] = minDegreeNode.value;
 
-		var maxDegreeNode = document.getElementById("condec-dashboard-rationale-coverage-maxdegree-input");
+		var maxDegreeNode = document.getElementById("max-degree-input-rationale-coverage");
 		preferences['maxDegree'] = maxDegreeNode.value;
 
-		var startDateNode = document.getElementById("condec-dashboard-rationale-coverage-startdate-input");
+		var startDateNode = document.getElementById("start-date-picker-rationale-coverage");
 		preferences['startDate'] = startDateNode.value;
 
-		var endDateNode = document.getElementById("condec-dashboard-rationale-coverage-enddate-input");
+		var endDateNode = document.getElementById("end-date-picker-rationale-coverage");
 		preferences['endDate'] = endDateNode.value;
 
-		var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-decisionknowledge-checkbox");
+		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-coverage");
 		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
 
-		var testCodeNode = document.getElementById("condec-dashboard-rationale-coverage-testcode-checkbox");
+		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-coverage");
 		preferences['testCodeShown'] = testCodeNode.checked;
 
-		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-incompleteknowledge-checkbox");
+		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-coverage");
 		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
+
+		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-coverage");
+		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-rationale-coverage-project-selection");
+			var projectNode = document.getElementById("project-dropdown-rationale-coverage");
 			projectNode.value = preferences['projectKey'];
 
 			conDecRationaleCoverageDashboard.setJiraIssueTypes(preferences['projectKey']);
@@ -279,80 +286,85 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 
 		if (preferences['issueType']) {
-			var issueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+			var issueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
 			issueTypeNode.value = preferences['issueType'];
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgetypes-input");
+			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
 		conDecRationaleCoverageDashboard.setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-coverage-documentationlocation-input");
+			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
 		}
 
 		conDecRationaleCoverageDashboard.setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgestatus-input");
+			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
 		conDecRationaleCoverageDashboard.setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("condec-dashboard-rationale-coverage-linktypes-input");
+			var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
 			setSelectValues(linkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("condec-dashboard-rationale-coverage-linkdistance-input");
+			var linkDistanceNode = document.getElementById("link-distance-input-rationale-coverage");
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("condec-dashboard-rationale-coverage-mindegree-input");
+			var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
 			minDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("condec-dashboard-rationale-coverage-maxdegree-input");
+			var maxDegreeNode = document.getElementById("max-degree-input-rationale-coverage");
 			maxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("condec-dashboard-rationale-coverage-startdate-input");
+			var startDateNode = document.getElementById("start-date-picker-rationale-coverage");
 			startDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("condec-dashboard-rationale-coverage-enddate-input");
+			var endDateNode = document.getElementById("end-date-picker-rationale-coverage");
 			endDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-decisionknowledge-checkbox");
+			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-coverage");
 			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("condec-dashboard-rationale-coverage-testcode-checkbox");
+			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-coverage");
 			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-coverage-incompleteknowledge-checkbox");
+			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-coverage");
 			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+		}
+
+		if (preferences['transitiveLinksShown']) {
+			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-coverage");
+			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 							   linkDistance, minDegree, maxDegree, startDate, endDate,
-							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown) {
+							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
 		filterSettings.projectKey = projectKey;
@@ -403,6 +415,9 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 		if (incompleteKnowledgeShown) {
 			filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
+		}
+		if (transitiveLinksShown) {
+			filterSettings.createTransitiveLinks = transitiveLinksShown;
 		}
 
 		return JSON.stringify(filterSettings);

@@ -21,7 +21,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setJiraIssueTypes = function setJiraIssueTypes(projectKey) {
-		var issueTypeSelection = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+		var issueTypeSelection = document.getElementById("issuetype-select-rationale-coverage");
 
 		removeOptions(issueTypeSelection);
 
@@ -29,7 +29,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
-		var KnowledgeTypeSelection = document.getElementById("condec-dashboard-rationale-coverage-knowledgetypes-input");
+		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
 		removeOptions(KnowledgeTypeSelection);
 
@@ -37,7 +37,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
-		var documentationLocationSelection = document.getElementById("condec-dashboard-rationale-coverage-documentationlocation-input");
+		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 
 		removeOptions(documentationLocationSelection);
 
@@ -45,7 +45,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
-		var KnowledgeStatusSelection = document.getElementById("condec-dashboard-rationale-coverage-knowledgestatus-input");
+		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 
 		removeOptions(KnowledgeStatusSelection);
 
@@ -53,7 +53,7 @@
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setLinkTypes = function setLinkTypes() {
-		var LinkTypeSelection = document.getElementById("condec-dashboard-rationale-coverage-linktypes-input");
+		var LinkTypeSelection = document.getElementById("linktype-multi-select-rationale-coverage");
 
 		removeOptions(LinkTypeSelection);
 
@@ -91,7 +91,7 @@
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function fillOptionsJiraIssueTypes(data) {
 		var jiraIssueTypes = getList(JSON.stringify(data));
 
-		var jiraIssueTypeNode = document.getElementById("condec-dashboard-rationale-coverage-issuetype-input");
+		var jiraIssueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
 
 		for (i = 0; i < jiraIssueTypes.length; i++) {
 			var issueType = document.createElement('option');
@@ -125,7 +125,7 @@
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
 		var knowledgeTypes = getList(JSON.stringify(data));
 
-		var knowledgeTypeNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgetypes-input");
+		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
 		for (i = 0; i < knowledgeTypes.length; i++) {
 			var knowledgeType = document.createElement('option');
@@ -156,7 +156,7 @@
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
 		var documentationLocations = getList(JSON.stringify(data));
 
-		var documentationLocationNode = document.getElementById("condec-dashboard-rationale-coverage-documentationlocation-input");
+		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 
 		for (i = 0; i < documentationLocations.length; i++) {
 			var documentationLocation = document.createElement('option');
@@ -187,7 +187,7 @@
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
 		var knowledgeStatuses = getList(JSON.stringify(data));
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-coverage-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 
 		for (i = 0; i < knowledgeStatuses.length; i++) {
 			var knowledgeStatus = document.createElement('option');
@@ -218,7 +218,7 @@
 	ConDecRationaleCoverageDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
 		var linkTypes = getList(JSON.stringify(data));
 
-		var linkTypesNode = document.getElementById("condec-dashboard-rationale-coverage-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
 
 		for (i = 0; i < linkTypes.length; i++) {
 			var linkType = document.createElement('option');

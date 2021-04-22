@@ -117,10 +117,14 @@ define('dashboard/rationaleCompleteness', [], function () {
 		if (preferences['incompleteKnowledgeShown']) {
 			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
 		}
+		var transitiveLinksShown;
+		if (preferences['transitiveLinksShown']) {
+			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 			linkDistance, minDegree, maxDegree, startDate, endDate,
-			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown);
+			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecRationaleCompletenessDashboard.init(filterSettings);
 
@@ -159,7 +163,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("rationale-completeness-save-button");
+		var saveButton = document.getElementById("save-button-rationale-completeness");
 		saveButton.addEventListener("click", onSaveButton);
 	}
 
@@ -170,20 +174,20 @@ define('dashboard/rationaleCompleteness', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("rationale-completeness-cancel-button");
+		var cancelButton = document.getElementById("cancel-button-rationale-completeness");
 		cancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+			var projectNode = document.getElementById("project-dropdown-rationale-completeness");
 			conDecRationaleCompletenessDashboard.setKnowledgeTypes(projectNode.value);
 			conDecRationaleCompletenessDashboard.setDocumentationLocations();
 			conDecRationaleCompletenessDashboard.setKnowledgeStatus();
 			conDecRationaleCompletenessDashboard.setLinkTypes();
 		}
 
-		var projectKeyNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+		var projectKeyNode = document.getElementById("project-dropdown-rationale-completeness");
 		projectKeyNode.addEventListener("change", onSelectProject);
 	}
 
@@ -222,126 +226,134 @@ define('dashboard/rationaleCompleteness', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+		var projectNode = document.getElementById("project-dropdown-rationale-completeness");
 		preferences['projectKey'] = projectNode.value;
 
-		var knowledgeTypesNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgetypes-input");
+		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-completeness");
 		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
 
-		var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-completeness-documentationlocation-input");
+		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-completeness");
 		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
 
-		var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgestatus-input");
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
 		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
 
-		var linkTypesNode = document.getElementById("condec-dashboard-rationale-completeness-linktypes-input");
+		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-completeness");
 		preferences['linkTypes'] = getSelectValues(linkTypesNode);
 
-		var linkDistanceNode = document.getElementById("condec-dashboard-rationale-completeness-linkdistance-input");
+		var linkDistanceNode = document.getElementById("link-distance-input-rationale-completeness");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
-		var minDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-mindegree-input");
+		var minDegreeNode = document.getElementById("min-degree-input-rationale-completeness");
 		preferences['minDegree'] = minDegreeNode.value;
 
-		var maxDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-maxdegree-input");
+		var maxDegreeNode = document.getElementById("max-degree-input-rationale-completeness");
 		preferences['maxDegree'] = maxDegreeNode.value;
 
-		var startDateNode = document.getElementById("condec-dashboard-rationale-completeness-startdate-input");
+		var startDateNode = document.getElementById("start-date-picker-rationale-completeness");
 		preferences['startDate'] = startDateNode.value;
 
-		var endDateNode = document.getElementById("condec-dashboard-rationale-completeness-enddate-input");
+		var endDateNode = document.getElementById("end-date-picker-rationale-completeness");
 		preferences['endDate'] = endDateNode.value;
 
-		var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-decisionknowledge-checkbox");
+		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-completeness");
 		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
 
-		var testCodeNode = document.getElementById("condec-dashboard-rationale-completeness-testcode-checkbox");
+		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-completeness");
 		preferences['testCodeShown'] = testCodeNode.checked;
 
-		var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-incompleteknowledge-checkbox");
+		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-completeness");
 		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
+
+		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-completeness");
+		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-rationale-completeness-project-selection");
+			var projectNode = document.getElementById("project-dropdown-rationale-completeness");
 			projectNode.value = preferences['projectKey'];
 
 			conDecRationaleCompletenessDashboard.setKnowledgeTypes(preferences['projectKey']);
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgetypes-input");
+			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-completeness");
 			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
 		conDecRationaleCompletenessDashboard.setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("condec-dashboard-rationale-completeness-documentationlocation-input");
+			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-completeness");
 			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
 		}
 
 		conDecRationaleCompletenessDashboard.setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("condec-dashboard-rationale-completeness-knowledgestatus-input");
+			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
 			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
 		conDecRationaleCompletenessDashboard.setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("condec-dashboard-rationale-completeness-linktypes-input");
+			var linkTypesNode = document.getElementById("linktype-multi-select-rationale-completeness");
 			setSelectValues(linkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("condec-dashboard-rationale-completeness-linkdistance-input");
+			var linkDistanceNode = document.getElementById("link-distance-input-rationale-completeness");
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-mindegree-input");
+			var minDegreeNode = document.getElementById("min-degree-input-rationale-completeness");
 			minDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("condec-dashboard-rationale-completeness-maxdegree-input");
+			var maxDegreeNode = document.getElementById("max-degree-input-rationale-completeness");
 			maxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("condec-dashboard-rationale-completeness-startdate-input");
+			var startDateNode = document.getElementById("start-date-picker-rationale-completeness");
 			startDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("condec-dashboard-rationale-completeness-enddate-input");
+			var endDateNode = document.getElementById("end-date-picker-rationale-completeness");
 			endDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-decisionknowledge-checkbox");
+			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-completeness");
 			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("condec-dashboard-rationale-completeness-testcode-checkbox");
+			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-completeness");
 			testCodeNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("condec-dashboard-rationale-completeness-incompleteknowledge-checkbox");
+			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-completeness");
 			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+		}
+
+		if (preferences['transitiveLinksShown']) {
+			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-completeness");
+			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
 							   linkDistance, minDegree, maxDegree, startDate, endDate,
-							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown) {
+							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
 		filterSettings.projectKey = projectKey;
@@ -392,6 +404,9 @@ define('dashboard/rationaleCompleteness', [], function () {
 		}
 		if (incompleteKnowledgeShown) {
 			filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
+		}
+		if (transitiveLinksShown) {
+			filterSettings.createTransitiveLinks = transitiveLinksShown;
 		}
 
 		return JSON.stringify(filterSettings);

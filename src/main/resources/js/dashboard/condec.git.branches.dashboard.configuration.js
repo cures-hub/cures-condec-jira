@@ -107,7 +107,7 @@ define('dashboard/branches', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("branch-save-button");
+		var saveButton = document.getElementById("save-button-branch");
 		saveButton.addEventListener("click", onSaveButton);
 	}
 
@@ -118,7 +118,7 @@ define('dashboard/branches', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("branch-cancel-button");
+		var cancelButton = document.getElementById("cancel-button-branch");
 		cancelButton.addEventListener("click", onCancelButton);
 	}
 
@@ -157,7 +157,7 @@ define('dashboard/branches', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("condec-dashboard-branch-project-selection");
+		var projectNode = document.getElementById("project-dropdown-branch");
 		preferences['projectKey'] = projectNode.value;
 
 		return preferences;
@@ -165,7 +165,7 @@ define('dashboard/branches', [], function () {
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("condec-dashboard-branch-project-selection");
+			var projectNode = document.getElementById("project-dropdown-branch");
 			projectNode.value = preferences['projectKey'];
 		}
 	}
