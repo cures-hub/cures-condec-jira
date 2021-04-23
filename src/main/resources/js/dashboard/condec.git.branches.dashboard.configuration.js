@@ -29,22 +29,10 @@ define('dashboard/branches', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
-		$(document).ready(function() {
-			if (preferences['projectKey']) {
-				if (checkElementsExist()) {
-					createRender(preferences);
-				}
-				else {
-					dashboardAPI.once("afterRender",
-						function() {
-							createRender(preferences);
-						});
-				}
-			}
-			else {
-				self.renderEdit(context, preferences);
-			}
-		});
+		dashboardAPI.once("afterRender",
+			function() {
+				createRender(preferences);
+			});
 	};
 
 	/**
@@ -54,17 +42,10 @@ define('dashboard/branches', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.renderEdit = function (context, preferences) {
-		$(document).ready(function() {
-			if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
 				createConfiguration(preferences);
-			}
-			else {
-				dashboardAPI.once("afterRender",
-					function() {
-						createConfiguration(preferences);
-					});
-			}
-		});
+			});
 	};
 
 	function createRender(preferences) {
@@ -120,18 +101,6 @@ define('dashboard/branches', [], function () {
 
 		var cancelButton = document.getElementById("cancel-button-branch");
 		cancelButton.addEventListener("click", onCancelButton);
-	}
-
-	function checkElementsExist() {
-		getHTMLNodes("condec-branch-dashboard-configproject"
-			, "condec-branches-dashboard-contents-container"
-			, "condec-branches-dashboard-contents-data-error"
-			, "condec-branches-dashboard-no-project"
-			, "condec-branches-dashboard-processing"
-			, "condec-branches-dashboard-nogit-error");
-
-		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
-			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
