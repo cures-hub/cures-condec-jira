@@ -15,10 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetJiraIssueTypes extends TestSetUp {
+public class TestGetKnowledgeTypes extends TestSetUp {
 	protected DashboardRest dashboardRest;
 	protected HttpServletRequest request;
-	private String projectKey;
 
 	@Before
 	public void setUp() {
@@ -30,23 +29,23 @@ public class TestGetJiraIssueTypes extends TestSetUp {
 	}
 
 	@Test
-	public void testGetJiraIssueTypes() {
-		this.projectKey = "TEST";
-		Response response = dashboardRest.getJiraIssueTypes(request, projectKey);
+	public void testGetKnowledgeTypes() {
+		String projectKey = "TEST";
+		Response response = dashboardRest.getKnowledgeTypes(request, projectKey);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetJiraIssueTypesNull() {
-		this.projectKey = null;
-		Response response = dashboardRest.getJiraIssueTypes(request, projectKey);
+	public void testGetKnowledgeTypesNull() {
+		String projectKey = null;
+		Response response = dashboardRest.getKnowledgeTypes(request, projectKey);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetJiraIssueTypesResponseNull() {
-		this.projectKey = "TEST";
-		Response response = dashboardRest.getJiraIssueTypes(null, projectKey);
+	public void testGetKnowledgeTypesResponseNull() {
+		String projectKey = "TEST";
+		Response response = dashboardRest.getKnowledgeTypes(null, projectKey);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

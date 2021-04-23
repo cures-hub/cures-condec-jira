@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -29,9 +31,10 @@ public class GeneralMetricCalculator {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, String projectKey) {
-		this.graph = KnowledgeGraph.getInstance(projectKey);
-		this.projectKey = projectKey;
+	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
+		this.projectKey = filterSettings.getProjectKey();
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}

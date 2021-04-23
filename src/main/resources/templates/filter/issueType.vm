@@ -1,0 +1,5 @@
+<div id="issuetype-$viewIdentifier" class="condec-dashboard-filter">
+    <label for="issuetype-select-$viewIdentifier">Jira Issue Type:</label>
+    <select name="issueType" id="issuetype-select-$viewIdentifier" class="select">
+    </select>
+</div>

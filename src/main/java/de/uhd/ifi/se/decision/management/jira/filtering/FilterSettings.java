@@ -323,6 +323,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
+  @XmlElement(name = "linkDistance")
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -333,6 +334,7 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
+  @JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
 	}
@@ -341,6 +343,7 @@ public class FilterSettings {
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
+  @XmlElement(name = "minDegree")
 	public int getMinDegree() {
 		return minDegree;
 	}
@@ -350,6 +353,7 @@ public class FilterSettings {
 	 *            minimal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
+  @JsonProperty("minDegree")
 	public void setMinDegree(int minDegree) {
 		this.minDegree = minDegree;
 	}
@@ -358,6 +362,7 @@ public class FilterSettings {
 	 * @return maximal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
+  @XmlElement(name = "maxDegree")
 	public int getMaxDegree() {
 		return maxDegree;
 	}
@@ -367,6 +372,7 @@ public class FilterSettings {
 	 *            maximal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
+  @JsonProperty("maxDegree")
 	public void setMaxDegree(int maxDegree) {
 		this.maxDegree = maxDegree;
 	}

@@ -1,0 +1,15 @@
+<label for="project-dropdown-$viewIdentifier">Project:</label>
+<select name="project" id="project-dropdown-$viewIdentifier" class="select long-field">
+    <option value="">
+        $i18n.getText("condec.project.selection.pickone")
+    </option>
+    #foreach ($project in $projects)
+        <option value="$project.getKey()"
+            #if ($projectsWithGit.indexOf($project) == -1)
+                style="background-color:yellow"
+            #end
+        >
+            $project.getKey() - $project.getName()
+        </option>
+    #end
+</select>

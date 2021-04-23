@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,30 +19,36 @@ import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
 public class TestGetCodeCoverage extends TestSetUp {
 	protected DashboardRest dashboardRest;
 	protected HttpServletRequest request;
-	private String projectKey;
-	private String linkDistance;
 
 	@Before
 	public void setUp() {
 		init();
 		dashboardRest = new DashboardRest();
-		this.linkDistance = Integer.toString(3);
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		this.request = new MockHttpServletRequest();
 		this.request.setAttribute("user", user);
 	}
 
 	@Test
-	public void testGetRationaleCoverage() {
-		this.projectKey = "TEST";
-		Response response = dashboardRest.getCodeCoverage(request, projectKey, linkDistance);
+	public void testGetCodeCoverage() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getCodeCoverage(request, filterSettings);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetRationaleCoverageNull() {
-		this.projectKey = null;
-		Response response = dashboardRest.getCodeCoverage(request, projectKey, linkDistance);
+	public void testGetCodeCoverageNull() {
+		FilterSettings filterSettings = null;
+		Response response = dashboardRest.getCodeCoverage(request, filterSettings);
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testGetCodeCoverageNoRequest() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getCodeCoverage(null, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

@@ -16,6 +16,7 @@ var ConDecDevBranches = [];
 	var processing = null;
 	var issueBranchKeyRx = null;
 
+	var dashboardFilterNode;
 	var dashboardContentNode;
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
@@ -28,24 +29,27 @@ var ConDecDevBranches = [];
 		console.log("ConDecBranchesDashboard constructor");
 	};
 
-	ConDecBranchesDashboard.prototype.init = function init(projectKey) {
+	ConDecBranchesDashboard.prototype.init = function init(filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-		issueBranchKeyRx = RegExp("origin/(" + projectKey + "-\\d+)\\.|origin/(" + projectKey + "-\\d+)$", "i");
+		issueBranchKeyRx = RegExp("origin/(" + JSON.parse(filterSettings).projectKey
+			+ "-\\d+)\\.|origin/(" + JSON.parse(filterSettings).projectKey + "-\\d+)$", "i");
 
-		getHTMLNodes("condec-branches-dashboard-contents-container"
+		getHTMLNodes("condec-branch-dashboard-configproject"
+			, "condec-branches-dashboard-contents-container"
 			, "condec-branches-dashboard-contents-data-error"
 			, "condec-branches-dashboard-no-project"
 			, "condec-branches-dashboard-processing"
 			, "condec-branches-dashboard-nogit-error");
 
 		branchesQuality = [];
-		getBranches(projectKey);
+		getBranches(filterSettings);
 	};
 
-	function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
@@ -55,6 +59,7 @@ var ConDecDevBranches = [];
 
 	function showDashboardSection(node) {
 		var hiddenClass = "hidden";
+		dashboardFilterNode.classList.add(hiddenClass);
 		dashboardContentNode.classList.add(hiddenClass);
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
@@ -63,7 +68,9 @@ var ConDecDevBranches = [];
 		node.classList.remove(hiddenClass);
 	}
 
-	function getBranches(projectKey) {
+	function getBranches(filterSettings) {
+		var projectKey = JSON.parse(filterSettings).projectKey;
+
 		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
 			return;
 		}

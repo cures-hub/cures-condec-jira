@@ -5,6 +5,7 @@ import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElem
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +25,9 @@ public class TestMetricCalculator extends TestSetUpGit {
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		calculator = new GeneralMetricCalculator(user, "TEST");
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		calculator = new GeneralMetricCalculator(user, filterSettings);
 		calculator.setJiraIssues(getTestJiraIssues());
 	}
 

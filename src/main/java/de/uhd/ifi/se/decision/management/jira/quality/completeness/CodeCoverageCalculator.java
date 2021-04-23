@@ -6,8 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -17,13 +22,15 @@ public class CodeCoverageCalculator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
+	private FilteringManager filteringManager;
 	private String projectKey;
 	private int linkDistance;
 	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<KnowledgeElement, Map<KnowledgeType, Integer>>();
 
-	public CodeCoverageCalculator(String projectKey, int linkDistance) {
-		this.projectKey = projectKey;
-		this.linkDistance = linkDistance;
+	public CodeCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
+		this.filteringManager = new FilteringManager(user, filterSettings);
+		this.projectKey = filterSettings.getProjectKey();
+		this.linkDistance = filterSettings.getLinkDistance();
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement codeFile) {
@@ -45,7 +52,7 @@ public class CodeCoverageCalculator {
 			return null;
 		}
 
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
 		String withLink = "";
@@ -76,7 +83,7 @@ public class CodeCoverageCalculator {
 			return null;
 		}
 
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();

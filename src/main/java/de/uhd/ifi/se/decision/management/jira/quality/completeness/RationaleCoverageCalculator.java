@@ -28,9 +28,9 @@ public class RationaleCoverageCalculator {
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
 
-	public RationaleCoverageCalculator(ApplicationUser user, String projectKey, FilterSettings filterSettings) {
+	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
+		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
-		this.projectKey = projectKey;
 		this.filterSettings = filterSettings;
 	}
 
@@ -70,16 +70,15 @@ public class RationaleCoverageCalculator {
 
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 
-		FilterSettings filterSettingsForType = filterSettings;
 		Set<String> types = new HashSet<>();
 		types.add(type.toString());
-		filterSettingsForType.setKnowledgeTypes(types);
+		filterSettings.setKnowledgeTypes(types);
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			filterSettingsForType.setSelectedElement(sourceElement);
-			FilteringManager filteringManager = new FilteringManager(filterSettingsForType);
+			filterSettings.setSelectedElement(sourceElement);
+			FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 			Set<KnowledgeElement> elementsOfTargetTypeReachable = filteringManager.getElementsMatchingFilterSettings();
 			numberOfElementsReachable.put(jiraIssue.getKey(), elementsOfTargetTypeReachable.size() - 1);
 		}

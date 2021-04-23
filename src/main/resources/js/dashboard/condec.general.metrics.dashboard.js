@@ -9,6 +9,7 @@
  */
 
 (function (global) {
+	var dashboardFilterNode;
 	var dashboardContentNode;
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
@@ -19,17 +20,192 @@
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.init = function init(projectKey) {
-		getHTMLNodes("condec-general-metrics-dashboard-contents-container"
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
+
+		removeOptions(KnowledgeTypeSelection);
+
+		getKnowledgeTypes(projectkey);
+	};
+
+	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
+		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
+
+		removeOptions(documentationLocationSelection);
+
+		getDocumentationLocations();
+	};
+
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
+		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
+
+		removeOptions(KnowledgeStatusSelection);
+
+		getKnowledgeStatus();
+	};
+
+	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function setLinkTypes() {
+		var LinkTypeSelection = document.getElementById("linktype-multi-select-general-metrics");
+
+		removeOptions(LinkTypeSelection);
+
+		getLinkTypes();
+	};
+
+	function removeOptions(selectElement) {
+		var i, L = selectElement.options.length - 1;
+		for(i = L; i >= 0; i--) {
+			selectElement.remove(i);
+		}
+	}
+
+	function getKnowledgeTypes(projectKey) {
+		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
+			return;
+		}
+		/*
+		 * on XHR HTTP failure codes the code aborts instead of processing with
+		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
+		 */
+		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
+
+		console.log("Starting REST query.");
+		AJS.$.ajax({
+			url: url,
+			type: "get",
+			dataType: "json",
+			async: false,
+			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeTypes,
+			error: conDecGeneralMetricsDashboard.processDataBad
+		});
+	}
+
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
+		var knowledgeTypes = getList(JSON.stringify(data));
+
+		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
+
+		for (i = 0; i < knowledgeTypes.length; i++) {
+			var knowledgeType = document.createElement('option');
+			knowledgeType.value = knowledgeTypes[i];
+			knowledgeType.text = knowledgeTypes[i];
+			knowledgeTypeNode.options.add(knowledgeType);
+		}
+	};
+
+	function getDocumentationLocations() {
+		/*
+		 * on XHR HTTP failure codes the code aborts instead of processing with
+		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
+		 */
+		url = conDecAPI.restPrefix + "/dashboard/documentationLocations";
+
+		console.log("Starting REST query.");
+		AJS.$.ajax({
+			url: url,
+			type: "get",
+			dataType: "json",
+			async: false,
+			success: conDecGeneralMetricsDashboard.fillOptionsDocumentationLocations,
+			error: conDecGeneralMetricsDashboard.processDataBad
+		});
+	}
+
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
+		var documentationLocations = getList(JSON.stringify(data));
+
+		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
+
+		for (i = 0; i < documentationLocations.length; i++) {
+			var documentationLocation = document.createElement('option');
+			documentationLocation.value = documentationLocations[i];
+			documentationLocation.text = documentationLocations[i];
+			documentationLocationNode.options.add(documentationLocation);
+		}
+	};
+
+	function getKnowledgeStatus() {
+		/*
+		 * on XHR HTTP failure codes the code aborts instead of processing with
+		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
+		 */
+		url = conDecAPI.restPrefix + "/dashboard/knowledgeStatus";
+
+		console.log("Starting REST query.");
+		AJS.$.ajax({
+			url: url,
+			type: "get",
+			dataType: "json",
+			async: false,
+			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeStatus,
+			error: conDecGeneralMetricsDashboard.processDataBad
+		});
+	}
+
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
+		var knowledgeStatuses = getList(JSON.stringify(data));
+
+		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
+
+		for (i = 0; i < knowledgeStatuses.length; i++) {
+			var knowledgeStatus = document.createElement('option');
+			knowledgeStatus.value = knowledgeStatuses[i];
+			knowledgeStatus.text = knowledgeStatuses[i];
+			knowledgeStatusNode.options.add(knowledgeStatus);
+		}
+	};
+
+	function getLinkTypes() {
+		/*
+		 * on XHR HTTP failure codes the code aborts instead of processing with
+		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
+		 */
+		url = conDecAPI.restPrefix + "/dashboard/linkTypes";
+
+		console.log("Starting REST query.");
+		AJS.$.ajax({
+			url: url,
+			type: "get",
+			dataType: "json",
+			async: false,
+			success: conDecGeneralMetricsDashboard.fillOptionsLinkTypes,
+			error: conDecGeneralMetricsDashboard.processDataBad
+		});
+	}
+
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
+		var linkTypes = getList(JSON.stringify(data));
+
+		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
+
+		for (i = 0; i < linkTypes.length; i++) {
+			var linkType = document.createElement('option');
+			linkType.value = linkTypes[i];
+			linkType.text = linkTypes[i];
+			linkTypesNode.options.add(linkType);
+		}
+	};
+
+	function getList(jsonString) {
+		jsonString = jsonString.replace("\[", "").replace("\]", "");
+		jsonString = jsonString.replaceAll("\"", "");
+
+		return jsonString.split(",");
+	}
+
+	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
+		getHTMLNodes("condec-general-metrics-dashboard-configproject"
+			, "condec-general-metrics-dashboard-contents-container"
 			, "condec-general-metrics-dashboard-contents-data-error"
 			, "condec-general-metrics-dashboard-no-project"
 			, "condec-general-metrics-dashboard-processing"
 			, "condec-general-metrics-dashboard-nogit-error");
 
-		getMetrics(projectKey);
+		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
@@ -39,6 +215,7 @@
 
 	function showDashboardSection(node) {
 		var hiddenClass = "hidden";
+		dashboardFilterNode.classList.add(hiddenClass);
 		dashboardContentNode.classList.add(hiddenClass);
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
@@ -47,8 +224,8 @@
 		node.classList.remove(hiddenClass);
 	}
 
-	function getMetrics(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
+	function getMetrics(filterSettings) {
+		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
 			return;
 		}
 		/*
@@ -56,13 +233,16 @@
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
 		showDashboardSection(dashboardProcessingNode);
-		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json?projectKey=" + projectKey;
+
+		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json";
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
-			type: "get",
+			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
+			type: "post",
 			dataType: "json",
+			data: filterSettings,
 			async: true,
 			success: conDecGeneralMetricsDashboard.processData,
 			error: conDecGeneralMetricsDashboard.processDataBad
@@ -103,8 +283,8 @@
 	}
 
 	function renderData(data) {
-		var jsonstr = JSON.stringify(data);
-		var json = JSON.parse(jsonstr);
+		var jsonStr = JSON.stringify(data);
+		var json = JSON.parse(jsonStr);
 
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
