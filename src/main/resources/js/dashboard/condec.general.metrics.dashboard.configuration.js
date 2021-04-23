@@ -9,8 +9,6 @@
  * generalMetricsDashboardItem.vm
  */
 define('dashboard/generalMetrics', [], function () {
-	var dashboardAPI;
-
 	var dashboardFilterNode;
 	var dashboardContentNode;
 	var dashboardDataErrorNode;
@@ -29,22 +27,12 @@ define('dashboard/generalMetrics', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.render = function (context, preferences) {
-		$(document).ready(function() {
-			if (preferences['projectKey']) {
-				if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
+				if (preferences['projectKey']) {
 					createRender(preferences);
 				}
-				else {
-					dashboardAPI.once("afterRender",
-						function() {
-							createRender(preferences);
-						});
-				}
-			}
-			else {
-				self.renderEdit(context, preferences);
-			}
-		});
+			});
 	};
 
 	/**
@@ -54,17 +42,10 @@ define('dashboard/generalMetrics', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderEdit = function (context, preferences) {
-		$(document).ready(function() {
-			if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
 				createConfiguration(preferences);
-			}
-			else {
-				dashboardAPI.once("afterRender",
-					function() {
-						createConfiguration(preferences);
-					});
-			}
-		});
+			});
 	};
 
 	function createRender(preferences) {
@@ -189,18 +170,6 @@ define('dashboard/generalMetrics', [], function () {
 
 		var projectKeyNode = document.getElementById("project-dropdown-general-metrics");
 		projectKeyNode.addEventListener("change", onSelectProject);
-	}
-
-	function checkElementsExist() {
-		getHTMLNodes("condec-general-metrics-dashboard-configproject"
-			, "condec-general-metrics-dashboard-contents-container"
-			, "condec-general-metrics-dashboard-contents-data-error"
-			, "condec-general-metrics-dashboard-no-project"
-			, "condec-general-metrics-dashboard-processing"
-			, "condec-general-metrics-dashboard-nogit-error");
-
-		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
-			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {

@@ -29,22 +29,12 @@ define('dashboard/rationaleCoverage', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
-		$(document).ready(function() {
-			if (preferences['projectKey'] && preferences['issueType']) {
-				if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
+				if (preferences['projectKey'] && preferences['issueType']) {
 					createRender(preferences);
 				}
-				else {
-					dashboardAPI.once("afterRender",
-						function() {
-							createRender(preferences);
-						});
-				}
-			}
-			else {
-				self.renderEdit(context, preferences);
-			}
-		});
+			});
 	};
 
 	/**
@@ -54,17 +44,10 @@ define('dashboard/rationaleCoverage', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function (context, preferences) {
-		$(document).ready(function() {
-			if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
 				createConfiguration(preferences);
-			}
-			else {
-				dashboardAPI.once("afterRender",
-					function() {
-						createConfiguration(preferences);
-					});
-			}
-		});
+			});
 	};
 
 	function createRender(preferences) {
@@ -191,18 +174,6 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		var projectKeyNode = document.getElementById("project-dropdown-rationale-coverage");
 		projectKeyNode.addEventListener("change", onSelectProject);
-	}
-
-	function checkElementsExist() {
-		getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
-			, "condec-rationale-coverage-dashboard-contents-container"
-			, "condec-rationale-coverage-dashboard-contents-data-error"
-			, "condec-rationale-coverage-dashboard-no-project"
-			, "condec-rationale-coverage-dashboard-processing"
-			, "condec-rationale-coverage-dashboard-nogit-error");
-
-		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
-			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {

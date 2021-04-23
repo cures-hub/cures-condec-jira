@@ -29,22 +29,12 @@ define('dashboard/codeCoverage', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecCodeCoverageDashboardItem.prototype.render = function (context, preferences) {
-		$(document).ready(function() {
-			if (preferences['projectKey']) {
-				if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
+				if (preferences['projectKey']) {
 					createRender(preferences);
 				}
-				else {
-					dashboardAPI.once("afterRender",
-						function() {
-							createRender(preferences);
-						});
-				}
-			}
-			else {
-				self.renderEdit(context, preferences);
-			}
-		});
+			});
 	};
 
 	/**
@@ -54,17 +44,10 @@ define('dashboard/codeCoverage', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecCodeCoverageDashboardItem.prototype.renderEdit = function (context, preferences) {
-		$(document).ready(function() {
-			if (checkElementsExist()) {
+		dashboardAPI.once("afterRender",
+			function() {
 				createConfiguration(preferences);
-			}
-			else {
-				dashboardAPI.once("afterRender",
-					function() {
-						createConfiguration(preferences);
-					});
-			}
-		});
+			});
 	};
 
 	function createRender(preferences) {
@@ -189,18 +172,6 @@ define('dashboard/codeCoverage', [], function () {
 
 		var projectKeyNode = document.getElementById("project-dropdown-code-coverage");
 		projectKeyNode.addEventListener("change", onSelectProject);
-	}
-
-	function checkElementsExist() {
-		getHTMLNodes("condec-code-coverage-dashboard-configproject"
-			, "condec-code-coverage-dashboard-contents-container"
-			, "condec-code-coverage-dashboard-contents-data-error"
-			, "condec-code-coverage-dashboard-no-project"
-			, "condec-code-coverage-dashboard-processing"
-			, "condec-code-coverage-dashboard-nogit-error");
-
-		return !!(dashboardFilterNode && dashboardContentNode && dashboardDataErrorNode &&
-			dashboardNoContentsNode && dashboardProcessingNode && dashboardProjectWithoutGit);
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
