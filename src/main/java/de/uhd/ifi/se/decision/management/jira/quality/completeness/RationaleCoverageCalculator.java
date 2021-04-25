@@ -37,7 +37,7 @@ public class RationaleCoverageCalculator {
 	// TODO Currently only link distance 1 is assessed. Enable higher link
 	// distances.
 	public Map<String, String> getJiraIssuesWithNeighborsOfOtherType(IssueType jiraIssueType,
-			KnowledgeType knowledgeType) {
+																	 KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getJiraIssuesWithNeighborsOfOtherType");
 
 		if (knowledgeType == null) {
@@ -65,13 +65,19 @@ public class RationaleCoverageCalculator {
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
+	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(IssueType jiraIssueType,
+																				  KnowledgeType knowledgeType) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
 
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+		if (knowledgeType == null) {
+			return null;
+		}
+
+		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user,
+			projectKey, jiraIssueType);
 
 		Set<String> types = new HashSet<>();
-		types.add(type.toString());
+		types.add(knowledgeType.toString());
 		filterSettings.setKnowledgeTypes(types);
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();

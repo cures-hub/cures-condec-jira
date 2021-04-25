@@ -108,9 +108,9 @@ public class DashboardRest {
 			RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
 			metrics.put("decisionsPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.DECISION));
 			metrics.put("issuesPerJiraIssue",
-				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
+				rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.ISSUE));
 			metrics.put("decisionDocumentedForSelectedJiraIssue",
 				rationaleCoverageCalculator.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
 			metrics.put("issueDocumentedForSelectedJiraIssue",

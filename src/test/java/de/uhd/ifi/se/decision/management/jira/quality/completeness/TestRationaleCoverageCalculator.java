@@ -51,8 +51,14 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssues() {
-		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE).size());
+	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssuesNull() {
+		assertNull(calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(null, null));
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssuesFilled() {
+		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(JiraIssueTypes.getTestTypes().get(0), KnowledgeType.ISSUE).size());
 	}
 
 }

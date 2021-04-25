@@ -496,6 +496,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		definitionOfDone.setLineNumbersInCodeFile(20);
 		definitionOfDone.setLinkDistanceFromCodeFileToDecision(3);
+		definitionOfDone.setLowThreshold(2);
+		definitionOfDone.setHighThreshold(4);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
@@ -507,11 +509,13 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(false);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		Map<String, Integer> expectedCriteriaMap = new HashMap<String, Integer>();
+		expectedCriteriaMap.put("lineNumbersInCodeFile", 20);
 		expectedCriteriaMap.put("issueIsLinkedToAlternative", 0);
 		expectedCriteriaMap.put("decisionIsLinkedToPro", 0);
 		expectedCriteriaMap.put("alternativeIsLinkedToArgument", 0);
 		expectedCriteriaMap.put("linkDistanceFromCodeFileToDecision", 3);
-		expectedCriteriaMap.put("lineNumbersInCodeFile", 20);
+		expectedCriteriaMap.put("thresholdLow", 2);
+		expectedCriteriaMap.put("thresholdHigh", 4);
 		assertEquals(expectedCriteriaMap, ConfigPersistenceManager.getDefinitionOfDone("TEST").getCriteriaMap());
 	}
 
