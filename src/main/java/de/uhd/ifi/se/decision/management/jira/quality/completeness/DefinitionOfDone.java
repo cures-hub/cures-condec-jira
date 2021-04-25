@@ -31,6 +31,8 @@ public class DefinitionOfDone {
 		criteriaMap.put("alternativeIsLinkedToArgument", 0);
 		criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
 		criteriaMap.put("lineNumbersInCodeFile", 50);
+		criteriaMap.put("thresholdLow", 1);
+		criteriaMap.put("thresholdHigh", 2);
 	}
 
 	public Map<String, Integer> getCriteriaMap() {
@@ -125,5 +127,29 @@ public class DefinitionOfDone {
 	@JsonProperty("lineNumbersInCodeFile")
 	public void setLineNumbersInCodeFile(int lineNumbersInCodeFile) {
 		criteriaMap.put("lineNumbersInCodeFile", lineNumbersInCodeFile);
+	}
+
+	public int getLowThreshold() {
+		if (!criteriaMap.containsKey("thresholdLow")) {
+			criteriaMap.put("thresholdLow", 1);
+		}
+		return criteriaMap.get("thresholdLow");
+	}
+
+	@JsonProperty("thresholdLow")
+	public void setLowThreshold(int thresholdLow) {
+		criteriaMap.put("thresholdLow", thresholdLow);
+	}
+
+	public int getHighThreshold() {
+		if (!criteriaMap.containsKey("thresholdHigh")) {
+			criteriaMap.put("thresholdHigh", 1);
+		}
+		return criteriaMap.get("thresholdHigh");
+	}
+
+	@JsonProperty("thresholdHigh")
+	public void setHighThreshold(int thresholdHigh) {
+		criteriaMap.put("thresholdHigh", thresholdHigh);
 	}
 }

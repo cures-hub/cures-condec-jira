@@ -55,6 +55,13 @@
     </ul>
 </div>
 <div class="field-group">
+    <label>Threshold:</label>
+    <ul>
+        <li>low threshold <input class="text short-field" type="number" id="low-threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getLowThreshold()"></li>
+        <li>high threshold <input class="text short-field" type="number" id="high-threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getHighThreshold()"></li>
+    </ul>
+</div>
+<div class="field-group">
     <label for="change-definition-of-done">Save Definition of Done</label>
     <button class="aui-button-primary aui-button" id="change-definition-of-done">Save</button>
     <div class="description">Saves all criteria for the definition of done.</div>
