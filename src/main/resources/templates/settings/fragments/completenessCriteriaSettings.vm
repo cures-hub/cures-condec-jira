@@ -57,9 +57,8 @@
 <div class="field-group">
     <label>Threshold:</label>
     <ul>
-        <li>low threshold <input class="text short-field" type="number" id="low-threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getLowThreshold()"></li>
-        <li>high threshold <input class="text short-field" type="number" id="high-threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getHighThreshold()"></li>
-    </ul>
+        <li>threshold <input class="text short-field" type="number" id="threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getThreshold()"></li>
+        </ul>
 </div>
 <div class="field-group">
     <label for="change-definition-of-done">Save Definition of Done</label>

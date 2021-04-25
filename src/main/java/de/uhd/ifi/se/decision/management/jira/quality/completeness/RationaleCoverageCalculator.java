@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +30,22 @@ public class RationaleCoverageCalculator {
 		this.filterSettings = filterSettings;
 	}
 
-	// TODO Currently only link distance 1 is assessed. Enable higher link
-	// distances.
+	public int calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(KnowledgeElement sourceElement,
+																		  KnowledgeType knowledgeType,
+																		  int linkDistance) {
+		Set<KnowledgeElement> elements = sourceElement.getLinkedElements(linkDistance);
+
+		int linkedElements = 0;
+
+		for (KnowledgeElement element : elements) {
+			if (element.getType() == knowledgeType) {
+				linkedElements++;
+			}
+		}
+
+		return linkedElements;
+	}
+
 	public Map<String, String> getJiraIssuesWithNeighborsOfOtherType(IssueType jiraIssueType,
 																	 KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getJiraIssuesWithNeighborsOfOtherType");
@@ -47,21 +57,34 @@ public class RationaleCoverageCalculator {
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user,
 				projectKey, jiraIssueType);
 
-		String withLink = "";
-		String withoutLink = "";
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+
+		int linkDistance = filterSettings.getLinkDistance();
+		int threshold = definitionOfDone.getThreshold();
+
+		String withHighLinks = "";
+		String withLowLinks = "";
+		String withoutLinks = "";
 
 		for (Issue jiraIssue : jiraIssues) {
 			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			if (sourceElement.hasNeighborOfType(knowledgeType)) {
-				withLink += jiraIssue.getKey() + " ";
-			} else {
-				withoutLink += jiraIssue.getKey() + " ";
+			int linkedIssues = calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(sourceElement,
+				knowledgeType, linkDistance);
+			if (linkedIssues == 0) {
+				withoutLinks += jiraIssue.getKey() + " ";
+			}
+			else if (linkedIssues < threshold) {
+				withLowLinks += jiraIssue.getKey() + " ";
+			}
+			else {
+				withHighLinks += jiraIssue.getKey() + " ";
 			}
 		}
 
 		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put("Links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLink);
-		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLink);
+		result.put("Many links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withHighLinks);
+		result.put("Some links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLowLinks);
+		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
 

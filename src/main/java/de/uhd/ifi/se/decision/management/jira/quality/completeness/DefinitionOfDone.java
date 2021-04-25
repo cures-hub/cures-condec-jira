@@ -31,8 +31,7 @@ public class DefinitionOfDone {
 		criteriaMap.put("alternativeIsLinkedToArgument", 0);
 		criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
 		criteriaMap.put("lineNumbersInCodeFile", 50);
-		criteriaMap.put("thresholdLow", 1);
-		criteriaMap.put("thresholdHigh", 2);
+		criteriaMap.put("threshold", 2);
 	}
 
 	public Map<String, Integer> getCriteriaMap() {
@@ -41,16 +40,15 @@ public class DefinitionOfDone {
 
 	/**
 	 * @return true if every decision problem (=issue) needs to be linked to at
-	 *         least one alternative.
+	 * least one alternative.
 	 */
 	public boolean isIssueIsLinkedToAlternative() {
 		return criteriaMap.get("issueIsLinkedToAlternative") != 0;
 	}
 
 	/**
-	 * @param issueIsLinkedToAlternative
-	 *            true if every decision problem (=issue) needs to be linked to at
-	 *            least one alternative.
+	 * @param issueIsLinkedToAlternative true if every decision problem (=issue) needs to be linked to at
+	 *                                   least one alternative.
 	 */
 	@JsonProperty("issueIsLinkedToAlternative")
 	public void setIssueLinkedToAlternative(boolean issueIsLinkedToAlternative) {
@@ -63,16 +61,15 @@ public class DefinitionOfDone {
 
 	/**
 	 * @return true if every decision (=solution for a decision problem) needs to be
-	 *         linked to at least one pro-argument.
+	 * linked to at least one pro-argument.
 	 */
 	public boolean isDecisionIsLinkedToPro() {
 		return criteriaMap.get("decisionIsLinkedToPro") != 0;
 	}
 
 	/**
-	 * @param decisionIsLinkedToPro
-	 *            true if every decision (=solution for a decision problem) needs to
-	 *            be linked to at least one pro-argument.
+	 * @param decisionIsLinkedToPro true if every decision (=solution for a decision problem) needs to
+	 *                              be linked to at least one pro-argument.
 	 */
 	@JsonProperty("decisionIsLinkedToPro")
 	public void setDecisionLinkedToPro(boolean decisionIsLinkedToPro) {
@@ -85,16 +82,15 @@ public class DefinitionOfDone {
 
 	/**
 	 * @return true if every alternative (=solution option for a decision problem)
-	 *         needs to be linked to at least one pro-argument.
+	 * needs to be linked to at least one pro-argument.
 	 */
 	public boolean isAlternativeIsLinkedToArgument() {
 		return criteriaMap.get("alternativeIsLinkedToArgument") != 0;
 	}
 
 	/**
-	 * @param alternativeIsLinkedToArgument
-	 *            true if every alternative (=solution option for a decision
-	 *            problem) needs to be linked to at least one pro-argument.
+	 * @param alternativeIsLinkedToArgument true if every alternative (=solution option for a decision
+	 *                                      problem) needs to be linked to at least one pro-argument.
 	 */
 	@JsonProperty("alternativeIsLinkedToArgument")
 	public void setAlternativeLinkedToArgument(boolean alternativeIsLinkedToArgument) {
@@ -129,27 +125,15 @@ public class DefinitionOfDone {
 		criteriaMap.put("lineNumbersInCodeFile", lineNumbersInCodeFile);
 	}
 
-	public int getLowThreshold() {
-		if (!criteriaMap.containsKey("thresholdLow")) {
-			criteriaMap.put("thresholdLow", 1);
+	public int getThreshold() {
+		if (!criteriaMap.containsKey("threshold")) {
+			criteriaMap.put("threshold", 2);
 		}
-		return criteriaMap.get("thresholdLow");
+		return criteriaMap.get("threshold");
 	}
 
-	@JsonProperty("thresholdLow")
-	public void setLowThreshold(int thresholdLow) {
-		criteriaMap.put("thresholdLow", thresholdLow);
-	}
-
-	public int getHighThreshold() {
-		if (!criteriaMap.containsKey("thresholdHigh")) {
-			criteriaMap.put("thresholdHigh", 1);
-		}
-		return criteriaMap.get("thresholdHigh");
-	}
-
-	@JsonProperty("thresholdHigh")
-	public void setHighThreshold(int thresholdHigh) {
-		criteriaMap.put("thresholdHigh", thresholdHigh);
+	@JsonProperty("threshold")
+	public void setThreshold(int threshold) {
+		criteriaMap.put("threshold", threshold);
 	}
 }
