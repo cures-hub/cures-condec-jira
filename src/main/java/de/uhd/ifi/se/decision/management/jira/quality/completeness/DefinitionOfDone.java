@@ -102,9 +102,6 @@ public class DefinitionOfDone {
 	}
 
 	public int getLinkDistanceFromCodeFileToDecision() {
-		if (!criteriaMap.containsKey("linkDistanceFromCodeFileToDecision")) {
-			criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
-		}
 		return criteriaMap.get("linkDistanceFromCodeFileToDecision");
 	}
 
@@ -114,9 +111,6 @@ public class DefinitionOfDone {
 	}
 
 	public int getLineNumbersInCodeFile() {
-		if (!criteriaMap.containsKey("lineNumbersInCodeFile")) {
-			criteriaMap.put("lineNumbersInCodeFile", 50);
-		}
 		return criteriaMap.get("lineNumbersInCodeFile");
 	}
 
@@ -126,9 +120,6 @@ public class DefinitionOfDone {
 	}
 
 	public int getThreshold() {
-		if (!criteriaMap.containsKey("threshold")) {
-			criteriaMap.put("threshold", 2);
-		}
 		return criteriaMap.get("threshold");
 	}
 
