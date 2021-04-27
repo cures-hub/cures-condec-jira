@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,6 +62,15 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssuesFilled() {
 		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(JiraIssueTypes.getTestTypes().get(0), KnowledgeType.ISSUE).size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testCalculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance() {
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		KnowledgeType knowledgeType = KnowledgeType.ISSUE;
+		int linkDistance = 2;
+		assertEquals(0, calculator.calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(knowledgeElement, knowledgeType, linkDistance));
 	}
 
 }
