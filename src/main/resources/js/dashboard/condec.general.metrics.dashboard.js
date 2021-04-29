@@ -20,12 +20,11 @@
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function (projectkey) {
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function (projectKey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
 
 		removeOptions(KnowledgeTypeSelection);
-
-		getKnowledgeTypes(projectkey);
+		this.fillOptionsKnowledgeTypes(projectKey);
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function () {
@@ -58,29 +57,9 @@
 		}
 	}
 
-	function getKnowledgeTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeTypes,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function (data) {
-		var knowledgeTypes = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
 

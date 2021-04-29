@@ -16,16 +16,15 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecRationaleCompletenessDashboard = function ConDecRationaleCompletenessDashboard() {
+	var ConDecRationaleCompletenessDashboard = function () {
 		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
-	ConDecRationaleCompletenessDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+	ConDecRationaleCompletenessDashboard.prototype.setKnowledgeTypes = function (projectKey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-rationale-completeness");
 
 		removeOptions(KnowledgeTypeSelection);
-
-		getKnowledgeTypes(projectkey);
+		this.fillOptionsKnowledgeTypes(projectKey);
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
@@ -57,30 +56,10 @@
 			selectElement.remove(i);
 		}
 	}
-
-	function getKnowledgeTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCompletenessDashboard.fillOptionsKnowledgeTypes,
-			error: conDecRationaleCompletenessDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
-		var knowledgeTypes = getList(JSON.stringify(data));
+	
+	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-rationale-completeness");
 

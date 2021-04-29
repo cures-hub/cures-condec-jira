@@ -16,7 +16,7 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecRationaleCoverageDashboard = function ConDecRationaleCoverageDashboard() {
+	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};
 
@@ -24,16 +24,14 @@
 		var issueTypeSelection = document.getElementById("issuetype-select-rationale-coverage");
 
 		removeOptions(issueTypeSelection);
-
-		getJiraIssueTypes(projectKey);
+		this.fillOptionsJiraIssueTypes(projectKey);
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+	ConDecRationaleCoverageDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectKey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
 		removeOptions(KnowledgeTypeSelection);
-
-		getKnowledgeTypes(projectkey);
+		this.fillOptionsKnowledgeTypes(projectKey);
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
@@ -67,29 +65,9 @@
 		}
 	}
 
-	function getJiraIssueTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsJiraIssueTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function fillOptionsJiraIssueTypes(data) {
-		var jiraIssueTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var jiraIssueTypes = conDecAPI.getKnowledgeTypes();
 
 		var jiraIssueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
 
@@ -101,29 +79,9 @@
 		}
 	};
 
-	function getKnowledgeTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsKnowledgeTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
-		var knowledgeTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
