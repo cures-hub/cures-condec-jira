@@ -75,7 +75,7 @@
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
+		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
@@ -109,7 +109,7 @@
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
+		url = conDecAPI.restPrefix + "/config/getKnowledgeTypes.json?projectKey=" + projectKey;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
@@ -202,7 +202,7 @@
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		url = conDecAPI.restPrefix + "/dashboard/linkTypes";
+		url = conDecAPI.restPrefix + "/config/getLinkTypes";
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({

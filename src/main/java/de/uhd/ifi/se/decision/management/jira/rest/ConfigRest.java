@@ -285,10 +285,6 @@ public class ConfigRest {
 	@Path("/getLinkTypes")
 	@GET
 	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
 		Set<String> linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		return Response.ok(linkTypes).build();
 	}

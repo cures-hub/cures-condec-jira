@@ -22,17 +22,17 @@ public class TestGetLinkTypes extends TestSetUp {
 
 	@Test
 	public void testProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getLinkTypes(null).getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.getLinkTypes(null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getLinkTypes("").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.getLinkTypes("").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.getLinkTypes("InvalidKey").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.getLinkTypes("InvalidKey").getStatus());
 	}
 
 	@Test

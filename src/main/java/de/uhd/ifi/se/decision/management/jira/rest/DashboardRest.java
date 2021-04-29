@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -24,7 +23,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -111,13 +109,13 @@ public class DashboardRest {
 		if (issueType.equals("Code")) {
 			CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(user, filterSettings);
 
-			metrics.put("issuesPerCodeFile",
+			metrics.put("issuesPerJiraIssue",
 					codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
-			metrics.put("decisionsPerCodeFile",
+			metrics.put("decisionsPerJiraIssue",
 					codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
-			metrics.put("decisionDocumentedForCodeFile",
+			metrics.put("decisionDocumentedForSelectedJiraIssue",
 					codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
-			metrics.put("issueDocumentedForCodeFile",
+			metrics.put("issueDocumentedForSelectedJiraIssue",
 					codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
 		} else {
 			IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
@@ -178,36 +176,5 @@ public class DashboardRest {
 		}
 
 		return Response.status(Status.OK).entity(knowledgeStatuses).build();
-	}
-
-	@Path("/linkTypes")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkTypes(@Context HttpServletRequest request) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		Set<String> linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
-
-		return Response.status(Status.OK).entity(linkTypes).build();
-	}
-
-	@Path("/knowledgeTypes")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getKnowledgeTypes(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		DecisionKnowledgeProject project = new DecisionKnowledgeProject(projectKey);
-
-		Set<String> knowledgeTypes = project.getNamesOfConDecKnowledgeTypes();
-
-		return Response.status(Status.OK).entity(knowledgeTypes).build();
 	}
 }
