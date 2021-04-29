@@ -32,7 +32,7 @@
 
 		removeOptions(documentationLocationSelection);
 
-		getDocumentationLocations();
+		this.fillOptionsDocumentationLocations();
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
@@ -71,26 +71,8 @@
 		}
 	};
 
-	function getDocumentationLocations() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/documentationLocations";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCompletenessDashboard.fillOptionsDocumentationLocations,
-			error: conDecRationaleCompletenessDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
-		var documentationLocations = getList(JSON.stringify(data));
+	ConDecRationaleCompletenessDashboard.prototype.fillOptionsDocumentationLocations = function () {
+		var documentationLocations = conDecAPI.documentationLocations;
 
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-rationale-completeness");
 

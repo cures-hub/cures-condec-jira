@@ -32,7 +32,7 @@
 
 		removeOptions(documentationLocationSelection);
 
-		getDocumentationLocations();
+		this.fillOptionsDocumentationLocations();
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function () {
@@ -71,27 +71,9 @@
 		}
 	};
 
-	function getDocumentationLocations() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/documentationLocations";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsDocumentationLocations,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function(data) {
-		var documentationLocations = getList(JSON.stringify(data));
-
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function() {
+		var documentationLocations = conDecAPI.documentationLocations;
+		
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		for (i = 0; i < documentationLocations.length; i++) {

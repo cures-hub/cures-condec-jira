@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CodeCoverageCalculator;
@@ -135,27 +134,6 @@ public class DashboardRest {
 		}
 
 		return Response.status(Status.OK).entity(metrics).build();
-	}
-
-	@Path("/documentationLocations")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDocumentationLocations(@Context HttpServletRequest request) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		List<DocumentationLocation> documentionLocationCollection = DocumentationLocation
-				.getAllDocumentationLocations();
-
-		List<String> documentationLocations = new ArrayList<>();
-
-		for (DocumentationLocation documentationLocation : documentionLocationCollection) {
-			documentationLocations.add(documentationLocation.toString());
-		}
-
-		return Response.status(Status.OK).entity(documentationLocations).build();
 	}
 
 	@Path("/knowledgeStatus")
