@@ -2,11 +2,11 @@
  This module render the configuration screen used in the rationale completeness dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
- * js/condec.rationale.completeness.dashboard.js
+ * condec.requirements.dashboard.js
+ * condec.rationale.completeness.dashboard.js
 
  Is referenced in HTML by
- * rationaleCompletenessDashboardItem.vm
+ * dashboard/rationaleCompleteness.vm
  */
 define('dashboard/rationaleCompleteness', [], function () {
 	var dashboardAPI;

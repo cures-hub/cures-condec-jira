@@ -2,10 +2,10 @@
  This module fills the box plots and pie charts used in the general metrics dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
+ * condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * generalMetricsDashboardItem.vm
+ * dashboard/generalMetrics.vm
  */
 
 (function (global) {
@@ -31,7 +31,6 @@
 		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		removeOptions(documentationLocationSelection);
-
 		this.fillOptionsDocumentationLocations();
 	};
 
@@ -39,8 +38,7 @@
 		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
 		removeOptions(KnowledgeStatusSelection);
-
-		getKnowledgeStatus();
+		this.fillOptionsKnowledgeStatus();
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function () {
@@ -84,26 +82,8 @@
 		}
 	};
 
-	function getKnowledgeStatus() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeStatus";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeStatus,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function (data) {
-		var knowledgeStatuses = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function () {
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
@@ -128,13 +108,6 @@
 			linkTypesNode.options.add(linkType);
 		}
 	};
-
-	function getList(jsonString) {
-		jsonString = jsonString.replace("\[", "").replace("\]", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		return jsonString.split(",");
-	}
 
 	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
 		getHTMLNodes("condec-general-metrics-dashboard-configproject"

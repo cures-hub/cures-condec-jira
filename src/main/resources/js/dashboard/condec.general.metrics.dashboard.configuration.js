@@ -2,11 +2,11 @@
  This module render the configuration screen used in the general metrics dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
- * js/condec.general.metrics.dashboard.js
+ * condec.requirements.dashboard.js
+ * condec.general.metrics.dashboard.js
 
  Is referenced in HTML by
- * generalMetricsDashboardItem.vm
+ * dashboard/generalMetrics.vm
  */
 define('dashboard/generalMetrics', [], function () {
 	var dashboardFilterNode;

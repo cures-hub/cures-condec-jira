@@ -286,7 +286,6 @@ public class ConfigRest {
 	@GET
 	public Response getLinkTypes(@QueryParam("projectKey") String projectKey) {
 		Set<String> linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
-		System.out.println(linkTypes.size());
 		return Response.ok(linkTypes).build();
 	}
 

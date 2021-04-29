@@ -1,12 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -23,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CodeCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
@@ -134,25 +130,5 @@ public class DashboardRest {
 		}
 
 		return Response.status(Status.OK).entity(metrics).build();
-	}
-
-	@Path("/knowledgeStatus")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getKnowledgeStatus(@Context HttpServletRequest request) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		List<KnowledgeStatus> knowledgeStatusCollection = KnowledgeStatus.getAllKnowledgeStatus();
-
-		List<String> knowledgeStatuses = new ArrayList<>();
-
-		for (KnowledgeStatus knowledgeStatus : knowledgeStatusCollection) {
-			knowledgeStatuses.add(knowledgeStatus.toString());
-		}
-
-		return Response.status(Status.OK).entity(knowledgeStatuses).build();
 	}
 }

@@ -2,10 +2,10 @@
  This module fills the box plots and pie charts used in the rationale completeness dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
+ * condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * rationaleCompletenessDashboardItem.vm
+ * dashboard/rationaleCompleteness.vm
  */
 
 (function (global) {
@@ -31,7 +31,6 @@
 		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-rationale-completeness");
 
 		removeOptions(documentationLocationSelection);
-
 		this.fillOptionsDocumentationLocations();
 	};
 
@@ -39,8 +38,7 @@
 		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
 
 		removeOptions(KnowledgeStatusSelection);
-
-		getKnowledgeStatus();
+		this.fillOptionsKnowledgeStatus();
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.setLinkTypes = function setLinkTypes() {
@@ -84,26 +82,8 @@
 		}
 	};
 
-	function getKnowledgeStatus() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeStatus";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCompletenessDashboard.fillOptionsKnowledgeStatus,
-			error: conDecRationaleCompletenessDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
-		var knowledgeStatuses = getList(JSON.stringify(data));
+	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeStatus = function () {
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
 
@@ -128,14 +108,7 @@
 		}
 	};
 
-	function getList(jsonString) {
-		jsonString = jsonString.replace("\[", "").replace("\]", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		return jsonString.split(",");
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.init = function init(filterSettings) {
+	ConDecRationaleCompletenessDashboard.prototype.init = function (filterSettings) {
 		getHTMLNodes("condec-rationale-completeness-dashboard-configproject"
 			, "condec-rationale-completeness-dashboard-contents-container"
 			, "condec-rationale-completeness-dashboard-contents-data-error"
