@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+// TODO: Integrate into RationaleCoverageCalculator class and remove this class
 public class CodeCoverageCalculator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
@@ -75,7 +75,6 @@ public class CodeCoverageCalculator {
 		return result;
 	}
 
-
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType knowledgeType) {
 		LOGGER.info("CodeCoverageCalculator getNumberOfDecisionKnowledgeElementsForCodeFiles");
 
@@ -94,7 +93,8 @@ public class CodeCoverageCalculator {
 			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
 				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), 0);
 			} else {
-				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), linkedElementMap.get(codeFile).get(knowledgeType));
+				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(),
+						linkedElementMap.get(codeFile).get(knowledgeType));
 			}
 		}
 		return numberOfElementsReachable;

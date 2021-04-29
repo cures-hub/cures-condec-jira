@@ -20,6 +20,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
+/**
+ * Calculates the rationale coverage of requirements, code, and other software
+ * artifacts (=knowledge elements). For example, calculates how many decisions
+ * are linked to a requirement.
+ */
 public class RationaleCoverageCalculator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
@@ -44,8 +49,8 @@ public class RationaleCoverageCalculator {
 			return null;
 		}
 
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user,
-				projectKey, jiraIssueType);
+		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
+				jiraIssueType);
 
 		String withLink = "";
 		String withoutLink = "";
