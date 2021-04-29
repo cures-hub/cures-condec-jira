@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CodeCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
@@ -101,22 +100,20 @@ public class DashboardRest {
 
 		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		if (issueType.equals("Code")) {
-			CodeCoverageCalculator codeCoverageCalculator = new CodeCoverageCalculator(user, filterSettings);
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
+		if (issueType.equals("Code")) {
 			metrics.put("issuesPerJiraIssue",
-					codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
-			metrics.put("decisionsPerJiraIssue",
-					codeCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
+					rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
+			metrics.put("decisionsPerJiraIssue", rationaleCoverageCalculator
+					.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
 			metrics.put("decisionDocumentedForSelectedJiraIssue",
-					codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
+					rationaleCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
 			metrics.put("issueDocumentedForSelectedJiraIssue",
-					codeCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
+					rationaleCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
 		} else {
 			IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
 			if (jiraIssueType != null) {
-				RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user,
-						filterSettings);
 
 				metrics.put("decisionsPerJiraIssue", rationaleCoverageCalculator
 						.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));

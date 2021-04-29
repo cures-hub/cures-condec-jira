@@ -17,6 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -32,11 +33,14 @@ public class RationaleCoverageCalculator {
 	private String projectKey;
 	private ApplicationUser user;
 	private FilterSettings filterSettings;
+	private FilteringManager filteringManager;
+	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<KnowledgeElement, Map<KnowledgeType, Integer>>();
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		this.filterSettings = filterSettings;
+		this.filteringManager = new FilteringManager(user, filterSettings);
 	}
 
 	// TODO Currently only link distance 1 is assessed. Enable higher link
@@ -86,6 +90,73 @@ public class RationaleCoverageCalculator {
 			FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 			Set<KnowledgeElement> elementsOfTargetTypeReachable = filteringManager.getElementsMatchingFilterSettings();
 			numberOfElementsReachable.put(jiraIssue.getKey(), elementsOfTargetTypeReachable.size() - 1);
+		}
+		return numberOfElementsReachable;
+	}
+
+	private void fillLinkedElementMap(KnowledgeElement codeFile) {
+		Map<KnowledgeType, Integer> knowledgeTypeMap = new HashMap<KnowledgeType, Integer>();
+		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(filterSettings.getLinkDistance());
+		for (KnowledgeElement linkedElement : linkedElements) {
+			if (!knowledgeTypeMap.containsKey(linkedElement.getType())) {
+				knowledgeTypeMap.put(linkedElement.getType(), 0);
+			}
+			knowledgeTypeMap.put(linkedElement.getType(), knowledgeTypeMap.get(linkedElement.getType()) + 1);
+		}
+		linkedElementMap.put(codeFile, knowledgeTypeMap);
+	}
+
+	public Map<String, String> getCodeFilesWithNeighborsOfOtherType(KnowledgeType knowledgeType) {
+		LOGGER.info("CodeCoverageCalculator getCodeFilesWithNeighborsOfOtherType");
+
+		if (knowledgeType == null) {
+			return null;
+		}
+
+		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
+
+		String withLink = "";
+		String withoutLink = "";
+
+		for (KnowledgeElement codeFile : codeFiles) {
+			if (!linkedElementMap.containsKey(codeFile)) {
+				fillLinkedElementMap(codeFile);
+			}
+			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
+				withoutLink += projectKey + '-' + codeFile.getDescription() + " ";
+			} else {
+				withLink += projectKey + '-' + codeFile.getDescription() + " ";
+			}
+		}
+
+		Map<String, String> result = new LinkedHashMap<String, String>();
+		result.put("Links from Code File to " + knowledgeType.toString(), withLink);
+		result.put("No links from Code File to " + knowledgeType.toString(), withoutLink);
+		return result;
+	}
+
+	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType knowledgeType) {
+		LOGGER.info("CodeCoverageCalculator getNumberOfDecisionKnowledgeElementsForCodeFiles");
+
+		if (knowledgeType == null) {
+			return null;
+		}
+
+		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
+
+		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
+		for (KnowledgeElement codeFile : codeFiles) {
+			if (!linkedElementMap.containsKey(codeFile)) {
+				fillLinkedElementMap(codeFile);
+			}
+			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
+				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), 0);
+			} else {
+				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(),
+						linkedElementMap.get(codeFile).get(knowledgeType));
+			}
 		}
 		return numberOfElementsReachable;
 	}
