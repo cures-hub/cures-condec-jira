@@ -75,7 +75,7 @@
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		url = conDecAPI.restPrefix + "/dashboard/jiraIssueTypes.json?projectKey=" + projectKey;
+		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({

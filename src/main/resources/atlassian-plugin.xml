@@ -629,26 +629,4 @@
             class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
         <amd-module>dashboard/rationaleCoverage</amd-module>
 	</dashboard-item>
-
-    <dashboard-item key="condec-code-coverage-dashboard-item"
-		            name="ConDec Dashboard for Code Coverage"
-                    configurable="true">
-		<definition>
-            <title key="condec.dashboard.codecoverage.title" />
-			<categories>
-				<category>Jira</category>
-			</categories>
-			<author>
-				<name>ConDec team</name>
-			</author>
-			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
-		</definition>
-        <description key="condec.dashboard.codecoverage.description" />
-		<resource name="view" type="velocity"
-			      location="/templates/dashboard/codeCoverage.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.CodeCoverageDashboardItem" />
-        <amd-module>dashboard/codeCoverage</amd-module>
-	</dashboard-item>
 </atlassian-plugin>
