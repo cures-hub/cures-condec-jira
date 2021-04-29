@@ -194,23 +194,6 @@ public class DashboardRest {
 		return Response.status(Status.OK).entity(linkTypes).build();
 	}
 
-	@Path("/jiraIssueTypes")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getJiraIssueTypes(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
-					.build();
-		}
-
-		DecisionKnowledgeProject project = new DecisionKnowledgeProject(projectKey);
-
-		Set<String> jiraIssueTypes = project.getJiraIssueTypeNames();
-
-		return Response.status(Status.OK).entity(jiraIssueTypes).build();
-	}
-
 	@Path("/knowledgeTypes")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })

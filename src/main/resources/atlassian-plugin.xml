@@ -523,10 +523,6 @@
                   location="js/dashboard/condec.rationale.coverage.dashboard.js" />
         <resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
                   location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
-        <resource type="download" name="condec.code.coverage.dashboard.js"
-                  location="js/dashboard/condec.code.coverage.dashboard.js" />
-        <resource type="download" name="condec.code.coverage.dashboard.configuration.js"
-                  location="js/dashboard/condec.code.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
