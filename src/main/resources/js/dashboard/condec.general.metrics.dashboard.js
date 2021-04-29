@@ -16,11 +16,11 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecGeneralMetricsDashboard = function ConDecGeneralMetricsDashboard() {
+	var ConDecGeneralMetricsDashboard = function() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function (projectkey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
 
 		removeOptions(KnowledgeTypeSelection);
@@ -28,7 +28,7 @@
 		getKnowledgeTypes(projectkey);
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
+	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function () {
 		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		removeOptions(documentationLocationSelection);
@@ -36,7 +36,7 @@
 		getDocumentationLocations();
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function () {
 		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
 		removeOptions(KnowledgeStatusSelection);
@@ -44,12 +44,11 @@
 		getKnowledgeStatus();
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function setLinkTypes() {
+	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function () {
 		var LinkTypeSelection = document.getElementById("linktype-multi-select-general-metrics");
 
 		removeOptions(LinkTypeSelection);
-
-		getLinkTypes();
+		this.fillOptionsLinkTypes();
 	};
 
 	function removeOptions(selectElement) {
@@ -80,7 +79,7 @@
 		});
 	}
 
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function (data) {
 		var knowledgeTypes = getList(JSON.stringify(data));
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
@@ -111,7 +110,7 @@
 		});
 	}
 
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function(data) {
 		var documentationLocations = getList(JSON.stringify(data));
 
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
@@ -142,7 +141,7 @@
 		});
 	}
 
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function (data) {
 		var knowledgeStatuses = getList(JSON.stringify(data));
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
@@ -155,26 +154,9 @@
 		}
 	};
 
-	function getLinkTypes() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getLinkTypes";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsLinkTypes,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
-		var linkTypes = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function() {
+		var linkTypes = conDecAPI.getLinkTypes();
+		console.log(linkTypes);
 
 		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
 

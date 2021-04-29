@@ -57,7 +57,7 @@
 
 		removeOptions(LinkTypeSelection);
 
-		getLinkTypes();
+		this.fillOptionsLinkTypes();
 	};
 
 	function removeOptions(selectElement) {
@@ -197,26 +197,8 @@
 		}
 	};
 
-	function getLinkTypes() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/config/getLinkTypes";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsLinkTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
-		var linkTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes() {
+		var linkTypes = conDecAPI.getLinkTypes();
 
 		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
 
