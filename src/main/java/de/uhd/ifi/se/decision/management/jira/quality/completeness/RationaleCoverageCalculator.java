@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 /**
  * Calculates the rationale coverage of requirements, code, and other software
  * artifacts (=knowledge elements). For example, calculates how many decisions
- * are linked to a requirement.
+ * are linked to a requirement or how many decisions are linked to a code file.
  */
 public class RationaleCoverageCalculator {
 
