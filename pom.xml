@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>com.atlassian.jira.plugins</groupId>
 			<artifactId>jira-greenhopper-plugin</artifactId>
-			<version>8.7.1</version>
+			<version>1000.571.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
