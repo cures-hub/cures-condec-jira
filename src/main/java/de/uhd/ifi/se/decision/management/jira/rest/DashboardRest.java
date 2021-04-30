@@ -102,6 +102,7 @@ public class DashboardRest {
 
 		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
+		// TODO Get rid of this if-else block, only work with knowledge elements
 		if (issueType.equals("Code")) {
 			metrics.put("issuesPerJiraIssue",
 					rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));

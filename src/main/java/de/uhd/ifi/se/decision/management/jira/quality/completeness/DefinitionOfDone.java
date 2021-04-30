@@ -7,9 +7,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Sets rules (criteria) that the decision knowledge documentation needs to
- * fulfill to be complete. These rules can be configured by the rationale
- * manager.
+ * Sets rules (criteria) that the knowledge documentation needs to fulfill to be
+ * done. These rules can be configured by the rationale manager.
+ * 
+ * The metrics used are the intra-rationale completeness, the rationale/decision
+ * coverage for requirements and code, and other criteria (e.g. whether code
+ * file is a test file).
  * 
  * Next to the configurable rules, there are default rules that cannot be
  * configured. For example, a default rule is that each decision problem
@@ -28,6 +31,9 @@ public class DefinitionOfDone {
 	private int maximumLinkDistanceToDecisions;
 	private int minimumDecisionsWithinLinkDistance;
 
+	/**
+	 * Constructs an object with default values.
+	 */
 	public DefinitionOfDone() {
 		this.issueIsLinkedToAlternative = false;
 		this.decisionIsLinkedToPro = false;

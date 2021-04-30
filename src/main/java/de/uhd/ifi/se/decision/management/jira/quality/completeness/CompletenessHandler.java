@@ -16,7 +16,7 @@ public final class CompletenessHandler {
 
 	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
 			entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
-			entry(KnowledgeType.ISSUE, new IssueCompletenessCheck()),
+			entry(KnowledgeType.ISSUE, new DecisionProblemCompletenessCheck()),
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
 			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
 			entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
