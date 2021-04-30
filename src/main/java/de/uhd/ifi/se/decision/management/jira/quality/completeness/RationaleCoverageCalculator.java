@@ -69,7 +69,6 @@ public class RationaleCoverageCalculator {
 
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
 				jiraIssueType);
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 
 		int linkDistance = filterSettings.getLinkDistance();
 		int minimumDecisionCoverage = filterSettings.getMinimumDecisionCoverage();
@@ -92,8 +91,10 @@ public class RationaleCoverageCalculator {
 		}
 
 		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put("Many links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withHighLinks);
-		result.put("Some links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLowLinks);
+		result.put("More than " + minimumDecisionCoverage + " links from " + jiraIssueType.getName() + " to " +
+			knowledgeType.toString(), withHighLinks);
+		result.put("Less than " + minimumDecisionCoverage + " links from " + jiraIssueType.getName() + " to " +
+			knowledgeType.toString(), withLowLinks);
 		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
