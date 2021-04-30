@@ -50,10 +50,10 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 		Map<String, String> calculation = calculator
 				.getJiraIssuesWithNeighborsOfOtherType(JiraIssueTypes.getTestTypes().get(0), KnowledgeType.ISSUE);
 
-		assertTrue(calculation.containsKey("Many links from Task to Issue"));
-		assertTrue(calculation.get("Many links from Task to Issue").isEmpty());
-		assertTrue(calculation.containsKey("Some links from Task to Issue"));
-		assertTrue(calculation.get("Some links from Task to Issue").isEmpty());
+		assertTrue(calculation.containsKey("More than 2 links from Task to Issue"));
+		assertTrue(calculation.get("More than 2 links from Task to Issue").isEmpty());
+		assertTrue(calculation.containsKey("Less than 2 links from Task to Issue"));
+		assertTrue(calculation.get("Less than 2 links from Task to Issue").isEmpty());
 		assertTrue(calculation.containsKey("No links from Task to Issue"));
 		assertTrue(calculation.get("No links from Task to Issue").isEmpty());
 	}
