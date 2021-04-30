@@ -1,8 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
@@ -40,8 +45,7 @@ public class RationaleCoverageCalculator {
 	}
 
 	public int calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(KnowledgeElement sourceElement,
-																		  KnowledgeType knowledgeType,
-																		  int linkDistance) {
+			KnowledgeType knowledgeType, int linkDistance) {
 		Set<KnowledgeElement> elements = sourceElement.getLinkedElements(linkDistance);
 
 		int linkedElements = 0;
@@ -56,7 +60,7 @@ public class RationaleCoverageCalculator {
 	}
 
 	public Map<String, String> getJiraIssuesWithNeighborsOfOtherType(IssueType jiraIssueType,
-																	 KnowledgeType knowledgeType) {
+			KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getJiraIssuesWithNeighborsOfOtherType");
 
 		if (knowledgeType == null) {
@@ -66,6 +70,8 @@ public class RationaleCoverageCalculator {
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
 				jiraIssueType);
 
+		// TODO "minimumCoverage" should also be a normal filter setting in the
+		// dashboard.
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 
 		int linkDistance = filterSettings.getLinkDistance();
@@ -77,15 +83,13 @@ public class RationaleCoverageCalculator {
 
 		for (Issue jiraIssue : jiraIssues) {
 			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			int linkedIssues = calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(sourceElement,
-				knowledgeType, linkDistance);
+			int linkedIssues = calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(sourceElement, knowledgeType,
+					linkDistance);
 			if (linkedIssues == 0) {
 				withoutLinks += jiraIssue.getKey() + " ";
-			}
-			else if (linkedIssues < threshold) {
+			} else if (linkedIssues < threshold) {
 				withLowLinks += jiraIssue.getKey() + " ";
-			}
-			else {
+			} else {
 				withHighLinks += jiraIssue.getKey() + " ";
 			}
 		}
@@ -98,15 +102,15 @@ public class RationaleCoverageCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(IssueType jiraIssueType,
-																				  KnowledgeType knowledgeType) {
+			KnowledgeType knowledgeType) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
 
 		if (knowledgeType == null) {
 			return null;
 		}
 
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user,
-			projectKey, jiraIssueType);
+		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
+				jiraIssueType);
 
 		Set<String> types = new HashSet<>();
 		types.add(knowledgeType.toString());
