@@ -62,7 +62,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	public void testIsDoneLinkedFile() {
 		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
-		definitionOfDone.setLinkDistanceFromCodeFileToDecision(1);
+		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}

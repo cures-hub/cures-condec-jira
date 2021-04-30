@@ -25,16 +25,16 @@ public class DefinitionOfDone {
 	private boolean decisionIsLinkedToPro;
 	private boolean alternativeIsLinkedToArgument;
 	private int lineNumbersInCodeFile;
-	private int linkDistanceFromCodeFileToDecision;
-	private int threshold;
+	private int maximumLinkDistanceToDecisions;
+	private int minimumDecisionsWithinLinkDistance;
 
 	public DefinitionOfDone() {
 		this.issueIsLinkedToAlternative = false;
 		this.decisionIsLinkedToPro = false;
 		this.alternativeIsLinkedToArgument = false;
-		this.linkDistanceFromCodeFileToDecision = 4;
+		this.maximumLinkDistanceToDecisions = 4;
 		this.lineNumbersInCodeFile = 50;
-		this.threshold = 2;
+		this.minimumDecisionsWithinLinkDistance = 2;
 	}
 
 	/**
@@ -91,15 +91,6 @@ public class DefinitionOfDone {
 		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
 	}
 
-	public int getLinkDistanceFromCodeFileToDecision() {
-		return linkDistanceFromCodeFileToDecision;
-	}
-
-	@JsonProperty("linkDistanceFromCodeFileToDecision")
-	public void setLinkDistanceFromCodeFileToDecision(int linkDistanceFromCodeFileToDecision) {
-		this.linkDistanceFromCodeFileToDecision = linkDistanceFromCodeFileToDecision;
-	}
-
 	public int getLineNumbersInCodeFile() {
 		return lineNumbersInCodeFile;
 	}
@@ -109,12 +100,58 @@ public class DefinitionOfDone {
 		this.lineNumbersInCodeFile = lineNumbersInCodeFile;
 	}
 
-	public int getThreshold() {
-		return threshold;
+	/**
+	 * @return maximum link distance starting from a requirement, code files (or
+	 *         other software artifact = knowledge element) in that a certain number
+	 *         of decisions
+	 *         ({@link #getMinimumNumberOfDecisionsWithinLinkDistance()}) needs to
+	 *         be documented. For example, in order to fulfill the definition of
+	 *         done, a code file needs to have at least two decisions documented
+	 *         within a link distance of 2. This defines the minimal
+	 *         rationale/decision coverage for the code file.
+	 */
+	public int getMaximumLinkDistanceToDecisions() {
+		return maximumLinkDistanceToDecisions;
 	}
 
-	@JsonProperty("threshold")
-	public void setThreshold(int threshold) {
-		this.threshold = threshold;
+	/**
+	 * @param maximumLinkDistanceToDecisions
+	 *            maximum link distance starting from a requirement, code files (or
+	 *            other software artifact = knowledge element) in that a certain
+	 *            number of decisions
+	 *            ({@link #getMinimumNumberOfDecisionsWithinLinkDistance()}) needs
+	 *            to be documented. For example, in order to fulfill the definition
+	 *            of done, a code file needs to have at least two decisions
+	 *            documented within a link distance of 2. This defines the minimal
+	 *            rationale/decision coverage for the code file.
+	 */
+	@JsonProperty("maximumLinkDistanceToDecisions")
+	public void setMaximumLinkDistanceToDecisions(int maximumLinkDistanceToDecisions) {
+		this.maximumLinkDistanceToDecisions = maximumLinkDistanceToDecisions;
+	}
+
+	/**
+	 * @return minimum number of decisions that need to be documented within the
+	 *         {@link #getMaximumLinkDistanceToDecisions}. For example, in order to
+	 *         fulfill the definition of done, a requirement needs to have at least
+	 *         one decision documented within a link distance of 3. This defines the
+	 *         minimal rationale/decision coverage for the requirement.
+	 */
+	public int getMinimumNumberOfDecisionsWithinLinkDistance() {
+		return minimumDecisionsWithinLinkDistance;
+	}
+
+	/**
+	 * @param minimumNumberOfDecisionsWithinLinkDistance
+	 *            minimum number of decisions that need to be documented within the
+	 *            {@link #getMaximumLinkDistanceToDecisions}. For example, in order
+	 *            to fulfill the definition of done, a requirement needs to have at
+	 *            least one decision documented within a link distance of 3. This
+	 *            defines the minimal rationale/decision coverage for the
+	 *            requirement.
+	 */
+	@JsonProperty("minimumNumberOfDecisions")
+	public void setMinimumNumberOfDecisionsWithinLinkDistance(int minimumNumberOfDecisionsWithinLinkDistance) {
+		this.minimumDecisionsWithinLinkDistance = minimumNumberOfDecisionsWithinLinkDistance;
 	}
 }

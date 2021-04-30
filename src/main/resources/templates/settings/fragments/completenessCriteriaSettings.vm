@@ -54,11 +54,14 @@
     </ul>
 </div>
 <div class="field-group">
-    <label>Rationale Coverage:</label>
+    <label>Rationale Coverage for Jira Issues and Code Files:</label>
     <ul>
-        <li>is linked to a decision with a maximum link distance of <input class="text short-field" type="number" id="link-distance-from-code-file-to-decision-number-input" max="6" value="$definitionOfDone.getLinkDistanceFromCodeFileToDecision()"></li>
-        <li>is linked to at least <input class="text short-field" type="number" id="threshold-number-of-decisions-per-issue-number-input" max="999" value="$definitionOfDone.getThreshold()"> decisions</li>
-        </ul>
+        <li>Jira issue (e.g. requirement) or code file is linked to at least 
+        	<input class="text short-field" type="number" id="minimum-number-of-decisions-input" max="999" value="$definitionOfDone.getMinimumNumberOfDecisionsWithinLinkDistance()"> 
+        	decisions within a maximum link distance of 
+        	<input class="text short-field" type="number" id="link-distance-to-decision-number-input" max="6" value="$definitionOfDone.getMaximumLinkDistanceToDecisions()">
+        </li>
+	</ul>
 </div>
 <div class="field-group">
     <label for="change-definition-of-done">Save Definition of Done</label>

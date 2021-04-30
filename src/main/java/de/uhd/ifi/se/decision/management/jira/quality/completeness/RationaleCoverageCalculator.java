@@ -69,7 +69,7 @@ public class RationaleCoverageCalculator {
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 
 		int linkDistance = filterSettings.getLinkDistance();
-		int threshold = definitionOfDone.getThreshold();
+		int threshold = definitionOfDone.getMinimumNumberOfDecisionsWithinLinkDistance();
 
 		String withHighLinks = "";
 		String withLowLinks = "";

@@ -17,8 +17,8 @@
                 "decisionIsLinkedToPro": $("#decision-link-pro-checkbox").prop("checked"),
                 "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
                 "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
-                "linkDistanceFromCodeFileToDecision": $("#link-distance-from-code-file-to-decision-number-input").prop("value"),
-                "threshold": $("#threshold-number-of-decisions-per-issue-number-input").prop("value"),
+                "linkDistanceFromCodeFileToDecision": $("#link-distance-to-decision-number-input").prop("value"),
+                "threshold": $("#minimum-number-of-decisions-input").prop("value"),
             }
             console.log(definitionOfDone);
             conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);

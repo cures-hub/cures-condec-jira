@@ -29,7 +29,7 @@ public class CodeCompletenessCheck implements CompletenessCheck {
 	@Override
 	public boolean isCompleteAccordingToSettings() {
 		int linkDistanceFromCodeFileToDecision = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getLinkDistanceFromCodeFileToDecision();
+				.getMaximumLinkDistanceToDecisions();
 		int lineNumbersInCodeFile = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 				.getLineNumbersInCodeFile();
 
