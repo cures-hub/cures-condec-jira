@@ -5,16 +5,16 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetRationaleCoverage extends TestSetUp {
 	protected DashboardRest dashboardRest;
@@ -30,9 +30,18 @@ public class TestGetRationaleCoverage extends TestSetUp {
 	}
 
 	@Test
-	public void testGetRationaleCoverage() {
+	public void testGetRationaleCoverageForRequirement() {
 		String projectKey = "TEST";
-		String issueType = "TEST";
+		String issueType = "Epic";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
+		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testGetRationaleCoverageForCode() {
+		String projectKey = "TEST";
+		String issueType = "Code";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

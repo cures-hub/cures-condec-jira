@@ -2,11 +2,11 @@
  This module render the configuration screen used in the feature branch dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
- * js/condec.git.branches.dashboard.js
+ * condec.requirements.dashboard.js
+ * condec.git.branches.dashboard.js
 
  Is referenced in HTML by
- * featureBranchesDashboardItem.vm
+ * dashboard/featureBranches.vm
  */
 define('dashboard/branches', [], function () {
 	var dashboardAPI;
