@@ -423,7 +423,7 @@
 		<amps.version>8.2.1</amps.version>
 		<ao.version>3.3.1-7fb0ce9e</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
-		<atlassian.spring.scanner.version>2.2.1-8199150</atlassian.spring.scanner.version>
+		<atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
