@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.IssueCompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DecisionProblemCompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -268,7 +268,7 @@ public class KnowledgePersistenceManager {
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
 		boolean isIssueResolved = false;
 		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
-			if (IssueCompletenessCheck.isValidDecisionLinkedToDecisionProblem(element)) {
+			if (DecisionProblemCompletenessCheck.isValidDecisionLinkedToDecisionProblem(element)) {
 				isIssueResolved = true;
 			}
 

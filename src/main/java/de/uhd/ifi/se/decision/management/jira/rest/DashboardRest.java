@@ -102,6 +102,7 @@ public class DashboardRest {
 
 		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
+		// TODO Get rid of this if-else block, only work with knowledge elements
 		if (issueType.equals("Code")) {
 			metrics.put("issuesPerJiraIssue",
 					rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
@@ -114,11 +115,10 @@ public class DashboardRest {
 		} else {
 			IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
 			if (jiraIssueType != null) {
-
 				metrics.put("decisionsPerJiraIssue", rationaleCoverageCalculator
-						.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
+						.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.DECISION));
 				metrics.put("issuesPerJiraIssue", rationaleCoverageCalculator
-						.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
+						.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.ISSUE));
 				metrics.put("decisionDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
 						.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
 				metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator

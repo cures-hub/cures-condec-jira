@@ -28,12 +28,12 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 
 	private List<KnowledgeElement> elements;
 	private KnowledgeElement issue;
-	private IssueCompletenessCheck issueCompletenessCheck;
+	private DecisionProblemCompletenessCheck issueCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
-		issueCompletenessCheck = new IssueCompletenessCheck();
+		issueCompletenessCheck = new DecisionProblemCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = elements.get(4);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
@@ -58,7 +58,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
 		assertNotNull(issue.getLink(alternative));
-		assertTrue(new IssueCompletenessCheck().execute(issue));
+		assertTrue(new DecisionProblemCompletenessCheck().execute(issue));
 	}
 
 	@Test

@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -10,8 +7,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Sets rules that the decision knowledge documentation needs to fulfill to be
- * complete. These rules can be configured by the rationale manager.
+ * Sets rules (criteria) that the knowledge documentation needs to fulfill to be
+ * done. These rules can be configured by the rationale manager.
+ * 
+ * The metrics used are the intra-rationale completeness, the rationale/decision
+ * coverage for requirements and code, and other criteria (e.g. whether code
+ * file is a test file).
  * 
  * Next to the configurable rules, there are default rules that cannot be
  * configured. For example, a default rule is that each decision problem
@@ -23,18 +24,23 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class DefinitionOfDone {
 
-	private Map<String, Integer> criteriaMap = new HashMap<>();
+	private boolean issueIsLinkedToAlternative;
+	private boolean decisionIsLinkedToPro;
+	private boolean alternativeIsLinkedToArgument;
+	private int lineNumbersInCodeFile;
+	private int maximumLinkDistanceToDecisions;
+	private int minimumDecisionsWithinLinkDistance;
 
+	/**
+	 * Constructs an object with default values.
+	 */
 	public DefinitionOfDone() {
-		criteriaMap.put("issueIsLinkedToAlternative", 0);
-		criteriaMap.put("decisionIsLinkedToPro", 0);
-		criteriaMap.put("alternativeIsLinkedToArgument", 0);
-		criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
-		criteriaMap.put("lineNumbersInCodeFile", 50);
-	}
-
-	public Map<String, Integer> getCriteriaMap() {
-		return criteriaMap;
+		this.issueIsLinkedToAlternative = false;
+		this.decisionIsLinkedToPro = false;
+		this.alternativeIsLinkedToArgument = false;
+		this.maximumLinkDistanceToDecisions = 4;
+		this.lineNumbersInCodeFile = 50;
+		this.minimumDecisionsWithinLinkDistance = 2;
 	}
 
 	/**
@@ -42,7 +48,7 @@ public class DefinitionOfDone {
 	 *         least one alternative.
 	 */
 	public boolean isIssueIsLinkedToAlternative() {
-		return criteriaMap.get("issueIsLinkedToAlternative") != 0;
+		return issueIsLinkedToAlternative;
 	}
 
 	/**
@@ -52,11 +58,7 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("issueIsLinkedToAlternative")
 	public void setIssueLinkedToAlternative(boolean issueIsLinkedToAlternative) {
-		if (issueIsLinkedToAlternative) {
-			criteriaMap.put("issueIsLinkedToAlternative", 1);
-		} else {
-			criteriaMap.put("issueIsLinkedToAlternative", 0);
-		}
+		this.issueIsLinkedToAlternative = issueIsLinkedToAlternative;
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class DefinitionOfDone {
 	 *         linked to at least one pro-argument.
 	 */
 	public boolean isDecisionIsLinkedToPro() {
-		return criteriaMap.get("decisionIsLinkedToPro") != 0;
+		return decisionIsLinkedToPro;
 	}
 
 	/**
@@ -74,11 +76,7 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("decisionIsLinkedToPro")
 	public void setDecisionLinkedToPro(boolean decisionIsLinkedToPro) {
-		if (decisionIsLinkedToPro) {
-			criteriaMap.put("decisionIsLinkedToPro", 1);
-		} else {
-			criteriaMap.put("decisionIsLinkedToPro", 0);
-		}
+		this.decisionIsLinkedToPro = decisionIsLinkedToPro;
 	}
 
 	/**
@@ -86,7 +84,7 @@ public class DefinitionOfDone {
 	 *         needs to be linked to at least one pro-argument.
 	 */
 	public boolean isAlternativeIsLinkedToArgument() {
-		return criteriaMap.get("alternativeIsLinkedToArgument") != 0;
+		return alternativeIsLinkedToArgument;
 	}
 
 	/**
@@ -96,34 +94,70 @@ public class DefinitionOfDone {
 	 */
 	@JsonProperty("alternativeIsLinkedToArgument")
 	public void setAlternativeLinkedToArgument(boolean alternativeIsLinkedToArgument) {
-		if (alternativeIsLinkedToArgument) {
-			criteriaMap.put("alternativeIsLinkedToArgument", 1);
-		} else {
-			criteriaMap.put("alternativeIsLinkedToArgument", 0);
-		}
-	}
-
-	public int getLinkDistanceFromCodeFileToDecision() {
-		if (!criteriaMap.containsKey("linkDistanceFromCodeFileToDecision")) {
-			criteriaMap.put("linkDistanceFromCodeFileToDecision", 4);
-		}
-		return criteriaMap.get("linkDistanceFromCodeFileToDecision");
-	}
-
-	@JsonProperty("linkDistanceFromCodeFileToDecision")
-	public void setLinkDistanceFromCodeFileToDecision(int linkDistanceFromCodeFileToDecision) {
-		criteriaMap.put("linkDistanceFromCodeFileToDecision", linkDistanceFromCodeFileToDecision);
+		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
 	}
 
 	public int getLineNumbersInCodeFile() {
-		if (!criteriaMap.containsKey("lineNumbersInCodeFile")) {
-			criteriaMap.put("lineNumbersInCodeFile", 50);
-		}
-		return criteriaMap.get("lineNumbersInCodeFile");
+		return lineNumbersInCodeFile;
 	}
 
 	@JsonProperty("lineNumbersInCodeFile")
 	public void setLineNumbersInCodeFile(int lineNumbersInCodeFile) {
-		criteriaMap.put("lineNumbersInCodeFile", lineNumbersInCodeFile);
+		this.lineNumbersInCodeFile = lineNumbersInCodeFile;
+	}
+
+	/**
+	 * @return maximum link distance starting from a requirement, code files (or
+	 *         other software artifact = knowledge element) in that a certain number
+	 *         of decisions
+	 *         ({@link #getMinimumNumberOfDecisionsWithinLinkDistance()}) needs to
+	 *         be documented. For example, in order to fulfill the definition of
+	 *         done, a code file needs to have at least two decisions documented
+	 *         within a link distance of 2. This defines the minimal
+	 *         rationale/decision coverage for the code file.
+	 */
+	public int getMaximumLinkDistanceToDecisions() {
+		return maximumLinkDistanceToDecisions;
+	}
+
+	/**
+	 * @param maximumLinkDistanceToDecisions
+	 *            maximum link distance starting from a requirement, code files (or
+	 *            other software artifact = knowledge element) in that a certain
+	 *            number of decisions
+	 *            ({@link #getMinimumNumberOfDecisionsWithinLinkDistance()}) needs
+	 *            to be documented. For example, in order to fulfill the definition
+	 *            of done, a code file needs to have at least two decisions
+	 *            documented within a link distance of 2. This defines the minimal
+	 *            rationale/decision coverage for the code file.
+	 */
+	@JsonProperty("maximumLinkDistanceToDecisions")
+	public void setMaximumLinkDistanceToDecisions(int maximumLinkDistanceToDecisions) {
+		this.maximumLinkDistanceToDecisions = maximumLinkDistanceToDecisions;
+	}
+
+	/**
+	 * @return minimum number of decisions that need to be documented within the
+	 *         {@link #getMaximumLinkDistanceToDecisions}. For example, in order to
+	 *         fulfill the definition of done, a requirement needs to have at least
+	 *         one decision documented within a link distance of 3. This defines the
+	 *         minimal rationale/decision coverage for the requirement.
+	 */
+	public int getMinimumNumberOfDecisionsWithinLinkDistance() {
+		return minimumDecisionsWithinLinkDistance;
+	}
+
+	/**
+	 * @param minimumNumberOfDecisionsWithinLinkDistance
+	 *            minimum number of decisions that need to be documented within the
+	 *            {@link #getMaximumLinkDistanceToDecisions}. For example, in order
+	 *            to fulfill the definition of done, a requirement needs to have at
+	 *            least one decision documented within a link distance of 3. This
+	 *            defines the minimal rationale/decision coverage for the
+	 *            requirement.
+	 */
+	@JsonProperty("minimumNumberOfDecisions")
+	public void setMinimumNumberOfDecisionsWithinLinkDistance(int minimumNumberOfDecisionsWithinLinkDistance) {
+		this.minimumDecisionsWithinLinkDistance = minimumNumberOfDecisionsWithinLinkDistance;
 	}
 }

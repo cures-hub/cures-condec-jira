@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -490,29 +489,20 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
 		assertEquals(50, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
-		assertEquals(4, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
+		assertEquals(4, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
 		definitionOfDone.setAlternativeLinkedToArgument(true);
 		definitionOfDone.setDecisionLinkedToPro(true);
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		definitionOfDone.setLineNumbersInCodeFile(20);
-		definitionOfDone.setLinkDistanceFromCodeFileToDecision(3);
+		definitionOfDone.setMaximumLinkDistanceToDecisions(3);
+		definitionOfDone.setMinimumNumberOfDecisionsWithinLinkDistance(3);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
 		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
-		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
-		definitionOfDone.setAlternativeLinkedToArgument(false);
-		definitionOfDone.setDecisionLinkedToPro(false);
-		definitionOfDone.setIssueLinkedToAlternative(false);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
-		Map<String, Integer> expectedCriteriaMap = new HashMap<String, Integer>();
-		expectedCriteriaMap.put("issueIsLinkedToAlternative", 0);
-		expectedCriteriaMap.put("decisionIsLinkedToPro", 0);
-		expectedCriteriaMap.put("alternativeIsLinkedToArgument", 0);
-		expectedCriteriaMap.put("linkDistanceFromCodeFileToDecision", 3);
-		expectedCriteriaMap.put("lineNumbersInCodeFile", 20);
-		assertEquals(expectedCriteriaMap, ConfigPersistenceManager.getDefinitionOfDone("TEST").getCriteriaMap());
+		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
+		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumNumberOfDecisionsWithinLinkDistance());
 	}
 
 	@Test

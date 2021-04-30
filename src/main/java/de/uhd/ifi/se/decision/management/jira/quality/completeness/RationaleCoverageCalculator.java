@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
@@ -43,8 +44,21 @@ public class RationaleCoverageCalculator {
 		this.filteringManager = new FilteringManager(user, filterSettings);
 	}
 
-	// TODO Currently only link distance 1 is assessed. Enable higher link
-	// distances.
+	public int calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(KnowledgeElement sourceElement,
+			KnowledgeType knowledgeType, int linkDistance) {
+		Set<KnowledgeElement> elements = sourceElement.getLinkedElements(linkDistance);
+
+		int linkedElements = 0;
+
+		for (KnowledgeElement element : elements) {
+			if (element.getType() == knowledgeType) {
+				linkedElements++;
+			}
+		}
+
+		return linkedElements;
+	}
+
 	public Map<String, String> getJiraIssuesWithNeighborsOfOtherType(IssueType jiraIssueType,
 			KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getJiraIssuesWithNeighborsOfOtherType");
@@ -56,31 +70,50 @@ public class RationaleCoverageCalculator {
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
 				jiraIssueType);
 
-		String withLink = "";
-		String withoutLink = "";
+		// TODO "minimumCoverage" should also be a normal filter setting in the
+		// dashboard.
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+
+		int linkDistance = filterSettings.getLinkDistance();
+		int threshold = definitionOfDone.getMinimumNumberOfDecisionsWithinLinkDistance();
+
+		String withHighLinks = "";
+		String withLowLinks = "";
+		String withoutLinks = "";
 
 		for (Issue jiraIssue : jiraIssues) {
 			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			if (sourceElement.hasNeighborOfType(knowledgeType)) {
-				withLink += jiraIssue.getKey() + " ";
+			int linkedIssues = calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(sourceElement, knowledgeType,
+					linkDistance);
+			if (linkedIssues == 0) {
+				withoutLinks += jiraIssue.getKey() + " ";
+			} else if (linkedIssues < threshold) {
+				withLowLinks += jiraIssue.getKey() + " ";
 			} else {
-				withoutLink += jiraIssue.getKey() + " ";
+				withHighLinks += jiraIssue.getKey() + " ";
 			}
 		}
 
 		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put("Links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLink);
-		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLink);
+		result.put("Many links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withHighLinks);
+		result.put("Some links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLowLinks);
+		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
+	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(IssueType jiraIssueType,
+			KnowledgeType knowledgeType) {
 		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
 
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+		if (knowledgeType == null) {
+			return null;
+		}
+
+		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
+				jiraIssueType);
 
 		Set<String> types = new HashSet<>();
-		types.add(type.toString());
+		types.add(knowledgeType.toString());
 		filterSettings.setKnowledgeTypes(types);
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
