@@ -1,10 +1,13 @@
-<h2>Rationale Backlog Configuration</h2>
-
+<h2>Definition Of Done Configuration</h2>
 #set($definitionOfDone = $project.getDefinitionOfDone())
 
+On this page, the rationale manager can configure the rules (criteria) that the knowledge documentation needs to fulfill to be done. 
+Knowledge elements that do not fulfill the definition of done are shown in the rationale backlog.
+Besides, ConDec shows warnings to the developers if the definition of done of the knowledge subgraph they are working on is not fulfilled.
+
 <form class="aui">
-    #parse("templates/settings/fragments/completenessCriteriaSettings.vm")
-    #parse("templates/settings/fragments/completenessEventSettings.vm")
+    #parse("templates/settings/definitionofdone/completenessCriteriaSettings.vm")
+    #parse("templates/settings/definitionofdone/completenessEventSettings.vm")
 </form>
 
 <script>
@@ -17,10 +20,9 @@
                 "decisionIsLinkedToPro": $("#decision-link-pro-checkbox").prop("checked"),
                 "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
                 "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
-                "linkDistanceFromCodeFileToDecision": $("#link-distance-to-decision-number-input").prop("value"),
-                "threshold": $("#minimum-number-of-decisions-input").prop("value"),
+                "maximumLinkDistanceToDecisions": $("#link-distance-to-decision-number-input").prop("value"),
+                "minimumNumberOfDecisions": $("#minimum-number-of-decisions-input").prop("value"),
             }
-            console.log(definitionOfDone);
             conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         });
         conDecJiraIssueCompletenessModule.init();
