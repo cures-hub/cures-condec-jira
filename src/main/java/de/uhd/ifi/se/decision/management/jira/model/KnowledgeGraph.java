@@ -280,11 +280,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * @return list of all knowledge elements for a project with a certain knowledge
-	 *         type.
-	 * @see KnowledgeElement
-	 * @see DecisionKnowledgeProject
-	 * @see KnowledgeType
+	 * @return list of all {@link KnowledgeElement}s for a project with a certain
+	 *         {@link KnowledgeType}.
 	 */
 	public List<KnowledgeElement> getElements(KnowledgeType type) {
 		KnowledgeType simpleType = type.replaceProAndConWithArgument();

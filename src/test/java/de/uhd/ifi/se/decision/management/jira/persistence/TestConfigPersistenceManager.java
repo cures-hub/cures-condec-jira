@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -504,18 +503,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
 		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLinkDistanceFromCodeFileToDecision());
 		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getThreshold());
-		definitionOfDone.setAlternativeLinkedToArgument(false);
-		definitionOfDone.setDecisionLinkedToPro(false);
-		definitionOfDone.setIssueLinkedToAlternative(false);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
-		Map<String, Integer> expectedCriteriaMap = new HashMap<String, Integer>();
-		expectedCriteriaMap.put("lineNumbersInCodeFile", 20);
-		expectedCriteriaMap.put("issueIsLinkedToAlternative", 0);
-		expectedCriteriaMap.put("decisionIsLinkedToPro", 0);
-		expectedCriteriaMap.put("alternativeIsLinkedToArgument", 0);
-		expectedCriteriaMap.put("linkDistanceFromCodeFileToDecision", 3);
-		expectedCriteriaMap.put("threshold", 3);
-		assertEquals(expectedCriteriaMap, ConfigPersistenceManager.getDefinitionOfDone("TEST").getCriteriaMap());
 	}
 
 	@Test
