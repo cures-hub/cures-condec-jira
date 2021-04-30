@@ -2,10 +2,10 @@
  This module fills the box plots and pie charts used in the rationale coverage dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
+ * condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * rationaleCoverageDashboardItem.vm
+ * dashboard/rationaleCoverage.vm
  */
 
 (function (global) {
@@ -16,48 +16,44 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecRationaleCoverageDashboard = function ConDecRationaleCoverageDashboard() {
+	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setJiraIssueTypes = function setJiraIssueTypes(projectKey) {
+	ConDecRationaleCoverageDashboard.prototype.setJiraIssueTypes = function (projectKey) {
 		var issueTypeSelection = document.getElementById("issuetype-select-rationale-coverage");
 
 		removeOptions(issueTypeSelection);
-
-		getJiraIssueTypes(projectKey);
+		this.fillOptionsJiraIssueTypes(projectKey);
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+	ConDecRationaleCoverageDashboard.prototype.setKnowledgeTypes = function (projectKey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
 		removeOptions(KnowledgeTypeSelection);
-
-		getKnowledgeTypes(projectkey);
+		this.fillOptionsKnowledgeTypes(projectKey);
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
+	ConDecRationaleCoverageDashboard.prototype.setDocumentationLocations = function () {
 		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 
 		removeOptions(documentationLocationSelection);
-
-		getDocumentationLocations();
+		this.fillOptionsDocumentationLocations();
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
+	ConDecRationaleCoverageDashboard.prototype.setKnowledgeStatus = function () {
 		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 
 		removeOptions(KnowledgeStatusSelection);
-
-		getKnowledgeStatus();
+		this.fillOptionsKnowledgeStatus();
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.setLinkTypes = function setLinkTypes() {
+	ConDecRationaleCoverageDashboard.prototype.setLinkTypes = function () {
 		var LinkTypeSelection = document.getElementById("linktype-multi-select-rationale-coverage");
 
 		removeOptions(LinkTypeSelection);
 
-		getLinkTypes();
+		this.fillOptionsLinkTypes();
 	};
 
 	function removeOptions(selectElement) {
@@ -67,29 +63,9 @@
 		}
 	}
 
-	function getJiraIssueTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/jiraIssueTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsJiraIssueTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function fillOptionsJiraIssueTypes(data) {
-		var jiraIssueTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsJiraIssueTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var jiraIssueTypes = conDecAPI.getKnowledgeTypes();
 
 		var jiraIssueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
 
@@ -101,29 +77,9 @@
 		}
 	};
 
-	function getKnowledgeTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsKnowledgeTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
-		var knowledgeTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
 
@@ -135,26 +91,9 @@
 		}
 	};
 
-	function getDocumentationLocations() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/documentationLocations";
 
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsDocumentationLocations,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
-		var documentationLocations = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsDocumentationLocations = function() {
+		var documentationLocations = conDecAPI.documentationLocations;
 
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
 
@@ -166,26 +105,8 @@
 		}
 	};
 
-	function getKnowledgeStatus() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeStatus";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsKnowledgeStatus,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
-		var knowledgeStatuses = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsKnowledgeStatus = function () {
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
 
@@ -197,26 +118,8 @@
 		}
 	};
 
-	function getLinkTypes() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/linkTypes";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecRationaleCoverageDashboard.fillOptionsLinkTypes,
-			error: conDecRationaleCoverageDashboard.processDataBad
-		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
-		var linkTypes = getList(JSON.stringify(data));
+	ConDecRationaleCoverageDashboard.prototype.fillOptionsLinkTypes = function () {
+		var linkTypes = conDecAPI.getLinkTypes();
 
 		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
 
@@ -228,14 +131,7 @@
 		}
 	};
 
-	function getList(jsonString) {
-		jsonString = jsonString.replace("\[", "").replace("\]", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		return jsonString.split(",");
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.init = function init(filterSettings, issueType) {
+	ConDecRationaleCoverageDashboard.prototype.init = function (filterSettings, issueType) {
 		getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
 			, "condec-rationale-coverage-dashboard-contents-container"
 			, "condec-rationale-coverage-dashboard-contents-data-error"
@@ -295,12 +191,12 @@
 		});
 	}
 
-	ConDecRationaleCoverageDashboard.prototype.processDataBad = function processDataBad(data) {
+	ConDecRationaleCoverageDashboard.prototype.processDataBad = function (data) {
 		console.log(data.responseJSON.error);
 		showDashboardSection(dashboardDataErrorNode);
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.processData = function processData(data) {
+	ConDecRationaleCoverageDashboard.prototype.processData = function (data) {
 		processXhrResponseData(data);
 	};
 

@@ -2,10 +2,10 @@
  This module fills the box plots and pie charts used in the feature task branch dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
+ * condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * featureBranchesDashboardItem.vm
+ * dashboard/featureBranches.vm
  */
 
 /* DEV vars to be removed: */

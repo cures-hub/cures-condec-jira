@@ -2,10 +2,10 @@
  This module fills the box plots and pie charts used in the general metrics dashboard item.
 
  Requires
- * js/condec.requirements.dashboard.js
+ * condec.requirements.dashboard.js
 
  Is referenced in HTML by
- * generalMetricsDashboardItem.vm
+ * dashboard/generalMetrics.vm
  */
 
 (function (global) {
@@ -16,40 +16,36 @@
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
-	var ConDecGeneralMetricsDashboard = function ConDecGeneralMetricsDashboard() {
+	var ConDecGeneralMetricsDashboard = function() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function setKnowledgeTypes(projectkey) {
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function (projectKey) {
 		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
 
 		removeOptions(KnowledgeTypeSelection);
-
-		getKnowledgeTypes(projectkey);
+		this.fillOptionsKnowledgeTypes(projectKey);
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
+	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function () {
 		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		removeOptions(documentationLocationSelection);
-
-		getDocumentationLocations();
+		this.fillOptionsDocumentationLocations();
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
+	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function () {
 		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
 		removeOptions(KnowledgeStatusSelection);
-
-		getKnowledgeStatus();
+		this.fillOptionsKnowledgeStatus();
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function setLinkTypes() {
+	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function () {
 		var LinkTypeSelection = document.getElementById("linktype-multi-select-general-metrics");
 
 		removeOptions(LinkTypeSelection);
-
-		getLinkTypes();
+		this.fillOptionsLinkTypes();
 	};
 
 	function removeOptions(selectElement) {
@@ -59,29 +55,9 @@
 		}
 	}
 
-	function getKnowledgeTypes(projectKey) {
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeTypes.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeTypes,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function fillOptionsKnowledgeTypes(data) {
-		var knowledgeTypes = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 
 		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
 
@@ -93,27 +69,9 @@
 		}
 	};
 
-	function getDocumentationLocations() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/documentationLocations";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsDocumentationLocations,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function fillOptionsDocumentationLocations(data) {
-		var documentationLocations = getList(JSON.stringify(data));
-
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function() {
+		var documentationLocations = conDecAPI.documentationLocations;
+		
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
 
 		for (i = 0; i < documentationLocations.length; i++) {
@@ -124,26 +82,8 @@
 		}
 	};
 
-	function getKnowledgeStatus() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/knowledgeStatus";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsKnowledgeStatus,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function fillOptionsKnowledgeStatus(data) {
-		var knowledgeStatuses = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function () {
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
 
@@ -155,26 +95,9 @@
 		}
 	};
 
-	function getLinkTypes() {
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/linkTypes";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: false,
-			success: conDecGeneralMetricsDashboard.fillOptionsLinkTypes,
-			error: conDecGeneralMetricsDashboard.processDataBad
-		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function fillOptionsLinkTypes(data) {
-		var linkTypes = getList(JSON.stringify(data));
+	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function() {
+		var linkTypes = conDecAPI.getLinkTypes();
+		console.log(linkTypes);
 
 		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
 
@@ -185,13 +108,6 @@
 			linkTypesNode.options.add(linkType);
 		}
 	};
-
-	function getList(jsonString) {
-		jsonString = jsonString.replace("\[", "").replace("\]", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		return jsonString.split(",");
-	}
 
 	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
 		getHTMLNodes("condec-general-metrics-dashboard-configproject"
