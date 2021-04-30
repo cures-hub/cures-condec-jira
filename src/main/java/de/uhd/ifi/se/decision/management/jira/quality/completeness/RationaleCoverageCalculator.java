@@ -69,13 +69,10 @@ public class RationaleCoverageCalculator {
 
 		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
 				jiraIssueType);
-
-		// TODO "minimumCoverage" should also be a normal filter setting in the
-		// dashboard.
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 
 		int linkDistance = filterSettings.getLinkDistance();
-		int threshold = definitionOfDone.getMinimumNumberOfDecisionsWithinLinkDistance();
+		int minimumDecisionCoverage = filterSettings.getMinimumDecisionCoverage();
 
 		String withHighLinks = "";
 		String withLowLinks = "";
@@ -87,7 +84,7 @@ public class RationaleCoverageCalculator {
 					linkDistance);
 			if (linkedIssues == 0) {
 				withoutLinks += jiraIssue.getKey() + " ";
-			} else if (linkedIssues < threshold) {
+			} else if (linkedIssues < minimumDecisionCoverage) {
 				withLowLinks += jiraIssue.getKey() + " ";
 			} else {
 				withHighLinks += jiraIssue.getKey() + " ";

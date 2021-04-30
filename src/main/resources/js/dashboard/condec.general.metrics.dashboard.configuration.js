@@ -100,7 +100,7 @@ define('dashboard/generalMetrics', [], function () {
 		}
 		var transitiveLinksShown;
 		if (preferences['transitiveLinksShown']) {
-			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+			transitiveLinksShown = preferences['transitiveLinksShown'];
 		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,

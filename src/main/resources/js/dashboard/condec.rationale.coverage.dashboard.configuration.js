@@ -73,6 +73,10 @@ define('dashboard/rationaleCoverage', [], function () {
 		if (preferences['linkDistance']) {
 			linkDistance = preferences['linkDistance'];
 		}
+		var minimumDecisionCoverage;
+		if (preferences['minimumDecisionCoverage']) {
+			minimumDecisionCoverage = preferences['minimumDecisionCoverage'];
+		}
 		var minDegree;
 		if (preferences['minDegree']) {
 			minDegree = preferences['minDegree'];
@@ -103,11 +107,11 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 		var transitiveLinksShown;
 		if (preferences['transitiveLinksShown']) {
-			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+			transitiveLinksShown = preferences['transitiveLinksShown'];
 		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-			linkDistance, minDegree, maxDegree, startDate, endDate,
+			linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecRationaleCoverageDashboard.init(filterSettings, issueType);
@@ -220,6 +224,9 @@ define('dashboard/rationaleCoverage', [], function () {
 		var linkDistanceNode = document.getElementById("link-distance-input-rationale-coverage");
 		preferences['linkDistance'] = linkDistanceNode.value;
 
+		var minimumDecisionCoverageNode = document.getElementById("minimum-decision-coverage-input-rationale-coverage");
+		preferences['minimumDecisionCoverage'] = minimumDecisionCoverageNode.value;
+
 		var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
 		preferences['minDegree'] = minDegreeNode.value;
 
@@ -292,6 +299,11 @@ define('dashboard/rationaleCoverage', [], function () {
 			linkDistanceNode.value = preferences['linkDistance'];
 		}
 
+		if (preferences['minimumDecisionCoverage']) {
+			var minimumDecisionCoverageNode = document.getElementById("minimum-decision-coverage-input-rationale-coverage");
+			minimumDecisionCoverageNode.value = preferences['minimumDecisionCoverage'];
+		}
+
 		if (preferences['minDegree']) {
 			var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
 			minDegreeNode.value = preferences['minDegree'];
@@ -334,7 +346,7 @@ define('dashboard/rationaleCoverage', [], function () {
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-							   linkDistance, minDegree, maxDegree, startDate, endDate,
+							   linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
 							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
@@ -363,6 +375,9 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		if (linkDistance && Number.isInteger(linkDistance)) {
 			filterSettings.linkDistance = linkDistance;
+		}
+		if (minimumDecisionCoverage && Number.isInteger(minimumDecisionCoverage)) {
+			filterSettings.minimumDecisionCoverage = minimumDecisionCoverage;
 		}
 		if (minDegree && Number.isInteger(minDegree)) {
 			filterSettings.minDegree = minDegree;
