@@ -18,6 +18,10 @@ define('dashboard/branches', [], function () {
 	var dashboardProcessingNode;
 	var dashboardProjectWithoutGit;
 
+	var dashboardFilterProjectNode;
+	var dashboardFilterSaveButton;
+	var dashboardFilterCancelButton;
+
 	var ConDecBranchesDashboardItem = function (API) {
 		dashboardAPI = API;
 	};
@@ -64,7 +68,10 @@ define('dashboard/branches', [], function () {
 			, "condec-branches-dashboard-contents-data-error"
 			, "condec-branches-dashboard-no-project"
 			, "condec-branches-dashboard-processing"
-			, "condec-branches-dashboard-nogit-error");
+			, "condec-branches-dashboard-nogit-error"
+			, "project-dropdown-branch"
+			, "save-button-branch"
+			, "cancel-button-branch");
 
 		showDashboardSection(dashboardFilterNode);
 
@@ -88,8 +95,7 @@ define('dashboard/branches', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("save-button-branch");
-		saveButton.addEventListener("click", onSaveButton);
+		dashboardFilterSaveButton.addEventListener("click", onSaveButton);
 	}
 
 	function createCancelButton(preferences) {
@@ -99,17 +105,21 @@ define('dashboard/branches', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("cancel-button-branch");
-		cancelButton.addEventListener("click", onCancelButton);
+		dashboardFilterCancelButton.addEventListener("click", onCancelButton);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName,
+						  projectName, saveButtonName, cancelButtonName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
 		dashboardProjectWithoutGit = document.getElementById(noGitName);
+
+		dashboardFilterProjectNode = document.getElementById(projectName);
+		dashboardFilterSaveButton = document.getElementById(saveButtonName);
+		dashboardFilterCancelButton = document.getElementById(cancelButtonName);
 	}
 
 	function showDashboardSection(node) {
@@ -126,16 +136,14 @@ define('dashboard/branches', [], function () {
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("project-dropdown-branch");
-		preferences['projectKey'] = projectNode.value;
+		preferences['projectKey'] = dashboardFilterProjectNode.value;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("project-dropdown-branch");
-			projectNode.value = preferences['projectKey'];
+			dashboardFilterProjectNode.value = preferences['projectKey'];
 		}
 	}
 
