@@ -40,84 +40,37 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssuesWithNeighborsOfOtherTypeNull() {
-		assertNull(calculator.getJiraIssuesWithNeighborsOfOtherType(JiraIssueTypes.getTestTypes().get(0), null));
+	public void testGetKnowledgeElementsWithNeighborsOfOtherTypeNull() {
+		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
+		assertNull(calculator.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, null));
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetJiraIssuesWithNeighborsOfOtherTypeFilled() {
+	public void testGetKnowledgeElementsWithNeighborsOfOtherTypeFilled() {
+		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
 		Map<String, String> calculation = calculator
-				.getJiraIssuesWithNeighborsOfOtherType(JiraIssueTypes.getTestTypes().get(0), KnowledgeType.ISSUE);
+				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.ISSUE);
 
-		assertTrue(calculation.containsKey("More than 2 links from Task to Issue"));
-		assertTrue(calculation.get("More than 2 links from Task to Issue").isEmpty());
-		assertTrue(calculation.containsKey("Less than 2 links from Task to Issue"));
-		assertTrue(calculation.get("Less than 2 links from Task to Issue").isEmpty());
-		assertTrue(calculation.containsKey("No links from Task to Issue"));
-		assertTrue(calculation.get("No links from Task to Issue").isEmpty());
+		assertTrue(calculation.containsKey("More than 2 links from selected Jira issue types to Issue"));
+		assertFalse(calculation.get("More than 2 links from selected Jira issue types to Issue").isEmpty());
+		assertTrue(calculation.containsKey("Less than 2 links from selected Jira issue types to Issue"));
+		assertFalse(calculation.get("Less than 2 links from selected Jira issue types to Issue").isEmpty());
+		assertTrue(calculation.containsKey("No links from selected Jira issue types to Issue"));
+		assertTrue(calculation.get("No links from selected Jira issue types to Issue").isEmpty());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssuesNull() {
-		assertNull(calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(null, null));
+	public void testGetNumberOfDecisionKnowledgeElementsForKnowledgeElementsNull() {
+		assertNull(calculator.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(null, null));
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForJiraIssuesFilled() {
-		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(JiraIssueTypes.getTestTypes().get(0), KnowledgeType.ISSUE).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCalculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement();
-		KnowledgeType knowledgeType = KnowledgeType.ISSUE;
-		int linkDistance = 2;
-		assertEquals(0, calculator.calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(knowledgeElement, knowledgeType, linkDistance));
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCodeFilesWithNeighborsOfOtherTypeNull() {
-		assertNull(calculator.getCodeFilesWithNeighborsOfOtherType(null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCodeFilesWithNeighborsOfOtherTypeFilled() {
-		Map<String, String> calculation = calculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE);
-
-		assertTrue(calculation.containsKey("Links from Code File to Issue"));
-		assertTrue(calculation.get("Links from Code File to Issue").contains("TEST-LinkedClassThatIsDone.java"));
-		assertTrue(calculation.containsKey("No links from Code File to Issue"));
-		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-ClassThatIsNotDone.java"));
-		assertTrue(calculation.get("No links from Code File to Issue").contains("TEST-SmallClassThatIsDone.java"));
-		assertFalse(calculation.get("No links from Code File to Issue").contains("TEST-TestClassThatIsDone.java"));
-
-		calculation = calculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION);
-
-		assertTrue(calculation.containsKey("Links from Code File to Decision"));
-		assertTrue(calculation.get("Links from Code File to Decision").contains("TEST-LinkedClassThatIsDone.java"));
-		assertTrue(calculation.containsKey("No links from Code File to Decision"));
-		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-ClassThatIsNotDone.java"));
-		assertTrue(calculation.get("No links from Code File to Decision").contains("TEST-SmallClassThatIsDone.java"));
-		assertFalse(calculation.get("No links from Code File to Decision").contains("TEST-TestClassThatIsDone.java"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForCodeFilesNull() {
-		assertNull(calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(null));
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetNumberOfDecisionKnowledgeElementsForCodeFilesFilled() {
-		assertEquals(3, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE).size());
-		assertEquals(3, calculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION).size());
+	public void testGetNumberOfDecisionKnowledgeElementsForKnowledgeElementsFilled() {
+		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
+		assertEquals(5, calculator.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.ISSUE).size());
 	}
 
 }

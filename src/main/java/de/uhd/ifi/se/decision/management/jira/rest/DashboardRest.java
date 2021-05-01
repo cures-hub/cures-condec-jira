@@ -102,28 +102,16 @@ public class DashboardRest {
 
 		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
-		// TODO Get rid of this if-else block, only work with knowledge elements
-		if (issueType.equals("Code")) {
-			metrics.put("issuesPerJiraIssue",
-					rationaleCoverageCalculator.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.ISSUE));
-			metrics.put("decisionsPerJiraIssue", rationaleCoverageCalculator
-					.getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType.DECISION));
-			metrics.put("decisionDocumentedForSelectedJiraIssue",
-					rationaleCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.ISSUE));
-			metrics.put("issueDocumentedForSelectedJiraIssue",
-					rationaleCoverageCalculator.getCodeFilesWithNeighborsOfOtherType(KnowledgeType.DECISION));
-		} else {
-			IssueType jiraIssueType = JiraSchemeManager.createIssueType(issueType);
-			if (jiraIssueType != null) {
-				metrics.put("decisionsPerJiraIssue", rationaleCoverageCalculator
-						.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.DECISION));
-				metrics.put("issuesPerJiraIssue", rationaleCoverageCalculator
-						.getNumberOfDecisionKnowledgeElementsForJiraIssues(jiraIssueType, KnowledgeType.ISSUE));
-				metrics.put("decisionDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-						.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.ISSUE));
-				metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-						.getJiraIssuesWithNeighborsOfOtherType(jiraIssueType, KnowledgeType.DECISION));
-			}
+		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType(issueType);
+		if (knowledgeType != null) {
+			metrics.put("decisionsPerSelectedJiraIssue", rationaleCoverageCalculator
+				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.DECISION));
+			metrics.put("issuesPerSelectedJiraIssue", rationaleCoverageCalculator
+				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.ISSUE));
+			metrics.put("decisionDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
+				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.ISSUE));
+			metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
+				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.DECISION));
 		}
 
 		return Response.status(Status.OK).entity(metrics).build();

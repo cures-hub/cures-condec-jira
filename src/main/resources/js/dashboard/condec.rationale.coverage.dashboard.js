@@ -118,29 +118,29 @@
 		var json = JSON.parse(jsonStr);
 
 		/*  init data for charts */
-		var issuesPerJiraIssue = new Map();
-		var decisionsPerJiraIssue = new Map();
+		var issuesPerSelectedJiraIssue = new Map();
+		var decisionsPerSelectedJiraIssue = new Map();
 		var decisionDocumentedForSelectedJiraIssue = new Map();
 		var issueDocumentedForSelectedJiraIssue = new Map();
 
 		/* set something for box plots in case no data will be added to them */
-		issuesPerJiraIssue.set("none", 0);
-		decisionsPerJiraIssue.set("none", 0);
+		issuesPerSelectedJiraIssue.set("none", 0);
+		decisionsPerSelectedJiraIssue.set("none", 0);
 
 		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 		issueDocumentedForSelectedJiraIssue.set("no rationale elements", "");
 
 		/* form data for charts */
-		issuesPerJiraIssue = getMap(JSON.stringify(json.issuesPerJiraIssue));
-		decisionsPerJiraIssue = getMap(JSON.stringify(json.decisionsPerJiraIssue));
+		issuesPerSelectedJiraIssue = getMap(JSON.stringify(json.issuesPerSelectedJiraIssue));
+		decisionsPerSelectedJiraIssue = getMap(JSON.stringify(json.decisionsPerSelectedJiraIssue));
 		decisionDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.decisionDocumentedForSelectedJiraIssue));
 		issueDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.issueDocumentedForSelectedJiraIssue));
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per selected issue type", issuesPerJiraIssue);
+			"", "# Issues per selected issue type", issuesPerSelectedJiraIssue);
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per selected issue type", decisionsPerJiraIssue);
+			"", "# Decisions per selected issue type", decisionsPerSelectedJiraIssue);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"", "For how many selected issue type elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
