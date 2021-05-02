@@ -19,7 +19,7 @@ define('dashboard/rationaleCoverage', [], function () {
 	var dashboardProjectWithoutGit;
 
 	var dashboardFilterProjectNode;
-	var dashboardFilterIssueTypeNode;
+	var dashboardFilterSourceKnowledgeTypesNode;
 	var dashboardFilterKnowledgeTypesNode;
 	var dashboardFilterDocumentationLocationsNode;
 	var dashboardFilterKnowledgeStatusNode;
@@ -50,7 +50,7 @@ define('dashboard/rationaleCoverage', [], function () {
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
 		dashboardAPI.once("afterRender",
 			function() {
-				if (preferences['projectKey'] && preferences['issueType']) {
+				if (preferences['projectKey']) {
 					createRender(preferences);
 				}
 			});
@@ -71,7 +71,10 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function createRender(preferences) {
 		var projectKey = preferences['projectKey'];
-		var issueType = preferences['issueType'];
+		var sourceKnowledgeTypes = "";
+		if (preferences['sourceKnowledgeTypes']) {
+			sourceKnowledgeTypes = preferences['sourceKnowledgeTypes'];
+		}
 		var knowledgeTypes;
 		if (preferences['knowledgeTypes']) {
 			knowledgeTypes = preferences['knowledgeTypes'];
@@ -133,7 +136,7 @@ define('dashboard/rationaleCoverage', [], function () {
 			linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
-		conDecRationaleCoverageDashboard.init(filterSettings, issueType);
+		conDecRationaleCoverageDashboard.init(filterSettings, sourceKnowledgeTypes);
 
 		dashboardAPI.resize();
 	}
@@ -146,7 +149,7 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "condec-rationale-coverage-dashboard-processing"
 			, "condec-rationale-coverage-dashboard-nogit-error"
 			, "project-dropdown-rationale-coverage"
-			, "issuetype-select-rationale-coverage"
+			, "source-knowledgetype-multi-select-rationale-coverage"
 			, "knowledgetype-multi-select-rationale-coverage"
 			, "documentationlocation-multi-select-rationale-coverage"
 			, "knowledgestatus-multi-select-rationale-coverage"
@@ -193,7 +196,7 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function createCancelButton(preferences) {
 		function onCancelButton(event) {
-			if (preferences['projectKey'] && preferences['issueType']) {
+			if (preferences['projectKey']) {
 				dashboardAPI.closeEdit();
 			}
 		}
@@ -203,7 +206,7 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function createListener() {
 		function onSelectProject(event) {
-			setJiraIssueTypes(dashboardFilterProjectNode.value);
+			setSourceKnowledgeTypes(dashboardFilterProjectNode.value);
 			setKnowledgeTypes(dashboardFilterProjectNode.value);
 			setDocumentationLocations();
 			setKnowledgeStatus();
@@ -214,7 +217,7 @@ define('dashboard/rationaleCoverage', [], function () {
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName,
-						  projectName, issueTypeName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
+						  projectName, sourceKnowledgeTypesName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
 						  linkDistanceName, minimumDecisionCoverageName, minDegreeName, maxDegreeName, startDateName, endDateName,
 						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
 						  saveButtonName, cancelButtonName) {
@@ -226,7 +229,7 @@ define('dashboard/rationaleCoverage', [], function () {
 		dashboardProjectWithoutGit = document.getElementById(noGitName);
 
 		dashboardFilterProjectNode = document.getElementById(projectName);
-		dashboardFilterIssueTypeNode = document.getElementById(issueTypeName);
+		dashboardFilterSourceKnowledgeTypesNode = document.getElementById(sourceKnowledgeTypesName);
 		dashboardFilterKnowledgeTypesNode = document.getElementById(knowledgeTypesName);
 		dashboardFilterDocumentationLocationsNode = document.getElementById(documentationLocationsName);
 		dashboardFilterKnowledgeStatusNode = document.getElementById(knowledgeStatusName);
@@ -260,7 +263,7 @@ define('dashboard/rationaleCoverage', [], function () {
 		var preferences = {};
 
 		preferences['projectKey'] = dashboardFilterProjectNode.value;
-		preferences['issueType'] = dashboardFilterIssueTypeNode.value;
+		preferences['sourceKnowledgeTypes'] = getSelectValues(dashboardFilterSourceKnowledgeTypesNode);
 		preferences['knowledgeTypes'] = getSelectValues(dashboardFilterKnowledgeTypesNode);
 		preferences['documentationLocations'] = getSelectValues(dashboardFilterDocumentationLocationsNode);
 		preferences['knowledgeStatus'] = getSelectValues(dashboardFilterKnowledgeStatusNode);
@@ -283,12 +286,12 @@ define('dashboard/rationaleCoverage', [], function () {
 		if (preferences['projectKey']) {
 			dashboardFilterProjectNode.value = preferences['projectKey'];
 
-			setJiraIssueTypes(preferences['projectKey']);
+			setSourceKnowledgeTypes(preferences['projectKey']);
 			setKnowledgeTypes(preferences['projectKey']);
 		}
 
-		if (preferences['issueType']) {
-			dashboardFilterIssueTypeNode.value = preferences['issueType'];
+		if (preferences['sourceKnowledgeTypes']) {
+			setSelectValues(dashboardFilterSourceKnowledgeTypesNode, preferences['sourceKnowledgeTypes']);
 		}
 
 		if (preferences['knowledgeTypes']) {
@@ -418,17 +421,17 @@ define('dashboard/rationaleCoverage', [], function () {
 		return JSON.stringify(filterSettings);
 	}
 
-	function setJiraIssueTypes(projectKey) {
-		removeOptions(dashboardFilterIssueTypeNode);
+	function setSourceKnowledgeTypes(projectKey) {
+		removeOptions(dashboardFilterSourceKnowledgeTypesNode);
 
 		conDecAPI.projectKey = projectKey;
-		var jiraIssueTypes = conDecAPI.getKnowledgeTypes();
+		var sourceKnowledgeTypes = conDecAPI.getKnowledgeTypes();
 
-		for (i = 0; i < jiraIssueTypes.length; i++) {
-			var issueType = document.createElement('option');
-			issueType.value = jiraIssueTypes[i];
-			issueType.text = jiraIssueTypes[i];
-			dashboardFilterIssueTypeNode.options.add(issueType);
+		for (i = 0; i < sourceKnowledgeTypes.length; i++) {
+			var sourceKnowledgeType = document.createElement('option');
+			sourceKnowledgeType.value = sourceKnowledgeTypes[i];
+			sourceKnowledgeType.text = sourceKnowledgeTypes[i];
+			dashboardFilterSourceKnowledgeTypesNode.options.add(sourceKnowledgeType);
 		}
 	}
 

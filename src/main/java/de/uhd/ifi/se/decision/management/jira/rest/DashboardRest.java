@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
@@ -20,6 +19,8 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
@@ -90,10 +91,17 @@ public class DashboardRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("issueType") String issueType) {
-		if (request == null || filterSettings == null || issueType == null) {
+			@QueryParam("sourceKnowledgeTypes") String sourceKnowledgeTypesString) {
+		if (request == null || filterSettings == null || sourceKnowledgeTypesString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
+		}
+
+		Set<String> sourceKnowledgeTypes;
+		if (sourceKnowledgeTypesString.isEmpty()) {
+			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey()).getNamesOfKnowledgeTypes();
+		} else {
+			sourceKnowledgeTypes = new HashSet<>(Arrays.asList(sourceKnowledgeTypesString.split(",")));
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -102,16 +110,15 @@ public class DashboardRest {
 
 		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
 
-		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType(issueType);
-		if (knowledgeType != null) {
+		if (!sourceKnowledgeTypes.isEmpty()) {
 			metrics.put("decisionsPerSelectedJiraIssue", rationaleCoverageCalculator
-				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.DECISION));
+				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(sourceKnowledgeTypes, KnowledgeType.DECISION));
 			metrics.put("issuesPerSelectedJiraIssue", rationaleCoverageCalculator
-				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.ISSUE));
+				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(sourceKnowledgeTypes, KnowledgeType.ISSUE));
 			metrics.put("decisionDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.ISSUE));
+				.getKnowledgeElementsWithNeighborsOfOtherType(sourceKnowledgeTypes, KnowledgeType.ISSUE));
 			metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.DECISION));
+				.getKnowledgeElementsWithNeighborsOfOtherType(sourceKnowledgeTypes, KnowledgeType.DECISION));
 		}
 
 		return Response.status(Status.OK).entity(metrics).build();

@@ -5,8 +5,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.junit.Before;
@@ -41,16 +43,18 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetKnowledgeElementsWithNeighborsOfOtherTypeNull() {
-		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
-		assertNull(calculator.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, null));
+		Set<String> knowledgeTypes = new HashSet<>();
+		knowledgeTypes.add("Task");
+		assertNull(calculator.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeTypes, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetKnowledgeElementsWithNeighborsOfOtherTypeFilled() {
-		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
+		Set<String> knowledgeTypes = new HashSet<>();
+		knowledgeTypes.add("Task");
 		Map<String, String> calculation = calculator
-				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeType, KnowledgeType.ISSUE);
+				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeTypes, KnowledgeType.ISSUE);
 
 		assertTrue(calculation.containsKey("More than 2 links from selected Jira issue types to Issue"));
 		assertFalse(calculation.get("More than 2 links from selected Jira issue types to Issue").isEmpty());
@@ -69,8 +73,9 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElementsForKnowledgeElementsFilled() {
-		KnowledgeType knowledgeType = KnowledgeType.getKnowledgeType("Task");
-		assertEquals(5, calculator.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeType, KnowledgeType.ISSUE).size());
+		Set<String> knowledgeTypes = new HashSet<>();
+		knowledgeTypes.add("Task");
+		assertEquals(5, calculator.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(knowledgeTypes, KnowledgeType.ISSUE).size());
 	}
 
 }

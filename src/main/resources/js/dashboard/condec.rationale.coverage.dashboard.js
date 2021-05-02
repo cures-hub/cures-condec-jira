@@ -51,11 +51,8 @@
 		node.classList.remove(hiddenClass);
 	}
 
-	function getMetrics(filterSettings, issueType) {
+	function getMetrics(filterSettings, sourceKnowledgeTypes) {
 		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
-			return;
-		}
-		if (!issueType || !issueType.length || !issueType.length > 0) {
 			return;
 		}
 
@@ -65,7 +62,7 @@
 		 */
 		showDashboardSection(dashboardProcessingNode);
 
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?issueType=" + issueType;
+		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?sourceKnowledgeTypes=" + sourceKnowledgeTypes;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({
@@ -138,14 +135,14 @@
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per selected issue type", issuesPerSelectedJiraIssue);
+			"", "# Issues per selected element", issuesPerSelectedJiraIssue);
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per selected issue type", decisionsPerSelectedJiraIssue);
+			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected issue type elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
+			"", "For how many selected elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
 		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many selected issue type elements is a decision documented?", issueDocumentedForSelectedJiraIssue);
+			"", "For how many selected elements is a decision documented?", issueDocumentedForSelectedJiraIssue);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
