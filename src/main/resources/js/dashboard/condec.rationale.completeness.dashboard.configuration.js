@@ -198,6 +198,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 			setDocumentationLocations();
 			setKnowledgeStatus();
 			setLinkTypes();
+			setDefaultLinkDistance(dashboardFilterProjectNode.value);
 		}
 
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
@@ -442,6 +443,14 @@ define('dashboard/rationaleCompleteness', [], function () {
 			linkType.value = linkTypes[i];
 			linkType.text = linkTypes[i];
 			dashboardFilterLinkTypesNode.options.add(linkType);
+		}
+	}
+
+	function setDefaultLinkDistance(projectKey) {
+		if (projectKey) {
+			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+			});
 		}
 	}
 

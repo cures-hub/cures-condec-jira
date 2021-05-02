@@ -713,6 +713,19 @@ public class ConfigRest {
 		return Response.ok().build();
 	}
 
+	@Path("/getDefinitionOfDone")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDefinitionOfDone(@Context HttpServletRequest request,
+										@QueryParam("projectKey") String projectKey) {
+
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getDefinitionOfDone(projectKey)).build();
+	}
+
 	/* **********************************************************/
 	/*															*/
 	/* Configuration for quality = completeness + consistency */

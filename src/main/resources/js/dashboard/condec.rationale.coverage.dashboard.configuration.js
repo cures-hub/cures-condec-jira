@@ -210,7 +210,8 @@ define('dashboard/rationaleCoverage', [], function () {
 			setKnowledgeTypes(dashboardFilterProjectNode.value);
 			setDocumentationLocations();
 			setKnowledgeStatus();
-			setLinkTypes();
+			setLinkTypes(dashboardFilterProjectNode.value);
+			setDefaultLinkDistanceAndAndMinimumDecisionCoverage(dashboardFilterProjectNode.value);
 		}
 
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
@@ -485,6 +486,15 @@ define('dashboard/rationaleCoverage', [], function () {
 			linkType.value = linkTypes[i];
 			linkType.text = linkTypes[i];
 			dashboardFilterLinkTypesNode.options.add(linkType);
+		}
+	}
+
+	function setDefaultLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
+		if (projectKey) {
+			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+				dashboardFilterMinimumDecisionCoverageNode.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			});
 		}
 	}
 
