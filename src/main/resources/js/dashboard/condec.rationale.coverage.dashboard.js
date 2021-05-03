@@ -117,21 +117,21 @@
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
 		var decisionsPerSelectedJiraIssue = new Map();
-		var decisionDocumentedForSelectedJiraIssue = new Map();
 		var issueDocumentedForSelectedJiraIssue = new Map();
+		var decisionDocumentedForSelectedJiraIssue = new Map();
 
 		/* set something for box plots in case no data will be added to them */
 		issuesPerSelectedJiraIssue.set("none", 0);
 		decisionsPerSelectedJiraIssue.set("none", 0);
 
-		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 		issueDocumentedForSelectedJiraIssue.set("no rationale elements", "");
+		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 
 		/* form data for charts */
 		issuesPerSelectedJiraIssue = getMap(JSON.stringify(json.issuesPerSelectedJiraIssue));
 		decisionsPerSelectedJiraIssue = getMap(JSON.stringify(json.decisionsPerSelectedJiraIssue));
-		decisionDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.decisionDocumentedForSelectedJiraIssue));
 		issueDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.issueDocumentedForSelectedJiraIssue));
+		decisionDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.decisionDocumentedForSelectedJiraIssue));
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
@@ -139,10 +139,10 @@
 		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
 			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
 		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue",
 			"", "For how many selected elements is a decision documented?", issueDocumentedForSelectedJiraIssue);
+		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"", "For how many selected elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
