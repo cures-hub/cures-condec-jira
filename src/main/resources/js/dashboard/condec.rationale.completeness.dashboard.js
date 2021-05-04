@@ -96,23 +96,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function getMap(jsonString) {
-		jsonString = jsonString.replace("\{", "").replace("\}", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		var jsMap = new Map();
-		var mapEntries = jsonString.split(",");
-		for (i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split(":");
-			jsMap.set(mapEntry[0], mapEntry[1]);
-		}
-		return jsMap;
-	}
-
 	function renderData(data) {
-		var jsonStr = JSON.stringify(data);
-		var json = JSON.parse(jsonStr);
-
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -130,12 +114,12 @@
 		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		issuesSolvedByDecision = getMap(JSON.stringify(json.issuesSolvedByDecision));
-		decisionsSolvingIssues = getMap(JSON.stringify(json.decisionsSolvingIssues));
-		proArgumentDocumentedForDecision = getMap(JSON.stringify(json.proArgumentDocumentedForDecision));
-		conArgumentDocumentedForAlternative = getMap(JSON.stringify(json.conArgumentDocumentedForAlternative));
-		conArgumentDocumentedForDecision = getMap(JSON.stringify(json.conArgumentDocumentedForDecision));
-		proArgumentDocumentedForAlternative = getMap(JSON.stringify(json.proArgumentDocumentedForAlternative));
+		issuesSolvedByDecision = data.issuesSolvedByDecision;
+		decisionsSolvingIssues = data.decisionsSolvingIssues;
+		proArgumentDocumentedForDecision = data.proArgumentDocumentedForDecision;
+		conArgumentDocumentedForAlternative = data.conArgumentDocumentedForAlternative;
+		conArgumentDocumentedForDecision = data.conArgumentDocumentedForDecision;
+		proArgumentDocumentedForAlternative = data.proArgumentDocumentedForAlternative;
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",

@@ -33,7 +33,7 @@
 
     ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
 		isIssueData = true;
-		this.initializeChartForSources(divId, title, subtitle, dataMap);
+		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
     }
     
     /** 
@@ -43,14 +43,19 @@
 	 * @alternative Directly use velocity maps in Javascript.
 	 * @con It is not possible to use velocity maps in Javascript.
 	 */	
-	function getMap(velocityMapAsString) {
+	function getMap(velocityMap) {
+		velocityMap = JSON.stringify(velocityMap);
+
 		// removes brackets
-		velocityMapAsString = velocityMapAsString.replace("\{", "").replace("\}", "");
-		
+		velocityMap = velocityMap.replaceAll("\{", "")
+		velocityMap = velocityMap.replaceAll("\}", "");
+		velocityMap = velocityMap.replaceAll("\":", "\" : ");
+		velocityMap = velocityMap.replaceAll("\"", "");
+
 		var jsMap = new Map();
-		var mapEntries = velocityMapAsString.split(", ");
+		var mapEntries = velocityMap.split(",");
 		for (i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split("=");
+			var mapEntry = mapEntries[i].split(" : ");
 			jsMap.set(mapEntry[0], mapEntry[1]);
 		}
 		return jsMap;

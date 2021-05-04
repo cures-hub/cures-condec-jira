@@ -86,9 +86,9 @@ public class RationaleCoverageCalculator {
 		}
 
 		Map<String, String> result = new LinkedHashMap<>();
-		result.put("More than " + minimumDecisionCoverage + " links from selected Jira issue types to " +
+		result.put("More than " + minimumDecisionCoverage + " links from selected types to " +
 			knowledgeType.toString(), withHighLinks);
-		result.put("Less than " + minimumDecisionCoverage + " links from selected Jira issue types to " +
+		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " +
 			knowledgeType.toString(), withLowLinks);
 		result.put("No links from selected Jira issue types to " + knowledgeType.toString(), withoutLinks);
 		return result;

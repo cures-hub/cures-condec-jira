@@ -97,23 +97,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function getMap(jsonString) {
-		jsonString = jsonString.replace("\{", "").replace("\}", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		var jsMap = new Map();
-		var mapEntries = jsonString.split(",");
-		for (i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split(":");
-			jsMap.set(mapEntry[0], mapEntry[1]);
-		}
-		return jsMap;
-	}
-
 	function renderData(data) {
-		var jsonStr = JSON.stringify(data);
-		var json = JSON.parse(jsonStr);
-
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
 		var decisionsPerSelectedJiraIssue = new Map();
@@ -128,10 +112,10 @@
 		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 
 		/* form data for charts */
-		issuesPerSelectedJiraIssue = getMap(JSON.stringify(json.issuesPerSelectedJiraIssue));
-		decisionsPerSelectedJiraIssue = getMap(JSON.stringify(json.decisionsPerSelectedJiraIssue));
-		issueDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.issueDocumentedForSelectedJiraIssue));
-		decisionDocumentedForSelectedJiraIssue = getMap(JSON.stringify(json.decisionDocumentedForSelectedJiraIssue));
+		issuesPerSelectedJiraIssue = data.issuesPerSelectedJiraIssue;
+		decisionsPerSelectedJiraIssue = data.decisionsPerSelectedJiraIssue;
+		issueDocumentedForSelectedJiraIssue = data.issueDocumentedForSelectedJiraIssue;
+		decisionDocumentedForSelectedJiraIssue = data.decisionDocumentedForSelectedJiraIssue;
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
