@@ -90,7 +90,7 @@ public class RationaleCoverageCalculator {
 			knowledgeType.toString(), withHighLinks);
 		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " +
 			knowledgeType.toString(), withLowLinks);
-		result.put("No links from selected Jira issue types to " + knowledgeType.toString(), withoutLinks);
+		result.put("No links from selected types to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
 

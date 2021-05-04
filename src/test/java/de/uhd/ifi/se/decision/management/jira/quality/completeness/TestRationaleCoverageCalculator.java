@@ -56,12 +56,12 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 		Map<String, String> calculation = calculator
 				.getKnowledgeElementsWithNeighborsOfOtherType(knowledgeTypes, KnowledgeType.ISSUE);
 
-		assertTrue(calculation.containsKey("More than 2 links from selected Jira issue types to Issue"));
-		assertFalse(calculation.get("More than 2 links from selected Jira issue types to Issue").isEmpty());
-		assertTrue(calculation.containsKey("Less than 2 links from selected Jira issue types to Issue"));
-		assertFalse(calculation.get("Less than 2 links from selected Jira issue types to Issue").isEmpty());
-		assertTrue(calculation.containsKey("No links from selected Jira issue types to Issue"));
-		assertTrue(calculation.get("No links from selected Jira issue types to Issue").isEmpty());
+		assertTrue(calculation.containsKey("More than 2 links from selected types to Issue"));
+		assertFalse(calculation.get("More than 2 links from selected types to Issue").isEmpty());
+		assertTrue(calculation.containsKey("Less than 2 links from selected types to Issue"));
+		assertFalse(calculation.get("Less than 2 links from selected types to Issue").isEmpty());
+		assertTrue(calculation.containsKey("No links from selected types to Issue"));
+		assertTrue(calculation.get("No links from selected types to Issue").isEmpty());
 	}
 
 	@Test
