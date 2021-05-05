@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="is-incomplete-knowledge-input-$viewIdentifier">$i18n.getText('condec.label.is.incomplete.knowledge')</label>
+    <input class="checkbox" type="checkbox" id="is-incomplete-knowledge-input-$viewIdentifier"/>
+</div>

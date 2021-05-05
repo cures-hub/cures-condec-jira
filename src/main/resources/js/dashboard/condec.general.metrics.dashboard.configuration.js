@@ -146,10 +146,10 @@ define('dashboard/generalMetrics', [], function () {
 			, "max-degree-input-general-metrics"
 			, "start-date-picker-general-metrics"
 			, "end-date-picker-general-metrics"
-			, "dashboard-checkbox-decisionknowledge-general-metrics"
-			, "dashboard-checkbox-testcode-general-metrics"
-			, "dashboard-checkbox-incompleteknowledge-general-metrics"
-			, "dashboard-checkbox-transitivelinks-general-metrics"
+			, "is-decision-knowledge-only-input-general-metrics"
+			, "is-incomplete-knowledge-input-general-metrics"
+			, "is-test-code-input-general-metrics"
+			, "is-transitive-links-input-general-metrics"
 			, "save-button-general-metrics"
 			, "cancel-button-general-metrics");
 

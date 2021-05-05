@@ -160,10 +160,10 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "max-degree-input-rationale-coverage"
 			, "start-date-picker-rationale-coverage"
 			, "end-date-picker-rationale-coverage"
-			, "dashboard-checkbox-decisionknowledge-rationale-coverage"
-			, "dashboard-checkbox-testcode-rationale-coverage"
-			, "dashboard-checkbox-incompleteknowledge-rationale-coverage"
-			, "dashboard-checkbox-transitivelinks-rationale-coverage"
+			, "is-decision-knowledge-only-input-rationale-coverage"
+			, "is-incomplete-knowledge-input-rationale-coverage"
+			, "is-test-code-input-rationale-coverage"
+			, "is-transitive-links-input-rationale-coverage"
 			, "save-button-rationale-coverage"
 			, "cancel-button-rationale-coverage");
 

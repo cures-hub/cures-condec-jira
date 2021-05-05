@@ -148,10 +148,10 @@ define('dashboard/rationaleCompleteness', [], function () {
 			, "max-degree-input-rationale-completeness"
 			, "start-date-picker-rationale-completeness"
 			, "end-date-picker-rationale-completeness"
-			, "dashboard-checkbox-decisionknowledge-rationale-completeness"
-			, "dashboard-checkbox-testcode-rationale-completeness"
-			, "dashboard-checkbox-incompleteknowledge-rationale-completeness"
-			, "dashboard-checkbox-transitivelinks-rationale-completeness"
+			, "is-decision-knowledge-only-input-rationale-completeness"
+			, "is-incomplete-knowledge-input-rationale-completeness"
+			, "is-test-code-input-rationale-completeness"
+			, "is-transitive-links-input-rationale-completeness"
 			, "save-button-rationale-completeness"
 			, "cancel-button-rationale-completeness");
 
