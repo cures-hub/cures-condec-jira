@@ -14,7 +14,6 @@ define('dashboard/generalMetrics', [], function () {
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var dashboardFilterProjectNode;
 	var dashboardFilterKnowledgeTypesNode;
@@ -135,7 +134,6 @@ define('dashboard/generalMetrics', [], function () {
 			, "condec-general-metrics-dashboard-contents-data-error"
 			, "condec-general-metrics-dashboard-no-project"
 			, "condec-general-metrics-dashboard-processing"
-			, "condec-general-metrics-dashboard-nogit-error"
 			, "project-dropdown-general-metrics"
 			, "knowledgetype-multi-select-general-metrics"
 			, "documentationlocation-multi-select-general-metrics"
@@ -202,7 +200,7 @@ define('dashboard/generalMetrics', [], function () {
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName,
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
 						  projectName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
 						  linkDistanceName, minDegreeName, maxDegreeName, startDateName, endDateName,
 						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
@@ -212,7 +210,6 @@ define('dashboard/generalMetrics', [], function () {
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 
 		dashboardFilterProjectNode = document.getElementById(projectName);
 		dashboardFilterKnowledgeTypesNode = document.getElementById(knowledgeTypesName);
@@ -239,7 +236,6 @@ define('dashboard/generalMetrics', [], function () {
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 

@@ -16,7 +16,6 @@ define('dashboard/rationaleCoverage', [], function () {
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var dashboardFilterProjectNode;
 	var dashboardFilterSourceKnowledgeTypesNode;
@@ -147,7 +146,6 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
 			, "condec-rationale-coverage-dashboard-processing"
-			, "condec-rationale-coverage-dashboard-nogit-error"
 			, "project-dropdown-rationale-coverage"
 			, "source-knowledgetype-multi-select-rationale-coverage"
 			, "knowledgetype-multi-select-rationale-coverage"
@@ -217,7 +215,7 @@ define('dashboard/rationaleCoverage', [], function () {
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName,
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
 						  projectName, sourceKnowledgeTypesName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
 						  linkDistanceName, minimumDecisionCoverageName, minDegreeName, maxDegreeName, startDateName, endDateName,
 						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
@@ -227,7 +225,6 @@ define('dashboard/rationaleCoverage', [], function () {
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 
 		dashboardFilterProjectNode = document.getElementById(projectName);
 		dashboardFilterSourceKnowledgeTypesNode = document.getElementById(sourceKnowledgeTypesName);
@@ -256,7 +253,6 @@ define('dashboard/rationaleCoverage', [], function () {
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 

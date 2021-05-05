@@ -16,7 +16,6 @@ define('dashboard/branches', [], function () {
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var dashboardFilterProjectNode;
 	var dashboardFilterSaveButton;
@@ -68,7 +67,6 @@ define('dashboard/branches', [], function () {
 			, "condec-branches-dashboard-contents-data-error"
 			, "condec-branches-dashboard-no-project"
 			, "condec-branches-dashboard-processing"
-			, "condec-branches-dashboard-nogit-error"
 			, "project-dropdown-branch"
 			, "save-button-branch"
 			, "cancel-button-branch");
@@ -108,14 +106,13 @@ define('dashboard/branches', [], function () {
 		dashboardFilterCancelButton.addEventListener("click", onCancelButton);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName,
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
 						  projectName, saveButtonName, cancelButtonName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 
 		dashboardFilterProjectNode = document.getElementById(projectName);
 		dashboardFilterSaveButton = document.getElementById(saveButtonName);
@@ -129,7 +126,6 @@ define('dashboard/branches', [], function () {
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 

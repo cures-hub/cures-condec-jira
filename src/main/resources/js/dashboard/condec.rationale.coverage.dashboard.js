@@ -14,7 +14,6 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
@@ -25,19 +24,17 @@
 			, "condec-rationale-coverage-dashboard-contents-container"
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
-			, "condec-rationale-coverage-dashboard-processing"
-			, "condec-rationale-coverage-dashboard-nogit-error");
+			, "condec-rationale-coverage-dashboard-processing");
 
 		getMetrics(filterSettings, issueType);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 	}
 
 	function showDashboardSection(node) {
@@ -47,7 +44,6 @@
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 

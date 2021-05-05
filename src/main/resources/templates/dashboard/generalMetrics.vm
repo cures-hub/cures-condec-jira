@@ -52,14 +52,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     $i18n.getText("condec.dashboard.generalmetrics.project.processing")
 </div>
 
-<div id="condec-general-metrics-dashboard-fatal-error" class="condec-dashboard-contents error hidden">
-    $i18n.getText("condec.dashboard.generalmetrics.setup.error")
-</div>
-
-<div id="condec-general-metrics-dashboard-nogit-error" class="condec-dashboard-contents error hidden">
-    $i18n.getText("condec.dashboard.generalmetrics.project.nogit")
-</div>
-
 <div id="condec-general-metrics-dashboard-contents-container" class="condec-dashboard-contents results hidden">
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
