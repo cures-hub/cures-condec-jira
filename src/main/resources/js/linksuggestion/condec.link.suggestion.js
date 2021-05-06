@@ -4,24 +4,15 @@
  * duplicatesTab.vm
  * relatedIssuesTab.vm
  */
-(function (global) {
+(function(global) {
 
 	let ConsistencyTabsModule = function() {
-		this.isInitialized = false;
-
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 	};
 
-	ConsistencyTabsModule.prototype.init = function () {
+	ConsistencyTabsModule.prototype.init = function() {
 		this.issueId = JIRA.Issue.getIssueId();
-
-		jQuery(document).ajaxComplete(function (event, request, settings) {
-			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				console.log("WorkflowUIDispatcher");
-				consistencyAPI.displayConsistencyCheck();
-			}
-		});
 
 		// Duplicates
 		this.duplicateResultsTableElement = document.getElementById("duplicate-results-table");
@@ -31,10 +22,9 @@
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
-
 	}
 
-	ConsistencyTabsModule.prototype.discardDuplicate = function (index) {
+	ConsistencyTabsModule.prototype.discardDuplicate = function(index) {
 		let suggestionElement = this.currentSuggestions[index].targetElement;
 		consistencyAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
@@ -44,7 +34,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.discardSuggestion = function (index) {
+	ConsistencyTabsModule.prototype.discardSuggestion = function(index) {
 		let suggestionElement = this.currentSuggestions[index].targetElement;
 
 		consistencyAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
@@ -55,7 +45,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.markAsDuplicate = function (index) {
+	ConsistencyTabsModule.prototype.markAsDuplicate = function(index) {
 		let duplicateElement = this.currentSuggestions[index].targetElement;
 
 		let self = this;
@@ -65,7 +55,7 @@
 	//-----------------------------------------
 	//			Generate table (Related)
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.displayRelatedElements = function (relatedElements) {
+	ConsistencyTabsModule.prototype.displayRelatedElements = function(relatedElements) {
 		if (relatedElements.length === 0) {
 			//reset table content to empty
 			this.resultsTableContentElement.innerHTML = "<i>No related issues found!</i>";
@@ -83,11 +73,11 @@
 
 	};
 
-	let generateTableRow = function (suggestion, index) {
+	let generateTableRow = function(suggestion, index) {
 		let row = document.createElement("tr");
 		row.appendChild(generateTableCell(`<a href="${suggestion.targetElement.url}">${suggestion.targetElement.key}</a>`, "th-key"));
 		row.appendChild(generateTableCell(suggestion.targetElement.summary, "th-name", {}));
-		let scoreCell = (generateTableCell(suggestion.totalScore, "th-score", {"title": suggestion.score}));
+		let scoreCell = (generateTableCell(suggestion.totalScore, "th-score", { "title": suggestion.score }));
 		AJS.$(scoreCell).tooltip();
 		row.appendChild(scoreCell);
 
@@ -95,7 +85,7 @@
 		return row;
 	};
 
-	let generateTableCell = function (content, headersId, attributes) {
+	let generateTableCell = function(content, headersId, attributes) {
 		let tableCell = document.createElement("td");
 		tableCell.headers = headersId;
 		tableCell.innerHTML = content;
@@ -106,19 +96,19 @@
 		return tableCell
 	};
 
-	let generateOptionButtons = function (suggestionIndex) {
+	let generateOptionButtons = function(suggestionIndex) {
 		return `<button class='aui-button aui-button-primary' onclick="consistencyTabsModule.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
 			`<button class='aui-button aui-button-removed' onclick="consistencyTabsModule.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
-	ConsistencyTabsModule.prototype.showDialog = function (index) {
+	ConsistencyTabsModule.prototype.showDialog = function(index) {
 		let targetElement = this.currentSuggestions[index].targetElement;
 		console.dir(targetElement);
 		let self = this;
 		conDecDialog.showDecisionLinkDialog(this.issueId, targetElement.id, "i", targetElement.documentationLocation, () => self.loadData());
 	}
 
-	ConsistencyTabsModule.prototype.processRelatedIssuesResponse = function (response) {
+	ConsistencyTabsModule.prototype.processRelatedIssuesResponse = function(response) {
 		return response.relatedIssues.map(suggestion => {
 			suggestion.totalScore = Math.round(suggestion.totalScore * 1000) / 1000.;
 			return suggestion;
@@ -128,7 +118,7 @@
 	//-----------------------------------------
 	//            Generate table (Duplicates)
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.displayDuplicateIssues = function (duplicates) {
+	ConsistencyTabsModule.prototype.displayDuplicateIssues = function(duplicates) {
 		if (duplicates.length === 0) {
 			//reset table content to empty
 			this.duplicateResultsTableContentElement.innerHTML = "<i>No duplicates found!</i>";
@@ -145,13 +135,12 @@
 		}
 	};
 
-
-	let generateDuplicateTableRow = function (duplicate, index) {
+	let generateDuplicateTableRow = function(duplicate, index) {
 		let row = document.createElement("tr");
 		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.targetElement.url}">${duplicate.targetElement.key}</a>`, "th-key-duplicate", {}));
 
 		//TODO: visualize the duplicate fragment
-		let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate + duplicate.length), "th-text-fragment-duplicate", {title: "Length:" + duplicate.length});
+		let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate + duplicate.length), "th-text-fragment-duplicate", { title: "Length:" + duplicate.length });
 		AJS.$(scoreCell).tooltip();
 		row.appendChild(scoreCell);
 
@@ -159,7 +148,7 @@
 		return row;
 	};
 
-	let generateDuplicateTableCell = function (content, headersId, attributes) {
+	let generateDuplicateTableCell = function(content, headersId, attributes) {
 		let tableCell = document.createElement("td");
 		tableCell.headers = headersId;
 		tableCell.innerHTML = content;
@@ -169,19 +158,19 @@
 		return tableCell
 	};
 
-	let generateDuplicateOptionButtons = function (index) {
+	let generateDuplicateOptionButtons = function(index) {
 		return `<button class='aui-button aui-button-primary' onclick="consistencyTabsModule.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
 			`<button class='aui-button aui-button-removed' onclick="consistencyTabsModule.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
-	let processDuplicateIssuesResponse = function (response) {
+	let processDuplicateIssuesResponse = function(response) {
 		return response.duplicates.sort((a, b) => b.length - a.length);
 	}
 
 	//-----------------------------------------
 	// Load data and call display logic.
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.loadDuplicateData = function () {
+	ConsistencyTabsModule.prototype.loadDuplicateData = function() {
 		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
 
 		consistencyAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
@@ -190,7 +179,7 @@
 			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
 	}
 
-	ConsistencyTabsModule.prototype.loadData = function () {
+	ConsistencyTabsModule.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 		consistencyAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
 			.then((data) => this.displayRelatedElements(this.processRelatedIssuesResponse(data)))
