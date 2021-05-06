@@ -1,26 +1,32 @@
 <div>
-    <aui-spinner size="large" id="loading-spinner"></aui-spinner>
+    <aui-spinner id="loading-spinner"></aui-spinner>
 </div>
 
+<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <table class="aui aui-table-list" id="results-table">
     <thead>
-    <tr>
-        <th id="th-key" class="aui-table-column-issue-key">Issue key</th>
-        <th id="th-name">Name</th>
-        <th id="th-score">Score</th>
-
-        <th id="th-options" class="aui-table-column-unsortable">Options</th>
-    <tr>
+	    <tr>
+	        <th id="th-key" class="aui-table-column-issue-key">Issue key</th>
+	        <th id="th-name">Name</th>
+	        <th id="th-score">Score</th>	
+	        <th id="th-options" class="aui-table-column-unsortable">Options</th>
+	    <tr>
     </thead>
-    <tbody id="table-content">
-    <!--<tr>
-        <td>TEST-12</td>
-        <td>Cannot sort tables</td>
-        <td>Table sorting should be allowed</td>
-    </tr>-->
-
-    </tbody>
+    <tbody id="table-content"></tbody>
 </table>
+
+<b>Potential duplicates</b>
+<table class="aui aui-table-list" id="duplicate-results-table">
+    <thead>
+	    <tr>
+	        <th id="th-key-duplicate" class="aui-table-column-issue-key">Issue key</th>
+	        <th id="th-text-fragment-duplicate">Duplicate</th>
+	        <th id="th-options-duplicate" class="aui-table-column-unsortable">Options</th>
+	    <tr>
+    </thead>
+    <tbody id="table-content-duplicate"></tbody>
+</table>
+
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {

@@ -32,10 +32,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     		<a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
     	</li>
 		<li class="menu-item" id="menu-item-related-knowledge">
-			<a href="#related-knowledge-elements-tab">Related knowledge</a>
-		</li>
-		<li class="menu-item" id="menu-item-duplicates">
-			<a href="#duplicates-tab">Duplicate knowledge</a>
+			<a href="#related-knowledge-elements-tab">Related Elements</a>
 		</li>
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
@@ -65,9 +62,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div class="tabs-pane" id="matrix-tab">
         #parse("templates/tabs/matrix/view.vm")
-    </div>
-    <div class="tabs-pane" id="duplicates-tab">
-        #parse("templates/tabs/duplicates.vm")
     </div>
     <div class="tabs-pane" id="chronology-tab">
         #parse("templates/tabs/chronology.vm")

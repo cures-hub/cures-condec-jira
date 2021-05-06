@@ -6,10 +6,7 @@
  */
 (function (global) {
 
-	/**
-	 * @constructor
-	 */
-	let ConsistencyTabsModule = function ConsistencyTabsModule() {
+	let ConsistencyTabsModule = function() {
 		this.isInitialized = false;
 
 		this.projectKey = conDecAPI.getProjectKey();
@@ -27,7 +24,6 @@
 		});
 
 		// Duplicates
-		this.loadingDuplicateSpinnerElement = document.getElementById("loading-spinner-duplicate");
 		this.duplicateResultsTableElement = document.getElementById("duplicate-results-table");
 		this.duplicateResultsTableContentElement = document.getElementById("table-content-duplicate");
 
@@ -186,12 +182,12 @@
 	// Load data and call display logic.
 	//-----------------------------------------
 	ConsistencyTabsModule.prototype.loadDuplicateData = function () {
-		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingDuplicateSpinnerElement);
+		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
 
 		consistencyAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
 			.then((data) => this.displayDuplicateIssues(processDuplicateIssuesResponse(data)))
 			.catch((error) => displayErrorMessage(error))
-			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingDuplicateSpinnerElement));
+			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
 	}
 
 	ConsistencyTabsModule.prototype.loadData = function () {
@@ -224,7 +220,6 @@
 		spinner.style.display = "none";
 		table.style.visibility = "visible";
 	}
-
 
 	global.consistencyTabsModule = new ConsistencyTabsModule();
 })(window);

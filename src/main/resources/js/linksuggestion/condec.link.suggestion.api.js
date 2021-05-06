@@ -1,6 +1,6 @@
 (function (global) {
 
-		const ConsistencyAPI = function ConsistencyAPI() {
+		const ConsistencyAPI = function() {
 			this.restPrefix = AJS.contextPath() + "/rest/condec/latest/consistency";
 			this.projectKey = conDecAPI.getProjectKey();
 			this.consistencyCheckFlag = undefined;
@@ -173,7 +173,6 @@
 			this.consistencyCheckFlag.close();
 		}
 
-		// export ConsistencyAPI
 		global.consistencyAPI = new ConsistencyAPI();
 	}
 )(window);
