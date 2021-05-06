@@ -420,7 +420,7 @@
 
 	<properties>
 		<jira.version>8.15.0</jira.version>
-		<amps.version>8.2.1</amps.version>
+		<amps.version>8.3.0-128eead6d</amps.version>
 		<ao.version>3.3.2</ao.version>
 		<jacoco-version>0.8.6</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.1-8199150</atlassian.spring.scanner.version>
