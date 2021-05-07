@@ -35,6 +35,7 @@ $(document).ready(function () {
     	if (!isOnceClicked && event.target.href.includes("#related-knowledge-elements-tab")) {
     		consistencyTabsModule.init();
     		consistencyTabsModule.loadData();
+    		consistencyTabsModule.loadDuplicateData();
 			isOnceClicked = true;
 		}
 	});

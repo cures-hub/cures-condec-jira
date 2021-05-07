@@ -70,7 +70,6 @@
 			}
 			AJS.tabs.setup();
 		}
-
 	};
 
 	let generateTableRow = function(suggestion, index) {

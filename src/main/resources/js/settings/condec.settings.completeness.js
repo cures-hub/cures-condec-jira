@@ -6,7 +6,7 @@
  */
 (function (global) {
 
-	let ConDecJiraIssueCompletenessModule = function ConDecJiraIssueCompletenessModule() {
+	let ConDecJiraIssueCompletenessModule = function () {
 		this.isInitialized = false;
 		this.projectKey = conDecAPI.getProjectKey();
 	};

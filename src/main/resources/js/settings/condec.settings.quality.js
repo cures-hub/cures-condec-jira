@@ -8,10 +8,9 @@
  */
 (function (global) {
 
-	let ConDecJiraIssueQualityModule = function ConDecJiraIssueQualityModule() {
+	let ConDecJiraIssueQualityModule = function () {
 		this.projectKey = conDecAPI.getProjectKey();
 	};
-
 
 	ConDecJiraIssueQualityModule.prototype.callSetActivationStatusOfQualityEvent = function(toggle, eventKey) {
 		return () => {
@@ -25,7 +24,6 @@
 				.finally(() => toggle.busy = false);
 		}
 	}
-
 
 	ConDecJiraIssueQualityModule.prototype.showSuccessFlag = function() {
 		conDecAPI.showFlag("success", "Configuration successfully updated!");
