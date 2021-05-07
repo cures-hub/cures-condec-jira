@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
@@ -10,6 +13,7 @@ public class LinkSuggestionConfiguration {
 
 	private double minProbability;
 	private int minTextLength;
+	private Set<String> activatedPromptEvents;
 
 	/**
 	 * Constructs an object with default values.
@@ -17,6 +21,7 @@ public class LinkSuggestionConfiguration {
 	public LinkSuggestionConfiguration() {
 		this.minProbability = 0.3;
 		this.minTextLength = 21;
+		this.activatedPromptEvents = new HashSet<>();
 	}
 
 	/**
@@ -74,6 +79,18 @@ public class LinkSuggestionConfiguration {
 	 */
 	public void setMinTextLength(int minTextLength) {
 		this.minTextLength = minTextLength;
+	}
+
+	public boolean isPromptEventActivated(String eventName) {
+		return activatedPromptEvents.contains(eventName);
+	}
+
+	public void setPromptEvent(String eventKey, boolean isActivated) {
+		if (isActivated) {
+			activatedPromptEvents.add(eventKey);
+		} else {
+			activatedPromptEvents.remove(eventKey);
+		}
 	}
 
 }

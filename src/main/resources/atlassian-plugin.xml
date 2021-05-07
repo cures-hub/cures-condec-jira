@@ -141,8 +141,6 @@
 			location="/js/linksuggestion/condec.link.suggestion.api.js" />
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.config.rest.js" location="/js/condec.config.rest.js" />
-		<resource type="download" name="condec.settings.consistency.js"
-			location="/js/settings/condec.settings.consistency.js" />
 		<resource type="download" name="condec.settings.completeness.js"
 			location="/js/settings/condec.settings.completeness.js" />
 		<resource type="download" name="condec.settings.quality.js"
@@ -312,6 +310,15 @@
 		<description>Adds the "Definition of Done" menu item.</description>
 		<label key="condec.project.settings.menu.item.definition.of.done" />
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=definitionOfDone
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-nudging"
+		name="Menu Item for ConDec Plug-in Project Settings of Developer Nudging"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "Nudging" menu item.</description>
+		<label key="condec.project.settings.menu.item.nudging" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=nudging
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>

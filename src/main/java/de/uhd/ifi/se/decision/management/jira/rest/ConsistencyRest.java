@@ -249,6 +249,62 @@ public class ConsistencyRest {
 		return Optional.ofNullable(knowledgeElement);
 	}
 
+	@Path("/setMinimumLinkSuggestionProbability")
+	@POST
+	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
+		}
+
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		return Response.ok().build();
+	}
+
+	@Path("/setMinimumDuplicateLength")
+	@POST
+	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != 200) {
+			return response;
+		}
+		if (fragmentLength < 3) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
+		}
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		return Response.ok().build();
+	}
+
+	@Path("/activateQualityEvent")
+	@POST
+	public Response activateQualityEvent(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
+			@QueryParam("isActivated") boolean isActivated) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setPromptEvent(eventKey, isActivated);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		return Response.ok().build();
+	}
+
 	// --------------------
 	// Completeness checks
 	// --------------------

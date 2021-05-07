@@ -4,7 +4,7 @@
     <label for="min-length-duplicate">Minimum length of similar text for duplication detection</label>
     <input class="text short-field" type="number"
            data-aui-validation-field
-           value="$linkSuggestionConfig.getMinTextLength()"
+           value="$project.getLinkSuggestionConfiguration().getMinTextLength()"
            step="1" min="3"
            id="min-length-duplicate" />
     <button id="save-min-length-duplicate-btn" class='aui-button'>Save</button>
@@ -16,6 +16,6 @@
 <script>
 	$("#save-min-length-duplicate-btn").click(event => {
 		event.preventDefault();
-		configAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
+		consistencyAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
     })
 </script>

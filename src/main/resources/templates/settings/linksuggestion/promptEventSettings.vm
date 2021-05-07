@@ -1,0 +1,37 @@
+<h3>Settings for the consistency check events</h3>
+
+<div class="field-group">
+    <label for="isConsistencyDoneActivated-toggle">Consistency check for done event activated?</label>
+    <aui-toggle id="isConsistencyDoneActivated-toggle" label="Resolved event activated?"
+    #if($project.getLinkSuggestionConfiguration().isPromptEventActivated("done"))
+		checked
+	#end
+    ></aui-toggle>
+    <div class="description">
+    	Enables or disables the check dialog for the done event of an issue.
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="isConsistencyClosedActivated-toggle">Consistency event check for closed event activated?</label>
+    <aui-toggle id="isConsistencyClosedActivated-toggle" label="Closed event activated?"
+    #if($project.getLinkSuggestionConfiguration().isPromptEventActivated("closed"))
+		checked
+	#end
+    ></aui-toggle>
+    <div class="description">
+    	Enables or disables the check dialog for the closed event of an issue.
+    </div>
+</div>
+
+<script>
+	$("#isConsistencyDoneActivated-toggle").change(function() {
+		const isActivated = $(this).prop("checked");
+		consistencyAPI.setActivationStatusOfQualityEvent("$projectKey", "done", isActivated);
+	})
+	
+	$("#isConsistencyClosedActivated-toggle").change(function() {
+		const isActivated = $(this).prop("checked");
+		consistencyAPI.setActivationStatusOfQualityEvent("$projectKey", "closed", isActivated);
+	})
+</script>

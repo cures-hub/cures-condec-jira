@@ -615,51 +615,6 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Consistency */
-	/*										*/
-	/* **************************************/
-	@Path("/setMinimumLinkSuggestionProbability")
-	@POST
-	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
-		}
-
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
-	@Path("/setMinimumDuplicateLength")
-	@POST
-	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (fragmentLength < 3) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
-		}
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
-	/* **************************************/
-	/*										*/
 	/* Configuration for Change Impact Analysis */
 	/*										*/
 	/* **************************************/
@@ -687,7 +642,6 @@ public class ConfigRest {
 	@Path("/getCiaSettings")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCiaSettings(@QueryParam("projectKey") String projectKey) {
-
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -705,7 +659,6 @@ public class ConfigRest {
 	@POST
 	public Response setDefinitionOfDone(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
-
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != 200) {
 			return response;
@@ -748,7 +701,10 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent(projectKey, eventKey, isActivated);
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setPromptEvent(eventKey, isActivated);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 

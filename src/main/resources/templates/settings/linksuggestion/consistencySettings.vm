@@ -1,13 +1,7 @@
 <h2>Settings for the consistency checks of Jira Issues</h2>
-#set($linkSuggestionConfig = $project.getLinkSuggestionConfiguration())
 
 <form class="aui">
     #parse("templates/settings/linksuggestion/consistencyLinkSettings.vm")
     #parse("templates/settings/linksuggestion/consistencyDuplicationSettings.vm")
-    #parse("templates/settings/linksuggestion/consistencyEventSettings.vm")
+    #parse("templates/settings/linksuggestion/promptEventSettings.vm")
 </form>
-<script>
-    $(document).ready(function () {
-        conDecJiraIssueConsistencyModule.init();
-    });
-</script>

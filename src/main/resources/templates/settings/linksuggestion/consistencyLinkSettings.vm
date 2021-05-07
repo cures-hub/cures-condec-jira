@@ -4,7 +4,7 @@
     <label for="min-probability-link">Minimum score for link suggestion</label>
     <input class="text short-field" type="number"
            data-aui-validation-field
-           value="$linkSuggestionConfig.getMinProbability()"
+           value="$project.getLinkSuggestionConfiguration().getMinProbability()"
            step="0.25" min="0" max="1"
            id="min-probability-link" />
     <button id="save-min-probability-link-btn" class='aui-button'>Save</button>
@@ -18,6 +18,6 @@
 <script>
 	$("#save-min-probability-link-btn").click(event => {
 		event.preventDefault();
-		configAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
+		consistencyAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
     })
 </script>

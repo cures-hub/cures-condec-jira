@@ -29,25 +29,5 @@
 		conDecAPI.showFlag("success", "Configuration successfully updated!");
 	}
 
-	//show current toggle status
-	ConDecJiraIssueQualityModule.prototype.initToggles = function(toggleElement, projectKey, eventKey) {
-		toggleElement.busy = true;
-		toggleElement.disabled = true;
-
-		configAPI.getActivationStatusOfQualityEvent(projectKey, eventKey)
-			.then(response => {
-				toggleElement.checked = response.isActivated;
-				this.showSuccessFlag();
-			})
-			.catch((error) =>
-				conDecAPI.showFlag("error", "Could not load activation status of quality event. " + error)
-			)
-			.finally(() => {
-					toggleElement.busy = false;
-					toggleElement.disabled = false;
-				}
-			);
-	}
-
 	global.conDecJiraIssueQualityModule = new ConDecJiraIssueQualityModule();
 })(window);

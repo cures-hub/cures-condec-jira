@@ -35,6 +35,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
     #parse("templates/settings/definitionofdone/definitionOfDone.vm")
 #elseif( $category == "cia" )
     #parse("templates/settings/ciaSettings.vm")
+#elseif( $category == "nudging" )
+    #parse("templates/settings/nudgingSettings.vm")
 #else
 	#parse("templates/settings/basicSettings.vm")
 #end
