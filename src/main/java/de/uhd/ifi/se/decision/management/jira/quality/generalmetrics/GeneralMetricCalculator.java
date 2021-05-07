@@ -28,11 +28,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 public class GeneralMetricCalculator {
 
 	@JsonIgnore
+	private FilterSettings filterSettings;
+	@JsonIgnore
 	private List<Issue> jiraIssues;
 	@JsonIgnore
 	private KnowledgeGraph graph;
-	@JsonIgnore
-	private String projectKey;
 	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
@@ -55,8 +55,8 @@ public class GeneralMetricCalculator {
 	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
 		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
-		this.projectKey = filterSettings.getProjectKey();
-		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+		this.filterSettings = filterSettings;
+		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
 		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();
@@ -137,9 +137,15 @@ public class GeneralMetricCalculator {
 	}
 
 	private Map<String, Integer> calculateNumberOfCommits() {
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
+
+	public void setJiraIssues(List<Issue> issues) {
+		jiraIssues = new ArrayList<>();
+		jiraIssues.addAll(issues);
+	}
+
 }

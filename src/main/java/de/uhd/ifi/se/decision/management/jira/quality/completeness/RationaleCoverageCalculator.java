@@ -29,10 +29,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 public class RationaleCoverageCalculator {
 
 	@JsonIgnore
-	private String projectKey;
-	@JsonIgnore
-	private ApplicationUser user;
-	@JsonIgnore
 	private FilterSettings filterSettings;
 	@JsonIgnore
 	private FilteringManager filteringManager;
@@ -53,8 +49,6 @@ public class RationaleCoverageCalculator {
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
 									   String sourceKnowledgeTypesString) {
-		this.projectKey = filterSettings.getProjectKey();
-		this.user = user;
 		this.filterSettings = filterSettings;
 		this.filteringManager = new FilteringManager(user, filterSettings);
 
