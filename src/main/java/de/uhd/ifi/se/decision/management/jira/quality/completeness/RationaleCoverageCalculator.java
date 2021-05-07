@@ -6,8 +6,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -18,8 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Calculates the rationale coverage of requirements, code, and other software

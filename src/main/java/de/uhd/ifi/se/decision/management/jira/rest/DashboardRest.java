@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
@@ -12,16 +11,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;

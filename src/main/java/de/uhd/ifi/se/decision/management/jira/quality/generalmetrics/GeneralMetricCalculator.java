@@ -143,9 +143,4 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
-	public void setJiraIssues(List<Issue> issues) {
-		jiraIssues = new ArrayList<>();
-		jiraIssues.addAll(issues);
-	}
-
 }
