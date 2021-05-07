@@ -6,7 +6,7 @@ Knowledge elements that do not fulfill the definition of done are shown in the r
 Besides, ConDec shows warnings to the developers if the definition of done of the knowledge subgraph they are working on is not fulfilled.
 
 <form class="aui">
-    #parse("templates/settings/definitionofdone/completenessCriteriaSettings.vm")
+    #parse("templates/settings/definitionofdone/definitionOfDoneCriteriaSettings.vm")
     #parse("templates/settings/definitionofdone/promptEventSettings.vm")
 </form>
 

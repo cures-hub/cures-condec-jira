@@ -1,15 +1,37 @@
-<h3>Settings for the completeness check events</h4>
+<h3>Settings for the prompting events for definition of done checking</h4>
 
 <div class="field-group">
-    <label for="isCompletenessDoneActivated-toggle">Completeness check for done event activated?</label>
-    <aui-toggle id="isCompletenessDoneActivated-toggle" label="Resolved event activated?"></aui-toggle>
-    <div class="description">Enables or disables the check dialog for the done event of an issue.
+    <label for="isCompletenessDoneActivated-toggle">DoD check for done event activated?</label>
+    <aui-toggle id="isCompletenessDoneActivated-toggle" label="Resolved event activated?"
+    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("done"))
+		checked
+	#end
+    ></aui-toggle>
+    <div class="description">
+    	Enables or disables the check dialog for the done event of a Jira issue.
     </div>
 </div>
 
 <div class="field-group">
-    <label for="isCompletenessClosedActivated-toggle">Completeness event check for closed event activated?</label>
-    <aui-toggle id="isCompletenessClosedActivated-toggle" label="Closed event activated?"></aui-toggle>
-    <div class="description">Enables or disables the check dialog for the closed event of an issue.
+    <label for="isCompletenessClosedActivated-toggle">DoD check for closed event activated?</label>
+    <aui-toggle id="isCompletenessClosedActivated-toggle" label="Closed event activated?"
+    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("closed"))
+		checked
+	#end
+    ></aui-toggle>
+    <div class="description">
+    	Enables or disables the check dialog for the closed event of a Jira issue.
     </div>
 </div>
+
+<script>
+	$("#isCompletenessDoneActivated-toggle").change(function() {
+		const isActivated = $(this).prop("checked");
+		configAPI.setActivationStatusOfQualityEvent("$projectKey", "done", isActivated);
+	})
+	
+	$("#isCompletenessClosedActivated-toggle").change(function() {
+		const isActivated = $(this).prop("checked");
+		configAPI.setActivationStatusOfQualityEvent("$projectKey", "closed", isActivated);
+	})
+</script>

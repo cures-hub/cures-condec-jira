@@ -83,12 +83,12 @@ public class TestConsistencyConfig extends TestConfigSuper {
 	@Test
 	@DisplayName("Tests the method activateQualityEvent.")
 	public void testActivateConsistencyEventWithValidData() {
-		assertEquals(200, configRest.activateQualityEvent(request, VALID_PROJECT_KEY, "done", true).getStatus());
+		assertEquals(200, configRest.activatePromptEventForLinkSuggestion(request, VALID_PROJECT_KEY, "done", true).getStatus());
 	}
 
 	@Test
 	@DisplayName("Tests the method activateQualityEvent.")
 	public void testActivateConsistencyEventWithInvalidData() {
-		assertEquals(400, configRest.activateQualityEvent(request, VALID_PROJECT_KEY, "none", true).getStatus());
+		assertEquals(400, configRest.activatePromptEventForLinkSuggestion(request, VALID_PROJECT_KEY, "none", true).getStatus());
 	}
 }

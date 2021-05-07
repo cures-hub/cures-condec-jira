@@ -28,7 +28,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 #elseif( $category == "releaseNotes" )
 	#parse("templates/settings/releaseNotesSettings.vm")
 #elseif( $category == "consistency" )
-    #parse("templates/settings/linksuggestion/consistencySettings.vm")
+    #parse("templates/settings/linksuggestion/linkSuggestion.vm")
 #elseif( $category == "decisionGuidance" )
     #parse("templates/settings/decisionguidance/decisionGuidance.vm")
 #elseif( $category == "definitionOfDone" )

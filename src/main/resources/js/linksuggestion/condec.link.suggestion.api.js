@@ -23,7 +23,7 @@
 	}
 
 	ConsistencyAPI.prototype.setActivationStatusOfQualityEvent = function(projectKey, eventKey, isActivated) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/activateQualityEvent.json?
+		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForLinkSuggestion.json?
 			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
 			.then(conDecAPI.showFlag("success", "Activation of prompting event was successfully changed!"));
 	}

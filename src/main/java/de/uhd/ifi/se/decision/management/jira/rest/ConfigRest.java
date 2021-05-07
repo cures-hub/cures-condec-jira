@@ -34,7 +34,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
@@ -52,9 +51,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -679,63 +678,20 @@ public class ConfigRest {
 	/*															*/
 	/* **********************************************************/
 
-	@Path("/isQualityEventActivated")
-	@GET
-	public Response isQualityEventActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
-
-		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfQualityEvent(projectKey, eventKey);
-		return Response.ok().entity(ImmutableMap.of("isActivated", isActivated)).build();
-	}
-
-	@Path("/activateQualityEvent")
+	@Path("/activatePromptEventForDefinitionOfDoneChecking")
 	@POST
 	public Response activateQualityEvent(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
 			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
-		linkSuggestionConfiguration.setPromptEvent(eventKey, isActivated);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		PromptingEventConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getPromptingEventConfiguration(projectKey);
+		linkSuggestionConfiguration.setPromptEventForDefinitionOfDoneChecking(eventKey, isActivated);
+		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 
-	private boolean checkIfQualityTriggerExists(String triggerName) {
-		String triggerNameShort = triggerName;
-		String[] triggerNameParts = triggerName.split("-");
-		if (triggerNameParts.length > 0) {
-			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
-		}
-		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
-				.doesQualityCheckEventTriggerNameExist(triggerNameShort);
-	}
-
-	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
-			String eventKey) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (!checkIfQualityTriggerExists(eventKey)) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
-		}
-		return Response.status(Status.OK).build();
-	}
-
-	@Path("/getQualityEventTriggerNames")
-	@GET
-	public Response getAllConsistencyCheckEventTriggerNames() {
-		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
-				.getInstance();
-		return Response.ok(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
-	}
 }

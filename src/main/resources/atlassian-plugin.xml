@@ -141,10 +141,6 @@
 			location="/js/linksuggestion/condec.link.suggestion.api.js" />
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.config.rest.js" location="/js/condec.config.rest.js" />
-		<resource type="download" name="condec.settings.completeness.js"
-			location="/js/settings/condec.settings.completeness.js" />
-		<resource type="download" name="condec.settings.quality.js"
-			location="/js/settings/condec.settings.quality.js" />
 		<resource type="download" name="condec.link.suggestion.js"
 			location="/js/linksuggestion/condec.link.suggestion.js" />
 		<resource type="download" name="condec.decision.guidance.api.js"

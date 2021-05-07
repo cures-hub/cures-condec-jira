@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
@@ -405,6 +406,24 @@ public class ConfigPersistenceManager {
 		return definitionOfDone;
 	}
 
+	public static void savePromptingEventConfiguration(String projectKey,
+			PromptingEventConfiguration promptingEventConfiguration) {
+		Type type = new TypeToken<PromptingEventConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "promptingEventConfiguration", promptingEventConfiguration, type);
+	}
+
+	public static PromptingEventConfiguration getPromptingEventConfiguration(String projectKey) {
+		Type type = new TypeToken<PromptingEventConfiguration>() {
+		}.getType();
+		PromptingEventConfiguration promptingEventConfiguration = (PromptingEventConfiguration) getSavedObject(
+				projectKey, "promptingEventConfiguration", type);
+		if (promptingEventConfiguration == null) {
+			return new PromptingEventConfiguration();
+		}
+		return promptingEventConfiguration;
+	}
+
 	/* **********************************************************/
 	/*										 					*/
 	/* Configuration for quality = completeness + consistency */
@@ -440,5 +459,4 @@ public class ConfigPersistenceManager {
 		}
 		return ciaSettings;
 	}
-
 }

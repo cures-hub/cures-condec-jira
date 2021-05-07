@@ -30,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
@@ -42,7 +43,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Su
 /**
  * REST resource for consistency functionality.
  */
-
 @Path("/consistency")
 public class ConsistencyRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConsistencyRest.class);
@@ -289,19 +289,19 @@ public class ConsistencyRest {
 		return Response.ok().build();
 	}
 
-	@Path("/activateQualityEvent")
+	@Path("/activatePromptEventForLinkSuggestion")
 	@POST
-	public Response activateQualityEvent(@Context HttpServletRequest request,
+	public Response activatePromptEventForLinkSuggestion(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
 			@QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
-		linkSuggestionConfiguration.setPromptEvent(eventKey, isActivated);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
+				.getPromptingEventConfiguration(projectKey);
+		promptingEventConfiguration.setPromptEventForLinkSuggestion(eventKey, isActivated);
+		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, promptingEventConfiguration);
 		return Response.ok().build();
 	}
 
