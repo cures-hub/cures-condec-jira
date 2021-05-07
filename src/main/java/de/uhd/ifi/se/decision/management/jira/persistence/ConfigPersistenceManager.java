@@ -11,7 +11,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -31,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
@@ -342,20 +342,22 @@ public class ConfigPersistenceManager {
 	/*										*/
 	/* **************************************/
 
-	public static void setFragmentLength(String projectKey, int fragmentLength) {
-		setValue(projectKey, "fragmentLength", Integer.toString(fragmentLength));
+	public static void saveLinkSuggestionConfiguration(String projectKey,
+			LinkSuggestionConfiguration linkSuggestionConfiguration) {
+		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
 	}
 
-	public static int getFragmentLength(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "fragmentLength"), 21);
-	}
-
-	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {
-		setValue(projectKey, "minLinkSuggestionProbability", Double.toString(minLinkSuggestionProbability));
-	}
-
-	public static double getMinLinkSuggestionScore(String projectKey) {
-		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
+	public static LinkSuggestionConfiguration getLinkSuggestionConfiguration(String projectKey) {
+		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+		}.getType();
+		LinkSuggestionConfiguration linkSuggestionConfiguration = (LinkSuggestionConfiguration) getSavedObject(
+				projectKey, "linkSuggestionConfiguration", type);
+		if (linkSuggestionConfiguration == null) {
+			return new LinkSuggestionConfiguration();
+		}
+		return linkSuggestionConfiguration;
 	}
 
 	/* **************************************/

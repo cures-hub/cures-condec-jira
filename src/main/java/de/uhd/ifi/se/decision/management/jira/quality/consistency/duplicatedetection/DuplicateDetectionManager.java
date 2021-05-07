@@ -42,7 +42,8 @@ public class DuplicateDetectionManager {
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 		if (this.knowledgeElement == null) {
 			this.fragmentLength = ConfigPersistenceManager
-					.getFragmentLength(this.knowledgeElement.getProject().getProjectKey());
+					.getLinkSuggestionConfiguration(this.knowledgeElement.getProject().getProjectKey())
+					.getMinTextLength();
 
 		} else {
 			this.fragmentLength = 21;

@@ -54,6 +54,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -631,7 +632,10 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
 		}
 
-		ConfigPersistenceManager.setMinLinkSuggestionScore(projectKey, minLinkSuggestionProbability);
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 
@@ -647,7 +651,10 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
 		}
-		ConfigPersistenceManager.setFragmentLength(projectKey, fragmentLength);
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration(projectKey);
+		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 

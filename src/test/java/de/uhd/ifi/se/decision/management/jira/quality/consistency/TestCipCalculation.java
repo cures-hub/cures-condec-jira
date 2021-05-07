@@ -46,8 +46,10 @@ public class TestCipCalculation extends TestSetUp {
 		Project project = JiraProjects.getTestProject();
 		TestCipCalculation.testIssues = JiraIssues.createJiraIssues(project);
 		this.project = JiraProjects.getTestProject();
-		ConfigPersistenceManager.setMinLinkSuggestionScore(this.project.getKey(), 0.0);
-
+		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				.getLinkSuggestionConfiguration("TEST");
+		linkSuggestionConfiguration.setMinProbability(0);
+		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 	}
 
 	@Test
@@ -148,7 +150,6 @@ public class TestCipCalculation extends TestSetUp {
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.25, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0.1);
-
 	}
 
 	@Test

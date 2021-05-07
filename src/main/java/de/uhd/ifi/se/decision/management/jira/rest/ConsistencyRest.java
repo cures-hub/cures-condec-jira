@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHel
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.DuplicateDetectionManager;
@@ -99,9 +100,11 @@ public class ConsistencyRest {
 
 			if (knowledgeElement.isPresent()) {
 				HashMap<String, Object> result = new HashMap<>();
+				LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+						.getLinkSuggestionConfiguration(projectKey);
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
-						new BasicDuplicateTextDetector(ConfigPersistenceManager.getFragmentLength(projectKey)),
-						ConfigPersistenceManager.getFragmentLength(projectKey));
+						new BasicDuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
+						linkSuggestionConfiguration.getMinTextLength());
 
 				// get KnowledgeElements of project
 				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);

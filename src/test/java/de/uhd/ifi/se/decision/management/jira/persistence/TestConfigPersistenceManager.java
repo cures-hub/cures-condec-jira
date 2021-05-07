@@ -423,37 +423,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetFragmentLength() {
-		int input = 4;
-		ConfigPersistenceManager.setFragmentLength("TEST", input);
-		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
-		// Cannot be tested because the MockPluginSettingsFactory does not support
-		// multiple projects
-		/*
-		 * input = 3; ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
-		 * assertEquals("Activated should still be 4.", 4,
-		 * ConfigPersistenceManager.getFragmentLength("TEST"));
-		 *
-		 */
-	}
-
-	@Test
-	public void testSetAndGetMinLinkSuggestionScore() {
-		double input = 0.4;
-		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
-		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
-				0.0);
-		// Cannot be tested because the MockPluginSettingsFactory does not support
-		// multiple projects
-		/*
-		 * input = 0.3; ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST",
-		 * input); assertTrue("Activated should still be 0.4.", 0.4 ==
-		 * ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
-		 *
-		 */
-	}
-
-	@Test
 	public void testSetAndGetActivationStatusOfQualityEvent() {
 		String consistencyEvent = "done";
 		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
@@ -502,7 +471,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
 		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
 		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
-		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumNumberOfDecisionsWithinLinkDistance());
+		assertEquals(3,
+				ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumNumberOfDecisionsWithinLinkDistance());
 	}
 
 	@Test

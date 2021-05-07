@@ -65,7 +65,7 @@ public class ContextInformation implements ContextInformationProvider {
 				// the score is higher or equal to the minimum probability set by the admin for
 				// the project
 				.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager
-						.getMinLinkSuggestionScore(this.element.getProject().getProjectKey()))
+						.getLinkSuggestionConfiguration(this.element.getProject().getProjectKey()).getMinProbability())
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
