@@ -881,7 +881,7 @@
 	};
 
 	/*
-	 * external references: rationaleBacklogSettings.vm
+	 * external references: settings/definitionofdone/...
 	 */
 	ConDecAPI.prototype.setDefinitionOfDone = function(projectKey, definitionOfDone) {
 		generalApi.postJSON(this.restPrefix + "/config/setDefinitionOfDone.json?projectKey=" + projectKey, definitionOfDone, function(
@@ -890,19 +890,6 @@
 				showFlag("success", "The definition of done is updated.");
 			}
 		});
-	};
-
-	/*
-	 * TODO Remove this REST method and use a velocity parameter in the SettingsForSingleProject servlet instead
-	 * external reference: rationaleBacklogSettings.vm
-	 */
-	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDefinitionOfDone.json?projectKey=${projectKey}`,
-			function(error, definitionOfDone) {
-				if (error === null) {
-					callback(definitionOfDone);
-				}
-			});
 	};
 
 	ConDecAPI.prototype.getPropagationRules = function() {
