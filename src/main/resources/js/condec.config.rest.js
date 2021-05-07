@@ -5,13 +5,15 @@
 	};
 
 	ConfigAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumDuplicateLength.json?
-			projectKey=${projectKey}&fragmentLength=${fragmentLength}`, null);
+		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumDuplicateLength.json?
+			projectKey=${projectKey}&fragmentLength=${fragmentLength}`, null)
+			.then(conDecAPI.showFlag("success", "Minimum length was successfully updated!"));
 	}
 
 	ConfigAPI.prototype.setMinimumLinkSuggestionProbability = function(projectKey, minLinkSuggestionProbability) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumLinkSuggestionProbability.json?
-			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null);
+		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumLinkSuggestionProbability.json?
+			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null)
+			.then(conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	}
 
 	ConfigAPI.prototype.getConsistencyEventTriggerNames = function() {

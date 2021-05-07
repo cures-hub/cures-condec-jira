@@ -16,6 +16,6 @@
 <script>
 	$("#save-min-length-duplicate-btn").click(event => {
 		event.preventDefault();
-		configAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val())
+		configAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
     })
 </script>
