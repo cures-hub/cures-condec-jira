@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -24,11 +27,29 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 
 public class GeneralMetricCalculator {
 
+	@JsonIgnore
 	private List<Issue> jiraIssues;
+	@JsonIgnore
 	private KnowledgeGraph graph;
+	@JsonIgnore
 	private String projectKey;
+	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
+	@JsonProperty("numberOfCommentsPerIssue")
+	private Map<String, Integer> numberOfCommentsPerIssue;
+	@JsonProperty("distributionOfKnowledgeTypes")
+	private Map<String, Integer> distributionOfKnowledgeTypes;
+	@JsonProperty("reqAndClassSummary")
+	private Map<String, Integer> reqAndClassSummary;
+	@JsonProperty("elementsFromDifferentOrigins")
+	private Map<String, String> elementsFromDifferentOrigins;
+	@JsonProperty("numberOfRelevantComments")
+	private Map<String, Integer> numberOfRelevantComments;
+	@JsonProperty("numberOfCommits")
+	private Map<String, Integer> numberOfCommits;
+
+	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
 	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
@@ -37,23 +58,30 @@ public class GeneralMetricCalculator {
 		this.projectKey = filterSettings.getProjectKey();
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
+
+		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();
+		this.distributionOfKnowledgeTypes = calculateDistributionOfKnowledgeTypes();
+		this.reqAndClassSummary = calculateReqAndClassSummary();
+		this.elementsFromDifferentOrigins = calculateElementsFromDifferentOrigins();
+		this.numberOfRelevantComments = calculateNumberOfRelevantComments();
+		this.numberOfCommits = calculateNumberOfCommits();
 	}
 
-	public Map<String, Integer> numberOfCommentsPerIssue() {
+	private Map<String, Integer> calculateNumberOfCommentsPerIssue() {
 		return commentMetricCalculator.getNumberOfCommentsPerIssue();
 	}
 
-	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
+	private Map<String, Integer> calculateDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
-		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
+		Map<String, Integer> distributionMap = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			List<KnowledgeElement> elements = graph.getElements(type);
-			distributionOfKnowledgeTypes.put(type.toString(), elements.size());
+			distributionMap.put(type.toString(), elements.size());
 		}
-		return distributionOfKnowledgeTypes;
+		return distributionMap;
 	}
 
-	public Map<String, Integer> getReqAndClassSummary() {
+	private Map<String, Integer> calculateReqAndClassSummary() {
 		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
 		Map<String, Integer> summaryMap = new HashMap<String, Integer>();
 		int numberOfRequirements = 0;
@@ -68,7 +96,7 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	public Map<String, String> getElementsFromDifferentOrigins() {
+	private Map<String, String> calculateElementsFromDifferentOrigins() {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
 		Map<String, String> originMap = new HashMap<>();
 
@@ -100,24 +128,18 @@ public class GeneralMetricCalculator {
 		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
 		originMap.put("Commit Message", elementsInCommitMessages.trim());
 		originMap.put("Code Comment", elementsInCodeComments.trim());
+
 		return originMap;
 	}
 
-	public Map<String, Integer> getNumberOfRelevantComments() {
+	private Map<String, Integer> calculateNumberOfRelevantComments() {
 		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
-	public Map<String, Integer> getNumberOfCommits() {
+	private Map<String, Integer> calculateNumberOfCommits() {
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
-	}
-
-	public void setJiraIssues(List<Issue> issues) {
-		jiraIssues = new ArrayList<>();
-		for (Issue issue : issues) {
-			jiraIssues.add(issue);
-		}
 	}
 }

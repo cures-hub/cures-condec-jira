@@ -92,7 +92,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function renderData(data) {
+	function renderData(calculator) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -110,12 +110,12 @@
 		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		issuesSolvedByDecision = data.issuesSolvedByDecision;
-		decisionsSolvingIssues = data.decisionsSolvingIssues;
-		proArgumentDocumentedForDecision = data.proArgumentDocumentedForDecision;
-		conArgumentDocumentedForAlternative = data.conArgumentDocumentedForAlternative;
-		conArgumentDocumentedForDecision = data.conArgumentDocumentedForDecision;
-		proArgumentDocumentedForAlternative = data.proArgumentDocumentedForAlternative;
+		issuesSolvedByDecision = calculator.issuesSolvedByDecision;
+		decisionsSolvingIssues = calculator.decisionsSolvingIssues;
+		proArgumentDocumentedForDecision = calculator.proArgumentDocumentedForDecision;
+		conArgumentDocumentedForAlternative = calculator.conArgumentDocumentedForAlternative;
+		conArgumentDocumentedForDecision = calculator.conArgumentDocumentedForDecision;
+		proArgumentDocumentedForAlternative = calculator.proArgumentDocumentedForAlternative;
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",

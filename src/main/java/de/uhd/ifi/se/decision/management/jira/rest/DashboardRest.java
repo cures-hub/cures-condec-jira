@@ -42,18 +42,10 @@ public class DashboardRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		GeneralMetricCalculator metricCalculator = new GeneralMetricCalculator(user, filterSettings);
+		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(user, filterSettings);
 
-		metrics.put("numberOfCommentsPerJiraIssue", metricCalculator.numberOfCommentsPerIssue());
-		metrics.put("numberOfCommitsPerJiraIssue", metricCalculator.getNumberOfCommits());
-		metrics.put("distributionOfKnowledgeTypes", metricCalculator.getDistributionOfKnowledgeTypes());
-		metrics.put("requirementsAndCodeFiles", metricCalculator.getReqAndClassSummary());
-		metrics.put("numberOfElementsPerDocumentationLocation", metricCalculator.getElementsFromDifferentOrigins());
-		metrics.put("numberOfRelevantComments", metricCalculator.getNumberOfRelevantComments());
-
-		return Response.status(Status.OK).entity(metrics).build();
+		return Response.status(Status.OK).entity(generalMetricsCalculator).build();
 	}
 
 	@Path("/rationaleCompleteness")
@@ -66,61 +58,27 @@ public class DashboardRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Map<String, Object> metrics = new LinkedHashMap<>();
 
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(user,
-				filterSettings);
+		RationaleCompletenessCalculator rationaleCompletenessCalculator =
+			new RationaleCompletenessCalculator(user, filterSettings);
 
-		metrics.put("issuesSolvedByDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION));
-		metrics.put("decisionsSolvingIssues", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE));
-		metrics.put("proArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO));
-		metrics.put("conArgumentDocumentedForAlternative", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE, KnowledgeType.CON));
-		metrics.put("proArgumentDocumentedForDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.PRO));
-		metrics.put("conArgumentDocumentedForDecision", rationaleCompletenessCalculator
-				.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.CON));
-
-		return Response.status(Status.OK).entity(metrics).build();
+		return Response.status(Status.OK).entity(rationaleCompletenessCalculator).build();
 	}
 
 	@Path("/rationaleCoverage")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("sourceKnowledgeTypes") String sourceKnowledgeTypesString) {
-		if (request == null || filterSettings == null || sourceKnowledgeTypesString == null) {
+			@QueryParam("sourceKnowledgeTypes") String sourceKnowledgeTypes) {
+		if (request == null || filterSettings == null || sourceKnowledgeTypes == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
 
-		Set<String> sourceKnowledgeTypes;
-		if (sourceKnowledgeTypesString.isEmpty()) {
-			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey()).getNamesOfKnowledgeTypes();
-		} else {
-			sourceKnowledgeTypes = new HashSet<>(Arrays.asList(sourceKnowledgeTypesString.split(",")));
-		}
-
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		Map<String, Object> metrics = new LinkedHashMap<>();
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings);
-
-		if (!sourceKnowledgeTypes.isEmpty()) {
-			metrics.put("decisionsPerSelectedJiraIssue", rationaleCoverageCalculator
-				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(sourceKnowledgeTypes, KnowledgeType.DECISION));
-			metrics.put("issuesPerSelectedJiraIssue", rationaleCoverageCalculator
-				.getNumberOfDecisionKnowledgeElementsForKnowledgeElements(sourceKnowledgeTypes, KnowledgeType.ISSUE));
-			metrics.put("decisionDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-				.getKnowledgeElementsWithNeighborsOfOtherType(sourceKnowledgeTypes, KnowledgeType.ISSUE));
-			metrics.put("issueDocumentedForSelectedJiraIssue", rationaleCoverageCalculator
-				.getKnowledgeElementsWithNeighborsOfOtherType(sourceKnowledgeTypes, KnowledgeType.DECISION));
-		}
-
-		return Response.status(Status.OK).entity(metrics).build();
+		return Response.status(Status.OK).entity(rationaleCoverageCalculator).build();
 	}
 }

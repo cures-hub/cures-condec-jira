@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
@@ -19,39 +17,19 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleCompletenessCalculator extends TestSetUp {
 
-	protected RationaleCompletenessCalculator calculator;
-
 	@Before
 	public void setUp() {
 		init();
+	}
+
+	@Test
+	@NonTransactional
+	public void testRationaleCompletenessCalculator() {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new RationaleCompletenessCalculator(user, filterSettings);
-	}
-
-	@Test
-	@NonTransactional
-	public void testElementsWithNeighborsOfOtherTypeFromArgumentToDecision() {
-		Map<String, String> calculation = calculator.getElementsWithNeighborsOfOtherType(KnowledgeType.ARGUMENT,
-				KnowledgeType.DECISION);
-
-		assertTrue(calculation.containsKey("Argument has no Decision"));
-		assertFalse(calculation.get("Argument has no Decision").isEmpty());
-		assertTrue(calculation.containsKey("Argument has Decision"));
-		assertEquals("TEST-5", calculation.get("Argument has Decision"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testElementsWithNeighborsOfOtherTypeFromDecisionToArgument() {
-		Map<String, String> calculation = calculator.getElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.ARGUMENT);
-
-		assertTrue(calculation.containsKey("Decision has no Argument"));
-		assertTrue(calculation.get("Decision has no Argument").isEmpty());
-		assertTrue(calculation.containsKey("Decision has Argument"));
-		assertEquals("TEST-4", calculation.get("Decision has Argument"));
+		RationaleCompletenessCalculator calculator = new RationaleCompletenessCalculator(user, filterSettings);
+		assertNotNull(calculator);
 	}
 
 }

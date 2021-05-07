@@ -92,7 +92,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function renderData(data) {
+	function renderData(calculator) {
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
 		var commitsPerIssue = new Map();
@@ -111,12 +111,12 @@
 		knowledgeTypeDistribution.set("no knowledge type", "");
 
 		/* form data for charts */
-		commentsPerIssue = data.numberOfCommentsPerJiraIssue;
-		commitsPerIssue = data.numberOfCommitsPerJiraIssue;
-		reqCodeSummary = data.requirementsAndCodeFiles;
-		decSources = data.numberOfElementsPerDocumentationLocation;
-		relevantSentences = data.numberOfRelevantComments;
-		knowledgeTypeDistribution = data.distributionOfKnowledgeTypes;
+		commentsPerIssue = calculator.numberOfCommentsPerIssue;
+		commitsPerIssue = calculator.numberOfCommits;
+		reqCodeSummary = calculator.reqAndClassSummary;
+		decSources = calculator.elementsFromDifferentOrigins;
+		relevantSentences = calculator.numberOfRelevantComments;
+		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",

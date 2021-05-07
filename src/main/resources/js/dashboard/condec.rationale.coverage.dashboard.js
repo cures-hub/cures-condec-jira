@@ -93,7 +93,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function renderData(data) {
+	function renderData(calculator) {
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
 		var decisionsPerSelectedJiraIssue = new Map();
@@ -108,10 +108,10 @@
 		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 
 		/* form data for charts */
-		issuesPerSelectedJiraIssue = data.issuesPerSelectedJiraIssue;
-		decisionsPerSelectedJiraIssue = data.decisionsPerSelectedJiraIssue;
-		issueDocumentedForSelectedJiraIssue = data.issueDocumentedForSelectedJiraIssue;
-		decisionDocumentedForSelectedJiraIssue = data.decisionDocumentedForSelectedJiraIssue;
+		issuesPerSelectedJiraIssue = calculator.issuesPerSelectedJiraIssue;
+		decisionsPerSelectedJiraIssue = calculator.decisionsPerSelectedJiraIssue;
+		issueDocumentedForSelectedJiraIssue = calculator.issueDocumentedForSelectedJiraIssue;
+		decisionDocumentedForSelectedJiraIssue = calculator.decisionDocumentedForSelectedJiraIssue;
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",

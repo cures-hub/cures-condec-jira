@@ -2,12 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.*;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -24,19 +28,53 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  */
 public class RationaleCoverageCalculator {
 
+	@JsonIgnore
+	private String projectKey;
+	@JsonIgnore
+	private ApplicationUser user;
+	@JsonIgnore
+	private FilterSettings filterSettings;
+	@JsonIgnore
+	private FilteringManager filteringManager;
+	@JsonIgnore
+	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<>();
+
+	@JsonProperty("decisionsPerSelectedJiraIssue")
+	private Map<String, Integer> decisionsPerSelectedJiraIssue = new HashMap<>();
+	@JsonProperty("issuesPerSelectedJiraIssue")
+	private Map<String, Integer> issuesPerSelectedJiraIssue = new HashMap<>();
+	@JsonProperty("decisionDocumentedForSelectedJiraIssue")
+	private Map<String, String> decisionDocumentedForSelectedJiraIssue = new HashMap<>();
+	@JsonProperty("issueDocumentedForSelectedJiraIssue")
+	private Map<String, String> issueDocumentedForSelectedJiraIssue = new HashMap<>();
+
+	@JsonIgnore
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
-	private String projectKey;
-	private ApplicationUser user;
-	private FilterSettings filterSettings;
-	private FilteringManager filteringManager;
-	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<KnowledgeElement, Map<KnowledgeType, Integer>>();
-
-	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
+									   String sourceKnowledgeTypesString) {
 		this.projectKey = filterSettings.getProjectKey();
 		this.user = user;
 		this.filterSettings = filterSettings;
 		this.filteringManager = new FilteringManager(user, filterSettings);
+
+		Set<String> sourceKnowledgeTypes;
+		if (sourceKnowledgeTypesString.isEmpty()) {
+			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey()).getNamesOfKnowledgeTypes();
+		} else {
+			sourceKnowledgeTypes = new HashSet<>(Arrays.asList(sourceKnowledgeTypesString.split(",")));
+		}
+
+		if (!sourceKnowledgeTypes.isEmpty()) {
+			this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
+			this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+			this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
+			this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+		}
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
@@ -51,7 +89,7 @@ public class RationaleCoverageCalculator {
 		linkedElementMap.put(sourceElement, knowledgeTypeMap);
 	}
 
-	public Map<String, String> getKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
+	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
 																			KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getKnowledgeElementsWithNeighborsOfOtherType");
 
@@ -94,7 +132,7 @@ public class RationaleCoverageCalculator {
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForKnowledgeElements(Set<String> sourceTypes,
+	private Map<String, Integer> calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(Set<String> sourceTypes,
 																						 KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getNumberOfDecisionKnowledgeElementsForKnowledgeElements");
 
