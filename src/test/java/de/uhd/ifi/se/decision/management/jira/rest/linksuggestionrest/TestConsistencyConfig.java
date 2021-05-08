@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
+package de.uhd.ifi.se.decision.management.jira.rest.linksuggestionrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,20 +10,20 @@ import org.junit.jupiter.api.DisplayName;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.rest.ConsistencyRest;
+import de.uhd.ifi.se.decision.management.jira.rest.LinkSuggestionRest;
 import de.uhd.ifi.se.decision.management.jira.rest.configrest.TestConfigSuper;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestConsistencyConfig extends TestConfigSuper {
 	protected HttpServletRequest request;
-	protected ConsistencyRest configRest;
+	protected LinkSuggestionRest configRest;
 
 	protected static String VALID_PROJECT_KEY = "TEST";
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConsistencyRest();
+		configRest = new LinkSuggestionRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}

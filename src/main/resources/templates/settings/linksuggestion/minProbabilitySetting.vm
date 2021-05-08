@@ -18,6 +18,6 @@
 <script>
 	$("#save-min-probability-link-btn").click(event => {
 		event.preventDefault();
-		consistencyAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
+		conDecLinkSuggestionAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
     })
 </script>

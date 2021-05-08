@@ -1,17 +1,14 @@
 /**
- * This object provides methods for the consistency tabs of the jira issue module.
- * This object is used in the following files:
- * duplicatesTab.vm
- * relatedIssuesTab.vm
+ * This module implements the link suggestion and duplicate detection.
  */
 (function(global) {
 
-	let ConsistencyTabsModule = function() {
+	let ConDecLinkSuggestion = function() {
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 	};
 
-	ConsistencyTabsModule.prototype.init = function() {
+	ConDecLinkSuggestion.prototype.init = function() {
 		this.issueId = JIRA.Issue.getIssueId();
 
 		// Duplicates
@@ -24,9 +21,9 @@
 		this.resultsTableContentElement = document.getElementById("table-content");
 	}
 
-	ConsistencyTabsModule.prototype.discardDuplicate = function(index) {
+	ConDecLinkSuggestion.prototype.discardDuplicate = function(index) {
 		let suggestionElement = this.currentSuggestions[index].targetElement;
-		consistencyAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkSuggestionAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadDuplicateData();
@@ -34,10 +31,10 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.discardSuggestion = function(index) {
+	ConDecLinkSuggestion.prototype.discardSuggestion = function(index) {
 		let suggestionElement = this.currentSuggestions[index].targetElement;
 
-		consistencyAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkSuggestionAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadData();
@@ -45,7 +42,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConsistencyTabsModule.prototype.markAsDuplicate = function(index) {
+	ConDecLinkSuggestion.prototype.markAsDuplicate = function(index) {
 		let duplicateElement = this.currentSuggestions[index].targetElement;
 
 		let self = this;
@@ -55,7 +52,7 @@
 	//-----------------------------------------
 	//			Generate table (Related)
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.displayRelatedElements = function(relatedElements) {
+	ConDecLinkSuggestion.prototype.displayRelatedElements = function(relatedElements) {
 		if (relatedElements.length === 0) {
 			//reset table content to empty
 			this.resultsTableContentElement.innerHTML = "<i>No related issues found!</i>";
@@ -96,18 +93,18 @@
 	};
 
 	let generateOptionButtons = function(suggestionIndex) {
-		return `<button class='aui-button aui-button-primary' onclick="consistencyTabsModule.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-			`<button class='aui-button aui-button-removed' onclick="consistencyTabsModule.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+		return `<button class='aui-button aui-button-primary' onclick="conDecLinkSuggestion.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkSuggestion.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
-	ConsistencyTabsModule.prototype.showDialog = function(index) {
+	ConDecLinkSuggestion.prototype.showDialog = function(index) {
 		let targetElement = this.currentSuggestions[index].targetElement;
 		console.dir(targetElement);
 		let self = this;
 		conDecDialog.showDecisionLinkDialog(this.issueId, targetElement.id, "i", targetElement.documentationLocation, () => self.loadData());
 	}
 
-	ConsistencyTabsModule.prototype.processRelatedIssuesResponse = function(response) {
+	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(response) {
 		return response.relatedIssues.map(suggestion => {
 			suggestion.totalScore = Math.round(suggestion.totalScore * 1000) / 1000.;
 			return suggestion;
@@ -117,7 +114,7 @@
 	//-----------------------------------------
 	//            Generate table (Duplicates)
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.displayDuplicateIssues = function(duplicates) {
+	ConDecLinkSuggestion.prototype.displayDuplicateIssues = function(duplicates) {
 		if (duplicates.length === 0) {
 			//reset table content to empty
 			this.duplicateResultsTableContentElement.innerHTML = "<i>No duplicates found!</i>";
@@ -158,8 +155,8 @@
 	};
 
 	let generateDuplicateOptionButtons = function(index) {
-		return `<button class='aui-button aui-button-primary' onclick="consistencyTabsModule.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
-			`<button class='aui-button aui-button-removed' onclick="consistencyTabsModule.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+		return `<button class='aui-button aui-button-primary' onclick="conDecLinkSuggestion.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkSuggestion.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
 	let processDuplicateIssuesResponse = function(response) {
@@ -169,18 +166,18 @@
 	//-----------------------------------------
 	// Load data and call display logic.
 	//-----------------------------------------
-	ConsistencyTabsModule.prototype.loadDuplicateData = function() {
+	ConDecLinkSuggestion.prototype.loadDuplicateData = function() {
 		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
 
-		consistencyAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
+		conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
 			.then((data) => this.displayDuplicateIssues(processDuplicateIssuesResponse(data)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
 	}
 
-	ConsistencyTabsModule.prototype.loadData = function() {
+	ConDecLinkSuggestion.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
-		consistencyAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
+		conDecLinkSuggestionAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
 			.then((data) => this.displayRelatedElements(this.processRelatedIssuesResponse(data)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
@@ -209,5 +206,5 @@
 		table.style.visibility = "visible";
 	}
 
-	global.consistencyTabsModule = new ConsistencyTabsModule();
+	global.conDecLinkSuggestion = new ConDecLinkSuggestion();
 })(window);

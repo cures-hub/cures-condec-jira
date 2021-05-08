@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
+package de.uhd.ifi.se.decision.management.jira.rest.linksuggestionrest;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.junit.Test;

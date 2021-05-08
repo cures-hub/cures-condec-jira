@@ -38,12 +38,12 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.SuggestionType;
 
 /**
- * REST resource for consistency functionality.
+ * REST resource for link suggestion and duplicate recognition (including its
+ * configuration).
  */
-// TODO Rename to linksuggestion
-@Path("/consistency")
-public class ConsistencyRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConsistencyRest.class);
+@Path("/linksuggestion")
+public class LinkSuggestionRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LinkSuggestionRest.class);
 
 	// --------------------
 	// Related issue detection
@@ -137,7 +137,7 @@ public class ConsistencyRest {
 	}
 
 	// --------------------
-	// Consistency checks
+	// Link suggestion prompts
 	// --------------------
 
 	@Path("/doesElementNeedApproval")
@@ -146,24 +146,15 @@ public class ConsistencyRest {
 	public Response doesElementNeedApproval(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("elementLocation") String documentationLocation) {
-		Optional<KnowledgeElement> knowledgeElement;
-		Response response;
-		try {
-			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, documentationLocation);
+		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId,
+				documentationLocation);
 
-			if (knowledgeElement.isPresent()) {
-				boolean doesIssueNeedApproval = ConsistencyCheckLogHelper
-						.doesKnowledgeElementNeedApproval(knowledgeElement.get());
-				response = Response.ok().entity(ImmutableMap.of("needsApproval", doesIssueNeedApproval)).build();
-			} else {
-				response = Response.status(400).entity(ImmutableMap.of("error", "No issue with the given key exists!"))
-						.build();
-			}
-		} catch (Exception e) {
-			// LOGGER.error(e.getMessage());
-			response = Response.status(500).entity(e).build();
+		if (knowledgeElement.isPresent()) {
+			boolean doesIssueNeedApproval = ConsistencyCheckLogHelper
+					.doesKnowledgeElementNeedApproval(knowledgeElement.get());
+			return Response.ok().entity(doesIssueNeedApproval).build();
 		}
-		return response;
+		return Response.status(400).entity(ImmutableMap.of("error", "No issue with the given key exists!")).build();
 	}
 
 	@Path("/approveCheck")
@@ -246,6 +237,10 @@ public class ConsistencyRest {
 
 		return Optional.ofNullable(knowledgeElement);
 	}
+
+	// --------------------
+	// Configuration
+	// --------------------
 
 	@Path("/setMinimumLinkSuggestionProbability")
 	@POST

@@ -16,6 +16,6 @@
 <script>
 	$("#save-min-length-duplicate-btn").click(event => {
 		event.preventDefault();
-		consistencyAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
+		conDecLinkSuggestionAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
     })
 </script>

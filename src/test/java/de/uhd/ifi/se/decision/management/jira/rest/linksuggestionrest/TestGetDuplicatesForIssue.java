@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.consistencyrest;
+package de.uhd.ifi.se.decision.management.jira.rest.linksuggestionrest;
 
 import static org.junit.Assert.assertEquals;
 

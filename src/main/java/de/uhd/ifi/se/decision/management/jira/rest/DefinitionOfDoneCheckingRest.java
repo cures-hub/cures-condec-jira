@@ -54,12 +54,11 @@ public class DefinitionOfDoneCheckingRest {
 		}
 		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
 		if (knowledgeElement == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Completeness check could not be performed because the element could not be found."))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"DoD check could not be performed because the element could not be found.")).build();
 		}
+		// TODO Return all the exact criteria that are not fulfilled
 		boolean doesIssueNeedApproval = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
-		return Response.ok().entity(ImmutableMap.of("needsCompletenessApproval", doesIssueNeedApproval)).build();
+		return Response.ok().entity(doesIssueNeedApproval).build();
 	}
 }

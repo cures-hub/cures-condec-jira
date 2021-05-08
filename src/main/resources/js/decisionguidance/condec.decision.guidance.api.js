@@ -3,8 +3,10 @@
  *
  * Is required by: conDecDecisionGuidance
  *
- * Is referenced in HTML by settingsForAllProjects.vm
- * settingsForSingleProject.vm
+ * Is referenced in HTML by 
+ * settings/decisionguidance/*
+ * tabs/decisiontable/*
+ * jiraIssueModule.vm
  */
 (function(global) {
 

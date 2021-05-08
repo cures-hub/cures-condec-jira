@@ -5,8 +5,7 @@
  * Requires: conDecTreant.findParentElement
  *
  * Is required by: conDecContextMenu conDecDialog conDecEvolutionPage
- * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
- * conDecTabPanel conDecVis
+ * conDecTreant conDecTreeViewer conDecKnowledgePage conDecVis
  *
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
@@ -891,7 +890,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: nudging/condec.prompts.js
 	 */
@@ -991,7 +990,7 @@
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;
 
-	var showFlag = function(type, message, status) {
+	function showFlag(type, message, status) {
 		if (status === null || status === undefined) {
 			status = "";
 		}
