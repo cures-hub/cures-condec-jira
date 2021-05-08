@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +47,6 @@ public class LinkSuggestionRest {
 	// Related issue detection
 	// --------------------
 
-	// TODO Change to POST method and post FilterSettings object
 	@Path("/getRelatedKnowledgeElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -60,11 +57,7 @@ public class LinkSuggestionRest {
 		if (knowledgeElement.isPresent()) {
 			ContextInformation ci = new ContextInformation(knowledgeElement.get());
 			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
-			Map<String, Object> result = new HashMap<>();
-
-			result.put("relatedIssues", linkSuggestions);
-
-			return Response.ok(result).build();
+			return Response.ok(linkSuggestions).build();
 		}
 		return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
 	}
@@ -97,7 +90,6 @@ public class LinkSuggestionRest {
 			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
 			if (knowledgeElement.isPresent()) {
-				HashMap<String, Object> result = new HashMap<>();
 				LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 						.getLinkSuggestionConfiguration(projectKey);
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
@@ -111,8 +103,7 @@ public class LinkSuggestionRest {
 				List<DuplicateSuggestion> foundDuplicateSuggestions = manager
 						.findAllDuplicates(persistenceManager.getKnowledgeElements());
 
-				result.put("duplicates", foundDuplicateSuggestions);
-				response = Response.ok(result).build();
+				response = Response.ok(foundDuplicateSuggestions).build();
 			} else {
 				response = Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
 			}

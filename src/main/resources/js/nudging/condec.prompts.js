@@ -25,8 +25,8 @@
 				Promise.all([conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 				conDecLinkSuggestionAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
 					(values) => {
-						let numDuplicates = (values[0].duplicates.length);
-						let numRelated = (values[1].relatedIssues.length);
+						let numDuplicates = (values[0].length);
+						let numRelated = (values[1].length);
 						if (numDuplicates + numRelated > 0) {
 							conDecLinkSuggestionAPI.consistencyCheckFlag = showWarning(
 								'Unlinked related knowledge elements detected!',

@@ -104,8 +104,8 @@
 		conDecDialog.showDecisionLinkDialog(this.issueId, targetElement.id, "i", targetElement.documentationLocation, () => self.loadData());
 	}
 
-	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(response) {
-		return response.relatedIssues.map(suggestion => {
+	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(relatedIssues) {
+		return relatedIssues.map(suggestion => {
 			suggestion.totalScore = Math.round(suggestion.totalScore * 1000) / 1000.;
 			return suggestion;
 		}).sort((a, b) => b.totalScore - a.totalScore);
@@ -159,8 +159,8 @@
 			`<button class='aui-button aui-button-removed' onclick="conDecLinkSuggestion.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
-	let processDuplicateIssuesResponse = function(response) {
-		return response.duplicates.sort((a, b) => b.length - a.length);
+	let processDuplicateIssuesResponse = function(duplicates) {
+		return duplicates.sort((a, b) => b.length - a.length);
 	}
 
 	//-----------------------------------------
@@ -170,7 +170,7 @@
 		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
 
 		conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
-			.then((data) => this.displayDuplicateIssues(processDuplicateIssuesResponse(data)))
+			.then((duplicates) => this.displayDuplicateIssues(processDuplicateIssuesResponse(duplicates)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
 	}
@@ -178,7 +178,7 @@
 	ConDecLinkSuggestion.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 		conDecLinkSuggestionAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
-			.then((data) => this.displayRelatedElements(this.processRelatedIssuesResponse(data)))
+			.then((relatedIssues) => this.displayRelatedElements(this.processRelatedIssuesResponse(relatedIssues)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
 	}
