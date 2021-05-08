@@ -6,8 +6,8 @@ Knowledge elements that do not fulfill the definition of done are shown in the r
 Besides, ConDec shows warnings to the developers if the definition of done of the knowledge subgraph they are working on is not fulfilled.
 
 <form class="aui">
-    #parse("templates/settings/definitionofdone/completenessCriteriaSettings.vm")
-    #parse("templates/settings/definitionofdone/completenessEventSettings.vm")
+    #parse("templates/settings/definitionofdone/definitionOfDoneCriteriaSettings.vm")
+    #parse("templates/settings/definitionofdone/promptEventSettings.vm")
 </form>
 
 <script>
@@ -21,10 +21,9 @@ Besides, ConDec shows warnings to the developers if the definition of done of th
                 "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
                 "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
                 "maximumLinkDistanceToDecisions": $("#link-distance-to-decision-number-input").prop("value"),
-                "minimumNumberOfDecisions": $("#minimum-number-of-decisions-input").prop("value"),
+                "minimumDecisionsWithinLinkDistance": $("#minimum-number-of-decisions-input").prop("value"),
             }
-            conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
+            conDecDoDCheckingAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         });
-        conDecJiraIssueCompletenessModule.init();
     });
 </script>

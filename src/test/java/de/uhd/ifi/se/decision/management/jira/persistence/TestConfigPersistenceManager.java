@@ -41,13 +41,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		init();
 	}
 
-	// test global (=across project) configuration
-	@Test
-	public void testSetGlobalValue() {
-		ConfigPersistenceManager.setValue("isActivated", "true");
-		assertEquals("true", ConfigPersistenceManager.getValue("isActivated"));
-	}
-
 	// configure persistence in Jira issues
 	@Test
 	public void testSetIssueStrategyNullFalse() {
@@ -420,65 +413,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
 		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
 		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
-	}
-
-	@Test
-	public void testSetAndGetFragmentLength() {
-		int input = 4;
-		ConfigPersistenceManager.setFragmentLength("TEST", input);
-		assertEquals("Activated should be 4.", 4, ConfigPersistenceManager.getFragmentLength("TEST"));
-		// Cannot be tested because the MockPluginSettingsFactory does not support
-		// multiple projects
-		/*
-		 * input = 3; ConfigPersistenceManager.setFragmentLength("NOTTEST", input);
-		 * assertEquals("Activated should still be 4.", 4,
-		 * ConfigPersistenceManager.getFragmentLength("TEST"));
-		 *
-		 */
-	}
-
-	@Test
-	public void testSetAndGetMinLinkSuggestionScore() {
-		double input = 0.4;
-		ConfigPersistenceManager.setMinLinkSuggestionScore("TEST", input);
-		assertEquals("Activated should be 0.4.", input, ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"),
-				0.0);
-		// Cannot be tested because the MockPluginSettingsFactory does not support
-		// multiple projects
-		/*
-		 * input = 0.3; ConfigPersistenceManager.setMinLinkSuggestionScore("NOTTEST",
-		 * input); assertTrue("Activated should still be 0.4.", 0.4 ==
-		 * ConfigPersistenceManager.getMinLinkSuggestionScore("TEST"));
-		 *
-		 */
-	}
-
-	@Test
-	public void testSetAndGetActivationStatusOfQualityEvent() {
-		String consistencyEvent = "done";
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, true);
-		assertTrue("Activated should be true.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
-
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", consistencyEvent, false);
-		assertFalse("Activated should be false.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
-
-		String otherConsistencyEvent = "none";
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent("TEST", otherConsistencyEvent, true);
-		assertFalse("Activated for 'done' should still be false.",
-				ConfigPersistenceManager.getActivationStatusOfQualityEvent("TEST", consistencyEvent));
-
-		// Cannot be tested because the MockPluginSettingsFactory does not support
-		// multiple projects
-		/*
-		 * isActivated = true;
-		 * ConfigPersistenceManager.setActivationStatusOfConsistencyEvent("NOTTEST",
-		 * consistencyEvent, isActivated);
-		 * assertFalse("Activated for 'done' of project 'TEST' should still be false.",
-		 * ConfigPersistenceManager.getActivationStatusOfConsistencyEvent("TEST",
-		 * consistencyEvent));
-		 */
 	}
 
 	@Test

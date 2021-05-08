@@ -5,28 +5,3 @@ updates:
   schedule:
     interval: monthly
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: com.atlassian.templaterenderer:atlassian-template-renderer-api
-    versions:
-    - 4.1.1
-  - dependency-name: org.apache.maven.plugins:maven-enforcer-plugin
-    versions:
-    - 3.0.0-atlassian-m01
-  - dependency-name: com.github.javaparser:javaparser-core
-    versions:
-    - 3.19.0
-  - dependency-name: com.atlassian.sal:sal-api
-    versions:
-    - 4.4.1
-  - dependency-name: com.atlassian.activeobjects:activeobjects-test
-    versions:
-    - 3.3.1-111e15e3
-    - 3.3.1-7fb0ce9e
-  - dependency-name: com.atlassian.activeobjects:activeobjects-plugin
-    versions:
-    - 3.3.1-111e15e3
-    - 3.3.1-7fb0ce9e
-  - dependency-name: com.atlassian.maven.plugins:jira-maven-plugin
-    versions:
-    - 8.2.1
-    - 8.3.0-c760282e9

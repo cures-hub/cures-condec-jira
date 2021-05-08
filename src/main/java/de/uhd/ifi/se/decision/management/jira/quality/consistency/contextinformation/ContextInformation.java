@@ -9,9 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -20,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 public class ContextInformation implements ContextInformationProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ContextInformation.class);
 
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> cips;
@@ -69,7 +65,7 @@ public class ContextInformation implements ContextInformationProvider {
 				// the score is higher or equal to the minimum probability set by the admin for
 				// the project
 				.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager
-						.getMinLinkSuggestionScore(this.element.getProject().getProjectKey()))
+						.getLinkSuggestionConfiguration(this.element.getProject().getProjectKey()).getMinProbability())
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 

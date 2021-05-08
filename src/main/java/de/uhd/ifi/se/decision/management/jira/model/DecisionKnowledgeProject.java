@@ -25,7 +25,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepos
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -228,6 +230,21 @@ public class DecisionKnowledgeProject {
 	 */
 	public DecisionGuidanceConfiguration getDecisionGuidanceConfiguration() {
 		return ConfigPersistenceManager.getDecisionGuidanceConfiguration(getProjectKey());
+	}
+
+	/**
+	 * @return configuration for the link suggestion and duplicate recognition
+	 *         within one project.
+	 */
+	public LinkSuggestionConfiguration getLinkSuggestionConfiguration() {
+		return ConfigPersistenceManager.getLinkSuggestionConfiguration(getProjectKey());
+	}
+
+	/**
+	 * @return configuration for just-in-time prompts (for developer nudging).
+	 */
+	public PromptingEventConfiguration getPromptingEventConfiguration() {
+		return ConfigPersistenceManager.getPromptingEventConfiguration(getProjectKey());
 	}
 
 	/**

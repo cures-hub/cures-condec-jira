@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
-	plugins-version="2">
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
 
 	<!-- Plug-in Information -->
 	<plugin-info>
@@ -18,27 +17,27 @@
 	<!-- Web Resources -->
 	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
 		<description>
-            Provides the style sheets and icons used in this plug-in.
-        </description>
-        <context>atl.general</context>
-        <!-- general icons -->
-        <resource type="download" name="add.png" location="/images/add.png"/>
-        <resource type="download" name="delete.png" location="/images/delete.png"/>
-        <resource type="download" name="open.png" location="/images/open.png"/>
-        <resource type="download" name="edit.png" location="/images/edit.png"/>
-        <resource type="download" name="32px.png" location="/images/32px.png"/>
-        <resource type="download" name="40px.png" location="/images/40px.png"/>
-        <resource type="download" name="throbber.gif" location="/images/throbber.gif"/>
-        <!-- default knowledge icons -->
-        <resource type="download" name="decision.png" location="/images/decision.png"/>
-        <resource type="download" name="issue.png" location="/images/issue.png"/>
-        <resource type="download" name="alternative.png" location="/images/alternative.png"/>
-        <resource type="download" name="solution.png" location="/images/solution.png"/>
-        <resource type="download" name="argument.png" location="/images/argument.png"/>
-        <resource type="download" name="argument_pro.png" location="/images/argument_pro.png"/>
-        <resource type="download" name="argument_con.png" location="/images/argument_con.png"/>
-        <resource type="download" name="other.png" location="/images/other.png"/>
-        <resource type="download" name="code.png" location="/images/code.png"/>
+			Provides the style sheets and icons used in this plug-in.
+		</description>
+		<context>atl.general</context>
+		<!-- general icons -->
+		<resource type="download" name="add.png" location="/images/add.png" />
+		<resource type="download" name="delete.png" location="/images/delete.png" />
+		<resource type="download" name="open.png" location="/images/open.png" />
+		<resource type="download" name="edit.png" location="/images/edit.png" />
+		<resource type="download" name="32px.png" location="/images/32px.png" />
+		<resource type="download" name="40px.png" location="/images/40px.png" />
+		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
+		<!-- default knowledge icons -->
+		<resource type="download" name="decision.png" location="/images/decision.png" />
+		<resource type="download" name="issue.png" location="/images/issue.png" />
+		<resource type="download" name="alternative.png" location="/images/alternative.png" />
+		<resource type="download" name="solution.png" location="/images/solution.png" />
+		<resource type="download" name="argument.png" location="/images/argument.png" />
+		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
+		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
+		<resource type="download" name="other.png" location="/images/other.png" />
+		<resource type="download" name="code.png" location="/images/code.png" />
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
@@ -48,8 +47,7 @@
 		<resource type="download" name="implication.png" location="/images/implication.png" />
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
-		<resource type="download" name="codesummarization.png"
-			location="/images/codesummarization.png" />
+		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
 		<!-- visGraph.js icons -->
 		<resource type="download" name="img/network/addNodeIcon.png"
 			location="/js/lib/vis-network/dist/img/network/addNodeIcon.png" />
@@ -72,8 +70,7 @@
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
-		<resource type="download" name="vis-network.css"
-			location="/js/lib/vis-network/dist/dist/vis-network.css" />
+		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
 		<resource type="download" name="vis-timeline-graph2d.min.css"
 			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
 		<!-- look and feel like Jira -->
@@ -97,14 +94,17 @@
 		<dependency>com.atlassian.auiplugin:aui-page-layout</dependency>
 		<dependency>com.atlassian.auiplugin:aui-help</dependency>
 		<!-- Jira dialogs -->
-		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
-		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
+		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue
+		</dependency>
+		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue
+		</dependency>
 	</web-resource>
 
 	<web-resource key="decision-knowledge-management-resources"
 		name="ConDec Decision Knowledge Management Resources">
 		<description>
-			Provides the JavaScript files for the management of decision knowledge.
+			Provides the JavaScript files for the management of
+			decision knowledge.
 		</description>
 		<context>atl.general</context>
 		<!-- jstree -->
@@ -113,8 +113,7 @@
 		<resource type="download" name="Treant.js" location="/js/lib/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/lib/treant/raphael.js" />
 		<!--Vis -->
-		<resource type="download" name="vis-network.js"
-			location="/js/lib/vis-network/dist/vis-network.js" />
+		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
 		<resource type="download" name="vis-timeline-graph2d.min.js"
 			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
 		<!-- ConDec JavaScript files -->
@@ -122,60 +121,49 @@
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
-		<resource type="download" name="condec.context.menu.js"
-			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
-		<resource type="download" name="condec.knowledge.page.js"
-			location="/js/condec.knowledge.page.js" />
-		<resource type="download" name="condec.gitdiffviewer.js"
-			location="/js/condec.gitdiffviewer.js" />
+		<resource type="download" name="condec.knowledge.page.js" location="/js/condec.knowledge.page.js" />
+		<resource type="download" name="condec.gitdiffviewer.js" location="/js/condec.gitdiffviewer.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
 			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
-		<resource type="download" name="condec.tree.viewer.js"
-			location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
-		<resource type="download" name="condec.decision.table.js"
-			location="/js/condec.decision.table.js" />
+		<resource type="download" name="condec.decision.table.js" location="/js/condec.decision.table.js" />
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
 		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
-        <resource type="download" name="condec.cia.js" location="/js/condec.cia.js"/>
+		<resource type="download" name="condec.cia.js" location="/js/condec.cia.js" />
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
-		<resource type="download" name="condec.decision.groups.js"
-			location="/js/condec.decision.groups.js" />
-		<resource type="download" name="condec.consistency.api.js"
-			location="/js/condec.consistency.api.js" />
-		<resource type="download" name="condec.rationale.backlog.js"
-			location="/js/condec.rationale.backlog.js" />
-		<resource type="download" name="condec.config.rest.js"
-			location="/js/condec.config.rest.js" />
-		<resource type="download" name="condec.settings.consistency.js"
-			location="/js/settings/condec.settings.consistency.js" />
-        <resource type="download" name="condec.settings.completeness.js"
-                  location="/js/settings/condec.settings.completeness.js" />
-        <resource type="download" name="condec.settings.quality.js"
-                  location="/js/settings/condec.settings.quality.js" />
-		<resource type="download" name="condec.jira.issue.module.consistency.js"
-			location="/js/condec.jira.issue.module.consistency.js" />
+		<resource type="download" name="condec.decision.groups.js" location="/js/condec.decision.groups.js" />
+		<resource type="download" name="condec.definition.of.done.checking.api.js"
+			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
+		<resource type="download" name="condec.link.suggestion.api.js"
+			location="/js/linksuggestion/condec.link.suggestion.api.js" />
+		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
+		<resource type="download" name="condec.nudging.api.js" location="/js/nudging/condec.nudging.api.js" />
+		<resource type="download" name="condec.prompts.js" location="/js/nudging/condec.prompts.js" />
+		<resource type="download" name="condec.link.suggestion.js"
+			location="/js/linksuggestion/condec.link.suggestion.js" />
 		<resource type="download" name="condec.decision.guidance.api.js"
 			location="/js/decisionguidance/condec.decision.guidance.api.js" />
 		<resource type="download" name="condec.decision.guidance.js"
-			location="/js/decisionguidance/condec.decision.guidance.js" />		
+			location="/js/decisionguidance/condec.decision.guidance.js" />
 	</web-resource>
 
-	<web-resource key="release-notes-resources"
-		name="ConDec Release Notes Page Resources">
+	<web-resource key="release-notes-resources" name="ConDec Release Notes Page Resources">
 		<description>
-			Provides the JavaScript files for the separate release note page of this
+			Provides the JavaScript files for the separate release
+			note page of this
 			plug-in.
 		</description>
 		<resource type="download" name="condec.release.notes.api.js"
 			location="/js/releasenotes/condec.release.notes.api.js" />
 		<resource type="download" name="condec.release.notes.page.js"
 			location="/js/releasenotes/condec.release.notes.page.js" />
-        <resource type="download" name="condec.release.notes.dialog.js"
-                  location="/js/releasenotes/condec.release.notes.dialog.js"/>
+		<resource type="download" name="condec.release.notes.dialog.js"
+			location="/js/releasenotes/condec.release.notes.dialog.js" />
 		<!--Markdown editor -->
 		<resource type="download" name="condec.release.note.markdowneditor.editor.js"
 			location="/js/lib/markdowneditor/editor.js" />
@@ -193,17 +181,18 @@
 			location="/js/lib/markdowneditor/icomoon_ie.eot" />
 	</web-resource>
 
-	<web-resource key="classifier-resources"
-		name="Resources for Text Classification as Decision Knowledge">
+	<web-resource key="classifier-resources" name="Resources for Text Classification as Decision Knowledge">
 		<description>
-			Provides the resources needed for the identifiction of decision knowledge elements in Jira issue description and
-			comments, e.g. the training data file for the text classifier.
+			Provides the resources needed for the identifiction of
+			decision knowledge elements in
+			Jira issue
+			description and
+			comments,
+			e.g. the training data file for the text classifier.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="defaultTrainingData.csv"
-			location="/classifier/defaultTrainingData.csv" />
-		<resource type="download" name="CONDEC-NLP4RE2021.csv"
-			location="/classifier/CONDEC-NLP4RE2021.csv" />
+		<resource type="download" name="defaultTrainingData.csv" location="/classifier/defaultTrainingData.csv" />
+		<resource type="download" name="CONDEC-NLP4RE2021.csv" location="/classifier/CONDEC-NLP4RE2021.csv" />
 
 		<!-- Language models -->
 		<resource type="download" name="glove.6b.50d.csv" location="/classifier/glove.6b.50d.csv" />
@@ -212,17 +201,20 @@
 	<!-- Decision Knowledge Page -->
 	<web-item name="Link to the Decision Knowledge Page in Side Bar" key="sidebar-link"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
-		<description>Provides the "Decision Knowledge" link in the project's navigation sidebar.
+		<description>Provides the "Decision Knowledge" link in the project's
+			navigation sidebar.
 		</description>
 		<label key="condec.sidebar.link.label" />
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
-		<link>/projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
+		<link>/projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-panel name="Decision Knowledge Page" key="decision-knowledge-page"
-		location="decision-knowledge-page" weight="1000">
+	<web-panel name="Decision Knowledge Page" key="decision-knowledge-page" location="decision-knowledge-page"
+		weight="1000">
 		<description>
-			Provides the plug-in page that developers use to manage decision knowledge.
+			Provides the plug-in page that developers use to manage
+			decision knowledge.
 		</description>
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
@@ -230,25 +222,25 @@
 	<!-- Release Notes Page -->
 	<web-item name="Link to the Release Notes Page in Side Bar" key="sidebar-link-release-notes"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
-		<description>Provides the "Release Notes" link in the project's navigation sidebar.
+		<description>Provides the "Release Notes" link in the project's
+			navigation sidebar.
 		</description>
 		<label key="condec.sidebar.link.label.release.notes" />
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-queues" />
-		<link>/projects/$pathEncodedProjectKey?selectedItem=release-notes-page</link>
+		<link>/projects/$pathEncodedProjectKey?selectedItem=release-notes-page
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-panel name="Release Notes Page" key="release-notes-page"
-		location="release-notes-page" weight="1000">
+	<web-panel name="Release Notes Page" key="release-notes-page" location="release-notes-page" weight="1000">
 		<description>
-			Provides the plug-in page that developers use to manage release notes.
+			Provides the plug-in page that developers use to manage
+			release notes.
 		</description>
-		<resource name="view" type="velocity"
-			location="templates/releasenotes/releaseNotesPage.vm" />
+		<resource name="view" type="velocity" location="templates/releasenotes/releaseNotesPage.vm" />
 	</web-panel>
 
 	<!-- REST API -->
-	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/condec"
-		version="1.0">
+	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/condec" version="1.0">
 		<description>
 			Provides REST resources to manage decision knowledge.
 		</description>
@@ -260,23 +252,24 @@
 	</rest>
 
 	<!-- Global Settings -->
-	<web-section key="condec-admin-section"
-		name="Web Section Label for ConDec Plug-in Administration" location="admin_plugins_menu">
+	<web-section key="condec-admin-section" name="Web Section Label for ConDec Plug-in Administration"
+		location="admin_plugins_menu">
 		<label key="condec.admin.section.label" />
 		<description>
-			Adds the "Decision Knowledge" label to the sidebar of the add-ons admin page.
+			Adds the "Decision Knowledge" label to the sidebar of the
+			add-ons admin page.
 		</description>
 	</web-section>
 	<web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
 		section="admin_plugins_menu/condec-admin-section" weight="10" application="jira">
 		<label key="condec.admin.menu.item.label" />
 		<description>
-			Adds the "ConDec settings" menu item that links to the ConDec admin page.
+			Adds the "ConDec settings" menu item that links to the
+			ConDec admin page.
 		</description>
 		<link>/plugins/servlet/condec/globalsettings</link>
 	</web-item>
-	<servlet key="servlet-for-settings-of-all-projects"
-		name="Servlet for Settings of All Projects"
+	<servlet key="servlet-for-settings-of-all-projects" name="Servlet for Settings of All Projects"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects">
 		<description>Provides the administration page.</description>
 		<url-pattern>/condec/globalsettings</url-pattern>
@@ -287,16 +280,18 @@
 		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
 		<label key="condec.project.settings.section.label" />
 		<description>
-			Adds the "ConDec Decision Knowledge" label to the project settings menu.
+			Adds the "ConDec Decision Knowledge" label to the project
+			settings menu.
 		</description>
 	</web-section>
-	<web-item key="condec-project-settings-menu-item"
-		name="Menu Item for ConDec Plug-in Project Settings"
+	<web-item key="condec-project-settings-menu-item" name="Menu Item for ConDec Plug-in Project Settings"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="15">
-		<description>Adds the "Basic settings" menu item that links to the project settings.
+		<description>Adds the "Basic settings" menu item that links to the
+			project settings.
 		</description>
 		<label key="condec.project.settings.menu.item" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<web-item key="condec-project-settings-menu-item-rationale-model"
@@ -307,35 +302,45 @@
 		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=rationaleModel
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-definitionofdone"
-              name="Menu Item for ConDec Plug-in Project Settings of Definition of Done"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-        <description>Adds the "Definition of Done" menu item.</description>
-        <label key="condec.project.settings.menu.item.definition.of.done"/>
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=definitionOfDone
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-cia"
-              name="Menu Item for ConDec Plug-in Project Settings of CIA Settings"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="17">
-        <description>Adds the "CIA Settings" menu item.</description>
-        <label key="condec.project.settings.menu.item.rationale.cia"/>
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=cia
-        </link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-git"
-              name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
-              section="atl.jira.proj.config/condec-project-settings-section" weight="18">
-        <description>Adds the "Git connection" menu item.</description>
-        <label key="condec.project.settings.menu.item.git"/>
-        <link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git</link>
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition"/>
-    </web-item>
-    <web-item key="condec-project-settings-menu-item-classification"
-              name="Menu Item for ConDec Plug-in Project Settings of Classification"
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-definitionofdone"
+		name="Menu Item for ConDec Plug-in Project Settings of Definition of Done"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "Definition of Done" menu item.</description>
+		<label key="condec.project.settings.menu.item.definition.of.done" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=definitionOfDone
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-nudging"
+		name="Menu Item for ConDec Plug-in Project Settings of Developer Nudging"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "Nudging" menu item.</description>
+		<label key="condec.project.settings.menu.item.nudging" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=nudging
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-cia"
+		name="Menu Item for ConDec Plug-in Project Settings of CIA Settings"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="17">
+		<description>Adds the "CIA Settings" menu item.</description>
+		<label key="condec.project.settings.menu.item.rationale.cia" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=cia
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-git"
+		name="Menu Item for ConDec Plug-in Project Settings of Git Connection"
+		section="atl.jira.proj.config/condec-project-settings-section" weight="18">
+		<description>Adds the "Git connection" menu item.</description>
+		<label key="condec.project.settings.menu.item.git" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=git
+		</link>
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
+	<web-item key="condec-project-settings-menu-item-classification"
+		name="Menu Item for ConDec Plug-in Project Settings of Classification"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="19">
 		<description>Adds the "Text classification" menu item.</description>
 		<label key="condec.project.settings.menu.item.classification" />
@@ -375,13 +380,15 @@
 		section="atl.jira.proj.config/condec-project-settings-section" weight="23">
 		<description>Adds the "Webhook" menu item.</description>
 		<label key="condec.project.settings.menu.item.webhook" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook</link>
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=webhook
+		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<servlet key="servlet-for-settings-of-single-project"
-		name="Servlet for Settings of Single Project"
+	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
-		<description>Provides the project settings page for the project administrators.</description>
+		<description>Provides the project settings page for the project
+			administrators.
+		</description>
 		<url-pattern>/condec/settings</url-pattern>
 		<init-param>
 			<param-name>category</param-name>
@@ -392,8 +399,10 @@
 	<!-- Active Objects -->
 	<ao key="ao-module" name="Active Objects Service">
 		<description>
-			Configures the Active Objects service that is used to persist decision knowledge with
-			object relational mapping.
+			Configures the Active Objects service that is used to
+			persist decision knowledge with
+			object relational
+			mapping.
 		</description>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase
@@ -429,100 +438,113 @@
 	</web-panel>
 
 	<!-- Decision Knowledge Export Functions -->
-	<web-item key="export-as-table-item"
-		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
+	<web-item key="export-as-table-item" name="Menu Item for Decision Knowledge Export as Table"
+		section="operations-operations">
 		<label key="condec.export.as.table.item.label" />
-		<description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
+		<description>Adds a menu item to the "More" dropdown in the Jira issue
+			view.
+		</description>
 		<link linkId="export-as-table-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="reset-decision-knowledge-from-text-item"
-		name="Menu Item for Rereading the Decision Knowledge Documented in Jira Issue Description and Comments" section="operations-operations">
+		name="Menu Item for Rereading the Decision Knowledge Documented in Jira Issue Description and Comments"
+		section="operations-operations">
 		<label key="condec.reset.decision.knowledge.from.text.item.label" />
-		<description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
+		<description>Adds a menu item to the "More" dropdown in the Jira issue
+			view.
+		</description>
 		<link linkId="reset-decision-knowledge-from-text-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-    <web-item key="remove-recommendations-from-knowledge-graph"
-              name="Menu Item for Removing the Recommendations in the Knowledge Graph" section="operations-operations">
-        <label key="condec.remove.recommendations.from.knowledge.graph.label" />
-        <description>Adds a menu item to the "More" dropdown in the Jira issue view.</description>
-        <link linkId="remove-recommendations-from-knowledge-graph-link" />
-        <condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-    </web-item>
+	<web-item key="remove-recommendations-from-knowledge-graph"
+		name="Menu Item for Removing the Recommendations in the Knowledge Graph" section="operations-operations">
+		<label key="condec.remove.recommendations.from.knowledge.graph.label" />
+		<description>Adds a menu item to the "More" dropdown in the Jira issue
+			view.
+		</description>
+		<link linkId="remove-recommendations-from-knowledge-graph-link" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+	</web-item>
 
 	<macro key="issue" name="ConDec Editor Macro for Issues"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">
-		<description>Highlights issue knowledge elements in the description and comments of Jira issue.
+		<description>Highlights issue knowledge elements in the description
+			and comments of Jira issue.
 		</description>
 	</macro>
 
 	<macro key="decision" name="ConDec Editor Macro for Decisions"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro">
-		<description>Highlights decision knowledge elements in the description and comments of Jira issue.
+		<description>Highlights decision knowledge elements in the description
+			and comments of Jira issue.
 		</description>
 	</macro>
 
 	<macro key="alternative" name="ConDec Editor Macro for Alternatives"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro">
-		<description>Highlights alternative knowledge elements in the description and comments of Jira
+		<description>Highlights alternative knowledge elements in the
+			description and comments of Jira
 			issue.
 		</description>
 	</macro>
 
 	<macro key="pro" name="ConDec Editor Macro for Pro-arguments"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro">
-		<description>Highlights pro knowledge elements in the description and comments of Jira issue.
+		<description>Highlights pro knowledge elements in the description and
+			comments of Jira issue.
 		</description>
 	</macro>
 
 	<macro key="con" name="ConDec Editor Macro for Con-arguments"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro">
-		<description>Highlights con knowledge elements in the description and comments of Jira issue.
+		<description>Highlights con knowledge elements in the description and
+			comments of Jira issue.
 		</description>
 	</macro>
 
 	<macro key="codesummarization" name="ConDec Editor Macro for Code Summarization"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro">
-		<description>Highlights code summarization in the description and comments of Jira issue.
+		<description>Highlights code summarization in the description and
+			comments of Jira issue.
 		</description>
 	</macro>
 
 	<web-resource key="toolbar" name="Jira Editor Reference Plugin Toolbar Init">
-		<description>Extends the rich text editor with menu items that enable the user to manually
-			classify text into decision knowledge elements.
+		<description>Extends the rich text editor with menu items that enable
+			the user to manually
+			classify
+			text into decision
+			knowledge elements.
 		</description>
 		<context>jira.rich.editor</context>
 		<context>jira.view.issue</context>
 		<context>jira.edit.issue</context>
 		<context>jira.create.issue</context>
 		<context>gh-rapid</context>
-		<resource type="download" name="js/toolbar-init.js"
-			location="js/condec.text.editor.extension.js" />
+		<resource type="download" name="js/toolbar-init.js" location="js/condec.text.editor.extension.js" />
 	</web-resource>
 
-	<web-resource key="dashboard-item-condec-resources"
-		name="ConDec Dashboard Web Resources">
-		<resource type="download" name="condec.dashboard.css"
-			location="/css/condec.dashboard.css" />
+	<web-resource key="dashboard-item-condec-resources" name="ConDec Dashboard Web Resources">
+		<resource type="download" name="condec.dashboard.css" location="/css/condec.dashboard.css" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
-        <resource type="download" name="condec.git.branches.dashboard.configuration.js"
-                  location="js/dashboard/condec.git.branches.dashboard.configuration.js" />
-        <resource type="download" name="condec.general.metrics.dashboard.js"
-            location="js/dashboard/condec.general.metrics.dashboard.js" />
-        <resource type="download" name="condec.general.metrics.dashboard.configuration.js"
-                  location="js/dashboard/condec.general.metrics.dashboard.configuration.js" />
-        <resource type="download" name="condec.rationale.completeness.dashboard.js"
-                  location="js/dashboard/condec.rationale.completeness.dashboard.js" />
-        <resource type="download" name="condec.rationale.completeness.dashboard.configuration.js"
-                  location="js/dashboard/condec.rationale.completeness.dashboard.configuration.js" />
-        <resource type="download" name="condec.rationale.coverage.dashboard.js"
-                  location="js/dashboard/condec.rationale.coverage.dashboard.js" />
-        <resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
-                  location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
+		<resource type="download" name="condec.git.branches.dashboard.configuration.js"
+			location="js/dashboard/condec.git.branches.dashboard.configuration.js" />
+		<resource type="download" name="condec.general.metrics.dashboard.js"
+			location="js/dashboard/condec.general.metrics.dashboard.js" />
+		<resource type="download" name="condec.general.metrics.dashboard.configuration.js"
+			location="js/dashboard/condec.general.metrics.dashboard.configuration.js" />
+		<resource type="download" name="condec.rationale.completeness.dashboard.js"
+			location="js/dashboard/condec.rationale.completeness.dashboard.js" />
+		<resource type="download" name="condec.rationale.completeness.dashboard.configuration.js"
+			location="js/dashboard/condec.rationale.completeness.dashboard.configuration.js" />
+		<resource type="download" name="condec.rationale.coverage.dashboard.js"
+			location="js/dashboard/condec.rationale.coverage.dashboard.js" />
+		<resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
+			location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
@@ -532,15 +554,14 @@
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<context>atl.dashboard</context>
-        <context>dashboard-item-condec</context>
+		<context>dashboard-item-condec</context>
 	</web-resource>
 
 	<!-- ConDec dashboard items -->
 	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
 	<dashboard-item key="condec-feature-branch-dashboard-item"
-		name="ConDec Dashboard for Feature Task Branches"
-        configurable="true">
+		name="ConDec Dashboard for Feature Task Branches" configurable="true">
 		<definition>
 			<title key="condec.dashboard.featurebranch.title" />
 			<categories>
@@ -553,18 +574,16 @@
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.featurebranch.description" />
-		<resource name="view" type="velocity"
-			location="/templates/dashboard/featureBranches.vm" />
+		<resource name="view" type="velocity" location="/templates/dashboard/featureBranches.vm" />
 		<context-provider
 			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
-        <amd-module>dashboard/branches</amd-module>
+		<amd-module>dashboard/branches</amd-module>
 	</dashboard-item>
 
-    <dashboard-item key="condec-general-metrics-dashboard-item"
-                    name="ConDec Dashboard for General Metrics"
-                    configurable="true">
-        <definition>
-            <title key="condec.dashboard.generalmetrics.title" />
+	<dashboard-item key="condec-general-metrics-dashboard-item" name="ConDec Dashboard for General Metrics"
+		configurable="true">
+		<definition>
+			<title key="condec.dashboard.generalmetrics.title" />
 			<categories>
 				<category>Jira</category>
 			</categories>
@@ -574,19 +593,17 @@
 			<thumbnail
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
-        <description key="condec.dashboard.generalmetrics.description" />
-        <resource name="view" type="velocity"
-                  location="/templates/dashboard/generalMetrics.vm" />
-        <context-provider
-            class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
-        <amd-module>dashboard/generalMetrics</amd-module>
-    </dashboard-item>
+		<description key="condec.dashboard.generalmetrics.description" />
+		<resource name="view" type="velocity" location="/templates/dashboard/generalMetrics.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
+		<amd-module>dashboard/generalMetrics</amd-module>
+	</dashboard-item>
 
-    <dashboard-item key="condec-ratioanle-completeness-dashboard-item"
-                    name="ConDec Dashboard for Intra-Rationale Completeness"
-                    configurable="true">
-        <definition>
-            <title key="condec.dashboard.rationalecompleteness.title" />
+	<dashboard-item key="condec-ratioanle-completeness-dashboard-item"
+		name="ConDec Dashboard for Intra-Rationale Completeness" configurable="true">
+		<definition>
+			<title key="condec.dashboard.rationalecompleteness.title" />
 			<categories>
 				<category>Jira</category>
 			</categories>
@@ -596,19 +613,17 @@
 			<thumbnail
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
-        <description key="condec.dashboard.rationalecompleteness.description" />
-        <resource name="view" type="velocity"
-                  location="/templates/dashboard/rationaleCompleteness.vm" />
-        <context-provider
-            class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
-        <amd-module>dashboard/rationaleCompleteness</amd-module>
-    </dashboard-item>
+		<description key="condec.dashboard.rationalecompleteness.description" />
+		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCompleteness.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
+		<amd-module>dashboard/rationaleCompleteness</amd-module>
+	</dashboard-item>
 
-    <dashboard-item key="condec-rationale-coverage-dashboard-item"
-                    name="ConDec Dashboard for Rationale Coverage"
-                    configurable="true">
-        <definition>
-            <title key="condec.dashboard.rationalecoverage.title" />
+	<dashboard-item key="condec-rationale-coverage-dashboard-item"
+		name="ConDec Dashboard for Rationale Coverage" configurable="true">
+		<definition>
+			<title key="condec.dashboard.rationalecoverage.title" />
 			<categories>
 				<category>Jira</category>
 			</categories>
@@ -618,11 +633,10 @@
 			<thumbnail
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
-        <description key="condec.dashboard.rationalecoverage.description" />
-        <resource name="view" type="velocity"
-                  location="/templates/dashboard/rationaleCoverage.vm" />
-        <context-provider
-            class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
-        <amd-module>dashboard/rationaleCoverage</amd-module>
+		<description key="condec.dashboard.rationalecoverage.description" />
+		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCoverage.vm" />
+		<context-provider
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
+		<amd-module>dashboard/rationaleCoverage</amd-module>
 	</dashboard-item>
 </atlassian-plugin>

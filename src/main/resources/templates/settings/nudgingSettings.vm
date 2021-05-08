@@ -1,0 +1,17 @@
+<h2>Nudging Settings and Explanation</h2>
+This page gathers settings and explanations for nudging mechanisms used in ConDec to motivate the developers 
+to document decision knowledge and to use the documentation.
+
+<h2>Just-in-time prompts</h2>
+<form class="aui">
+    #parse("templates/settings/linksuggestion/promptEventSettings.vm")
+    #parse("templates/settings/definitionofdone/promptEventSettings.vm")
+</form>
+
+<h3>TODO: Settings for the prompting events for decision guidance</h3>
+
+<h3>TODO: Settings for the prompting events for text classification?</h3>
+
+<h2>Ambient feedback</h2>
+The quality of the documentation is indicated by the color of menu items.
+If the color of menu items is red, action is needed by the developers or the rationale manager.

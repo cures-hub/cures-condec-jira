@@ -5,8 +5,7 @@
  * Requires: conDecTreant.findParentElement
  *
  * Is required by: conDecContextMenu conDecDialog conDecEvolutionPage
- * conDecTreant conDecTreeViewer conDecJiraIssueModule conDecKnowledgePage
- * conDecTabPanel conDecVis
+ * conDecTreant conDecTreeViewer conDecKnowledgePage conDecVis
  *
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
@@ -880,31 +879,6 @@
 			});
 	};
 
-	/*
-	 * external references: rationaleBacklogSettings.vm
-	 */
-	ConDecAPI.prototype.setDefinitionOfDone = function(projectKey, definitionOfDone) {
-		generalApi.postJSON(this.restPrefix + "/config/setDefinitionOfDone.json?projectKey=" + projectKey, definitionOfDone, function(
-			error, response) {
-			if (error === null) {
-				showFlag("success", "The definition of done is updated.");
-			}
-		});
-	};
-
-	/*
-	 * TODO Remove this REST method and use a velocity parameter in the SettingsForSingleProject servlet instead
-	 * external reference: rationaleBacklogSettings.vm
-	 */
-	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDefinitionOfDone.json?projectKey=${projectKey}`,
-			function(error, definitionOfDone) {
-				if (error === null) {
-					callback(definitionOfDone);
-				}
-			});
-	};
-
 	ConDecAPI.prototype.getPropagationRules = function() {
 		if (this.propagationRules === undefined || this.propagationRules.length === 0) {
 			this.propagationRules = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getPropagationRules.json?projectKey=" + conDecAPI.projectKey);
@@ -936,8 +910,7 @@
 			// console.log(error);
 		}
 		if (issueKey === undefined) {
-			// console.log("conDecAPI could not getIssueKey using object
-			// JIRA!");
+			// console.log("conDecAPI could not getIssueKey using object JIRA!");
 			try {
 				issueKey = AJS.Meta.get("issue-key");
 			} catch (error) {
@@ -945,8 +918,7 @@
 			}
 		}
 		if (issueKey === undefined) {
-			// console.log("conDecAPI could not getIssueKey using object
-			// AJS!");
+			// console.log("conDecAPI could not getIssueKey using object AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
@@ -999,7 +971,7 @@
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;
 
-	var showFlag = function(type, message, status) {
+	function showFlag(type, message, status) {
 		if (status === null || status === undefined) {
 			status = "";
 		}

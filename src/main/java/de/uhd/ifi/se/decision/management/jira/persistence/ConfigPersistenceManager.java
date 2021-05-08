@@ -11,7 +11,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.gzipfilter.org.apache.commons.lang.math.NumberUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -29,8 +28,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
@@ -56,24 +57,12 @@ public class ConfigPersistenceManager {
 		return issueTypeNames;
 	}
 
-	public static String getValue(String parameter) {
-		return getValue(parameter, null, true);
-	}
-
 	public static String getValue(String projectKey, String parameter) {
-		return getValue(parameter, projectKey, false);
-	}
-
-	public static String getValue(String parameter, String projectKey, boolean isGlobalSetting) {
-		PluginSettings settings;
-		if (isGlobalSetting) {
-			settings = pluginSettingsFactory.createGlobalSettings();
-		} else {
-			if (projectKey == null || projectKey.isBlank()) {
-				return "";
-			}
-			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		if (projectKey == null || projectKey.isBlank()) {
+			return "";
 		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+
 		if (parameter == null || parameter.isBlank()) {
 			return "";
 		}
@@ -83,10 +72,7 @@ public class ConfigPersistenceManager {
 				return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
 			}
 		});
-		if (value instanceof String) {
-			return value.toString();
-		}
-		return "";
+		return value != null ? value.toString() : "";
 	}
 
 	public static Object getSavedObject(String projectKey, String parameter, Type type) {
@@ -280,19 +266,6 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "textClassificationConfiguration", textClassificationConfiguration, type);
 	}
 
-	public static void setValue(String parameter, String value) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
-	}
-
-	public static void setValue(String projectKey, String parameter, Object value) {
-		if (projectKey == null || value == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
-	}
-
 	public static void setValue(String projectKey, String parameter, String value) {
 		if (projectKey == null || value == null) {
 			return;
@@ -336,33 +309,23 @@ public class ConfigPersistenceManager {
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
 
-	/* **************************************/
-	/*										*/
-	/* Configuration for Consistency */
-	/*										*/
-	/* **************************************/
-
-	public static void setFragmentLength(String projectKey, int fragmentLength) {
-		setValue(projectKey, "fragmentLength", Integer.toString(fragmentLength));
+	public static void saveLinkSuggestionConfiguration(String projectKey,
+			LinkSuggestionConfiguration linkSuggestionConfiguration) {
+		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
 	}
 
-	public static int getFragmentLength(String projectKey) {
-		return NumberUtils.toInt(getValue(projectKey, "fragmentLength"), 21);
+	public static LinkSuggestionConfiguration getLinkSuggestionConfiguration(String projectKey) {
+		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+		}.getType();
+		LinkSuggestionConfiguration linkSuggestionConfiguration = (LinkSuggestionConfiguration) getSavedObject(
+				projectKey, "linkSuggestionConfiguration", type);
+		if (linkSuggestionConfiguration == null) {
+			return new LinkSuggestionConfiguration();
+		}
+		return linkSuggestionConfiguration;
 	}
-
-	public static void setMinLinkSuggestionScore(String projectKey, double minLinkSuggestionProbability) {
-		setValue(projectKey, "minLinkSuggestionProbability", Double.toString(minLinkSuggestionProbability));
-	}
-
-	public static double getMinLinkSuggestionScore(String projectKey) {
-		return NumberUtils.toDouble(getValue(projectKey, "minLinkSuggestionProbability"), 0.3);
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Decision Guidance */
-	/*										*/
-	/* **************************************/
 
 	public static void saveDecisionGuidanceConfiguration(String projectKey,
 			DecisionGuidanceConfiguration decisionGuidanceConfiguration) {
@@ -382,11 +345,6 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	/* **************************************/
-	/*										*/
-	/* Configuration for Rationale Backlog */
-	/*										*/
-	/* **************************************/
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
@@ -403,25 +361,23 @@ public class ConfigPersistenceManager {
 		return definitionOfDone;
 	}
 
-	/* **********************************************************/
-	/*										 					*/
-	/* Configuration for quality = completeness + consistency */
-	/*															*/
-	/* **********************************************************/
-
-	public static void setActivationStatusOfQualityEvent(String projectKey, String eventKey, boolean isActivated) {
-		setValue(projectKey, eventKey, Boolean.toString(isActivated));
+	public static void savePromptingEventConfiguration(String projectKey,
+			PromptingEventConfiguration promptingEventConfiguration) {
+		Type type = new TypeToken<PromptingEventConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "promptingEventConfiguration", promptingEventConfiguration, type);
 	}
 
-	public static boolean getActivationStatusOfQualityEvent(String projectKey, String eventKey) {
-		return "true".equals(getValue(projectKey, eventKey));
+	public static PromptingEventConfiguration getPromptingEventConfiguration(String projectKey) {
+		Type type = new TypeToken<PromptingEventConfiguration>() {
+		}.getType();
+		PromptingEventConfiguration promptingEventConfiguration = (PromptingEventConfiguration) getSavedObject(
+				projectKey, "promptingEventConfiguration", type);
+		if (promptingEventConfiguration == null) {
+			return new PromptingEventConfiguration();
+		}
+		return promptingEventConfiguration;
 	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Change Impact Analysis (CIA) Settings */
-	/*										*/
-	/* **************************************/
 
 	public static void setCiaSettings(String projectKey, CiaSettings ciaSettings) {
 		Type type = new TypeToken<CiaSettings>() {
@@ -438,5 +394,4 @@ public class ConfigPersistenceManager {
 		}
 		return ciaSettings;
 	}
-
 }

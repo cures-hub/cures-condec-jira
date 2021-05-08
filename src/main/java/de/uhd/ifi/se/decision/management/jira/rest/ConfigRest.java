@@ -34,7 +34,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
@@ -53,7 +52,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -614,45 +612,6 @@ public class ConfigRest {
 
 	/* **************************************/
 	/*										*/
-	/* Configuration for Consistency */
-	/*										*/
-	/* **************************************/
-	@Path("/setMinimumLinkSuggestionProbability")
-	@POST
-	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
-		}
-
-		ConfigPersistenceManager.setMinLinkSuggestionScore(projectKey, minLinkSuggestionProbability);
-		return Response.ok().build();
-	}
-
-	@Path("/setMinimumDuplicateLength")
-	@POST
-	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (fragmentLength < 3) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
-		}
-		ConfigPersistenceManager.setFragmentLength(projectKey, fragmentLength);
-		return Response.ok().build();
-	}
-
-	/* **************************************/
-	/*										*/
 	/* Configuration for Change Impact Analysis */
 	/*										*/
 	/* **************************************/
@@ -663,7 +622,7 @@ public class ConfigRest {
 	public Response setCiaSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			CiaSettings ciaSettings) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -680,112 +639,10 @@ public class ConfigRest {
 	@Path("/getCiaSettings")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCiaSettings(@QueryParam("projectKey") String projectKey) {
-
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Rationale Backlog */
-	/*										*/
-	/* **************************************/
-
-	@Path("/setDefinitionOfDone")
-	@POST
-	public Response setDefinitionOfDone(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
-
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		if (definitionOfDone == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
-		}
-
-		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
-		return Response.ok().build();
-	}
-
-	@Path("/getDefinitionOfDone")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDefinitionOfDone(@Context HttpServletRequest request,
-										@QueryParam("projectKey") String projectKey) {
-
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getDefinitionOfDone(projectKey)).build();
-	}
-
-	/* **********************************************************/
-	/*															*/
-	/* Configuration for quality = completeness + consistency */
-	/*															*/
-	/* **********************************************************/
-
-	@Path("/isQualityEventActivated")
-	@GET
-	public Response isQualityEventActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey) {
-
-		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		boolean isActivated = ConfigPersistenceManager.getActivationStatusOfQualityEvent(projectKey, eventKey);
-		return Response.ok().entity(ImmutableMap.of("isActivated", isActivated)).build();
-	}
-
-	@Path("/activateQualityEvent")
-	@POST
-	public Response activateQualityEvent(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = this.checkIfQualityTriggerRequestIsValid(request, projectKey, eventKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ConfigPersistenceManager.setActivationStatusOfQualityEvent(projectKey, eventKey, isActivated);
-		return Response.ok().build();
-	}
-
-	private boolean checkIfQualityTriggerExists(String triggerName) {
-		String triggerNameShort = triggerName;
-		String[] triggerNameParts = triggerName.split("-");
-		if (triggerNameParts.length > 0) {
-			triggerNameShort = triggerNameParts[triggerNameParts.length - 1];
-		}
-		return ((QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton.getInstance())
-				.doesQualityCheckEventTriggerNameExist(triggerNameShort);
-	}
-
-	private Response checkIfQualityTriggerRequestIsValid(HttpServletRequest request, String projectKey,
-			String eventKey) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-		if (!checkIfQualityTriggerExists(eventKey)) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "No trigger exists for this event.")).build();
-		}
-		return Response.status(Status.OK).build();
-	}
-
-	@Path("/getQualityEventTriggerNames")
-	@GET
-	public Response getAllConsistencyCheckEventTriggerNames() {
-		QualityCheckEventListenerSingleton listener = (QualityCheckEventListenerSingleton) QualityCheckEventListenerSingleton
-				.getInstance();
-		return Response.ok(ImmutableMap.of("names", listener.getAllQualityCheckEventTriggerNames())).build();
 	}
 }

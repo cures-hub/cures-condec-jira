@@ -60,10 +60,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("trainedClassifiers", FileManager.getTrainedClassifierNames());
 
 		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
-
-		velocityParameters.put("minLengthDuplicate", ConfigPersistenceManager.getFragmentLength(projectKey));
-		velocityParameters.put("minProbabilityLink", ConfigPersistenceManager.getMinLinkSuggestionScore(projectKey));
-
 		return velocityParameters;
 	}
 
