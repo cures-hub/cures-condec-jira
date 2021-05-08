@@ -15,7 +15,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleCompletenessCalculator extends TestSetUp {
 
-	RationaleCompletenessCalculator calculator;
+	private RationaleCompletenessCalculator calculator;
 
 	@Before
 	public void setUp() {

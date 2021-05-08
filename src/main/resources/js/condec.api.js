@@ -929,13 +929,13 @@
 	};
 
 	function getIssueKey() {
-		var issueKey = null;
+		var issueKey;
 		try {
 			issueKey = JIRA.Issue.getIssueKey();
 		} catch (error) {
 			// console.log(error);
 		}
-		if (issueKey === undefined || !issueKey) {
+		if (issueKey === undefined) {
 			// console.log("conDecAPI could not getIssueKey using object
 			// JIRA!");
 			try {
@@ -944,7 +944,7 @@
 				// console.log(error);
 			}
 		}
-		if (issueKey === undefined || !issueKey) {
+		if (issueKey === undefined) {
 			// console.log("conDecAPI could not getIssueKey using object
 			// AJS!");
 			var chunks = document.location.pathname.split("/");

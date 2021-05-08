@@ -16,7 +16,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleCoverageCalculator extends TestSetUp {
 
-	RationaleCoverageCalculator calculator;
+	private RationaleCoverageCalculator calculator;
 
 	@Before
 	public void setUp() {
