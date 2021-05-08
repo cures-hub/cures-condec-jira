@@ -281,19 +281,6 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "textClassificationConfiguration", textClassificationConfiguration, type);
 	}
 
-	public static void setValue(String parameter, String value) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
-	}
-
-	public static void setValue(String projectKey, String parameter, Object value) {
-		if (projectKey == null || value == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(ComponentGetter.PLUGIN_KEY + "." + parameter, value);
-	}
-
 	public static void setValue(String projectKey, String parameter, String value) {
 		if (projectKey == null || value == null) {
 			return;
@@ -337,12 +324,6 @@ public class ConfigPersistenceManager {
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
 
-	/* **************************************/
-	/*										*/
-	/* Configuration for Consistency */
-	/*										*/
-	/* **************************************/
-
 	public static void saveLinkSuggestionConfiguration(String projectKey,
 			LinkSuggestionConfiguration linkSuggestionConfiguration) {
 		Type type = new TypeToken<LinkSuggestionConfiguration>() {
@@ -360,12 +341,6 @@ public class ConfigPersistenceManager {
 		}
 		return linkSuggestionConfiguration;
 	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Decision Guidance */
-	/*										*/
-	/* **************************************/
 
 	public static void saveDecisionGuidanceConfiguration(String projectKey,
 			DecisionGuidanceConfiguration decisionGuidanceConfiguration) {
@@ -385,11 +360,6 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	/* **************************************/
-	/*										*/
-	/* Configuration for Rationale Backlog */
-	/*										*/
-	/* **************************************/
 	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
@@ -423,26 +393,6 @@ public class ConfigPersistenceManager {
 		}
 		return promptingEventConfiguration;
 	}
-
-	/* **********************************************************/
-	/*										 					*/
-	/* Configuration for quality = completeness + consistency */
-	/*															*/
-	/* **********************************************************/
-
-	public static void setActivationStatusOfQualityEvent(String projectKey, String eventKey, boolean isActivated) {
-		setValue(projectKey, eventKey, Boolean.toString(isActivated));
-	}
-
-	public static boolean getActivationStatusOfQualityEvent(String projectKey, String eventKey) {
-		return "true".equals(getValue(projectKey, eventKey));
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Change Impact Analysis (CIA) Settings */
-	/*										*/
-	/* **************************************/
 
 	public static void setCiaSettings(String projectKey, CiaSettings ciaSettings) {
 		Type type = new TypeToken<CiaSettings>() {
