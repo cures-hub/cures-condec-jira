@@ -27,11 +27,11 @@
 <script>
 	$("#isCompletenessDoneActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		configAPI.setActivationStatusOfQualityEvent("$projectKey", "done", isActivated);
+		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "done", isActivated);
 	})
 	
 	$("#isCompletenessClosedActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		configAPI.setActivationStatusOfQualityEvent("$projectKey", "closed", isActivated);
+		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "closed", isActivated);
 	})
 </script>

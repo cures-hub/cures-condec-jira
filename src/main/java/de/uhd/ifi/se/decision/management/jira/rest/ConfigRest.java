@@ -51,7 +51,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
@@ -671,27 +670,4 @@ public class ConfigRest {
 		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
 		return Response.ok().build();
 	}
-
-	/* **********************************************************/
-	/*															*/
-	/* Configuration for quality = completeness + consistency */
-	/*															*/
-	/* **********************************************************/
-
-	@Path("/activatePromptEventForDefinitionOfDoneChecking")
-	@POST
-	public Response activateQualityEvent(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		PromptingEventConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getPromptingEventConfiguration(projectKey);
-		linkSuggestionConfiguration.setPromptEventForDefinitionOfDoneChecking(eventKey, isActivated);
-		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
 }

@@ -1,14 +1,20 @@
 (function(global) {
 
-	const ConfigAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/config";
+	const NudgingAPI = function() {
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 	};
 
-	ConfigAPI.prototype.setActivationStatusOfQualityEvent = function(projectKey, eventKey, isActivated) {
+	NudgingAPI.prototype.activatePromptEventForDefinitionOfDoneChecking = function(projectKey, eventKey, isActivated) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForDefinitionOfDoneChecking.json?
 			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
 			.then(conDecAPI.showFlag("success", "Activation of prompting event was successfully changed!"));
 	}
 
-	global.configAPI = new ConfigAPI();
+	NudgingAPI.prototype.activatePromptEventForLinkSuggestion = function(projectKey, eventKey, isActivated) {
+		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForLinkSuggestion.json?
+			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
+			.then(conDecAPI.showFlag("success", "Activation of prompting event was successfully changed!"));
+	}
+
+	global.nudgingAPI = new NudgingAPI();
 })(window);

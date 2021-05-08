@@ -27,11 +27,11 @@
 <script>
 	$("#isConsistencyDoneActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		consistencyAPI.setActivationStatusOfQualityEvent("$projectKey", "done", isActivated);
+		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "done", isActivated);
 	})
 	
 	$("#isConsistencyClosedActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		consistencyAPI.setActivationStatusOfQualityEvent("$projectKey", "closed", isActivated);
+		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "closed", isActivated);
 	})
 </script>

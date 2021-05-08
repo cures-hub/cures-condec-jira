@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
@@ -286,22 +285,6 @@ public class ConsistencyRest {
 				.getLinkSuggestionConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
-	@Path("/activatePromptEventForLinkSuggestion")
-	@POST
-	public Response activatePromptEventForLinkSuggestion(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
-				.getPromptingEventConfiguration(projectKey);
-		promptingEventConfiguration.setPromptEventForLinkSuggestion(eventKey, isActivated);
-		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, promptingEventConfiguration);
 		return Response.ok().build();
 	}
 

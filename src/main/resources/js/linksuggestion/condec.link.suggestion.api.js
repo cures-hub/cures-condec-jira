@@ -22,12 +22,6 @@
 			.then(conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	}
 
-	ConsistencyAPI.prototype.setActivationStatusOfQualityEvent = function(projectKey, eventKey, isActivated) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForLinkSuggestion.json?
-			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
-			.then(conDecAPI.showFlag("success", "Activation of prompting event was successfully changed!"));
-	}
-
 	ConsistencyAPI.prototype.getRelatedKnowledgeElements = function(projectKey, elementId, elementLocation) {
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/getRelatedKnowledgeElements.json

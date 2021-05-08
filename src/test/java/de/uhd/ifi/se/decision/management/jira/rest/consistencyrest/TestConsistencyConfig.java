@@ -78,19 +78,4 @@ public class TestConsistencyConfig extends TestConfigSuper {
 	public void testSetMinimumDuplicateLengthWithValidValue() {
 		assertEquals(200, configRest.setMinimumDuplicateLength(request, VALID_PROJECT_KEY, 9).getStatus());
 	}
-
-	// Tests for the method activateQualityEvent
-	@Test
-	@DisplayName("Tests the method activateQualityEvent.")
-	public void testActivateConsistencyEventWithValidData() {
-		assertEquals(200,
-				configRest.activatePromptEventForLinkSuggestion(request, VALID_PROJECT_KEY, "done", true).getStatus());
-	}
-
-	@Test
-	@DisplayName("Tests the method activateQualityEvent.")
-	public void testActivateConsistencyEventWithInvalidData() {
-		assertEquals(200,
-				configRest.activatePromptEventForLinkSuggestion(request, VALID_PROJECT_KEY, "none", true).getStatus());
-	}
 }
