@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -15,19 +16,45 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleCoverageCalculator extends TestSetUp {
 
+	RationaleCoverageCalculator calculator;
+
 	@Before
 	public void setUp() {
 		init();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		String sourceKnowledgeTypes = "TEST-1";
+		calculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleCoverageCalculator() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		String sourceKnowledgeTypes = "TEST-1";
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
 		assertNotNull(calculator);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetDecisionsPerSelectedJiraIssue() {
+		assertEquals(calculator.getDecisionsPerSelectedJiraIssue().size(), 5);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetIssuesPerSelectedJiraIssue() {
+		assertEquals(calculator.getIssuesPerSelectedJiraIssue().size(), 5);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetDecisionDocumentedForSelectedJiraIssue() {
+		assertEquals(calculator.getDecisionDocumentedForSelectedJiraIssue().size(), 3);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetIssueDocumentedForSelectedJiraIssue() {
+		assertEquals(calculator.getIssueDocumentedForSelectedJiraIssue().size(), 3);
 	}
 
 }
