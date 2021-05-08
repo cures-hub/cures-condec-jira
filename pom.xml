@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>com.atlassian.sal</groupId>
 			<artifactId>sal-api</artifactId>
-			<version>4.5.1</version>
+			<version>4.5.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Servlets -->
@@ -262,7 +262,7 @@
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.19.0</version>
+			<version>3.20.2</version>
 		</dependency>
 		<!-- Webhook -->
 		<dependency>
@@ -275,7 +275,7 @@
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</dependency>
 		<!-- Decision Guidance -->
 		<dependency>
@@ -422,7 +422,7 @@
 		<jira.version>8.15.0</jira.version>
 		<amps.version>8.3.0-128eead6d</amps.version>
 		<ao.version>3.3.2</ao.version>
-		<jacoco-version>0.8.6</jacoco-version>
+		<jacoco-version>0.8.7</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
