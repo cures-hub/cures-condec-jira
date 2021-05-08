@@ -495,14 +495,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		definitionOfDone.setLineNumbersInCodeFile(20);
 		definitionOfDone.setMaximumLinkDistanceToDecisions(3);
-		definitionOfDone.setMinimumNumberOfDecisionsWithinLinkDistance(3);
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
 		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
 		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
-		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumNumberOfDecisionsWithinLinkDistance());
+		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumDecisionsWithinLinkDistance());
 	}
 
 	@Test

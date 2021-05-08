@@ -1,0 +1,3 @@
+<div class="filter-label" id="label-$viewIdentifier">
+    <label>Filter options:</label>
+</div>

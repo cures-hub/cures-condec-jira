@@ -1,0 +1,6 @@
+<div id="source-knowledgetype-multi-$viewIdentifier" class="condec-dashboard-filter">
+    <label for="source-knowledgetype-multi-select-$viewIdentifier">Rationale Coverage will be calculated for:</label>
+    <select name="SourceKnowledgeType" id="source-knowledgetype-multi-select-$viewIdentifier" class="select"
+            multiple size="3">
+    </select>
+</div>

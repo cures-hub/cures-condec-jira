@@ -14,98 +14,9 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var ConDecRationaleCompletenessDashboard = function () {
 		console.log("ConDecRationaleCompletenessDashboard constructor");
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.setKnowledgeTypes = function (projectKey) {
-		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-rationale-completeness");
-
-		removeOptions(KnowledgeTypeSelection);
-		this.fillOptionsKnowledgeTypes(projectKey);
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.setDocumentationLocations = function setDocumentationLocations() {
-		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-rationale-completeness");
-
-		removeOptions(documentationLocationSelection);
-		this.fillOptionsDocumentationLocations();
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.setKnowledgeStatus = function setKnowledgeStatus() {
-		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
-
-		removeOptions(KnowledgeStatusSelection);
-		this.fillOptionsKnowledgeStatus();
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.setLinkTypes = function setLinkTypes() {
-		var LinkTypeSelection = document.getElementById("linktype-multi-select-rationale-completeness");
-
-		removeOptions(LinkTypeSelection);
-		this.fillOptionsLinkTypes();
-	};
-
-	function removeOptions(selectElement) {
-		var i, L = selectElement.options.length - 1;
-		for(i = L; i >= 0; i--) {
-			selectElement.remove(i);
-		}
-	}
-	
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
-		conDecAPI.projectKey = projectKey;
-		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
-
-		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-rationale-completeness");
-
-		for (i = 0; i < knowledgeTypes.length; i++) {
-			var knowledgeType = document.createElement('option');
-			knowledgeType.value = knowledgeTypes[i];
-			knowledgeType.text = knowledgeTypes[i];
-			knowledgeTypeNode.options.add(knowledgeType);
-		}
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsDocumentationLocations = function () {
-		var documentationLocations = conDecAPI.documentationLocations;
-
-		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-rationale-completeness");
-
-		for (i = 0; i < documentationLocations.length; i++) {
-			var documentationLocation = document.createElement('option');
-			documentationLocation.value = documentationLocations[i];
-			documentationLocation.text = documentationLocations[i];
-			documentationLocationNode.options.add(documentationLocation);
-		}
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsKnowledgeStatus = function () {
-		var knowledgeStatuses = conDecAPI.knowledgeStatus;
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-completeness");
-
-		for (i = 0; i < knowledgeStatuses.length; i++) {
-			var knowledgeStatus = document.createElement('option');
-			knowledgeStatus.value = knowledgeStatuses[i];
-			knowledgeStatus.text = knowledgeStatuses[i];
-			knowledgeStatusNode.options.add(knowledgeStatus);
-		}
-	};
-
-	ConDecRationaleCompletenessDashboard.prototype.fillOptionsLinkTypes = function() {
-		var linkTypes = conDecAPI.getLinkTypes();
-
-		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-completeness");
-
-		for (i = 0; i < linkTypes.length; i++) {
-			var linkType = document.createElement('option');
-			linkType.value = linkTypes[i];
-			linkType.text = linkTypes[i];
-			linkTypesNode.options.add(linkType);
-		}
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.init = function (filterSettings) {
@@ -113,19 +24,17 @@
 			, "condec-rationale-completeness-dashboard-contents-container"
 			, "condec-rationale-completeness-dashboard-contents-data-error"
 			, "condec-rationale-completeness-dashboard-no-project"
-			, "condec-rationale-completeness-dashboard-processing"
-			, "condec-rationale-completeness-dashboard-nogit-error");
+			, "condec-rationale-completeness-dashboard-processing");
 
 		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 	}
 
 	function showDashboardSection(node) {
@@ -135,7 +44,6 @@
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 
@@ -184,23 +92,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function getMap(jsonString) {
-		jsonString = jsonString.replace("\{", "").replace("\}", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		var jsMap = new Map();
-		var mapEntries = jsonString.split(",");
-		for (i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split(":");
-			jsMap.set(mapEntry[0], mapEntry[1]);
-		}
-		return jsMap;
-	}
-
-	function renderData(data) {
-		var jsonStr = JSON.stringify(data);
-		var json = JSON.parse(jsonStr);
-
+	function renderData(calculator) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -218,12 +110,12 @@
 		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		issuesSolvedByDecision = getMap(JSON.stringify(json.issuesSolvedByDecision));
-		decisionsSolvingIssues = getMap(JSON.stringify(json.decisionsSolvingIssues));
-		proArgumentDocumentedForDecision = getMap(JSON.stringify(json.proArgumentDocumentedForDecision));
-		conArgumentDocumentedForAlternative = getMap(JSON.stringify(json.conArgumentDocumentedForAlternative));
-		conArgumentDocumentedForDecision = getMap(JSON.stringify(json.conArgumentDocumentedForDecision));
-		proArgumentDocumentedForAlternative = getMap(JSON.stringify(json.proArgumentDocumentedForAlternative));
+		issuesSolvedByDecision = calculator.issuesSolvedByDecision;
+		decisionsSolvingIssues = calculator.decisionsSolvingIssues;
+		proArgumentDocumentedForDecision = calculator.proArgumentDocumentedForDecision;
+		conArgumentDocumentedForAlternative = calculator.conArgumentDocumentedForAlternative;
+		conArgumentDocumentedForDecision = calculator.conArgumentDocumentedForDecision;
+		proArgumentDocumentedForAlternative = calculator.proArgumentDocumentedForAlternative;
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",

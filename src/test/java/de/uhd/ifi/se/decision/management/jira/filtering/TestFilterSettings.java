@@ -215,6 +215,17 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testGetMinimumDecisionCoverage() {
+		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	}
+
+	@Test
+	public void testSetMinimumDecisionCoverage() {
+		filterSettings.setMinimumDecisionCoverage(2);
+		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	}
+
+	@Test
 	public void testGetMinAndMaxDegree() {
 		assertEquals(0, filterSettings.getMinDegree());
 		assertEquals(50, filterSettings.getMaxDegree());

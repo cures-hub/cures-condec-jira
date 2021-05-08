@@ -14,99 +14,9 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var ConDecGeneralMetricsDashboard = function() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeTypes = function (projectKey) {
-		var KnowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-general-metrics");
-
-		removeOptions(KnowledgeTypeSelection);
-		this.fillOptionsKnowledgeTypes(projectKey);
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.setDocumentationLocations = function () {
-		var documentationLocationSelection = document.getElementById("documentationlocation-multi-select-general-metrics");
-
-		removeOptions(documentationLocationSelection);
-		this.fillOptionsDocumentationLocations();
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.setKnowledgeStatus = function () {
-		var KnowledgeStatusSelection = document.getElementById("knowledgestatus-multi-select-general-metrics");
-
-		removeOptions(KnowledgeStatusSelection);
-		this.fillOptionsKnowledgeStatus();
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.setLinkTypes = function () {
-		var LinkTypeSelection = document.getElementById("linktype-multi-select-general-metrics");
-
-		removeOptions(LinkTypeSelection);
-		this.fillOptionsLinkTypes();
-	};
-
-	function removeOptions(selectElement) {
-		var i, L = selectElement.options.length - 1;
-		for(i = L; i >= 0; i--) {
-			selectElement.remove(i);
-		}
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeTypes = function (projectKey) {
-		conDecAPI.projectKey = projectKey;
-		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
-
-		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-general-metrics");
-
-		for (i = 0; i < knowledgeTypes.length; i++) {
-			var knowledgeType = document.createElement('option');
-			knowledgeType.value = knowledgeTypes[i];
-			knowledgeType.text = knowledgeTypes[i];
-			knowledgeTypeNode.options.add(knowledgeType);
-		}
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsDocumentationLocations = function() {
-		var documentationLocations = conDecAPI.documentationLocations;
-		
-		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-general-metrics");
-
-		for (i = 0; i < documentationLocations.length; i++) {
-			var documentationLocation = document.createElement('option');
-			documentationLocation.value = documentationLocations[i];
-			documentationLocation.text = documentationLocations[i];
-			documentationLocationNode.options.add(documentationLocation);
-		}
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsKnowledgeStatus = function () {
-		var knowledgeStatuses = conDecAPI.knowledgeStatus;
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
-
-		for (i = 0; i < knowledgeStatuses.length; i++) {
-			var knowledgeStatus = document.createElement('option');
-			knowledgeStatus.value = knowledgeStatuses[i];
-			knowledgeStatus.text = knowledgeStatuses[i];
-			knowledgeStatusNode.options.add(knowledgeStatus);
-		}
-	};
-
-	ConDecGeneralMetricsDashboard.prototype.fillOptionsLinkTypes = function() {
-		var linkTypes = conDecAPI.getLinkTypes();
-		console.log(linkTypes);
-
-		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
-
-		for (i = 0; i < linkTypes.length; i++) {
-			var linkType = document.createElement('option');
-			linkType.value = linkTypes[i];
-			linkType.text = linkTypes[i];
-			linkTypesNode.options.add(linkType);
-		}
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
@@ -114,19 +24,17 @@
 			, "condec-general-metrics-dashboard-contents-container"
 			, "condec-general-metrics-dashboard-contents-data-error"
 			, "condec-general-metrics-dashboard-no-project"
-			, "condec-general-metrics-dashboard-processing"
-			, "condec-general-metrics-dashboard-nogit-error");
+			, "condec-general-metrics-dashboard-processing");
 
 		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 	}
 
 	function showDashboardSection(node) {
@@ -136,7 +44,6 @@
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 
@@ -185,23 +92,7 @@
 		showDashboardSection(dashboardProcessingNode);
 	}
 
-	function getMap(jsonString) {
-		jsonString = jsonString.replace("\{", "").replace("\}", "");
-		jsonString = jsonString.replaceAll("\"", "");
-
-		var jsMap = new Map();
-		var mapEntries = jsonString.split(",");
-		for (i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split(":");
-			jsMap.set(mapEntry[0], mapEntry[1]);
-		}
-		return jsMap;
-	}
-
-	function renderData(data) {
-		var jsonStr = JSON.stringify(data);
-		var json = JSON.parse(jsonStr);
-
+	function renderData(calculator) {
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
 		var commitsPerIssue = new Map();
@@ -220,12 +111,12 @@
 		knowledgeTypeDistribution.set("no knowledge type", "");
 
 		/* form data for charts */
-		commentsPerIssue = getMap(JSON.stringify(json.numberOfCommentsPerJiraIssue));
-		commitsPerIssue = getMap(JSON.stringify(json.numberOfCommitsPerJiraIssue));
-		reqCodeSummary = getMap(JSON.stringify(json.requirementsAndCodeFiles));
-		decSources = getMap(JSON.stringify(json.numberOfElementsPerDocumentationLocation));
-		relevantSentences = getMap(JSON.stringify(json.numberOfRelevantComments));
-		knowledgeTypeDistribution = getMap(JSON.stringify(json.distributionOfKnowledgeTypes));
+		commentsPerIssue = calculator.numberOfCommentsPerIssue;
+		commitsPerIssue = calculator.numberOfCommits;
+		reqCodeSummary = calculator.reqAndClassSummary;
+		decSources = calculator.elementsFromDifferentOrigins;
+		relevantSentences = calculator.numberOfRelevantComments;
+		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",

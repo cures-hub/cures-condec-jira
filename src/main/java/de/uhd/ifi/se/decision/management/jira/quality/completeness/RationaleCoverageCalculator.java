@@ -1,26 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Calculates the rationale coverage of requirements, code, and other software
@@ -29,169 +24,147 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
  */
 public class RationaleCoverageCalculator {
 
+	@JsonIgnore
+	private FilterSettings filterSettings;
+	@JsonIgnore
+	private FilteringManager filteringManager;
+	@JsonIgnore
+	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<>();
+
+	private Map<String, Integer> decisionsPerSelectedJiraIssue = new HashMap<>();
+	private Map<String, Integer> issuesPerSelectedJiraIssue = new HashMap<>();
+	private Map<String, String> decisionDocumentedForSelectedJiraIssue = new HashMap<>();
+	private Map<String, String> issueDocumentedForSelectedJiraIssue = new HashMap<>();
+
+	@JsonIgnore
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
-	private String projectKey;
-	private ApplicationUser user;
-	private FilterSettings filterSettings;
-	private FilteringManager filteringManager;
-	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<KnowledgeElement, Map<KnowledgeType, Integer>>();
-
-	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings) {
-		this.projectKey = filterSettings.getProjectKey();
-		this.user = user;
+	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
+									   String sourceKnowledgeTypesString) {
 		this.filterSettings = filterSettings;
 		this.filteringManager = new FilteringManager(user, filterSettings);
+
+		Set<String> sourceKnowledgeTypes;
+		if (sourceKnowledgeTypesString.isEmpty()) {
+			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey()).getNamesOfKnowledgeTypes();
+		} else {
+			sourceKnowledgeTypes = new HashSet<>(Arrays.asList(sourceKnowledgeTypesString.split(",")));
+		}
+
+		if (!sourceKnowledgeTypes.isEmpty()) {
+			this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
+			this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+			this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
+			this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+		}
 	}
 
-	public int calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(KnowledgeElement sourceElement,
-			KnowledgeType knowledgeType, int linkDistance) {
-		Set<KnowledgeElement> elements = sourceElement.getLinkedElements(linkDistance);
-
-		int linkedElements = 0;
-
-		for (KnowledgeElement element : elements) {
-			if (element.getType() == knowledgeType) {
-				linkedElements++;
-			}
-		}
-
-		return linkedElements;
-	}
-
-	public Map<String, String> getJiraIssuesWithNeighborsOfOtherType(IssueType jiraIssueType,
-			KnowledgeType knowledgeType) {
-		LOGGER.info("RationaleCoverageCalculator getJiraIssuesWithNeighborsOfOtherType");
-
-		if (knowledgeType == null) {
-			return null;
-		}
-
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
-				jiraIssueType);
-
-		// TODO "minimumCoverage" should also be a normal filter setting in the
-		// dashboard.
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-
-		int linkDistance = filterSettings.getLinkDistance();
-		int threshold = definitionOfDone.getMinimumNumberOfDecisionsWithinLinkDistance();
-
-		String withHighLinks = "";
-		String withLowLinks = "";
-		String withoutLinks = "";
-
-		for (Issue jiraIssue : jiraIssues) {
-			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			int linkedIssues = calculateNumberOfElementsOfKnowledgeTypeWithinLinkDistance(sourceElement, knowledgeType,
-					linkDistance);
-			if (linkedIssues == 0) {
-				withoutLinks += jiraIssue.getKey() + " ";
-			} else if (linkedIssues < threshold) {
-				withLowLinks += jiraIssue.getKey() + " ";
-			} else {
-				withHighLinks += jiraIssue.getKey() + " ";
-			}
-		}
-
-		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put("Many links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withHighLinks);
-		result.put("Some links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withLowLinks);
-		result.put("No links from " + jiraIssueType.getName() + " to " + knowledgeType.toString(), withoutLinks);
-		return result;
-	}
-
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(IssueType jiraIssueType,
-			KnowledgeType knowledgeType) {
-		LOGGER.info("RequirementsDashboard getNumberOfDecisionKnowledgeElementsForJiraIssues 3 2");
-
-		if (knowledgeType == null) {
-			return null;
-		}
-
-		List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProjectAndType(user, projectKey,
-				jiraIssueType);
-
-		Set<String> types = new HashSet<>();
-		types.add(knowledgeType.toString());
-		filterSettings.setKnowledgeTypes(types);
-
-		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
-		for (Issue jiraIssue : jiraIssues) {
-			KnowledgeElement sourceElement = new KnowledgeElement(jiraIssue);
-			filterSettings.setSelectedElement(sourceElement);
-			FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-			Set<KnowledgeElement> elementsOfTargetTypeReachable = filteringManager.getElementsMatchingFilterSettings();
-			numberOfElementsReachable.put(jiraIssue.getKey(), elementsOfTargetTypeReachable.size() - 1);
-		}
-		return numberOfElementsReachable;
-	}
-
-	private void fillLinkedElementMap(KnowledgeElement codeFile) {
-		Map<KnowledgeType, Integer> knowledgeTypeMap = new HashMap<KnowledgeType, Integer>();
-		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(filterSettings.getLinkDistance());
+	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
+		Map<KnowledgeType, Integer> knowledgeTypeMap = new HashMap<>();
+		Set<KnowledgeElement> linkedElements = sourceElement.getLinkedElements(filterSettings.getLinkDistance());
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (!knowledgeTypeMap.containsKey(linkedElement.getType())) {
 				knowledgeTypeMap.put(linkedElement.getType(), 0);
 			}
 			knowledgeTypeMap.put(linkedElement.getType(), knowledgeTypeMap.get(linkedElement.getType()) + 1);
 		}
-		linkedElementMap.put(codeFile, knowledgeTypeMap);
+		linkedElementMap.put(sourceElement, knowledgeTypeMap);
 	}
 
-	public Map<String, String> getCodeFilesWithNeighborsOfOtherType(KnowledgeType knowledgeType) {
-		LOGGER.info("CodeCoverageCalculator getCodeFilesWithNeighborsOfOtherType");
+	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
+																			KnowledgeType knowledgeType) {
+		LOGGER.info("RationaleCoverageCalculator getKnowledgeElementsWithNeighborsOfOtherType");
 
 		if (knowledgeType == null) {
 			return null;
 		}
 
 		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
-		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
+		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
+		for (String sourceType : sourceTypes) {
+			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
+			knowledgeElements.addAll(graph.getElements(type));
+		}
 
-		String withLink = "";
-		String withoutLink = "";
+		int minimumDecisionCoverage = filterSettings.getMinimumDecisionCoverage();
 
-		for (KnowledgeElement codeFile : codeFiles) {
-			if (!linkedElementMap.containsKey(codeFile)) {
-				fillLinkedElementMap(codeFile);
+		String withHighLinks = "";
+		String withLowLinks = "";
+		String withoutLinks = "";
+
+		for (KnowledgeElement knowledgeElement : knowledgeElements) {
+			if (!linkedElementMap.containsKey(knowledgeElement)) {
+				fillLinkedElementMap(knowledgeElement);
 			}
-			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
-				withoutLink += projectKey + '-' + codeFile.getDescription() + " ";
-			} else {
-				withLink += projectKey + '-' + codeFile.getDescription() + " ";
+			if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
+				withoutLinks += knowledgeElement.getKey() + " ";
+			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) < minimumDecisionCoverage) {
+				withLowLinks += knowledgeElement.getKey() + " ";
+			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) >= minimumDecisionCoverage) {
+				withHighLinks += knowledgeElement.getKey() + " ";
 			}
 		}
 
-		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put("Links from Code File to " + knowledgeType.toString(), withLink);
-		result.put("No links from Code File to " + knowledgeType.toString(), withoutLink);
+		Map<String, String> result = new LinkedHashMap<>();
+		result.put("More than " + minimumDecisionCoverage + " links from selected types to " +
+			knowledgeType.toString(), withHighLinks);
+		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " +
+			knowledgeType.toString(), withLowLinks);
+		result.put("No links from selected types to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForCodeFiles(KnowledgeType knowledgeType) {
-		LOGGER.info("CodeCoverageCalculator getNumberOfDecisionKnowledgeElementsForCodeFiles");
+	private Map<String, Integer> calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(Set<String> sourceTypes,
+																						 KnowledgeType knowledgeType) {
+		LOGGER.info("RationaleCoverageCalculator getNumberOfDecisionKnowledgeElementsForKnowledgeElements");
 
 		if (knowledgeType == null) {
 			return null;
 		}
 
 		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
-		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
+		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
+		for (String sourceType : sourceTypes) {
+			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
+			knowledgeElements.addAll(graph.getElements(type));
+		}
 
-		Map<String, Integer> numberOfElementsReachable = new HashMap<String, Integer>();
-		for (KnowledgeElement codeFile : codeFiles) {
-			if (!linkedElementMap.containsKey(codeFile)) {
-				fillLinkedElementMap(codeFile);
+		Map<String, Integer> numberOfElementsReachable = new HashMap<>();
+		for (KnowledgeElement knowledgeElement : knowledgeElements) {
+			if (!linkedElementMap.containsKey(knowledgeElement)) {
+				fillLinkedElementMap(knowledgeElement);
 			}
-			if (!linkedElementMap.get(codeFile).containsKey(knowledgeType)) {
-				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(), 0);
+			if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
+				numberOfElementsReachable.put(knowledgeElement.getKey(), 0);
 			} else {
-				numberOfElementsReachable.put(projectKey + '-' + codeFile.getDescription(),
-						linkedElementMap.get(codeFile).get(knowledgeType));
+				numberOfElementsReachable.put(knowledgeElement.getKey(),
+					linkedElementMap.get(knowledgeElement).get(knowledgeType));
 			}
 		}
 		return numberOfElementsReachable;
 	}
 
+	@JsonProperty("decisionsPerSelectedJiraIssue")
+	public Map<String, Integer> getDecisionsPerSelectedJiraIssue() {
+		return decisionsPerSelectedJiraIssue;
+	}
+
+	@JsonProperty("issuesPerSelectedJiraIssue")
+	public Map<String, Integer> getIssuesPerSelectedJiraIssue() {
+		return issuesPerSelectedJiraIssue;
+	}
+
+	@JsonProperty("decisionDocumentedForSelectedJiraIssue")
+	public Map<String, String> getDecisionDocumentedForSelectedJiraIssue() {
+		return decisionDocumentedForSelectedJiraIssue;
+	}
+
+	@JsonProperty("issueDocumentedForSelectedJiraIssue")
+	public Map<String, String> getIssueDocumentedForSelectedJiraIssue() {
+		return issueDocumentedForSelectedJiraIssue;
+	}
 }

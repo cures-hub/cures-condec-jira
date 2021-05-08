@@ -47,6 +47,7 @@ public class DefinitionOfDone {
 	 * @return true if every decision problem (=issue) needs to be linked to at
 	 *         least one alternative.
 	 */
+	@JsonProperty("issueIsLinkedToAlternative")
 	public boolean isIssueIsLinkedToAlternative() {
 		return issueIsLinkedToAlternative;
 	}
@@ -65,6 +66,7 @@ public class DefinitionOfDone {
 	 * @return true if every decision (=solution for a decision problem) needs to be
 	 *         linked to at least one pro-argument.
 	 */
+	@JsonProperty("decisionIsLinkedToPro")
 	public boolean isDecisionIsLinkedToPro() {
 		return decisionIsLinkedToPro;
 	}
@@ -83,6 +85,7 @@ public class DefinitionOfDone {
 	 * @return true if every alternative (=solution option for a decision problem)
 	 *         needs to be linked to at least one pro-argument.
 	 */
+	@JsonProperty("alternativeIsLinkedToArgument")
 	public boolean isAlternativeIsLinkedToArgument() {
 		return alternativeIsLinkedToArgument;
 	}
@@ -97,6 +100,7 @@ public class DefinitionOfDone {
 		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
 	}
 
+	@JsonProperty("lineNumbersInCodeFile")
 	public int getLineNumbersInCodeFile() {
 		return lineNumbersInCodeFile;
 	}
@@ -116,6 +120,7 @@ public class DefinitionOfDone {
 	 *         within a link distance of 2. This defines the minimal
 	 *         rationale/decision coverage for the code file.
 	 */
+	@JsonProperty("maximumLinkDistanceToDecisions")
 	public int getMaximumLinkDistanceToDecisions() {
 		return maximumLinkDistanceToDecisions;
 	}
@@ -143,12 +148,13 @@ public class DefinitionOfDone {
 	 *         one decision documented within a link distance of 3. This defines the
 	 *         minimal rationale/decision coverage for the requirement.
 	 */
-	public int getMinimumNumberOfDecisionsWithinLinkDistance() {
+	@JsonProperty("minimumDecisionsWithinLinkDistance")
+	public int getMinimumDecisionsWithinLinkDistance() {
 		return minimumDecisionsWithinLinkDistance;
 	}
 
 	/**
-	 * @param minimumNumberOfDecisionsWithinLinkDistance
+	 * @param setMinimumDecisionsWithinLinkDistance
 	 *            minimum number of decisions that need to be documented within the
 	 *            {@link #getMaximumLinkDistanceToDecisions}. For example, in order
 	 *            to fulfill the definition of done, a requirement needs to have at
@@ -156,8 +162,8 @@ public class DefinitionOfDone {
 	 *            defines the minimal rationale/decision coverage for the
 	 *            requirement.
 	 */
-	@JsonProperty("minimumNumberOfDecisions")
-	public void setMinimumNumberOfDecisionsWithinLinkDistance(int minimumNumberOfDecisionsWithinLinkDistance) {
-		this.minimumDecisionsWithinLinkDistance = minimumNumberOfDecisionsWithinLinkDistance;
+	@JsonProperty("minimumDecisionsWithinLinkDistance")
+	public void setMinimumDecisionsWithinLinkDistance(int minimumDecisionsWithinLinkDistance) {
+		this.minimumDecisionsWithinLinkDistance = minimumDecisionsWithinLinkDistance;
 	}
 }
