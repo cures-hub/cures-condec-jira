@@ -32,6 +32,10 @@
 			<id>zubrod</id>
 			<name>Paul Zubrod</name>
 		</developer>
+        <developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 
@@ -262,7 +266,7 @@
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>3.19.0</version>
+			<version>3.20.2</version>
 		</dependency>
 		<!-- Webhook -->
 		<dependency>
