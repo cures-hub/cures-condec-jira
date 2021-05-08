@@ -930,14 +930,18 @@
 
 	function getIssueKey() {
 		var issueKey = null;
-		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
+		try {
 			issueKey = JIRA.Issue.getIssueKey();
+		} catch (error) {
+			// console.log(error);
 		}
 		if (issueKey === undefined || !issueKey) {
 			// console.log("conDecAPI could not getIssueKey using object
 			// JIRA!");
-			if (AJS && AJS.Meta && AJS.Meta.get) {
+			try {
 				issueKey = AJS.Meta.get("issue-key");
+			} catch (error) {
+				// console.log(error);
 			}
 		}
 		if (issueKey === undefined || !issueKey) {
