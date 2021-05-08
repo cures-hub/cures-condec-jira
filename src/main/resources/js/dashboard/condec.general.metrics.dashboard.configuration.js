@@ -14,7 +14,23 @@ define('dashboard/generalMetrics', [], function () {
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
+
+	var dashboardFilterProjectNode;
+	var dashboardFilterKnowledgeTypesNode;
+	var dashboardFilterDocumentationLocationsNode;
+	var dashboardFilterKnowledgeStatusNode;
+	var dashboardFilterLinkTypesNode;
+	var dashboardFilterLinkDistanceNode;
+	var dashboardFilterMinDegreeNode;
+	var dashboardFilterMaxDegreeNode;
+	var dashboardFilterStartDateNode;
+	var dashboardFilterEndDateNode;
+	var dashboardFilterDecisionKnowledgeShownNode;
+	var dashboardFilterTestCodeShownNode;
+	var dashboardFilterIncompleteKnowledgeShownNode;
+	var dashboardFilterTransitiveLinksShownNode;
+	var dashboardFilterSaveButton;
+	var dashboardFilterCancelButton;
 
 	var ConDecGeneralMetricsDashboardItem = function (API) {
 		dashboardAPI = API;
@@ -100,7 +116,7 @@ define('dashboard/generalMetrics', [], function () {
 		}
 		var transitiveLinksShown;
 		if (preferences['transitiveLinksShown']) {
-			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+			transitiveLinksShown = preferences['transitiveLinksShown'];
 		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
@@ -118,7 +134,22 @@ define('dashboard/generalMetrics', [], function () {
 			, "condec-general-metrics-dashboard-contents-data-error"
 			, "condec-general-metrics-dashboard-no-project"
 			, "condec-general-metrics-dashboard-processing"
-			, "condec-general-metrics-dashboard-nogit-error");
+			, "project-dropdown-general-metrics"
+			, "knowledgetype-multi-select-general-metrics"
+			, "documentationlocation-multi-select-general-metrics"
+			, "knowledgestatus-multi-select-general-metrics"
+			, "linktype-multi-select-general-metrics"
+			, "link-distance-input-general-metrics"
+			, "min-degree-input-general-metrics"
+			, "max-degree-input-general-metrics"
+			, "start-date-picker-general-metrics"
+			, "end-date-picker-general-metrics"
+			, "is-decision-knowledge-only-input-general-metrics"
+			, "is-incomplete-knowledge-input-general-metrics"
+			, "is-test-code-input-general-metrics"
+			, "is-transitive-links-input-general-metrics"
+			, "save-button-general-metrics"
+			, "cancel-button-general-metrics");
 
 		showDashboardSection(dashboardFilterNode);
 
@@ -144,8 +175,7 @@ define('dashboard/generalMetrics', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("save-button-general-metrics");
-		saveButton.addEventListener("click", onSaveButton);
+		dashboardFilterSaveButton.addEventListener("click", onSaveButton);
 	}
 
 	function createCancelButton(preferences) {
@@ -155,30 +185,48 @@ define('dashboard/generalMetrics', [], function () {
 			}
 		}
 
-		var cancelButton = document.getElementById("cancel-button-general-metrics");
-		cancelButton.addEventListener("click", onCancelButton);
+		dashboardFilterCancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("project-dropdown-general-metrics");
-			conDecGeneralMetricsDashboard.setKnowledgeTypes(projectNode.value);
-			conDecGeneralMetricsDashboard.setDocumentationLocations();
-			conDecGeneralMetricsDashboard.setKnowledgeStatus();
-			conDecGeneralMetricsDashboard.setLinkTypes();
+			setKnowledgeTypes(dashboardFilterProjectNode.value);
+			setDocumentationLocations();
+			setKnowledgeStatus();
+			setLinkTypes();
+			setDefaultLinkDistance(dashboardFilterProjectNode.value);
 		}
 
-		var projectKeyNode = document.getElementById("project-dropdown-general-metrics");
-		projectKeyNode.addEventListener("change", onSelectProject);
+		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
+						  projectName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
+						  linkDistanceName, minDegreeName, maxDegreeName, startDateName, endDateName,
+						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
+						  saveButtonName, cancelButtonName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
+
+		dashboardFilterProjectNode = document.getElementById(projectName);
+		dashboardFilterKnowledgeTypesNode = document.getElementById(knowledgeTypesName);
+		dashboardFilterDocumentationLocationsNode = document.getElementById(documentationLocationsName);
+		dashboardFilterKnowledgeStatusNode = document.getElementById(knowledgeStatusName);
+		dashboardFilterLinkTypesNode = document.getElementById(linkTypesName);
+		dashboardFilterLinkDistanceNode = document.getElementById(linkDistanceName);
+		dashboardFilterMinDegreeNode = document.getElementById(minDegreeName);
+		dashboardFilterMaxDegreeNode = document.getElementById(maxDegreeName);
+		dashboardFilterStartDateNode = document.getElementById(startDateName);
+		dashboardFilterEndDateNode = document.getElementById(endDateName);
+		dashboardFilterDecisionKnowledgeShownNode = document.getElementById(decisionKnowledgeShownName);
+		dashboardFilterTestCodeShownNode = document.getElementById(testCodeShownName);
+		dashboardFilterIncompleteKnowledgeShownNode = document.getElementById(incompleteKnowledgeShownName);
+		dashboardFilterTransitiveLinksShownNode = document.getElementById(transitiveLinkShownName);
+		dashboardFilterSaveButton = document.getElementById(saveButtonName);
+		dashboardFilterCancelButton = document.getElementById(cancelButtonName);
 	}
 
 	function showDashboardSection(node) {
@@ -188,135 +236,93 @@ define('dashboard/generalMetrics', [], function () {
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("project-dropdown-general-metrics");
-		preferences['projectKey'] = projectNode.value;
-
-		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-general-metrics");
-		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
-
-		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-general-metrics");
-		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
-		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
-
-		var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
-		preferences['linkTypes'] = getSelectValues(linkTypesNode);
-
-		var linkDistanceNode = document.getElementById("link-distance-input-general-metrics");
-		preferences['linkDistance'] = linkDistanceNode.value;
-
-		var minDegreeNode = document.getElementById("min-degree-input-general-metrics");
-		preferences['minDegree'] = minDegreeNode.value;
-
-		var maxDegreeNode = document.getElementById("max-degree-input-general-metrics");
-		preferences['maxDegree'] = maxDegreeNode.value;
-
-		var startDateNode = document.getElementById("start-date-picker-general-metrics");
-		preferences['startDate'] = startDateNode.value;
-
-		var endDateNode = document.getElementById("end-date-picker-general-metrics");
-		preferences['endDate'] = endDateNode.value;
-
-		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-general-metrics");
-		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
-
-		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-general-metrics");
-		preferences['testCodeShown'] = testCodeNode.checked;
-
-		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-general-metrics");
-		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
-
-		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-general-metrics");
-		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
+		preferences['projectKey'] = dashboardFilterProjectNode.value;
+		preferences['knowledgeTypes'] = getSelectValues(dashboardFilterKnowledgeTypesNode);
+		preferences['documentationLocations'] = getSelectValues(dashboardFilterDocumentationLocationsNode);
+		preferences['knowledgeStatus'] = getSelectValues(dashboardFilterKnowledgeStatusNode);
+		preferences['linkTypes'] = getSelectValues(dashboardFilterLinkTypesNode);
+		preferences['linkDistance'] = dashboardFilterLinkDistanceNode.value;
+		preferences['minDegree'] = dashboardFilterMinDegreeNode.value;
+		preferences['maxDegree'] = dashboardFilterMaxDegreeNode.value;
+		preferences['startDate'] = dashboardFilterStartDateNode.value;
+		preferences['endDate'] = dashboardFilterEndDateNode.value;
+		preferences['decisionKnowledgeShown'] = dashboardFilterDecisionKnowledgeShownNode.checked;
+		preferences['testCodeShown'] = dashboardFilterTestCodeShownNode.checked;
+		preferences['incompleteKnowledgeShown'] = dashboardFilterIncompleteKnowledgeShownNode.checked;
+		preferences['transitiveLinksShown'] = dashboardFilterTransitiveLinksShownNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("project-dropdown-general-metrics");
-			projectNode.value = preferences['projectKey'];
+			dashboardFilterProjectNode.value = preferences['projectKey'];
 
-			conDecGeneralMetricsDashboard.setKnowledgeTypes(preferences['projectKey']);
+			setKnowledgeTypes(preferences['projectKey']);
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-general-metrics");
-			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
+			setSelectValues(dashboardFilterKnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
-		conDecGeneralMetricsDashboard.setDocumentationLocations();
+		setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-general-metrics");
-			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
+			setSelectValues(dashboardFilterDocumentationLocationsNode, preferences['documentationLocations']);
 		}
 
-		conDecGeneralMetricsDashboard.setKnowledgeStatus();
+		setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-general-metrics");
-			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
+			setSelectValues(dashboardFilterKnowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
-		conDecGeneralMetricsDashboard.setLinkTypes();
+		setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("linktype-multi-select-general-metrics");
-			setSelectValues(linkTypesNode, preferences['linkTypes']);
+			setSelectValues(dashboardFilterLinkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("link-distance-input-general-metrics");
-			linkDistanceNode.value = preferences['linkDistance'];
+			dashboardFilterLinkDistanceNode.value = preferences['linkDistance'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("min-degree-input-general-metrics");
-			minDegreeNode.value = preferences['minDegree'];
+			dashboardFilterMinDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("max-degree-input-general-metrics");
-			maxDegreeNode.value = preferences['maxDegree'];
+			dashboardFilterMaxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("start-date-picker-general-metrics");
-			startDateNode.value = preferences['startDate'];
+			dashboardFilterStartDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("end-date-picker-general-metrics");
-			endDateNode.value = preferences['endDate'];
+			dashboardFilterEndDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-general-metrics");
-			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
+			dashboardFilterDecisionKnowledgeShownNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-general-metrics");
-			testCodeNode.checked = preferences['testCodeShown'];
+			dashboardFilterTestCodeShownNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-general-metrics");
-			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+			dashboardFilterIncompleteKnowledgeShownNode.checked = preferences['incompleteKnowledgeShown'];
 		}
 
 		if (preferences['transitiveLinksShown']) {
-			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-general-metrics");
-			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
+			dashboardFilterTransitiveLinksShownNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
@@ -379,6 +385,74 @@ define('dashboard/generalMetrics', [], function () {
 		}
 
 		return JSON.stringify(filterSettings);
+	}
+
+	function setKnowledgeTypes(projectKey) {
+		removeOptions(dashboardFilterKnowledgeTypesNode);
+
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
+
+		for (i = 0; i < knowledgeTypes.length; i++) {
+			var knowledgeType = document.createElement('option');
+			knowledgeType.value = knowledgeTypes[i];
+			knowledgeType.text = knowledgeTypes[i];
+			dashboardFilterKnowledgeTypesNode.options.add(knowledgeType);
+		}
+	}
+
+	function setDocumentationLocations() {
+		removeOptions(dashboardFilterDocumentationLocationsNode);
+
+		var documentationLocations = conDecAPI.documentationLocations;
+
+		for (i = 0; i < documentationLocations.length; i++) {
+			var documentationLocation = document.createElement('option');
+			documentationLocation.value = documentationLocations[i];
+			documentationLocation.text = documentationLocations[i];
+			dashboardFilterDocumentationLocationsNode.options.add(documentationLocation);
+		}
+	}
+
+	function setKnowledgeStatus() {
+		removeOptions(dashboardFilterKnowledgeStatusNode);
+
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
+
+		for (i = 0; i < knowledgeStatuses.length; i++) {
+			var knowledgeStatus = document.createElement('option');
+			knowledgeStatus.value = knowledgeStatuses[i];
+			knowledgeStatus.text = knowledgeStatuses[i];
+			dashboardFilterKnowledgeStatusNode.options.add(knowledgeStatus);
+		}
+	}
+
+	function setLinkTypes() {
+		removeOptions(dashboardFilterLinkTypesNode);
+
+		var linkTypes = conDecAPI.getLinkTypes();
+
+		for (i = 0; i < linkTypes.length; i++) {
+			var linkType = document.createElement('option');
+			linkType.value = linkTypes[i];
+			linkType.text = linkTypes[i];
+			dashboardFilterLinkTypesNode.options.add(linkType);
+		}
+	}
+
+	function setDefaultLinkDistance(projectKey) {
+		if (projectKey) {
+			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+			});
+		}
+	}
+
+	function removeOptions(selectElement) {
+		var i, L = selectElement.options.length - 1;
+		for(i = L; i >= 0; i--) {
+			selectElement.remove(i);
+		}
 	}
 
 	function getSelectValues(select) {

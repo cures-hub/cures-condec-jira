@@ -297,4 +297,13 @@ public class TestFilteringManager extends TestSetUp {
 		noTransitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
 		assertTrue(noTransitiveLinks.size() == 0);
 	}
+
+	@Test
+	public void testSetAndGetUser() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		filteringManager.setUser(user);filteringManager.getUser();
+		assertEquals(user, filteringManager.getUser());
+	}
 }

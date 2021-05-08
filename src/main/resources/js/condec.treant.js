@@ -19,7 +19,7 @@
 
         // Add event listeners to HTML elements for filtering
         conDecFiltering.addOnChangeEventToFilterElements("treant", conDecTreant.updateView);
-        var isTestCodeShownInput = document.getElementById("show-test-elements-input");
+        var isTestCodeShownInput = document.getElementById("is-test-code-input-treant");
         isTestCodeShownInput.addEventListener("click", function() { conDecTreant.updateView(); });
 
         // Register/subscribe this view as an observer
@@ -34,7 +34,7 @@
         var issueKey = conDecAPI.getIssueKey();
         var filterSettings = conDecFiltering.getFilterSettings("treant");
         filterSettings["selectedElement"] = issueKey;
-        var isTestCodeShown = document.getElementById("show-test-elements-input").checked;
+        var isTestCodeShown = document.getElementById("is-test-code-input-treant").checked;
         filterSettings["isTestCodeShown"] = isTestCodeShown;
         conDecTreant.buildTreant(filterSettings, true);
     };

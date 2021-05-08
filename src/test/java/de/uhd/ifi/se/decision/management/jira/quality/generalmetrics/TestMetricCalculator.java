@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
-import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
-import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addElementToDataBase;
-import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.Before;
@@ -12,13 +10,12 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestMetricCalculator extends TestSetUpGit {
 
-	protected GeneralMetricCalculator calculator;
+	private GeneralMetricCalculator calculator;
 
 	@Override
 	@Before
@@ -28,28 +25,48 @@ public class TestMetricCalculator extends TestSetUpGit {
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		calculator = new GeneralMetricCalculator(user, filterSettings);
-		calculator.setJiraIssues(getTestJiraIssues());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGeneralMetricsCalculator() {
+		assertNotNull(calculator);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfCommentsPerIssue() {
+		assertEquals(calculator.getNumberOfCommentsPerIssue().size(), 0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDistributionOfKnowledgeTypes() {
-		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size());
+		assertEquals(calculator.getDistributionOfKnowledgeTypes().size(), 4);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetReqAndClassSummary() {
-		assertEquals(2, calculator.getReqAndClassSummary().size());
+		assertEquals(calculator.getReqAndClassSummary().size(), 2);
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetKnowledgeSourceCount() {
-		addElementToDataBase(24, KnowledgeType.DECISION);
-		addComment(getTestJiraIssues().get(7));
-		calculator.setJiraIssues(getTestJiraIssues());
-		assertEquals(4, calculator.getElementsFromDifferentOrigins().size());
+	public void testGetElementsFromDifferentOrigins() {
+		assertEquals(calculator.getElementsFromDifferentOrigins().size(), 4);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfRelevantComments() {
+		assertEquals(calculator.getNumberOfRelevantComments().size(), 2);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfCommits() {
+		assertEquals(calculator.getNumberOfCommits().size(), 0);
 	}
 
 }

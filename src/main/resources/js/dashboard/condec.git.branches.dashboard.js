@@ -21,7 +21,6 @@ var ConDecDevBranches = [];
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
 
 	var branchesQuality = [];
 
@@ -41,20 +40,18 @@ var ConDecDevBranches = [];
 			, "condec-branches-dashboard-contents-container"
 			, "condec-branches-dashboard-contents-data-error"
 			, "condec-branches-dashboard-no-project"
-			, "condec-branches-dashboard-processing"
-			, "condec-branches-dashboard-nogit-error");
+			, "condec-branches-dashboard-processing");
 
 		branchesQuality = [];
 		getBranches(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
 	}
 
 	function showDashboardSection(node) {
@@ -64,7 +61,6 @@ var ConDecDevBranches = [];
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 

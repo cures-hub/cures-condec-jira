@@ -53,6 +53,7 @@ public class FilterSettings {
 	private boolean isTestCodeShown;
 	private boolean isIncompleteKnowledgeShown;
 	private int linkDistance;
+	private int minimumDecisionCoverage;
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
@@ -90,6 +91,7 @@ public class FilterSettings {
 		this.isTestCodeShown = false;
 		this.isIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
+		this.minimumDecisionCoverage = 2;
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
@@ -323,7 +325,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
-  @XmlElement(name = "linkDistance")
+  	@XmlElement(name = "linkDistance")
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -334,9 +336,29 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
-  @JsonProperty("linkDistance")
+  	@JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
+	}
+
+	/**
+	 * @return minimum number of decisions within the link distance of a knowledge
+	 * 		   element (=node) to be included in the filtered graph.
+	 */
+	@XmlElement(name = "minimumDecisionCoverage")
+	public int getMinimumDecisionCoverage() {
+		return minimumDecisionCoverage;
+	}
+
+	/**
+	 * @param minimumDecisionCoverage
+	 *            nodes with at least this many decisions within the link distance
+	 *            are included in the filtered graph. All nodes with less decisions
+	 *            within the link distance are not included.
+	 */
+	@JsonProperty("minimumDecisionCoverage")
+	public void setMinimumDecisionCoverage(int minimumDecisionCoverage) {
+		this.minimumDecisionCoverage = minimumDecisionCoverage;
 	}
 
 	/**

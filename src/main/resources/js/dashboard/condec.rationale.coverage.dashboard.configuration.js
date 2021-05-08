@@ -16,7 +16,25 @@ define('dashboard/rationaleCoverage', [], function () {
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
-	var dashboardProjectWithoutGit;
+
+	var dashboardFilterProjectNode;
+	var dashboardFilterSourceKnowledgeTypesNode;
+	var dashboardFilterKnowledgeTypesNode;
+	var dashboardFilterDocumentationLocationsNode;
+	var dashboardFilterKnowledgeStatusNode;
+	var dashboardFilterLinkTypesNode;
+	var dashboardFilterLinkDistanceNode;
+	var dashboardFilterMinimumDecisionCoverageNode;
+	var dashboardFilterMinDegreeNode;
+	var dashboardFilterMaxDegreeNode;
+	var dashboardFilterStartDateNode;
+	var dashboardFilterEndDateNode;
+	var dashboardFilterDecisionKnowledgeShownNode;
+	var dashboardFilterTestCodeShownNode;
+	var dashboardFilterIncompleteKnowledgeShownNode;
+	var dashboardFilterTransitiveLinksShownNode;
+	var dashboardFilterSaveButton;
+	var dashboardFilterCancelButton;
 
 	var ConDecRationaleCoverageDashboardItem = function (API) {
 		dashboardAPI = API;
@@ -31,7 +49,7 @@ define('dashboard/rationaleCoverage', [], function () {
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
 		dashboardAPI.once("afterRender",
 			function() {
-				if (preferences['projectKey'] && preferences['issueType']) {
+				if (preferences['projectKey']) {
 					createRender(preferences);
 				}
 			});
@@ -52,7 +70,10 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function createRender(preferences) {
 		var projectKey = preferences['projectKey'];
-		var issueType = preferences['issueType'];
+		var sourceKnowledgeTypes = "";
+		if (preferences['sourceKnowledgeTypes']) {
+			sourceKnowledgeTypes = preferences['sourceKnowledgeTypes'];
+		}
 		var knowledgeTypes;
 		if (preferences['knowledgeTypes']) {
 			knowledgeTypes = preferences['knowledgeTypes'];
@@ -72,6 +93,10 @@ define('dashboard/rationaleCoverage', [], function () {
 		var linkDistance;
 		if (preferences['linkDistance']) {
 			linkDistance = preferences['linkDistance'];
+		}
+		var minimumDecisionCoverage;
+		if (preferences['minimumDecisionCoverage']) {
+			minimumDecisionCoverage = preferences['minimumDecisionCoverage'];
 		}
 		var minDegree;
 		if (preferences['minDegree']) {
@@ -103,14 +128,14 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 		var transitiveLinksShown;
 		if (preferences['transitiveLinksShown']) {
-			incompleteKnowledgeShown = preferences['transitiveLinksShown'];
+			transitiveLinksShown = preferences['transitiveLinksShown'];
 		}
 
 		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-			linkDistance, minDegree, maxDegree, startDate, endDate,
+			linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
-		conDecRationaleCoverageDashboard.init(filterSettings, issueType);
+		conDecRationaleCoverageDashboard.init(filterSettings, sourceKnowledgeTypes);
 
 		dashboardAPI.resize();
 	}
@@ -121,7 +146,24 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
 			, "condec-rationale-coverage-dashboard-processing"
-			, "condec-rationale-coverage-dashboard-nogit-error");
+			, "project-dropdown-rationale-coverage"
+			, "source-knowledgetype-multi-select-rationale-coverage"
+			, "knowledgetype-multi-select-rationale-coverage"
+			, "documentationlocation-multi-select-rationale-coverage"
+			, "knowledgestatus-multi-select-rationale-coverage"
+			, "linktype-multi-select-rationale-coverage"
+			, "link-distance-input-rationale-coverage"
+			, "minimum-decision-coverage-input-rationale-coverage"
+			, "min-degree-input-rationale-coverage"
+			, "max-degree-input-rationale-coverage"
+			, "start-date-picker-rationale-coverage"
+			, "end-date-picker-rationale-coverage"
+			, "is-decision-knowledge-only-input-rationale-coverage"
+			, "is-incomplete-knowledge-input-rationale-coverage"
+			, "is-test-code-input-rationale-coverage"
+			, "is-transitive-links-input-rationale-coverage"
+			, "save-button-rationale-coverage"
+			, "cancel-button-rationale-coverage");
 
 		showDashboardSection(dashboardFilterNode);
 
@@ -147,42 +189,61 @@ define('dashboard/rationaleCoverage', [], function () {
 			dashboardAPI.resize();
 		}
 
-		var saveButton = document.getElementById("save-button-rationale-coverage");
-		saveButton.addEventListener("click", onSaveButton);
+		dashboardFilterSaveButton.addEventListener("click", onSaveButton);
 	}
 
 	function createCancelButton(preferences) {
 		function onCancelButton(event) {
-			if (preferences['projectKey'] && preferences['issueType']) {
+			if (preferences['projectKey']) {
 				dashboardAPI.closeEdit();
 			}
 		}
 
-		var cancelButton = document.getElementById("cancel-button-rationale-coverage");
-		cancelButton.addEventListener("click", onCancelButton);
+		dashboardFilterCancelButton.addEventListener("click", onCancelButton);
 	}
 
 	function createListener() {
 		function onSelectProject(event) {
-			var projectNode = document.getElementById("project-dropdown-rationale-coverage");
-			conDecRationaleCoverageDashboard.setJiraIssueTypes(projectNode.value);
-			conDecRationaleCoverageDashboard.setKnowledgeTypes(projectNode.value);
-			conDecRationaleCoverageDashboard.setDocumentationLocations();
-			conDecRationaleCoverageDashboard.setKnowledgeStatus();
-			conDecRationaleCoverageDashboard.setLinkTypes();
+			setSourceKnowledgeTypes(dashboardFilterProjectNode.value);
+			setKnowledgeTypes(dashboardFilterProjectNode.value);
+			setDocumentationLocations();
+			setKnowledgeStatus();
+			setLinkTypes(dashboardFilterProjectNode.value);
+			setDefaultLinkDistanceAndAndMinimumDecisionCoverage(dashboardFilterProjectNode.value);
 		}
 
-		var projectKeyNode = document.getElementById("project-dropdown-rationale-coverage");
-		projectKeyNode.addEventListener("change", onSelectProject);
+		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
 	}
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, noGitName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
+						  projectName, sourceKnowledgeTypesName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
+						  linkDistanceName, minimumDecisionCoverageName, minDegreeName, maxDegreeName, startDateName, endDateName,
+						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
+						  saveButtonName, cancelButtonName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectWithoutGit = document.getElementById(noGitName);
+
+		dashboardFilterProjectNode = document.getElementById(projectName);
+		dashboardFilterSourceKnowledgeTypesNode = document.getElementById(sourceKnowledgeTypesName);
+		dashboardFilterKnowledgeTypesNode = document.getElementById(knowledgeTypesName);
+		dashboardFilterDocumentationLocationsNode = document.getElementById(documentationLocationsName);
+		dashboardFilterKnowledgeStatusNode = document.getElementById(knowledgeStatusName);
+		dashboardFilterLinkTypesNode = document.getElementById(linkTypesName);
+		dashboardFilterLinkDistanceNode = document.getElementById(linkDistanceName);
+		dashboardFilterMinimumDecisionCoverageNode = document.getElementById(minimumDecisionCoverageName);
+		dashboardFilterMinDegreeNode = document.getElementById(minDegreeName);
+		dashboardFilterMaxDegreeNode = document.getElementById(maxDegreeName);
+		dashboardFilterStartDateNode = document.getElementById(startDateName);
+		dashboardFilterEndDateNode = document.getElementById(endDateName);
+		dashboardFilterDecisionKnowledgeShownNode = document.getElementById(decisionKnowledgeShownName);
+		dashboardFilterTestCodeShownNode = document.getElementById(testCodeShownName);
+		dashboardFilterIncompleteKnowledgeShownNode = document.getElementById(incompleteKnowledgeShownName);
+		dashboardFilterTransitiveLinksShownNode = document.getElementById(transitiveLinkShownName);
+		dashboardFilterSaveButton = document.getElementById(saveButtonName);
+		dashboardFilterCancelButton = document.getElementById(cancelButtonName);
 	}
 
 	function showDashboardSection(node) {
@@ -192,149 +253,109 @@ define('dashboard/rationaleCoverage', [], function () {
 		dashboardDataErrorNode.classList.add(hiddenClass);
 		dashboardNoContentsNode.classList.add(hiddenClass);
 		dashboardProcessingNode.classList.add(hiddenClass);
-		dashboardProjectWithoutGit.classList.add(hiddenClass);
 		node.classList.remove(hiddenClass);
 	}
 
 	function getPreferences() {
 		var preferences = {};
 
-		var projectNode = document.getElementById("project-dropdown-rationale-coverage");
-		preferences['projectKey'] = projectNode.value;
-
-		var issueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
-		preferences['issueType'] = issueTypeNode.value;
-
-		var knowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
-		preferences['knowledgeTypes'] = getSelectValues(knowledgeTypesNode);
-
-		var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
-		preferences['documentationLocations'] = getSelectValues(documentationLocationsNode);
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
-		preferences['knowledgeStatus'] = getSelectValues(knowledgeStatusNode);
-
-		var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
-		preferences['linkTypes'] = getSelectValues(linkTypesNode);
-
-		var linkDistanceNode = document.getElementById("link-distance-input-rationale-coverage");
-		preferences['linkDistance'] = linkDistanceNode.value;
-
-		var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
-		preferences['minDegree'] = minDegreeNode.value;
-
-		var maxDegreeNode = document.getElementById("max-degree-input-rationale-coverage");
-		preferences['maxDegree'] = maxDegreeNode.value;
-
-		var startDateNode = document.getElementById("start-date-picker-rationale-coverage");
-		preferences['startDate'] = startDateNode.value;
-
-		var endDateNode = document.getElementById("end-date-picker-rationale-coverage");
-		preferences['endDate'] = endDateNode.value;
-
-		var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-coverage");
-		preferences['decisionKnowledgeShown'] = decisionKnowledgeNode.checked;
-
-		var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-coverage");
-		preferences['testCodeShown'] = testCodeNode.checked;
-
-		var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-coverage");
-		preferences['incompleteKnowledgeShown'] = incompleteKnowledgeNode.checked;
-
-		var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-coverage");
-		preferences['transitiveLinksShown'] = transitiveLinksNode.checked;
+		preferences['projectKey'] = dashboardFilterProjectNode.value;
+		preferences['sourceKnowledgeTypes'] = getSelectValues(dashboardFilterSourceKnowledgeTypesNode);
+		preferences['knowledgeTypes'] = getSelectValues(dashboardFilterKnowledgeTypesNode);
+		preferences['documentationLocations'] = getSelectValues(dashboardFilterDocumentationLocationsNode);
+		preferences['knowledgeStatus'] = getSelectValues(dashboardFilterKnowledgeStatusNode);
+		preferences['linkTypes'] = getSelectValues(dashboardFilterLinkTypesNode);
+		preferences['linkDistance'] = dashboardFilterLinkDistanceNode.value;
+		preferences['minimumDecisionCoverage'] = dashboardFilterMinimumDecisionCoverageNode.value;
+		preferences['minDegree'] = dashboardFilterMinDegreeNode.value;
+		preferences['maxDegree'] = dashboardFilterMaxDegreeNode.value;
+		preferences['startDate'] = dashboardFilterStartDateNode.value;
+		preferences['endDate'] = dashboardFilterEndDateNode.value;
+		preferences['decisionKnowledgeShown'] = dashboardFilterDecisionKnowledgeShownNode.checked;
+		preferences['testCodeShown'] = dashboardFilterTestCodeShownNode.checked;
+		preferences['incompleteKnowledgeShown'] = dashboardFilterIncompleteKnowledgeShownNode.checked;
+		preferences['transitiveLinksShown'] = dashboardFilterTransitiveLinksShownNode.checked;
 
 		return preferences;
 	}
 
 	function setPreferences(preferences) {
 		if (preferences['projectKey']) {
-			var projectNode = document.getElementById("project-dropdown-rationale-coverage");
-			projectNode.value = preferences['projectKey'];
+			dashboardFilterProjectNode.value = preferences['projectKey'];
 
-			conDecRationaleCoverageDashboard.setJiraIssueTypes(preferences['projectKey']);
-			conDecRationaleCoverageDashboard.setKnowledgeTypes(preferences['projectKey']);
+			setSourceKnowledgeTypes(preferences['projectKey']);
+			setKnowledgeTypes(preferences['projectKey']);
 		}
 
-		if (preferences['issueType']) {
-			var issueTypeNode = document.getElementById("issuetype-select-rationale-coverage");
-			issueTypeNode.value = preferences['issueType'];
+		if (preferences['sourceKnowledgeTypes']) {
+			setSelectValues(dashboardFilterSourceKnowledgeTypesNode, preferences['sourceKnowledgeTypes']);
 		}
 
 		if (preferences['knowledgeTypes']) {
-			var KnowledgeTypesNode = document.getElementById("knowledgetype-multi-select-rationale-coverage");
-			setSelectValues(KnowledgeTypesNode, preferences['knowledgeTypes']);
+			setSelectValues(dashboardFilterKnowledgeTypesNode, preferences['knowledgeTypes']);
 		}
 
-		conDecRationaleCoverageDashboard.setDocumentationLocations();
+		setDocumentationLocations();
 
 		if (preferences['documentationLocations']) {
-			var documentationLocationsNode = document.getElementById("documentationlocation-multi-select-rationale-coverage");
-			setSelectValues(documentationLocationsNode, preferences['documentationLocations']);
+			setSelectValues(dashboardFilterDocumentationLocationsNode, preferences['documentationLocations']);
 		}
 
-		conDecRationaleCoverageDashboard.setKnowledgeStatus();
+		setKnowledgeStatus();
 
 		if (preferences['knowledgeStatus']) {
-			var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-rationale-coverage");
-			setSelectValues(knowledgeStatusNode, preferences['knowledgeStatus']);
+			setSelectValues(dashboardFilterKnowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
-		conDecRationaleCoverageDashboard.setLinkTypes();
+		setLinkTypes();
 
 		if (preferences['linkTypes']) {
-			var linkTypesNode = document.getElementById("linktype-multi-select-rationale-coverage");
-			setSelectValues(linkTypesNode, preferences['linkTypes']);
+			setSelectValues(dashboardFilterLinkTypesNode, preferences['linkTypes']);
 		}
 
 		if (preferences['linkDistance']) {
-			var linkDistanceNode = document.getElementById("link-distance-input-rationale-coverage");
-			linkDistanceNode.value = preferences['linkDistance'];
+			dashboardFilterLinkDistanceNode.value = preferences['linkDistance'];
+		}
+
+		if (preferences['minimumDecisionCoverage']) {
+			dashboardFilterMinimumDecisionCoverageNode.value = preferences['minimumDecisionCoverage'];
 		}
 
 		if (preferences['minDegree']) {
-			var minDegreeNode = document.getElementById("min-degree-input-rationale-coverage");
-			minDegreeNode.value = preferences['minDegree'];
+			dashboardFilterMinDegreeNode.value = preferences['minDegree'];
 		}
 
 		if (preferences['maxDegree']) {
-			var maxDegreeNode = document.getElementById("max-degree-input-rationale-coverage");
-			maxDegreeNode.value = preferences['maxDegree'];
+			dashboardFilterMaxDegreeNode.value = preferences['maxDegree'];
 		}
 
 		if (preferences['startDate']) {
-			var startDateNode = document.getElementById("start-date-picker-rationale-coverage");
-			startDateNode.value = preferences['startDate'];
+			dashboardFilterStartDateNode.value = preferences['startDate'];
 		}
 
 		if (preferences['endDate']) {
-			var endDateNode = document.getElementById("end-date-picker-rationale-coverage");
-			endDateNode.value = preferences['endDate'];
+			dashboardFilterEndDateNode.value = preferences['endDate'];
 		}
 
 		if (preferences['decisionKnowledgeShown']) {
-			var decisionKnowledgeNode = document.getElementById("dashboard-checkbox-decisionknowledge-rationale-coverage");
-			decisionKnowledgeNode.checked = preferences['decisionKnowledgeShown'];
+			dashboardFilterDecisionKnowledgeShownNode.checked = preferences['decisionKnowledgeShown'];
 		}
 
 		if (preferences['testCodeShown']) {
-			var testCodeNode = document.getElementById("dashboard-checkbox-testcode-rationale-coverage");
-			testCodeNode.checked = preferences['testCodeShown'];
+			dashboardFilterTestCodeShownNode.checked = preferences['testCodeShown'];
 		}
 
 		if (preferences['incompleteKnowledgeShown']) {
-			var incompleteKnowledgeNode = document.getElementById("dashboard-checkbox-incompleteknowledge-rationale-coverage");
-			incompleteKnowledgeNode.checked = preferences['incompleteKnowledgeShown'];
+			dashboardFilterIncompleteKnowledgeShownNode.checked = preferences['incompleteKnowledgeShown'];
 		}
 
 		if (preferences['transitiveLinksShown']) {
-			var transitiveLinksNode = document.getElementById("dashboard-checkbox-transitivelinks-rationale-coverage");
-			transitiveLinksNode.checked = preferences['transitiveLinksShown'];
+			dashboardFilterTransitiveLinksShownNode.checked = preferences['transitiveLinksShown'];
 		}
 	}
 
 	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-							   linkDistance, minDegree, maxDegree, startDate, endDate,
+							   linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
 							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
@@ -364,6 +385,9 @@ define('dashboard/rationaleCoverage', [], function () {
 		if (linkDistance && Number.isInteger(linkDistance)) {
 			filterSettings.linkDistance = linkDistance;
 		}
+		if (minimumDecisionCoverage && Number.isInteger(minimumDecisionCoverage)) {
+			filterSettings.minimumDecisionCoverage = minimumDecisionCoverage;
+		}
 		if (minDegree && Number.isInteger(minDegree)) {
 			filterSettings.minDegree = minDegree;
 		}
@@ -392,6 +416,89 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 
 		return JSON.stringify(filterSettings);
+	}
+
+	function setSourceKnowledgeTypes(projectKey) {
+		removeOptions(dashboardFilterSourceKnowledgeTypesNode);
+
+		conDecAPI.projectKey = projectKey;
+		var sourceKnowledgeTypes = conDecAPI.getKnowledgeTypes();
+
+		for (i = 0; i < sourceKnowledgeTypes.length; i++) {
+			var sourceKnowledgeType = document.createElement('option');
+			sourceKnowledgeType.value = sourceKnowledgeTypes[i];
+			sourceKnowledgeType.text = sourceKnowledgeTypes[i];
+			dashboardFilterSourceKnowledgeTypesNode.options.add(sourceKnowledgeType);
+		}
+	}
+
+	function setKnowledgeTypes(projectKey) {
+		removeOptions(dashboardFilterKnowledgeTypesNode);
+
+		conDecAPI.projectKey = projectKey;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
+
+		for (i = 0; i < knowledgeTypes.length; i++) {
+			var knowledgeType = document.createElement('option');
+			knowledgeType.value = knowledgeTypes[i];
+			knowledgeType.text = knowledgeTypes[i];
+			dashboardFilterKnowledgeTypesNode.options.add(knowledgeType);
+		}
+	}
+
+	function setDocumentationLocations() {
+		removeOptions(dashboardFilterDocumentationLocationsNode);
+
+		var documentationLocations = conDecAPI.documentationLocations;
+
+		for (i = 0; i < documentationLocations.length; i++) {
+			var documentationLocation = document.createElement('option');
+			documentationLocation.value = documentationLocations[i];
+			documentationLocation.text = documentationLocations[i];
+			dashboardFilterDocumentationLocationsNode.options.add(documentationLocation);
+		}
+	}
+
+	function setKnowledgeStatus() {
+		removeOptions(dashboardFilterKnowledgeStatusNode);
+
+		var knowledgeStatuses = conDecAPI.knowledgeStatus;
+
+		for (i = 0; i < knowledgeStatuses.length; i++) {
+			var knowledgeStatus = document.createElement('option');
+			knowledgeStatus.value = knowledgeStatuses[i];
+			knowledgeStatus.text = knowledgeStatuses[i];
+			dashboardFilterKnowledgeStatusNode.options.add(knowledgeStatus);
+		}
+	}
+
+	function setLinkTypes() {
+		removeOptions(dashboardFilterLinkTypesNode);
+
+		var linkTypes = conDecAPI.getLinkTypes();
+
+		for (i = 0; i < linkTypes.length; i++) {
+			var linkType = document.createElement('option');
+			linkType.value = linkTypes[i];
+			linkType.text = linkTypes[i];
+			dashboardFilterLinkTypesNode.options.add(linkType);
+		}
+	}
+
+	function setDefaultLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
+		if (projectKey) {
+			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+				dashboardFilterMinimumDecisionCoverageNode.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			});
+		}
+	}
+
+	function removeOptions(selectElement) {
+		var i, L = selectElement.options.length - 1;
+		for(i = L; i >= 0; i--) {
+			selectElement.remove(i);
+		}
 	}
 
 	function getSelectValues(select) {

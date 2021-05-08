@@ -25,12 +25,12 @@
 			<name>Julia Baum</name>
 		</developer>
 		<developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
+		<developer>
 			<id>mruder</id>
 			<name>Marvin A. Ruder</name>
-		</developer>
-		<developer>
-			<id>zubrod</id>
-			<name>Paul Zubrod</name>
 		</developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
