@@ -32,6 +32,10 @@
 			<id>zubrod</id>
 			<name>Paul Zubrod</name>
 		</developer>
+        <developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 
@@ -130,7 +134,7 @@
 		<dependency>
 			<groupId>com.atlassian.sal</groupId>
 			<artifactId>sal-api</artifactId>
-			<version>4.4.1</version>
+			<version>4.5.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Servlets -->
