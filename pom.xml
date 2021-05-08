@@ -32,6 +32,10 @@
 			<id>zubrod</id>
 			<name>Paul Zubrod</name>
 		</developer>
+        <developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 
@@ -422,7 +426,7 @@
 		<jira.version>8.15.0</jira.version>
 		<amps.version>8.2.1</amps.version>
 		<ao.version>3.3.1-7fb0ce9e</ao.version>
-		<jacoco-version>0.8.6</jacoco-version>
+		<jacoco-version>0.8.7</jacoco-version>
 		<atlassian.spring.scanner.version>2.2.1-8199150</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
