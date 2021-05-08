@@ -32,6 +32,10 @@
 			<id>zubrod</id>
 			<name>Paul Zubrod</name>
 		</developer>
+        <developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 
@@ -112,7 +116,7 @@
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-core</artifactId>
-            <version>8.8.1</version>
+            <version>1000.30.0</version>
             <scope>provided</scope>
         </dependency>
 		<dependency>
