@@ -23,8 +23,7 @@ Besides, ConDec shows warnings to the developers if the definition of done of th
                 "maximumLinkDistanceToDecisions": $("#link-distance-to-decision-number-input").prop("value"),
                 "minimumNumberOfDecisions": $("#minimum-number-of-decisions-input").prop("value"),
             }
-            conDecAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
+            conDecDoDCheckingAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         });
-        conDecJiraIssueCompletenessModule.init();
     });
 </script>

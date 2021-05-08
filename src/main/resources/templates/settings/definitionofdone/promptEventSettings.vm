@@ -27,11 +27,11 @@
 <script>
 	$("#isDoDCheckingAtDoneEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "done", isActivated);
+		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "done", isActivated);
 	})
 	
 	$("#isDoDCheckingAtClosedEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "closed", isActivated);
+		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "closed", isActivated);
 	})
 </script>

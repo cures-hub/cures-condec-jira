@@ -62,7 +62,7 @@
 			"selectedElement": issueKey
 		}
 		// TODO Show exact DoD criteria that are violated
-		conDecAPI.doesElementNeedCompletenessApproval(filterSettings)
+		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
 			.then(isDoDViolated => {
 				if (!isDoDViolated) {
 					return;

@@ -72,7 +72,7 @@ public class ConfigPersistenceManager {
 				return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
 			}
 		});
-		return value.toString();
+		return value != null ? value.toString() : "";
 	}
 
 	public static Object getSavedObject(String projectKey, String parameter, Type type) {

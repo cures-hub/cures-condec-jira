@@ -27,11 +27,11 @@
 <script>
 	$("#isLinkSuggestionAtDoneEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "done", isActivated);
+		conDecNudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "done", isActivated);
 	})
 	
 	$("#isLinkSuggestionAtClosedEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
-		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "closed", isActivated);
+		conDecNudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "closed", isActivated);
 	})
 </script>
