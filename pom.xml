@@ -32,6 +32,10 @@
 			<id>zubrod</id>
 			<name>Paul Zubrod</name>
 		</developer>
+        <developer>
+            <id>mboerner</id>
+            <name>Markus Boerner</name>
+        </developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 
@@ -275,7 +279,7 @@
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</dependency>
 		<!-- Decision Guidance -->
 		<dependency>
