@@ -21,7 +21,7 @@ Besides, ConDec shows warnings to the developers if the definition of done of th
                 "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
                 "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
                 "maximumLinkDistanceToDecisions": $("#link-distance-to-decision-number-input").prop("value"),
-                "minimumNumberOfDecisions": $("#minimum-number-of-decisions-input").prop("value"),
+                "minimumDecisionsWithinLinkDistance": $("#minimum-number-of-decisions-input").prop("value"),
             }
             conDecDoDCheckingAPI.setDefinitionOfDone("$projectKey", definitionOfDone);
         });
