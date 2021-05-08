@@ -57,24 +57,12 @@ public class ConfigPersistenceManager {
 		return issueTypeNames;
 	}
 
-	public static String getValue(String parameter) {
-		return getValue(parameter, null, true);
-	}
-
 	public static String getValue(String projectKey, String parameter) {
-		return getValue(parameter, projectKey, false);
-	}
-
-	public static String getValue(String parameter, String projectKey, boolean isGlobalSetting) {
-		PluginSettings settings;
-		if (isGlobalSetting) {
-			settings = pluginSettingsFactory.createGlobalSettings();
-		} else {
-			if (projectKey == null || projectKey.isBlank()) {
-				return "";
-			}
-			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		if (projectKey == null || projectKey.isBlank()) {
+			return "";
 		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+
 		if (parameter == null || parameter.isBlank()) {
 			return "";
 		}
@@ -84,10 +72,7 @@ public class ConfigPersistenceManager {
 				return settings.get(ComponentGetter.PLUGIN_KEY + "." + parameter);
 			}
 		});
-		if (value instanceof String) {
-			return value.toString();
-		}
-		return "";
+		return value.toString();
 	}
 
 	public static Object getSavedObject(String projectKey, String parameter, Type type) {
