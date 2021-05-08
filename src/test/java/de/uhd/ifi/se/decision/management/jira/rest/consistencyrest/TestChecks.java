@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 
@@ -25,22 +24,6 @@ public class TestChecks extends TestConsistencyRestSuper {
 		response = consistencyRest.doesElementNeedApproval(request, null, null, null);
 		assertEquals("Response should be 500.", 400, response.getStatus());
 
-	}
-
-	@Test
-	public void testDoesIssueNeedCompletenessApproval() {
-		KnowledgeElement knowledgeElement = new KnowledgeElement(issues.get(0));
-		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
-		Response response = consistencyRest.doesElementNeedCompletenessApproval(request, settings);
-		assertEquals(200, response.getStatus());
-
-		settings.setSelectedElement((KnowledgeElement) null);
-		response = consistencyRest.doesElementNeedCompletenessApproval(request, settings);
-		assertEquals(400, response.getStatus());
-
-		response = consistencyRest.doesElementNeedCompletenessApproval(request, null);
-		assertEquals(400, response.getStatus());
 	}
 
 	@Test

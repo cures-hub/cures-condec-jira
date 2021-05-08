@@ -24,13 +24,11 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.BasicDuplicateTextDetector;
@@ -287,29 +285,5 @@ public class ConsistencyRest {
 		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
-	}
-
-	// --------------------
-	// Completeness checks
-	// --------------------
-	@Path("/doesElementNeedCompletenessApproval")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response doesElementNeedCompletenessApproval(@Context HttpServletRequest request,
-			FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getProjectKey() == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Completeness check could not be performed due to a bad request."))
-					.build();
-		}
-		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
-		if (knowledgeElement == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Completeness check could not be performed because the element could not be found."))
-					.build();
-		}
-		boolean doesIssueNeedApproval = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
-		return Response.ok().entity(ImmutableMap.of("needsCompletenessApproval", doesIssueNeedApproval)).build();
 	}
 }

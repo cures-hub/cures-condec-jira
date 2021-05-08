@@ -52,7 +52,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -623,7 +622,7 @@ public class ConfigRest {
 	public Response setCiaSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			CiaSettings ciaSettings) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 
@@ -645,29 +644,5 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Rationale Backlog */
-	/*										*/
-	/* **************************************/
-
-	@Path("/setDefinitionOfDone")
-	@POST
-	public Response setDefinitionOfDone(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, DefinitionOfDone definitionOfDone) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
-			return response;
-		}
-
-		if (definitionOfDone == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
-		}
-
-		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
-		return Response.ok().build();
 	}
 }
