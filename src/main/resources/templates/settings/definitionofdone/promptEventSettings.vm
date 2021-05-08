@@ -1,8 +1,8 @@
 <h3>Settings for the prompting events for definition of done checking</h4>
 
 <div class="field-group">
-    <label for="isCompletenessDoneActivated-toggle">DoD check for done event activated?</label>
-    <aui-toggle id="isCompletenessDoneActivated-toggle" label="Resolved event activated?"
+    <label>DoD check for done event activated?</label>
+    <aui-toggle id="isDoDCheckingAtDoneEventActivated-toggle" label="Resolved event activated?"
     #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("done"))
 		checked
 	#end
@@ -13,8 +13,8 @@
 </div>
 
 <div class="field-group">
-    <label for="isCompletenessClosedActivated-toggle">DoD check for closed event activated?</label>
-    <aui-toggle id="isCompletenessClosedActivated-toggle" label="Closed event activated?"
+    <label>DoD check for closed event activated?</label>
+    <aui-toggle id="isDoDCheckingAtClosedEventActivated-toggle" label="Closed event activated?"
     #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("closed"))
 		checked
 	#end
@@ -25,12 +25,12 @@
 </div>
 
 <script>
-	$("#isCompletenessDoneActivated-toggle").change(function() {
+	$("#isDoDCheckingAtDoneEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
 		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "done", isActivated);
 	})
 	
-	$("#isCompletenessClosedActivated-toggle").change(function() {
+	$("#isDoDCheckingAtClosedEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
 		nudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "closed", isActivated);
 	})

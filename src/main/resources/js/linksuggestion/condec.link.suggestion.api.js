@@ -4,10 +4,6 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/consistency";
 		this.projectKey = conDecAPI.getProjectKey();
 		this.consistencyCheckFlag = undefined;
-		let that = this;
-		global.addEventListener("DOMContentLoaded", () => {
-			that.displayConsistencyCheck();
-		});
 	};
 
 	ConsistencyAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {

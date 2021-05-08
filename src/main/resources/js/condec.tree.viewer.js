@@ -33,13 +33,6 @@
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 
-		jQuery(document).ajaxComplete(function (event, request, settings) {
-			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				console.log("WorkflowUIDispatcher");
-				consistencyAPI.displayCompletenessCheck();
-			}
-		});
-
 		// Fill view
 		this.updateView();		
 	};

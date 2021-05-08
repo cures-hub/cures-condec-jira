@@ -71,9 +71,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
 </div>
 
-<a id="open-fullscreen"><span style="padding-right:6px;"
-                              class="aui-icon aui-icon-small aui-iconfont-vid-full-screen-on">Fullscreen</span>  $i18n.getText(
-    "condec.fullscreen")</a>
+<a id="open-fullscreen">
+	<span class="aui-icon aui-iconfont-vid-full-screen-on"></span> $i18n.getText("condec.fullscreen")
+</a>
 <a id="close-fullscreen" class="aui-close-button">Close</a>
 
 #parse("templates/contextMenu.vm")

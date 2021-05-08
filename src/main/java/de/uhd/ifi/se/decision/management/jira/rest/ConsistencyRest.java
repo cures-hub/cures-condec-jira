@@ -42,6 +42,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Su
 /**
  * REST resource for consistency functionality.
  */
+// TODO Rename to linksuggestion
 @Path("/consistency")
 public class ConsistencyRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConsistencyRest.class);

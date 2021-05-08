@@ -1,8 +1,8 @@
 <h3>Settings for the prompting events for link suggestion and duplicate recognition</h3>
 
 <div class="field-group">
-    <label for="isConsistencyDoneActivated-toggle">Consistency check for done event activated?</label>
-    <aui-toggle id="isConsistencyDoneActivated-toggle" label="Resolved event activated?"
+    <label>Link suggestion at done event activated?</label>
+    <aui-toggle id="isLinkSuggestionAtDoneEventActivated-toggle" label="Resolved event activated?"
     #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated("done"))
 		checked
 	#end
@@ -13,8 +13,8 @@
 </div>
 
 <div class="field-group">
-    <label for="isConsistencyClosedActivated-toggle">Consistency event check for closed event activated?</label>
-    <aui-toggle id="isConsistencyClosedActivated-toggle" label="Closed event activated?"
+    <label>Link suggestion at closed event activated?</label>
+    <aui-toggle id="isLinkSuggestionAtClosedEventActivated-toggle" label="Closed event activated?"
     #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated("closed"))
 		checked
 	#end
@@ -25,12 +25,12 @@
 </div>
 
 <script>
-	$("#isConsistencyDoneActivated-toggle").change(function() {
+	$("#isLinkSuggestionAtDoneEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
 		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "done", isActivated);
 	})
 	
-	$("#isConsistencyClosedActivated-toggle").change(function() {
+	$("#isLinkSuggestionAtClosedEventActivated-toggle").change(function() {
 		const isActivated = $(this).prop("checked");
 		nudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "closed", isActivated);
 	})
