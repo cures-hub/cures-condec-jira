@@ -36,17 +36,11 @@ public class GeneralMetricCalculator {
 	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
-	@JsonProperty("numberOfCommentsPerIssue")
 	private Map<String, Integer> numberOfCommentsPerIssue;
-	@JsonProperty("distributionOfKnowledgeTypes")
 	private Map<String, Integer> distributionOfKnowledgeTypes;
-	@JsonProperty("reqAndClassSummary")
 	private Map<String, Integer> reqAndClassSummary;
-	@JsonProperty("elementsFromDifferentOrigins")
 	private Map<String, String> elementsFromDifferentOrigins;
-	@JsonProperty("numberOfRelevantComments")
 	private Map<String, Integer> numberOfRelevantComments;
-	@JsonProperty("numberOfCommits")
 	private Map<String, Integer> numberOfCommits;
 
 	@JsonIgnore
@@ -143,4 +137,33 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
+	@JsonProperty("numberOfCommentsPerIssue")
+	public Map<String, Integer> getNumberOfCommentsPerIssue() {
+		return numberOfCommentsPerIssue;
+	}
+
+	@JsonProperty("distributionOfKnowledgeTypes")
+	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
+		return distributionOfKnowledgeTypes;
+	}
+
+	@JsonProperty("reqAndClassSummary")
+	public Map<String, Integer> getReqAndClassSummary() {
+		return reqAndClassSummary;
+	}
+
+	@JsonProperty("elementsFromDifferentOrigins")
+	public Map<String, String> getElementsFromDifferentOrigins() {
+		return elementsFromDifferentOrigins;
+	}
+
+	@JsonProperty("numberOfRelevantComments")
+	public Map<String, Integer> getNumberOfRelevantComments() {
+		return numberOfRelevantComments;
+	}
+
+	@JsonProperty("numberOfCommits")
+	public Map<String, Integer> getNumberOfCommits() {
+		return numberOfCommits;
+	}
 }

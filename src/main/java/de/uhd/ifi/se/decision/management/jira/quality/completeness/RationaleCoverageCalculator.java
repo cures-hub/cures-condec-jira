@@ -31,13 +31,9 @@ public class RationaleCoverageCalculator {
 	@JsonIgnore
 	private Map<KnowledgeElement, Map<KnowledgeType, Integer>> linkedElementMap = new HashMap<>();
 
-	@JsonProperty("decisionsPerSelectedJiraIssue")
 	private Map<String, Integer> decisionsPerSelectedJiraIssue = new HashMap<>();
-	@JsonProperty("issuesPerSelectedJiraIssue")
 	private Map<String, Integer> issuesPerSelectedJiraIssue = new HashMap<>();
-	@JsonProperty("decisionDocumentedForSelectedJiraIssue")
 	private Map<String, String> decisionDocumentedForSelectedJiraIssue = new HashMap<>();
-	@JsonProperty("issueDocumentedForSelectedJiraIssue")
 	private Map<String, String> issueDocumentedForSelectedJiraIssue = new HashMap<>();
 
 	@JsonIgnore
@@ -150,5 +146,25 @@ public class RationaleCoverageCalculator {
 			}
 		}
 		return numberOfElementsReachable;
+	}
+
+	@JsonProperty("decisionsPerSelectedJiraIssue")
+	public Map<String, Integer> getDecisionsPerSelectedJiraIssue() {
+		return decisionsPerSelectedJiraIssue;
+	}
+
+	@JsonProperty("issuesPerSelectedJiraIssue")
+	public Map<String, Integer> getIssuesPerSelectedJiraIssue() {
+		return issuesPerSelectedJiraIssue;
+	}
+
+	@JsonProperty("decisionDocumentedForSelectedJiraIssue")
+	public Map<String, String> getDecisionDocumentedForSelectedJiraIssue() {
+		return decisionDocumentedForSelectedJiraIssue;
+	}
+
+	@JsonProperty("issueDocumentedForSelectedJiraIssue")
+	public Map<String, String> getIssueDocumentedForSelectedJiraIssue() {
+		return issueDocumentedForSelectedJiraIssue;
 	}
 }

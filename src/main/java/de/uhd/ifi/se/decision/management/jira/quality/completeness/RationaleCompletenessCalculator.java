@@ -26,17 +26,11 @@ public class RationaleCompletenessCalculator {
 	@JsonIgnore
 	private FilteringManager filteringManager;
 
-	@JsonProperty("issuesSolvedByDecision")
 	private Map<String, String> issuesSolvedByDecision;
-	@JsonProperty("decisionsSolvingIssues")
 	private Map<String, String> decisionsSolvingIssues;
-	@JsonProperty("proArgumentDocumentedForAlternative")
 	private Map<String, String> proArgumentDocumentedForAlternative;
-	@JsonProperty("conArgumentDocumentedForAlternative")
 	private Map<String, String> conArgumentDocumentedForAlternative;
-	@JsonProperty("proArgumentDocumentedForDecision")
 	private Map<String, String> proArgumentDocumentedForDecision;
-	@JsonProperty("conArgumentDocumentedForDecision")
 	private Map<String, String> conArgumentDocumentedForDecision;
 
 	@JsonIgnore
@@ -79,4 +73,33 @@ public class RationaleCompletenessCalculator {
 		return havingLinkMap;
 	}
 
+	@JsonProperty("issuesSolvedByDecision")
+	public Map<String, String> getIssuesSolvedByDecision() {
+		return issuesSolvedByDecision;
+	}
+
+	@JsonProperty("decisionsSolvingIssues")
+	public Map<String, String> getDecisionsSolvingIssues() {
+		return decisionsSolvingIssues;
+	}
+
+	@JsonProperty("proArgumentDocumentedForAlternative")
+	public Map<String, String> getProArgumentDocumentedForAlternative() {
+		return proArgumentDocumentedForAlternative;
+	}
+
+	@JsonProperty("conArgumentDocumentedForAlternative")
+	public Map<String, String> getConArgumentDocumentedForAlternative() {
+		return conArgumentDocumentedForAlternative;
+	}
+
+	@JsonProperty("proArgumentDocumentedForDecision")
+	public Map<String, String> getProArgumentDocumentedForDecision() {
+		return proArgumentDocumentedForDecision;
+	}
+
+	@JsonProperty("conArgumentDocumentedForDecision")
+	public Map<String, String> getConArgumentDocumentedForDecision() {
+		return conArgumentDocumentedForDecision;
+	}
 }
