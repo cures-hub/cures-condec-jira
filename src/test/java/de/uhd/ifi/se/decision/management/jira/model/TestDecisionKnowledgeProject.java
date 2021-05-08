@@ -190,6 +190,17 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertFalse(project.getDecisionGuidanceConfiguration().isRecommendationAddedToKnowledgeGraph());
 	}
 
+	@Test
+	public void testGetLinkSuggestionConfiguration() {
+		assertTrue(project.getLinkSuggestionConfiguration().getMinProbability() > 0);
+	}
+
+	@Test
+	public void testGetPromptingEventConfiguration() {
+		assertFalse(
+				project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("finished"));
+	}
+
 	@AfterClass
 	public static void tearDown() {
 		// reset plugin settings to default settings

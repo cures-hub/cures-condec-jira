@@ -46,7 +46,7 @@
 		let duplicateElement = this.currentSuggestions[index].targetElement;
 
 		let self = this;
-		conDecAPI.createLink(duplicateElement.knowledgeType, this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
+		conDecAPI.createLink(this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
 	}
 
 	//-----------------------------------------
@@ -101,7 +101,7 @@
 		let targetElement = this.currentSuggestions[index].targetElement;
 		console.dir(targetElement);
 		let self = this;
-		conDecDialog.showDecisionLinkDialog(this.issueId, targetElement.id, "i", targetElement.documentationLocation, () => self.loadData());
+		conDecDialog.showLinkDialog(this.issueId, "i", targetElement.id, targetElement.documentationLocation, () => self.loadData());
 	}
 
 	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(relatedIssues) {
