@@ -1,0 +1,8 @@
+<h2>Text Classification in Jira Issue Description and Comments</h2>
+#set($textClassificationConfig = $project.getTextClassificationConfiguration())
+
+#parse("templates/settings/classification/textClassificationActivation.vm")
+#parse("templates/settings/classification/retrospectiveTextClassification.vm")
+#parse("templates/settings/classification/trainingFileCreation.vm")
+#parse("templates/settings/classification/textClassifierTraining.vm")
+#parse("templates/settings/classification/textClassificationEvaluation.vm")
