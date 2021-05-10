@@ -26,10 +26,10 @@ public class ContextInformation implements ContextInformationProvider {
 		this.element = element;
 		// Add context information providers
 		this.cips = new ArrayList<>();
-		this.cips.add(new TextualSimilarityCIP());
-		this.cips.add(new TracingCIP());
-		this.cips.add(new TimeCIP());
-		this.cips.add(new UserCIP());
+		this.cips.add(new TextualSimilarityContextInformationProvider());
+		this.cips.add(new TracingContextInformationProvider());
+		this.cips.add(new TimeContextInformationProvider());
+		this.cips.add(new UserContextInformationProvider());
 		// this.cips.add(new ActiveCIP());
 
 	}

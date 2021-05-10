@@ -12,12 +12,19 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
-public class TracingCIP implements ContextInformationProvider {
+/**
+ * Uses existing tracing links between {@link KnowledgeElement}s for rating a
+ * relation. {@link Link}s can be created manually or automatically during
+ * development. This provider assumes that a {@link KnowledgeElement} that
+ * traces to another element has a close relation to this element. (Miesbauer
+ * and Weinreich, 2012)
+ */
+public class TracingContextInformationProvider implements ContextInformationProvider {
 	private final String id = "TracingCIP_BFS";
 	private final String name = "TracingCIP";
 	private Collection<LinkSuggestion> linkSuggestions;
 
-	public TracingCIP() {
+	public TracingContextInformationProvider() {
 		this.linkSuggestions = new ArrayList<>();
 	}
 

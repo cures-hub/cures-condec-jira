@@ -10,13 +10,18 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
-public class TextualSimilarityCIP implements ContextInformationProvider {
+/**
+ * Rates relations comparing textual information of {@link KnowledgeElement}s.
+ * It assumes a strong relation if they have the same name or if the name of the
+ * element is mentioned in the description of another element.
+ */
+public class TextualSimilarityContextInformationProvider implements ContextInformationProvider {
 	private String id = "TextualSimilarityCIP_jaccard";
 	private String name = "TextualSimilarityCIP";
 	private Collection<LinkSuggestion> linkSuggestions;
 	private Preprocessor pp;
 
-	public TextualSimilarityCIP() {
+	public TextualSimilarityContextInformationProvider() {
 		pp = Preprocessor.getInstance();
 		this.linkSuggestions = new ArrayList<>();
 	}
@@ -45,9 +50,9 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
-					String[] stemmedI2Description = pp.getStemmedTokensWithoutStopWords(knowledgeElement.getDescription());
-					String[] concatenatedList = new String[stemmedI1Description.length
-					                                       + stemmedI2Description.length];
+					String[] stemmedI2Description = pp
+							.getStemmedTokensWithoutStopWords(knowledgeElement.getDescription());
+					String[] concatenatedList = new String[stemmedI1Description.length + stemmedI2Description.length];
 
 					concatenatedList = concatenate(stemmedI1Description, stemmedI2Description);
 
@@ -56,8 +61,8 @@ public class TextualSimilarityCIP implements ContextInformationProvider {
 					// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
 
 					linkSuggestion
-					.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
-							/ (double) unionCount, this.getName() + ": " + getId());
+							.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
+									/ (double) unionCount, this.getName() + ": " + getId());
 				} catch (Exception e) {
 					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
 				}

@@ -28,8 +28,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformationProvider;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.TracingCIP;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.UserCIP;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.TracingContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.UserContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -79,7 +79,7 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testUserCIP() {
-		ContextInformationProvider userCIP = new UserCIP();
+		ContextInformationProvider userCIP = new UserContextInformationProvider();
 		assertEquals("UserCIP_equalCreatorOrEqualAssignee", userCIP.getId());
 
 		MockIssue i1 = (MockIssue) JiraIssues.createJiraIssues(project).get(0);
@@ -93,23 +93,23 @@ public class TestCipCalculation extends TestSetUp {
 		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
-		userCIP = new UserCIP();
+		userCIP = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
 		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
-		userCIP = new UserCIP();
+		userCIP = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
 		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
-		userCIP = new UserCIP();
+		userCIP = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
 		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
-		userCIP = new UserCIP();
+		userCIP = new UserContextInformationProvider();
 
 		i2.setAssignee(null);
 		i2.setCreatorId(null);
@@ -117,7 +117,7 @@ public class TestCipCalculation extends TestSetUp {
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		userCIP.assessRelation(e1, testIssueList);
 		assertEquals(1., findFirst(userCIP.getLinkSuggestions()).getScore().getTotal(), 0);
-		userCIP = new UserCIP();
+		userCIP = new UserContextInformationProvider();
 
 		i1.setAssignee(null);
 		i1.setCreatorId(null);
@@ -132,7 +132,7 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testTracingCIP() {
-		ContextInformationProvider tracingCIP = new TracingCIP();
+		ContextInformationProvider tracingCIP = new TracingContextInformationProvider();
 		assertEquals("TracingCIP_BFS", tracingCIP.getId());
 
 		Issue i0 = testIssues.get(0);
@@ -145,7 +145,7 @@ public class TestCipCalculation extends TestSetUp {
 		tracingCIP.assessRelation(e0, testIssueList);
 		assertEquals(0.5, findFirst(tracingCIP.getLinkSuggestions()).getScore().getTotal(), 0);
 		// Score is 1/4
-		tracingCIP = new TracingCIP();
+		tracingCIP = new TracingContextInformationProvider();
 
 		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		tracingCIP.assessRelation(e0, testIssueList);
