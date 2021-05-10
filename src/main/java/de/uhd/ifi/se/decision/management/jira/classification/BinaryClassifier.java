@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -45,6 +47,7 @@ public class BinaryClassifier extends AbstractClassifier {
 	@Override
 	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
 		isCurrentlyTraining = true;
+		namePrefix = FilenameUtils.getBaseName(trainingData.getFileName());
 		long start = System.nanoTime();
 		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
 		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(), classifierType);
