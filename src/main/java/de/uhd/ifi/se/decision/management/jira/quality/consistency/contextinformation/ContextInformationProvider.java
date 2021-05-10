@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 /**
- * Interface for different context information providers to realize context
+ * Superclass for different context information providers to realize context
  * utility functions. For example, the {@link TimeContextInformationProvider}
  * rates relations based on time of creation or modifications of elements.
  * 
@@ -18,19 +19,32 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  *           Working IEEE/IFIP Conference on Software Architecture and European
  *           Conference on Software Architecture
  */
-public interface ContextInformationProvider {
+public abstract class ContextInformationProvider {
+
+	protected String id;
+	protected Collection<LinkSuggestion> linkSuggestions;
+
+	public ContextInformationProvider() {
+		this.linkSuggestions = new ArrayList<>();
+	}
 
 	/**
 	 * @return id of the context information provider
 	 */
-	String getId();
+	public String getId() {
+		return id;
+	}
 
 	/**
 	 * @return name of the context information provider
 	 */
-	String getName();
+	public String getName() {
+		return this.getClass().getName();
+	}
 
-	Collection<LinkSuggestion> getLinkSuggestions();
+	public Collection<LinkSuggestion> getLinkSuggestions() {
+		return linkSuggestions;
+	}
 
 	/**
 	 * Calculates the relationship between the issues i1 and i2. Higher values
@@ -41,6 +55,6 @@ public interface ContextInformationProvider {
 	 * @param knowledgeElements
 	 * @return value of relationship in [0, inf]
 	 */
-	void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements);
+	public abstract void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements);
 
 }

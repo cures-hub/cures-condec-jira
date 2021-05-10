@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistence
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
-public class ContextInformation implements ContextInformationProvider {
+public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> cips;

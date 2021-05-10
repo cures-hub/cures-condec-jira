@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,42 +13,24 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  * It assumes a strong relation if they have the same name or if the name of the
  * element is mentioned in the description of another element.
  */
-public class TextualSimilarityContextInformationProvider implements ContextInformationProvider {
-	private String id = "TextualSimilarityCIP_jaccard";
-	private String name = "TextualSimilarityCIP";
-	private Collection<LinkSuggestion> linkSuggestions;
-	private Preprocessor pp;
-
-	public TextualSimilarityContextInformationProvider() {
-		pp = Preprocessor.getInstance();
-		this.linkSuggestions = new ArrayList<>();
-	}
+public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getId() {
-		return this.id;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public Collection<LinkSuggestion> getLinkSuggestions() {
-		return this.linkSuggestions;
+		return "TextualSimilarityCIP_jaccard";
 	}
 
 	@Override
 	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+		Preprocessor preprocessor = Preprocessor.getInstance();
 		try {
-			String[] stemmedI1Description = pp.getStemmedTokensWithoutStopWords(baseElement.getDescription());
+			String[] stemmedI1Description = preprocessor.getStemmedTokensWithoutStopWords(baseElement.getDescription());
 			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
 			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
 				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 
 				try {
-					String[] stemmedI2Description = pp
+					String[] stemmedI2Description = preprocessor
 							.getStemmedTokensWithoutStopWords(knowledgeElement.getDescription());
 					String[] concatenatedList = new String[stemmedI1Description.length + stemmedI2Description.length];
 

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,22 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  * Assumes that the {@link KnowledgeElement}s within the active sprint are
  * related.
  */
-public class ActiveElementsContextInformationProvider implements ContextInformationProvider {
-	private List<LinkSuggestion> linkSuggestions = new ArrayList<>();
+public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getId() {
 		return "ActiveCIP_Sprint";
-	}
-
-	@Override
-	public String getName() {
-		return "Active elements";
-	}
-
-	@Override
-	public Collection<LinkSuggestion> getLinkSuggestions() {
-		return linkSuggestions;
 	}
 
 	@Override

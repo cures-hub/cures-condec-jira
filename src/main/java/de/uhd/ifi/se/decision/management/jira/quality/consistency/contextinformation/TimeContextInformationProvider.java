@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -14,28 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  * recently created decisions are rated higher then others. (Miesbauer and
  * Weinreich, 2012)
  */
-public class TimeContextInformationProvider implements ContextInformationProvider {
-	private String id = "TimeCIP_ms";
-	private String name = "TimeCIP";
-	private Collection<LinkSuggestion> linkSuggestions;
-
-	public TimeContextInformationProvider() {
-		this.linkSuggestions = new ArrayList<>();
-	}
+public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getId() {
-		return this.id;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public Collection<LinkSuggestion> getLinkSuggestions() {
-		return this.linkSuggestions;
+		return "TimeCIP_ms";
 	}
 
 	@Override

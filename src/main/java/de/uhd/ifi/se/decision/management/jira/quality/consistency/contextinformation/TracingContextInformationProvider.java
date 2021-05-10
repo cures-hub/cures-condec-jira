@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,23 +18,11 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  * traces to another element has a close relation to this element. (Miesbauer
  * and Weinreich, 2012)
  */
-public class TracingContextInformationProvider implements ContextInformationProvider {
-	private final String id = "TracingCIP_BFS";
-	private final String name = "TracingCIP";
-	private Collection<LinkSuggestion> linkSuggestions;
-
-	public TracingContextInformationProvider() {
-		this.linkSuggestions = new ArrayList<>();
-	}
+public class TracingContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getId() {
-		return this.id;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
+		return "TracingCIP_BFS";
 	}
 
 	@Override
@@ -115,10 +102,5 @@ public class TracingContextInformationProvider implements ContextInformationProv
 			knowledgeElements.addAll(issueLink.getBothElements());
 		}
 		return knowledgeElements;
-	}
-
-	@Override
-	public Collection<LinkSuggestion> getLinkSuggestions() {
-		return linkSuggestions;
 	}
 }
