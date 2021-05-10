@@ -681,21 +681,6 @@
 	};
 
 	/*
-	 * external references: consistencySettings.vm
-	 */
-	ConDecAPI.prototype.setConsistencyActivated = function(isConsistencyActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setConsistencyActivated.json?projectKey="
-			+ projectKey + "&isConsistencyActivated=" + isConsistencyActivated, null, function(error,
-				response) {
-			if (error === null) {
-				showFlag("success",
-					"Usage of the consistency module of the ConDec plugin has been set to "
-					+ isConsistencyActivated + ".");
-			}
-		});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookData = function(projectKey, webhookUrl, webhookSecret) {
@@ -770,113 +755,6 @@
 		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
 			+ "&oldName=" + oldName + "&newName=" + newName);
 		callback();
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.setTextClassifierEnabled = function(isTextClassifierEnabled, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/classification/setTextClassifierEnabled.json?projectKey="
-			+ projectKey + "&isTextClassifierEnabled=" + isTextClassifierEnabled, null, function(error,
-				response) {
-			if (error === null) {
-				showFlag("success",
-					"Activation of text classification for decision knowledge in Jira issue description and comments was set to "
-					+ isTextClassifierEnabled + ".");
-			}
-		});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.classifyText = function(text, projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/classification/classifyText?projectKey="
-			+ projectKey + "&text=" + text, null, function(error, response) {
-				if (error === null) {
-					callback(response.classificationResult);
-				} else {
-					callback("Error! Please check if the classifier is trained.");
-				}
-			});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.classifyWholeProject = function(projectKey, animatedElement) {
-		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/classification/classifyWholeProject.json?projectKey=" + projectKey,
-			null,
-			function(error, response) {
-				animatedElement.classList.remove("aui-progress-indicator-value");
-				if (error === null) {
-					showFlag("success", "The whole project has been classified.");
-				}
-			});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.trainClassifier = function(projectKey, trainingFileName, binaryClassifierType, fineGrainedClassifierType, animatedElement) {
-		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/classification/trainClassifier.json?projectKey=" + projectKey + "&trainingFileName="
-			+ trainingFileName + "&binaryClassifierType=" + binaryClassifierType + "&fineGrainedClassifierType=" + fineGrainedClassifierType,
-			null,
-			function(error, response) {
-				animatedElement.classList.remove("aui-progress-indicator-value");
-				if (error === null) {
-					showFlag("success", "The classifier was successfully retrained.");
-				}
-			});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.useTrainedClassifier = function(projectKey, trainedClassifier, isOnlineLearningActivated) {
-		generalApi.postJSON(this.restPrefix + "/classification/useTrainedClassifier.json?projectKey=" + projectKey +
-			"&trainedClassifier=" + trainedClassifier + "&isOnlineLearningActivated=" + isOnlineLearningActivated,
-			null,
-			function(error, response) {
-				if (error === null) {
-					showFlag("success", "The trained classifier was successfully set for the project.");
-				}
-			});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.evaluateTextClassifier = function(projectKey, trainingFileName, numberOfFolds,
-		binaryClassifierType, fineGrainedClassifierType, animatedElement, callback) {
-		animatedElement.classList.add("aui-progress-indicator-value");
-		generalApi.postJSON(this.restPrefix + "/classification/evaluateTextClassifier.json?projectKey=" + projectKey + "&trainingFileName="
-			+ trainingFileName + "&numberOfFolds=" + numberOfFolds
-			+ "&binaryClassifierType=" + binaryClassifierType + "&fineGrainedClassifierType=" + fineGrainedClassifierType,
-			null,
-			function(error, response) {
-				animatedElement.classList.remove("aui-progress-indicator-value");
-				if (error === null) {
-					showFlag("success", "The evaluation results file was successfully created.");
-					callback(response["content"]);
-				}
-			});
-	};
-
-	/*
-	 * external references: templates/settings/classificationSettings.vm
-	 */
-	ConDecAPI.prototype.saveTrainingFile = function(projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/classification/saveTrainingFile.json?projectKey=" + projectKey, null,
-			function(error, response) {
-				if (error === null) {
-					showFlag("success", "The training file was successfully created and saved in "
-						+ response["trainingFile"] + ".");
-					callback(response["content"]);
-				}
-			});
 	};
 
 	ConDecAPI.prototype.getPropagationRules = function() {

@@ -1,0 +1,22 @@
+<div class="field-group">
+    <label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
+    <input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify Description and Comments of all Jira Issues"/>
+    <div class="description">
+    	Classifies the text in the description and the comments of all Jira issues for this project. 
+    	This is used for the retrospective identification of decision knowledge/rationale. <br/>
+    	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> This cannot be reverted!
+    </div>
+    <div class="aui-progress-indicator">
+        <span id="classify-whole-project-progress-bar"></span>
+    </div>
+</div>
+
+<script>
+    const classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+    classifyAllIssuesInProjectButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to classify all Jira issue comments and descriptions? This might take a long time if the project is big and cannot be reverted!")) {
+            var animatedElementWholeProjectClassification = document.getElementById("classify-whole-project-progress-bar");
+            conDecTextClassificationAPI.classifyWholeProject("$projectKey", animatedElementWholeProjectClassification);
+        }
+    });
+</script>
