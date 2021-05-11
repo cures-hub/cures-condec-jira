@@ -1,0 +1,14 @@
+<div class="qualityCheckContainer">
+    <div class="field-group">
+        <label id="quality-check-issue-label"></label>
+    </div>
+    <div class="field-group">
+        <label id="quality-check-decision-label"></label>
+    </div>
+</div>
+<script>
+    /* Adds the on click listener on tab opening */
+    $(document).ready(function () {
+        conDecQualityChecking.initView();
+    });
+</script>

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import java.util.*;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,8 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+import javax.swing.*;
 
 /**
  * Calculates the rationale coverage of requirements, code, and other software
@@ -38,6 +41,12 @@ public class RationaleCoverageCalculator {
 
 	@JsonIgnore
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
+
+	public RationaleCoverageCalculator(String projectKey) {
+		this.filterSettings = new FilterSettings(projectKey, "");
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		this.filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+	}
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
 									   String sourceKnowledgeTypesString) {
@@ -144,6 +153,20 @@ public class RationaleCoverageCalculator {
 				numberOfElementsReachable.put(knowledgeElement.getKey(),
 					linkedElementMap.get(knowledgeElement).get(knowledgeType));
 			}
+		}
+		return numberOfElementsReachable;
+	}
+
+	public int calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(KnowledgeElement knowledgeElement,
+																			 KnowledgeType knowledgeType) {
+		int numberOfElementsReachable;
+		if (!linkedElementMap.containsKey(knowledgeElement)) {
+			fillLinkedElementMap(knowledgeElement);
+		}
+		if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
+			numberOfElementsReachable = 0;
+		} else {
+			numberOfElementsReachable = linkedElementMap.get(knowledgeElement).get(knowledgeType);
 		}
 		return numberOfElementsReachable;
 	}

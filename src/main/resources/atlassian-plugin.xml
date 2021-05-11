@@ -137,6 +137,7 @@
 		<resource type="download" name="condec.cia.js" location="/js/condec.cia.js" />
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
 		<resource type="download" name="condec.decision.groups.js" location="/js/condec.decision.groups.js" />
+        <resource type="download" name="condec.quality.check.js" location="/js/condec.quality.check.js" />
 		<resource type="download" name="condec.definition.of.done.checking.api.js"
 			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
 		<resource type="download" name="condec.link.suggestion.api.js"
