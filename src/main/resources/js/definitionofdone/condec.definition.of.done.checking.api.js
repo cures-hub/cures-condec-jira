@@ -25,5 +25,14 @@
 		);
 	};
 
+	ConDecDoDCheckingAPI.prototype.getCoverageOfJiraIssue = function(projectKey, issueKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/coverageOfJiraIssue.json?projectKey=${projectKey}&issueKey=${issueKey}`,
+			function(error, result) {
+				if (error === null) {
+					callback(result);
+				}
+			});
+	};
+
 	global.conDecDoDCheckingAPI = new ConDecDoDCheckingAPI();
 })(window);

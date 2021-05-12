@@ -902,24 +902,6 @@
 		generalApi.getJSON(this.restPrefix + "/config/getCiaSettings.json?projectKey=" + projectKey, callback);
 	};
 
-	ConDecAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/config/getDefinitionOfDone.json?projectKey=${projectKey}`,
-			function(error, definitionOfDone) {
-				if (error === null) {
-					callback(definitionOfDone);
-				}
-			});
-	};
-
-	ConDecAPI.prototype.getCoverageOfJiraIssue = function(projectKey, issueKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/dodchecking/coverageOfJiraIssue.json?projectKey=${projectKey}&issueKey=${issueKey}`,
-			function(error, result) {
-				if (error === null) {
-					callback(result);
-				}
-			});
-	};
-
 	function getIssueKey() {
 		var issueKey = null;
 		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {

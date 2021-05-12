@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**

@@ -18,8 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import javax.swing.*;
-
 /**
  * Calculates the rationale coverage of requirements, code, and other software
  * artifacts (=knowledge elements). For example, calculates how many decisions

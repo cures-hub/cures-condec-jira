@@ -9,6 +9,6 @@
 <script>
     /* Adds the on click listener on tab opening */
     $(document).ready(function () {
-        conDecQualityChecking.initView();
+        conDecQualityCheck.initView();
     });
 </script>
