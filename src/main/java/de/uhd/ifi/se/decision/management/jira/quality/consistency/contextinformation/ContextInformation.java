@@ -46,7 +46,7 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public Collection<LinkSuggestion> getLinkSuggestions() {
+	public List<LinkSuggestion> getLinkSuggestions() {
 		// Add all issues of project to projectKnowledgeElements set
 		Set<KnowledgeElement> projectKnowledgeElements = new HashSet<>(
 				KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements());

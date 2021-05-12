@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+
+// TODO Extend Link class
 public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
 	@JsonProperty
 	private KnowledgeElement baseElement;
@@ -16,7 +18,6 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Kn
 		this.targetElement = targetElement;
 		this.score = new SimilarityScore();
 	}
-
 
 	public KnowledgeElement getBaseIssue() {
 		return baseElement;
@@ -39,10 +40,9 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Kn
 		this.score.put(field, score);
 	}
 
-
 	@Override
 	public int compareTo(LinkSuggestion o) {
-		if (o == null){
+		if (o == null) {
 			return -1;
 		}
 		int compareValue = 0;

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -22,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
 public abstract class ContextInformationProvider {
 
 	protected String id;
-	protected Collection<LinkSuggestion> linkSuggestions;
+	protected List<LinkSuggestion> linkSuggestions;
 
 	public ContextInformationProvider() {
 		this.linkSuggestions = new ArrayList<>();
@@ -42,7 +41,7 @@ public abstract class ContextInformationProvider {
 		return this.getClass().getName();
 	}
 
-	public Collection<LinkSuggestion> getLinkSuggestions() {
+	public List<LinkSuggestion> getLinkSuggestions() {
 		return linkSuggestions;
 	}
 
