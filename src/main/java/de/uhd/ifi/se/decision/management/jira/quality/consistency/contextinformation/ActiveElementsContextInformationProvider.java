@@ -21,7 +21,7 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		List<Long> activeIssueIds = new PlanningModeService.CurrentSprints().getSprintsToIssues().keySet()
 				.parallelStream().map(sprintPlanEntry -> sprintPlanEntry.issuesIds).flatMap(Collection::stream)
 				.collect(Collectors.toList());
@@ -32,5 +32,10 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 			ls.addToScore(isActive, this.getId());
 			return ls;
 		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		return 0.0;
 	}
 }

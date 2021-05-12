@@ -52,7 +52,7 @@ public class ContextInformation extends ContextInformationProvider {
 				KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements());
 
 		projectKnowledgeElements.remove(this.element);
-		this.assessRelation(element, new ArrayList<>(projectKnowledgeElements));
+		this.assessRelations(element, new ArrayList<>(projectKnowledgeElements));
 		// calculate context score
 
 		// get filtered issues
@@ -87,7 +87,7 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
 		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();// Collections.synchronizedMap(new
 																				// HashMap<String, LinkSuggestion>());
@@ -97,7 +97,7 @@ public class ContextInformation extends ContextInformationProvider {
 		this.cips.parallelStream().forEach((cip) -> {
 			// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
 			// " + cip.getName());
-			cip.assessRelation(this.element, new ArrayList<>(knowledgeElements));
+			cip.assessRelations(this.element, new ArrayList<>(knowledgeElements));
 
 			double nullCompensation = 0.;
 
@@ -122,6 +122,12 @@ public class ContextInformation extends ContextInformationProvider {
 			});
 
 		});
+	}
+
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+
+		return 0.0;
 	}
 
 	@Override

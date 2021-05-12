@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinform
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -54,39 +53,36 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
-		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i2));
-		contextInformationProvider.assessRelation(element, testIssueList);
+		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 	}
 
 	@Test
 	public void testDifferentUser() {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
-		List<KnowledgeElement> testIssueList = Collections.singletonList(new KnowledgeElement(i2));
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		contextInformationProvider.assessRelation(element, testIssueList);
+		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
-		contextInformationProvider.assessRelation(element, testIssueList);
+		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		contextInformationProvider.assessRelation(element, testIssueList);
+		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(null);
 		i2.setCreatorId(null);
 		i2.setReporter(null);
-		testIssueList = Collections.singletonList(new KnowledgeElement(i2));
-		contextInformationProvider.assessRelation(element, testIssueList);
+		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 
-		contextInformationProvider.assessRelation(new KnowledgeElement(), testIssueList);
+		contextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2));
 		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getTotal(), 0);
 	}
 }

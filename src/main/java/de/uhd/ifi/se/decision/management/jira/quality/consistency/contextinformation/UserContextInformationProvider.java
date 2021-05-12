@@ -20,26 +20,31 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		for (KnowledgeElement elementToTest : knowledgeElements) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
-
-			Double score = 0.;
-			if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
-				score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(),
-						elementToTest.getJiraIssue().getCreator());
-				score += this.isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(),
-						elementToTest.getJiraIssue().getAssignee())
-						+ this.isApplicationUserEqual(baseElement.getJiraIssue().getReporter(),
-								elementToTest.getJiraIssue().getReporter())
-						+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(),
-								elementToTest.getJiraIssue().getArchivedByUser());
-			}
-			linkSuggestion.addToScore(score, this.getName());
-
-			linkSuggestions.add(linkSuggestion);
-
+			assessRelation(baseElement, elementToTest);
 		}
+	}
+
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+
+		Double score = 0.;
+		if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
+			score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(),
+					elementToTest.getJiraIssue().getCreator());
+			score += this.isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(),
+					elementToTest.getJiraIssue().getAssignee())
+					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getReporter(),
+							elementToTest.getJiraIssue().getReporter())
+					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(),
+							elementToTest.getJiraIssue().getArchivedByUser());
+		}
+		linkSuggestion.addToScore(score, this.getName());
+
+		linkSuggestions.add(linkSuggestion);
+		return score;
 	}
 
 	private Double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {

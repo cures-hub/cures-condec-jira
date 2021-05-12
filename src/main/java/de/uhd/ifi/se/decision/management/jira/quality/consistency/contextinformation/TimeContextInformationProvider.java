@@ -20,14 +20,20 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		for (KnowledgeElement elementToTest : knowledgeElements) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
-			double differenceInWeeks = (baseElement.getCreationDate().getTime()
-					- elementToTest.getCreationDate().getTime()) / (1000 * 60 * 60 * 24. * 7.);
-			double score = (1. / (Math.abs(differenceInWeeks) + 1.));
-			linkSuggestion.addToScore(score, this.getName() + ": " + this.getId());
-			this.linkSuggestions.add(linkSuggestion);
+			assessRelation(baseElement, elementToTest);
 		}
+	}
+
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+		double differenceInWeeks = (baseElement.getCreationDate().getTime() - elementToTest.getCreationDate().getTime())
+				/ (1000 * 60 * 60 * 24. * 7.);
+		double score = (1. / (Math.abs(differenceInWeeks) + 1.));
+		linkSuggestion.addToScore(score, this.getName() + ": " + this.getId());
+		this.linkSuggestions.add(linkSuggestion);
+		return score;
 	}
 }

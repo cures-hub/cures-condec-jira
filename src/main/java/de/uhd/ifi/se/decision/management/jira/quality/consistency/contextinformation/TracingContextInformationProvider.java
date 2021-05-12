@@ -26,22 +26,25 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		for (KnowledgeElement issueToTest : knowledgeElements) {
-			LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, issueToTest);
-
-			Integer distance = search(baseElement, issueToTest);
-			// A null value means the nodes are not connected.
-			Double value = 0.;
-			if (distance != null) {
-				value = 1. / (distance + 1);
-			}
-			// Prevent a division by zero exception.
-			linkSuggestion.addToScore(value, this.getName());
-			this.linkSuggestions.add(linkSuggestion);
-
+			assessRelation(baseElement, issueToTest);
 		}
+	}
 
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
+		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
+		Integer distance = search(baseElement, knowledgeElement);
+		// A null value means the nodes are not connected.
+		Double value = 0.;
+		if (distance != null) {
+			value = 1. / (distance + 1);
+		}
+		// Prevent a division by zero exception.
+		linkSuggestion.addToScore(value, this.getName());
+		this.linkSuggestions.add(linkSuggestion);
+		return value;
 	}
 
 	private boolean wasVisited(String node, Map<String, ?> distanceMap) {

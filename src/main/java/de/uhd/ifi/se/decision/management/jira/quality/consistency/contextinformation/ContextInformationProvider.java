@@ -54,6 +54,8 @@ public abstract class ContextInformationProvider {
 	 * @param knowledgeElements
 	 * @return value of relationship in [0, inf]
 	 */
-	public abstract void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements);
+	public abstract void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements);
+
+	public abstract double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement);
 
 }

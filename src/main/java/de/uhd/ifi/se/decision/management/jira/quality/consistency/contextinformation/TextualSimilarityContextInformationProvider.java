@@ -21,7 +21,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	}
 
 	@Override
-	public void assessRelation(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
+	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		Preprocessor preprocessor = Preprocessor.getInstance();
 		try {
 			String[] stemmedI1Description = preprocessor.getStemmedTokensWithoutStopWords(baseElement.getDescription());
@@ -57,7 +57,11 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 				return ls;
 			}).collect(Collectors.toList());
 		}
+	}
 
+	@Override
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		return 0;
 	}
 
 	private String[] uniqueElements(CharSequence[] list) {
