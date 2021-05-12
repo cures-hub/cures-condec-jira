@@ -30,13 +30,6 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	}
 
 	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement elementToTest : knowledgeElements) {
-			assessRelation(baseElement, elementToTest);
-		}
-	}
-
-	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion ls = new LinkSuggestion(baseElement, elementToTest);
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;

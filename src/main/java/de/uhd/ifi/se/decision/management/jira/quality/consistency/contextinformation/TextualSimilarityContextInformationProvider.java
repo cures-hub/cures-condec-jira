@@ -1,10 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.List;
-
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
@@ -15,23 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  */
 public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
-	private Preprocessor preprocessor;
-
 	public TextualSimilarityContextInformationProvider() {
 		super();
-		preprocessor = Preprocessor.getInstance();
 	}
 
 	@Override
 	public String getId() {
 		return "TextualSimilarityCIP_jaccard";
-	}
-
-	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement elementToTest : knowledgeElements) {
-			assessRelation(baseElement, elementToTest);
-		}
 	}
 
 	@Override
@@ -46,21 +33,4 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	public double calculateSimilarity(String left, String right) {
 		return new JaccardSimilarity().apply(left, right);
 	}
-
-	/**
-	 * @param a
-	 *            first array of double values
-	 * @param b
-	 *            second array of double values
-	 * @return concatenated array of double values
-	 */
-	public static String[] concatenate(String[] a, String[] b) {
-		int aLen = a.length;
-		int bLen = b.length;
-		String[] c = new String[aLen + bLen];
-		System.arraycopy(a, 0, c, 0, aLen);
-		System.arraycopy(b, 0, c, aLen, bLen);
-		return c;
-	}
-
 }

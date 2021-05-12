@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.List;
-
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -17,13 +15,6 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 	@Override
 	public String getId() {
 		return "UserCIP_equalCreatorOrEqualAssignee";
-	}
-
-	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement elementToTest : knowledgeElements) {
-			assessRelation(baseElement, elementToTest);
-		}
 	}
 
 	@Override

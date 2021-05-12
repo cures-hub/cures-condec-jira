@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
-import java.util.List;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
@@ -17,13 +15,6 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 	@Override
 	public String getId() {
 		return "TimeCIP_ms";
-	}
-
-	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement elementToTest : knowledgeElements) {
-			assessRelation(baseElement, elementToTest);
-		}
 	}
 
 	@Override

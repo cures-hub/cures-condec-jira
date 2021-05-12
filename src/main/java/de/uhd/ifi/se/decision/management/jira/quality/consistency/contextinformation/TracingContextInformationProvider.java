@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinform
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,13 +22,6 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 	@Override
 	public String getId() {
 		return "TracingCIP_BFS";
-	}
-
-	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement issueToTest : knowledgeElements) {
-			assessRelation(baseElement, issueToTest);
-		}
 	}
 
 	@Override

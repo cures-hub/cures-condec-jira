@@ -31,7 +31,7 @@ public class ContextInformation extends ContextInformationProvider {
 		this.cips.add(new TimeContextInformationProvider());
 		this.cips.add(new UserContextInformationProvider());
 		// this.cips.add(new ActiveCIP());
-
+		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();
 	}
 
 	public Collection<KnowledgeElement> getLinkedKnowledgeElements() {
@@ -87,19 +87,12 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		// init the link suggestions
-		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();
-		knowledgeElements.parallelStream().forEach(otherElement -> linkSuggestions.put(otherElement.getKey(),
-				new LinkSuggestion(this.element, otherElement)));
-
-		this.cips.parallelStream().forEach((cip) -> {
-			// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
-			// " + cip.getName());
-			cip.assessRelations(this.element, new ArrayList<>(knowledgeElements));
-
+	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		linkSuggestions.put(elementToTest.getKey(), new LinkSuggestion(this.element, elementToTest));
+		for (ContextInformationProvider cip : cips) {
 			double nullCompensation = 0.;
 
+			cip.assessRelation(baseElement, elementToTest);
 			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
 			double sumOfIndividualScoresForCurrentCip = suggestions.parallelStream()
 					.mapToDouble(LinkSuggestion::getTotalScore).sum();
@@ -119,13 +112,7 @@ public class ContextInformation extends ContextInformationProvider {
 				linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation)
 						/ (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());// sumOfIndividualScoresForCurrentCip);
 			});
-
-		});
-	}
-
-	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-
+		}
 		return 0.0;
 	}
 
