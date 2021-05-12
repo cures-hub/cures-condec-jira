@@ -89,8 +89,7 @@ public class ContextInformation extends ContextInformationProvider {
 	@Override
 	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
 		// init the link suggestions
-		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();// Collections.synchronizedMap(new
-																				// HashMap<String, LinkSuggestion>());
+		this.linkSuggestions = new ConcurrentHashMap<String, LinkSuggestion>();
 		knowledgeElements.parallelStream().forEach(otherElement -> linkSuggestions.put(otherElement.getKey(),
 				new LinkSuggestion(this.element, otherElement)));
 

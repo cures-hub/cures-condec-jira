@@ -15,6 +15,15 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  */
 public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
+	private List<Long> activeIssueIds;
+
+	public ActiveElementsContextInformationProvider() {
+		super();
+		activeIssueIds = new PlanningModeService.CurrentSprints().getSprintsToIssues().keySet().parallelStream()
+				.map(sprintPlanEntry -> sprintPlanEntry.issuesIds).flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
+
 	@Override
 	public String getId() {
 		return "ActiveCIP_Sprint";
@@ -22,20 +31,17 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		List<Long> activeIssueIds = new PlanningModeService.CurrentSprints().getSprintsToIssues().keySet()
-				.parallelStream().map(sprintPlanEntry -> sprintPlanEntry.issuesIds).flatMap(Collection::stream)
-				.collect(Collectors.toList());
-
-		this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
-			LinkSuggestion ls = new LinkSuggestion(baseElement, knowledgeElement);
-			double isActive = activeIssueIds.contains(knowledgeElement.getJiraIssue().getId()) ? 1. : 0.;
-			ls.addToScore(isActive, this.getId());
-			return ls;
-		}).collect(Collectors.toList());
+		for (KnowledgeElement elementToTest : knowledgeElements) {
+			assessRelation(baseElement, elementToTest);
+		}
 	}
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		return 0.0;
+		LinkSuggestion ls = new LinkSuggestion(baseElement, elementToTest);
+		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
+		ls.addToScore(isActive, this.getId());
+		this.linkSuggestions.add(ls);
+		return isActive;
 	}
 }

@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -15,6 +15,13 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Li
  */
 public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
+	private Preprocessor preprocessor;
+
+	public TextualSimilarityContextInformationProvider() {
+		super();
+		preprocessor = Preprocessor.getInstance();
+	}
+
 	@Override
 	public String getId() {
 		return "TextualSimilarityCIP_jaccard";
@@ -22,51 +29,22 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	@Override
 	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		Preprocessor preprocessor = Preprocessor.getInstance();
-		try {
-			String[] stemmedI1Description = preprocessor.getStemmedTokensWithoutStopWords(baseElement.getDescription());
-			int uniqueE1Elements = uniqueElements(stemmedI1Description).length;
-			this.linkSuggestions = knowledgeElements.parallelStream().map(knowledgeElement -> {
-				LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
-
-				try {
-					String[] stemmedI2Description = preprocessor
-							.getStemmedTokensWithoutStopWords(knowledgeElement.getDescription());
-					String[] concatenatedList = new String[stemmedI1Description.length + stemmedI2Description.length];
-
-					concatenatedList = concatenate(stemmedI1Description, stemmedI2Description);
-
-					int unionCount = uniqueElements(concatenatedList).length;
-
-					// Jaccard similarity: (|A| + |B| - |A u B|) / |A u B|
-
-					linkSuggestion
-							.addToScore((uniqueE1Elements + uniqueElements(stemmedI2Description).length - unionCount)
-									/ (double) unionCount, this.getName() + ": " + getId());
-				} catch (Exception e) {
-					linkSuggestion.addToScore(0., this.getName() + ": " + getId());
-				}
-				return linkSuggestion;
-
-			}).collect(Collectors.toList());
-
-		} catch (Exception e) {
-			this.linkSuggestions = knowledgeElements.parallelStream().map(element -> {
-				LinkSuggestion ls = new LinkSuggestion(baseElement, element);
-				ls.addToScore(0., this.getName());
-				return ls;
-			}).collect(Collectors.toList());
+		for (KnowledgeElement elementToTest : knowledgeElements) {
+			assessRelation(baseElement, elementToTest);
 		}
 	}
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		return 0;
+		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+		double similarity = calculateSimilarity(baseElement.getDescription(), elementToTest.getDescription());
+		linkSuggestion.addToScore(similarity, this.getName() + ": " + getId());
+		this.linkSuggestions.add(linkSuggestion);
+		return similarity;
 	}
 
-	private String[] uniqueElements(CharSequence[] list) {
-		Set<CharSequence> hashedArray = Set.of(list);
-		return hashedArray.toArray(String[]::new);
+	public double calculateSimilarity(String left, String right) {
+		return new JaccardSimilarity().apply(left, right);
 	}
 
 	/**
