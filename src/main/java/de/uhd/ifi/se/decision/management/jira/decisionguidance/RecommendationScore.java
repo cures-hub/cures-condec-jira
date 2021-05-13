@@ -57,6 +57,12 @@ public class RecommendationScore {
 		return sumOfSubScoreValues;
 	}
 
+	public void normalizeTo(float maxScoreValue) {
+		System.out.println(maxScoreValue);
+		value = (getSumOfSubScores() * 1.0f / maxScoreValue) * 100f;
+		System.out.println(value);
+	}
+
 	/**
 	 * @return explanation on how the score was calculated.
 	 */

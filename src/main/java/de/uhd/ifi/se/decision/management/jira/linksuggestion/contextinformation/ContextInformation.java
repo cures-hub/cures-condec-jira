@@ -55,9 +55,22 @@ public class ContextInformation extends ContextInformationProvider {
 
 		// get filtered issues
 		Set<KnowledgeElement> elementsToKeep = this.filterKnowledgeElements(projectKnowledgeElements);
-
+		float maxScoreValue = getMaxScoreValue(linkSuggestions);
+		for (LinkSuggestion suggestion : linkSuggestions) {
+			suggestion.getScore().normalizeTo(maxScoreValue);
+		}
 		// retain scores of filtered issues
 		return linkSuggestions;
+	}
+
+	public static float getMaxScoreValue(List<LinkSuggestion> linkSuggestions) {
+		float maxScoreValue = 0;
+		for (LinkSuggestion suggestion : linkSuggestions) {
+			if (suggestion.getScore().getValue() > maxScoreValue) {
+				maxScoreValue = suggestion.getScore().getValue();
+			}
+		}
+		return maxScoreValue;
 	}
 
 	private Set<KnowledgeElement> filterKnowledgeElements(List<KnowledgeElement> projectKnowledgeElements) {

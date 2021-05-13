@@ -17,11 +17,6 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 	}
 
 	@XmlElement
-	public double getTotalScore() {
-		return score.getSumOfSubScores();
-	}
-
-	@XmlElement
 	public RecommendationScore getScore() {
 		return score;
 	}
@@ -46,7 +41,7 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 			return -1;
 		}
 		int compareValue = 0;
-		if (this.getTotalScore() > o.getTotalScore()) {
+		if (this.getScore().getValue() > o.getScore().getValue()) {
 			compareValue = 1;
 		} else {
 			compareValue = -1;

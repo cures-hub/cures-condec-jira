@@ -73,7 +73,7 @@
 		let row = document.createElement("tr");
 		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.key}</a>`, "th-key"));
 		row.appendChild(generateTableCell(suggestion.target.summary, "th-name", {}));
-		let scoreCell = (generateTableCell(suggestion.totalScore, "th-score", { "title": suggestion.score }));
+		let scoreCell = (generateTableCell(suggestion.score.value, "th-score", { "title": suggestion.score }));
 		AJS.$(scoreCell).tooltip();
 		row.appendChild(scoreCell);
 
@@ -106,9 +106,8 @@
 
 	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(relatedIssues) {
 		return relatedIssues.map(suggestion => {
-			suggestion.totalScore = Math.round(suggestion.totalScore * 1000) / 1000.;
 			return suggestion;
-		}).sort((a, b) => b.totalScore - a.totalScore);
+		}).sort((a, b) => b.score.value - a.score.value);
 	}
 
 	//-----------------------------------------
