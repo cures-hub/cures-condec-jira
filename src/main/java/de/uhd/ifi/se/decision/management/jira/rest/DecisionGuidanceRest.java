@@ -20,16 +20,16 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
 /**
  * REST resource for configuration and usage of decision guidance

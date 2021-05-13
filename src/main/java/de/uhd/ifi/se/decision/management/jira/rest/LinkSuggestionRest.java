@@ -20,18 +20,18 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.LinkSuggestionConfiguration;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.DuplicateSuggestion;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.SuggestionType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 /**
  * REST resource for link suggestion and duplicate recognition (including its

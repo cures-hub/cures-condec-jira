@@ -3,9 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.SuggestionType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 import net.java.ao.Query;
 
 import java.util.ArrayList;

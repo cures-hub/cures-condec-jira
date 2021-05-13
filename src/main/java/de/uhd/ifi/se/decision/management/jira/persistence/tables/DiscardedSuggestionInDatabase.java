@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
