@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
 
 /**
@@ -15,25 +15,25 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
  * {@link NumberOfTruePositives} and {@link ReciprocalRank}.
  * 
  * Use {@link Evaluator#getTopKRecommendations(List, int)} to trim the list of
- * {@link Recommendation}s to the top-k results.
+ * {@link ElementRecommendation}s to the top-k results.
  */
 public abstract class EvaluationMetric {
 
 	protected List<SolutionOption> groundTruthSolutionOptions;
-	protected List<Recommendation> recommendations;
+	protected List<ElementRecommendation> recommendations;
 
-	public EvaluationMetric(List<Recommendation> recommendations) {
+	public EvaluationMetric(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 
 	/**
 	 * @param recommendations
-	 *            {@link Recommendation}s from a {@link KnowledgeSource}, such as
+	 *            {@link ElementRecommendation}s from a {@link KnowledgeSource}, such as
 	 *            DBPedia or a Jira project.
 	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
+	public EvaluationMetric(List<ElementRecommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
@@ -76,7 +76,7 @@ public abstract class EvaluationMetric {
 		return counter;
 	}
 
-	public static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
+	public static boolean isMatching(KnowledgeElement knowledgeElement, ElementRecommendation recommendation) {
 		return isMatching(knowledgeElement.getSummary(), recommendation.getSummary());
 	}
 

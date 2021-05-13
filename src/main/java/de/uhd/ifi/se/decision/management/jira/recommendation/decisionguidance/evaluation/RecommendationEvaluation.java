@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.NumberOfTruePositives;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.ReciprocalRank;
@@ -15,17 +15,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
  * Represents the evaluation result for one {@link KnowledgeSource} for given
  * inputs. Calculated by the {@link Evaluator}.
  * 
- * Comprises the ground truth solution options, the {@link Recommendation}s, and
+ * Comprises the ground truth solution options, the {@link ElementRecommendation}s, and
  * various {@link EvaluationMetric}s.
  */
 public class RecommendationEvaluation {
 
 	private KnowledgeSource knowledgeSource;
-	private List<Recommendation> recommendations;
+	private List<ElementRecommendation> recommendations;
 	private List<EvaluationMetric> metrics;
 	private List<SolutionOption> groundTruthSolutionOptions;
 
-	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
+	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<ElementRecommendation> recommendations,
 			List<EvaluationMetric> metrics, List<SolutionOption> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
@@ -50,20 +50,20 @@ public class RecommendationEvaluation {
 	}
 
 	/**
-	 * @return number of {@link Recommendation}s generated from the
+	 * @return number of {@link ElementRecommendation}s generated from the
 	 *         {@link KnowledgeSource}.
 	 */
 	@XmlElement
-	public List<Recommendation> getRecommendations() {
+	public List<ElementRecommendation> getRecommendations() {
 		return recommendations;
 	}
 
 	/**
 	 * @param numberOfResults
-	 *            number of {@link Recommendation}s generated from the
+	 *            number of {@link ElementRecommendation}s generated from the
 	 *            {@link KnowledgeSource}.
 	 */
-	public void setRecommendations(List<Recommendation> recommendations) {
+	public void setRecommendations(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 

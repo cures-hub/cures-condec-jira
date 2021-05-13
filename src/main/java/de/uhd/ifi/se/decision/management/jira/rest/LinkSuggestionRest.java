@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
@@ -81,7 +81,7 @@ public class LinkSuggestionRest {
 			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
 			if (knowledgeElement.isPresent()) {
-				LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+				LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 						.getLinkSuggestionConfiguration(projectKey);
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
 						new BasicDuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
@@ -235,7 +235,7 @@ public class LinkSuggestionRest {
 					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
 		}
 
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkSuggestionConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
@@ -254,7 +254,7 @@ public class LinkSuggestionRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
 		}
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkSuggestionConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);

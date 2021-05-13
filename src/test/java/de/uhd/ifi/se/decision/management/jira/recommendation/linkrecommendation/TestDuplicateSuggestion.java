@@ -39,7 +39,7 @@ public class TestDuplicateSuggestion extends TestSetUp {
 				new KnowledgeElement(i2), text, start, length, field);
 
 		assertEquals(i1.getId().longValue(), duplicateSuggestion.getSource().getId());
-		assertEquals(i2.getId().longValue(), duplicateSuggestion.getSuggestion().getId());
+		assertEquals(i2.getId().longValue(), duplicateSuggestion.getTarget().getId());
 		assertEquals(field, duplicateSuggestion.getField());
 		assertEquals(text, duplicateSuggestion.getPreprocessedSummary());
 		assertEquals(start, duplicateSuggestion.getStartDuplicate());

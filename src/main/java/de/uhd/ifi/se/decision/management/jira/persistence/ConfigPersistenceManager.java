@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEve
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
@@ -310,19 +310,19 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void saveLinkSuggestionConfiguration(String projectKey,
-			LinkSuggestionConfiguration linkSuggestionConfiguration) {
-		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+			LinkRecommendationConfiguration linkSuggestionConfiguration) {
+		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
 	}
 
-	public static LinkSuggestionConfiguration getLinkSuggestionConfiguration(String projectKey) {
-		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+	public static LinkRecommendationConfiguration getLinkSuggestionConfiguration(String projectKey) {
+		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
-		LinkSuggestionConfiguration linkSuggestionConfiguration = (LinkSuggestionConfiguration) getSavedObject(
+		LinkRecommendationConfiguration linkSuggestionConfiguration = (LinkRecommendationConfiguration) getSavedObject(
 				projectKey, "linkSuggestionConfiguration", type);
 		if (linkSuggestionConfiguration == null) {
-			return new LinkSuggestionConfiguration();
+			return new LinkRecommendationConfiguration();
 		}
 		return linkSuggestionConfiguration;
 	}

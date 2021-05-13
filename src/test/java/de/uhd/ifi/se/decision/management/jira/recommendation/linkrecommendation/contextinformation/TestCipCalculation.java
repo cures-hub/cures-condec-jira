@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
@@ -31,7 +31,7 @@ public class TestCipCalculation extends TestSetUp {
 	public void setUp() {
 		TestSetUp.init();
 		testIssues = JiraIssues.getTestJiraIssues();
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkSuggestionConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);

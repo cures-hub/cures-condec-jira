@@ -10,7 +10,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestTracingContextInformationProvider extends TestSetUp {
@@ -21,7 +21,7 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkSuggestionConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);

@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.AveragePrecision;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.EvaluationMetric;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.FScore;
@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.pr
 
 public class TestEvaluationMetrics extends TestSetUp {
 
-	protected List<Recommendation> recommendations;
+	protected List<ElementRecommendation> recommendations;
 	protected List<SolutionOption> groundTruthSolutionOptions;
 
 	@Before
@@ -36,8 +36,8 @@ public class TestEvaluationMetrics extends TestSetUp {
 		groundTruthSolutionOptions = new ArrayList<>();
 
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST");
-		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "Test Url");
-		Recommendation recommendation2 = new Recommendation(knowledgeSource, "PostgreSQL", "Test Url");
+		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "MySQL", "Test Url");
+		ElementRecommendation recommendation2 = new ElementRecommendation(knowledgeSource, "PostgreSQL", "Test Url");
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 

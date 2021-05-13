@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
@@ -30,7 +31,7 @@ public class TestRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendation() {
-		Recommendation recommendation = new Recommendation(knowledgeSource, "MySQL", "TEST URL");
+		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "MySQL", "TEST URL");
 		recommendation.setUrl("TEST URL");
 		recommendation.setScore(new RecommendationScore(123, ""));
 		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
@@ -42,7 +43,7 @@ public class TestRecommendation extends TestSetUp {
 
 	@Test
 	public void testSetAndGetKnowledgeSource() {
-		Recommendation recommendation = new Recommendation();
+		ElementRecommendation recommendation = new ElementRecommendation();
 		recommendation.setKnowledgeSource(knowledgeSource);
 		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
 	}
@@ -58,21 +59,21 @@ public class TestRecommendation extends TestSetUp {
 		Argument argument = new Argument(knowledgeElement);
 		arguments.add(argument);
 
-		Recommendation recommendation = new Recommendation();
+		ElementRecommendation recommendation = new ElementRecommendation();
 		recommendation.addArguments(arguments);
 		assertEquals(1, recommendation.getArguments().size());
 
 		recommendation.setArguments(arguments);
 		assertEquals(1, recommendation.getArguments().size());
 
-		Recommendation emptyArguments = new Recommendation();
+		ElementRecommendation emptyArguments = new ElementRecommendation();
 		emptyArguments.addArgument(argument);
 		assertEquals(1, emptyArguments.getArguments().size());
 	}
 
 	@Test
 	public void testHashCode() {
-		Recommendation recommendation = new Recommendation(knowledgeSource, "TEST", "TESTURL");
+		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
 	}
 
@@ -80,19 +81,19 @@ public class TestRecommendation extends TestSetUp {
 	@Test
 	public void testEquals() {
 		KnowledgeSource sourceA = new ProjectSource("TEST", true);
-		Recommendation recommendationA = new Recommendation(sourceA, "Recommendation", "TESTURL");
+		ElementRecommendation recommendationA = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
 
-		Recommendation recommendationB = new Recommendation(sourceA, "Recommendation", "TESTURL");
+		ElementRecommendation recommendationB = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
 
 		KnowledgeSource sourceB = new RDFSource();
-		recommendationB = new Recommendation(sourceB, "Recommendation", "TESTURL");
+		recommendationB = new ElementRecommendation(sourceB, "Recommendation", "TESTURL");
 		assertFalse(recommendationA.equals(recommendationB));
 
 		recommendationB = null;
 		assertFalse(recommendationA.equals(recommendationB));
 
-		recommendationB = new Recommendation(sourceA, "Recommendation with other summary", "TESTURL");
+		recommendationB = new ElementRecommendation(sourceA, "Recommendation with other summary", "TESTURL");
 		assertFalse(recommendationA.equals(recommendationB));
 
 		assertFalse(recommendationA.equals(new RDFSource()));

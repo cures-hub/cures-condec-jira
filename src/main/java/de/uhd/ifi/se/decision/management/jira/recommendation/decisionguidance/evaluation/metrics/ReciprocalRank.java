@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 /**
  * Measures the position of the first correct recommendation. For example: If
@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Re
  */
 public class ReciprocalRank extends EvaluationMetric {
 
-	public ReciprocalRank(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
+	public ReciprocalRank(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 

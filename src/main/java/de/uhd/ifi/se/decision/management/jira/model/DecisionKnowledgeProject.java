@@ -27,7 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -236,7 +236,7 @@ public class DecisionKnowledgeProject {
 	 * @return configuration for the link suggestion and duplicate recognition
 	 *         within one project.
 	 */
-	public LinkSuggestionConfiguration getLinkSuggestionConfiguration() {
+	public LinkRecommendationConfiguration getLinkSuggestionConfiguration() {
 		return ConfigPersistenceManager.getLinkSuggestionConfiguration(getProjectKey());
 	}
 

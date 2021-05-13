@@ -55,17 +55,17 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * @param keywords
 	 *            used to query the {@link KnowledgeSource} (either
 	 *            {@link RDFSource} or {@link ProjectSource}).
-	 * @return list of {@link Recommendation}s matching the keywords.
+	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
-	public abstract List<Recommendation> getRecommendations(String keywords);
+	public abstract List<ElementRecommendation> getRecommendations(String keywords);
 
-	public List<Recommendation> getRecommendations(KnowledgeElement decisionProblem) {
+	public List<ElementRecommendation> getRecommendations(KnowledgeElement decisionProblem) {
 		if (decisionProblem == null) {
 			return new ArrayList<>();
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
-			List<Recommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
+			List<ElementRecommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
 			recommendations.addAll(recommendationFromAlternative);
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
@@ -74,10 +74,10 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	/**
 	 * @param keywords
 	 * @param decisionProblem
-	 * @return list of {@link Recommendation}s matching the keywords.
+	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
-	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
-		List<Recommendation> recommendations = new ArrayList<>();
+	public List<ElementRecommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		recommendations.addAll(getRecommendations(decisionProblem));
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
 			recommendations.addAll(getRecommendations(keywords));
@@ -85,16 +85,16 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
-	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement decisionProblem,
+	public static List<ElementRecommendation> getAllRecommendations(String projectKey, KnowledgeElement decisionProblem,
 			String keywords) {
 		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
 		List<KnowledgeSource> knowledgeSources = config.getAllActivatedKnowledgeSources();
 		return getAllRecommendations(projectKey, knowledgeSources, decisionProblem, keywords);
 	}
 
-	public static List<Recommendation> getAllRecommendations(String projectKey, List<KnowledgeSource> knowledgeSources,
+	public static List<ElementRecommendation> getAllRecommendations(String projectKey, List<KnowledgeSource> knowledgeSources,
 			KnowledgeElement decisionProblem, String keywords) {
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		for (KnowledgeSource knowledgeSource : knowledgeSources) {
 			Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource(projectKey, knowledgeSource);
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
@@ -114,14 +114,14 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param recommendations
-	 *            list of recommended solution options ({@link Recommendation}s)
+	 *            list of recommended solution options ({@link ElementRecommendation}s)
 	 *            that should be linked in the {@link KnowledgeGraph}.
 	 */
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
-			List<Recommendation> recommendations) {
+			List<ElementRecommendation> recommendations) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		for (Recommendation recommendation : recommendations) {
+		for (ElementRecommendation recommendation : recommendations) {
 			recommendation.setProject(projectKey);
 			recommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(recommendation, user, decisionProblem);

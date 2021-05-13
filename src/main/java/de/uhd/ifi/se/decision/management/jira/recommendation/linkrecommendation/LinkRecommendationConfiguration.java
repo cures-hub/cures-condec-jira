@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  * Contains the configuration details for the link suggestion and duplicate
  * recognition for one Jira project (see {@link DecisionKnowledgeProject}).
  */
-public class LinkSuggestionConfiguration {
+public class LinkRecommendationConfiguration {
 
 	private double minProbability;
 	private int minTextLength;
@@ -14,7 +14,7 @@ public class LinkSuggestionConfiguration {
 	/**
 	 * Constructs an object with default values.
 	 */
-	public LinkSuggestionConfiguration() {
+	public LinkRecommendationConfiguration() {
 		this.minProbability = 0.3;
 		this.minTextLength = 21;
 	}

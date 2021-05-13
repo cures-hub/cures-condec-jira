@@ -15,14 +15,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.BagOfIrrelevantWords;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
 
 /**
  * Queries another Jira project ({@link ProjectSource}) to generate
- * {@link Recommendation}s.
+ * {@link ElementRecommendation}s.
  */
 public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
@@ -39,17 +39,17 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendations(String inputs) {
+	public List<ElementRecommendation> getRecommendations(String inputs) {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		List<KnowledgeElement> similarElements = findSimilarElements(inputs);
 		similarElements.forEach(issue -> {
 			issue.getLinkedElements(5).stream()
 					.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
 					.forEach(element -> {
-						Recommendation recommendation = new Recommendation(element);
+						ElementRecommendation recommendation = new ElementRecommendation(element);
 						recommendation.setKnowledgeSource(knowledgeSource);
 						recommendation.addArguments(new SolutionOption(element).getArguments());
 

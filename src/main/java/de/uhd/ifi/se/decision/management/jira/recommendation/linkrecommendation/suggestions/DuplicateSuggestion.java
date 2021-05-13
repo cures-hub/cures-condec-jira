@@ -4,8 +4,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
-public class DuplicateSuggestion extends Link implements Suggestion<KnowledgeElement> {
+public class DuplicateSuggestion extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;
 	@JsonProperty
@@ -43,12 +45,13 @@ public class DuplicateSuggestion extends Link implements Suggestion<KnowledgeEle
 	}
 
 	@Override
-	public KnowledgeElement getSuggestion() {
-		return getTarget();
+	public SuggestionType getSuggestionType() {
+		return SuggestionType.DUPLICATE;
 	}
 
 	@Override
-	public SuggestionType getSuggestionType() {
-		return SuggestionType.DUPLICATE;
+	public RecommendationScore getScore() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

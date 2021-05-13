@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
@@ -24,20 +25,20 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
  */
-public class Recommendation extends KnowledgeElement {
+public class ElementRecommendation extends KnowledgeElement {
 
 	private KnowledgeSource knowledgeSource;
 	private String url;
 	private List<Argument> arguments;
 	private RecommendationScore score;
 
-	public Recommendation() {
+	public ElementRecommendation() {
 		this.arguments = new ArrayList<>();
 		this.status = KnowledgeStatus.RECOMMENDED;
 		this.type = KnowledgeType.ALTERNATIVE;
 	}
 
-	public Recommendation(KnowledgeSource knowledgeSource, String summary, String url) {
+	public ElementRecommendation(KnowledgeSource knowledgeSource, String summary, String url) {
 		this();
 		this.project = new DecisionKnowledgeProject("");
 		this.knowledgeSource = knowledgeSource;
@@ -45,7 +46,7 @@ public class Recommendation extends KnowledgeElement {
 		this.url = url;
 	}
 
-	public Recommendation(KnowledgeElement knowledgeElement) {
+	public ElementRecommendation(KnowledgeElement knowledgeElement) {
 		this();
 		this.project = knowledgeElement.getProject();
 		this.setSummary(knowledgeElement.getSummary());
@@ -110,9 +111,9 @@ public class Recommendation extends KnowledgeElement {
 		this.score = score;
 	}
 
-	public static float getMaxScoreValue(List<Recommendation> recommendations) {
+	public static float getMaxScoreValue(List<ElementRecommendation> recommendations) {
 		float maxScoreValue = 0;
-		for (Recommendation recommendation : recommendations) {
+		for (ElementRecommendation recommendation : recommendations) {
 			if (recommendation.getScore().getValue() > maxScoreValue) {
 				maxScoreValue = recommendation.getScore().getValue();
 			}
@@ -165,7 +166,7 @@ public class Recommendation extends KnowledgeElement {
 		if (object == null || getClass() != object.getClass()) {
 			return false;
 		}
-		Recommendation otherRecommendation = (Recommendation) object;
+		ElementRecommendation otherRecommendation = (ElementRecommendation) object;
 		return this.knowledgeSource.getName().equals(otherRecommendation.knowledgeSource.getName())
 				&& this.getSummary().equals(otherRecommendation.getSummary());
 	}

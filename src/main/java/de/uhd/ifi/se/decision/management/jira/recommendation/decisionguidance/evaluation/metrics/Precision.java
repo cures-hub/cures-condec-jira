@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.e
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 /**
  * Measures the precision (positive predictive value) within the top-k results,
@@ -14,13 +14,13 @@ public class Precision extends EvaluationMetric {
 
 	private double numberOfTruePositives;
 
-	public Precision(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
+	public Precision(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 		this.numberOfTruePositives = new NumberOfTruePositives(recommendations, groundTruthSolutionOptions)
 				.calculateMetric();
 	}
 
-	public Precision(List<Recommendation> recommendations, double numberOfTruePositives) {
+	public Precision(List<ElementRecommendation> recommendations, double numberOfTruePositives) {
 		super(recommendations);
 		this.numberOfTruePositives = numberOfTruePositives;
 	}

@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
@@ -275,7 +275,7 @@ public class DecisionGuidanceRest {
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		KnowledgeElement decisionProblem = manager.getKnowledgeElement(issueId, documentationLocation);
-		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, decisionProblem, keyword);
+		List<ElementRecommendation> recommendations = Recommender.getAllRecommendations(projectKey, decisionProblem, keyword);
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
 			Recommender.addToKnowledgeGraph(decisionProblem, AuthenticationManager.getUser(request), recommendations);

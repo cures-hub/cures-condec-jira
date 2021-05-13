@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
 public class TestRecommendationScore extends TestSetUp {
 

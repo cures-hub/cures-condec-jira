@@ -14,7 +14,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -35,7 +35,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		i1.setAssignee(new MockApplicationUser("TESTUSER"));
 		element = new KnowledgeElement(i1);
 
-		LinkSuggestionConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkSuggestionConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);

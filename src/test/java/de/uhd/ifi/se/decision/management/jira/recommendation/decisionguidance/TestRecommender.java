@@ -40,7 +40,7 @@ public class TestRecommender extends TestSetUp {
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
+		List<ElementRecommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
 				decisionProblem, "");
 		assertEquals(2, recommendations.size());
 

@@ -1,12 +1,14 @@
-package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
+package de.uhd.ifi.se.decision.management.jira.recommendation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+
 /**
- * The score represents the predicted relevance of a {@link Recommendation},
+ * The score represents the predicted relevance of a {@link ElementRecommendation},
  * i.e., how likely it is that the user accepts the recommendation. The score
  * can be used to rank/sort the recommendations.
  * 
