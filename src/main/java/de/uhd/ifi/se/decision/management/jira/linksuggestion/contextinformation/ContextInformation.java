@@ -57,7 +57,7 @@ public class ContextInformation extends ContextInformationProvider {
 		Set<KnowledgeElement> elementsToKeep = this.filterKnowledgeElements(projectKnowledgeElements);
 
 		// retain scores of filtered issues
-		return cips.stream().flatMap(cip -> cip.getLinkSuggestions().stream()).collect(Collectors.toList());
+		return linkSuggestions;
 	}
 
 	private Set<KnowledgeElement> filterKnowledgeElements(List<KnowledgeElement> projectKnowledgeElements) {
@@ -81,28 +81,10 @@ public class ContextInformation extends ContextInformationProvider {
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion linkSuggestion = new LinkSuggestion(this.element, elementToTest);
 		for (ContextInformationProvider cip : cips) {
-			double nullCompensation = 0.;
-
-			cip.assessRelation(baseElement, elementToTest);
-			Collection<LinkSuggestion> suggestions = cip.getLinkSuggestions();
-			double sumOfIndividualScoresForCurrentCip = suggestions.parallelStream()
-					.mapToDouble(LinkSuggestion::getTotalScore).sum();
-
-			if (sumOfIndividualScoresForCurrentCip == 0) {
-				sumOfIndividualScoresForCurrentCip = 1.;
-				nullCompensation = 1. / suggestions.size();
-			}
-
-			double finalSumOfIndividualScoresForCurrentCip = sumOfIndividualScoresForCurrentCip;
-			// Divide each score by the max value to scale it to [0,1]
-			double finalNullCompensation = nullCompensation;
-			suggestions.parallelStream().forEach(score -> {
-				// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
-				// " + score.getTargetElement().getKey());
-				linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation)
-						/ (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());// sumOfIndividualScoresForCurrentCip);
-			});
+			double scoreValue = cip.assessRelation(baseElement, elementToTest);
+			linkSuggestion.addToScore(scoreValue, cip.getName());
 		}
+		linkSuggestions.add(linkSuggestion);
 		return 0.0;
 	}
 
