@@ -105,10 +105,10 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
 
-				recommendation.setScore(new RecommendationScore(numberOfLinks, "This Recommendation number of links"));
+				recommendation
+						.setScore(new RecommendationScore(numberOfLinks, "number of links of this recommendation"));
 
 				List<Argument> arguments = new ArrayList<>();
-
 				for (Map.Entry<String, String> constraint : knowledgeSource.getConstraintMap().entrySet()) {
 					arguments.addAll(getArgument(row.get("?subject").toString(), constraint));
 				}
@@ -118,14 +118,13 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			}
 		}
 
-		return getRecommendationWithScore(recommendations);
+		return normalizeRecommendationScore(recommendations);
 	}
 
-	private List<Recommendation> getRecommendationWithScore(List<Recommendation> recommendations) {
+	private List<Recommendation> normalizeRecommendationScore(List<Recommendation> recommendations) {
 		float maxValue = Recommendation.getMaxScoreValue(recommendations);
 		for (Recommendation recommendation : recommendations) {
-			RecommendationScore normalizedScore = getScore((int) maxValue, (int) recommendation.getScore().getValue());
-			recommendation.setScore(normalizedScore);
+			recommendation.getScore().normalizeTo(maxValue);
 		}
 		return recommendations;
 	}
@@ -168,14 +167,6 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 		}
 		return argumentsList;
-	}
-
-	private static RecommendationScore getScore(int maxValue, int actualValue) {
-		RecommendationScore recommendationScore = new RecommendationScore(0.0f, "Recommendation with most links");
-		recommendationScore.addSubScore(new RecommendationScore(maxValue, "Recommendation with most links"));
-		recommendationScore.addSubScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
-		recommendationScore.normalizeTo(maxValue);
-		return recommendationScore;
 	}
 
 	private int getLimit() {

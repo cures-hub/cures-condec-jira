@@ -110,11 +110,11 @@ public class Recommendation extends KnowledgeElement {
 		this.score = score;
 	}
 
-	public static float getMaxScoreValue(List<Recommendation> linkSuggestions) {
+	public static float getMaxScoreValue(List<Recommendation> recommendations) {
 		float maxScoreValue = 0;
-		for (Recommendation suggestion : linkSuggestions) {
-			if (suggestion.getScore().getValue() > maxScoreValue) {
-				maxScoreValue = suggestion.getScore().getValue();
+		for (Recommendation recommendation : recommendations) {
+			if (recommendation.getScore().getValue() > maxScoreValue) {
+				maxScoreValue = recommendation.getScore().getValue();
 			}
 		}
 		return maxScoreValue;

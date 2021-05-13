@@ -58,7 +58,13 @@ public class RecommendationScore {
 	}
 
 	public void normalizeTo(float maxScoreValue) {
+		if (!explanation.isBlank()) {
+			// keep the current explanation as a sub-score after normalizing
+			addSubScore(new RecommendationScore(getValue(), explanation));
+		}
 		value = (getSumOfSubScores() * 1.0f / maxScoreValue) * 100f;
+		explanation = "compared to best recommendation (normalized)";
+		addSubScore(new RecommendationScore(maxScoreValue, "absolute value of best recommendation"));
 	}
 
 	/**
