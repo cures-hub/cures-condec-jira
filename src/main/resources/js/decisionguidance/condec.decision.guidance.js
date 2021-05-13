@@ -134,6 +134,8 @@
 		var scoreExplanation = scoreControl.outerHTML + document.getElementById("score-explanation").outerHTML;
 		return scoreExplanation.replace(/score-explanation/g, "score-explanation-" + ID);
 	}
+	
+	ConDecDecisionGuidance.prototype.buildScore = buildScore;
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);

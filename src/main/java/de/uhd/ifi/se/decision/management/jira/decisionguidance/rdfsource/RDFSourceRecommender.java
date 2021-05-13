@@ -105,8 +105,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
 
-				recommendation
-						.setScore(new RecommendationScore(numberOfLinks, "number of links of this recommendation"));
+				recommendation.setScore(new RecommendationScore(numberOfLinks, "Number of links"));
 
 				List<Argument> arguments = new ArrayList<>();
 				for (Map.Entry<String, String> constraint : knowledgeSource.getConstraintMap().entrySet()) {

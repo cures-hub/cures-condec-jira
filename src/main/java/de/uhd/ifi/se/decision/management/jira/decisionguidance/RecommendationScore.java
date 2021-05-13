@@ -57,14 +57,22 @@ public class RecommendationScore {
 		return sumOfSubScoreValues;
 	}
 
+	/**
+	 * Normalizes the score value against the value of the best recommendation. Adds
+	 * a sub-score for the absolute score value of this recommendation and another
+	 * sub-score for the absolute score value of the best recommendation.
+	 * 
+	 * @param maxScoreValue
+	 *            of the best recommendation, set to 100%.
+	 */
 	public void normalizeTo(float maxScoreValue) {
 		if (!explanation.isBlank()) {
 			// keep the current explanation as a sub-score after normalizing
-			addSubScore(new RecommendationScore(getValue(), explanation));
+			addSubScore(new RecommendationScore(getValue(), explanation + " of this recommendation"));
 		}
 		value = (getSumOfSubScores() * 1.0f / maxScoreValue) * 100f;
-		explanation = "compared to best recommendation (normalized)";
-		addSubScore(new RecommendationScore(maxScoreValue, "absolute value of best recommendation"));
+		addSubScore(new RecommendationScore(maxScoreValue, explanation + " of the best recommendation"));
+		explanation = "Compared to best recommendation (normalized)";
 	}
 
 	/**

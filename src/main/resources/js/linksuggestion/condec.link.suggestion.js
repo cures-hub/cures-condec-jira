@@ -73,8 +73,7 @@
 		let row = document.createElement("tr");
 		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.key}</a>`, "th-key"));
 		row.appendChild(generateTableCell(suggestion.target.summary, "th-name", {}));
-		let scoreCell = (generateTableCell(suggestion.score.value, "th-score", { "title": suggestion.score }));
-		AJS.$(scoreCell).tooltip();
+		let scoreCell = (generateTableCell(conDecDecisionGuidance.buildScore(suggestion.score, "score_" + index), "th-score", ""));
 		row.appendChild(scoreCell);
 
 		row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));
