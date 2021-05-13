@@ -22,7 +22,7 @@
 	}
 
 	ConDecLinkSuggestion.prototype.discardDuplicate = function(index) {
-		let suggestionElement = this.currentSuggestions[index].targetElement;
+		let suggestionElement = this.currentSuggestions[index].target;
 		conDecLinkSuggestionAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
@@ -32,7 +32,7 @@
 	}
 
 	ConDecLinkSuggestion.prototype.discardSuggestion = function(index) {
-		let suggestionElement = this.currentSuggestions[index].targetElement;
+		let suggestionElement = this.currentSuggestions[index].target;
 
 		conDecLinkSuggestionAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
@@ -43,7 +43,7 @@
 	}
 
 	ConDecLinkSuggestion.prototype.markAsDuplicate = function(index) {
-		let duplicateElement = this.currentSuggestions[index].targetElement;
+		let duplicateElement = this.currentSuggestions[index].target;
 
 		let self = this;
 		conDecAPI.createLink(this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
@@ -71,8 +71,8 @@
 
 	let generateTableRow = function(suggestion, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateTableCell(`<a href="${suggestion.targetElement.url}">${suggestion.targetElement.key}</a>`, "th-key"));
-		row.appendChild(generateTableCell(suggestion.targetElement.summary, "th-name", {}));
+		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.key}</a>`, "th-key"));
+		row.appendChild(generateTableCell(suggestion.target.summary, "th-name", {}));
 		let scoreCell = (generateTableCell(suggestion.totalScore, "th-score", { "title": suggestion.score }));
 		AJS.$(scoreCell).tooltip();
 		row.appendChild(scoreCell);
@@ -98,10 +98,10 @@
 	};
 
 	ConDecLinkSuggestion.prototype.showDialog = function(index) {
-		let targetElement = this.currentSuggestions[index].targetElement;
-		console.dir(targetElement);
+		let target = this.currentSuggestions[index].target;
+		console.dir(target);
 		let self = this;
-		conDecDialog.showLinkDialog(this.issueId, "i", targetElement.id, targetElement.documentationLocation, () => self.loadData());
+		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
 	}
 
 	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(relatedIssues) {
@@ -133,7 +133,7 @@
 
 	let generateDuplicateTableRow = function(duplicate, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.targetElement.url}">${duplicate.targetElement.key}</a>`, "th-key-duplicate", {}));
+		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.target.url}">${duplicate.target.key}</a>`, "th-key-duplicate", {}));
 
 		//TODO: visualize the duplicate fragment
 		let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate + duplicate.length), "th-text-fragment-duplicate", { title: "Length:" + duplicate.length });

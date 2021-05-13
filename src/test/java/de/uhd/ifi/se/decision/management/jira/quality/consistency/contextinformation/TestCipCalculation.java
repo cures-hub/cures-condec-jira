@@ -49,11 +49,11 @@ public class TestCipCalculation extends TestSetUp {
 		LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
 
 		// The baseElement should not be most similar to itself, as it is filtered out!
-		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTargetElement().getJiraIssue().getKey()));
+		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTarget().getJiraIssue().getKey()));
 		assertNotNull(identicalIssueSuggestion.getScore().getScores());
 
 		assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
-				identicalIssueSuggestion.getBaseIssue().getKey());
+				identicalIssueSuggestion.getSource().getKey());
 
 	}
 

@@ -60,7 +60,7 @@ public class ContextInformation extends ContextInformationProvider {
 		// retain scores of filtered issues
 		return this.linkSuggestions.values().parallelStream()
 				// issue was not filtered out
-				.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTargetElement()))
+				.filter(linkSuggestion -> elementsToKeep.contains(linkSuggestion.getTarget()))
 				// the score is higher or equal to the minimum probability set by the admin for
 				// the project
 				.filter(linkSuggestion -> linkSuggestion.getTotalScore() >= ConfigPersistenceManager
@@ -107,7 +107,7 @@ public class ContextInformation extends ContextInformationProvider {
 			suggestions.parallelStream().forEach(score -> {
 				// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
 				// " + score.getTargetElement().getKey());
-				LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTargetElement().getKey());
+				LinkSuggestion linkSuggestion = this.linkSuggestions.get(score.getTarget().getKey());
 				linkSuggestion.addToScore((score.getTotalScore() + finalNullCompensation)
 						/ (finalSumOfIndividualScoresForCurrentCip * this.cips.size()), cip.getName());// sumOfIndividualScoresForCurrentCip);
 			});

@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -8,29 +8,15 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
 
 	private static final long serialVersionUID = 1L;
-	@JsonProperty
-	private KnowledgeElement baseElement;
-	@JsonProperty
-	private KnowledgeElement targetElement;
-	@JsonProperty
 	private SimilarityScore score;
 
 	public LinkSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement) {
-		this.baseElement = baseElement;
-		this.targetElement = targetElement;
+		super(baseElement, targetElement);
 		this.score = new SimilarityScore();
 	}
 
-	public KnowledgeElement getBaseIssue() {
-		return baseElement;
-	}
-
-	public KnowledgeElement getTargetElement() {
-		return targetElement;
-	}
-
-	@JsonProperty("totalScore")
-	public Double getTotalScore() {
+	@XmlElement
+	public double getTotalScore() {
 		return score.getTotal();
 	}
 
@@ -58,7 +44,7 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 
 	@Override
 	public KnowledgeElement getSuggestion() {
-		return getTargetElement();
+		return getTarget();
 	}
 
 	@Override

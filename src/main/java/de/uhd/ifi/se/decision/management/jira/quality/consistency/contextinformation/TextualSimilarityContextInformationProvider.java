@@ -31,6 +31,9 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	}
 
 	public double calculateSimilarity(String left, String right) {
+		if (left == null || right == null) {
+			return 0;
+		}
 		return new JaccardSimilarity().apply(left, right);
 	}
 }
