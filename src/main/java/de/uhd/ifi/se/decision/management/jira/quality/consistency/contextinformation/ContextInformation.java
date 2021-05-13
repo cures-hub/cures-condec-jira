@@ -47,12 +47,11 @@ public class ContextInformation extends ContextInformationProvider {
 
 	@Override
 	public List<LinkSuggestion> getLinkSuggestions() {
-		// Add all issues of project to projectKnowledgeElements set
-		Set<KnowledgeElement> projectKnowledgeElements = new HashSet<>(
-				KnowledgePersistenceManager.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements());
+		List<KnowledgeElement> projectKnowledgeElements = KnowledgePersistenceManager
+				.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements();
 
 		projectKnowledgeElements.remove(this.element);
-		this.assessRelations(element, new ArrayList<>(projectKnowledgeElements));
+		this.assessRelations(element, projectKnowledgeElements);
 		// calculate context score
 
 		// get filtered issues
@@ -69,7 +68,7 @@ public class ContextInformation extends ContextInformationProvider {
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	private Set<KnowledgeElement> filterKnowledgeElements(Set<KnowledgeElement> projectKnowledgeElements) {
+	private Set<KnowledgeElement> filterKnowledgeElements(List<KnowledgeElement> projectKnowledgeElements) {
 		// Create union of all issues to be filtered out.
 		Set<KnowledgeElement> filteredKnowledgeElements = new HashSet<>(projectKnowledgeElements);
 		Set<KnowledgeElement> filterOutElements = new HashSet<>(this.getLinkedKnowledgeElements());

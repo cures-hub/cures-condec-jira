@@ -3,9 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
-// TODO Extend Link class
-public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
+public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
+
+	private static final long serialVersionUID = 1L;
 	@JsonProperty
 	private KnowledgeElement baseElement;
 	@JsonProperty
@@ -60,7 +62,7 @@ public class LinkSuggestion implements Comparable<LinkSuggestion>, Suggestion<Kn
 	}
 
 	@Override
-	public SuggestionType getType() {
+	public SuggestionType getSuggestionType() {
 		return SuggestionType.LINK;
 	}
 }

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinform
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
@@ -42,24 +41,20 @@ public class TestCipCalculation extends TestSetUp {
 	public void testCIP() {
 		Issue baseIssue = TestCipCalculation.testIssues.get(0);
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
-		try {
-			GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
-					DocumentationLocation.JIRAISSUE);
-			Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
-			List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions.stream().sorted((LinkSuggestion::compareTo))
-					.collect(Collectors.toList());
-			LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
+		GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
+				DocumentationLocation.JIRAISSUE);
+		Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
+		List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions.stream().sorted((LinkSuggestion::compareTo))
+				.collect(Collectors.toList());
+		LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
 
-			// The baseElement should not be most similar to itself, as it is filtered out!
-			assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTargetElement().getJiraIssue().getKey()));
-			assertNotNull(identicalIssueSuggestion.getScore().getScores());
+		// The baseElement should not be most similar to itself, as it is filtered out!
+		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTargetElement().getJiraIssue().getKey()));
+		assertNotNull(identicalIssueSuggestion.getScore().getScores());
 
-			assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
-					identicalIssueSuggestion.getBaseIssue().getKey());
+		assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
+				identicalIssueSuggestion.getBaseIssue().getKey());
 
-		} catch (NullPointerException e) {
-			assertNull(e);
-		}
 	}
 
 	@Test

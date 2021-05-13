@@ -15,6 +15,6 @@ public interface Suggestion<T extends KnowledgeElement> {
 	 *
 	 * @return suggestion type of suggestion
 	 */
-	SuggestionType getType();
+	SuggestionType getSuggestionType();
 
 }
