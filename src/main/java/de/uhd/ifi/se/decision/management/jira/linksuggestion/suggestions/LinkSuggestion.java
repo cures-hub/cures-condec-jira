@@ -18,7 +18,7 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 
 	@XmlElement
 	public double getTotalScore() {
-		return score.getValue();
+		return score.getSumOfSubScores();
 	}
 
 	@XmlElement
@@ -28,6 +28,16 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 
 	public void addToScore(double value, String field) {
 		score.addSubScore(new RecommendationScore((float) value, field));
+	}
+
+	@Override
+	public KnowledgeElement getSuggestion() {
+		return getTarget();
+	}
+
+	@Override
+	public SuggestionType getSuggestionType() {
+		return SuggestionType.LINK;
 	}
 
 	@Override
@@ -42,15 +52,5 @@ public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, 
 			compareValue = -1;
 		}
 		return compareValue;
-	}
-
-	@Override
-	public KnowledgeElement getSuggestion() {
-		return getTarget();
-	}
-
-	@Override
-	public SuggestionType getSuggestionType() {
-		return SuggestionType.LINK;
 	}
 }

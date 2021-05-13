@@ -133,7 +133,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			int maxValue = scoreMap.entrySet().stream().max(maxValueComparator).get().getValue();
 
 			scoreMap.forEach((recommendation, value) -> {
-				recommendation.setScore(this.getScore(maxValue, value));
+				recommendation.setScore(getScore(maxValue, value));
 				recommendationWithScore.add(recommendation);
 			});
 		}
@@ -180,13 +180,17 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		return argumentsList;
 	}
 
-	private RecommendationScore getScore(int maxValue, int actualValue) {
+	private static RecommendationScore getScore(int maxValue, int actualValue) {
 		RecommendationScore recommendationScore = new RecommendationScore(0.0f, "Recommendation with most links");
 		recommendationScore.addSubScore(new RecommendationScore(maxValue, "Recommendation with most links"));
 		recommendationScore.addSubScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
-		float totalScore = (actualValue * 1.0f / maxValue) * 100f;
+		float totalScore = normalizeScoreValue(maxValue, actualValue);
 		recommendationScore.setValue(totalScore);
 		return recommendationScore;
+	}
+
+	public static float normalizeScoreValue(float maxValue, float actualValue) {
+		return (actualValue * 1.0f / maxValue) * 100f;
 	}
 
 	private int getLimit() {

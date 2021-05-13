@@ -33,7 +33,7 @@ public class TestRecommendationScore extends TestSetUp {
 		score.addSubScore(new RecommendationScore(0.5f, "First Score"));
 		score.addSubScore(new RecommendationScore(0.5f, "Second Score"));
 		assertEquals(2, score.getSubScores().size());
-		assertEquals(1.0, score.getValue(), 0.0);
+		assertEquals(1.0, score.getSumOfSubScores(), 0.0);
 
 		score.setValue(0.5f);
 		assertEquals(0.5, score.getValue(), 0.0);

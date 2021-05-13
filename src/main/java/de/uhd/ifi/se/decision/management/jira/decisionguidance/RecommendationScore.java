@@ -33,12 +33,6 @@ public class RecommendationScore {
 	 */
 	@XmlElement
 	public float getValue() {
-		if (!subScores.isEmpty() && value <= 0) {
-			value = 0;
-			for (RecommendationScore subScore : subScores) {
-				value += subScore.getValue();
-			}
-		}
 		return value;
 	}
 
@@ -50,6 +44,17 @@ public class RecommendationScore {
 	 */
 	public void setValue(float value) {
 		this.value = value;
+	}
+
+	/**
+	 * @return sum of all the sub-score values.
+	 */
+	public float getSumOfSubScores() {
+		float sumOfSubScoreValues = 0;
+		for (RecommendationScore subScore : subScores) {
+			sumOfSubScoreValues += subScore.getValue();
+		}
+		return sumOfSubScoreValues;
 	}
 
 	/**
