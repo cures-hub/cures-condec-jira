@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -43,10 +44,11 @@ public class TestCipCalculation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
 				DocumentationLocation.JIRAISSUE);
-		Collection<LinkSuggestion> linkSuggestions = contextInformation.getLinkSuggestions();
-		List<LinkSuggestion> sortedLinkSuggestions = linkSuggestions.stream().sorted((LinkSuggestion::compareTo))
+		Collection<Recommendation> linkSuggestions = contextInformation.getLinkSuggestions();
+		List<Recommendation> sortedLinkSuggestions = linkSuggestions.stream().sorted((Recommendation::compareTo))
 				.collect(Collectors.toList());
-		LinkSuggestion identicalIssueSuggestion = sortedLinkSuggestions.get(sortedLinkSuggestions.size() - 1);
+		LinkSuggestion identicalIssueSuggestion = (LinkSuggestion) sortedLinkSuggestions
+				.get(sortedLinkSuggestions.size() - 1);
 
 		// The baseElement should not be most similar to itself, as it is filtered out!
 		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTarget().getJiraIssue().getKey()));

@@ -6,8 +6,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
 
 /**
@@ -20,20 +21,20 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 public abstract class EvaluationMetric {
 
 	protected List<SolutionOption> groundTruthSolutionOptions;
-	protected List<ElementRecommendation> recommendations;
+	protected List<Recommendation> recommendations;
 
-	public EvaluationMetric(List<ElementRecommendation> recommendations) {
+	public EvaluationMetric(List<Recommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 
 	/**
 	 * @param recommendations
-	 *            {@link ElementRecommendation}s from a {@link KnowledgeSource}, such as
-	 *            DBPedia or a Jira project.
+	 *            {@link ElementRecommendation}s from a {@link KnowledgeSource},
+	 *            such as DBPedia or a Jira project.
 	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<ElementRecommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
+	public EvaluationMetric(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
@@ -76,8 +77,8 @@ public abstract class EvaluationMetric {
 		return counter;
 	}
 
-	public static boolean isMatching(KnowledgeElement knowledgeElement, ElementRecommendation recommendation) {
-		return isMatching(knowledgeElement.getSummary(), recommendation.getSummary());
+	public static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
+		return isMatching(knowledgeElement.getSummary(), ((ElementRecommendation) recommendation).getSummary());
 	}
 
 	public static boolean isMatching(String summaryA, String summaryB) {

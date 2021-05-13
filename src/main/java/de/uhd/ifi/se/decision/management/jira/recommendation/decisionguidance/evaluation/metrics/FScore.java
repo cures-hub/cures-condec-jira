@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.e
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
  * Measures the harmonic mean of {@link Precision} and {@Recall}.
@@ -13,7 +13,7 @@ public class FScore extends EvaluationMetric {
 	private double precision;
 	private double recall;
 
-	public FScore(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
+	public FScore(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 		this.precision = new Precision(recommendations, solutionOptions).calculateMetric();
 		this.recall = new Recall(recommendations, solutionOptions).calculateMetric();

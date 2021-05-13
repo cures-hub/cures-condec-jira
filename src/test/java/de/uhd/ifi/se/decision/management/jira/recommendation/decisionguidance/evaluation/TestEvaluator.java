@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
@@ -28,7 +29,7 @@ public class TestEvaluator extends TestSetUp {
 
 	@Test
 	public void testTopKResults() {
-		List<ElementRecommendation> recommendations = new ArrayList<>();
+		List<Recommendation> recommendations = new ArrayList<>();
 		recommendations.add(new ElementRecommendation());
 		recommendations.add(new ElementRecommendation());
 

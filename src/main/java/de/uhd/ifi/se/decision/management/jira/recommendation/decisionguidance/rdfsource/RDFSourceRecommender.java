@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
@@ -77,11 +78,11 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	}
 
 	@Override
-	public List<ElementRecommendation> getRecommendations(String inputs) {
+	public List<Recommendation> getRecommendations(String inputs) {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
-		List<ElementRecommendation> recommendations = new ArrayList<>();
+		List<Recommendation> recommendations = new ArrayList<>();
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		final List<String> combinedKeywords = this.combineKeywords(keywords);
@@ -100,7 +101,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 				String label = this.getLabel(row.get("?subject").toString());
 
-				ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, label, row.get("?url").toString());
+				ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, label,
+						row.get("?url").toString());
 
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
@@ -120,9 +122,9 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		return normalizeRecommendationScore(recommendations);
 	}
 
-	private List<ElementRecommendation> normalizeRecommendationScore(List<ElementRecommendation> recommendations) {
-		float maxValue = ElementRecommendation.getMaxScoreValue(recommendations);
-		for (ElementRecommendation recommendation : recommendations) {
+	private List<Recommendation> normalizeRecommendationScore(List<Recommendation> recommendations) {
+		float maxValue = Recommendation.getMaxScoreValue(recommendations);
+		for (Recommendation recommendation : recommendations) {
 			recommendation.getScore().normalizeTo(maxValue);
 		}
 		return recommendations;

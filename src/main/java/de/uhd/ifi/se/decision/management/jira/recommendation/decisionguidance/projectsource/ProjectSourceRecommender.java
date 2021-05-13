@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.BagOfIrrelevantWords;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
@@ -39,7 +40,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	}
 
 	@Override
-	public List<ElementRecommendation> getRecommendations(String inputs) {
+	public List<Recommendation> getRecommendations(String inputs) {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}

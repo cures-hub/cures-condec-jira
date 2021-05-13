@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
 
 /**
@@ -45,7 +46,7 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public List<LinkSuggestion> getLinkSuggestions() {
+	public List<Recommendation> getLinkSuggestions() {
 		List<KnowledgeElement> projectKnowledgeElements = KnowledgePersistenceManager
 				.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements();
 
@@ -55,22 +56,12 @@ public class ContextInformation extends ContextInformationProvider {
 
 		// get filtered issues
 		Set<KnowledgeElement> elementsToKeep = this.filterKnowledgeElements(projectKnowledgeElements);
-		float maxScoreValue = getMaxScoreValue(linkSuggestions);
-		for (LinkSuggestion suggestion : linkSuggestions) {
+		float maxScoreValue = Recommendation.getMaxScoreValue(linkSuggestions);
+		for (Recommendation suggestion : linkSuggestions) {
 			suggestion.getScore().normalizeTo(maxScoreValue);
 		}
 		// retain scores of filtered issues
 		return linkSuggestions;
-	}
-
-	public static float getMaxScoreValue(List<LinkSuggestion> linkSuggestions) {
-		float maxScoreValue = 0;
-		for (LinkSuggestion suggestion : linkSuggestions) {
-			if (suggestion.getScore().getValue() > maxScoreValue) {
-				maxScoreValue = suggestion.getScore().getValue();
-			}
-		}
-		return maxScoreValue;
 	}
 
 	private Set<KnowledgeElement> filterKnowledgeElements(List<KnowledgeElement> projectKnowledgeElements) {
@@ -100,10 +91,4 @@ public class ContextInformation extends ContextInformationProvider {
 		linkSuggestions.add(linkSuggestion);
 		return 0.0;
 	}
-
-	@Override
-	public String getName() {
-		return "BaseCalculation";
-	}
-
 }

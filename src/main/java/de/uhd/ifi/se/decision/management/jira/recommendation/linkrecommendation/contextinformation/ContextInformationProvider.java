@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
  * Superclass for different context information providers to realize context
@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  */
 public abstract class ContextInformationProvider {
 
-	protected List<LinkSuggestion> linkSuggestions;
+	protected List<Recommendation> linkSuggestions;
 
 	public ContextInformationProvider() {
 		this.linkSuggestions = new ArrayList<>();
@@ -37,7 +37,7 @@ public abstract class ContextInformationProvider {
 		return this.getClass().getSimpleName();
 	}
 
-	public List<LinkSuggestion> getLinkSuggestions() {
+	public List<Recommendation> getLinkSuggestions() {
 		return linkSuggestions;
 	}
 

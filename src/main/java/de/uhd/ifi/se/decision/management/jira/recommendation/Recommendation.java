@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation;
 
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 public interface Recommendation extends Comparable<Recommendation> {
@@ -8,11 +12,39 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 *
 	 * @return suggestion type of suggestion
 	 */
-	SuggestionType getSuggestionType();
+	public abstract SuggestionType getSuggestionType();
 
-	public RecommendationScore getScore();
+	/**
+	 * @return score that represents the predicted relevance of a recommendation,
+	 *         i.e., how likely it is that the user accepts the recommendation. The
+	 *         score can be used to rank/sort the recommendations.
+	 */
+	@XmlElement
+	RecommendationScore getScore();
 
-	default public int compareTo(Recommendation o) {
+	/**
+	 * @param score
+	 *            that represents the predicted relevance of a recommendation, i.e.,
+	 *            how likely it is that the user accepts the recommendation. The
+	 *            score can be used to rank/sort the recommendations.
+	 */
+	void setScore(RecommendationScore score);
+
+	default void addToScore(double value, String field) {
+		getScore().addSubScore(new RecommendationScore((float) value, field));
+	}
+
+	static float getMaxScoreValue(List<Recommendation> recommendations) {
+		float maxScoreValue = 0;
+		for (Recommendation recommendation : recommendations) {
+			if (recommendation.getScore().getValue() > maxScoreValue) {
+				maxScoreValue = recommendation.getScore().getValue();
+			}
+		}
+		return maxScoreValue;
+	}
+
+	default int compareTo(Recommendation o) {
 		if (o == null) {
 			return -1;
 		}
@@ -24,5 +56,4 @@ public interface Recommendation extends Comparable<Recommendation> {
 		}
 		return compareValue;
 	}
-
 }

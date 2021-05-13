@@ -12,9 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 /**
  * Models a recommendation of a solution option for a decision problem. The
@@ -25,7 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
  */
-public class ElementRecommendation extends KnowledgeElement {
+public class ElementRecommendation extends KnowledgeElement implements Recommendation {
 
 	private KnowledgeSource knowledgeSource;
 	private String url;
@@ -91,34 +93,14 @@ public class ElementRecommendation extends KnowledgeElement {
 		this.url = url;
 	}
 
-	/**
-	 * @return score that represents the predicted relevance of a recommendation,
-	 *         i.e., how likely it is that the user accepts the recommendation. The
-	 *         score can be used to rank/sort the recommendations.
-	 */
-	@XmlElement
+	@Override
 	public RecommendationScore getScore() {
 		return score;
 	}
 
-	/**
-	 * @param score
-	 *            that represents the predicted relevance of a recommendation, i.e.,
-	 *            how likely it is that the user accepts the recommendation. The
-	 *            score can be used to rank/sort the recommendations.
-	 */
+	@Override
 	public void setScore(RecommendationScore score) {
 		this.score = score;
-	}
-
-	public static float getMaxScoreValue(List<ElementRecommendation> recommendations) {
-		float maxScoreValue = 0;
-		for (ElementRecommendation recommendation : recommendations) {
-			if (recommendation.getScore().getValue() > maxScoreValue) {
-				maxScoreValue = recommendation.getScore().getValue();
-			}
-		}
-		return maxScoreValue;
 	}
 
 	/**
@@ -174,6 +156,12 @@ public class ElementRecommendation extends KnowledgeElement {
 	@Override
 	public int hashCode() {
 		return Objects.hash(knowledgeSource.getName(), getSummary());
+	}
+
+	@Override
+	public SuggestionType getSuggestionType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

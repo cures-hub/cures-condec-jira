@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -31,28 +32,28 @@ public class TestProjectSourceRecommender extends TestSetUp {
 
 	@Test
 	public void testKeywordsOnly() {
-		List<ElementRecommendation> recommendations = projectSourceRecommender
+		List<Recommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?");
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
 	public void testKeywordsNull() {
-		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations((String) null);
+		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations((String) null);
 		assertEquals(0, recommendations.size());
 	}
 
 	@Test
 	public void testDecisionProblem() {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
+		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
 	public void testDecisionProblemAndKeywords() {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		List<ElementRecommendation> recommendations = projectSourceRecommender
+		List<Recommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?", decisionProblem);
 		assertEquals(2, recommendations.size());
 	}
@@ -72,10 +73,10 @@ public class TestProjectSourceRecommender extends TestSetUp {
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
+		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertFalse(recommendations.isEmpty());
-		assertFalse(recommendations.get(0).getArguments().isEmpty());
-		assertFalse(recommendations.get(1).getArguments().isEmpty());
+		assertFalse(((ElementRecommendation) recommendations.get(0)).getArguments().isEmpty());
+		assertFalse(((ElementRecommendation) recommendations.get(1)).getArguments().isEmpty());
 	}
 
 	@Test

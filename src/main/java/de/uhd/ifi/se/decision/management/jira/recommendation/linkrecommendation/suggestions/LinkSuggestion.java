@@ -22,12 +22,13 @@ public class LinkSuggestion extends Link implements Recommendation {
 		return score;
 	}
 
-	public void addToScore(double value, String field) {
-		score.addSubScore(new RecommendationScore((float) value, field));
-	}
-
 	@Override
 	public SuggestionType getSuggestionType() {
 		return SuggestionType.LINK;
+	}
+
+	@Override
+	public void setScore(RecommendationScore score) {
+		this.score = score;
 	}
 }

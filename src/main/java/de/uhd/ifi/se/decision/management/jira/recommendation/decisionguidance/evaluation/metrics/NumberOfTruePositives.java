@@ -4,13 +4,14 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 
 /**
  * Counts the number of true positives under the top-k results, i.e. the number
- * of {@link ElementRecommendation}s from a {@link KnowledgeSource} that were already
- * documented in the {@link KnowledgeGraph}.
+ * of {@link ElementRecommendation}s from a {@link KnowledgeSource} that were
+ * already documented in the {@link KnowledgeGraph}.
  * 
  * @issue Should the recommendation of rejected decisions and discarded
  *        alternatives be counted as true positives?
@@ -24,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 
-	public NumberOfTruePositives(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
+	public NumberOfTruePositives(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 
@@ -41,8 +42,8 @@ public class NumberOfTruePositives extends EvaluationMetric {
 	@Override
 	public double calculateMetric() {
 		int numberOfTruePositives = 0;
-		for (ElementRecommendation recommendation : recommendations) {
-			if (countMatches(groundTruthSolutionOptions, recommendation.getSummary()) > 0) {
+		for (Recommendation recommendation : recommendations) {
+			if (countMatches(groundTruthSolutionOptions, ((ElementRecommendation) recommendation).getSummary()) > 0) {
 				numberOfTruePositives++;
 			}
 		}

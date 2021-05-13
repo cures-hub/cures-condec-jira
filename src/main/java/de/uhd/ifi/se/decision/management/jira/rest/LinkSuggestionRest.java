@@ -25,12 +25,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 /**
@@ -49,7 +49,7 @@ public class LinkSuggestionRest {
 		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 		if (knowledgeElement.isPresent()) {
 			ContextInformation ci = new ContextInformation(knowledgeElement.get());
-			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
+			Collection<Recommendation> linkSuggestions = ci.getLinkSuggestions();
 			return Response.ok(linkSuggestions).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();

@@ -54,4 +54,10 @@ public class DuplicateSuggestion extends Link implements Recommendation {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void setScore(RecommendationScore score) {
+		// TODO Auto-generated method stub
+
+	}
 }

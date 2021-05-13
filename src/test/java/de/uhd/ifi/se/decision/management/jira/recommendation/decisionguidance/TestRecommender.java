@@ -11,6 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
@@ -40,7 +41,7 @@ public class TestRecommender extends TestSetUp {
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		List<ElementRecommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
+		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
 				decisionProblem, "");
 		assertEquals(2, recommendations.size());
 
