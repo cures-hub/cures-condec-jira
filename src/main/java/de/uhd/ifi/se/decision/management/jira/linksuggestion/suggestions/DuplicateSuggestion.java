@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 

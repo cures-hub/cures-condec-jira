@@ -1,31 +1,33 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.decisionguidance.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class LinkSuggestion extends Link implements Comparable<LinkSuggestion>, Suggestion<KnowledgeElement> {
 
 	private static final long serialVersionUID = 1L;
-	private SimilarityScore score;
+	private RecommendationScore score;
 
 	public LinkSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement) {
 		super(baseElement, targetElement);
-		this.score = new SimilarityScore();
+		score = new RecommendationScore(0, "");
 	}
 
 	@XmlElement
 	public double getTotalScore() {
-		return score.getTotal();
+		return score.getValue();
 	}
 
-	public SimilarityScore getScore() {
+	@XmlElement
+	public RecommendationScore getScore() {
 		return score;
 	}
 
-	public void addToScore(Double score, String field) {
-		this.score.put(field, score);
+	public void addToScore(double value, String field) {
+		score.addSubScore(new RecommendationScore((float) value, field));
 	}
 
 	@Override

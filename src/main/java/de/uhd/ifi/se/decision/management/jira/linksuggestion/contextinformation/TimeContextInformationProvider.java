@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 /**
  * Rates relations based on time of creation or modifications of elements.

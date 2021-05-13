@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 /**
  * Uses existing tracing links between {@link KnowledgeElement}s for rating a

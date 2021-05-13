@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.consistencycheckeventlistener;
 
-import static de.uhd.ifi.se.decision.management.jira.quality.consistency.TestConsistencyCheckEventTrigger.generateWorkflowIssueEvent;
+import static de.uhd.ifi.se.decision.management.jira.linksuggestion.TestConsistencyCheckEventTrigger.generateWorkflowIssueEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

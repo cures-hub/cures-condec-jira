@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation;
 
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 /**
  * Rates relations comparing textual information of {@link KnowledgeElement}s.

@@ -1,9 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 
 /**
  * Uses information about the author of a {@link KnowledgeElement} or about the

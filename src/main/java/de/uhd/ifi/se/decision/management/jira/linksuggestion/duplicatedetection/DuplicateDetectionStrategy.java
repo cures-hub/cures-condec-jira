@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
 
 import java.util.List;
 

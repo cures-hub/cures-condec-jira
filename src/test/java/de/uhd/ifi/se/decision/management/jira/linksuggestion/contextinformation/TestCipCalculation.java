@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -15,12 +15,12 @@ import org.junit.Test;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestCipCalculation extends TestSetUp {
@@ -50,7 +50,7 @@ public class TestCipCalculation extends TestSetUp {
 
 		// The baseElement should not be most similar to itself, as it is filtered out!
 		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTarget().getJiraIssue().getKey()));
-		assertNotNull(identicalIssueSuggestion.getScore().getScores());
+		assertNotNull(identicalIssueSuggestion.getScore().getSubScores());
 
 		assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
 				identicalIssueSuggestion.getSource().getKey());

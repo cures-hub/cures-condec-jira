@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -14,10 +14,10 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.DuplicateDetectionStrategy;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.DuplicateDetectionStrategy;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 

@@ -5,4 +5,4 @@
  *      "https://github.com/cures-hub/cures-condec-jira/blob/master/doc/features/link-suggestion.md">
  *      README for Link Suggestion and Duplicate Recognition</a>
  */
-package de.uhd.ifi.se.decision.management.jira.quality.consistency;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion;

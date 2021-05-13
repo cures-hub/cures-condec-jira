@@ -33,6 +33,12 @@ public class RecommendationScore {
 	 */
 	@XmlElement
 	public float getValue() {
+		if (!subScores.isEmpty()) {
+			value = 0;
+			for (RecommendationScore subScore : subScores) {
+				value += subScore.getValue();
+			}
+		}
 		return value;
 	}
 

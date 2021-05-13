@@ -1,12 +1,12 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
 
 public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.consistency;
+package de.uhd.ifi.se.decision.management.jira.linksuggestion;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 

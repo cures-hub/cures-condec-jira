@@ -8,10 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -22,18 +20,18 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.duplicatedetection.DuplicateDetectionManager;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.linksuggestion.suggestions.SuggestionType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.DuplicateSuggestion;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.LinkSuggestion;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.SuggestionType;
 
 /**
  * REST resource for link suggestion and duplicate recognition (including its
@@ -43,13 +41,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.Su
 public class LinkSuggestionRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkSuggestionRest.class);
 
-	// --------------------
-	// Related issue detection
-	// --------------------
-
 	@Path("/getRelatedKnowledgeElements")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("elementLocation") String elementLocation) {
@@ -59,12 +52,11 @@ public class LinkSuggestionRest {
 			Collection<LinkSuggestion> linkSuggestions = ci.getLinkSuggestions();
 			return Response.ok(linkSuggestions).build();
 		}
-		return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();
 	}
 
 	@Path("/discardLinkSuggestion")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response discardLinkSuggestion(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originId,
 			@QueryParam("originElementLocation") String originLocation, @QueryParam("targetElementId") Long targetId,
@@ -80,7 +72,6 @@ public class LinkSuggestionRest {
 
 	@Path("/getDuplicateKnowledgeElement")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDuplicateKnowledgeElements(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("location") String elementLocation) {
@@ -116,7 +107,6 @@ public class LinkSuggestionRest {
 
 	@Path("/discardDuplicate")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response discardDetectedDuplicate(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originIssueId,
 			@QueryParam("originElementLocation") String originLocation,
@@ -133,7 +123,6 @@ public class LinkSuggestionRest {
 
 	@Path("/doesElementNeedApproval")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response doesElementNeedApproval(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("elementLocation") String documentationLocation) {
@@ -150,7 +139,6 @@ public class LinkSuggestionRest {
 
 	@Path("/approveCheck")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation,
 			@QueryParam("user") String user) {
