@@ -9,35 +9,27 @@
 	var projectKey;
 	var issueKey;
 
-	var numberOfIssues;
-	var numberOfDecisions;
-	var minimumCoverage;
-
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 		projectKey = conDecAPI.getProjectKey();
 		issueKey = conDecAPI.getIssueKey();
-
-		numberOfIssues = 0;
-		numberOfDecisions = 0;
-		minimumCoverage = 1;
 	};
 
 	ConDecQualityCheck.prototype.initView = function () {
 		console.log("ConDecQualityChecking initView");
 
-		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, function(result) {
-			numberOfIssues = result.Issue;
-			numberOfDecisions = result.Decision;
-		});
-
 		conDecAPI.getFilterSettings(issueKey, "", function(filterSettings) {
-			minimumCoverage = filterSettings.minimumDecisionCoverage;
-		});
+			var minimumCoverage = filterSettings.minimumDecisionCoverage;
 
-		updateView();
+			conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, function(result) {
+				var numberOfIssues = result.Issue;
+				var numberOfDecisions = result.Decision;
+
+				updateView(numberOfIssues, numberOfDecisions, minimumCoverage);
+			});
+		});
 	};
 
-	function updateView() {
+	function updateView(numberOfIssues, numberOfDecisions, minimumCoverage) {
 		issueLabel = document.getElementById("quality-check-issue-label");
 		decisionLabel = document.getElementById("quality-check-decision-label");
 
