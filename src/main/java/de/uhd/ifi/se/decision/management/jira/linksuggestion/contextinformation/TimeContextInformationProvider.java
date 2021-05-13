@@ -13,17 +13,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public String getId() {
-		return "TimeCIP_ms";
-	}
-
-	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
 		double differenceInWeeks = (baseElement.getCreationDate().getTime() - elementToTest.getCreationDate().getTime())
 				/ (1000 * 60 * 60 * 24. * 7.);
 		double score = (1. / (Math.abs(differenceInWeeks) + 1.));
-		linkSuggestion.addToScore(score, this.getName() + ": " + this.getId());
+		linkSuggestion.addToScore(score, getName() + " (ms)");
 		this.linkSuggestions.add(linkSuggestion);
 		return score;
 	}

@@ -20,11 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class TracingContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public String getId() {
-		return "TracingCIP_BFS";
-	}
-
-	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
 		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
 		Integer distance = search(baseElement, knowledgeElement);

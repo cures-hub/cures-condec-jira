@@ -12,20 +12,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
-	public TextualSimilarityContextInformationProvider() {
-		super();
-	}
-
-	@Override
-	public String getId() {
-		return "TextualSimilarityCIP_jaccard";
-	}
-
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
 		double similarity = calculateSimilarity(baseElement.getDescription(), elementToTest.getDescription());
-		linkSuggestion.addToScore(similarity, this.getName() + ": " + getId());
+		linkSuggestion.addToScore(similarity, getName() + " (Jaccard)");
 		this.linkSuggestions.add(linkSuggestion);
 		return similarity;
 	}

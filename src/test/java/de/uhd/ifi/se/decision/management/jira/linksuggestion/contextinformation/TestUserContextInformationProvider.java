@@ -44,11 +44,6 @@ public class TestUserContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testId() {
-		assertEquals("UserCIP_equalCreatorOrEqualAssignee", contextInformationProvider.getId());
-	}
-
-	@Test
 	public void testSameUser() {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());

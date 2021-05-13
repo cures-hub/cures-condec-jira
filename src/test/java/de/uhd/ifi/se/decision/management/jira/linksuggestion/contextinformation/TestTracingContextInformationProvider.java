@@ -44,11 +44,6 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testId() {
-		assertEquals("TracingCIP_BFS", tracingContextInformationProvider.getId());
-	}
-
-	@Test
 	public void testIndirectlyLinked() {
 		assertEquals(0.333,
 				tracingContextInformationProvider.assessRelation(knowledgeElements.get(0), knowledgeElements.get(2)),

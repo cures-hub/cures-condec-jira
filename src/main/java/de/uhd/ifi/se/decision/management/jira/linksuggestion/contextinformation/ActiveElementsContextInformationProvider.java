@@ -25,15 +25,10 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	}
 
 	@Override
-	public String getId() {
-		return "ActiveCIP_Sprint";
-	}
-
-	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion ls = new LinkSuggestion(baseElement, elementToTest);
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
-		ls.addToScore(isActive, this.getId());
+		ls.addToScore(isActive, getName() + " (per Sprint)");
 		this.linkSuggestions.add(ls);
 		return isActive;
 	}

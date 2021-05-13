@@ -13,11 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 public class UserContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public String getId() {
-		return "UserCIP_equalCreatorOrEqualAssignee";
-	}
-
-	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
 
@@ -32,7 +27,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(),
 							elementToTest.getJiraIssue().getArchivedByUser());
 		}
-		linkSuggestion.addToScore(score, this.getName());
+		linkSuggestion.addToScore(score, getName() + " (equalCreatorOrEqualAssignee)");
 
 		linkSuggestions.add(linkSuggestion);
 		return score;

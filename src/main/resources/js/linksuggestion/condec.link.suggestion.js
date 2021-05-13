@@ -55,7 +55,7 @@
 	ConDecLinkSuggestion.prototype.displayRelatedElements = function(relatedElements) {
 		if (relatedElements.length === 0) {
 			//reset table content to empty
-			this.resultsTableContentElement.innerHTML = "<i>No related issues found!</i>";
+			this.resultsTableContentElement.innerHTML = "<i>No related knowledge elements found!</i>";
 		} else {
 			//reset table content to empty
 			this.resultsTableContentElement.innerHTML = "";
@@ -186,7 +186,7 @@
 	//-----------------------------------------
 
 	function displayErrorMessage(error) {
-		conDecAPI.showFlag("error", "Could not load Knowledge-Element! </br>" + error)
+		conDecAPI.showFlag("error", "Could not load knowledge element! </br>" + error)
 	}
 
 	function displaySuccessMessage(message) {

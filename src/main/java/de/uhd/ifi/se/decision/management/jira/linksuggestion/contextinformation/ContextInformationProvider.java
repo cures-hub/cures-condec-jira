@@ -24,18 +24,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public abstract class ContextInformationProvider {
 
-	protected String id;
 	protected List<LinkSuggestion> linkSuggestions;
 
 	public ContextInformationProvider() {
 		this.linkSuggestions = new ArrayList<>();
-	}
-
-	/**
-	 * @return id of the context information provider
-	 */
-	public String getId() {
-		return id;
 	}
 
 	/**

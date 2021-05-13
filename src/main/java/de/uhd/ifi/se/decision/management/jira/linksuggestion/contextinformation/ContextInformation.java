@@ -102,11 +102,6 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public String getId() {
-		return "BaseCalculation";
-	}
-
-	@Override
 	public String getName() {
 		return "BaseCalculation";
 	}
