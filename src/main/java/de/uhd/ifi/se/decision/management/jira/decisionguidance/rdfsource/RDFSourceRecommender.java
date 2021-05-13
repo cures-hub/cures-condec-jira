@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +82,6 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			return new ArrayList<>();
 		}
 		List<Recommendation> recommendations = new ArrayList<>();
-		Map<Recommendation, Integer> scoreMap = new HashMap<>();
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		final List<String> combinedKeywords = this.combineKeywords(keywords);
@@ -108,7 +105,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
 
-				scoreMap.put(recommendation, numberOfLinks);
+				recommendation.setScore(new RecommendationScore(numberOfLinks, "This Recommendation number of links"));
 
 				List<Argument> arguments = new ArrayList<>();
 
@@ -121,23 +118,16 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			}
 		}
 
-		return this.getRecommendationWithScore(scoreMap);
+		return getRecommendationWithScore(recommendations);
 	}
 
-	private List<Recommendation> getRecommendationWithScore(Map<Recommendation, Integer> scoreMap) {
-		List<Recommendation> recommendationWithScore = new ArrayList<>();
-		if (scoreMap.size() != 0) {
-			Comparator<? super Map.Entry<Recommendation, Integer>> maxValueComparator = Comparator
-					.comparing(Map.Entry::getValue);
-
-			int maxValue = scoreMap.entrySet().stream().max(maxValueComparator).get().getValue();
-
-			scoreMap.forEach((recommendation, value) -> {
-				recommendation.setScore(getScore(maxValue, value));
-				recommendationWithScore.add(recommendation);
-			});
+	private List<Recommendation> getRecommendationWithScore(List<Recommendation> recommendations) {
+		float maxValue = Recommendation.getMaxScoreValue(recommendations);
+		for (Recommendation recommendation : recommendations) {
+			RecommendationScore normalizedScore = getScore((int) maxValue, (int) recommendation.getScore().getValue());
+			recommendation.setScore(normalizedScore);
 		}
-		return recommendationWithScore;
+		return recommendations;
 	}
 
 	private String getLabel(String resource) {
@@ -184,13 +174,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		RecommendationScore recommendationScore = new RecommendationScore(0.0f, "Recommendation with most links");
 		recommendationScore.addSubScore(new RecommendationScore(maxValue, "Recommendation with most links"));
 		recommendationScore.addSubScore(new RecommendationScore(actualValue, "This Recommendation number of links"));
-		float totalScore = normalizeScoreValue(maxValue, actualValue);
-		recommendationScore.setValue(totalScore);
+		recommendationScore.normalizeTo(maxValue);
 		return recommendationScore;
-	}
-
-	public static float normalizeScoreValue(float maxValue, float actualValue) {
-		return (actualValue * 1.0f / maxValue) * 100f;
 	}
 
 	private int getLimit() {
