@@ -33,7 +33,7 @@ public class RecommendationScore {
 	 */
 	@XmlElement
 	public float getValue() {
-		return value;
+		return value > 0 ? value : getSumOfSubScores();
 	}
 
 	/**
