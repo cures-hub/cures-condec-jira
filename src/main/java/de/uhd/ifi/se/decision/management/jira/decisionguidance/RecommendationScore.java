@@ -28,12 +28,12 @@ public class RecommendationScore {
 
 	/**
 	 * @return score value. If the score is composed of sub-scores, the value is
-	 *         calculated using these sub-scores. It might be normalized to enable
-	 *         recommendation ranking.
+	 *         calculated using these sub-scores. It needs to be normalized to
+	 *         enable recommendation ranking.
 	 */
 	@XmlElement
 	public float getValue() {
-		if (!subScores.isEmpty()) {
+		if (!subScores.isEmpty() && value <= 0) {
 			value = 0;
 			for (RecommendationScore subScore : subScores) {
 				value += subScore.getValue();
@@ -80,8 +80,8 @@ public class RecommendationScore {
 	 * @param subScores
 	 *            sub-scores which this score is composed of.
 	 */
-	public void setSubScore(List<RecommendationScore> subScores) {
-		this.subScores.addAll(subScores);
+	public void setSubScores(List<RecommendationScore> subScores) {
+		this.subScores = subScores;
 	}
 
 	/**
