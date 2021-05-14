@@ -1,4 +1,4 @@
-<h2>Settings for the consistency checks of Jira Issues</h2>
+<h2>Settings for the link recommendation and duplicate recognition within one project</h2>
 
 <form class="aui">
     #parse("templates/settings/linksuggestion/minProbabilitySetting.vm")

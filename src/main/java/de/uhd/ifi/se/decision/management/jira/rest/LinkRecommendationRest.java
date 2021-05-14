@@ -34,12 +34,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
 
 /**
- * REST resource for link suggestion and duplicate recognition (including its
- * configuration).
+ * REST resource for link recommendation and duplicate recognition (including
+ * its configuration).
  */
-@Path("/linksuggestion")
-public class LinkSuggestionRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LinkSuggestionRest.class);
+@Path("/linkrecommendation")
+public class LinkRecommendationRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LinkRecommendationRest.class);
 
 	@Path("/getRelatedKnowledgeElements")
 	@GET

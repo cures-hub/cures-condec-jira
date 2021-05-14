@@ -1,7 +1,7 @@
 (function(global) {
 
 	const ConDecLinkSuggestionAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/linksuggestion";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/linkrecommendation";
 		this.projectKey = conDecAPI.getProjectKey();
 	};
 
