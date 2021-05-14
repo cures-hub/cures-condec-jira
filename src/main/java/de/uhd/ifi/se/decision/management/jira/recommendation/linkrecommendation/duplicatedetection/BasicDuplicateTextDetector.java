@@ -21,6 +21,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		this.fragmentLength = fragmentLength;
 	}
 
+	// TODO Move to Preprocessor
 	private String cleanMarkdown(String markdown) {
 		return markdown.replaceAll("[{(color)]+[:#0-9]*}", "")
 				.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "URL")
@@ -60,8 +61,8 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 				if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
 					// sequenceToCheck.remove(sequenceToCheck.size()-1);
 					String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
-					duplicateList.add(new DuplicateRecommendation(baseElement, compareElement, preprocessedDuplicateSummary,
-							0, preprocessedDuplicateSummary.length(),
+					duplicateList.add(new DuplicateRecommendation(baseElement, compareElement,
+							preprocessedDuplicateSummary, 0, preprocessedDuplicateSummary.length(),
 							// calculateScore(sequenceToCheck, sequenceToCheckAgainst),
 							fieldUsedForDetection));
 					return duplicateList;
@@ -83,12 +84,14 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 		return count / sequenceToCheck.length;
 	}
 
-	// private String generateStringToSearch(List<CharSequence> tokens, int index, int numberOfDuplicateTokens) {
-	// 	StringBuilder stringToSearch = new StringBuilder();
-	// 	for (int i = index; i < tokens.size() && i < index + numberOfDuplicateTokens; i++) {
-	// 		stringToSearch.append(tokens.get(i)).append(" ");
-	// 	}
-	// 	return stringToSearch.toString().trim();
+	// private String generateStringToSearch(List<CharSequence> tokens, int index,
+	// int numberOfDuplicateTokens) {
+	// StringBuilder stringToSearch = new StringBuilder();
+	// for (int i = index; i < tokens.size() && i < index + numberOfDuplicateTokens;
+	// i++) {
+	// stringToSearch.append(tokens.get(i)).append(" ");
+	// }
+	// return stringToSearch.toString().trim();
 	// }
 
 }

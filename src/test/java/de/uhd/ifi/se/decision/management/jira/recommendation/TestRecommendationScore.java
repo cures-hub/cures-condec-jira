@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
+package de.uhd.ifi.se.decision.management.jira.recommendation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
 public class TestRecommendationScore extends TestSetUp {
 
@@ -50,5 +49,12 @@ public class TestRecommendationScore extends TestSetUp {
 	public void testSetAndGetExplanation() {
 		score.setExplanation("TEST EXPLANATION");
 		assertEquals("TEST EXPLANATION", score.getExplanation());
+	}
+
+	@Test
+	public void testNormalizeToMaxValue() {
+		assertTrue(score.getSubScores().isEmpty());
+		score.normalizeTo(0.5f);
+		assertEquals(2, score.getSubScores().size());
 	}
 }

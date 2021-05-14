@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
-public class TestRecommendation extends TestSetUp {
+public class TestElementRecommendation extends TestSetUp {
 
 	private KnowledgeSource knowledgeSource;
 

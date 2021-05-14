@@ -5,10 +5,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
-
 /**
- * The score represents the predicted relevance of a {@link ElementRecommendation},
+ * The score represents the predicted relevance of a {@link Recommendation},
  * i.e., how likely it is that the user accepts the recommendation. The score
  * can be used to rank/sort the recommendations.
  * 
@@ -68,12 +66,12 @@ public class RecommendationScore {
 	 *            of the best recommendation, set to 100%.
 	 */
 	public void normalizeTo(float maxScoreValue) {
-		if (!explanation.isBlank()) {
-			// keep the current explanation as a sub-score after normalizing
-			addSubScore(new RecommendationScore(getValue(), explanation + " of this recommendation"));
-		}
-		value = (getSumOfSubScores() * 1.0f / maxScoreValue) * 100f;
+		// keep the current explanation as a sub-score after normalizing
+		addSubScore(new RecommendationScore(getValue(), explanation + " of this recommendation"));
 		addSubScore(new RecommendationScore(maxScoreValue, explanation + " of the best recommendation"));
+
+		// normalize, update score value and explanation
+		value = (getSumOfSubScores() * 1.0f / maxScoreValue) * 100f;
 		explanation = "Compared to best recommendation (normalized)";
 	}
 
