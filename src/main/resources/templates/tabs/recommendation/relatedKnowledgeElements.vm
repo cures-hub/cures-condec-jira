@@ -6,10 +6,10 @@
 <table class="aui aui-table-list" id="results-table">
     <thead>
 	    <tr>
-	        <th id="th-key" class="aui-table-column-issue-key">Issue key</th>
-	        <th id="th-name">Name</th>
-	        <th id="th-score">Score</th>	
-	        <th id="th-options" class="aui-table-column-unsortable">Options</th>
+	        <th id="th-key">$i18n.getText("condec.label.knowledge.type")</th>
+	        <th id="th-name">$i18n.getText("condec.label.summary")</th>
+	        <th id="th-score">$i18n.getText("condec.recommendation.score")</th>	
+	        <th id="th-options">$i18n.getText("condec.recommendation.manage")</th>
 	    <tr>
     </thead>
     <tbody id="table-content"></tbody>
@@ -19,9 +19,9 @@
 <table class="aui aui-table-list" id="duplicate-results-table">
     <thead>
 	    <tr>
-	        <th id="th-key-duplicate" class="aui-table-column-issue-key">Issue key</th>
-	        <th id="th-text-fragment-duplicate">Duplicate</th>
-	        <th id="th-options-duplicate" class="aui-table-column-unsortable">Options</th>
+	        <th id="th-key-duplicate">$i18n.getText("condec.label.knowledge.type")</th>
+	        <th id="th-text-fragment-duplicate">$i18n.getText("condec.duplicate")</th>
+	        <th id="th-options-duplicate">$i18n.getText("condec.recommendation.manage")</th>
 	    <tr>
     </thead>
     <tbody id="table-content-duplicate"></tbody>

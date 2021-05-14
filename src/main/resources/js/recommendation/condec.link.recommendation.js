@@ -74,7 +74,7 @@
 
 	let generateTableRow = function(suggestion, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.key}</a>`, "th-key"));
+		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.type}</a>`, "th-key"));
 		row.appendChild(generateTableCell(suggestion.target.summary, "th-name", {}));
 		let scoreCell = (generateTableCell(conDecRecommendation.buildScore(suggestion.score, "score_" + index), "th-score", ""));
 		row.appendChild(scoreCell);
@@ -134,7 +134,7 @@
 
 	let generateDuplicateTableRow = function(duplicate, index) {
 		let row = document.createElement("tr");
-		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.target.url}">${duplicate.target.key}</a>`, "th-key-duplicate", {}));
+		row.appendChild(generateDuplicateTableCell(`<a href="${duplicate.target.url}">${duplicate.target.type}</a>`, "th-key-duplicate", {}));
 
 		//TODO: visualize the duplicate fragment
 		let scoreCell = generateDuplicateTableCell(duplicate.preprocessedSummary.slice(duplicate.startDuplicate, duplicate.startDuplicate + duplicate.length), "th-text-fragment-duplicate", { title: "Length:" + duplicate.length });

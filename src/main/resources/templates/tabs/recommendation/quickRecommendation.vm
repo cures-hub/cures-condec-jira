@@ -4,8 +4,8 @@
 	<thead>
 		<tr>
 			<th>Recommendation</th>
-			<th class="aui-table-column-issue-key">Score</th>
-			<th class="aui-table-column-unsortable">Option</th>
+			<th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
+			<th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
 		</tr>
 	</thead>
 	<tbody id="quick-recommendations-table-body">		

@@ -17,8 +17,8 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
     <tr>
         <th>$i18n.getText("condec.decision.guidance.recommendations")</th>
         <th>$i18n.getText("condec.decision.guidance.knowledgesources")</th>
-        <th class="aui-table-column-issue-key">$i18n.getText("condec.decision.guidance.score")</th>
-        <th class="aui-table-column-unsortable">$i18n.getText("condec.decision.guidance.options")</th>
+        <th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
+        <th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
         <th>$i18n.getText("condec.decision.guidance.arguments")</th>
     </tr>
     </thead>
