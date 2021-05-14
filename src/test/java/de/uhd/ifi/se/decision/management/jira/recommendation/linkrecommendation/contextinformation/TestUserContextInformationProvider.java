@@ -71,7 +71,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		i2.setCreatorId(null);
 		i2.setReporter(null);
 		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
-		assertEquals(1.,
+		assertEquals(0.,
 				contextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2)).getValue(),
 				0);
 	}

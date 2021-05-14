@@ -266,8 +266,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         be linked.
 	 */
 	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.addAll(this.vertexSet());
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>(vertexSet());
 		if (element == null) {
 			return elements;
 		}

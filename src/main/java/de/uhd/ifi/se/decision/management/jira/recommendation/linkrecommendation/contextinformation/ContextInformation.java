@@ -8,9 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -27,12 +28,13 @@ public class ContextInformation implements ContextInformationProvider {
 	public ContextInformation(KnowledgeElement element) {
 		this.element = element;
 		// Add context information providers as concrete decorators
-		this.contextInformationProviders = new ArrayList<>();
-		this.contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
-		this.contextInformationProviders.add(new TracingContextInformationProvider());
-		this.contextInformationProviders.add(new TimeContextInformationProvider());
-		this.contextInformationProviders.add(new UserContextInformationProvider());
-		// this.cips.add(new ActiveCIP());
+		contextInformationProviders = new ArrayList<>();
+		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
+		contextInformationProviders.add(new TracingContextInformationProvider());
+		contextInformationProviders.add(new TimeContextInformationProvider());
+		contextInformationProviders.add(new UserContextInformationProvider());
+		// contextInformationProviders.add(new
+		// ActiveElementsContextInformationProvider());
 	}
 
 	public Collection<KnowledgeElement> getLinkedKnowledgeElements() {
@@ -47,12 +49,10 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	public List<Recommendation> getLinkSuggestions() {
-		List<KnowledgeElement> projectKnowledgeElements = KnowledgePersistenceManager
-				.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements();
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject());
+		List<KnowledgeElement> projectKnowledgeElements = graph.getUnlinkedElements(element);
 
-		projectKnowledgeElements.remove(this.element);
 		List<Recommendation> linkSuggestions = assessRelations(element, projectKnowledgeElements);
-		// calculate context score
 
 		// get filtered issues
 		Set<KnowledgeElement> elementsToKeep = this.filterKnowledgeElements(projectKnowledgeElements);
@@ -104,7 +104,11 @@ public class ContextInformation implements ContextInformationProvider {
 			List<KnowledgeElement> knowledgeElements) {
 		List<Recommendation> linkRecommendations = new ArrayList<>();
 		for (KnowledgeElement elementToTest : knowledgeElements) {
-			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+			if (elementToTest.getTypeAsString().equals(KnowledgeType.OTHER.toString())) {
+				// only recommend relevant decision, project, or system knowledge elements
+				continue;
+			}
+			Recommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 			linkSuggestion.setScore(assessRelation(baseElement, elementToTest));
 			linkRecommendations.add(linkSuggestion);
 		}
