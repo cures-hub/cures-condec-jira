@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -227,7 +225,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -259,7 +256,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/recommendations")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("keyword") String keyword, @QueryParam("issueId") int issueId,
 			@QueryParam("documentationLocation") String documentationLocation) {
@@ -285,7 +281,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/recommendationEvaluation")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
 			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults,

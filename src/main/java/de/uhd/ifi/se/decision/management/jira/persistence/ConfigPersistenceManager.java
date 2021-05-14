@@ -316,7 +316,7 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
 	}
 
-	public static LinkRecommendationConfiguration getLinkSuggestionConfiguration(String projectKey) {
+	public static LinkRecommendationConfiguration getLinkRecommendationConfiguration(String projectKey) {
 		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
 		LinkRecommendationConfiguration linkSuggestionConfiguration = (LinkRecommendationConfiguration) getSavedObject(

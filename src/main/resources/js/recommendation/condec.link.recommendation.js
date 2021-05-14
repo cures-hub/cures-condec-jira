@@ -26,7 +26,7 @@
 
 	ConDecLinkRecommendation.prototype.discardDuplicate = function(index) {
 		let suggestionElement = this.currentSuggestions[index].target;
-		ConDecLinkRecommendationAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadDuplicateData();
@@ -37,7 +37,7 @@
 	ConDecLinkRecommendation.prototype.discardSuggestion = function(index) {
 		let suggestionElement = this.currentSuggestions[index].target;
 
-		ConDecLinkRecommendationAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadData();
@@ -96,12 +96,11 @@
 
 	let generateOptionButtons = function(suggestionIndex) {
 		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
 	};
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
 		let target = this.currentSuggestions[index].target;
-		console.dir(target);
 		let self = this;
 		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
 	}
@@ -157,7 +156,7 @@
 
 	let generateDuplicateOptionButtons = function(index) {
 		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
 	};
 
 	let processDuplicateIssuesResponse = function(duplicates) {

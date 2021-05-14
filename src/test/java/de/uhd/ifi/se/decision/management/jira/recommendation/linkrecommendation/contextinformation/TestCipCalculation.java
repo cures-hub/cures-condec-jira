@@ -33,7 +33,7 @@ public class TestCipCalculation extends TestSetUp {
 		TestSetUp.init();
 		testIssues = JiraIssues.getTestJiraIssues();
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration("TEST");
+				.getLinkRecommendationConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 	}

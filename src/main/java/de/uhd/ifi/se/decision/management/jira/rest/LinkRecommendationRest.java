@@ -21,6 +21,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
@@ -41,6 +42,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class LinkRecommendationRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkRecommendationRest.class);
 
+	// TODO Add duplicates here
 	@Path("/getRelatedKnowledgeElements")
 	@GET
 	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request,
@@ -76,33 +78,29 @@ public class LinkRecommendationRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("location") String elementLocation) {
 		Optional<KnowledgeElement> knowledgeElement;
-		Response response;
 		try {
 			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
 			if (knowledgeElement.isPresent()) {
 				LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-						.getLinkSuggestionConfiguration(projectKey);
+						.getLinkRecommendationConfiguration(projectKey);
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
 						new BasicDuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
 						linkSuggestionConfiguration.getMinTextLength());
 
-				// get KnowledgeElements of project
-				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+				KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+				List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
 
 				// detect duplicates
-				List<DuplicateRecommendation> foundDuplicateSuggestions = manager
-						.findAllDuplicates(persistenceManager.getKnowledgeElements());
+				List<DuplicateRecommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
 
-				response = Response.ok(foundDuplicateSuggestions).build();
+				return Response.ok(foundDuplicateSuggestions).build();
 			} else {
-				response = Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
+				return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
 			}
 		} catch (Exception e) {
-			// LOGGER.error(e.getMessage());
-			response = Response.status(500).entity(e).build();
+			return Response.status(500).entity(e).build();
 		}
-		return response;
 	}
 
 	@Path("/discardDuplicate")
@@ -236,7 +234,7 @@ public class LinkRecommendationRest {
 		}
 
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
+				.getLinkRecommendationConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
@@ -255,7 +253,7 @@ public class LinkRecommendationRest {
 					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
 		}
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration(projectKey);
+				.getLinkRecommendationConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();

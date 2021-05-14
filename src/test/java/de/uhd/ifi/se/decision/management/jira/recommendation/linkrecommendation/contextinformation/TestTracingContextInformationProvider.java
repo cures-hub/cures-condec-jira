@@ -22,7 +22,7 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 	public void setUp() {
 		init();
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration("TEST");
+				.getLinkRecommendationConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 		tracingContextInformationProvider = new TracingContextInformationProvider();

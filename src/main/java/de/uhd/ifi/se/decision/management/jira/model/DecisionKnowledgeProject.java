@@ -237,7 +237,7 @@ public class DecisionKnowledgeProject {
 	 *         within one project.
 	 */
 	public LinkRecommendationConfiguration getLinkSuggestionConfiguration() {
-		return ConfigPersistenceManager.getLinkSuggestionConfiguration(getProjectKey());
+		return ConfigPersistenceManager.getLinkRecommendationConfiguration(getProjectKey());
 	}
 
 	/**

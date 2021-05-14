@@ -36,7 +36,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		element = new KnowledgeElement(i1);
 
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkSuggestionConfiguration("TEST");
+				.getLinkRecommendationConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 
