@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -13,13 +14,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 		double differenceInWeeks = (baseElement.getCreationDate().getTime() - elementToTest.getCreationDate().getTime())
 				/ (1000 * 60 * 60 * 24. * 7.);
 		double score = (1. / (Math.abs(differenceInWeeks) + 1.));
 		linkSuggestion.addToScore(score, getName() + " (ms)");
 		this.linkSuggestions.add(linkSuggestion);
-		return score;
+		return new RecommendationScore((float) score, getName() + " (ms)");
 	}
 }

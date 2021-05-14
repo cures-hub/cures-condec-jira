@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -13,12 +14,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 		double similarity = calculateSimilarity(baseElement.getDescription(), elementToTest.getDescription());
 		linkSuggestion.addToScore(similarity, getName() + " (Jaccard)");
 		this.linkSuggestions.add(linkSuggestion);
-		return similarity;
+		return new RecommendationScore((float) similarity, getName() + " (Jaccard)");
 	}
 
 	public double calculateSimilarity(String left, String right) {

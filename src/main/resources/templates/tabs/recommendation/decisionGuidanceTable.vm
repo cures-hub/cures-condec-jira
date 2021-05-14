@@ -27,8 +27,8 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
 </table>
 
 <div style="display:none">
-#parse("templates/tabs/decisiontable/quickRecommendation.vm")
-#parse("templates/tabs/decisiontable/scoreExplanation.vm")
+#parse("templates/tabs/recommendation/quickRecommendation.vm")
+#parse("templates/tabs/recommendation/scoreExplanation.vm")
 </div>
 
 <script>

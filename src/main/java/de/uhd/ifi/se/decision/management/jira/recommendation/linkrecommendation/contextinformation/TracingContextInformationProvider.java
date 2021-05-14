@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -20,18 +21,18 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class TracingContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
 		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, knowledgeElement);
 		Integer distance = search(baseElement, knowledgeElement);
 		// A null value means the nodes are not connected.
-		Double value = 0.;
+		double value = 0.;
 		if (distance != null) {
 			value = 1. / (distance + 1);
 		}
 		// Prevent a division by zero exception.
 		linkSuggestion.addToScore(value, this.getName());
 		this.linkSuggestions.add(linkSuggestion);
-		return value;
+		return new RecommendationScore((float) value, getName());
 	}
 
 	private boolean wasVisited(String node, Map<String, ?> distanceMap) {

@@ -31,22 +31,19 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testSameElement() {
-		assertEquals(1.0,
-				tracingContextInformationProvider.assessRelation(knowledgeElements.get(0), knowledgeElements.get(0)),
-				0);
+		assertEquals(1.0, tracingContextInformationProvider
+				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(0)).getValue(), 0);
 	}
 
 	@Test
 	public void testDirectlyLinked() {
-		assertEquals(0.5,
-				tracingContextInformationProvider.assessRelation(knowledgeElements.get(0), knowledgeElements.get(1)),
-				0);
+		assertEquals(0.5, tracingContextInformationProvider
+				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(1)).getValue(), 0);
 	}
 
 	@Test
 	public void testIndirectlyLinked() {
-		assertEquals(0.333,
-				tracingContextInformationProvider.assessRelation(knowledgeElements.get(0), knowledgeElements.get(2)),
-				0.1);
+		assertEquals(0.333, tracingContextInformationProvider
+				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(2)).getValue(), 0.1);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.atlassian.greenhopper.web.rapid.plan.PlanningModeService;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -25,11 +26,11 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	}
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkRecommendation ls = new LinkRecommendation(baseElement, elementToTest);
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
 		ls.addToScore(isActive, getName() + " (per Sprint)");
 		this.linkSuggestions.add(ls);
-		return isActive;
+		return new RecommendationScore((float) isActive, getName() + " (per Sprint)");
 	}
 }

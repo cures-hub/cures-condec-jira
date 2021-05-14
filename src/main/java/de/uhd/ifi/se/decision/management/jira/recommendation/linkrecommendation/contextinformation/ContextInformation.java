@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -21,16 +22,16 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
-	private List<ContextInformationProvider> cips;
+	private List<ContextInformationProvider> contextInformationProviders;
 
 	public ContextInformation(KnowledgeElement element) {
 		this.element = element;
 		// Add context information providers as concrete decorators
-		this.cips = new ArrayList<>();
-		this.cips.add(new TextualSimilarityContextInformationProvider());
-		this.cips.add(new TracingContextInformationProvider());
-		this.cips.add(new TimeContextInformationProvider());
-		this.cips.add(new UserContextInformationProvider());
+		this.contextInformationProviders = new ArrayList<>();
+		this.contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
+		this.contextInformationProviders.add(new TracingContextInformationProvider());
+		this.contextInformationProviders.add(new TimeContextInformationProvider());
+		this.contextInformationProviders.add(new UserContextInformationProvider());
 		// this.cips.add(new ActiveCIP());
 	}
 
@@ -82,13 +83,15 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkRecommendation linkSuggestion = new LinkRecommendation(this.element, elementToTest);
-		for (ContextInformationProvider cip : cips) {
-			double scoreValue = cip.assessRelation(baseElement, elementToTest);
-			linkSuggestion.addToScore(scoreValue, cip.getName());
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+		RecommendationScore score = new RecommendationScore(0, getName());
+		for (ContextInformationProvider cip : contextInformationProviders) {
+			RecommendationScore scoreValue = cip.assessRelation(baseElement, elementToTest);
+			score.addSubScore(scoreValue);
 		}
+		linkSuggestion.setScore(score);
 		linkSuggestions.add(linkSuggestion);
-		return 0.0;
+		return score;
 	}
 }

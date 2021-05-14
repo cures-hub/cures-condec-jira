@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
@@ -13,10 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class UserContextInformationProvider extends ContextInformationProvider {
 
 	@Override
-	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 
-		Double score = 0.;
+		double score = 0.;
 		if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
 			score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(),
 					elementToTest.getJiraIssue().getCreator());
@@ -30,7 +31,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 		linkSuggestion.addToScore(score, getName() + " (equalCreatorOrEqualAssignee)");
 
 		linkSuggestions.add(linkSuggestion);
-		return score;
+		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
 	}
 
 	private Double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {

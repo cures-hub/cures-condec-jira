@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
 /**
  * Superclass for different context information providers to realize context
@@ -56,6 +57,6 @@ public abstract class ContextInformationProvider {
 		}
 	}
 
-	public abstract double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement);
+	public abstract RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement);
 
 }
