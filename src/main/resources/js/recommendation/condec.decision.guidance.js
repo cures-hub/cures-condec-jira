@@ -55,7 +55,7 @@
 			let tableRow = "<tr>";
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
-			tableRow += "<td>" + buildScore(recommendation.score, "score_" + counter) + "</td>";
+			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_" + counter + "' class='aui-button-primary aui-button accept-solution-button'>" + "Accept" + "</button></td>";
 			tableRow += "<td><ul>";
 			recommendation.arguments.forEach(argument => {
@@ -84,7 +84,7 @@
 			counter++;
 			let tableRow = "<tr>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></div></td>";
-			tableRow += "<td>" + buildScore(recommendation.score, "score_quick" + counter) + "</td>";
+			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_quick" + counter) + "</td>";
 			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link'>Accept</button></td>";
 			tableRow += "</tr>";
 			columns += tableRow;
@@ -120,22 +120,6 @@
 			});
 		});
 	}
-
-	function buildScore(score, ID) {
-		var scoreControl = document.getElementById("control-score-explanation");
-		scoreControl.innerText = score.value.toFixed(0) + "%";
-
-		var columns = "<tr style='background-color: #e8e8e8;'><td>" + score.explanation + "</td><td>" + score.value.toFixed(2) + "%</td></tr>";
-		score.subScores.forEach(subScore => {
-			columns += "<tr><td>" + subScore.explanation + "</td><td>" + subScore.value.toFixed(2) + "</td></tr>";
-		})
-		document.getElementById("score-explanation-table-body").innerHTML = columns;
-
-		var scoreExplanation = scoreControl.outerHTML + document.getElementById("score-explanation").outerHTML;
-		return scoreExplanation.replace(/score-explanation/g, "score-explanation-" + ID);
-	}
-	
-	ConDecDecisionGuidance.prototype.buildScore = buildScore;
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);

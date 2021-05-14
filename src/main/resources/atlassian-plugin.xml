@@ -142,6 +142,8 @@
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.nudging.api.js" location="/js/nudging/condec.nudging.api.js" />
 		<resource type="download" name="condec.prompts.js" location="/js/nudging/condec.prompts.js" />
+		<resource type="download" name="condec.recommendation.js"
+			location="/js/recommendation/condec.recommendation.js" />
 		<resource type="download" name="condec.link.recommendation.api.js"
 			location="/js/recommendation/condec.link.recommendation.api.js" />
 		<resource type="download" name="condec.link.recommendation.js"
