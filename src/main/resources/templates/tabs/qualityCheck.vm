@@ -1,9 +1,7 @@
 <div class="qualityCheckContainer">
-    <div class="field-group">
-        <label id="quality-check-issue-label"></label>
+    <div id="quality-check-issue-text">
     </div>
-    <div class="field-group">
-        <label id="quality-check-decision-label"></label>
+    <div id="quality-check-decision-text">
     </div>
 </div>
 <script>

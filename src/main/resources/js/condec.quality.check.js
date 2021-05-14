@@ -3,8 +3,9 @@
  */
 
 (function (global) {
-	var issueLabel;
-	var decisionLabel;
+	var qualityCheckTab;
+	var issueText;
+	var decisionText;
 
 	var projectKey;
 	var issueKey;
@@ -17,6 +18,10 @@
 	ConDecQualityCheck.prototype.initView = function () {
 		console.log("ConDecQualityChecking initView");
 
+		updateView();
+	};
+
+	function updateView() {
 		conDecAPI.getFilterSettings(issueKey, "", function(filterSettings) {
 			var minimumCoverage = filterSettings.minimumDecisionCoverage;
 
@@ -24,29 +29,43 @@
 				var numberOfIssues = result.Issue;
 				var numberOfDecisions = result.Decision;
 
-				updateView(numberOfIssues, numberOfDecisions, minimumCoverage);
+				qualityCheckTab = document.getElementById("menu-item-quality-check");
+				issueText = document.getElementById("quality-check-issue-text");
+				decisionText = document.getElementById("quality-check-decision-text");
+
+				updateTab(qualityCheckTab, numberOfIssues, numberOfDecisions, minimumCoverage);
+				updateText(issueText, "issues", numberOfIssues, minimumCoverage);
+				updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
 			});
 		});
-	};
-
-	function updateView(numberOfIssues, numberOfDecisions, minimumCoverage) {
-		issueLabel = document.getElementById("quality-check-issue-label");
-		decisionLabel = document.getElementById("quality-check-decision-label");
-
-		issueLabel.innerHTML = fillInLabel("issues", numberOfIssues, minimumCoverage);
-		decisionLabel.innerHTML = fillInLabel("decisions", numberOfDecisions, minimumCoverage);
 	}
 
-	function fillInLabel(type, coverage, minimum) {
-		if (coverage >= minimum) {
-			return "# " + type + ": " + coverage;
-		} else if ((coverage < minimum) && (coverage > 0)) {
-			return "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
-		} else if (coverage === 0) {
-			return "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
+	function updateTab(tab, coverageOfIssues, coverageOfDecisions, minimum) {
+		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum)) {
+			tab.style.background = "green";
+		} else if ((coverageOfIssues > 0) && (coverageOfIssues > 0)) {
+			tab.style.background = "orange";
+		} else if ((coverageOfIssues === 0) && (coverageOfIssues === 0)) {
+			tab.style.background = "red";
+		} else {
+			tab.style.background = "white";
 		}
+	}
 
-		return "";
+	function updateText(textField, type, coverage, minimum) {
+		if (coverage >= minimum) {
+			textField.textContent = "# " + type + ": " + coverage;
+			textField.style.color = "green";
+		} else if ((coverage < minimum) && (coverage > 0)) {
+			textField.textContent = "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
+			textField.style.color = "orange";
+		} else if (coverage === 0) {
+			textField.textContent = "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
+			textField.style.color = "red";
+		} else {
+			textField.textContent = "";
+			textField.style.color = "black";
+		}
 	}
 
 	global.conDecQualityCheck = new ConDecQualityCheck();
