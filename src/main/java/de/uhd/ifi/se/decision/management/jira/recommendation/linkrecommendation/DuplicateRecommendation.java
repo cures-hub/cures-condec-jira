@@ -44,7 +44,7 @@ public class DuplicateRecommendation extends LinkRecommendation {
 	}
 
 	@Override
-	public RecommendationType getSuggestionType() {
+	public RecommendationType getRecommendationType() {
 		return RecommendationType.DUPLICATE;
 	}
 

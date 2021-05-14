@@ -24,7 +24,7 @@ public class LinkRecommendation extends Link implements Recommendation {
 	}
 
 	@Override
-	public RecommendationType getSuggestionType() {
+	public RecommendationType getRecommendationType() {
 		return RecommendationType.LINK;
 	}
 

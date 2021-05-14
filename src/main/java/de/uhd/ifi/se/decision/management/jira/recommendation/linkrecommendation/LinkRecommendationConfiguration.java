@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
- * Contains the configuration details for the link suggestion and duplicate
+ * Contains the configuration details for the link recommendation and duplicate
  * recognition for one Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class LinkRecommendationConfiguration {

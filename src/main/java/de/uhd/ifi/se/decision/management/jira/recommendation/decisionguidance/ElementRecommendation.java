@@ -159,9 +159,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	}
 
 	@Override
-	public RecommendationType getSuggestionType() {
-		// TODO Auto-generated method stub
-		return null;
+	public RecommendationType getRecommendationType() {
+		return RecommendationType.EXTERNAL;
 	}
-
 }

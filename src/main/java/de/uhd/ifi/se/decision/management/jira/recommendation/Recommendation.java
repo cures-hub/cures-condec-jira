@@ -4,13 +4,25 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+
+/**
+ * Interface for a recommendation of a {@link KnowledgeElement} element or
+ * {@link Link}. Implementing classes are {@link ElementRecommendation} and
+ * {@link LinkRecommendation}, respectively. Note that we use the words
+ * recommendation and suggestion interchangeably.
+ */
 public interface Recommendation extends Comparable<Recommendation> {
 
 	/**
-	 *
-	 * @return suggestion type of suggestion
+	 * @return type of the recommendation, e.g. solution option from an
+	 *         {@link RecommendationType#EXTERNAL} {@link KnowledgeSource} or a new
+	 *         {@link RecommendationType#LINK} within the project.
 	 */
-	public abstract RecommendationType getSuggestionType();
+	public abstract RecommendationType getRecommendationType();
 
 	/**
 	 * @return score that represents the predicted relevance of a recommendation,
@@ -28,10 +40,24 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 */
 	void setScore(RecommendationScore score);
 
-	default void addToScore(double value, String field) {
-		getScore().addSubScore(new RecommendationScore((float) value, field));
+	/**
+	 * @param value
+	 *            of the score (represents the confidence that the recommendation is
+	 *            useful).
+	 * @param explanation
+	 *            on how the score was calculated.
+	 */
+	default void addToScore(double value, String explanation) {
+		getScore().addSubScore(new RecommendationScore((float) value, explanation));
 	}
 
+	/**
+	 * @param recommendations
+	 *            list of {@link Recommendation}s.
+	 * @return value of the best scored {@link Recommendation}. Used to normalize
+	 *         the {@link RecommendationScore}s of all recommendations in the range
+	 *         of [0,1].
+	 */
 	static float getMaxScoreValue(List<Recommendation> recommendations) {
 		float maxScoreValue = 0;
 		for (Recommendation recommendation : recommendations) {
@@ -42,6 +68,10 @@ public interface Recommendation extends Comparable<Recommendation> {
 		return maxScoreValue;
 	}
 
+	/**
+	 * Compares two {@link Recommendation}s based on their
+	 * {@link RecommendationScore}.
+	 */
 	default int compareTo(Recommendation o) {
 		if (o == null) {
 			return -1;
