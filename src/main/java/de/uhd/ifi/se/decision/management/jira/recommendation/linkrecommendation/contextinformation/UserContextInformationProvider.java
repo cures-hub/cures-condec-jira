@@ -4,19 +4,16 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Uses information about the author of a {@link KnowledgeElement} or about the
  * person last modifying an element for rating relations. A relation is assumed
  * if an element have been implemented or modified by the same user.
  */
-public class UserContextInformationProvider extends ContextInformationProvider {
+public class UserContextInformationProvider implements ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
-
 		double score = 0.;
 		if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
 			score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(),
@@ -28,9 +25,6 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(),
 							elementToTest.getJiraIssue().getArchivedByUser());
 		}
-		linkSuggestion.addToScore(score, getName() + " (equalCreatorOrEqualAssignee)");
-
-		linkSuggestions.add(linkSuggestion);
 		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
 	}
 

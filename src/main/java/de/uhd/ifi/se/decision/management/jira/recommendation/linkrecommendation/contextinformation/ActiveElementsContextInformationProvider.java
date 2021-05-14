@@ -8,13 +8,12 @@ import com.atlassian.greenhopper.web.rapid.plan.PlanningModeService;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Assumes that the {@link KnowledgeElement}s within the active sprint are
  * related.
  */
-public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
+public class ActiveElementsContextInformationProvider implements ContextInformationProvider {
 
 	private List<Long> activeIssueIds;
 
@@ -27,10 +26,7 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkRecommendation ls = new LinkRecommendation(baseElement, elementToTest);
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
-		ls.addToScore(isActive, getName() + " (per Sprint)");
-		this.linkSuggestions.add(ls);
 		return new RecommendationScore((float) isActive, getName() + " (per Sprint)");
 	}
 }

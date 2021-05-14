@@ -9,7 +9,6 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Uses existing tracing links between {@link KnowledgeElement}s for rating a
@@ -18,11 +17,10 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * traces to another element has a close relation to this element. (Miesbauer
  * and Weinreich, 2012)
  */
-public class TracingContextInformationProvider extends ContextInformationProvider {
+public class TracingContextInformationProvider implements ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
-		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, knowledgeElement);
 		Integer distance = search(baseElement, knowledgeElement);
 		// A null value means the nodes are not connected.
 		double value = 0.;
@@ -30,8 +28,6 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 			value = 1. / (distance + 1);
 		}
 		// Prevent a division by zero exception.
-		linkSuggestion.addToScore(value, this.getName());
-		this.linkSuggestions.add(linkSuggestion);
 		return new RecommendationScore((float) value, getName());
 	}
 

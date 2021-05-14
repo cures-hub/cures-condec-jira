@@ -1,14 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Superclass for different context information providers to realize context
+ * Interface for different context information providers to realize context
  * utility functions. For example, the {@link TimeContextInformationProvider}
  * rates relations based on time of creation or modifications of elements.
  * 
@@ -23,40 +21,31 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  *           Working IEEE/IFIP Conference on Software Architecture and European
  *           Conference on Software Architecture
  */
-public abstract class ContextInformationProvider {
-
-	protected List<Recommendation> linkSuggestions;
-
-	public ContextInformationProvider() {
-		this.linkSuggestions = new ArrayList<>();
-	}
+public interface ContextInformationProvider {
 
 	/**
-	 * @return name of the context information provider
+	 * @return name of the context information provider. Used as the explanation in
+	 *         the {@link RecommendationScore}.
 	 */
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
-
-	public List<Recommendation> getLinkSuggestions() {
-		return linkSuggestions;
+	default String getName() {
+		return getClass().getSimpleName();
 	}
 
 	/**
-	 * Calculates the relationship between one {@link KnowledgeElement} to a list of
-	 * other {@link KnowledgeElement}s. Higher values indicate a higher similarity.
-	 * The value is called Context Relationship Indicator in the paper.
+	 * Predicts the relationship between one {@link KnowledgeElement} to a second
+	 * {@link KnowledgeElement}. Higher values indicate a higher similarity. The
+	 * value is called Context Relationship Indicator in the paper by Miesbauer and
+	 * Weinreich.
 	 *
 	 * @param baseElement
-	 * @param knowledgeElements
-	 * @return value of relationship in [0, inf]
+	 *            {@link KnowledgeElement} for that new links should be recommended
+	 *            (see {@link LinkRecommendation}).
+	 * @param otherElement
+	 *            another {@link KnowledgeElement} in the {@link KnowledgeGraph}
+	 *            that is not directly linked.
+	 * @return {@link RecommendationScore} including the predicted value of
+	 *         relationship in [0, inf] and an explanation.
 	 */
-	public void assessRelations(KnowledgeElement baseElement, List<KnowledgeElement> knowledgeElements) {
-		for (KnowledgeElement elementToTest : knowledgeElements) {
-			assessRelation(baseElement, elementToTest);
-		}
-	}
-
-	public abstract RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement);
+	public abstract RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement);
 
 }

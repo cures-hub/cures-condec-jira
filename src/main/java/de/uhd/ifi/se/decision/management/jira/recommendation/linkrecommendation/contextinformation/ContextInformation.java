@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Component in decorator pattern.
  *
  */
-public class ContextInformation extends ContextInformationProvider {
+public class ContextInformation implements ContextInformationProvider {
 
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> contextInformationProviders;
@@ -46,13 +46,12 @@ public class ContextInformation extends ContextInformationProvider {
 		return linkedKnowledgeElements;
 	}
 
-	@Override
 	public List<Recommendation> getLinkSuggestions() {
 		List<KnowledgeElement> projectKnowledgeElements = KnowledgePersistenceManager
 				.getOrCreate(element.getProject().getProjectKey()).getKnowledgeElements();
 
 		projectKnowledgeElements.remove(this.element);
-		this.assessRelations(element, projectKnowledgeElements);
+		List<Recommendation> linkSuggestions = assessRelations(element, projectKnowledgeElements);
 		// calculate context score
 
 		// get filtered issues
@@ -84,14 +83,31 @@ public class ContextInformation extends ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 		RecommendationScore score = new RecommendationScore(0, getName());
-		for (ContextInformationProvider cip : contextInformationProviders) {
-			RecommendationScore scoreValue = cip.assessRelation(baseElement, elementToTest);
+		for (ContextInformationProvider contextInformationProvider : contextInformationProviders) {
+			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, elementToTest);
 			score.addSubScore(scoreValue);
 		}
-		linkSuggestion.setScore(score);
-		linkSuggestions.add(linkSuggestion);
 		return score;
+	}
+
+	/**
+	 * Calculates the relationship between one {@link KnowledgeElement} to a list of
+	 * other {@link KnowledgeElement}s. Higher values indicate a higher similarity.
+	 * The value is called Context Relationship Indicator in the paper.
+	 *
+	 * @param baseElement
+	 * @param knowledgeElements
+	 * @return value of relationship in [0, inf]
+	 */
+	public List<Recommendation> assessRelations(KnowledgeElement baseElement,
+			List<KnowledgeElement> knowledgeElements) {
+		List<Recommendation> linkRecommendations = new ArrayList<>();
+		for (KnowledgeElement elementToTest : knowledgeElements) {
+			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+			linkSuggestion.setScore(assessRelation(baseElement, elementToTest));
+			linkRecommendations.add(linkSuggestion);
+		}
+		return linkRecommendations;
 	}
 }
