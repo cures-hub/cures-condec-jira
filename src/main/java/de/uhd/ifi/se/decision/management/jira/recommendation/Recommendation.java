@@ -4,15 +4,13 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
-
 public interface Recommendation extends Comparable<Recommendation> {
 
 	/**
 	 *
 	 * @return suggestion type of suggestion
 	 */
-	public abstract SuggestionType getSuggestionType();
+	public abstract RecommendationType getSuggestionType();
 
 	/**
 	 * @return score that represents the predicted relevance of a recommendation,

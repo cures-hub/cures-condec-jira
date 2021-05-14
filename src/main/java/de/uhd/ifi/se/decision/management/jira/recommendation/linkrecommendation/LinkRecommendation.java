@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions;
+package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -6,13 +6,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 
-public class LinkSuggestion extends Link implements Recommendation {
+public class LinkRecommendation extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;
 	private RecommendationScore score;
 
-	public LinkSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement) {
+	public LinkRecommendation(KnowledgeElement baseElement, KnowledgeElement targetElement) {
 		super(baseElement, targetElement);
 		score = new RecommendationScore(0, "");
 	}
@@ -23,8 +24,8 @@ public class LinkSuggestion extends Link implements Recommendation {
 	}
 
 	@Override
-	public SuggestionType getSuggestionType() {
-		return SuggestionType.LINK;
+	public RecommendationType getSuggestionType() {
+		return RecommendationType.LINK;
 	}
 
 	@Override

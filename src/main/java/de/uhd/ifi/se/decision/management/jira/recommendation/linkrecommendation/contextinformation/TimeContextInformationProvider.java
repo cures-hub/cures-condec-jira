@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Rates relations based on time of creation or modifications of elements.
@@ -14,7 +14,7 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 		double differenceInWeeks = (baseElement.getCreationDate().getTime() - elementToTest.getCreationDate().getTime())
 				/ (1000 * 60 * 60 * 24. * 7.);
 		double score = (1. / (Math.abs(differenceInWeeks) + 1.));

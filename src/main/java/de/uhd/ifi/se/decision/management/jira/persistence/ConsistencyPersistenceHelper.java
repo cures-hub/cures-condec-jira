@@ -5,7 +5,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import net.java.ao.Query;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class ConsistencyPersistenceHelper {
 		if (baseElement == null || baseElement.getProject() == null){
 			return new ArrayList<>();
 		}
-		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, SuggestionType.LINK);
+		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, RecommendationType.LINK);
 	}
 
 
@@ -40,7 +40,7 @@ public class ConsistencyPersistenceHelper {
 		if (origin == null || discarded == null) {
 			return -1;
 		}
-		return addDiscardedSuggestions(origin, discarded, SuggestionType.LINK);
+		return addDiscardedSuggestions(origin, discarded, RecommendationType.LINK);
 	}
 
 
@@ -53,18 +53,18 @@ public class ConsistencyPersistenceHelper {
 		if (base == null || base.getProject() == null){
 			return new ArrayList<>();
 		}
-		return getDiscardedSuggestions(base, SuggestionType.DUPLICATE);
+		return getDiscardedSuggestions(base, RecommendationType.DUPLICATE);
 	}
 
 	public static long addDiscardedDuplicate(KnowledgeElement origin, KnowledgeElement target) {
-		return addDiscardedSuggestions(origin, target, SuggestionType.DUPLICATE);
+		return addDiscardedSuggestions(origin, target, RecommendationType.DUPLICATE);
 	}
 
 	//------------------
 	// General Suggestion
 	//------------------
 
-	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement origin, SuggestionType type) {
+	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement origin, RecommendationType type) {
 		List<KnowledgeElement> discardedSuggestions = new ArrayList<>();
 		Optional<DiscardedSuggestionInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), type)));
@@ -76,14 +76,14 @@ public class ConsistencyPersistenceHelper {
 		return discardedSuggestions;
 	}
 
-	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement origin, KnowledgeElement target, SuggestionType type) {
+	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement origin, KnowledgeElement target, RecommendationType type) {
 		DiscardedSuggestionInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), target.getId(), type));
 
 		return discardedLinkSuggestions;
 	}
 
-	public static long addDiscardedSuggestions(KnowledgeElement origin, KnowledgeElement discardedElement, SuggestionType type) {
+	public static long addDiscardedSuggestions(KnowledgeElement origin, KnowledgeElement discardedElement, RecommendationType type) {
 		long id;
 		//null checks
 		if (origin == null || origin.getProject() == null|| discardedElement == null || type == null) {

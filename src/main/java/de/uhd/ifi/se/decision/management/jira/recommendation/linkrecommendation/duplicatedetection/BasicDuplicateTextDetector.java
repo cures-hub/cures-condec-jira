@@ -6,7 +6,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
 public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 
@@ -29,11 +29,11 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 	}
 
 	@Override
-	public List<DuplicateSuggestion> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement)
+	public List<DuplicateRecommendation> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement)
 			throws Exception {
 		String s1 = baseElement.getDescription();
 		String s2 = compareElement.getDescription();
-		List<DuplicateSuggestion> duplicateList = new ArrayList<>();
+		List<DuplicateRecommendation> duplicateList = new ArrayList<>();
 		if (s1 != null && s2 != null) {
 			s1 = cleanMarkdown(s1);
 			s2 = cleanMarkdown(s2);
@@ -60,7 +60,7 @@ public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
 				if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
 					// sequenceToCheck.remove(sequenceToCheck.size()-1);
 					String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
-					duplicateList.add(new DuplicateSuggestion(baseElement, compareElement, preprocessedDuplicateSummary,
+					duplicateList.add(new DuplicateRecommendation(baseElement, compareElement, preprocessedDuplicateSummary,
 							0, preprocessedDuplicateSummary.length(),
 							// calculateScore(sequenceToCheck, sequenceToCheckAgainst),
 							fieldUsedForDetection));

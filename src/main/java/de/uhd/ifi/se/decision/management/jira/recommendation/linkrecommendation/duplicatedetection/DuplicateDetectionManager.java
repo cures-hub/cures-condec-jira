@@ -19,14 +19,14 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
 public class DuplicateDetectionManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DuplicateDetectionManager.class);
 
 	private KnowledgeElement knowledgeElement;
 
-	private volatile List<DuplicateSuggestion> foundDuplicateSuggestions;
+	private volatile List<DuplicateRecommendation> foundDuplicateSuggestions;
 
 	private int fragmentLength;
 
@@ -57,7 +57,7 @@ public class DuplicateDetectionManager {
 		this.fragmentLength = fragmentLength;
 	}
 
-	public List<DuplicateSuggestion> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
+	public List<DuplicateRecommendation> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
 
 		foundDuplicateSuggestions = new ArrayList<>();
 
@@ -78,9 +78,9 @@ public class DuplicateDetectionManager {
 			foundDuplicateSuggestions = elementsToCheck.parallelStream().map((element) -> {
 				// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
 				// " + element.getKey());
-				DuplicateSuggestion mostLikelyDuplicate = null;
+				DuplicateRecommendation mostLikelyDuplicate = null;
 				try {
-					List<DuplicateSuggestion> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(
+					List<DuplicateRecommendation> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(
 							this.fragmentLength).detectDuplicates(this.knowledgeElement, element);
 					mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 				} catch (Exception e) {
@@ -113,12 +113,12 @@ public class DuplicateDetectionManager {
 		return this.knowledgeElement;
 	}
 
-	private DuplicateSuggestion findLongestDuplicate(List<DuplicateSuggestion> foundDuplicateFragmentsForIssue) {
-		DuplicateSuggestion mostLikelyDuplicate = null;
+	private DuplicateRecommendation findLongestDuplicate(List<DuplicateRecommendation> foundDuplicateFragmentsForIssue) {
+		DuplicateRecommendation mostLikelyDuplicate = null;
 
 		// if (foundDuplicateFragmentsForIssue != null &&
 		// foundDuplicateFragmentsForIssue.size() > 0) {
-		for (DuplicateSuggestion fragment : foundDuplicateFragmentsForIssue) {
+		for (DuplicateRecommendation fragment : foundDuplicateFragmentsForIssue) {
 			if (mostLikelyDuplicate == null || fragment.getLength() > mostLikelyDuplicate.getLength()) {
 				mostLikelyDuplicate = fragment;
 			}

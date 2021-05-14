@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestCipCalculation extends TestSetUp {
@@ -47,7 +47,7 @@ public class TestCipCalculation extends TestSetUp {
 		Collection<Recommendation> linkSuggestions = contextInformation.getLinkSuggestions();
 		List<Recommendation> sortedLinkSuggestions = linkSuggestions.stream().sorted((Recommendation::compareTo))
 				.collect(Collectors.toList());
-		LinkSuggestion identicalIssueSuggestion = (LinkSuggestion) sortedLinkSuggestions
+		LinkRecommendation identicalIssueSuggestion = (LinkRecommendation) sortedLinkSuggestions
 				.get(sortedLinkSuggestions.size() - 1);
 
 		// The baseElement should not be most similar to itself, as it is filtered out!
@@ -61,13 +61,13 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testLinkSuggestion() {
-		LinkSuggestion linkSuggestion1 = new LinkSuggestion(new KnowledgeElement(testIssues.get(0)),
+		LinkRecommendation linkSuggestion1 = new LinkRecommendation(new KnowledgeElement(testIssues.get(0)),
 				new KnowledgeElement(testIssues.get(1)));
 
 		linkSuggestion1.addToScore(0.5, "test");
 		assertEquals(-1, linkSuggestion1.compareTo(null));
 
-		LinkSuggestion linkSuggestion2 = new LinkSuggestion(new KnowledgeElement(testIssues.get(0)),
+		LinkRecommendation linkSuggestion2 = new LinkRecommendation(new KnowledgeElement(testIssues.get(0)),
 				new KnowledgeElement(testIssues.get(1)));
 		linkSuggestion2.addToScore(0.5, "test");
 		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));

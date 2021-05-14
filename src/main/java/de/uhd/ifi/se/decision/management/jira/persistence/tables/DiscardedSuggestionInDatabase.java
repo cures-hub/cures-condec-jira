@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -38,9 +38,9 @@ public interface DiscardedSuggestionInDatabase extends RawEntity<Long> {
 
 	void setDiscElDocumentationLocation(String locationIdentifier);
 
-	SuggestionType getType();
+	RecommendationType getType();
 
-	void setType(SuggestionType type);
+	void setType(RecommendationType type);
 
 	static boolean deleteDiscardedDuplicate(DiscardedSuggestionInDatabase elementToDelete) {
 		try {

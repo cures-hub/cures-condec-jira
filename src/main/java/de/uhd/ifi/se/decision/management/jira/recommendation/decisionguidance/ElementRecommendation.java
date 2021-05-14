@@ -14,9 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 /**
  * Models a recommendation of a solution option for a decision problem. The
@@ -159,7 +159,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	}
 
 	@Override
-	public SuggestionType getSuggestionType() {
+	public RecommendationType getSuggestionType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

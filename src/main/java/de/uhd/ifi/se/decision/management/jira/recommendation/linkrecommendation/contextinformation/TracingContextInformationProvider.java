@@ -8,7 +8,7 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Uses existing tracing links between {@link KnowledgeElement}s for rating a
@@ -21,7 +21,7 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
-		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, knowledgeElement);
+		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, knowledgeElement);
 		Integer distance = search(baseElement, knowledgeElement);
 		// A null value means the nodes are not connected.
 		Double value = 0.;

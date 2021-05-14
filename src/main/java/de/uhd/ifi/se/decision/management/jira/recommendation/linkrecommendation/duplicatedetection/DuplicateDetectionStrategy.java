@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface DuplicateDetectionStrategy {
 	 * @return List of all found duplicate text fragments in i2 of i1
 	 * @throws Exception
 	 */
-	List<DuplicateSuggestion> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception;
+	List<DuplicateRecommendation> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement) throws Exception;
 
 }
 

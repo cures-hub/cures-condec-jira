@@ -26,12 +26,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHel
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.SuggestionType;
 
 /**
  * REST resource for link suggestion and duplicate recognition (including its
@@ -62,7 +62,7 @@ public class LinkSuggestionRest {
 			@QueryParam("originElementLocation") String originLocation, @QueryParam("targetElementId") Long targetId,
 			@QueryParam("targetElementLocation") String targetLocation) {
 		return this.discardSuggestion(projectKey, originId, originLocation, targetId, targetLocation,
-				SuggestionType.LINK);
+				RecommendationType.LINK);
 
 	}
 
@@ -91,7 +91,7 @@ public class LinkSuggestionRest {
 				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 
 				// detect duplicates
-				List<DuplicateSuggestion> foundDuplicateSuggestions = manager
+				List<DuplicateRecommendation> foundDuplicateSuggestions = manager
 						.findAllDuplicates(persistenceManager.getKnowledgeElements());
 
 				response = Response.ok(foundDuplicateSuggestions).build();
@@ -113,7 +113,7 @@ public class LinkSuggestionRest {
 			@QueryParam("targetElementId") Long targetIssueId,
 			@QueryParam("targetElementLocation") String targetLocation) {
 		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation,
-				SuggestionType.DUPLICATE);
+				RecommendationType.DUPLICATE);
 
 	}
 
@@ -165,7 +165,7 @@ public class LinkSuggestionRest {
 	}
 
 	private Response discardSuggestion(String projectKey, Long originIssueId, String originLocation, Long targetIssueId,
-			String targetLocation, SuggestionType type) {
+			String targetLocation, RecommendationType type) {
 		Response response;
 		// check if issue keys exist
 		try {

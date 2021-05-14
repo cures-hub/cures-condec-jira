@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Uses information about the author of a {@link KnowledgeElement} or about the
@@ -14,7 +14,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 
 		Double score = 0.;
 		if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {

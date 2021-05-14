@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Component in decorator pattern.
@@ -83,7 +83,7 @@ public class ContextInformation extends ContextInformationProvider {
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkSuggestion linkSuggestion = new LinkSuggestion(this.element, elementToTest);
+		LinkRecommendation linkSuggestion = new LinkRecommendation(this.element, elementToTest);
 		for (ContextInformationProvider cip : cips) {
 			double scoreValue = cip.assessRelation(baseElement, elementToTest);
 			linkSuggestion.addToScore(scoreValue, cip.getName());

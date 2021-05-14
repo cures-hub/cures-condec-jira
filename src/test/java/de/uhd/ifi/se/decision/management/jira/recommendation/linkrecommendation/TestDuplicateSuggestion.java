@@ -12,7 +12,6 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.DuplicateSuggestion;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
@@ -35,7 +34,7 @@ public class TestDuplicateSuggestion extends TestSetUp {
 		String text = "Hello world!";
 		int start = 0;
 		int length = 5;
-		DuplicateSuggestion duplicateSuggestion = new DuplicateSuggestion(new KnowledgeElement(i1),
+		DuplicateRecommendation duplicateSuggestion = new DuplicateRecommendation(new KnowledgeElement(i1),
 				new KnowledgeElement(i2), text, start, length, field);
 
 		assertEquals(i1.getId().longValue(), duplicateSuggestion.getSource().getId());

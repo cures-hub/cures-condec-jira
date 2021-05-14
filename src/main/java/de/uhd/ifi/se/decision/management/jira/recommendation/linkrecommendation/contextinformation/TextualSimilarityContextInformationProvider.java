@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions.LinkSuggestion;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
  * Rates relations comparing textual information of {@link KnowledgeElement}s.
@@ -14,7 +14,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	@Override
 	public double assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		LinkSuggestion linkSuggestion = new LinkSuggestion(baseElement, elementToTest);
+		LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 		double similarity = calculateSimilarity(baseElement.getDescription(), elementToTest.getDescription());
 		linkSuggestion.addToScore(similarity, getName() + " (Jaccard)");
 		this.linkSuggestions.add(linkSuggestion);

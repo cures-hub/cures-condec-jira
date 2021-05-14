@@ -1,13 +1,12 @@
-package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.suggestions;
+package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 
-public class DuplicateSuggestion extends Link implements Recommendation {
+public class DuplicateRecommendation extends LinkRecommendation {
 
 	private static final long serialVersionUID = 1L;
 	@JsonProperty
@@ -19,7 +18,7 @@ public class DuplicateSuggestion extends Link implements Recommendation {
 	@JsonProperty
 	private final String field;
 
-	public DuplicateSuggestion(KnowledgeElement baseElement, KnowledgeElement targetElement, String preprocessedSummary,
+	public DuplicateRecommendation(KnowledgeElement baseElement, KnowledgeElement targetElement, String preprocessedSummary,
 			int startDuplicate, int length, String field) {
 		super(baseElement, targetElement);
 		this.startDuplicate = startDuplicate;
@@ -45,8 +44,8 @@ public class DuplicateSuggestion extends Link implements Recommendation {
 	}
 
 	@Override
-	public SuggestionType getSuggestionType() {
-		return SuggestionType.DUPLICATE;
+	public RecommendationType getSuggestionType() {
+		return RecommendationType.DUPLICATE;
 	}
 
 	@Override
