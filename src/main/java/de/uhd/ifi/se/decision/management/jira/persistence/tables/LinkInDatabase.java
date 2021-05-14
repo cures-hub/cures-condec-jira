@@ -17,7 +17,8 @@ import net.java.ao.schema.Table;
  * @see Link
  */
 @Table("CondecLink")
-public interface LinkInDatabase extends RawEntity<Integer> {
+public interface LinkInDatabase extends RawEntity<Long> {
+
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
