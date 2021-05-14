@@ -48,36 +48,31 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
-		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
+		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 	}
 
 	@Test
 	public void testDifferentUser() {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
+		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
-		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
+		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
+		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 		contextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(null);
 		i2.setCreatorId(null);
 		i2.setReporter(null);
-		contextInformationProvider.assessRelation(element, new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
-
-		contextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2));
-		assertEquals(1., contextInformationProvider.getLinkSuggestions().get(0).getScore().getValue(), 0);
+		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		assertEquals(1.,
+				contextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2)).getValue(),
+				0);
 	}
 }

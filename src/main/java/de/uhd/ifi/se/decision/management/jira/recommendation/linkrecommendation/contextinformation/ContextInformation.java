@@ -82,10 +82,10 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	@Override
-	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore(0, getName());
 		for (ContextInformationProvider contextInformationProvider : contextInformationProviders) {
-			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, elementToTest);
+			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
 			score.addSubScore(scoreValue);
 		}
 		return score;
