@@ -1,5 +1,7 @@
 /**
- * This module implements the solution option recommendation for decision problems.
+ * This module implements the solution option recommendation for decision problems (=decision guidance).
+ * The recommended solution options are taken from external knowledge sources, such as 
+ * other Jira projects or DBPedia.
  */
 (function(global) {
 

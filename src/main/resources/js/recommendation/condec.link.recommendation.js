@@ -3,12 +3,12 @@
  */
 (function(global) {
 
-	let ConDecLinkSuggestion = function() {
+	let ConDecLinkRecommendation = function() {
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentSuggestions = [];
 	};
 
-	ConDecLinkSuggestion.prototype.init = function() {
+	ConDecLinkRecommendation.prototype.init = function() {
 		this.issueId = JIRA.Issue.getIssueId();
 
 		// Duplicates
@@ -19,11 +19,14 @@
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
+		
+		this.loadData();
+		this.loadDuplicateData();
 	}
 
-	ConDecLinkSuggestion.prototype.discardDuplicate = function(index) {
+	ConDecLinkRecommendation.prototype.discardDuplicate = function(index) {
 		let suggestionElement = this.currentSuggestions[index].target;
-		conDecLinkSuggestionAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		ConDecLinkRecommendationAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadDuplicateData();
@@ -31,10 +34,10 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConDecLinkSuggestion.prototype.discardSuggestion = function(index) {
+	ConDecLinkRecommendation.prototype.discardSuggestion = function(index) {
 		let suggestionElement = this.currentSuggestions[index].target;
 
-		conDecLinkSuggestionAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		ConDecLinkRecommendationAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
 			.then((data) => {
 				displaySuccessMessage("Discarded suggestion sucessfully!");
 				this.loadData();
@@ -42,7 +45,7 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConDecLinkSuggestion.prototype.markAsDuplicate = function(index) {
+	ConDecLinkRecommendation.prototype.markAsDuplicate = function(index) {
 		let duplicateElement = this.currentSuggestions[index].target;
 
 		let self = this;
@@ -52,7 +55,7 @@
 	//-----------------------------------------
 	//			Generate table (Related)
 	//-----------------------------------------
-	ConDecLinkSuggestion.prototype.displayRelatedElements = function(relatedElements) {
+	ConDecLinkRecommendation.prototype.displayRelatedElements = function(relatedElements) {
 		if (relatedElements.length === 0) {
 			//reset table content to empty
 			this.resultsTableContentElement.innerHTML = "<i>No related knowledge elements found!</i>";
@@ -92,18 +95,18 @@
 	};
 
 	let generateOptionButtons = function(suggestionIndex) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecLinkSuggestion.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkSuggestion.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
-	ConDecLinkSuggestion.prototype.showDialog = function(index) {
+	ConDecLinkRecommendation.prototype.showDialog = function(index) {
 		let target = this.currentSuggestions[index].target;
 		console.dir(target);
 		let self = this;
 		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
 	}
 
-	ConDecLinkSuggestion.prototype.processRelatedIssuesResponse = function(relatedIssues) {
+	ConDecLinkRecommendation.prototype.processRelatedIssuesResponse = function(relatedIssues) {
 		return relatedIssues.map(suggestion => {
 			return suggestion;
 		}).sort((a, b) => b.score.value - a.score.value);
@@ -112,7 +115,7 @@
 	//-----------------------------------------
 	//            Generate table (Duplicates)
 	//-----------------------------------------
-	ConDecLinkSuggestion.prototype.displayDuplicateIssues = function(duplicates) {
+	ConDecLinkRecommendation.prototype.displayDuplicateIssues = function(duplicates) {
 		if (duplicates.length === 0) {
 			//reset table content to empty
 			this.duplicateResultsTableContentElement.innerHTML = "<i>No duplicates found!</i>";
@@ -153,8 +156,8 @@
 	};
 
 	let generateDuplicateOptionButtons = function(index) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecLinkSuggestion.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkSuggestion.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
+		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardDuplicate(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard suggestion </button>`;
 	};
 
 	let processDuplicateIssuesResponse = function(duplicates) {
@@ -164,18 +167,18 @@
 	//-----------------------------------------
 	// Load data and call display logic.
 	//-----------------------------------------
-	ConDecLinkSuggestion.prototype.loadDuplicateData = function() {
+	ConDecLinkRecommendation.prototype.loadDuplicateData = function() {
 		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
 
-		conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
+		conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i")
 			.then((duplicates) => this.displayDuplicateIssues(processDuplicateIssuesResponse(duplicates)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
 	}
 
-	ConDecLinkSuggestion.prototype.loadData = function() {
+	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
-		conDecLinkSuggestionAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
+		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i')
 			.then((relatedIssues) => this.displayRelatedElements(this.processRelatedIssuesResponse(relatedIssues)))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
@@ -204,5 +207,5 @@
 		table.style.visibility = "visible";
 	}
 
-	global.conDecLinkSuggestion = new ConDecLinkSuggestion();
+	global.conDecLinkRecommendation = new ConDecLinkRecommendation();
 })(window);

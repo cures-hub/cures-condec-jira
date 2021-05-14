@@ -16,6 +16,6 @@
 <script>
 	$("#save-min-length-duplicate-btn").click(event => {
 		event.preventDefault();
-		conDecLinkSuggestionAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
+		conDecLinkRecommendationAPI.setMinimumDuplicateLength("$projectKey", $("#min-length-duplicate").val());
     })
 </script>
