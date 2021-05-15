@@ -75,14 +75,14 @@ public class DefinitionOfDoneCheckingRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCoverageOfJiraIssue(@Context HttpServletRequest request,
-	   		@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String jiraIssueKey) {
-		if (request == null || projectKey == null || jiraIssueKey == null) {
+	   		@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+		if (request == null || projectKey == null || issueKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "Quality check could not be performed due to a bad request."))
 				.build();
 		}
 
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement(jiraIssue);
 
