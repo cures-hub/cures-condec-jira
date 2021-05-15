@@ -5,9 +5,9 @@ The text classifier consists of a binary and a fine-grained classifier.
 
 ## Ground Truth Data
 Ground truth data is needed to train and evaluate the text classifier.
-ConDec installs two default training files: [one rather small one](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/classifier/defaultTrainingData.csv) and one with the data used for the NLP4RE'21 workshop.
+ConDec installs two default training files: [one rather small one](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/classifier/defaultTrainingData.csv) and one with the data used for the NLP4RE'21 paper.
 
-To reproduce the results from the **NLP4RE'21 workshop** do the following steps:
+To reproduce the results from the [**NLP4RE'21 paper**](http://ceur-ws.org/Vol-2857/nlp4re1.pdf) do the following steps:
 - Install the [version 2.3.2](https://github.com/cures-hub/cures-condec-jira/releases/tag/v2.3.2) of the ConDec Jira plug-in and activate the plug-in for a Jira project.
 - Navigate to the text classification settings page (see section below).
 - Choose the training file [CONDEC-NLP4RE2021.csv](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/resources/classifier/CONDEC-NLP4RE2021.csv).

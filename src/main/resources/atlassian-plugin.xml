@@ -151,6 +151,8 @@
 			location="/js/decisionguidance/condec.decision.guidance.api.js" />
 		<resource type="download" name="condec.decision.guidance.js"
 			location="/js/decisionguidance/condec.decision.guidance.js" />
+		<resource type="download" name="condec.text.classification.api.js"
+			location="/js/classification/condec.text.classification.api.js" />
 	</web-resource>
 
 	<web-resource key="release-notes-resources" name="ConDec Release Notes Page Resources">
@@ -525,7 +527,8 @@
 		<context>jira.edit.issue</context>
 		<context>jira.create.issue</context>
 		<context>gh-rapid</context>
-		<resource type="download" name="js/toolbar-init.js" location="js/condec.text.editor.extension.js" />
+		<resource type="download" name="js/toolbar-init.js"
+			location="js/classification/condec.text.editor.extension.js" />
 	</web-resource>
 
 	<web-resource key="dashboard-item-condec-resources" name="ConDec Dashboard Web Resources">

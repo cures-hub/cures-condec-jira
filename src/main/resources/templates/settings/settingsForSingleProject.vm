@@ -20,7 +20,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 #if( $category == "rationaleModel" )
 	#parse("templates/settings/rationaleModelSettings.vm")
 #elseif( $category == "classification" )
-	#parse("templates/settings/classificationSettings.vm")
+	#parse("templates/settings/classification/textClassification.vm")
 #elseif( $category == "git" )
 	#parse("templates/settings/gitSettings.vm")
 #elseif( $category == "webhook" )

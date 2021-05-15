@@ -1,0 +1,29 @@
+<div class="field-group">
+    <label for="saveTrainingFile-button">Create a Training File</label>
+    <input type="button" class="aui-button" id="saveTrainingFile-button" value="Create Training File"/>
+    <div class="description">Creates a training file (in csv format) of <b>manually approved</b> (i.e. human-validated) text data
+        for the current project that can be used to train the classifier.
+        This file is saved in the Jira home directory in data/condec-plugin/classifier. 
+        You can download it from there. The file name consists of the project-key and the current data and time. 
+        If you want to train the classifier with this file you need to reload this page to access the file.
+    </div>
+</div>
+
+<script>
+    const saveTrainingFileButton = document.getElementById("saveTrainingFile-button");
+    saveTrainingFileButton.addEventListener("click", function () {
+        conDecTextClassificationAPI.saveTrainingFile("$projectKey", saveToFile("classifierTrainingData.csv"));
+    });
+    
+    saveToFile = function (name) {
+        return function (content) {
+            let link = document.createElement("a");
+            link.style.display = "none";
+            link.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(content));
+            link.setAttribute("download", name);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+</script>
