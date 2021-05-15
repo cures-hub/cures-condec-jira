@@ -902,21 +902,33 @@
 		generalApi.getJSON(this.restPrefix + "/config/getCiaSettings.json?projectKey=" + projectKey, callback);
 	};
 
+	/*
+	 * external references: condec.context.menu
+	 */
+	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
+		let newTab = window.open();
+		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
+			newTab.location.href = decisionKnowledgeElement.url;
+		});
+	};
+
 	function getIssueKey() {
-		var issueKey = null;
-		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
+		var issueKey;
+		try {
 			issueKey = JIRA.Issue.getIssueKey();
+		} catch (error) {
+			// console.log(error);
 		}
-		if (issueKey === undefined || !issueKey) {
-			// console.log("conDecAPI could not getIssueKey using object
-			// JIRA!");
-			if (AJS && AJS.Meta && AJS.Meta.get) {
+		if (issueKey === undefined) {
+			// console.log("conDecAPI could not getIssueKey using object JIRA!");
+			try {
 				issueKey = AJS.Meta.get("issue-key");
+			} catch (error) {
+				// console.log(error);
 			}
 		}
-		if (issueKey === undefined || !issueKey) {
-			// console.log("conDecAPI could not getIssueKey using object
-			// AJS!");
+		if (issueKey === undefined) {
+			// console.log("conDecAPI could not getIssueKey using object AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
@@ -930,18 +942,9 @@
 	}
 
 	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
-		let newTab = window.open();
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
-			newTab.location.href = decisionKnowledgeElement.url;
-		});
-	};
-
-	/*
 	 * external references: condec.export,
-	 * condec.gitdiffviewer, relatedIssuesTab.vm
+	 * condec.gitdiffviewer, condec.quality.check
+	 * relatedIssuesTab.vm
 	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
@@ -965,7 +968,8 @@
 	}
 
 	/*
-	 * external references: relatedIssuesTab.vm
+	 * external references: condec.quality.check,
+	 * relatedIssuesTab.vm
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;
 
