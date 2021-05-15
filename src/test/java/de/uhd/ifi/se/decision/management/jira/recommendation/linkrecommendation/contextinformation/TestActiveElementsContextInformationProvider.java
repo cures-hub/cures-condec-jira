@@ -20,7 +20,7 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testAssessRelation() {
+	public void testAssessRelationWithoutSprint() {
 		RecommendationScore score = activeElementsContextInformationProvider
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.0, score.getValue(), 0);

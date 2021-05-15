@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
@@ -14,25 +15,20 @@ public class UserContextInformationProvider implements ContextInformationProvide
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		double score = 0.;
-		if (baseElement.getJiraIssue() != null && elementToTest.getJiraIssue() != null) {
-			score = this.isApplicationUserEqual(baseElement.getJiraIssue().getCreator(),
-					elementToTest.getJiraIssue().getCreator());
-			score += this.isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(),
-					elementToTest.getJiraIssue().getAssignee())
-					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getReporter(),
-							elementToTest.getJiraIssue().getReporter())
-					+ this.isApplicationUserEqual(baseElement.getJiraIssue().getArchivedByUser(),
-							elementToTest.getJiraIssue().getArchivedByUser());
+		double score = isApplicationUserEqual(baseElement.getCreator(), elementToTest.getCreator());
+		if (baseElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			score += isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(),
+					elementToTest.getJiraIssue().getAssignee());
+			score += isApplicationUserEqual(baseElement.getJiraIssue().getReporter(),
+					elementToTest.getJiraIssue().getReporter());
 		}
 		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
 	}
 
-	private Double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
-		int isUserEqual = 0;
-		if (user1 != null && user1.equals(user2)) { // || (user1 == null && user2 == null)) {
-			isUserEqual = 1;
+	public static double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
+		if (user1 != null && user1.equals(user2)) {
+			return 0.3;
 		}
-		return Double.valueOf(isUserEqual);
+		return 0;
 	}
 }
