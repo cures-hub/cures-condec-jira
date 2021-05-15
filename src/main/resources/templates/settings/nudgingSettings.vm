@@ -4,7 +4,7 @@ to document decision knowledge and to use the documentation.
 
 <h2>Just-in-time prompts</h2>
 <form class="aui">
-    #parse("templates/settings/linksuggestion/promptEventSettings.vm")
+    #parse("templates/settings/linkrecommendation/promptEventSettings.vm")
     #parse("templates/settings/definitionofdone/promptEventSettings.vm")
 </form>
 

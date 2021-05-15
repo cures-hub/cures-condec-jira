@@ -17,30 +17,26 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestCipCalculation extends TestSetUp {
+public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 
 	private static List<Issue> testIssues;
+	private TextualSimilarityContextInformationProvider textualSimilarityContextInformationProvider;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
 		testIssues = JiraIssues.getTestJiraIssues();
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration("TEST");
-		linkSuggestionConfiguration.setMinProbability(0);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
+		textualSimilarityContextInformationProvider = new TextualSimilarityContextInformationProvider();
 	}
 
 	@Test
 	public void testCIP() {
-		Issue baseIssue = TestCipCalculation.testIssues.get(0);
+		Issue baseIssue = TestTextualSimilarityContextInformationProvider.testIssues.get(0);
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
 				DocumentationLocation.JIRAISSUE);
@@ -77,5 +73,12 @@ public class TestCipCalculation extends TestSetUp {
 
 		linkSuggestion1.addToScore(1., "test1");
 		assertEquals(1, linkSuggestion1.compareTo(linkSuggestion2));
+	}
+
+	@Test
+	public void testTextSimilarity() {
+		assertEquals(0.96, textualSimilarityContextInformationProvider.calculateSimilarity("MySQL", "MySQL@en"), 0.1);
+		assertEquals(1.0, textualSimilarityContextInformationProvider
+				.calculateSimilarity("How can we implement the feature?", "How to implement the feature?"), 0.0);
 	}
 }

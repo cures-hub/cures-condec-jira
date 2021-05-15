@@ -278,6 +278,16 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return elements;
 	}
 
+	public List<KnowledgeElement> getUnlinkedElementsAndNotInSameJiraIssue(KnowledgeElement element) {
+		List<KnowledgeElement> unlinkedElements = getUnlinkedElements(element);
+		unlinkedElements
+				.removeAll(unlinkedElements.stream()
+						.filter(unlinkedElement -> unlinkedElement.getJiraIssue() != null
+								&& unlinkedElement.getJiraIssue().equals(element.getJiraIssue()))
+						.collect(Collectors.toList()));
+		return unlinkedElements;
+	}
+
 	/**
 	 * @return list of all {@link KnowledgeElement}s for a project with a certain
 	 *         {@link KnowledgeType}.

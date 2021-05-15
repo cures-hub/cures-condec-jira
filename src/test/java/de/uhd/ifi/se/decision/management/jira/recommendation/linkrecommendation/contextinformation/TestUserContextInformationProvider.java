@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 public class TestUserContextInformationProvider extends TestSetUp {
 
 	private List<Issue> testIssues;
-	private ContextInformationProvider contextInformationProvider;
+	private ContextInformationProvider userContextInformationProvider;
 	private KnowledgeElement element;
 
 	@Before
@@ -40,7 +40,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		linkSuggestionConfiguration.setMinProbability(0);
 		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 
-		contextInformationProvider = new UserContextInformationProvider();
+		userContextInformationProvider = new UserContextInformationProvider();
 	}
 
 	@Test
@@ -48,31 +48,31 @@ public class TestUserContextInformationProvider extends TestSetUp {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setCreatorId(JiraUsers.SYS_ADMIN.createApplicationUser().getKey());
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
-		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		assertEquals(1., userContextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 	}
 
 	@Test
 	public void testDifferentUser() {
 		MockIssue i2 = (MockIssue) testIssues.get(1);
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
-		contextInformationProvider = new UserContextInformationProvider();
+		assertEquals(1., userContextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		userContextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("TESTUSER"));
 		i2.setCreatorId(JiraUsers.BLACK_HEAD.createApplicationUser().getKey());
-		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
-		contextInformationProvider = new UserContextInformationProvider();
+		assertEquals(1., userContextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		userContextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(new MockApplicationUser("NOT_TESTUSER"));
-		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
-		contextInformationProvider = new UserContextInformationProvider();
+		assertEquals(1., userContextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		userContextInformationProvider = new UserContextInformationProvider();
 
 		i2.setAssignee(null);
 		i2.setCreatorId(null);
 		i2.setReporter(null);
-		assertEquals(1., contextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
+		assertEquals(1., userContextInformationProvider.assessRelation(element, new KnowledgeElement(i2)).getValue(), 0);
 		assertEquals(0.,
-				contextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2)).getValue(),
+				userContextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement(i2)).getValue(),
 				0);
 	}
 }

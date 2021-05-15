@@ -76,7 +76,7 @@
 		let row = document.createElement("tr");
 		row.appendChild(generateTableCell(`<a href="${suggestion.target.url}">${suggestion.target.type}</a>`, "th-key"));
 		row.appendChild(generateTableCell(suggestion.target.summary, "th-name", {}));
-		let scoreCell = (generateTableCell(conDecRecommendation.buildScore(suggestion.score, "score_" + index), "th-score", ""));
+		let scoreCell = (generateTableCell(conDecRecommendation.buildScore(suggestion.score, "link_score_" + index), "th-score", ""));
 		row.appendChild(scoreCell);
 
 		row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));

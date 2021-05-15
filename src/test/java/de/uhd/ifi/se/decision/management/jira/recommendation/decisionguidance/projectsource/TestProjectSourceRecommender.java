@@ -78,11 +78,4 @@ public class TestProjectSourceRecommender extends TestSetUp {
 		assertFalse(((ElementRecommendation) recommendations.get(0)).getArguments().isEmpty());
 		assertFalse(((ElementRecommendation) recommendations.get(1)).getArguments().isEmpty());
 	}
-
-	@Test
-	public void testTextSimilarity() {
-		assertEquals(0.96, projectSourceRecommender.calculateSimilarity("MySQL", "MySQL@en"), 0.1);
-		assertEquals(1.0, projectSourceRecommender.calculateSimilarity("How can we implement the feature?",
-				"How to implement the feature?"), 0.0);
-	}
 }

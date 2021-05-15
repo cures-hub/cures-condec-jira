@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * Component in decorator pattern.
+ * Provides Component in decorator pattern.
  *
  */
 public class ContextInformation implements ContextInformationProvider {
@@ -37,7 +37,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 	public List<Recommendation> getLinkSuggestions() {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject());
-		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(element);
+		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
 		List<KnowledgeElement> elementsToKeep = filterDiscardedElements(unlinkedElements);
 		List<Recommendation> recommendations = assessRelations(element, elementsToKeep);
 
@@ -54,9 +54,6 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {
-		unlinkedElements.removeAll(unlinkedElements.stream().filter(
-				element -> element.getJiraIssue() != null && element.getJiraIssue().equals(element.getJiraIssue()))
-				.collect(Collectors.toList()));
 		unlinkedElements.removeAll(ConsistencyPersistenceHelper.getDiscardedLinkSuggestions(element));
 		return unlinkedElements;
 	}

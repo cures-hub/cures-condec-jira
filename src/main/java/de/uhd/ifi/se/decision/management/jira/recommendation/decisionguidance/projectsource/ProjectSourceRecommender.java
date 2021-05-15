@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.text.similarity.JaroWinklerDistance;
-import org.apache.commons.text.similarity.SimilarityScore;
-
-import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -17,9 +13,9 @@ import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.BagOfIrrelevantWords;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.TextualSimilarityContextInformationProvider;
 
 /**
  * Queries another Jira project ({@link ProjectSource}) to generate
@@ -27,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Re
  */
 public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
-	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
+	private static final TextualSimilarityContextInformationProvider similarityProvider = new TextualSimilarityContextInformationProvider();
 
 	/**
 	 * @param projectKey
@@ -44,7 +40,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
-		List<ElementRecommendation> recommendations = new ArrayList<>();
+		List<Recommendation> recommendations = new ArrayList<>();
 		List<KnowledgeElement> similarElements = findSimilarElements(inputs);
 		similarElements.forEach(issue -> {
 			issue.getLinkedElements(5).stream()
@@ -77,17 +73,15 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		double similarityThreshold = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.getSimilarityThreshold();
 		return inputElements.stream()
-				.filter(issue -> calculateSimilarity(issue.getSummary(), text) > similarityThreshold)
+				.filter(issue -> similarityProvider.calculateSimilarity(issue.getSummary(), text) > similarityThreshold)
 				.collect(Collectors.toList());
 	}
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement decisionProblem,
 			List<Argument> arguments) {
+		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityProvider.getName());
 
-		RecommendationScore score = new RecommendationScore(0,
-				"Similarity based on " + similarityScore.getClass().getName());
-
-		double jc = calculateSimilarity(keywords, decisionProblem.getSummary());
+		double jc = similarityProvider.calculateSimilarity(keywords, decisionProblem.getSummary());
 		score.addSubScore(new RecommendationScore((float) jc,
 				"<b>" + keywords + "</b> is similar to <b>" + decisionProblem.getSummary() + "</b>"));
 
@@ -114,16 +108,4 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 		return score;
 	}
-
-	public double calculateSimilarity(String left, String right) {
-		return similarityScore.apply(cleanInput(left), cleanInput(right));
-	}
-
-	private String cleanInput(String input) {
-		String[] tokens = Preprocessor.getInstance().getStemmedTokensWithoutStopWords(input);
-		BagOfIrrelevantWords bagOfIrrelevantWords = new BagOfIrrelevantWords(
-				ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getIrrelevantWords());
-		return bagOfIrrelevantWords.cleanSentence(tokens);
-	}
-
 }
