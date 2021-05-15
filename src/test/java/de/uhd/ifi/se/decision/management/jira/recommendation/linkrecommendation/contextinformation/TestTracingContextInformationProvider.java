@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestTracingContextInformationProvider extends TestSetUp {
@@ -21,24 +19,25 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration("TEST");
-		linkSuggestionConfiguration.setMinProbability(0);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
 		tracingContextInformationProvider = new TracingContextInformationProvider();
 		knowledgeElements = KnowledgeElements.getTestKnowledgeElements();
 	}
 
 	@Test
 	public void testSameElement() {
-		assertEquals(1.0, tracingContextInformationProvider
-				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(0)).getValue(), 0);
+		assertEquals(1.0,
+				tracingContextInformationProvider
+						.assessRelation(KnowledgeElements.getDecision(), KnowledgeElements.getDecision()).getValue(),
+				0);
 	}
 
 	@Test
 	public void testDirectlyLinked() {
-		assertEquals(0.5, tracingContextInformationProvider
-				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(1)).getValue(), 0);
+		assertEquals(0.5,
+				tracingContextInformationProvider
+						.assessRelation(KnowledgeElements.getSolvedDecisionProblem(), KnowledgeElements.getDecision())
+						.getValue(),
+				0);
 	}
 
 	@Test

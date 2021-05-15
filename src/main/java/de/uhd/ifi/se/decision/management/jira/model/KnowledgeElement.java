@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
@@ -575,17 +577,19 @@ public class KnowledgeElement {
 		return elements;
 	}
 
-	public int getLinkDistance(KnowledgeElement other, int maxLinkDistance) {
-		Set<KnowledgeElement> linkedElements = new HashSet<KnowledgeElement>();
-		for (int distance = 0; distance <= maxLinkDistance; distance++) {
-			Set<KnowledgeElement> newLinkedElements = getLinkedElements(distance);
-			newLinkedElements.removeAll(linkedElements);
-			for (KnowledgeElement element : newLinkedElements) {
-				if (other.equals(element)) {
-					return distance;
-				}
-			}
-			linkedElements.addAll(newLinkedElements);
+	/**
+	 * @param otherElement
+	 *            another element in the {@link KnowledgeGraph}
+	 * @return length of the shortest path between this knowledge element to another
+	 *         element in the {@link KnowledgeGraph}. Uses the
+	 *         {@link DijkstraShortestPath} algorithm.
+	 */
+	public int getLinkDistance(KnowledgeElement otherElement, int maxLinkDistance) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		DijkstraShortestPath<KnowledgeElement, Link> path = new DijkstraShortestPath<>(graph, maxLinkDistance);
+		GraphPath<KnowledgeElement, Link> graphPath = path.getPath(this, otherElement);
+		if (graphPath != null) {
+			return graphPath.getLength();
 		}
 		return -1;
 	}
