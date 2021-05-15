@@ -14,10 +14,11 @@ public class TracingContextInformationProvider implements ContextInformationProv
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
 		int distance = baseElement.getLinkDistance(knowledgeElement, 5);
-		// A null value means the nodes are not connected.
-		double value = 0.;
-		value = 1. / (distance + 1);
-		// Prevent a division by zero exception.
+		// Prevent a division by zero exception
+		// Unlinked elements (with distance -1) get the highest score
+		double value = 1. / (distance + 2);
+		System.out.println(distance);
+		System.out.println(value);
 		return new RecommendationScore((float) value, getName());
 	}
 }

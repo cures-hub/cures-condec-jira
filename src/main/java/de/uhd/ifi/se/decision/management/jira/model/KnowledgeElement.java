@@ -10,9 +10,14 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
+import org.jgrapht.graph.AsUndirectedGraph;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
@@ -556,25 +561,10 @@ public class KnowledgeElement {
 		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
-	public Set<KnowledgeElement> getLinkedElements(int currentDistance) {
-		Set<KnowledgeElement> elements = new HashSet<>();
-		Set<Link> traversedLinks = new HashSet<>();
-		elements.add(this);
-
-		if (currentDistance == 0) {
-			return elements;
-		}
-		for (Link link : this.getLinks()) {
-			if (!traversedLinks.add(link)) {
-				continue;
-			}
-			KnowledgeElement oppositeElement = link.getOppositeElement(this);
-			if (oppositeElement == null) {
-				continue;
-			}
-			elements.addAll(oppositeElement.getLinkedElements(currentDistance - 1));
-		}
-		return elements;
+	public Set<KnowledgeElement> getLinkedElements(int maxDistance) {
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
+		SingleSourcePaths<KnowledgeElement, Link> paths = pathAlgorithm.getPaths(this);
+		return ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths).getDistanceAndPredecessorMap().keySet();
 	}
 
 	/**
@@ -585,13 +575,18 @@ public class KnowledgeElement {
 	 *         {@link DijkstraShortestPath} algorithm.
 	 */
 	public int getLinkDistance(KnowledgeElement otherElement, int maxLinkDistance) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
-		DijkstraShortestPath<KnowledgeElement, Link> path = new DijkstraShortestPath<>(graph, maxLinkDistance);
-		GraphPath<KnowledgeElement, Link> graphPath = path.getPath(this, otherElement);
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxLinkDistance);
+		GraphPath<KnowledgeElement, Link> graphPath = pathAlgorithm.getPath(this, otherElement);
 		if (graphPath != null) {
 			return graphPath.getLength();
 		}
 		return -1;
+	}
+
+	private ShortestPathAlgorithm<KnowledgeElement, Link> getShortestPathAlgorithm(int maxLinkDistance) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+		return new DijkstraShortestPath<>(undirectedGraph, maxLinkDistance);
 	}
 
 	/**
