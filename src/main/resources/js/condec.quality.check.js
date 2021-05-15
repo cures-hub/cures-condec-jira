@@ -7,21 +7,19 @@
 	var issueText;
 	var decisionText;
 
-	var projectKey;
-	var issueKey;
-
 	var ConDecQualityCheck = function ConDecQualityCheck() {
-		projectKey = conDecAPI.getProjectKey();
-		issueKey = conDecAPI.getIssueKey();
 	};
 
 	ConDecQualityCheck.prototype.initView = function () {
 		console.log("ConDecQualityChecking initView");
 
-		updateView();
+		var projectKey = conDecAPI.getProjectKey();
+		var issueKey = conDecAPI.getIssueKey();
+
+		updateView(projectKey, issueKey);
 	};
 
-	function updateView() {
+	function updateView(projectKey, issueKey) {
 		conDecAPI.getFilterSettings(issueKey, "", function(filterSettings) {
 			var minimumCoverage = filterSettings.minimumDecisionCoverage;
 
@@ -43,9 +41,9 @@
 	function updateTab(tab, coverageOfIssues, coverageOfDecisions, minimum) {
 		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum)) {
 			tab.style.background = "green";
-		} else if ((coverageOfIssues > 0) && (coverageOfIssues > 0)) {
+		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
 			tab.style.background = "orange";
-		} else if ((coverageOfIssues === 0) && (coverageOfIssues === 0)) {
+		} else if ((coverageOfIssues === 0) && (coverageOfDecisions === 0)) {
 			tab.style.background = "red";
 		} else {
 			tab.style.background = "white";
