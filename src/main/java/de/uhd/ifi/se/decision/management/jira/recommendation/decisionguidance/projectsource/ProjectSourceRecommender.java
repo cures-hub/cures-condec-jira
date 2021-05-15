@@ -57,7 +57,6 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 		});
 
 		Recommendation.normalizeRecommendationScore(recommendations);
-
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
@@ -81,9 +80,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement decisionProblem,
 			List<Argument> arguments) {
-		RecommendationScore score = new RecommendationScore(0,
-				"<b>" + keywords + "</b> is similar to <b>" + decisionProblem.getSummary() + "</b>");
-		score.addSubScore(similarityProvider.assessRelation(keywords, decisionProblem.getText()));
+		RecommendationScore score = similarityProvider.assessRelation(keywords, decisionProblem.getText());
 
 		for (Argument argument : arguments) {
 			score.addSubScore(getRecommendationScoreForArgument(argument));

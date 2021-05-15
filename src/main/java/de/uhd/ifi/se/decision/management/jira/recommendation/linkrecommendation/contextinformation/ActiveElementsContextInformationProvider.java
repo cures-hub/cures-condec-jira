@@ -27,6 +27,6 @@ public class ActiveElementsContextInformationProvider implements ContextInformat
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
-		return new RecommendationScore((float) isActive, getName() + " (per Sprint)");
+		return new RecommendationScore((float) isActive, getName() + " (same Sprint)");
 	}
 }

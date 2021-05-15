@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
@@ -82,6 +83,7 @@ public class TestElementRecommendation extends TestSetUp {
 	public void testEquals() {
 		KnowledgeSource sourceA = new ProjectSource("TEST", true);
 		ElementRecommendation recommendationA = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
+		assertTrue(recommendationA.equals(recommendationA));
 
 		ElementRecommendation recommendationB = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
@@ -97,5 +99,11 @@ public class TestElementRecommendation extends TestSetUp {
 		assertFalse(recommendationA.equals(recommendationB));
 
 		assertFalse(recommendationA.equals(new RDFSource()));
+	}
+
+	@Test
+	public void testRecommendationType() {
+		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		assertEquals(RecommendationType.EXTERNAL, recommendation.getRecommendationType());
 	}
 }

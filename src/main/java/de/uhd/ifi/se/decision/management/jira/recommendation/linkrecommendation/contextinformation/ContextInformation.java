@@ -40,19 +40,21 @@ public class ContextInformation implements ContextInformationProvider {
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
 		List<KnowledgeElement> elementsToKeep = filterDiscardedElements(unlinkedElements);
 		List<Recommendation> recommendations = assessRelations(element, elementsToKeep);
-
-		LinkRecommendationConfiguration config = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration(element.getProject().getProjectKey());
 		Recommendation.normalizeRecommendationScore(recommendations);
-
-		return recommendations.stream()
-				.filter(recommendation -> recommendation.getScore().getValue() >= config.getMinProbability() * 100)
-				.collect(Collectors.toList());
+		return filterUselessRecommendations(recommendations);
 	}
 
 	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {
 		unlinkedElements.removeAll(ConsistencyPersistenceHelper.getDiscardedLinkSuggestions(element));
 		return unlinkedElements;
+	}
+
+	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
+		LinkRecommendationConfiguration config = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(element.getProject().getProjectKey());
+		return recommendations.stream()
+				.filter(recommendation -> recommendation.getScore().getValue() >= config.getMinProbability() * 100)
+				.collect(Collectors.toList());
 	}
 
 	@Override
