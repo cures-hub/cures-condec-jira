@@ -56,6 +56,8 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 					});
 		});
 
+		Recommendation.normalizeRecommendationScore(recommendations);
+
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
@@ -79,33 +81,21 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 	private RecommendationScore calculateScore(String keywords, KnowledgeElement decisionProblem,
 			List<Argument> arguments) {
-		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityProvider.getName());
-
-		double similarity = similarityProvider.calculateSimilarity(keywords, decisionProblem.getSummary());
-		score.addSubScore(new RecommendationScore((float) similarity,
-				"<b>" + keywords + "</b> is similar to <b>" + decisionProblem.getSummary() + "</b>"));
-
-		float numberProArguments = 0;
-		float numberConArguments = 0;
+		RecommendationScore score = new RecommendationScore(0,
+				"<b>" + keywords + "</b> is similar to <b>" + decisionProblem.getSummary() + "</b>");
+		score.addSubScore(similarityProvider.assessRelation(keywords, decisionProblem.getText()));
 
 		for (Argument argument : arguments) {
-			if (argument.getType() == KnowledgeType.PRO || argument.getType() == KnowledgeType.ARGUMENT) {
-				numberProArguments += 1;
-				score.addSubScore(new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary()));
-			}
-			if (argument.getType() == KnowledgeType.CON) {
-				numberConArguments += 1;
-				score.addSubScore(new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary()));
-			}
+			score.addSubScore(getRecommendationScoreForArgument(argument));
 		}
 
-		float argumentWeight = .1f; // TODO make the weight of an argument changeable in the UI
-
-		float scoreJC = ((float) similarity + (numberProArguments - numberConArguments) * argumentWeight)
-				/ (1 + arguments.size() * argumentWeight) * 100f; // TODO find better formula
-
-		score.setValue(scoreJC);
-
 		return score;
+	}
+
+	private RecommendationScore getRecommendationScoreForArgument(Argument argument) {
+		if (argument.getType() == KnowledgeType.PRO || argument.getType() == KnowledgeType.ARGUMENT) {
+			return new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary());
+		}
+		return new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary());
 	}
 }

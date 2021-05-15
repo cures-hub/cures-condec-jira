@@ -119,15 +119,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			}
 		}
 
-		return normalizeRecommendationScore(recommendations);
-	}
-
-	private List<Recommendation> normalizeRecommendationScore(List<Recommendation> recommendations) {
-		float maxValue = Recommendation.getMaxScoreValue(recommendations);
-		for (Recommendation recommendation : recommendations) {
-			recommendation.getScore().normalizeTo(maxValue);
-		}
-		return recommendations;
+		return Recommendation.normalizeRecommendationScore(recommendations);
 	}
 
 	private String getLabel(String resource) {

@@ -23,6 +23,18 @@ public class TextualSimilarityContextInformationProvider implements ContextInfor
 		return assessRelation(baseElement.getText(), elementToTest.getText());
 	}
 
+	/**
+	 * Predicts the relationship between one text to another text. Higher values
+	 * indicate a higher similarity. The value is called Context Relationship
+	 * Indicator in the paper by Miesbauer and Weinreich.
+	 *
+	 * @param textA
+	 *            e.g. summary and description of a {@link KnowledgeElement}.
+	 * @param textB
+	 *            e.g. summary and description of another {@link KnowledgeElement}.
+	 * @return {@link RecommendationScore} including the predicted value of
+	 *         relationship in [0, inf] and an explanation.
+	 */
 	public RecommendationScore assessRelation(String textA, String textB) {
 		double similarity = calculateSimilarity(textA, textB);
 		String explanation = getName() + " (JaroWinklerDistance)";

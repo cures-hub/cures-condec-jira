@@ -43,10 +43,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 		LinkRecommendationConfiguration config = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(element.getProject().getProjectKey());
-		float maxScoreValue = Recommendation.getMaxScoreValue(recommendations);
-		for (Recommendation suggestion : recommendations) {
-			suggestion.getScore().normalizeTo(maxScoreValue);
-		}
+		Recommendation.normalizeRecommendationScore(recommendations);
 
 		return recommendations.stream()
 				.filter(recommendation -> recommendation.getScore().getValue() >= config.getMinProbability() * 100)
