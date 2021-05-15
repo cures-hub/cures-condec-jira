@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.Graph;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -119,9 +118,11 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "TEST");
 
 		FilteringManager filteringManager = new FilteringManager(user, settings);
-		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
+		assertEquals(JiraIssues.getTestJiraIssueCount(),
+				filteringManager.getSubgraphMatchingFilterSettings().vertexSet().size());
 		// Currently, the mock links all have the "relate" type.
-		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount(), filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
+		assertEquals(JiraIssueLinks.getTestJiraIssueLinkCount(),
+				filteringManager.getSubgraphMatchingFilterSettings().edgeSet().size());
 	}
 
 	@Test
@@ -243,15 +244,16 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testTransitiveLinks() {
 		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-31");
+		settings.setSelectedElement("TEST-1");
 		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
 		settings.setCreateTransitiveLinks(true);
+		settings.setLinkDistance(4);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getSubgraphMatchingFilterSettings();
 		Set<Link> transitiveLinks = new HashSet<Link>();
 		transitiveLinks.addAll(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
-		assertTrue(transitiveLinks.size() == 4);
+		assertEquals(2, transitiveLinks.size());
 
 		Set<Link> otherLinks1 = new HashSet<Link>();
 		otherLinks1.addAll(subgraph.edgeSet());
@@ -274,7 +276,8 @@ public class TestFilteringManager extends TestSetUp {
 	@Test
 	public void testTransitiveLinksWithMultipleKnowledgeElementsInARowAreRemovedByFilters() {
 		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-31");
+		settings.setSelectedElement("TEST-1");
+		settings.setLinkDistance(4);
 		settings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Work Item", "Argument", "Pro", "Con")));
 		settings.setCreateTransitiveLinks(true);
 		FilteringManager filteringManager = new FilteringManager(user, settings);
@@ -282,7 +285,7 @@ public class TestFilteringManager extends TestSetUp {
 		Set<Link> transitiveLinks = new HashSet<Link>();
 		transitiveLinks.addAll(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
-		assertTrue(transitiveLinks.size() == 4);
+		assertEquals(2, transitiveLinks.size());
 	}
 
 	@Test
@@ -303,7 +306,8 @@ public class TestFilteringManager extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		filteringManager.setUser(user);filteringManager.getUser();
+		filteringManager.setUser(user);
+		filteringManager.getUser();
 		assertEquals(user, filteringManager.getUser());
 	}
 }
