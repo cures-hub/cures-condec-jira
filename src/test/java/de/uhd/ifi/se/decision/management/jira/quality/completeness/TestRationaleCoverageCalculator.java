@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,6 +57,13 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetIssueDocumentedForSelectedJiraIssue() {
 		assertEquals(calculator.getIssueDocumentedForSelectedJiraIssue().size(), 3);
+	}
+
+	@Test
+	@NonTransactional
+	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElement() {
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+			KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.ISSUE), 2);
 	}
 
 }
