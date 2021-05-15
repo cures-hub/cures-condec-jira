@@ -37,12 +37,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetIrrelevantWords() {
-		config.setIrrelevantWords("WHICH;WHAT;COULD;SHOULD");
-		assertEquals("WHICH;WHAT;COULD;SHOULD", config.getIrrelevantWords());
-	}
-
-	@Test
 	public void testSetAndGetAddRecommendationDirectly() {
 		config.setRecommendationAddedToKnowledgeGraph(true);
 		assertTrue(config.isRecommendationAddedToKnowledgeGraph());

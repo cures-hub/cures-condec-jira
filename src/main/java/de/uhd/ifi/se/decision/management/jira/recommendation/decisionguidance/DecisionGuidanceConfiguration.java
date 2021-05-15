@@ -26,7 +26,6 @@ public class DecisionGuidanceConfiguration {
 	private boolean isRecommendationAddedToKnowledgeGraph;
 	private int maxNumberOfRecommendations;
 	private double similarityThreshold;
-	private String irrelevantWords;
 	private List<RDFSource> rdfKnowledgeSources;
 	private List<ProjectSource> projectKnowledgeSources;
 
@@ -37,7 +36,6 @@ public class DecisionGuidanceConfiguration {
 		this.setRecommendationAddedToKnowledgeGraph(false);
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
-		this.setIrrelevantWords("");
 		this.rdfKnowledgeSources = new ArrayList<>();
 		this.projectKnowledgeSources = new ArrayList<>();
 	}
@@ -93,22 +91,6 @@ public class DecisionGuidanceConfiguration {
 	@JsonProperty
 	public void setSimilarityThreshold(double similarityThreshold) {
 		this.similarityThreshold = similarityThreshold;
-	}
-
-	/**
-	 * @return words that should not be involved in the score calculation.
-	 */
-	public String getIrrelevantWords() {
-		return irrelevantWords;
-	}
-
-	/**
-	 * @param irrelevantWords
-	 *            that should not be involved in the score calculation.
-	 */
-	@JsonProperty
-	public void setIrrelevantWords(String irrelevantWords) {
-		this.irrelevantWords = irrelevantWords;
 	}
 
 	/**
