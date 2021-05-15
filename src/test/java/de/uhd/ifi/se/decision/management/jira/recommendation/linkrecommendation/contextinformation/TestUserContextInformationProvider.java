@@ -37,6 +37,14 @@ public class TestUserContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
+	public void testJiraIssuesUnknown() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		assertEquals(0.,
+				userContextInformationProvider.assessRelation(KnowledgeElements.getDecision(), element).getValue(), 0);
+	}
+
+	@Test
 	public void testIsApplicationUserEqual() {
 		assertEquals(0., UserContextInformationProvider.isApplicationUserEqual(null, null), 0);
 		assertEquals(0.3, UserContextInformationProvider.isApplicationUserEqual(

@@ -2,30 +2,25 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestTracingContextInformationProvider extends TestSetUp {
 
 	private ContextInformationProvider tracingContextInformationProvider;
-	private List<KnowledgeElement> knowledgeElements;
 
 	@Before
 	public void setUp() {
 		init();
 		tracingContextInformationProvider = new TracingContextInformationProvider();
-		knowledgeElements = KnowledgeElements.getTestKnowledgeElements();
 	}
 
 	@Test
 	public void testSameElement() {
-		assertEquals(1.0,
+		assertEquals(0.5,
 				tracingContextInformationProvider
 						.assessRelation(KnowledgeElements.getDecision(), KnowledgeElements.getDecision()).getValue(),
 				0);
@@ -33,16 +28,17 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testDirectlyLinked() {
-		assertEquals(0.5,
+		assertEquals(0.3,
 				tracingContextInformationProvider
 						.assessRelation(KnowledgeElements.getSolvedDecisionProblem(), KnowledgeElements.getDecision())
 						.getValue(),
-				0);
+				0.1);
 	}
 
 	@Test
-	public void testIndirectlyLinked() {
-		assertEquals(0.333, tracingContextInformationProvider
-				.assessRelation(knowledgeElements.get(0), knowledgeElements.get(2)).getValue(), 0.1);
+	public void testNotLinked() {
+		assertEquals(1, tracingContextInformationProvider
+				.assessRelation(KnowledgeElements.getOtherWorkItem(), KnowledgeElements.getProArgument()).getValue(),
+				0.1);
 	}
 }

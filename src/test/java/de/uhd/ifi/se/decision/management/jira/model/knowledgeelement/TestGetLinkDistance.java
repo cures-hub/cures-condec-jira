@@ -26,11 +26,11 @@ public class TestGetLinkDistance extends TestSetUp {
 
 	@Test
 	public void testMaxDistanceTooSmallToFindPath() {
-		assertEquals(-1, element.getLinkDistance(KnowledgeElements.getAlternative(), 1));
+		assertEquals(-1, element.getLinkDistance(KnowledgeElements.getAlternative(), 0));
 	}
 
 	@Test
 	public void testLinkedWithinMaxDistance() {
-		assertEquals(2, element.getLinkDistance(KnowledgeElements.getAlternative(), 3));
+		assertEquals(1, element.getLinkDistance(KnowledgeElements.getAlternative(), 3));
 	}
 }

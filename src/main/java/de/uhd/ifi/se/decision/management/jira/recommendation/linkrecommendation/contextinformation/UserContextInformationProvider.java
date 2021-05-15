@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 
@@ -16,11 +16,11 @@ public class UserContextInformationProvider implements ContextInformationProvide
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		double score = isApplicationUserEqual(baseElement.getCreator(), elementToTest.getCreator());
-		if (baseElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-			score += isApplicationUserEqual(baseElement.getJiraIssue().getAssignee(),
-					elementToTest.getJiraIssue().getAssignee());
-			score += isApplicationUserEqual(baseElement.getJiraIssue().getReporter(),
-					elementToTest.getJiraIssue().getReporter());
+		Issue baseElementJiraIssue = baseElement.getJiraIssue();
+		Issue otherElementJiraIssue = elementToTest.getJiraIssue();
+		if (baseElementJiraIssue != null && otherElementJiraIssue != null) {
+			score += isApplicationUserEqual(baseElementJiraIssue.getAssignee(), otherElementJiraIssue.getAssignee());
+			score += isApplicationUserEqual(baseElementJiraIssue.getReporter(), otherElementJiraIssue.getReporter());
 		}
 		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
 	}

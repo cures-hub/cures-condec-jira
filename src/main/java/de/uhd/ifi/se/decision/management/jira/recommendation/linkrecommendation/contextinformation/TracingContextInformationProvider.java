@@ -17,8 +17,6 @@ public class TracingContextInformationProvider implements ContextInformationProv
 		// Prevent a division by zero exception
 		// Unlinked elements (with distance -1) get the highest score
 		double value = 1. / (distance + 2);
-		System.out.println(distance);
-		System.out.println(value);
 		return new RecommendationScore((float) value, getName());
 	}
 }
