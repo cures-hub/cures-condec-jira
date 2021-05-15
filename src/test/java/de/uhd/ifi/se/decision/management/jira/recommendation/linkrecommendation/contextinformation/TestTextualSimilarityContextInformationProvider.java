@@ -1,84 +1,42 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 
-	private static List<Issue> testIssues;
 	private TextualSimilarityContextInformationProvider textualSimilarityContextInformationProvider;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
-		testIssues = JiraIssues.getTestJiraIssues();
 		textualSimilarityContextInformationProvider = new TextualSimilarityContextInformationProvider();
 	}
 
 	@Test
-	public void testCIP() {
-		Issue baseIssue = TestTextualSimilarityContextInformationProvider.testIssues.get(0);
-		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
-		GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
-				DocumentationLocation.JIRAISSUE);
-		Collection<Recommendation> linkSuggestions = contextInformation.getLinkSuggestions();
-		List<Recommendation> sortedLinkSuggestions = linkSuggestions.stream().sorted((Recommendation::compareTo))
-				.collect(Collectors.toList());
-		LinkRecommendation identicalIssueSuggestion = (LinkRecommendation) sortedLinkSuggestions
-				.get(sortedLinkSuggestions.size() - 1);
-
-		// The baseElement should not be most similar to itself, as it is filtered out!
-		assertThat(baseIssue.getKey(), not(identicalIssueSuggestion.getTarget().getJiraIssue().getKey()));
-		assertNotNull(identicalIssueSuggestion.getScore().getSubScores());
-
-		assertEquals("The baseIssue should be set correctly.", baseIssue.getKey(),
-				identicalIssueSuggestion.getSource().getKey());
-
+	public void testAssessRelation() {
+		RecommendationScore score = textualSimilarityContextInformationProvider
+				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
+		assertEquals(0.44, score.getValue(), 0.1);
+		assertEquals("TextualSimilarityContextInformationProvider (JaroWinklerDistance)", score.getExplanation());
 	}
 
 	@Test
-	public void testLinkSuggestion() {
-		LinkRecommendation linkSuggestion1 = new LinkRecommendation(new KnowledgeElement(testIssues.get(0)),
-				new KnowledgeElement(testIssues.get(1)));
-
-		linkSuggestion1.addToScore(0.5, "test");
-		assertEquals(-1, linkSuggestion1.compareTo(null));
-
-		LinkRecommendation linkSuggestion2 = new LinkRecommendation(new KnowledgeElement(testIssues.get(0)),
-				new KnowledgeElement(testIssues.get(1)));
-		linkSuggestion2.addToScore(0.5, "test");
-		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
-
-		linkSuggestion2.addToScore(0.5, "test1");
-		assertEquals(-1, linkSuggestion1.compareTo(linkSuggestion2));
-
-		linkSuggestion1.addToScore(1., "test1");
-		assertEquals(1, linkSuggestion1.compareTo(linkSuggestion2));
-	}
-
-	@Test
-	public void testTextSimilarity() {
+	public void testCalculateSimilarityValid() {
 		assertEquals(0.96, textualSimilarityContextInformationProvider.calculateSimilarity("MySQL", "MySQL@en"), 0.1);
 		assertEquals(1.0, textualSimilarityContextInformationProvider
 				.calculateSimilarity("How can we implement the feature?", "How to implement the feature?"), 0.0);
+	}
+
+	@Test
+	public void testCalculateSimilarityNull() {
+		assertEquals(0, textualSimilarityContextInformationProvider.calculateSimilarity(null, ""), 0);
+		assertEquals(0, textualSimilarityContextInformationProvider.calculateSimilarity("", null), 0);
 	}
 }

@@ -81,8 +81,8 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 			List<Argument> arguments) {
 		RecommendationScore score = new RecommendationScore(0, "Similarity based on " + similarityProvider.getName());
 
-		double jc = similarityProvider.calculateSimilarity(keywords, decisionProblem.getSummary());
-		score.addSubScore(new RecommendationScore((float) jc,
+		double similarity = similarityProvider.calculateSimilarity(keywords, decisionProblem.getSummary());
+		score.addSubScore(new RecommendationScore((float) similarity,
 				"<b>" + keywords + "</b> is similar to <b>" + decisionProblem.getSummary() + "</b>"));
 
 		float numberProArguments = 0;
@@ -101,7 +101,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
 		float argumentWeight = .1f; // TODO make the weight of an argument changeable in the UI
 
-		float scoreJC = ((float) jc + (numberProArguments - numberConArguments) * argumentWeight)
+		float scoreJC = ((float) similarity + (numberProArguments - numberConArguments) * argumentWeight)
 				/ (1 + arguments.size() * argumentWeight) * 100f; // TODO find better formula
 
 		score.setValue(scoreJC);

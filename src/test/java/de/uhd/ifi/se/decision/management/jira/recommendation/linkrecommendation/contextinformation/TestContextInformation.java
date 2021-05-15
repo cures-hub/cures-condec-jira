@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestCipCalculation extends TestSetUp {
+public class TestContextInformation extends TestSetUp {
 
 	private static List<Issue> testIssues;
 
@@ -40,7 +40,7 @@ public class TestCipCalculation extends TestSetUp {
 
 	@Test
 	public void testCIP() {
-		Issue baseIssue = TestCipCalculation.testIssues.get(0);
+		Issue baseIssue = TestContextInformation.testIssues.get(0);
 		ContextInformation contextInformation = new ContextInformation(new KnowledgeElement(baseIssue));
 		GenericLinkManager.deleteLinksForElement(new KnowledgeElement(baseIssue).getId(),
 				DocumentationLocation.JIRAISSUE);

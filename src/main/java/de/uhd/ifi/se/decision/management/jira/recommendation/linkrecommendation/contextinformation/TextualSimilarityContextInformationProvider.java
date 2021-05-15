@@ -11,8 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 
 /**
  * Rates relations comparing textual information of {@link KnowledgeElement}s.
- * It assumes a strong relation if they have the same name or if the name of the
- * element is mentioned in the description of another element.
+ * It assumes a strong relation if they have a similar textual content (summary
+ * and description).
  */
 public class TextualSimilarityContextInformationProvider implements ContextInformationProvider {
 
@@ -20,8 +20,13 @@ public class TextualSimilarityContextInformationProvider implements ContextInfor
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		double similarity = calculateSimilarity(baseElement.getDescription(), elementToTest.getDescription());
-		return new RecommendationScore((float) similarity, getName() + " (JaroWinklerDistance)");
+		return assessRelation(baseElement.getText(), elementToTest.getText());
+	}
+
+	public RecommendationScore assessRelation(String textA, String textB) {
+		double similarity = calculateSimilarity(textA, textB);
+		String explanation = getName() + " (JaroWinklerDistance)";
+		return new RecommendationScore((float) similarity, explanation);
 	}
 
 	public double calculateSimilarity(String left, String right) {

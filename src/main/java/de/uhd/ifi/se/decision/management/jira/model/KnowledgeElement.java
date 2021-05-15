@@ -169,6 +169,13 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @return concatenated String of the summary and the description.
+	 */
+	public String getText() {
+		return summary + " " + description;
+	}
+
+	/**
 	 * @param description
 	 *            of the knowledge element. The description provides details about
 	 *            the element. When using Jira issues to persist knowledge, it can
