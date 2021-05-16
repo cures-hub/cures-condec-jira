@@ -69,7 +69,7 @@ public class ContextInformation implements ContextInformationProvider {
 
 	/**
 	 * Makes recommendations whether one {@link KnowledgeElement} should be linked
-	 * to other {@link KnowledgeElement}s that it is currently not linked to.
+	 * to other {@link KnowledgeElement}s that are currently not linked to it.
 	 *
 	 * @param baseElement
 	 *            {@link KnowledgeElement} for that new links should be recommended

@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
@@ -82,10 +83,10 @@ public class TestElementRecommendation extends TestSetUp {
 	@Test
 	public void testEquals() {
 		KnowledgeSource sourceA = new ProjectSource("TEST", true);
-		ElementRecommendation recommendationA = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
+		Recommendation recommendationA = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationA));
 
-		ElementRecommendation recommendationB = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
+		Recommendation recommendationB = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
 
 		KnowledgeSource sourceB = new RDFSource();
@@ -103,7 +104,7 @@ public class TestElementRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendationType() {
-		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(RecommendationType.EXTERNAL, recommendation.getRecommendationType());
 	}
 }
