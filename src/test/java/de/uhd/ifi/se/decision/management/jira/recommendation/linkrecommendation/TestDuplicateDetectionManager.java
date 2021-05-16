@@ -24,29 +24,29 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 public class TestDuplicateDetectionManager extends TestSetUp {
 	private Project project;
 	private ApplicationUser user;
+	private DuplicateDetectionManager detectionManager;
 
 	@Before
 	public void setUp() {
 		TestSetUp.init();
 		project = JiraProjects.TEST.createJiraProject(1);// JiraProjects.getTestProject();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		detectionManager = new DuplicateDetectionManager(KnowledgeElements.getTestKnowledgeElement(),
+				new DuplicateTextDetector(3));
 	}
 
 	@Test
 	public void testDuplicateDetectionGetter() {
-		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(
-				KnowledgeElements.getTestKnowledgeElement(), new DuplicateTextDetector(3));
-		assertEquals(JiraIssues.getTestJiraIssues().get(0).getKey(),
-				detectionManager.getKnowledgeElement().getJiraIssue().getKey());
+		assertEquals(KnowledgeElements.getTestKnowledgeElement(), detectionManager.getKnowledgeElement());
 	}
 
 	@Test
-	public void testFindAllDuplicatesWithWithValidData() {
-		List<KnowledgeElement> testElements = generateDuplicates("This text should be detected as a Duplicate.");
+	public void testFindAllDuplicatesWithDuplicatesExisting() {
+		List<KnowledgeElement> testElements = generateDuplicates("This text should be detected as a duplicate.");
+		testElements.addAll(generateDuplicates("This text should be detected as a duplicate which is even longer."));
 		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(testElements.get(0),
 				new DuplicateTextDetector(3));
-		assertEquals(1, detectionManager.findAllDuplicates(testElements).size());
-
+		assertEquals(3, detectionManager.findAllDuplicates(testElements).size());
 	}
 
 	private List<KnowledgeElement> generateDuplicates(String text) {
@@ -59,4 +59,8 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 		return issues;
 	}
 
+	@Test
+	public void testFindAllDuplicatesWithNoDuplicatesExisting() {
+		assertEquals(0, detectionManager.findAllDuplicates(KnowledgeElements.getTestKnowledgeElements()).size());
+	}
 }

@@ -217,11 +217,11 @@ public class LinkRecommendationRest {
 
 	@Path("/setMinimumLinkSuggestionProbability")
 	@POST
-	public Response setMinimumLinkSuggestionProbability(@Context HttpServletRequest request,
+	public Response setMinimumRecommendationScore(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
@@ -241,7 +241,7 @@ public class LinkRecommendationRest {
 	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (fragmentLength < 3) {

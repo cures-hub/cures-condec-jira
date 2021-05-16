@@ -562,6 +562,16 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @issue How can we get all knowledge elements within a certain distance/number
+	 *        of hops from one element?
+	 * @decision Use the ShortestPathAlgorithm of the jGraphT library to find all
+	 *           knowledge elements within a certain distance/number of hops from
+	 *           one element.
+	 * @pro Might be faster than the former implementation using the recursion
+	 *      (better performance).
+	 * @alternative We used to have our own implementation to get all knowledge
+	 *              elements within a certain distance using recursion.
+	 * 
 	 * @param maxDistance
 	 *            maximal link distance that is travered to search for the other
 	 *            {@link KnowledgeElement}s starting from this element.
@@ -577,6 +587,14 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @issue How can we get the link distance/number of hops from one element to
+	 *        another element in the knowledge graph?
+	 * @decision Use the ShortestPathAlgorithm of the jGraphT library to get the
+	 *           link distance/number of hops from one element to another element.
+	 * @pro Might be faster than our own implementation (better performance).
+	 * @alternative We used to have our own implementation to get the link
+	 *              distance/number of hops from one element to another element.
+	 * 
 	 * @param otherElement
 	 *            another element in the {@link KnowledgeGraph}
 	 * @param maxDistance

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -35,14 +34,10 @@ public class TestDuplicateTextDetector extends TestSetUp {
 
 	@Test
 	public void testBasicDuplicateTextDetectorWithNoDuplicates() {
-		try {
-			basicDuplicateTextDetector = new DuplicateTextDetector(3);
-			List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
-					.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(otherIssue));
-			assertTrue("No duplicates should have been found", foundDuplicates.isEmpty());
-		} catch (Exception e) {
-			assertNull("No exception should be thrown.", e);
-		}
+		basicDuplicateTextDetector = new DuplicateTextDetector(3);
+		List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
+				.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(otherIssue));
+		assertTrue("No duplicates should have been found", foundDuplicates.isEmpty());
 	}
 
 	@Test
@@ -56,7 +51,6 @@ public class TestDuplicateTextDetector extends TestSetUp {
 
 	@Test
 	public void testBasicDuplicateTextDetectorWithOtherIssueBeingNull() {
-
 		basicDuplicateTextDetector = new DuplicateTextDetector(3);
 		assertThrows(NullPointerException.class,
 				() -> basicDuplicateTextDetector.detectDuplicates(new KnowledgeElement(baseIssue), null));
@@ -65,13 +59,9 @@ public class TestDuplicateTextDetector extends TestSetUp {
 
 	@Test
 	public void testBasicDuplicateTextDetectorWithDuplicates() {
-		try {
-			basicDuplicateTextDetector = new DuplicateTextDetector(3);
-			List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
-					.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(baseIssue));
-			assertFalse("One duplicate should have been found", foundDuplicates.isEmpty());
-		} catch (Exception e) {
-			assertNull("No exception should be thrown.", e);
-		}
+		basicDuplicateTextDetector = new DuplicateTextDetector(3);
+		List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
+				.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(baseIssue));
+		assertFalse("One duplicate should have been found", foundDuplicates.isEmpty());
 	}
 }
