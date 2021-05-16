@@ -30,14 +30,14 @@ public class DuplicateDetectionManager {
 
 	private int fragmentLength;
 
-	private DuplicateDetectionStrategy duplicateDetectionStrategy;
+	private DuplicateTextDetector duplicateDetectionStrategy;
 
-	public DuplicateDetectionManager(Issue knowledgeElement, DuplicateDetectionStrategy duplicateDetectionStrategy) {
+	public DuplicateDetectionManager(Issue knowledgeElement, DuplicateTextDetector duplicateDetectionStrategy) {
 		this(new KnowledgeElement(knowledgeElement), duplicateDetectionStrategy);
 	}
 
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement,
-			DuplicateDetectionStrategy duplicateDetectionStrategy) {
+			DuplicateTextDetector duplicateDetectionStrategy) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 		if (this.knowledgeElement == null) {
@@ -51,7 +51,7 @@ public class DuplicateDetectionManager {
 	}
 
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement,
-			DuplicateDetectionStrategy duplicateDetectionStrategy, int fragmentLength) {
+			DuplicateTextDetector duplicateDetectionStrategy, int fragmentLength) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 		this.fragmentLength = fragmentLength;
@@ -80,7 +80,7 @@ public class DuplicateDetectionManager {
 				// " + element.getKey());
 				DuplicateRecommendation mostLikelyDuplicate = null;
 				try {
-					List<DuplicateRecommendation> foundDuplicateFragmentsForIssue = new BasicDuplicateTextDetector(
+					List<DuplicateRecommendation> foundDuplicateFragmentsForIssue = new DuplicateTextDetector(
 							this.fragmentLength).detectDuplicates(this.knowledgeElement, element);
 					mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 				} catch (Exception e) {
@@ -105,7 +105,7 @@ public class DuplicateDetectionManager {
 		return elements;
 	}
 
-	public void setDuplicateDetectionStrategy(DuplicateDetectionStrategy duplicateDetectionStrategy) {
+	public void setDuplicateDetectionStrategy(DuplicateTextDetector duplicateDetectionStrategy) {
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
 	}
 
@@ -113,7 +113,8 @@ public class DuplicateDetectionManager {
 		return this.knowledgeElement;
 	}
 
-	private DuplicateRecommendation findLongestDuplicate(List<DuplicateRecommendation> foundDuplicateFragmentsForIssue) {
+	private DuplicateRecommendation findLongestDuplicate(
+			List<DuplicateRecommendation> foundDuplicateFragmentsForIssue) {
 		DuplicateRecommendation mostLikelyDuplicate = null;
 
 		// if (foundDuplicateFragmentsForIssue != null &&

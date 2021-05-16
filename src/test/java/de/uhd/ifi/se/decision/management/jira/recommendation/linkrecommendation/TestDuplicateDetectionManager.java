@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -42,12 +42,12 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 	@Test
 	public void testDuplicateDetectionGetter() {
 		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(issue,
-				new BasicDuplicateTextDetector(3));
+				new DuplicateTextDetector(3));
 
 		assertEquals("The base issue should be set correctly.", issue.getKey(),
 				detectionManager.getKnowledgeElement().getJiraIssue().getKey());
 
-		detectionManager = new DuplicateDetectionManager((Issue) null, new BasicDuplicateTextDetector(3));
+		detectionManager = new DuplicateDetectionManager((Issue) null, new DuplicateTextDetector(3));
 
 		assertNull("The base issue should be set correctly.", detectionManager.getKnowledgeElement().getJiraIssue());
 
@@ -56,14 +56,14 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 	@Test
 	public void testFindAllDuplicatesWithWithValidData() {
 		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager(
-				transformIssuesToKnowledgeElement(issue), new BasicDuplicateTextDetector(3), 3);
+				transformIssuesToKnowledgeElement(issue), new DuplicateTextDetector(3), 3);
 
 		// No Duplicate Exists
 		assertEquals("The base issue should be set correctly.", 0,
 				detectionManager.findAllDuplicates(transformIssuesToKnowledgeElements(testIssues)).size());
 
 		List<KnowledgeElement> duplicateIssues = generateDuplicates("This text should be detected as a Duplicate.");
-		detectionManager = new DuplicateDetectionManager(duplicateIssues.get(0), new BasicDuplicateTextDetector(3), 3);
+		detectionManager = new DuplicateDetectionManager(duplicateIssues.get(0), new DuplicateTextDetector(3), 3);
 		List<KnowledgeElement> list = transformIssuesToKnowledgeElements(testIssues);
 		list.addAll(duplicateIssues);
 		assertEquals("The duplicate issue should be found.", 1, detectionManager.findAllDuplicates(list).size());
@@ -73,7 +73,7 @@ public class TestDuplicateDetectionManager extends TestSetUp {
 	@Test
 	public void testFindAllDuplicatesWithWithNull() {
 		DuplicateDetectionManager detectionManager = new DuplicateDetectionManager((Issue) null,
-				new BasicDuplicateTextDetector(3));
+				new DuplicateTextDetector(3));
 
 		// No Duplicate Exists
 		assertTrue("No duplicates can be found.",

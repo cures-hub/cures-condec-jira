@@ -15,15 +15,14 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionStrategy;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 
 public class TestDuplicateTextDetector extends TestSetUp {
 	private static Issue baseIssue;
 	private static Issue otherIssue;
-	private static DuplicateDetectionStrategy basicDuplicateTextDetector;
+	private static DuplicateTextDetector basicDuplicateTextDetector;
 
 	@BeforeClass
 	public static void setUp() {
@@ -37,7 +36,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	@Test
 	public void testBasicDuplicateTextDetectorWithNoDuplicates() {
 		try {
-			basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
+			basicDuplicateTextDetector = new DuplicateTextDetector(3);
 			List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
 					.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(otherIssue));
 			assertTrue("No duplicates should have been found", foundDuplicates.isEmpty());
@@ -49,7 +48,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	@Test
 	public void testBasicDuplicateTextDetectorWithBaseIssueBeingNull() {
 
-		basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
+		basicDuplicateTextDetector = new DuplicateTextDetector(3);
 		assertThrows(NullPointerException.class,
 				() -> basicDuplicateTextDetector.detectDuplicates(null, new KnowledgeElement(otherIssue)));
 
@@ -58,7 +57,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	@Test
 	public void testBasicDuplicateTextDetectorWithOtherIssueBeingNull() {
 
-		basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
+		basicDuplicateTextDetector = new DuplicateTextDetector(3);
 		assertThrows(NullPointerException.class,
 				() -> basicDuplicateTextDetector.detectDuplicates(new KnowledgeElement(baseIssue), null));
 
@@ -67,7 +66,7 @@ public class TestDuplicateTextDetector extends TestSetUp {
 	@Test
 	public void testBasicDuplicateTextDetectorWithDuplicates() {
 		try {
-			basicDuplicateTextDetector = new BasicDuplicateTextDetector(3);
+			basicDuplicateTextDetector = new DuplicateTextDetector(3);
 			List<DuplicateRecommendation> foundDuplicates = basicDuplicateTextDetector
 					.detectDuplicates(new KnowledgeElement(baseIssue), new KnowledgeElement(baseIssue));
 			assertFalse("One duplicate should have been found", foundDuplicates.isEmpty());

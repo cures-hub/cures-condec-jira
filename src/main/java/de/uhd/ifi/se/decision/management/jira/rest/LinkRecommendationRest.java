@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.BasicDuplicateTextDetector;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
 
 /**
@@ -85,7 +85,7 @@ public class LinkRecommendationRest {
 				LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 						.getLinkRecommendationConfiguration(projectKey);
 				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
-						new BasicDuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
+						new DuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
 						linkSuggestionConfiguration.getMinTextLength());
 
 				KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);

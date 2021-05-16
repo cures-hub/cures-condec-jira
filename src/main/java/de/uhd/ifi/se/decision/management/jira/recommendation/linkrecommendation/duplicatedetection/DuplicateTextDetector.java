@@ -8,36 +8,25 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
-public class BasicDuplicateTextDetector implements DuplicateDetectionStrategy {
+public class DuplicateTextDetector {
 
 	private Preprocessor preprocessor;
 	private static final String fieldUsedForDetection = "DESCRIPTION";
 	private int fragmentLength;
 	private static final double MIN_SIMILARITY = 0.85;
 
-	public BasicDuplicateTextDetector(int fragmentLength) {
+	public DuplicateTextDetector(int fragmentLength) {
 		preprocessor = Preprocessor.getInstance();
 
 		this.fragmentLength = fragmentLength;
 	}
 
-	// TODO Move to Preprocessor
-	private String cleanMarkdown(String markdown) {
-		return markdown.replaceAll("[{(color)]+[:#0-9]*}", "")
-				.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "URL")
-				.replaceAll("[|\\[\\]]+", " ").replaceAll("h[0-9]+", "").replaceAll("[;/:*?\"<>&.{},'#!+@-]+", " ")
-				.replaceAll("[\n\r]+", " ").replaceAll("[0-9]+", "NUMBER").replaceAll("(-){2,}", "");
-	}
-
-	@Override
-	public List<DuplicateRecommendation> detectDuplicates(KnowledgeElement baseElement, KnowledgeElement compareElement)
-			throws Exception {
+	public List<DuplicateRecommendation> detectDuplicates(KnowledgeElement baseElement,
+			KnowledgeElement compareElement) {
 		String s1 = baseElement.getDescription();
 		String s2 = compareElement.getDescription();
 		List<DuplicateRecommendation> duplicateList = new ArrayList<>();
 		if (s1 != null && s2 != null) {
-			s1 = cleanMarkdown(s1);
-			s2 = cleanMarkdown(s2);
 			String[] preprocessedS1Tokens = preprocessor.getStemmedTokensWithoutStopWords(s1);
 			String[] preprocessedS2Tokens = preprocessor.getStemmedTokensWithoutStopWords(s2);
 
