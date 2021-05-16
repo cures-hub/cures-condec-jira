@@ -31,8 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 
 /**
  * REST resource for link recommendation and duplicate recognition (including
@@ -78,28 +78,24 @@ public class LinkRecommendationRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
 			@QueryParam("location") String elementLocation) {
 		Optional<KnowledgeElement> knowledgeElement;
-		try {
-			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
-			if (knowledgeElement.isPresent()) {
-				LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-						.getLinkRecommendationConfiguration(projectKey);
-				DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
-						new DuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()),
-						linkSuggestionConfiguration.getMinTextLength());
+		knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 
-				KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-				List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
+		if (knowledgeElement.isPresent()) {
+			LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+					.getLinkRecommendationConfiguration(projectKey);
+			DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
+					new DuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()));
 
-				// detect duplicates
-				List<DuplicateRecommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
+			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+			List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
 
-				return Response.ok(foundDuplicateSuggestions).build();
-			} else {
-				return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
-			}
-		} catch (Exception e) {
-			return Response.status(500).entity(e).build();
+			// detect duplicates
+			List<DuplicateRecommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
+
+			return Response.ok(foundDuplicateSuggestions).build();
+		} else {
+			return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
 		}
 	}
 

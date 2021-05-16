@@ -17,7 +17,6 @@ public class DuplicateTextDetector {
 
 	public DuplicateTextDetector(int fragmentLength) {
 		preprocessor = Preprocessor.getInstance();
-
 		this.fragmentLength = fragmentLength;
 	}
 
@@ -26,40 +25,38 @@ public class DuplicateTextDetector {
 		String s1 = baseElement.getDescription();
 		String s2 = compareElement.getDescription();
 		List<DuplicateRecommendation> duplicateList = new ArrayList<>();
-		if (s1 != null && s2 != null) {
-			String[] preprocessedS1Tokens = preprocessor.getStemmedTokensWithoutStopWords(s1);
-			String[] preprocessedS2Tokens = preprocessor.getStemmedTokensWithoutStopWords(s2);
 
-			int index = 0;
-			// Iterate over text.
-			while (index < preprocessedS1Tokens.length - fragmentLength + 1) {
-				int internalIndex = 0;
-				// Get Lists of text based on the fragmentLength
-				CharSequence[] sequenceToCheck = Arrays.copyOfRange(preprocessedS1Tokens, index,
-						index + fragmentLength);
-				CharSequence[] sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
+		String[] preprocessedS1Tokens = preprocessor.getStemmedTokensWithoutStopWords(s1);
+		String[] preprocessedS2Tokens = preprocessor.getStemmedTokensWithoutStopWords(s2);
+
+		int index = 0;
+		// Iterate over text.
+		while (index < preprocessedS1Tokens.length - fragmentLength + 1) {
+			int internalIndex = 0;
+			// Get Lists of text based on the fragmentLength
+			CharSequence[] sequenceToCheck = Arrays.copyOfRange(preprocessedS1Tokens, index, index + fragmentLength);
+			CharSequence[] sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
+					Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.length));
+
+			while (calculateScore(sequenceToCheck, sequenceToCheckAgainst) <= MIN_SIMILARITY
+					&& internalIndex < preprocessedS2Tokens.length - fragmentLength + 1) {
+				sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
 						Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.length));
-
-				while (calculateScore(sequenceToCheck, sequenceToCheckAgainst) <= MIN_SIMILARITY
-						&& internalIndex < preprocessedS2Tokens.length - fragmentLength + 1) {
-					sequenceToCheckAgainst = Arrays.copyOfRange(preprocessedS2Tokens, internalIndex,
-							Math.min(internalIndex + fragmentLength, preprocessedS2Tokens.length));
-					internalIndex++;
-				}
-
-				if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
-					// sequenceToCheck.remove(sequenceToCheck.size()-1);
-					String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
-					duplicateList.add(new DuplicateRecommendation(baseElement, compareElement,
-							preprocessedDuplicateSummary, 0, preprocessedDuplicateSummary.length(),
-							// calculateScore(sequenceToCheck, sequenceToCheckAgainst),
-							fieldUsedForDetection));
-					return duplicateList;
-				}
-				index++;
+				internalIndex++;
 			}
 
+			if (calculateScore(sequenceToCheck, sequenceToCheckAgainst) >= MIN_SIMILARITY) {
+				// sequenceToCheck.remove(sequenceToCheck.size()-1);
+				String preprocessedDuplicateSummary = String.join(" ", sequenceToCheckAgainst);
+				duplicateList.add(new DuplicateRecommendation(baseElement, compareElement, preprocessedDuplicateSummary,
+						0, preprocessedDuplicateSummary.length(),
+						// calculateScore(sequenceToCheck, sequenceToCheckAgainst),
+						fieldUsedForDetection));
+				return duplicateList;
+			}
+			index++;
 		}
+
 		return duplicateList;
 	}
 

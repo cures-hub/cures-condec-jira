@@ -12,12 +12,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
@@ -26,71 +23,44 @@ public class DuplicateDetectionManager {
 
 	private KnowledgeElement knowledgeElement;
 
-	private volatile List<DuplicateRecommendation> foundDuplicateSuggestions;
-
-	private int fragmentLength;
+	private volatile List<DuplicateRecommendation> duplicateRecommendations;
 
 	private DuplicateTextDetector duplicateDetectionStrategy;
-
-	public DuplicateDetectionManager(Issue knowledgeElement, DuplicateTextDetector duplicateDetectionStrategy) {
-		this(new KnowledgeElement(knowledgeElement), duplicateDetectionStrategy);
-	}
 
 	public DuplicateDetectionManager(KnowledgeElement knowledgeElement,
 			DuplicateTextDetector duplicateDetectionStrategy) {
 		this.knowledgeElement = knowledgeElement;
 		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
-		if (this.knowledgeElement == null) {
-			this.fragmentLength = ConfigPersistenceManager
-					.getLinkRecommendationConfiguration(this.knowledgeElement.getProject().getProjectKey())
-					.getMinTextLength();
-
-		} else {
-			this.fragmentLength = 21;
-		}
-	}
-
-	public DuplicateDetectionManager(KnowledgeElement knowledgeElement,
-			DuplicateTextDetector duplicateDetectionStrategy, int fragmentLength) {
-		this.knowledgeElement = knowledgeElement;
-		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
-		this.fragmentLength = fragmentLength;
 	}
 
 	public List<DuplicateRecommendation> findAllDuplicates(Collection<? extends KnowledgeElement> elementsToCheck) {
+		duplicateRecommendations = new ArrayList<>();
+		elementsToCheck = elementsToCheck.stream().filter((element -> {
+			if (element.getJiraIssue() == null || this.knowledgeElement.getJiraIssue() == null) {
+				return true;
+			}
+			return !element.getJiraIssue().getKey().equals(this.knowledgeElement.getJiraIssue().getKey());
+		})).collect(Collectors.toList());
 
-		foundDuplicateSuggestions = new ArrayList<>();
+		elementsToCheck.remove(this.knowledgeElement);
+		elementsToCheck.removeAll(ConsistencyPersistenceHelper.getDiscardedDuplicates(this.knowledgeElement));// remove
+																												// discareded
+																												// suggestions;
+		elementsToCheck.removeAll(this.alreadyLinkedAsDuplicates());// remove linked elements;
 
-		if (this.knowledgeElement != null && this.duplicateDetectionStrategy != null) {
-			elementsToCheck = elementsToCheck.stream().filter((element -> {
-				if (element.getJiraIssue() == null || this.knowledgeElement.getJiraIssue() == null) {
-					return true;
-				}
-				return !element.getJiraIssue().getKey().equals(this.knowledgeElement.getJiraIssue().getKey());
-			})).collect(Collectors.toList());
+		duplicateRecommendations = elementsToCheck.parallelStream().map((element) -> {
+			DuplicateRecommendation mostLikelyDuplicate = null;
+			try {
+				List<DuplicateRecommendation> foundDuplicateFragmentsForIssue = duplicateDetectionStrategy
+						.detectDuplicates(knowledgeElement, element);
+				mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+			}
+			return mostLikelyDuplicate;
+		}).collect(Collectors.toList());
 
-			elementsToCheck.remove(this.knowledgeElement);
-			elementsToCheck.removeAll(ConsistencyPersistenceHelper.getDiscardedDuplicates(this.knowledgeElement));// remove
-																													// discareded
-																													// suggestions;
-			elementsToCheck.removeAll(this.alreadyLinkedAsDuplicates());// remove linked elements;
-
-			foundDuplicateSuggestions = elementsToCheck.parallelStream().map((element) -> {
-				// System.out.println("Thread : " + Thread.currentThread().getName() + ", value:
-				// " + element.getKey());
-				DuplicateRecommendation mostLikelyDuplicate = null;
-				try {
-					List<DuplicateRecommendation> foundDuplicateFragmentsForIssue = new DuplicateTextDetector(
-							this.fragmentLength).detectDuplicates(this.knowledgeElement, element);
-					mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage());
-				}
-				return mostLikelyDuplicate;
-			}).collect(Collectors.toList());
-		}
-
-		return foundDuplicateSuggestions.parallelStream().filter(Objects::nonNull).collect(Collectors.toList());
+		return duplicateRecommendations.parallelStream().filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	private Collection<? extends KnowledgeElement> alreadyLinkedAsDuplicates() {
@@ -105,12 +75,8 @@ public class DuplicateDetectionManager {
 		return elements;
 	}
 
-	public void setDuplicateDetectionStrategy(DuplicateTextDetector duplicateDetectionStrategy) {
-		this.duplicateDetectionStrategy = duplicateDetectionStrategy;
-	}
-
 	public KnowledgeElement getKnowledgeElement() {
-		return this.knowledgeElement;
+		return knowledgeElement;
 	}
 
 	private DuplicateRecommendation findLongestDuplicate(
