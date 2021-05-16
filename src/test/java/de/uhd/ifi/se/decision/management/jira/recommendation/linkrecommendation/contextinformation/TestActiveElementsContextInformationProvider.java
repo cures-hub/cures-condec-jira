@@ -15,7 +15,7 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		TestSetUp.init();
+		init();
 		activeElementsContextInformationProvider = new ActiveElementsContextInformationProvider();
 	}
 

@@ -51,7 +51,7 @@ public class LinkRecommendationRest {
 		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 		if (knowledgeElement.isPresent()) {
 			ContextInformation ci = new ContextInformation(knowledgeElement.get());
-			Collection<Recommendation> linkSuggestions = ci.getLinkSuggestions();
+			Collection<Recommendation> linkSuggestions = ci.getLinkRecommendations();
 			return Response.ok(linkSuggestions).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();

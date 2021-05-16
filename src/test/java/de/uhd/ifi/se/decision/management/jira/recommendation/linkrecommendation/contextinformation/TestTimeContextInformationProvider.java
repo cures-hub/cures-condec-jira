@@ -15,7 +15,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		TestSetUp.init();
+		init();
 		timeContextInformationProvider = new TimeContextInformationProvider();
 	}
 

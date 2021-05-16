@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -53,7 +54,12 @@ public class KnowledgeElements {
 		for (Issue jiraIssue : jiraIssues) {
 			elements.add(new KnowledgeElement(jiraIssue));
 		}
+		elements.addAll(createChangedFiles());
+		return elements;
+	}
 
+	public static List<KnowledgeElement> createChangedFiles() {
+		List<KnowledgeElement> elements = new ArrayList<>();
 		String stringThatIsNotDone = "public class ClassThatIsNotDone {\n"
 				+ "    // This file must be larger than 50 lines,\n"
 				+ "    // must not be named \"test\" at the beginning,\n"
@@ -123,8 +129,10 @@ public class KnowledgeElements {
 		graph.addVertexNotBeingInDatabase(fileThatIsNotDone);
 		graph.addVertexNotBeingInDatabase(smallFileThatIsDone);
 		graph.addVertexNotBeingInDatabase(testFileThatIsDone);
-		KnowledgeElement issueToBeLinked = new KnowledgeElement(jiraIssues.get(4));
-		KnowledgeElement decisionToBeLinked = new KnowledgeElement(jiraIssues.get(10));
+		KnowledgeElement issueToBeLinked = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(4));
+		issueToBeLinked.setDocumentationLocation(DocumentationLocation.CODE);
+		KnowledgeElement decisionToBeLinked = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(10));
+		decisionToBeLinked.setDocumentationLocation(DocumentationLocation.CODE);
 		graph.addVertexNotBeingInDatabase(issueToBeLinked);
 		graph.addVertexNotBeingInDatabase(decisionToBeLinked);
 
@@ -133,8 +141,6 @@ public class KnowledgeElements {
 		link = new Link(issueToBeLinked, decisionToBeLinked);
 		graph.addEdgeNotBeingInDatabase(link);
 		assertEquals(1, linkedFileThatIsDone.getLinks().size());
-		elements.add(linkedFileThatIsDone);
-
 		return elements;
 	}
 }

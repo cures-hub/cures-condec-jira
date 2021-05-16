@@ -16,7 +16,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		TestSetUp.init();
+		init();
 		userContextInformationProvider = new UserContextInformationProvider();
 	}
 

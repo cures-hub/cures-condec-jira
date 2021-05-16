@@ -15,7 +15,7 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		TestSetUp.init();
+		init();
 		textualSimilarityContextInformationProvider = new TextualSimilarityContextInformationProvider();
 	}
 

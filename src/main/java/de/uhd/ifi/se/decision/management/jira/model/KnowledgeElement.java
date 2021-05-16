@@ -561,6 +561,15 @@ public class KnowledgeElement {
 		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
+	/**
+	 * @param maxDistance
+	 *            maximal link distance that is travered to search for the other
+	 *            {@link KnowledgeElement}s starting from this element.
+	 * @return set of all {@link KnowledgeElement}s reachable from this element
+	 *         within the maximal link distance. Uses the
+	 *         {@link DijkstraShortestPath} algorithm. Assumes that the graph is
+	 *         undirected.
+	 */
 	public Set<KnowledgeElement> getLinkedElements(int maxDistance) {
 		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
 		SingleSourcePaths<KnowledgeElement, Link> paths = pathAlgorithm.getPaths(this);
@@ -570,12 +579,16 @@ public class KnowledgeElement {
 	/**
 	 * @param otherElement
 	 *            another element in the {@link KnowledgeGraph}
+	 * @param maxDistance
+	 *            maximal link distance that is travered to search for the other
+	 *            {@link KnowledgeElement} starting from this element.
 	 * @return length of the shortest path between this knowledge element to another
-	 *         element in the {@link KnowledgeGraph}. Uses the
-	 *         {@link DijkstraShortestPath} algorithm.
+	 *         element in the {@link KnowledgeGraph} within the maximal link
+	 *         distance. Uses the {@link DijkstraShortestPath} algorithm. Assumes
+	 *         that the graph is undirected.
 	 */
-	public int getLinkDistance(KnowledgeElement otherElement, int maxLinkDistance) {
-		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxLinkDistance);
+	public int getLinkDistance(KnowledgeElement otherElement, int maxDistance) {
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
 		GraphPath<KnowledgeElement, Link> graphPath = pathAlgorithm.getPath(this, otherElement);
 		if (graphPath != null) {
 			return graphPath.getLength();

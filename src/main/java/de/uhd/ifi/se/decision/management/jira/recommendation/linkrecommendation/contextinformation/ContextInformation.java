@@ -35,7 +35,7 @@ public class ContextInformation implements ContextInformationProvider {
 		// ActiveElementsContextInformationProvider());
 	}
 
-	public List<Recommendation> getLinkSuggestions() {
+	public List<Recommendation> getLinkRecommendations() {
 		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
 		List<KnowledgeElement> elementsToKeep = filterDiscardedElements(unlinkedElements);
@@ -68,13 +68,18 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	/**
-	 * Calculates the relationship between one {@link KnowledgeElement} to a list of
-	 * other {@link KnowledgeElement}s. Higher values indicate a higher similarity.
-	 * The value is called Context Relationship Indicator in the paper.
+	 * Makes recommendations whether one {@link KnowledgeElement} should be linked
+	 * to other {@link KnowledgeElement}s that it is currently not linked to.
 	 *
 	 * @param baseElement
+	 *            {@link KnowledgeElement} for that new links should be recommended
+	 *            (see {@link LinkRecommendation}).
 	 * @param knowledgeElements
-	 * @return value of relationship in [0, inf]
+	 *            other {@link KnowledgeElement}s in the {@link KnowledgeGraph} that
+	 *            are not directly linked.
+	 * @return list of {@link Recommendation}s. For each {@link Recommendation}, the
+	 *         {@link RecommendationScore} indicates whether the element should be
+	 *         linked.
 	 */
 	public List<Recommendation> assessRelations(KnowledgeElement baseElement,
 			List<KnowledgeElement> knowledgeElements) {
