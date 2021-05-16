@@ -791,22 +791,20 @@
 	};
 
 	function getIssueKey() {
-		var issueKey;
-		try {
+		var issueKey = null;
+		if (JIRA && JIRA.Issue && JIRA.Issue.getIssueKey) {
 			issueKey = JIRA.Issue.getIssueKey();
-		} catch (error) {
-			// console.log(error);
 		}
-		if (issueKey === undefined) {
-			// console.log("conDecAPI could not getIssueKey using object JIRA!");
-			try {
+		if (issueKey === undefined || !issueKey) {
+			// console.log("conDecAPI could not getIssueKey using object
+			// JIRA!");
+			if (AJS && AJS.Meta && AJS.Meta.get) {
 				issueKey = AJS.Meta.get("issue-key");
-			} catch (error) {
-				// console.log(error);
 			}
 		}
-		if (issueKey === undefined) {
-			// console.log("conDecAPI could not getIssueKey using object AJS!");
+		if (issueKey === undefined || !issueKey) {
+			// console.log("conDecAPI could not getIssueKey using object
+			// AJS!");
 			var chunks = document.location.pathname.split("/");
 			if (chunks.length > 0) {
 				var lastChunk = chunks[chunks.length - 1];
