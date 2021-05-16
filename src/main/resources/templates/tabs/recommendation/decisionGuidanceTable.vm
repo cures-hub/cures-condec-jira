@@ -1,0 +1,36 @@
+<h2>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</h2> 
+<b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b> 
+DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;  
+Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
+
+<form class="aui">
+        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required />
+        <button class="aui-button" id="recommendation-button" disabled="true">
+            <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span> 
+            $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
+        </button>
+        <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
+</form>
+
+<table id="recommendation-container" class="aui aui-table-list">
+    <thead>
+    <tr>
+        <th>$i18n.getText("condec.decision.guidance.recommendations")</th>
+        <th>$i18n.getText("condec.decision.guidance.knowledgesources")</th>
+        <th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
+        <th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
+        <th>$i18n.getText("condec.decision.guidance.arguments")</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div style="display:none">
+#parse("templates/tabs/recommendation/quickRecommendation.vm")
+#parse("templates/tabs/recommendation/scoreExplanation.vm")
+</div>
+
+<script>
+    conDecDecisionGuidance.initView();
+</script>

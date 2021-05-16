@@ -266,8 +266,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         be linked.
 	 */
 	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.addAll(this.vertexSet());
+		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>(vertexSet());
 		if (element == null) {
 			return elements;
 		}
@@ -277,6 +276,16 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		elements.removeAll(linkedElements);
 
 		return elements;
+	}
+
+	public List<KnowledgeElement> getUnlinkedElementsAndNotInSameJiraIssue(KnowledgeElement element) {
+		List<KnowledgeElement> unlinkedElements = getUnlinkedElements(element);
+		unlinkedElements
+				.removeAll(unlinkedElements.stream()
+						.filter(unlinkedElement -> unlinkedElement.getJiraIssue() != null
+								&& unlinkedElement.getJiraIssue().equals(element.getJiraIssue()))
+						.collect(Collectors.toList()));
+		return unlinkedElements;
 	}
 
 	/**

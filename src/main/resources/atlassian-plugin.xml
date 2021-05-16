@@ -139,17 +139,19 @@
 		<resource type="download" name="condec.decision.groups.js" location="/js/condec.decision.groups.js" />
 		<resource type="download" name="condec.definition.of.done.checking.api.js"
 			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
-		<resource type="download" name="condec.link.suggestion.api.js"
-			location="/js/linksuggestion/condec.link.suggestion.api.js" />
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.nudging.api.js" location="/js/nudging/condec.nudging.api.js" />
 		<resource type="download" name="condec.prompts.js" location="/js/nudging/condec.prompts.js" />
-		<resource type="download" name="condec.link.suggestion.js"
-			location="/js/linksuggestion/condec.link.suggestion.js" />
+		<resource type="download" name="condec.recommendation.js"
+			location="/js/recommendation/condec.recommendation.js" />
+		<resource type="download" name="condec.link.recommendation.api.js"
+			location="/js/recommendation/condec.link.recommendation.api.js" />
+		<resource type="download" name="condec.link.recommendation.js"
+			location="/js/recommendation/condec.link.recommendation.js" />
 		<resource type="download" name="condec.decision.guidance.api.js"
-			location="/js/decisionguidance/condec.decision.guidance.api.js" />
+			location="/js/recommendation/condec.decision.guidance.api.js" />
 		<resource type="download" name="condec.decision.guidance.js"
-			location="/js/decisionguidance/condec.decision.guidance.js" />
+			location="/js/recommendation/condec.decision.guidance.js" />
 		<resource type="download" name="condec.text.classification.api.js"
 			location="/js/classification/condec.text.classification.api.js" />
 	</web-resource>
@@ -350,12 +352,12 @@
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="condec-project-settings-menu-item-consistency"
-		name="Menu Item for ConDec Plug-in Project Settings of Consistency"
+	<web-item key="condec-project-settings-menu-item-linkrecommendation"
+		name="Menu Item for ConDec Plug-in Project Settings of Link Recommendation"
 		section="atl.jira.proj.config/condec-project-settings-section" weight="20">
-		<description>Adds the "Consistency" menu item.</description>
-		<label key="condec.project.settings.menu.item.consistency" />
-		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=consistency
+		<description>Adds the "Link Recommendation" menu item.</description>
+		<label key="condec.project.settings.menu.item.link.recommendation" />
+		<link>/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded&amp;category=linkRecommendation
 		</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
@@ -422,7 +424,7 @@
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase
 		</entity>
 		<entity>
-			de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase
 		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase

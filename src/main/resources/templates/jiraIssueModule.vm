@@ -52,7 +52,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		#parse("templates/tabs/visGraph.vm")
 	</div>
 	<div class="tabs-pane" id="related-knowledge-elements-tab">
-		#parse("templates/tabs/relatedKnowledgeElements.vm")
+		#parse("templates/tabs/recommendation/relatedKnowledgeElements.vm")
 	</div>
 	<div class="tabs-pane" id="decision-table-tab">
 		#parse("templates/tabs/decisiontable/view.vm")

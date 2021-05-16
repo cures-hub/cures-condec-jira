@@ -154,7 +154,7 @@ public class Link extends DefaultWeightedEdge {
 		this.type = LinkType.getLinkType(type);
 	}
 
-	@XmlElement(name = "color")
+	@XmlElement
 	public String getColor() {
 		return LinkType.getLinkTypeColor(this.getTypeAsString());
 	}
@@ -219,15 +219,13 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * Sets the destination element of this link by its id and documentation
-	 * location.
+	 * Sets the destination element of this link by its id and
+	 * {@link DocumentationLocation}.
 	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
 	 * @param id
-	 *            of the destination element of this link.
+	 *            of the destination {@link KnowledgeElement} of this link.
 	 * @param documentationLocation
-	 *            of the decision knowledge element.
+	 *            of the knowledge element.
 	 */
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.target == null) {
@@ -241,16 +239,13 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * Sets the destination element of this link by its id and documentation
-	 * location.
+	 * Sets the destination element of this link by its id and
+	 * {@link DocumentationLocation}.
 	 *
-	 * @see KnowledgeElement
-	 * @see DocumentationLocation
 	 * @param id
-	 *            of the destination element of this link.
+	 *            of the destination {@link KnowledgeElement} of this link.
 	 * @param documentationLocation
-	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
-	 *            issue.
+	 *            of the knowledge element as a String, e.g. "i" for Jira issue.
 	 */
 	public void setDestinationElement(long id, String documentationLocation) {
 		this.setDestinationElement(id,
@@ -258,9 +253,9 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * @see KnowledgeElement
-	 * @return target (=destination) element of this link (=edge).
+	 * @return target (=destination) {@link KnowledgeElement} of this link (=edge).
 	 */
+	@XmlElement
 	@Override
 	public KnowledgeElement getTarget() {
 		if (target == null) {

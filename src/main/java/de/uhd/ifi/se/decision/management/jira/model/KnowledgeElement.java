@@ -10,7 +10,14 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
+import org.jgrapht.graph.AsUndirectedGraph;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
@@ -166,6 +173,13 @@ public class KnowledgeElement {
 	@XmlElement
 	public String getDescription() {
 		return description;
+	}
+
+	/**
+	 * @return concatenated String of the summary and the description.
+	 */
+	public String getText() {
+		return summary + " " + description;
 	}
 
 	/**
@@ -547,40 +561,63 @@ public class KnowledgeElement {
 		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
 	}
 
-	public Set<KnowledgeElement> getLinkedElements(int currentDistance) {
-		Set<KnowledgeElement> elements = new HashSet<>();
-		Set<Link> traversedLinks = new HashSet<>();
-		elements.add(this);
-
-		if (currentDistance == 0) {
-			return elements;
-		}
-		for (Link link : this.getLinks()) {
-			if (!traversedLinks.add(link)) {
-				continue;
-			}
-			KnowledgeElement oppositeElement = link.getOppositeElement(this);
-			if (oppositeElement == null) {
-				continue;
-			}
-			elements.addAll(oppositeElement.getLinkedElements(currentDistance - 1));
-		}
-		return elements;
+	/**
+	 * @issue How can we get all knowledge elements within a certain distance/number
+	 *        of hops from one element?
+	 * @decision Use the ShortestPathAlgorithm of the jGraphT library to find all
+	 *           knowledge elements within a certain distance/number of hops from
+	 *           one element.
+	 * @pro Might be faster than the former implementation using the recursion
+	 *      (better performance).
+	 * @alternative We used to have our own implementation to get all knowledge
+	 *              elements within a certain distance using recursion.
+	 * 
+	 * @param maxDistance
+	 *            maximal link distance that is travered to search for the other
+	 *            {@link KnowledgeElement}s starting from this element.
+	 * @return set of all {@link KnowledgeElement}s reachable from this element
+	 *         within the maximal link distance. Uses the
+	 *         {@link DijkstraShortestPath} algorithm. Assumes that the graph is
+	 *         undirected.
+	 */
+	public Set<KnowledgeElement> getLinkedElements(int maxDistance) {
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
+		SingleSourcePaths<KnowledgeElement, Link> paths = pathAlgorithm.getPaths(this);
+		return ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths).getDistanceAndPredecessorMap().keySet();
 	}
 
-	public int getLinkDistance(KnowledgeElement other, int maxLinkDistance) {
-		Set<KnowledgeElement> linkedElements = new HashSet<KnowledgeElement>();
-		for (int distance = 0; distance <= maxLinkDistance; distance++) {
-			Set<KnowledgeElement> newLinkedElements = getLinkedElements(distance);
-			newLinkedElements.removeAll(linkedElements);
-			for (KnowledgeElement element : newLinkedElements) {
-				if (other.equals(element)) {
-					return distance;
-				}
-			}
-			linkedElements.addAll(newLinkedElements);
+	/**
+	 * @issue How can we get the link distance/number of hops from one element to
+	 *        another element in the knowledge graph?
+	 * @decision Use the ShortestPathAlgorithm of the jGraphT library to get the
+	 *           link distance/number of hops from one element to another element.
+	 * @pro Might be faster than our own implementation (better performance).
+	 * @alternative We used to have our own implementation to get the link
+	 *              distance/number of hops from one element to another element.
+	 * 
+	 * @param otherElement
+	 *            another element in the {@link KnowledgeGraph}
+	 * @param maxDistance
+	 *            maximal link distance that is travered to search for the other
+	 *            {@link KnowledgeElement} starting from this element.
+	 * @return length of the shortest path between this knowledge element to another
+	 *         element in the {@link KnowledgeGraph} within the maximal link
+	 *         distance. Uses the {@link DijkstraShortestPath} algorithm. Assumes
+	 *         that the graph is undirected.
+	 */
+	public int getLinkDistance(KnowledgeElement otherElement, int maxDistance) {
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
+		GraphPath<KnowledgeElement, Link> graphPath = pathAlgorithm.getPath(this, otherElement);
+		if (graphPath != null) {
+			return graphPath.getLength();
 		}
 		return -1;
+	}
+
+	private ShortestPathAlgorithm<KnowledgeElement, Link> getShortestPathAlgorithm(int maxLinkDistance) {
+		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+		return new DijkstraShortestPath<>(undirectedGraph, maxLinkDistance);
 	}
 
 	/**

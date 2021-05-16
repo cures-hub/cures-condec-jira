@@ -1,6 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.jgrapht.graph.AsSubgraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -9,15 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import org.jgrapht.graph.AsSubgraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -81,35 +83,35 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	private Boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement,
+	private boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement,
 			KnowledgeGraph temporaryGraph, KnowledgeElement element, Map<KnowledgeElement, Integer> linkDistanceMap) {
 
 		// if both elements are identical or are already linked to each other
 		if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
-				|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement,
-				targetElement) || graph.containsEdge(targetElement, sourceElement)) {
+				|| temporaryGraph.containsEdge(targetElement, sourceElement)
+				|| graph.containsEdge(sourceElement, targetElement)
+				|| graph.containsEdge(targetElement, sourceElement)) {
 			return false;
 		}
 
-		// if both elements are decision knowledge elements, check whether the direction is correct
-		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
-				(  !graph.getLinkedSourceElements(element).contains(sourceElement)
-				|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
+		// if both elements are decision knowledge elements, check whether the direction
+		// is correct
+		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER
+				&& (!graph.getLinkedSourceElements(element).contains(sourceElement)
+						|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
 			return false;
 		}
 
-		// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
+		// linking a knowledge element to a decision knowledge element shall only be
+		// done in one direction, towards the other knowledge element
 		if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
 			return false;
 		}
 
-		// if both knowledge elements have the same link distance to the selected element, we do not create a transitive link
-		if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
-				|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
-			return false;
-		}
-
-		return true;
+		// if both knowledge elements have the same link distance to the selected
+		// element, we do not create a transitive link
+		return !linkDistanceMap.get(sourceElement).equals(linkDistanceMap.get(targetElement))
+				&& !linkDistanceMap.get(sourceElement).equals(-1) && !linkDistanceMap.get(targetElement).equals(-1);
 	}
 
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
@@ -131,23 +133,29 @@ public class FilteringManager {
 				linkedElements.addAll(temporaryGraph.getLinkedElements(element));
 			}
 
-			// iterate through every pair of elements linked to the removed element, which are possible candidates for creating a transitive link in between
+			// iterate through every pair of elements linked to the removed element, which
+			// are possible candidates for creating a transitive link in between
 			for (KnowledgeElement sourceElement : linkedElements) {
 				for (KnowledgeElement targetElement : linkedElements) {
 
-					// computing link distances takes a lot of time, so we store and reuse the results
+					// computing link distances takes a lot of time, so we store and reuse the
+					// results
 					if (!linkDistanceMap.containsKey(sourceElement)) {
-						linkDistanceMap.put(sourceElement, sourceElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
+						linkDistanceMap.put(sourceElement, sourceElement.getLinkDistance(
+								filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
 					}
 					if (!linkDistanceMap.containsKey(targetElement)) {
-						linkDistanceMap.put(targetElement, targetElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
+						linkDistanceMap.put(targetElement, targetElement.getLinkDistance(
+								filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
 					}
 
-					if (transitiveLinkShallBeAdded(sourceElement, targetElement, temporaryGraph, element, linkDistanceMap)) {
+					if (transitiveLinkShallBeAdded(sourceElement, targetElement, temporaryGraph, element,
+							linkDistanceMap)) {
 						Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
 						transitiveLink.setId(id++);
 
-						// we store the link just created so we can create transitive links even if multiple knowledge elements in a row are removed by filters
+						// we store the link just created so we can create transitive links even if
+						// multiple knowledge elements in a row are removed by filters
 						temporaryGraph.addEdge(transitiveLink);
 
 						if (subgraph.isElementInGraph(sourceElement) && subgraph.isElementInGraph(targetElement)) {

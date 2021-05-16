@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 import java.sql.SQLException;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -14,6 +15,7 @@ import net.java.ao.schema.Table;
  * relational mapping to the database.
  * 
  * @see KnowledgeElement
+ * @see PartOfJiraIssueText
  */
 @Table("CondecInComment")
 public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
@@ -60,6 +62,14 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setStatus(String status);
 
+	/**
+	 * Deletes the {@link PartOfJiraIssueTextInDatabase} object, i.e., removes it
+	 * from database.
+	 * 
+	 * @param elementToDelete
+	 *            {@link PartOfJiraIssueTextInDatabase} object.
+	 * @return true if deletion was successful, false otherwise.
+	 */
 	static boolean deleteElement(PartOfJiraIssueTextInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);

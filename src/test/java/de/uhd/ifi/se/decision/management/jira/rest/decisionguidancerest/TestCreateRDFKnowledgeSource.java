@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 

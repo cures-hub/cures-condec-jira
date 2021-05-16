@@ -1,0 +1,41 @@
+<div>
+    <aui-spinner id="loading-spinner"></aui-spinner>
+</div>
+
+<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
+<table class="aui aui-table-list" id="results-table">
+    <thead>
+	    <tr>
+	        <th id="th-key">$i18n.getText("condec.label.knowledge.type")</th>
+	        <th id="th-name">$i18n.getText("condec.label.summary")</th>
+	        <th id="th-score">$i18n.getText("condec.recommendation.score")</th>	
+	        <th id="th-options">$i18n.getText("condec.recommendation.manage")</th>
+	    <tr>
+    </thead>
+    <tbody id="table-content"></tbody>
+</table>
+
+<b>Potential duplicates</b>
+<table class="aui aui-table-list" id="duplicate-results-table">
+    <thead>
+	    <tr>
+	        <th id="th-key-duplicate">$i18n.getText("condec.label.knowledge.type")</th>
+	        <th id="th-text-fragment-duplicate">$i18n.getText("condec.duplicate")</th>
+	        <th id="th-options-duplicate">$i18n.getText("condec.recommendation.manage")</th>
+	    <tr>
+    </thead>
+    <tbody id="table-content-duplicate"></tbody>
+</table>
+
+<script>
+/* Adds the on click listener on tab opening */
+$(document).ready(function () {
+	var isOnceClicked = false;
+    AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+    	if (!isOnceClicked && event.target.href.includes("#related-knowledge-elements-tab")) {
+    		conDecLinkRecommendation.init();
+			isOnceClicked = true;
+		}
+	});
+});
+</script>

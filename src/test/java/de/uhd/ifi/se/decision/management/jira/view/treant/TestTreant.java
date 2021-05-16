@@ -71,7 +71,7 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testConstructor() {
 		FilterSettings filterSettings = new FilterSettings("TEST", null);
-		filterSettings.setSelectedElement("14");
+		filterSettings.setSelectedElement("TEST-14");
 		this.treant = new Treant(filterSettings, false);
 		assertNotNull(this.treant);
 	}

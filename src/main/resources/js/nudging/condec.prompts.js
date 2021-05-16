@@ -23,7 +23,7 @@
 					return;
 				}
 				Promise.all([conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-				conDecLinkSuggestionAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
+				conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
 					(values) => {
 						let numDuplicates = (values[0].length);
 						let numRelated = (values[1].length);

@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
@@ -17,7 +17,7 @@ import net.java.ao.schema.Table;
  * @decision Storing code classes is necessary because then they have a unique
  *           id and can be linked to Jira issues such as work items.
  *
- * @see KnowledgeElement
+ * @see ChangedFile
  * @see CodeClassPersistenceManager
  */
 @Table("CondecCodeClass")
@@ -41,6 +41,14 @@ public interface CodeClassInDatabase extends RawEntity<Long> {
 
 	void setProjectKey(String projectKey);
 
+	/**
+	 * Deletes the {@link CodeClassInDatabase} object, i.e., removes it from
+	 * database.
+	 * 
+	 * @param elementToDelete
+	 *            {@link CodeClassInDatabase} object.
+	 * @return true if deletion was successful, false otherwise.
+	 */
 	static boolean deleteElement(CodeClassInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
