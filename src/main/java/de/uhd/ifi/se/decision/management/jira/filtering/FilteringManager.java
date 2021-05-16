@@ -110,12 +110,8 @@ public class FilteringManager {
 
 		// if both knowledge elements have the same link distance to the selected
 		// element, we do not create a transitive link
-		if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
-				|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
-			return false;
-		}
-
-		return true;
+		return linkDistanceMap.get(sourceElement) != linkDistanceMap.get(targetElement)
+				&& linkDistanceMap.get(sourceElement) != -1 && linkDistanceMap.get(targetElement) != -1;
 	}
 
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
