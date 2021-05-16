@@ -149,8 +149,4 @@ public class MockUserManager implements UserManager {
 	public Iterable<String> findGroupNamesByPrefix(String prefix, int startIndex, int maxResults) {
 		return null;
 	}
-
-	public ApplicationUser getUserByNameEvenWhenUnknown(String username) {
-		return JiraUsers.BLACK_HEAD.getApplicationUser();
-	}
 }

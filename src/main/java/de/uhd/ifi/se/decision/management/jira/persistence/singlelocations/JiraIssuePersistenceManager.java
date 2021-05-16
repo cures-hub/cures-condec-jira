@@ -361,10 +361,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
 		if (issue == null) {
-			System.out.println(element.getKey());
 			return ComponentAccessor.getUserManager().getUserByNameEvenWhenUnknown("Unknown User");
 		}
-		return issue.getCreator();
+		return issue.getReporter();
 	}
 
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {

@@ -141,6 +141,7 @@ public class KnowledgeElements {
 		link = new Link(issueToBeLinked, decisionToBeLinked);
 		graph.addEdgeNotBeingInDatabase(link);
 		assertEquals(1, linkedFileThatIsDone.getLinks().size());
+		elements.add(linkedFileThatIsDone);
 		return elements;
 	}
 }
