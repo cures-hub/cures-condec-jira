@@ -271,18 +271,6 @@ public class ViewRest {
 		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
 	}
 
-	private Response checkIfElementIsValid(String elementKey) {
-		if (elementKey == null) {
-			return jiraIssueKeyIsInvalid();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		return Response.status(Status.OK).build();
-	}
-
 	private Response jiraIssueKeyIsInvalid() {
 		String message = "Decision knowledge elements cannot be shown since the Jira issue key is invalid.";
 		LOGGER.error(message);
