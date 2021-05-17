@@ -253,7 +253,7 @@ public class TestFilteringManager extends TestSetUp {
 		Set<Link> transitiveLinks = new HashSet<Link>();
 		transitiveLinks.addAll(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
-		assertEquals(2, transitiveLinks.size());
+		assertEquals(1, transitiveLinks.size());
 
 		Set<Link> otherLinks1 = new HashSet<Link>();
 		otherLinks1.addAll(subgraph.edgeSet());
@@ -285,7 +285,7 @@ public class TestFilteringManager extends TestSetUp {
 		Set<Link> transitiveLinks = new HashSet<Link>();
 		transitiveLinks.addAll(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
-		assertEquals(2, transitiveLinks.size());
+		assertEquals(1, transitiveLinks.size());
 	}
 
 	@Test

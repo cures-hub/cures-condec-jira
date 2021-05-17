@@ -581,9 +581,13 @@ public class KnowledgeElement {
 	 *         undirected.
 	 */
 	public Set<KnowledgeElement> getLinkedElements(int maxDistance) {
-		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
-		SingleSourcePaths<KnowledgeElement, Link> paths = pathAlgorithm.getPaths(this);
+		SingleSourcePaths<KnowledgeElement, Link> paths = getAllPaths(maxDistance);
 		return ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths).getDistanceAndPredecessorMap().keySet();
+	}
+
+	public SingleSourcePaths<KnowledgeElement, Link> getAllPaths(int maxDistance) {
+		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
+		return pathAlgorithm.getPaths(this);
 	}
 
 	/**
