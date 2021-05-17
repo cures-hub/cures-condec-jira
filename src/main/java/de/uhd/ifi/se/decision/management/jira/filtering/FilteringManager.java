@@ -274,7 +274,7 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
-		if (element.getType() == KnowledgeType.OTHER) {
+		if (element.getType() == KnowledgeType.OTHER || element.getType() == KnowledgeType.CODE) {
 			if (filterSettings.isOnlyDecisionKnowledgeShown()) {
 				return false;
 			}

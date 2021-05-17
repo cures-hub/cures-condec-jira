@@ -232,6 +232,17 @@ public class TestFilteringManager extends TestSetUp {
 	@NonTransactional
 	public void testIsIrrelevantTextShownFilter() {
 		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setOnlyDecisionKnowledgeShown(true);
+		FilteringManager filteringManager = new FilteringManager(user, settings);
+		assertTrue(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getDecision()));
+		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getOtherWorkItem()));
+		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getCodeFile()));
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsElementMatchingKnowledgeTypeFilter() {
+		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setIrrelevantTextShown(true);
 		// Add irrelevant sentence
 		JiraIssues.getSentencesForCommentText("Irrelevant text");
