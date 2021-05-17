@@ -23,7 +23,6 @@ a:focus a:hover {
     float: left;
     overflow: auto;
     resize: both;
-    margin: 10px;
 }
 
 .graph {

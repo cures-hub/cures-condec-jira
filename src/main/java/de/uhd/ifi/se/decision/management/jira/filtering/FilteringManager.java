@@ -64,8 +64,10 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @return subgraph of the {@link KnowledgeGraph} that matches the
-	 *         {@link FilterSettings}.
+	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
+	 *         If no transitive links are created, a subgraph of the original graph
+	 *         is returned. If transitive links are created, the returned graph
+	 *         contains new {@link Link}s (and is thus no subgraph).
 	 */
 	public KnowledgeGraph getSubgraphMatchingFilterSettings() {
 		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
@@ -77,52 +79,15 @@ public class FilteringManager {
 		KnowledgeGraph subgraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
 		removeLinksWithTypesNotInFilterSettings(subgraph);
 
-		if (filterSettings.createTransitiveLinks()) {
+		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
 			addTransitiveLinksToSubgraph(subgraph);
 		}
 		return subgraph;
 	}
 
-	private boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement,
-			KnowledgeGraph temporaryGraph, KnowledgeElement element, Map<KnowledgeElement, Integer> linkDistanceMap) {
-
-		// if both elements are identical or are already linked to each other
-		if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
-				|| temporaryGraph.containsEdge(targetElement, sourceElement)
-				|| graph.containsEdge(sourceElement, targetElement)
-				|| graph.containsEdge(targetElement, sourceElement)) {
-			return false;
-		}
-
-		// if both elements are decision knowledge elements, check whether the direction
-		// is correct
-		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER
-				&& (!graph.getLinkedSourceElements(element).contains(sourceElement)
-						|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
-			return false;
-		}
-
-		// linking a knowledge element to a decision knowledge element shall only be
-		// done in one direction, towards the other knowledge element
-		if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
-			return false;
-		}
-
-		// if both knowledge elements have the same link distance to the selected
-		// element, we do not create a transitive link
-		return !linkDistanceMap.get(sourceElement).equals(linkDistanceMap.get(targetElement))
-				&& !linkDistanceMap.get(sourceElement).equals(-1) && !linkDistanceMap.get(targetElement).equals(-1);
-	}
-
 	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
-
-		// we always need a selected element
-		if (filterSettings.getSelectedElement() == null) {
-			return subgraph;
-		}
-
 		KnowledgeGraph temporaryGraph = new KnowledgeGraph();
-		int id = -65536;
+		int id = Integer.MIN_VALUE;
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
 		Map<KnowledgeElement, Integer> linkDistanceMap = new HashMap<KnowledgeElement, Integer>();
 
@@ -168,6 +133,37 @@ public class FilteringManager {
 		return subgraph;
 	}
 
+	private boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement,
+			KnowledgeGraph temporaryGraph, KnowledgeElement element, Map<KnowledgeElement, Integer> linkDistanceMap) {
+
+		// if both elements are identical or are already linked to each other
+		if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
+				|| temporaryGraph.containsEdge(targetElement, sourceElement)
+				|| graph.containsEdge(sourceElement, targetElement)
+				|| graph.containsEdge(targetElement, sourceElement)) {
+			return false;
+		}
+
+		// if both elements are decision knowledge elements, check whether the direction
+		// is correct
+		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER
+				&& (!graph.getLinkedSourceElements(element).contains(sourceElement)
+						|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
+			return false;
+		}
+
+		// linking a knowledge element to a decision knowledge element shall only be
+		// done in one direction, towards the other knowledge element
+		if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
+			return false;
+		}
+
+		// if both knowledge elements have the same link distance to the selected
+		// element, we do not create a transitive link
+		return !linkDistanceMap.get(sourceElement).equals(linkDistanceMap.get(targetElement))
+				&& !linkDistanceMap.get(sourceElement).equals(-1) && !linkDistanceMap.get(targetElement).equals(-1);
+	}
+
 	/**
 	 * @return all knowledge elements that do not match the {@link FilterSettings}.
 	 */
@@ -183,12 +179,12 @@ public class FilteringManager {
 			graph.addVertex(filterSettings.getSelectedElement());
 			return getElementsInLinkDistance(filterSettings.getSelectedElement());
 		}
-		return new HashSet<>(graph.vertexSet());
+		return graph.vertexSet();
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
 		int linkDistance = filterSettings.getLinkDistance();
-		return new HashSet<>(element.getLinkedElements(linkDistance));
+		return element.getLinkedElements(linkDistance);
 	}
 
 	/**
