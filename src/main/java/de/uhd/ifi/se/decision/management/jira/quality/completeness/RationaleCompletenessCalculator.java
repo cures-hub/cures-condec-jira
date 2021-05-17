@@ -52,7 +52,7 @@ public class RationaleCompletenessCalculator {
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
-		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		KnowledgeGraph graph = filteringManager.getFilteredGraph();
 		List<KnowledgeElement> allSourceElements = graph.getElements(sourceElementType);
 		String sourceElementsWithTargetTypeLinked = "";
 		String sourceElementsWithoutTargetTypeLinked = "";

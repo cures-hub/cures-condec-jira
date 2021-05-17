@@ -51,7 +51,7 @@ public class FilteringManager {
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+		if (filterSettings == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<>();
 		}
@@ -69,20 +69,21 @@ public class FilteringManager {
 	 *         is returned. If transitive links are created, the returned graph
 	 *         contains new {@link Link}s (and is thus no subgraph).
 	 */
-	public KnowledgeGraph getSubgraphMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+	public KnowledgeGraph getFilteredGraph() {
+		if (filterSettings == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph subgraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
-		removeLinksWithTypesNotInFilterSettings(subgraph);
+		KnowledgeGraph filteredGraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
 
 		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
-			addTransitiveLinksToFilteredGraph(subgraph);
+			addTransitiveLinksToFilteredGraph(filteredGraph);
 		}
-		return subgraph;
+
+		removeLinksWithTypesNotInFilterSettings(filteredGraph);
+		return filteredGraph;
 	}
 
 	/**
@@ -160,9 +161,6 @@ public class FilteringManager {
 
 	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
 		Set<KnowledgeElement> filteredElements = new HashSet<>();
-		if (elements == null || elements.isEmpty()) {
-			return filteredElements;
-		}
 		for (KnowledgeElement element : elements) {
 			if (isElementMatchingFilterSettings(element)) {
 				filteredElements.add(element);

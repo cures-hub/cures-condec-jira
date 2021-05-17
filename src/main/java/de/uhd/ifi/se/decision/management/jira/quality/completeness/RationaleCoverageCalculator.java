@@ -83,7 +83,7 @@ public class RationaleCoverageCalculator {
 			return null;
 		}
 
-		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		KnowledgeGraph graph = filteringManager.getFilteredGraph();
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
@@ -126,7 +126,7 @@ public class RationaleCoverageCalculator {
 			return null;
 		}
 
-		KnowledgeGraph graph = filteringManager.getSubgraphMatchingFilterSettings();
+		KnowledgeGraph graph = filteringManager.getFilteredGraph();
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);

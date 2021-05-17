@@ -62,7 +62,7 @@ public class Treant {
 		LOGGER.info(filterSettings.toString());
 
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
+		this.graph = filteringManager.getFilteredGraph();
 		this.setChart(new Chart());
 		nodeStructure = getTreantNodeWithChildren(filterSettings.getSelectedElement());
 		this.setHyperlinked(isHyperlinked);
