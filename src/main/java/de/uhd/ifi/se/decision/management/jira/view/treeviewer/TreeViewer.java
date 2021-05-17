@@ -88,7 +88,7 @@ public class TreeViewer {
 		LOGGER.info(filterSettings.toString());
 
 		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
-		graph = filteringManager.getSubgraphMatchingFilterSettings();
+		graph = filteringManager.getFilteredGraph();
 
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
 
@@ -111,7 +111,7 @@ public class TreeViewer {
 
 		for (KnowledgeElement element : rootElements) {
 			filteringManager.getFilterSettings().setSelectedElement(element);
-			graph = filteringManager.getSubgraphMatchingFilterSettings();
+			graph = filteringManager.getFilteredGraph();
 			nodes.add(getTreeViewerNodeWithChildren(element));
 		}
 	}

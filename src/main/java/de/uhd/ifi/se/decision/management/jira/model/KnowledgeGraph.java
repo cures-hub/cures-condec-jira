@@ -220,6 +220,16 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
+	 * @param link
+	 *            edge whose presence in this graph is to be tested.
+	 * @return <tt>true</tt> if the graph contains this edge if it was undirected
+	 *         (source and target can be flipped).
+	 */
+	public boolean containsUndirectedEdge(Link link) {
+		return containsEdge(link) || containsEdge(link.flip());
+	}
+
+	/**
 	 * Removes the specified edge from the graph if it is present. Returns
 	 * <tt>true</tt> if the graph contained the specified edge. (The graph will not
 	 * contain the specified edge once the call returns).
@@ -339,23 +349,5 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			}
 		}
 		return null;
-	}
-
-	public Set<KnowledgeElement> getLinkedTargetElements(KnowledgeElement sourceElement) {
-		return outgoingEdgesOf(sourceElement).stream().map(Link::getTarget).collect(Collectors.toSet());
-	}
-
-	public Set<KnowledgeElement> getLinkedSourceElements(KnowledgeElement targetElement) {
-		return incomingEdgesOf(targetElement).stream().map(Link::getSource).collect(Collectors.toSet());
-	}
-
-	public Set<KnowledgeElement> getLinkedElements(KnowledgeElement element) {
-		Set<KnowledgeElement> linkedElements = getLinkedTargetElements(element);
-		linkedElements.addAll(getLinkedSourceElements(element));
-		return linkedElements;
-	}
-
-	public boolean isElementInGraph(KnowledgeElement element) {
-		return this.vertexSet().contains(element);
 	}
 }
