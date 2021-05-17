@@ -1,25 +1,24 @@
-.menu-item.condec-default * {
-    background: white !important;
+.menu-item.condec-default {
+    background: white;
 }
-.menu-item.condec-empty * {
-    background: red !important;
+.menu-item.condec-empty {
+    background: red;
 }
-.menu-item.condec-warning * {
-    background: orange !important;
+.menu-item.condec-warning {
+    background: orange;
 }
-.menu-item.condec-fine * {
-    background: green !important;
+.menu-item.condec-fine {
+    background: green;
 }
-
-.text-field.condec-default * {
-    background: black !important;
+.text-field.condec-default {
+    color: black;
 }
-.text-field.condec-empty * {
-    background: red !important;
+.text-field.condec-empty {
+    color: red;
 }
-.text-field.condec-incomplete * {
-    background: orange !important;
+.text-field.condec-warning {
+    color: orange;
 }
-.text-field.condec-fine * {
-    background: green !important;
+.text-field.condec-fine {
+    color: green;
 }
