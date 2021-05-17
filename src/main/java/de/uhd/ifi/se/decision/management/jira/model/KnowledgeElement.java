@@ -573,8 +573,9 @@ public class KnowledgeElement {
 	 *              elements within a certain distance using recursion.
 	 * 
 	 * @param maxDistance
-	 *            maximal link distance that is travered to search for the other
-	 *            {@link KnowledgeElement}s starting from this element.
+	 *            maximal link distance that the {@link KnowledgeGraph} is travered
+	 *            to search for the other {@link KnowledgeElement}s starting from
+	 *            this element.
 	 * @return set of all {@link KnowledgeElement}s reachable from this element
 	 *         within the maximal link distance. Uses the
 	 *         {@link DijkstraShortestPath} algorithm. Assumes that the graph is
@@ -585,6 +586,16 @@ public class KnowledgeElement {
 		return ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths).getDistanceAndPredecessorMap().keySet();
 	}
 
+	/**
+	 * @param maxDistance
+	 *            maximal link distance that the {@link KnowledgeGraph} is travered
+	 *            to search for the other {@link KnowledgeElement}s starting from
+	 *            this element.
+	 * @return all paths from this element to other {@link KnowledgeElement}s in the
+	 *         {@link KnowledgeGraph} (not filtered) within the maximal link
+	 *         distance as a {@link SingleSourcePaths} object. Assumes that the
+	 *         graph is undirected.
+	 */
 	public SingleSourcePaths<KnowledgeElement, Link> getAllPaths(int maxDistance) {
 		ShortestPathAlgorithm<KnowledgeElement, Link> pathAlgorithm = getShortestPathAlgorithm(maxDistance);
 		return pathAlgorithm.getPaths(this);
@@ -602,8 +613,9 @@ public class KnowledgeElement {
 	 * @param otherElement
 	 *            another element in the {@link KnowledgeGraph}
 	 * @param maxDistance
-	 *            maximal link distance that is travered to search for the other
-	 *            {@link KnowledgeElement} starting from this element.
+	 *            maximal link distance that the {@link KnowledgeGraph} is travered
+	 *            to search for the other {@link KnowledgeElement} starting from
+	 *            this element.
 	 * @return length of the shortest path between this knowledge element to another
 	 *         element in the {@link KnowledgeGraph} within the maximal link
 	 *         distance. Uses the {@link DijkstraShortestPath} algorithm. Assumes

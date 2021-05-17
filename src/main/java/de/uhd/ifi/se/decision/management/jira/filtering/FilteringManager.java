@@ -80,35 +80,38 @@ public class FilteringManager {
 		removeLinksWithTypesNotInFilterSettings(subgraph);
 
 		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
-			addTransitiveLinksToSubgraph(subgraph);
+			addTransitiveLinksToFilteredGraph(subgraph);
 		}
 		return subgraph;
 	}
 
-	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph filteredGraph) {
+	/**
+	 * @param filteredGraph
+	 *            subgraph of the entire {@link KnowledgeGraph} that matches the
+	 *            {@link FilterSettings} but without transitive links.
+	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
+	 *         Filtered {@link KnowledgeElement}s (=nodes/verteces) are replaced
+	 *         with transitive links.
+	 */
+	private KnowledgeGraph addTransitiveLinksToFilteredGraph(KnowledgeGraph filteredGraph) {
 		SingleSourcePaths<KnowledgeElement, Link> paths = filterSettings.getSelectedElement()
 				.getAllPaths(filterSettings.getLinkDistance());
-		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		int id = Integer.MIN_VALUE;
 
-		for (KnowledgeElement element : elements) {
+		for (KnowledgeElement element : filteredGraph.vertexSet()) {
 			GraphPath<KnowledgeElement, Link> path = paths.getPath(element);
-			if (path == null) {
-				continue;
-			}
-
-			List<KnowledgeElement> elementsOnPath = path.getVertexList();
-			KnowledgeElement lastElementOnPath = filterSettings.getSelectedElement();
-			for (KnowledgeElement elementOnPath : elementsOnPath) {
-				if (elements.contains(elementOnPath)) {
-					Link transitiveLink = new Link(lastElementOnPath, elementOnPath, LinkType.TRANSITIVE);
-					if (!filteredGraph.containsEdge(transitiveLink)
-							&& !filteredGraph.containsEdge(transitiveLink.flip())) {
-						transitiveLink.setId(id++);
-						filteredGraph.addEdge(transitiveLink);
-					}
-					lastElementOnPath = elementOnPath;
+			KnowledgeElement lastValidElementOnPath = filterSettings.getSelectedElement();
+			for (KnowledgeElement elementOnPath : path.getVertexList()) {
+				if (!filteredGraph.vertexSet().contains(elementOnPath)) {
+					// the element on the former path is filtered out
+					continue;
 				}
+				Link transitiveLink = new Link(lastValidElementOnPath, elementOnPath, LinkType.TRANSITIVE);
+				if (!filteredGraph.containsUndirectedEdge(transitiveLink)) {
+					transitiveLink.setId(id++);
+					filteredGraph.addEdge(transitiveLink);
+				}
+				lastValidElementOnPath = elementOnPath;
 			}
 		}
 		return filteredGraph;
