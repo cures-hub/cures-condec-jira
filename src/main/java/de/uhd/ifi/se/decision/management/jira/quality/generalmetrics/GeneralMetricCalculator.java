@@ -48,7 +48,7 @@ public class GeneralMetricCalculator {
 
 	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
-		this.graph = filteringManager.getSubgraphMatchingFilterSettings();
+		this.graph = filteringManager.getFilteredGraph();
 		this.filterSettings = filterSettings;
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);

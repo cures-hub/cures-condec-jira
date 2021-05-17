@@ -4,8 +4,8 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.suggestions.SuggestionType;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import net.java.ao.Query;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Optional;
  * Groups are stored in the internal database of Jira.
  * This class is called ...Helper because of the codacy checks of the ConDec github project.
  *
- * @see DiscardedSuggestionInDatabase
+ * @see DiscardedRecommendationInDatabase
  */
 
 public class ConsistencyPersistenceHelper {
@@ -32,7 +32,7 @@ public class ConsistencyPersistenceHelper {
 		if (baseElement == null || baseElement.getProject() == null){
 			return new ArrayList<>();
 		}
-		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, SuggestionType.LINK);
+		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, RecommendationType.LINK);
 	}
 
 
@@ -40,7 +40,7 @@ public class ConsistencyPersistenceHelper {
 		if (origin == null || discarded == null) {
 			return -1;
 		}
-		return addDiscardedSuggestions(origin, discarded, SuggestionType.LINK);
+		return addDiscardedSuggestions(origin, discarded, RecommendationType.LINK);
 	}
 
 
@@ -53,37 +53,37 @@ public class ConsistencyPersistenceHelper {
 		if (base == null || base.getProject() == null){
 			return new ArrayList<>();
 		}
-		return getDiscardedSuggestions(base, SuggestionType.DUPLICATE);
+		return getDiscardedSuggestions(base, RecommendationType.DUPLICATE);
 	}
 
 	public static long addDiscardedDuplicate(KnowledgeElement origin, KnowledgeElement target) {
-		return addDiscardedSuggestions(origin, target, SuggestionType.DUPLICATE);
+		return addDiscardedSuggestions(origin, target, RecommendationType.DUPLICATE);
 	}
 
 	//------------------
 	// General Suggestion
 	//------------------
 
-	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement origin, SuggestionType type) {
+	private static List<KnowledgeElement> getDiscardedSuggestions(KnowledgeElement origin, RecommendationType type) {
 		List<KnowledgeElement> discardedSuggestions = new ArrayList<>();
-		Optional<DiscardedSuggestionInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
+		Optional<DiscardedRecommendationInDatabase[]> discardedLinkSuggestions = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), type)));
 		persistenceManager = KnowledgePersistenceManager.getOrCreate(origin.getProject().getProjectKey());
 
-		for (DiscardedSuggestionInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedSuggestionInDatabase[0])) {
+		for (DiscardedRecommendationInDatabase discardedLinkSuggestion : discardedLinkSuggestions.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {
 			discardedSuggestions.add(persistenceManager.getKnowledgeElement(discardedLinkSuggestion.getDiscardedElementId(), discardedLinkSuggestion.getDiscElDocumentationLocation()));
 		}
 		return discardedSuggestions;
 	}
 
-	private static DiscardedSuggestionInDatabase[] getDiscardedSuggestion(KnowledgeElement origin, KnowledgeElement target, SuggestionType type) {
-		DiscardedSuggestionInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
+	private static DiscardedRecommendationInDatabase[] getDiscardedSuggestion(KnowledgeElement origin, KnowledgeElement target, RecommendationType type) {
+		DiscardedRecommendationInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
 			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), target.getId(), type));
 
 		return discardedLinkSuggestions;
 	}
 
-	public static long addDiscardedSuggestions(KnowledgeElement origin, KnowledgeElement discardedElement, SuggestionType type) {
+	public static long addDiscardedSuggestions(KnowledgeElement origin, KnowledgeElement discardedElement, RecommendationType type) {
 		long id;
 		//null checks
 		if (origin == null || origin.getProject() == null|| discardedElement == null || type == null) {
@@ -91,12 +91,12 @@ public class ConsistencyPersistenceHelper {
 		} else {
 			// if null check passes
 			// exists check
-			DiscardedSuggestionInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(origin, discardedElement, type);
+			DiscardedRecommendationInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(origin, discardedElement, type);
 			if (discardedLinkSuggestionsInDatabase.length > 0) {
 				id = discardedLinkSuggestionsInDatabase[0].getId();
 			} else {
 				//not null parameter and does not already exist -> create new
-				final DiscardedSuggestionInDatabase discardedLinkSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedSuggestionInDatabase.class);
+				final DiscardedRecommendationInDatabase discardedLinkSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedRecommendationInDatabase.class);
 				discardedLinkSuggestionInDatabase.setOriginId(origin.getId());
 				discardedLinkSuggestionInDatabase.setDiscardedElementId(discardedElement.getId());
 				discardedLinkSuggestionInDatabase.setType(type);
@@ -113,7 +113,7 @@ public class ConsistencyPersistenceHelper {
 
 
 	public static void resetDiscardedSuggestions() {
-		DiscardedSuggestionInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedSuggestionInDatabase.class,
+		DiscardedRecommendationInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
 			Query.select().where("1 = 1"));
 		ACTIVE_OBJECTS.delete(discardedLinkSuggestions);
 	}

@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedSuggestionInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
@@ -30,7 +30,7 @@ public class MockDatabase implements DatabaseUpdater {
 			entityManager.migrate(DecisionGroupInDatabase.class);
 			entityManager.migrate(CodeClassInDatabase.class);
 			entityManager.migrate(ReleaseNotesInDatabase.class);
-			entityManager.migrate(DiscardedSuggestionInDatabase.class);
+			entityManager.migrate(DiscardedRecommendationInDatabase.class);
 			entityManager.migrate(ConsistencyCheckLogsInDatabase.class);
 
 		} catch (SQLException | NullPointerException e) {

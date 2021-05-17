@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -31,7 +30,8 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
@@ -310,19 +310,19 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void saveLinkSuggestionConfiguration(String projectKey,
-			LinkSuggestionConfiguration linkSuggestionConfiguration) {
-		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+			LinkRecommendationConfiguration linkSuggestionConfiguration) {
+		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
 	}
 
-	public static LinkSuggestionConfiguration getLinkSuggestionConfiguration(String projectKey) {
-		Type type = new TypeToken<LinkSuggestionConfiguration>() {
+	public static LinkRecommendationConfiguration getLinkRecommendationConfiguration(String projectKey) {
+		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
-		LinkSuggestionConfiguration linkSuggestionConfiguration = (LinkSuggestionConfiguration) getSavedObject(
+		LinkRecommendationConfiguration linkSuggestionConfiguration = (LinkRecommendationConfiguration) getSavedObject(
 				projectKey, "linkSuggestionConfiguration", type);
 		if (linkSuggestionConfiguration == null) {
-			return new LinkSuggestionConfiguration();
+			return new LinkRecommendationConfiguration();
 		}
 		return linkSuggestionConfiguration;
 	}

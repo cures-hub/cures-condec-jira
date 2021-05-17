@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -20,16 +18,16 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.Recommender;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.Evaluator;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.evaluation.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
 /**
  * REST resource for configuration and usage of decision guidance
@@ -74,26 +72,6 @@ public class DecisionGuidanceRest {
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
 		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	@Path("/setIrrelevantWords")
-	@POST
-	public Response setIrrelevantWords(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("words") String words) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		if (words.isBlank()) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The words should not be blank"))
-					.build();
-		}
-
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.setIrrelevantWords(words);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
 		return Response.ok(Status.ACCEPTED).build();
 	}
@@ -227,7 +205,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -259,7 +236,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/recommendations")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("keyword") String keyword, @QueryParam("issueId") int issueId,
 			@QueryParam("documentationLocation") String documentationLocation) {
@@ -285,7 +261,6 @@ public class DecisionGuidanceRest {
 
 	@Path("/recommendationEvaluation")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
 			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults,

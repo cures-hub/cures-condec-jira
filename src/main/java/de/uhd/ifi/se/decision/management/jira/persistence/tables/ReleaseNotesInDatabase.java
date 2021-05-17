@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -15,7 +16,7 @@ import net.java.ao.schema.Table;
  * @see ReleaseNotes
  */
 @Table("CondecReleaseNotes")
-public interface ReleaseNotesInDatabase extends RawEntity<Integer> {
+public interface ReleaseNotesInDatabase extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -44,9 +45,17 @@ public interface ReleaseNotesInDatabase extends RawEntity<Integer> {
 
 	void setEndDate(String endDate);
 
-	static boolean deleteReleaseNotes(ReleaseNotesInDatabase elementToDelete) {
+	/**
+	 * Deletes the {@link ReleaseNotesInDatabase} object, i.e., removes it from
+	 * database.
+	 * 
+	 * @param releaseNotesToDelete
+	 *            {@link ReleaseNotesInDatabase} object.
+	 * @return true if deletion was successful, false otherwise.
+	 */
+	static boolean deleteReleaseNotes(ReleaseNotesInDatabase releaseNotesToDelete) {
 		try {
-			elementToDelete.getEntityManager().delete(elementToDelete);
+			releaseNotesToDelete.getEntityManager().delete(releaseNotesToDelete);
 			return true;
 		} catch (SQLException e) {
 			return false;

@@ -1,7 +1,0 @@
-<h2>Settings for the consistency checks of Jira Issues</h2>
-
-<form class="aui">
-    #parse("templates/settings/linksuggestion/minProbabilitySetting.vm")
-    #parse("templates/settings/linksuggestion/minTextLengthSetting.vm")
-    #parse("templates/settings/linksuggestion/promptEventSettings.vm")
-</form>

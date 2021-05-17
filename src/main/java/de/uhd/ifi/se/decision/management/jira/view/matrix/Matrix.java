@@ -55,7 +55,7 @@ public class Matrix {
 	}
 
 	public Matrix(FilterSettings filterSettings) {
-		this(new FilteringManager(filterSettings).getSubgraphMatchingFilterSettings().vertexSet());
+		this(new FilteringManager(filterSettings).getFilteredGraph().vertexSet());
 		LOGGER.info(filterSettings.toString());
 		headerElements.forEach(entry -> {
 			colorMap.put(entry.getId(), "#ffffff");

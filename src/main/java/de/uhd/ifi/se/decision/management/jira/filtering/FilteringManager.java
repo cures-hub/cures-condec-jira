@@ -1,6 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
+import org.jgrapht.graph.AsSubgraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -9,15 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import org.jgrapht.graph.AsSubgraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -49,7 +51,7 @@ public class FilteringManager {
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+		if (filterSettings == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return new HashSet<>();
 		}
@@ -62,112 +64,58 @@ public class FilteringManager {
 	}
 
 	/**
-	 * @return subgraph of the {@link KnowledgeGraph} that matches the
-	 *         {@link FilterSettings}.
+	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
+	 *         If no transitive links are created, a subgraph of the original graph
+	 *         is returned. If transitive links are created, the returned graph
+	 *         contains new {@link Link}s (and is thus no subgraph).
 	 */
-	public KnowledgeGraph getSubgraphMatchingFilterSettings() {
-		if (filterSettings == null || filterSettings.getProjectKey() == null || graph == null) {
+	public KnowledgeGraph getFilteredGraph() {
+		if (filterSettings == null || graph == null) {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph subgraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
-		removeLinksWithTypesNotInFilterSettings(subgraph);
+		KnowledgeGraph filteredGraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
 
-		if (filterSettings.createTransitiveLinks()) {
-			addTransitiveLinksToSubgraph(subgraph);
-		}
-		return subgraph;
-	}
-
-	private Boolean transitiveLinkShallBeAdded(KnowledgeElement sourceElement, KnowledgeElement targetElement,
-			KnowledgeGraph temporaryGraph, KnowledgeElement element, Map<KnowledgeElement, Integer> linkDistanceMap) {
-
-		// if both elements are identical or are already linked to each other
-		if (sourceElement.equals(targetElement) || temporaryGraph.containsEdge(sourceElement, targetElement)
-				|| temporaryGraph.containsEdge(targetElement, sourceElement) || graph.containsEdge(sourceElement,
-				targetElement) || graph.containsEdge(targetElement, sourceElement)) {
-			return false;
+		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
+			addTransitiveLinksToFilteredGraph(filteredGraph);
 		}
 
-		// if both elements are decision knowledge elements, check whether the direction is correct
-		if (sourceElement.getType() != KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER &&
-				(  !graph.getLinkedSourceElements(element).contains(sourceElement)
-				|| !graph.getLinkedTargetElements(element).contains(targetElement))) {
-			return false;
-		}
-
-		// linking a knowledge element to a decision knowledge element shall only be done in one direction, towards the other knowledge element
-		if (sourceElement.getType() == KnowledgeType.OTHER && targetElement.getType() != KnowledgeType.OTHER) {
-			return false;
-		}
-
-		// if both knowledge elements have the same link distance to the selected element, we do not create a transitive link
-		if (linkDistanceMap.get(sourceElement) == linkDistanceMap.get(targetElement)
-				|| linkDistanceMap.get(sourceElement) == -1 || linkDistanceMap.get(targetElement) == -1) {
-			return false;
-		}
-
-		return true;
-	}
-
-	private KnowledgeGraph addTransitiveLinksToSubgraph(KnowledgeGraph subgraph) {
-
-		// we always need a selected element
-		if (filterSettings.getSelectedElement() == null) {
-			return subgraph;
-		}
-
-		KnowledgeGraph temporaryGraph = new KnowledgeGraph();
-		int id = -65536;
-		Set<KnowledgeElement> elementsNotMatchingFilterSettings = getElementsNotMatchingFilterSettings();
-		Map<KnowledgeElement, Integer> linkDistanceMap = new HashMap<KnowledgeElement, Integer>();
-
-		// iterate through every element removed by filters
-		for (KnowledgeElement element : elementsNotMatchingFilterSettings) {
-			Set<KnowledgeElement> linkedElements = graph.getLinkedElements(element);
-			if (temporaryGraph.isElementInGraph(element)) {
-				linkedElements.addAll(temporaryGraph.getLinkedElements(element));
-			}
-
-			// iterate through every pair of elements linked to the removed element, which are possible candidates for creating a transitive link in between
-			for (KnowledgeElement sourceElement : linkedElements) {
-				for (KnowledgeElement targetElement : linkedElements) {
-
-					// computing link distances takes a lot of time, so we store and reuse the results
-					if (!linkDistanceMap.containsKey(sourceElement)) {
-						linkDistanceMap.put(sourceElement, sourceElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
-					}
-					if (!linkDistanceMap.containsKey(targetElement)) {
-						linkDistanceMap.put(targetElement, targetElement.getLinkDistance(filterSettings.getSelectedElement(), filterSettings.getLinkDistance()));
-					}
-
-					if (transitiveLinkShallBeAdded(sourceElement, targetElement, temporaryGraph, element, linkDistanceMap)) {
-						Link transitiveLink = new Link(sourceElement, targetElement, LinkType.TRANSITIVE);
-						transitiveLink.setId(id++);
-
-						// we store the link just created so we can create transitive links even if multiple knowledge elements in a row are removed by filters
-						temporaryGraph.addEdge(transitiveLink);
-
-						if (subgraph.isElementInGraph(sourceElement) && subgraph.isElementInGraph(targetElement)) {
-							subgraph.addEdge(transitiveLink);
-						}
-					}
-				}
-			}
-		}
-		return subgraph;
+		removeLinksWithTypesNotInFilterSettings(filteredGraph);
+		return filteredGraph;
 	}
 
 	/**
-	 * @return all knowledge elements that do not match the {@link FilterSettings}.
+	 * @param filteredGraph
+	 *            subgraph of the entire {@link KnowledgeGraph} that matches the
+	 *            {@link FilterSettings} but without transitive links.
+	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
+	 *         Filtered {@link KnowledgeElement}s (=nodes/verteces) are replaced
+	 *         with transitive links.
 	 */
-	public Set<KnowledgeElement> getElementsNotMatchingFilterSettings() {
-		Set<KnowledgeElement> elementsInLinkDistanceOrEntireVertexSet = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
-		Set<KnowledgeElement> elementsMatchingFilterSettings = getElementsMatchingFilterSettings();
-		elementsInLinkDistanceOrEntireVertexSet.removeAll(elementsMatchingFilterSettings);
-		return elementsInLinkDistanceOrEntireVertexSet;
+	private KnowledgeGraph addTransitiveLinksToFilteredGraph(KnowledgeGraph filteredGraph) {
+		SingleSourcePaths<KnowledgeElement, Link> paths = filterSettings.getSelectedElement()
+				.getAllPaths(filterSettings.getLinkDistance());
+		int id = Integer.MIN_VALUE;
+
+		for (KnowledgeElement element : filteredGraph.vertexSet()) {
+			GraphPath<KnowledgeElement, Link> path = paths.getPath(element);
+			KnowledgeElement lastValidElementOnPath = filterSettings.getSelectedElement();
+			for (KnowledgeElement elementOnPath : path.getVertexList()) {
+				if (!filteredGraph.vertexSet().contains(elementOnPath)) {
+					// the element on the former path is filtered out
+					continue;
+				}
+				Link transitiveLink = new Link(lastValidElementOnPath, elementOnPath, LinkType.TRANSITIVE);
+				if (!filteredGraph.containsUndirectedEdge(transitiveLink)) {
+					transitiveLink.setId(id++);
+					filteredGraph.addEdge(transitiveLink);
+				}
+				lastValidElementOnPath = elementOnPath;
+			}
+		}
+		return filteredGraph;
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet() {
@@ -175,12 +123,12 @@ public class FilteringManager {
 			graph.addVertex(filterSettings.getSelectedElement());
 			return getElementsInLinkDistance(filterSettings.getSelectedElement());
 		}
-		return new HashSet<>(graph.vertexSet());
+		return graph.vertexSet();
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
 		int linkDistance = filterSettings.getLinkDistance();
-		return new HashSet<>(element.getLinkedElements(linkDistance));
+		return element.getLinkedElements(linkDistance);
 	}
 
 	/**
@@ -213,9 +161,6 @@ public class FilteringManager {
 
 	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
 		Set<KnowledgeElement> filteredElements = new HashSet<>();
-		if (elements == null || elements.isEmpty()) {
-			return filteredElements;
-		}
 		for (KnowledgeElement element : elements) {
 			if (isElementMatchingFilterSettings(element)) {
 				filteredElements.add(element);
@@ -327,7 +272,7 @@ public class FilteringManager {
 	 */
 	public boolean isElementMatchingKnowledgeTypeFilter(KnowledgeElement element) {
 		String type = element.getType().replaceProAndConWithArgument().toString();
-		if (element.getType() == KnowledgeType.OTHER) {
+		if (element.getType() == KnowledgeType.OTHER || element.getType() == KnowledgeType.CODE) {
 			if (filterSettings.isOnlyDecisionKnowledgeShown()) {
 				return false;
 			}

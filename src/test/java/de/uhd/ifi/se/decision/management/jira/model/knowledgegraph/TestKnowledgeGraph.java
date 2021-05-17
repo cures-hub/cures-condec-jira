@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestKnowledgeGraph extends TestSetUp {
@@ -49,6 +51,15 @@ public class TestKnowledgeGraph extends TestSetUp {
 		Link link = new Link(2, 4, DocumentationLocation.JIRAISSUE, DocumentationLocation.JIRAISSUE);
 		link.setId(2);
 		assertTrue(graph.containsEdge(link));
+	}
+
+	@Test
+	@NonTransactional
+	public void testContainsUndirectedEdge() {
+		Link link = Links.getTestLink();
+		assertTrue(graph.containsUndirectedEdge(link));
+		assertFalse(graph.containsEdge(link.flip()));
+		assertTrue(graph.containsUndirectedEdge(link.flip()));
 	}
 
 	@Test

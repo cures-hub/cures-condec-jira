@@ -20,14 +20,14 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.consistency.LinkSuggestionConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -236,8 +236,8 @@ public class DecisionKnowledgeProject {
 	 * @return configuration for the link suggestion and duplicate recognition
 	 *         within one project.
 	 */
-	public LinkSuggestionConfiguration getLinkSuggestionConfiguration() {
-		return ConfigPersistenceManager.getLinkSuggestionConfiguration(getProjectKey());
+	public LinkRecommendationConfiguration getLinkSuggestionConfiguration() {
+		return ConfigPersistenceManager.getLinkRecommendationConfiguration(getProjectKey());
 	}
 
 	/**

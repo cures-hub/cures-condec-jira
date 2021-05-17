@@ -363,7 +363,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (issue == null) {
 			return ComponentAccessor.getUserManager().getUserByNameEvenWhenUnknown("Unknown User");
 		}
-		return issue.getReporterUser();
+		return issue.getReporter();
 	}
 
 	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
