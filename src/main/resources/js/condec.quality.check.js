@@ -20,7 +20,7 @@
 	};
 
 	function updateView(projectKey, issueKey) {
-		conDecAPI.getFilterSettings(issueKey, "", function(filterSettings) {
+		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
 			var minimumCoverage = filterSettings.minimumDecisionCoverage;
 
 			conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, function(result) {
@@ -40,30 +40,38 @@
 
 	function updateTab(tab, coverageOfIssues, coverageOfDecisions, minimum) {
 		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum)) {
-			tab.style.background = "green";
+			addToken(tab, "condec-fine");
 		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
-			tab.style.background = "orange";
+			addToken(tab, "condec-warning");
 		} else if ((coverageOfIssues === 0) && (coverageOfDecisions === 0)) {
-			tab.style.background = "red";
+			addToken(tab, "condec-empty");
 		} else {
-			tab.style.background = "white";
+			addToken(tab, "condec-default");
 		}
 	}
 
 	function updateText(textField, type, coverage, minimum) {
 		if (coverage >= minimum) {
 			textField.textContent = "# " + type + ": " + coverage;
-			textField.style.color = "green";
+			addToken(textField, "condec-fine");
 		} else if ((coverage < minimum) && (coverage > 0)) {
 			textField.textContent = "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
-			textField.style.color = "orange";
+			addToken(textField, "condec-warning");
 		} else if (coverage === 0) {
 			textField.textContent = "# " + type + ": " + coverage + " (at least " + minimum + " " + type + " required!)";
-			textField.style.color = "red";
+			addToken(textField, "condec-empty");
 		} else {
 			textField.textContent = "";
-			textField.style.color = "black";
+			addToken(textField, "condec-default");
 		}
+	}
+
+	function addToken(element, tag) {
+		element.classList.remove("condec-default");
+		element.classList.remove("condec-empty");
+		element.classList.remove("condec-warning");
+		element.classList.remove("condec-fine");
+		element.classList.add(tag);
 	}
 
 	global.conDecQualityCheck = new ConDecQualityCheck();

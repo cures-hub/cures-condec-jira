@@ -1,7 +1,7 @@
 <div class="qualityCheckContainer">
-    <div id="quality-check-issue-text">
+    <div class="text-field" id="quality-check-issue-text">
     </div>
-    <div id="quality-check-decision-text">
+    <div class="text-field" id="quality-check-decision-text">
     </div>
 </div>
 <script>

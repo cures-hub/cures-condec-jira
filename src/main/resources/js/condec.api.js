@@ -361,8 +361,8 @@
 	 * external reference: currently not used, used to be used in
 	 * Jira issue view to fill the HTML filter elements
 	 */
-	ConDecAPI.prototype.getFilterSettings = function(elementKey, searchTerm, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?elementKey=" + elementKey
+	ConDecAPI.prototype.getFilterSettings = function(projectKey, searchTerm, callback) {
+		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?projectKey=" + projectKey
 			+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 				if (error === null) {
 					callback(filterSettings);

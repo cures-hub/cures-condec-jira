@@ -252,10 +252,3 @@ will be copied if .content is marked and copied */
 	border-top-color: black;
 	border-left-color: black;
 }
-/* ensure 1st look awareness */
-.menu-item.condec-attention * {
-    color: red !important;
-}
-.menu-item.condec-fine * {
-    color: green !important;
-}

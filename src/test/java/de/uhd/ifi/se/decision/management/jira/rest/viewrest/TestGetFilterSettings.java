@@ -37,7 +37,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Test
 	public void testRequestFilledSearchTermEmptyElementExistent() {
-		Response filterSettingsResponse = viewRest.getFilterSettings(request, "", "TEST-1");
+		Response filterSettingsResponse = viewRest.getFilterSettings(request, "TEST", "");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
@@ -49,7 +49,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Test
 	public void testRequestFilledSearchTermJqlElementExistent() {
-		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?jql=issuetype%20%3D%20Issue", "TEST-1");
+		Response filterSettingsResponse = viewRest.getFilterSettings(request, "TEST", "?jql=issuetype%20%3D%20Issue");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();
@@ -62,7 +62,7 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Test
 	public void testRequestFilledSearchTermPresetJiraFilterElementExistent() {
-		Response filterSettingsResponse = viewRest.getFilterSettings(request, "?filter=allopenissues", "TEST-12");
+		Response filterSettingsResponse = viewRest.getFilterSettings(request, "TEST", "?filter=allopenissues");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());
 
 		FilterSettings filterSettings = (FilterSettings) filterSettingsResponse.getEntity();

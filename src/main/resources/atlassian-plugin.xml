@@ -64,6 +64,7 @@
 		<!-- dashboard item thumbnail -->
 		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
+        <resource type="download" name="condec.tab.css" location="/css/condec.tab.css" />
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
