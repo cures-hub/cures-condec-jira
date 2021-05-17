@@ -36,6 +36,18 @@ public class TestGetFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testRequestNullSearchTermEmptyElementEmpty() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+			viewRest.getFilterSettings(null, "", "").getStatus());
+	}
+
+	@Test
+	public void testRequestFilledSearchTermEmptyElementNull() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+			viewRest.getFilterSettings(request, null, "").getStatus());
+	}
+
+	@Test
 	public void testRequestFilledSearchTermEmptyElementExistent() {
 		Response filterSettingsResponse = viewRest.getFilterSettings(request, "TEST", "");
 		assertEquals(Response.Status.OK.getStatusCode(), filterSettingsResponse.getStatus());

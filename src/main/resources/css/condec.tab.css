@@ -1,25 +1,25 @@
 .menu-item.condec-default * {
-    background: white !important;
+    background: white;
 }
 .menu-item.condec-empty * {
-    background: red !important;
+    background: red;
 }
 .menu-item.condec-warning * {
-    background: orange !important;
+    background: orange;
 }
 .menu-item.condec-fine * {
-    background: green !important;
+    background: green;
 }
 
 .text-field.condec-default * {
-    background: black !important;
+    background: black;
 }
 .text-field.condec-empty * {
-    background: red !important;
+    background: red;
 }
 .text-field.condec-incomplete * {
-    background: orange !important;
+    background: orange;
 }
 .text-field.condec-fine * {
-    background: green !important;
+    background: green;
 }

@@ -66,4 +66,11 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 			KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.ISSUE), 2);
 	}
 
+	@Test
+	@NonTransactional
+	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNull() {
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+			KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.OTHER), 0);
+	}
+
 }
