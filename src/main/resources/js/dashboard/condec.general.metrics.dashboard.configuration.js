@@ -442,8 +442,8 @@ define('dashboard/generalMetrics', [], function () {
 
 	function setDefaultLinkDistance(projectKey) {
 		if (projectKey) {
-			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
-				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+			conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
+				dashboardFilterLinkDistanceNode.value = filterSettings.linkDistance;
 			});
 		}
 	}

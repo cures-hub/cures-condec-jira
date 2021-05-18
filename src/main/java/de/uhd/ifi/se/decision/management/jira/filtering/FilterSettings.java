@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.PassRule;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
@@ -90,8 +91,8 @@ public class FilterSettings {
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isIncompleteKnowledgeShown = false;
-		this.linkDistance = 3;
-		this.minimumDecisionCoverage = 2;
+		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMaximumLinkDistanceToDecisions();
+		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMinimumDecisionsWithinLinkDistance();
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;

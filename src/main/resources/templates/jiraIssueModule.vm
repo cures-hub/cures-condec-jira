@@ -37,9 +37,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
-        <li class="menu-item" id="menu-item-cia">
-            <a href="#cia-tab">$i18n.getText('condec.label.cia')</a>
-        </li>
+    <li class="menu-item" id="menu-item-cia">
+        <a href="#cia-tab">$i18n.getText('condec.label.cia')</a>
+    </li>
+    <li class="menu-item" id="menu-item-quality-check">
+        <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
+    </li>
 	</ul>
 	#set($showTransitiveFilter = true)
 	<div class="tabs-pane" id="jstree-tab">
@@ -68,6 +71,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div class="tabs-pane" id="cia-tab">
         #parse("templates/tabs/changeImpactIssueTab.vm")
+    </div>
+    <div class="tabs-pane" id="quality-check-tab">
+        #parse("templates/tabs/qualityCheck.vm")
     </div>
 </div>
 

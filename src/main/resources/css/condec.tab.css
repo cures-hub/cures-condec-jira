@@ -1,0 +1,24 @@
+.menu-item.condec-default {
+    background: white;
+}
+.menu-item.condec-empty {
+    background: red;
+}
+.menu-item.condec-warning {
+    background: orange;
+}
+.menu-item.condec-fine {
+    background: green;
+}
+.text-field.condec-default {
+    color: black;
+}
+.text-field.condec-empty {
+    color: red;
+}
+.text-field.condec-warning {
+    color: orange;
+}
+.text-field.condec-fine {
+    color: green;
+}

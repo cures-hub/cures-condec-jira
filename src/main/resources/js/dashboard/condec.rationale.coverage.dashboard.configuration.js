@@ -487,9 +487,9 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function setDefaultLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
 		if (projectKey) {
-			conDecAPI.getDefinitionOfDone(projectKey, function (definitionOfDone) {
-				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
-				dashboardFilterMinimumDecisionCoverageNode.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			conDecAPI.getFilterSettings(projectKey, "", function (filterSettings) {
+				dashboardFilterLinkDistanceNode.value = filterSettings.linkDistance;
+				dashboardFilterMinimumDecisionCoverageNode.value = filterSettings.minimumDecisionCoverage;
 			});
 		}
 	}

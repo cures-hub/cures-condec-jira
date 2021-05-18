@@ -223,15 +223,13 @@ public class ViewRest {
 	@Path("/getFilterSettings")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("elementKey") String elementKey) {
-		String projectKey;
-		if (RestParameterChecker.checkIfProjectKeyIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
-			projectKey = elementKey;
-		} else if (checkIfElementIsValid(elementKey).getStatus() == Status.OK.getStatusCode()) {
-			projectKey = getProjectKey(elementKey);
-		} else {
-			return checkIfElementIsValid(elementKey);
+	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+		  @QueryParam("searchTerm") String searchTerm) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error",
+					"The HttpServletRequest or the projectKey are null. FilterSettings could not be created."))
+				.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
@@ -271,18 +269,6 @@ public class ViewRest {
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	private Response checkIfElementIsValid(String elementKey) {
-		if (elementKey == null) {
-			return jiraIssueKeyIsInvalid();
-		}
-		String projectKey = getProjectKey(elementKey);
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		return Response.status(Status.OK).build();
 	}
 
 	private Response jiraIssueKeyIsInvalid() {

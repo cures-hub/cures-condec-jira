@@ -485,7 +485,7 @@ linkBranchCandidates
         }
 
         function setStatusWarningInMenuItem() {
-          setStatusInMenuItem("condec-attention");
+          setStatusInMenuItem("condec-warning");
         }
 
         function setStatusFineInMenuItem() {
@@ -498,16 +498,19 @@ linkBranchCandidates
             for (var idx = 0; idx < menuItems.length; idx++) {
               if (menuItems[idx].dataset.condec) {
                 /*  if any branch has issues, status is set to bad. */
-                if (status === "condec-attention") {
-                    menuItems[idx].classList.remove("condec-fine");
-                    menuItems[idx].classList.add(status);
-                    return;
-                }
-                menuItems[idx].classList.add(status);
+                addToken(menuItems[idx], status);
               }
             }
           }
         }
+
+		function addToken(element, status) {
+			element.classList.remove("condec-default");
+			element.classList.remove("condec-empty");
+			element.classList.remove("condec-warning");
+			element.classList.remove("condec-fine");
+			element.classList.add(status);
+		}
     };
 
     /*
