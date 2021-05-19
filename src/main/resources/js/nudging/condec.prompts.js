@@ -17,18 +17,18 @@
 		if (issueId === null || issueId === undefined) {
 			return;
 		}
-		conDecLinkSuggestionAPI.doesElementNeedApproval(projectKey, issueId, "i")
+		conDecLinkRecommendationAPI.doesElementNeedApproval(projectKey, issueId, "i")
 			.then((isApprovalNeeded) => {
 				if (!isApprovalNeeded) {
 					return;
 				}
-				Promise.all([conDecLinkSuggestionAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
+				Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 				conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
 					(values) => {
 						let numDuplicates = (values[0].length);
 						let numRelated = (values[1].length);
 						if (numDuplicates + numRelated > 0) {
-							conDecLinkSuggestionAPI.consistencyCheckFlag = showWarning(
+							conDecLinkRecommendationAPI.consistencyCheckFlag = showWarning(
 								'Unlinked related knowledge elements detected!',
 								'Issue <strong>'
 								+ conDecAPI.getIssueKey()
@@ -40,7 +40,7 @@
 								+ '<ul class="aui-nav-actions-list">'
 								+ '<li>'
 								+ '<button id="consistency-check-dialog-submit-button" '
-								+ 'onclick="conDecLinkSuggestionAPI.approveInconsistencies()" class="aui-button aui-button-link">'
+								+ 'onclick="conDecLinkRecommendationAPI.approveInconsistencies()" class="aui-button aui-button-link">'
 								+ 'I approve the consistency of this knowledge element!'
 								+ '</button>'
 								+ '</li>'
