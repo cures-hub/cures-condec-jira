@@ -120,9 +120,9 @@
 			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue);
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is a decision documented?", issueDocumentedForSelectedJiraIssue);
+			"", "For how many selected elements is an issue documented?", issueDocumentedForSelectedJiraIssue);
 		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
+			"", "For how many selected elements is a decision documented?", decisionDocumentedForSelectedJiraIssue);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();

@@ -25,6 +25,9 @@
 		);
 	};
 
+	/*
+	 * external references: condec.quality.check.js
+	 */
 	ConDecDoDCheckingAPI.prototype.getCoverageOfJiraIssue = function(projectKey, issueKey, callback) {
 		generalApi.getJSON(this.restPrefix + `/coverageOfJiraIssue.json?projectKey=${projectKey}&issueKey=${issueKey}`,
 			function(error, result) {
