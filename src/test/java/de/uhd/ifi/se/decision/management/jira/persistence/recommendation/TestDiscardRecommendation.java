@@ -1,7 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
+package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
-import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.getDiscardedDuplicates;
-import static de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper.resetDiscardedSuggestions;
+import static de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager.getDiscardedDuplicates;
+import static de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager.resetDiscardedSuggestions;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -38,27 +38,27 @@ public class TestDiscardRecommendation extends TestSetUp implements DiscardSugge
 		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedDuplicateSuggestions.size());
 
 		LinkRecommendation recommendation = new DuplicateRecommendation(knowledgeElement0, knowledgeElement1);
-		long id = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		long id = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion one discarded suggestion should exist.", 1, discardedDuplicateSuggestions.size());
 
 		assertEquals("The discarded suggestion should be the inserted issue.", knowledgeElement1,
 				discardedDuplicateSuggestions.get(0));
 
-		long sameId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		long sameId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
 
 		recommendation.setSourceElement(null);
-		long exceptionId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		long exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
 		recommendation.setSourceElement(knowledgeElement0);
 		recommendation.setDestinationElement(null);
-		exceptionId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
 		recommendation.setSourceElement(null);
-		exceptionId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
 	}
@@ -70,7 +70,7 @@ public class TestDiscardRecommendation extends TestSetUp implements DiscardSugge
 		List<KnowledgeElement> discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		int discardedSuggestionsBeforeNullInsertion = discardedDuplicateSuggestions.size();
 		LinkRecommendation recommendation = new LinkRecommendation(knowledgeElement0, null);
-		ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("After insertion of null as a discarded suggestion, no additional discarded issue should exist.",
 				discardedSuggestionsBeforeNullInsertion, discardedDuplicateSuggestions.size());
@@ -83,7 +83,7 @@ public class TestDiscardRecommendation extends TestSetUp implements DiscardSugge
 		KnowledgeElement knowledgeElement0 = new KnowledgeElement(issues.get(0));
 		KnowledgeElement knowledgeElement1 = new KnowledgeElement(issues.get(1));
 		LinkRecommendation recommendation = new LinkRecommendation(knowledgeElement0, knowledgeElement1);
-		ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		resetDiscardedSuggestions();
 		List<KnowledgeElement> discardedDuplicateSuggestions = getDiscardedDuplicates(knowledgeElement0);
 		assertEquals("No more suggestion should be discarded after reset.", 0, discardedDuplicateSuggestions.size());

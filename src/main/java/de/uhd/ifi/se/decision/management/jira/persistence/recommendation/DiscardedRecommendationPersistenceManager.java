@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -21,7 +22,7 @@ import net.java.ao.Query;
  * @see DiscardedRecommendationInDatabase
  */
 
-public class ConsistencyPersistenceHelper {
+public class DiscardedRecommendationPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	public static KnowledgePersistenceManager persistenceManager;
@@ -33,7 +34,7 @@ public class ConsistencyPersistenceHelper {
 		if (baseElement == null || baseElement.getProject() == null) {
 			return new ArrayList<>();
 		}
-		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, RecommendationType.LINK);
+		return DiscardedRecommendationPersistenceManager.getDiscardedSuggestions(baseElement, RecommendationType.LINK);
 	}
 
 	// ------------------

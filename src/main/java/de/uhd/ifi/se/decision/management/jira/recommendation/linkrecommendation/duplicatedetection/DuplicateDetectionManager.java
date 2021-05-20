@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 
 public class DuplicateDetectionManager {
@@ -30,7 +30,7 @@ public class DuplicateDetectionManager {
 		List<DuplicateRecommendation> duplicateRecommendations = new ArrayList<>();
 
 		elementsToCheck.remove(knowledgeElement);
-		elementsToCheck.removeAll(ConsistencyPersistenceHelper.getDiscardedDuplicates(knowledgeElement));
+		elementsToCheck.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedDuplicates(knowledgeElement));
 		elementsToCheck.removeAll(alreadyLinkedAsDuplicates());// remove linked elements;
 
 		duplicateRecommendations = elementsToCheck.parallelStream().map((element) -> {

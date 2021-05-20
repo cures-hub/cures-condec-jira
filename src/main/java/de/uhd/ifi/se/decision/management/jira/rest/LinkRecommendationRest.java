@@ -24,8 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -98,7 +98,7 @@ public class LinkRecommendationRest {
 		}
 		recommendation.setProject(projectKey);
 
-		long databaseId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
+		long databaseId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 
 		if (databaseId == -1) {
 			return Response.status(Status.BAD_REQUEST)

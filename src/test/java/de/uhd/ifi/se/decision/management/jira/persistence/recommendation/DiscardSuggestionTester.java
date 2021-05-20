@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
+package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
 public interface DiscardSuggestionTester {
 
