@@ -96,8 +96,9 @@ public class LinkRecommendationRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
+		recommendation.setProject(projectKey);
 
-		long databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(recommendation.getSource(),
+		long databaseId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation.getSource(),
 				recommendation.getTarget(), recommendation.getRecommendationType());
 
 		if (databaseId == -1) {

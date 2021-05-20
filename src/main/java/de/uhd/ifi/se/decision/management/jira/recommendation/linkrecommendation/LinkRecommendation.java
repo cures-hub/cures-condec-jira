@@ -19,6 +19,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
  * the recommendation is represented by the {@link RecommendationScore}.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+// @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
+// @JsonSubTypes({ @JsonSubTypes.Type(value = LinkRecommendation.class, name =
+// "LINK"),
+// @JsonSubTypes.Type(value = DuplicateRecommendation.class, name = "DUPLICATE")
+// })
 public class LinkRecommendation extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;
