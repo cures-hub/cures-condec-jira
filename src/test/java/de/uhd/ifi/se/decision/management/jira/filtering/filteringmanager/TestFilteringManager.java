@@ -140,14 +140,4 @@ public class TestFilteringManager extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(user, settings);
 		assertTrue(filteringManager.getFilteredGraph().vertexSet().size() > 0);
 	}
-
-	@Test
-	public void testSetAndGetUser() {
-		FilterSettings settings = new FilterSettings("TEST", "");
-		FilteringManager filteringManager = new FilteringManager(user, settings);
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		filteringManager.setUser(user);
-		filteringManager.getUser();
-		assertEquals(user, filteringManager.getUser());
-	}
 }

@@ -168,10 +168,11 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * Updates a knowledge element. If the element is not in the graph it will be
-	 * added.
+	 * Updates a {@link KnowledgeElement} (i.e. a graph node/vertex). If the element
+	 * is not in the graph, it will be added.
 	 * 
 	 * @param node
+	 *            {@link KnowledgeElement} to be updated (or added).
 	 */
 	public boolean updateElement(KnowledgeElement node) {
 		KnowledgeElement oldElement = null;
@@ -324,7 +325,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 * @con The subgraph needs to include all the elements of the entire graph,
 	 *      which can be a problem during knowledge management.
 	 * @con This class is not a subclass of our KnowledgeGraph class and cannot be
-	 *      cast easily. Thus, it lacks methods such as getElements(KnowledgeType).
+	 *      easily cast. Thus, it lacks methods such as getElements(KnowledgeType).
 	 * @decision Create a new KnowledgeGraph object and add the respective elements
 	 *           and links to it!
 	 * @pro Is mutable, i.e. new elements and links can be added.

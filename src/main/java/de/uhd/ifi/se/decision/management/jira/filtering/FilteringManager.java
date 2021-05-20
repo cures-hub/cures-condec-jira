@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public class FilteringManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringManager.class);
-	private ApplicationUser user;
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
 
@@ -35,7 +34,6 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(ApplicationUser user, FilterSettings filterSettings) {
-		this.user = user;
 		this.filterSettings = filterSettings;
 		if (filterSettings != null) {
 			this.graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
@@ -359,21 +357,5 @@ public class FilteringManager {
 	 */
 	public void setFilterSettings(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
-	}
-
-	/**
-	 * @return {@link ApplicationUser} who performs filtering.
-	 */
-	public ApplicationUser getUser() {
-		return user;
-	}
-
-	/**
-	 * @param user
-	 *            {@link ApplicationUser} object who performs filtering. The user
-	 *            needs to have the rights to query the database.
-	 */
-	public void setUser(ApplicationUser user) {
-		this.user = user;
 	}
 }
