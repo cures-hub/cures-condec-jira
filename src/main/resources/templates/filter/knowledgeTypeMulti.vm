@@ -1,5 +1,5 @@
 <div id="knowledgetype-multi-$viewIdentifier" class="condec-dashboard-filter">
-    <label for="knowledgetype-multi-select-$viewIdentifier">Knowledge Types:</label>
+    <label for="knowledgetype-multi-select-$viewIdentifier">$i18n.getText('condec.label.knowledge.types')</label>
     <select name="knowledgeType" id="knowledgetype-multi-select-$viewIdentifier" class="select"
             multiple size="3">
     </select>

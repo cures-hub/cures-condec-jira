@@ -14,6 +14,7 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
+	var dashboardProjectNode;
 
 	var ConDecRationaleCompletenessDashboard = function () {
 		console.log("ConDecRationaleCompletenessDashboard constructor");
@@ -24,17 +25,19 @@
 			, "condec-rationale-completeness-dashboard-contents-container"
 			, "condec-rationale-completeness-dashboard-contents-data-error"
 			, "condec-rationale-completeness-dashboard-no-project"
-			, "condec-rationale-completeness-dashboard-processing");
+			, "condec-rationale-completeness-dashboard-processing"
+			, "condec-dashboard-selected-project-rationale-completeness");
 
 		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
+		dashboardProjectNode = document.getElementById(projectName);
 	}
 
 	function showDashboardSection(node) {
@@ -51,12 +54,15 @@
 		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
 			return;
 		}
+
+		showDashboardSection(dashboardProcessingNode);
+		var projectKey = JSON.parse(filterSettings).projectKey;
+		dashboardProjectNode.innerText = projectKey;
+
 		/*
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		showDashboardSection(dashboardProcessingNode);
-
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json";
 
 		console.log("Starting REST query.");

@@ -40,25 +40,29 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </form>
 </div>
 
-<div id="condec-general-metrics-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
-    $i18n.getText("condec.dashboard.generalmetrics.project.data.error")
-</div>
-
-<div id="condec-general-metrics-dashboard-no-project" class="condec-dashboard-contents init">
-    $i18n.getText("condec.dashboard.generalmetrics.project.selection.not.done")
-</div>
-
-<div id="condec-general-metrics-dashboard-processing" class="condec-dashboard-contents waiting hidden">
-    $i18n.getText("condec.dashboard.generalmetrics.project.processing")
-</div>
-
 <div id="condec-general-metrics-dashboard-contents-container" class="condec-dashboard-contents results hidden">
+    #set ($viewIdentifier = "general-metrics")
+    <div class="field-group">
+        #parse("templates/dashboard/selectedProject.vm")
+    </div>
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
     <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
     <div id="piechartRich-DecSources" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
+</div>
+
+<div id="condec-general-metrics-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.requirements.project.data.error")
+</div>
+
+<div id="condec-general-metrics-dashboard-no-project" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.requirements.project.selection.not.done")
+</div>
+
+<div id="condec-general-metrics-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.requirements.project.processing")
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")

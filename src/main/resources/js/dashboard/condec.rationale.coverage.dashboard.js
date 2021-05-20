@@ -14,6 +14,7 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
+	var dashboardProjectNode;
 
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
@@ -24,17 +25,19 @@
 			, "condec-rationale-coverage-dashboard-contents-container"
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
-			, "condec-rationale-coverage-dashboard-processing");
+			, "condec-rationale-coverage-dashboard-processing"
+			, "condec-dashboard-selected-project-rationale-coverage");
 
 		getMetrics(filterSettings, issueType);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
+		dashboardProjectNode = document.getElementById(projectName);
 	}
 
 	function showDashboardSection(node) {
@@ -52,12 +55,14 @@
 			return;
 		}
 
+		showDashboardSection(dashboardProcessingNode);
+		var projectKey = JSON.parse(filterSettings).projectKey;
+		dashboardProjectNode.innerText = projectKey;
+
 		/*
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		showDashboardSection(dashboardProcessingNode);
-
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?sourceKnowledgeTypes=" + sourceKnowledgeTypes;
 
 		console.log("Starting REST query.");

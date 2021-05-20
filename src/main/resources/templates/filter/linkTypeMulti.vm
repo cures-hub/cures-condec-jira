@@ -1,5 +1,5 @@
 <div id="linktype-multi-$viewIdentifier" class="condec-dashboard-filter">
-    <label for="linktype-multi-select-$viewIdentifier">Jira Issue Link Types:</label>
+    <label for="linktype-multi-select-$viewIdentifier">Link Types:</label>
     <select name="linkType" id="linktype-multi-select-$viewIdentifier" class="select"
             multiple size="3">
     </select>
