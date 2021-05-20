@@ -5,7 +5,8 @@
 
 	let ConDecLinkRecommendation = function() {
 		this.projectKey = conDecAPI.getProjectKey();
-		this.currentSuggestions = [];
+		this.currentLinkRecommendations = [];
+		this.currentLinkDuplicates = [];
 	};
 
 	ConDecLinkRecommendation.prototype.init = function() {
@@ -25,31 +26,28 @@
 	}
 
 	ConDecLinkRecommendation.prototype.discardDuplicate = function(index) {
-		let suggestionElement = this.currentSuggestions[index].target;
-		conDecLinkRecommendationAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, this.currentDuplicates[index])
 			.then((data) => {
-				displaySuccessMessage("Discarded suggestion sucessfully!");
+				conDecAPI.showFlag("success", "Discarded duplicate recommendation sucessfully!");
 				this.loadDuplicateData();
 			})
 			.catch((error) => displayErrorMessage(error));
 	}
 
 	ConDecLinkRecommendation.prototype.discardSuggestion = function(index) {
-		let suggestionElement = this.currentSuggestions[index].target;
-
-		conDecLinkRecommendationAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, this.currentLinkRecommendations[index])
 			.then((data) => {
-				displaySuccessMessage("Discarded suggestion sucessfully!");
+				conDecAPI.showFlag("success", "Discarded link recommendation sucessfully!");
 				this.loadData();
 			})
 			.catch((error) => displayErrorMessage(error));
 	}
 
 	ConDecLinkRecommendation.prototype.markAsDuplicate = function(index) {
-		let duplicateElement = this.currentSuggestions[index].target;
+		let duplicateElement = this.currentDuplicates[index].target;
 
 		let self = this;
-		conDecAPI.createLink(this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicates", () => self.loadDuplicateData());
+		conDecAPI.createLink(this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicate", () => self.loadDuplicateData());
 	}
 
 	//-----------------------------------------
@@ -62,7 +60,7 @@
 		} else {
 			//reset table content to empty
 			this.resultsTableContentElement.innerHTML = "";
-			this.currentSuggestions = relatedElements;
+			this.currentLinkRecommendations = relatedElements;
 			//append table rows with possibly related issues
 			for (let index in relatedElements) {
 				let row = generateTableRow(relatedElements[index], index);
@@ -100,7 +98,7 @@
 	};
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
-		let target = this.currentSuggestions[index].target;
+		let target = this.currentLinkRecommendations[index].target;
 		let self = this;
 		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
 	}
@@ -121,7 +119,7 @@
 		} else {
 			//reset table content to empty
 			this.duplicateResultsTableContentElement.innerHTML = "";
-			this.currentSuggestions = duplicates;
+			this.currentDuplicates = duplicates;
 			//append table rows with duplicates
 			for (let index in duplicates) {
 				let row = generateDuplicateTableRow(duplicates[index], index);
@@ -189,10 +187,6 @@
 
 	function displayErrorMessage(error) {
 		conDecAPI.showFlag("error", "Could not load knowledge element! </br>" + error)
-	}
-
-	function displaySuccessMessage(message) {
-		conDecAPI.showFlag("success", message)
 	}
 
 	function startLoadingVisualization(table, spinner) {

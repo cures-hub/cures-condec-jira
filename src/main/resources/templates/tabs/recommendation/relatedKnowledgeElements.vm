@@ -27,6 +27,10 @@
     <tbody id="table-content-duplicate"></tbody>
 </table>
 
+<div style="display:none">
+#parse("templates/prompts/linkRecommendationPrompt.vm")
+</div>
+
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {

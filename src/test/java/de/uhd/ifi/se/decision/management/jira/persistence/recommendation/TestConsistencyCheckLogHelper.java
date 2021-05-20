@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.consistency;
+package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;

@@ -1,0 +1,9 @@
+<div id="definition-of-done-checking-prompt">
+	<strong id="definition-of-done-checking-prompt-jira-issue-key"></strong> violates the definition of done for the knowledge documentation. <br/>
+	<a href="#menu-item-quality-check" style="width:100%" class="aui-button-link">View Violated Definition of Done Criteria</a><br/>
+	Please improve the definition of done for the knowledge documentation!<br/>
+	<button id="definition-of-done-checking-prompt-button" class="aui-button aui-button-link">
+		<span class="aui-icon aui-icon-small aui-iconfont-check">Confirm quality</span> 
+		I confirm that the definition of done is fulfilled.
+	</button>	
+</div>
