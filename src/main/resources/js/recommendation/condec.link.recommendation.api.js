@@ -25,26 +25,9 @@
 				&elementLocation=${elementLocation}`);
 	};
 
-	ConDecLinkRecommendationAPI.prototype.discardLinkSuggestion = function(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
-		return generalApi.postJSONReturnPromise(
-			`${this.restPrefix}/discardLinkSuggestion.json
-				?projectKey=${projectKey}
-				&originElementId=${originElementId}
-				&originElementLocation=${originElementLocation}
-				&targetElementId=${targetElementId}
-				&targetElementLocation=${targetElementLocation}`
-		);
-	};
-
-	ConDecLinkRecommendationAPI.prototype.discardDuplicateSuggestion = function(projectKey, originElementId, originElementLocation, targetElementId, targetElementLocation) {
-		return generalApi.postJSONReturnPromise(
-			`${this.restPrefix}/discardDuplicate.json
-				?projectKey=${projectKey}
-				&originElementId=${originElementId}
-				&originElementLocation=${originElementLocation}
-				&targetElementId=${targetElementId}
-				&targetElementLocation=${targetElementLocation}`
-		);
+	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
+				?projectKey=${projectKey}`, recommendation);
 	};
 
 	ConDecLinkRecommendationAPI.prototype.getDuplicateKnowledgeElement = function(projectKey, elementId, location) {

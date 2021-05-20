@@ -26,21 +26,18 @@
 	}
 
 	ConDecLinkRecommendation.prototype.discardDuplicate = function(index) {
-		let suggestionElement = this.currentDuplicates[index].target;
-		conDecLinkRecommendationAPI.discardDuplicateSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, this.currentDuplicates[index])
 			.then((data) => {
-				displaySuccessMessage("Discarded link recommendation sucessfully!");
+				conDecAPI.showFlag("success", "Discarded duplicate recommendation sucessfully!");
 				this.loadDuplicateData();
 			})
 			.catch((error) => displayErrorMessage(error));
 	}
 
 	ConDecLinkRecommendation.prototype.discardSuggestion = function(index) {
-		let suggestionElement = this.currentLinkRecommendations[index].target;
-
-		conDecLinkRecommendationAPI.discardLinkSuggestion(this.projectKey, this.issueId, 'i', suggestionElement.id, suggestionElement.documentationLocation)
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, this.currentLinkRecommendations[index])
 			.then((data) => {
-				displaySuccessMessage("Discarded suggestion sucessfully!");
+				conDecAPI.showFlag("success", "Discarded link recommendation sucessfully!");
 				this.loadData();
 			})
 			.catch((error) => displayErrorMessage(error));
@@ -190,10 +187,6 @@
 
 	function displayErrorMessage(error) {
 		conDecAPI.showFlag("error", "Could not load knowledge element! </br>" + error)
-	}
-
-	function displaySuccessMessage(message) {
-		conDecAPI.showFlag("success", message)
 	}
 
 	function startLoadingVisualization(table, spinner) {

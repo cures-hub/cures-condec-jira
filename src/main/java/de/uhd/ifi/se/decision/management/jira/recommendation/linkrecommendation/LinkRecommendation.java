@@ -2,6 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -14,14 +18,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
  * two {@link KnowledgeElement}s that are currently not linked. The relevance of
  * the recommendation is represented by the {@link RecommendationScore}.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LinkRecommendation extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;
 	private RecommendationScore score;
 
-	public LinkRecommendation(KnowledgeElement baseElement, KnowledgeElement targetElement) {
+	@JsonCreator
+	public LinkRecommendation(@JsonProperty("source") KnowledgeElement baseElement,
+			@JsonProperty("target") KnowledgeElement targetElement) {
 		super(baseElement, targetElement);
-		score = new RecommendationScore(0, "");
+		score = new RecommendationScore();
 	}
 
 	@XmlElement
