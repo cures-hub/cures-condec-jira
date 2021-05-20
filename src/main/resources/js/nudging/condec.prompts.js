@@ -28,26 +28,18 @@
 						let numDuplicates = (values[0].length);
 						let numRelated = (values[1].length);
 						if (numDuplicates + numRelated > 0) {
-							conDecLinkRecommendationAPI.consistencyCheckFlag = showWarning(
-								'Unlinked related knowledge elements detected!',
-								'Issue <strong>'
-								+ conDecAPI.getIssueKey()
-								+ '</strong> contains some detected inconsistencies. <br/>'
-								+ '<ul>'
-								+ '<li> ' + numRelated + ' possibly related issues </li>'
-								+ '<li> ' + numDuplicates + ' possible duplicates </li>'
-								+ '</ul>'
-								+ '<ul class="aui-nav-actions-list">'
-								+ '<li>'
-								+ '<button id="consistency-check-dialog-submit-button" '
-								+ 'onclick="conDecLinkRecommendationAPI.approveInconsistencies()" class="aui-button aui-button-link">'
-								+ 'I approve the consistency of this knowledge element!'
-								+ '</button>'
-								+ '</li>'
-								+ '</ul>'
-							);
+							document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+							document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
+							document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
+							var flag = AJS.flag({
+								body: document.getElementById("link-recommendation-prompt").outerHTML,
+								title: "Related Knowledge Elements Detected!"
+							});
+							document.getElementById("link-recommendation-prompt-button").onclick = function() {
+								conDecLinkRecommendationAPI.approveInconsistencies();
+								flag.close();
+							};
 						}
-
 					});
 			});
 	}

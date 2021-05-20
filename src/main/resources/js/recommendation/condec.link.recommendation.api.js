@@ -61,7 +61,6 @@
 
 	ConDecLinkRecommendationAPI.prototype.approveInconsistencies = function() {
 		conDecLinkRecommendationAPI.approveCheck(this.projectKey, this.issueId, "i", JIRA.Users.LoggedInUser.userName());
-		this.consistencyCheckFlag.close();
 	}
 	
 	ConDecLinkRecommendationAPI.prototype.confirmIncompleteMessage = function() {
