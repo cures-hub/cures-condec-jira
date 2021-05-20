@@ -22,6 +22,7 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 *         {@link RecommendationType#EXTERNAL} {@link KnowledgeSource} or a new
 	 *         {@link RecommendationType#LINK} within the project.
 	 */
+	@XmlElement
 	public abstract RecommendationType getRecommendationType();
 
 	/**

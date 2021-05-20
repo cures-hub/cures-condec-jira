@@ -26,6 +26,7 @@
 	};
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
+		recommendation["@type"] = recommendation.recommendationType;
 		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
 				?projectKey=${projectKey}`, recommendation);
 	};

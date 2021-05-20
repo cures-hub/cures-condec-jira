@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation;
 
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -9,17 +10,23 @@ public class DuplicateRecommendation extends LinkRecommendation {
 
 	private static final long serialVersionUID = 1L;
 	@JsonProperty
-	private final int startDuplicate; // of Issue i2
+	private int startDuplicate; // of Issue i2
 	@JsonProperty
-	private final int length; // of Issue i2
+	private int length; // of Issue i2
 	@JsonProperty
-	private final String preprocessedSummary; // of Issue i2
+	private String preprocessedSummary; // of Issue i2
 	@JsonProperty
-	private final String field;
+	private String field;
+
+	@JsonCreator
+	public DuplicateRecommendation(@JsonProperty("source") KnowledgeElement baseElement,
+			@JsonProperty("target") KnowledgeElement targetElement) {
+		super(baseElement, targetElement);
+	}
 
 	public DuplicateRecommendation(KnowledgeElement baseElement, KnowledgeElement targetElement,
 			String preprocessedSummary, int startDuplicate, int length, String field) {
-		super(baseElement, targetElement);
+		this(baseElement, targetElement);
 		this.startDuplicate = startDuplicate;
 		this.length = length;
 		this.field = field;
