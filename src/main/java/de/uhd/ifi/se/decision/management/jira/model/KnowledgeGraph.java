@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -317,24 +318,40 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * @return copy of the {@link KnowledgeGraph} instance.
+	 * @issue How can we get a subgraph of the entire knowledge graph that only
+	 *        contains certain elements (for filtering)?
+	 * @alternative Use the org.jgrapht.graph.AsSubgraph class to create a subgraph.
+	 * @con The subgraph needs to include all the elements of the entire graph,
+	 *      which can be a problem during knowledge management.
+	 * @con This class is not a subclass of our KnowledgeGraph class and cannot be
+	 *      cast easily. Thus, it lacks methods such as getElements(KnowledgeType).
+	 * @decision Create a new KnowledgeGraph object and add the respective elements
+	 *           and links to it!
+	 * @pro Is mutable, i.e. new elements and links can be added.
+	 * @pro Provides all methods as the entire graph.
+	 * 
+	 * @param collection
+	 *            of {@link KnowledgeElement}s (verteces/nodes) that should be
+	 *            included in the new {@link KnowledgeGraph}.
+	 * @return new {@link KnowledgeGraph} containing the given
+	 *         {@link KnowledgeElement}s as well as all the {@link Link}s between
+	 *         these elements. New {@link Link}s and {@link KnowledgeElement}s can
+	 *         be added to this graph. Thus, it is no real subgraph but mutable.
 	 */
-	public static KnowledgeGraph copy(Graph<KnowledgeElement, Link> graphToBeCopied) {
-		KnowledgeGraph copiedGraph = new KnowledgeGraph();
-		graphToBeCopied.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
-		graphToBeCopied.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
-		return copiedGraph;
-	}
-
-	public KnowledgeGraph getMutableSubgraphFor(Set<KnowledgeElement> elements) {
+	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		edgeSet().stream().filter(edge -> elements.contains(getEdgeSource(edge)) && elements.contains(getEdgeTarget(edge)))
+		edgeSet().stream()
+				.filter(edge -> elements.contains(getEdgeSource(edge)) && elements.contains(getEdgeTarget(edge)))
 				.forEach(mutableSubgraph::addEdge);
-		// return copy(new AsSubgraph<>(this, elements));
 		return mutableSubgraph;
 	}
 
+	/**
+	 * @param elementKey
+	 *            e.g. CONDEC-42.
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key.
+	 */
 	public KnowledgeElement getElement(String elementKey) {
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
 		while (iterator.hasNext()) {
