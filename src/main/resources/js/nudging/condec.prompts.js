@@ -36,7 +36,7 @@
 								title: "Related Knowledge Elements Detected!"
 							});
 							document.getElementById("link-recommendation-prompt-button").onclick = function() {
-								conDecLinkRecommendationAPI.approveInconsistencies();
+								conDecLinkRecommendationAPI.approveInconsistencies(issueId);
 								flag.close();
 							};
 						}
@@ -53,36 +53,23 @@
 			"projectKey": conDecAPI.projectKey,
 			"selectedElement": issueKey
 		}
-		// TODO Show exact DoD criteria that are violated
 		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
 			.then(isDoDViolated => {
 				if (!isDoDViolated) {
 					return;
 				}
-				// TODO Add velocity template and move HTML code there
-				conDecPrompt.dodCheckingPrompt = showWarning("Incomplete decision knowledge!",
-					'Issue <strong>'
-					+ issueKey
-					+ '</strong> contains some incomplete documented decision knowledge. <br/>'
-					+ '<ul class="aui-nav-actions-list">'
-					+ '<li>'
-					+ '<button id="completeness-check-dialog-submit-button" '
-					+ 'onclick="conDecPrompt.dodCheckingPrompt.close()" class="aui-button aui-button-link">'
-					+ 'Confirm'
-					+ '</button>'
-					+ '</li>'
-					+ '</ul>');
+				document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+				var flag = AJS.flag({
+					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
+					title: "Definition of Done Violated!",
+					type: "warning"
+				
+				});
+				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
+					flag.close();
+				};
 			});
 	}
-
-	function showWarning(title, message) {
-		return AJS.flag({
-			type: "warning",
-			close: "manual",
-			title: title,
-			body: message
-		});
-	};
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);

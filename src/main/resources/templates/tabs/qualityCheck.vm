@@ -4,6 +4,11 @@
     <div class="text-field" id="quality-check-decision-text">
     </div>
 </div>
+
+<div style="display:none">
+#parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
+</div>
+
 <script>
     /* Adds the on click listener on tab opening */
     $(document).ready(function () {

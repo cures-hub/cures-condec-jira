@@ -59,8 +59,8 @@
 		);
 	};
 
-	ConDecLinkRecommendationAPI.prototype.approveInconsistencies = function() {
-		conDecLinkRecommendationAPI.approveCheck(this.projectKey, this.issueId, "i", JIRA.Users.LoggedInUser.userName());
+	ConDecLinkRecommendationAPI.prototype.approveInconsistencies = function(elementId) {
+		conDecLinkRecommendationAPI.approveCheck(this.projectKey, elementId, "i", JIRA.Users.LoggedInUser.userName());
 	}
 	
 	ConDecLinkRecommendationAPI.prototype.confirmIncompleteMessage = function() {
