@@ -45,7 +45,7 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {
-		unlinkedElements.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedLinkSuggestions(element));
+		unlinkedElements.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedLinkRecommendations(element));
 		return unlinkedElements;
 	}
 

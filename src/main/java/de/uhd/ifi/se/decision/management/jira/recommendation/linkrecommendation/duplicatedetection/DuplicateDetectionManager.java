@@ -30,7 +30,7 @@ public class DuplicateDetectionManager {
 		List<DuplicateRecommendation> duplicateRecommendations = new ArrayList<>();
 
 		elementsToCheck.remove(knowledgeElement);
-		elementsToCheck.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedDuplicates(knowledgeElement));
+		elementsToCheck.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedDuplicateRecommendations(knowledgeElement));
 		elementsToCheck.removeAll(alreadyLinkedAsDuplicates());// remove linked elements;
 
 		duplicateRecommendations = elementsToCheck.parallelStream().map((element) -> {
