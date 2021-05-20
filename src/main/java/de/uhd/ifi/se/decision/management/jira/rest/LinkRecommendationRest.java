@@ -24,11 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
@@ -55,17 +55,6 @@ public class LinkRecommendationRest {
 			return Response.ok(linkSuggestions).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();
-	}
-
-	@Path("/discardLinkSuggestion")
-	@POST
-	public Response discardLinkSuggestion(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originId,
-			@QueryParam("originElementLocation") String originLocation, @QueryParam("targetElementId") Long targetId,
-			@QueryParam("targetElementLocation") String targetLocation) {
-		return this.discardSuggestion(projectKey, originId, originLocation, targetId, targetLocation,
-				RecommendationType.LINK);
-
 	}
 
 	// --------------------
@@ -99,16 +88,24 @@ public class LinkRecommendationRest {
 		}
 	}
 
-	@Path("/discardDuplicate")
+	@Path("/discardRecommendation")
 	@POST
-	public Response discardDetectedDuplicate(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("originElementId") Long originIssueId,
-			@QueryParam("originElementLocation") String originLocation,
-			@QueryParam("targetElementId") Long targetIssueId,
-			@QueryParam("targetElementLocation") String targetLocation) {
-		return this.discardSuggestion(projectKey, originIssueId, originLocation, targetIssueId, targetLocation,
-				RecommendationType.DUPLICATE);
+	public Response discardRecommendation(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, LinkRecommendation recommendation) {
+		if (recommendation == null || recommendation.getBothElements().contains(null)) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
+		}
+		recommendation.setProject(projectKey);
 
+		long databaseId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
+
+		if (databaseId == -1) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation could not be discarded.")).build();
+		}
+
+		return Response.status(Status.OK).build();
 	}
 
 	// --------------------
@@ -155,42 +152,6 @@ public class LinkRecommendationRest {
 			// LOGGER.error(e.getMessage());
 			response = Response.status(500).entity(e).build();
 		}
-		return response;
-	}
-
-	private Response discardSuggestion(String projectKey, Long originIssueId, String originLocation, Long targetIssueId,
-			String targetLocation, RecommendationType type) {
-		Response response;
-		// check if issue keys exist
-		try {
-
-			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-			KnowledgeElement origin = persistenceManager.getKnowledgeElement(originIssueId, originLocation);
-			KnowledgeElement target = persistenceManager.getKnowledgeElement(targetIssueId, targetLocation);
-			if (origin == null || target == null) {
-				response = Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
-			} else {
-				try {
-					long databaseId;
-
-					databaseId = ConsistencyPersistenceHelper.addDiscardedSuggestions(origin, target, type);
-
-					response = Response.status(200).build();
-					if (databaseId == -1) {
-						response = Response.status(500).build();
-					}
-
-				} catch (Exception e) {
-					// LOGGER.error(e.getMessage());
-					response = Response.status(500).entity(ImmutableMap.of("error", e.toString())).build();
-				}
-			}
-
-		} catch (Exception e) {
-			// LOGGER.error(e.getMessage());
-			response = Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
-		}
-
 		return response;
 	}
 

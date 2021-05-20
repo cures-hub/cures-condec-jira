@@ -82,6 +82,9 @@ public class Preprocessor {
 	}
 
 	public String[] getStemmedTokensWithoutStopWords(String sentence) {
+		if (sentence == null) {
+			return new String[0];
+		}
 		String cleanedSentence = normalize(sentence);
 		// replace long words and possible methods!
 		String[] tokens = tokenize(cleanedSentence);
@@ -90,8 +93,7 @@ public class Preprocessor {
 	}
 
 	public String normalize(String sentence) {
-		String cleanedSentence = SimpleNormalizer.getInstance().normalize(sentence);
-		return cleanedSentence;
+		return SimpleNormalizer.getInstance().normalize(sentence);
 	}
 
 	/**

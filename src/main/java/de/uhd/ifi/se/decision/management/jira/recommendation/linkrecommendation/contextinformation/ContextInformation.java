@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyPersistenceHelper;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -45,7 +45,7 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {
-		unlinkedElements.removeAll(ConsistencyPersistenceHelper.getDiscardedLinkSuggestions(element));
+		unlinkedElements.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedLinkRecommendations(element));
 		return unlinkedElements;
 	}
 

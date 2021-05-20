@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.linksuggestionrest;
+package de.uhd.ifi.se.decision.management.jira.rest.linkrecommendationrest;
 
 import java.util.List;
 

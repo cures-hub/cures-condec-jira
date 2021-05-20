@@ -20,10 +20,15 @@ public class RecommendationScore {
 	private String explanation;
 	private List<RecommendationScore> subScores;
 
+	public RecommendationScore() {
+		this.explanation = "";
+		this.subScores = new ArrayList<>();
+	}
+
 	public RecommendationScore(float totalScore, String explanation) {
+		this();
 		this.value = totalScore;
 		this.explanation = explanation;
-		this.subScores = new ArrayList<>();
 	}
 
 	/**

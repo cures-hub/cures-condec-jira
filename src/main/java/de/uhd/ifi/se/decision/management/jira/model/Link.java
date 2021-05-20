@@ -199,6 +199,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @see KnowledgeElement
 	 * @return source element of this link (=edge).
 	 */
+	@XmlElement
 	@Override
 	public KnowledgeElement getSource() {
 		if (source == null) {

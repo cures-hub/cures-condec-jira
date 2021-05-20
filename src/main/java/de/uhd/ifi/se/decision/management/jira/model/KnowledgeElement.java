@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -40,6 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
  * @see KnowledgeGraph
  * @see Link
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KnowledgeElement {
 
 	protected long id;
