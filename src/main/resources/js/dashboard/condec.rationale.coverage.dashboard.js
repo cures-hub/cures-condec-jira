@@ -118,16 +118,23 @@
 		issueDocumentedForSelectedJiraIssue = calculator.issueDocumentedForSelectedJiraIssue;
 		decisionDocumentedForSelectedJiraIssue = calculator.decisionDocumentedForSelectedJiraIssue;
 
+		/* define color palette */
+		var colorpalette = ['#EE6666', '#FAC858', '#91CC75'];
+
 		/* render box-plots */
-		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per selected element", issuesPerSelectedJiraIssue);
-		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue);
+		ConDecReqDash.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
+			"", "# Issues per selected element", issuesPerSelectedJiraIssue,
+			colorpalette);
+		ConDecReqDash.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
+			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue,
+			colorpalette);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is an issue documented?", issueDocumentedForSelectedJiraIssue);
-		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is a decision documented?", decisionDocumentedForSelectedJiraIssue);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
+			"", "For how many selected elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
+			colorpalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"", "For how many selected elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
+			colorpalette);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
