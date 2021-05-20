@@ -110,8 +110,8 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	public void onLinkCreatedIssueEvent(IssueLinkCreatedEvent linkCreatedEvent) {
 		KnowledgeElement element = new KnowledgeElement(linkCreatedEvent.getIssueLink().getSourceObject());
 		Link link = new Link(linkCreatedEvent.getIssueLink());
-		KnowledgeGraph.getOrCreate(element.getProject()).removeEdge(link);
-		KnowledgeGraph.getOrCreate(element.getProject()).addEdge(link);
+		KnowledgeGraph.getInstance(element.getProject()).removeEdge(link);
+		KnowledgeGraph.getInstance(element.getProject()).addEdge(link);
 		linkEventListeners.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
 		LOGGER.info("ConDec event listener on link created issue event was triggered.");
 	}
@@ -120,7 +120,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	public void onLinkDeletedIssueEvent(IssueLinkDeletedEvent linkDeletedEvent) {
 		KnowledgeElement element = new KnowledgeElement(linkDeletedEvent.getIssueLink().getSourceObject());
 		Link link = new Link(linkDeletedEvent.getIssueLink());
-		KnowledgeGraph.getOrCreate(element.getProject()).removeEdge(link);
+		KnowledgeGraph.getInstance(element.getProject()).removeEdge(link);
 		linkEventListeners.forEach(linkEventListener -> linkEventListener.onLinkEvent(element));
 		LOGGER.info("ConDec event listener on link deleted issue event was triggered.");
 	}

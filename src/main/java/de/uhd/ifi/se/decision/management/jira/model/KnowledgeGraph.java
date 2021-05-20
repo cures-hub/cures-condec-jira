@@ -65,7 +65,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return knowledgeGraph;
 	}
 
-	public static KnowledgeGraph getOrCreate(DecisionKnowledgeProject project) {
+	public static KnowledgeGraph getInstance(DecisionKnowledgeProject project) {
 		if (project == null) {
 			return null;
 		}
@@ -324,6 +324,15 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		graphToBeCopied.vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
 		graphToBeCopied.edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
 		return copiedGraph;
+	}
+
+	public KnowledgeGraph getMutableSubgraphFor(Set<KnowledgeElement> elements) {
+		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
+		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
+		edgeSet().stream().filter(edge -> elements.contains(getEdgeSource(edge)) && elements.contains(getEdgeTarget(edge)))
+				.forEach(mutableSubgraph::addEdge);
+		// return copy(new AsSubgraph<>(this, elements));
+		return mutableSubgraph;
 	}
 
 	public KnowledgeElement getElement(String elementKey) {

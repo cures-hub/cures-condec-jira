@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.graph.AsSubgraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,7 @@ public class FilteringManager {
 		}
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph filteredGraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
+		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
 
 		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
 			addTransitiveLinksToFilteredGraph(filteredGraph);

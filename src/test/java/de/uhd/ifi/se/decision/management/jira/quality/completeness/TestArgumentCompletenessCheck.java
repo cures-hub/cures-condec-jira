@@ -77,7 +77,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		linkToDecision = proArgument.getLink(decision);
 		assertNull(linkToDecision);
 
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(proArgument.getProject());
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
 		assertFalse(argumentCompletenessCheck.execute(proArgument));
