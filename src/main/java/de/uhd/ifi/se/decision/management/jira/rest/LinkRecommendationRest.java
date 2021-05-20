@@ -98,8 +98,7 @@ public class LinkRecommendationRest {
 		}
 		recommendation.setProject(projectKey);
 
-		long databaseId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation.getSource(),
-				recommendation.getTarget(), recommendation.getRecommendationType());
+		long databaseId = ConsistencyPersistenceHelper.saveDiscardedRecommendation(recommendation);
 
 		if (databaseId == -1) {
 			return Response.status(Status.BAD_REQUEST)

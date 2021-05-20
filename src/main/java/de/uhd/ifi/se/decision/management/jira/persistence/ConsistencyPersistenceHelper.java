@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import net.java.ao.Query;
 
 /**
@@ -35,13 +36,6 @@ public class ConsistencyPersistenceHelper {
 		return ConsistencyPersistenceHelper.getDiscardedSuggestions(baseElement, RecommendationType.LINK);
 	}
 
-	public static long addDiscardedLinkSuggestions(KnowledgeElement origin, KnowledgeElement discarded) {
-		if (origin == null || discarded == null) {
-			return -1;
-		}
-		return saveDiscardedRecommendation(origin, discarded, RecommendationType.LINK);
-	}
-
 	// ------------------
 	// Duplicates
 	// ------------------
@@ -51,10 +45,6 @@ public class ConsistencyPersistenceHelper {
 			return new ArrayList<>();
 		}
 		return getDiscardedSuggestions(base, RecommendationType.DUPLICATE);
-	}
-
-	public static long addDiscardedDuplicate(KnowledgeElement origin, KnowledgeElement target) {
-		return saveDiscardedRecommendation(origin, target, RecommendationType.DUPLICATE);
 	}
 
 	// ------------------
@@ -88,36 +78,36 @@ public class ConsistencyPersistenceHelper {
 		return discardedLinkSuggestions;
 	}
 
-	public static long saveDiscardedRecommendation(KnowledgeElement origin, KnowledgeElement discardedElement,
-			RecommendationType type) {
+	public static long saveDiscardedRecommendation(LinkRecommendation recommendation) {
 		long id;
 		// null checks
-		if (origin == null || origin.getProject() == null || discardedElement == null || type == null) {
-			id = -1;
-		} else {
-			// if null check passes
-			// exists check
-			DiscardedRecommendationInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(origin,
-					discardedElement, type);
-			if (discardedLinkSuggestionsInDatabase.length > 0) {
-				id = discardedLinkSuggestionsInDatabase[0].getId();
-			} else {
-				// not null parameter and does not already exist -> create new
-				final DiscardedRecommendationInDatabase discardedLinkSuggestionInDatabase = ACTIVE_OBJECTS
-						.create(DiscardedRecommendationInDatabase.class);
-				discardedLinkSuggestionInDatabase.setOriginId(origin.getId());
-				discardedLinkSuggestionInDatabase.setDiscardedElementId(discardedElement.getId());
-				discardedLinkSuggestionInDatabase.setType(type);
-				discardedLinkSuggestionInDatabase.setProjectKey(origin.getProject().getProjectKey());
-				discardedLinkSuggestionInDatabase
-						.setOriginDocumentationLocation(origin.getDocumentationLocationAsString());
-				discardedLinkSuggestionInDatabase
-						.setDiscElDocumentationLocation(discardedElement.getDocumentationLocationAsString());
-
-				discardedLinkSuggestionInDatabase.save();
-				id = discardedLinkSuggestionInDatabase.getId();
-			}
+		if (recommendation.getSource() == null || recommendation.getSource().getProject() == null
+				|| recommendation.getTarget() == null) {
+			return -1;
 		}
+		// if null check passes
+		// exists check
+		DiscardedRecommendationInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedSuggestion(
+				recommendation.getSource(), recommendation.getTarget(), recommendation.getRecommendationType());
+		if (discardedLinkSuggestionsInDatabase.length > 0) {
+			id = discardedLinkSuggestionsInDatabase[0].getId();
+		} else {
+			// not null parameter and does not already exist -> create new
+			final DiscardedRecommendationInDatabase discardedLinkSuggestionInDatabase = ACTIVE_OBJECTS
+					.create(DiscardedRecommendationInDatabase.class);
+			discardedLinkSuggestionInDatabase.setOriginId(recommendation.getSource().getId());
+			discardedLinkSuggestionInDatabase.setDiscardedElementId(recommendation.getTarget().getId());
+			discardedLinkSuggestionInDatabase.setType(recommendation.getRecommendationType());
+			discardedLinkSuggestionInDatabase.setProjectKey(recommendation.getSource().getProject().getProjectKey());
+			discardedLinkSuggestionInDatabase
+					.setOriginDocumentationLocation(recommendation.getSource().getDocumentationLocationAsString());
+			discardedLinkSuggestionInDatabase
+					.setDiscElDocumentationLocation(recommendation.getTarget().getDocumentationLocationAsString());
+
+			discardedLinkSuggestionInDatabase.save();
+			id = discardedLinkSuggestionInDatabase.getId();
+		}
+
 		return id;
 	}
 

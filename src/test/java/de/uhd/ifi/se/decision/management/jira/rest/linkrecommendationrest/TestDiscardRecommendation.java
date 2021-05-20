@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.linkrecommendationrest;
 import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,22 +33,27 @@ public class TestDiscardRecommendation extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testWithValidIssues() {
+	public void testValidRecommendation() {
 		KnowledgeElement knowledgeElement0 = KnowledgeElements.getTestKnowledgeElement();
 		KnowledgeElement knowledgeElement1 = KnowledgeElements.getSolvedDecisionProblem();
-		int actualStatus = configRest
+		assertEquals(Status.OK.getStatusCode(), configRest
 				.discardRecommendation(request, "TEST", new LinkRecommendation(knowledgeElement0, knowledgeElement1))
-				.getStatus();
-		assertEquals("The response status should be OK (200).", 200, actualStatus);
+				.getStatus());
 	}
 
 	@Test
 	@NonTransactional
-	public void testWithInvalidIssues() {
+	public void testRecommendationNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.discardRecommendation(request, "TEST", null).getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testInvalidRecommendation() {
 		KnowledgeElement knowledgeElement1 = KnowledgeElements.getSolvedDecisionProblem();
-		int actualStatus = configRest
-				.discardRecommendation(request, "TEST", new LinkRecommendation(null, knowledgeElement1)).getStatus();
-		assertEquals("The response status should be not OK.", 400, actualStatus);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest
+				.discardRecommendation(request, "TEST", new LinkRecommendation(null, knowledgeElement1)).getStatus());
 	}
 
 }
