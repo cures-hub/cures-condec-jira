@@ -309,14 +309,10 @@ public class FilteringManager {
 	 * @return true if the element is a test class.
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
-		// TODO Make code class recognition more explicit
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
+		if (element.getType() != KnowledgeType.CODE) {
 			return true;
 		}
-		if (!element.getSummary().contains(".java")) {
-			return true;
-		}
-		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
+		return filterSettings.isTestCodeShown() || !element.getSummary().contains("Test");
 	}
 
 	/**
