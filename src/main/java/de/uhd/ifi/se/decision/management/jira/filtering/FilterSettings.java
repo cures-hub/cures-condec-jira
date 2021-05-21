@@ -103,7 +103,7 @@ public class FilterSettings {
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
-		this.setIrrelevantTextShown(false);
+		this.isIrrelevantTextShown = false;
 
 		this.linkImpact = new HashMap<>();
 		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
@@ -440,7 +440,7 @@ public class FilterSettings {
 	 * @see CompletenessCheck
 	 */
 	@JsonProperty("isIncompleteKnowledgeShown")
-	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
+	public void setOnlyIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
 		this.isIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
 	}
 

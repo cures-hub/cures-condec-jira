@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -305,7 +306,8 @@ public class FilteringManager {
 
 	/**
 	 * @param element
-	 *            {@link KnowledgeElement} object.
+	 *            {@link ChangedFile} object. (A {@link ChangedFile} is a specific
+	 *            {@link KnowledgeElement}.)
 	 * @return true if the element is a test class.
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
@@ -318,9 +320,9 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return True if the element is incompletely documented according to the
-	 *         {@see CompletenessCheck} and incomplete knowledge elements should be
-	 *         shown. False otherwise.
+	 * @return true if the element is incompletely documented according to the
+	 *         {@see CompletenessCheck} and only incomplete knowledge elements
+	 *         should be shown. False otherwise.
 	 */
 	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
 		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
@@ -331,7 +333,7 @@ public class FilteringManager {
 	 *         manager uses.
 	 */
 	public FilterSettings getFilterSettings() {
-		return this.filterSettings;
+		return filterSettings;
 	}
 
 	/**

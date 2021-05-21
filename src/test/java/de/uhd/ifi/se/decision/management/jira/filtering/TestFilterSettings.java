@@ -164,7 +164,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testSetOnlyIncompleteElementsShown() {
-		filterSettings.setIncompleteKnowledgeShown(true);
+		filterSettings.setOnlyIncompleteKnowledgeShown(true);
 		assertTrue(filterSettings.isIncompleteKnowledgeShown());
 	}
 
