@@ -246,7 +246,7 @@ public class FilteringManager {
 		if (element.getSummary() != null && element.getSummary().toLowerCase().contains(searchString)) {
 			return true;
 		}
-		return element.getKey() != null && element.getKey().toLowerCase().contains(searchString);
+		return element.getKey().toLowerCase().contains(searchString);
 	}
 
 	/**

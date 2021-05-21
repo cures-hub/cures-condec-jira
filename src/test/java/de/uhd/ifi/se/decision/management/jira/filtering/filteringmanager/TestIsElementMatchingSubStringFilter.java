@@ -28,7 +28,6 @@ public class TestIsElementMatchingSubStringFilter extends TestSetUp {
 	@Test
 	public void testNoSearchTermInFilter() {
 		assertTrue(filteringManager.isElementMatchingSubStringFilter(element));
-		assertTrue(filteringManager.isElementMatchingFilterSettings(element));
 	}
 
 	@Test
@@ -36,6 +35,34 @@ public class TestIsElementMatchingSubStringFilter extends TestSetUp {
 		filteringManager.getFilterSettings().setSearchTerm("42");
 		assertFalse(filteringManager.isElementMatchingSubStringFilter(element));
 		assertFalse(filteringManager.isElementMatchingFilterSettings(element));
+	}
+
+	@Test
+	public void testSearchTermInDescription() {
+		element.setDescription("42");
+		filteringManager.getFilterSettings().setSearchTerm("42");
+		assertTrue(filteringManager.isElementMatchingSubStringFilter(element));
+	}
+
+	@Test
+	public void testSearchTermNotInDescriptionButInSummary() {
+		element.setDescription("42");
+		filteringManager.getFilterSettings().setSearchTerm("WI");
+		assertTrue(filteringManager.isElementMatchingSubStringFilter(element));
+	}
+
+	@Test
+	public void testSearchTermMatchesKey() {
+		element.setDescription(null);
+		element.setSummary(null);
+		filteringManager.getFilterSettings().setSearchTerm("TEST-1");
+		assertTrue(filteringManager.isElementMatchingSubStringFilter(element));
+	}
+
+	@Test
+	public void testSearchTermIsJiraQuery() {
+		filteringManager.getFilterSettings().setSearchTerm("?jql=project=CONDEC");
+		assertTrue(filteringManager.isElementMatchingSubStringFilter(element));
 	}
 
 }

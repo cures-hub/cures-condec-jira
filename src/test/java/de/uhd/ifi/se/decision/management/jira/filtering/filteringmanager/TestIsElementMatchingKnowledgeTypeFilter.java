@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -37,7 +36,7 @@ public class TestIsElementMatchingKnowledgeTypeFilter extends TestSetUp {
 	}
 
 	@Test
-	public void testNoStatusInFilter() {
+	public void testNoKnowledgeTypesInFilter() {
 		filteringManager.getFilterSettings().setKnowledgeTypes(new HashSet<>());
 		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(element));
 		assertFalse(filteringManager.isElementMatchingFilterSettings(element));
@@ -45,12 +44,17 @@ public class TestIsElementMatchingKnowledgeTypeFilter extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testIsElementMatchingKnowledgeTypeFilter() {
-		filteringManager.getFilterSettings().setIrrelevantTextShown(true);
-		// Add irrelevant sentence
-		JiraIssues.getSentencesForCommentText("Irrelevant text");
-		JiraIssues.addElementToDataBase(1, KnowledgeType.OTHER);
+	public void testOnlyDecisionKnowledgeInFilter() {
+		filteringManager.getFilterSettings().setOnlyDecisionKnowledgeShown(true);
+		assertTrue(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getDecision()));
+		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getOtherWorkItem()));
+		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getCodeFile()));
+	}
 
-		assertTrue(filteringManager.getFilteredGraph().vertexSet().size() > 0);
+	@Test
+	@NonTransactional
+	public void testIncludeIrrelevantPartsOfText() {
+		filteringManager.getFilterSettings().setIrrelevantTextShown(true);
+		assertTrue(filteringManager.isElementMatchingKnowledgeTypeFilter(JiraIssues.getIrrelevantSentence()));
 	}
 }

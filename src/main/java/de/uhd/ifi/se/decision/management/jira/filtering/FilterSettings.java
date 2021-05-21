@@ -1,11 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -19,20 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -76,7 +79,7 @@ public class FilterSettings {
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-						  @JsonProperty("searchTerm") String searchTerm) {
+			@JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 		setSearchTerm(searchTerm);
 
@@ -91,8 +94,10 @@ public class FilterSettings {
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isIncompleteKnowledgeShown = false;
-		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMaximumLinkDistanceToDecisions();
-		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMinimumDecisionsWithinLinkDistance();
+		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMaximumLinkDistanceToDecisions();
+		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMinimumDecisionsWithinLinkDistance();
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
@@ -326,7 +331,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
-  	@XmlElement(name = "linkDistance")
+	@XmlElement(name = "linkDistance")
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -337,14 +342,14 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
-  	@JsonProperty("linkDistance")
+	@JsonProperty("linkDistance")
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
 	}
 
 	/**
 	 * @return minimum number of decisions within the link distance of a knowledge
-	 * 		   element (=node) to be included in the filtered graph.
+	 *         element (=node) to be included in the filtered graph.
 	 */
 	@XmlElement(name = "minimumDecisionCoverage")
 	public int getMinimumDecisionCoverage() {
@@ -366,7 +371,7 @@ public class FilterSettings {
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-  @XmlElement(name = "minDegree")
+	@XmlElement(name = "minDegree")
 	public int getMinDegree() {
 		return minDegree;
 	}
@@ -376,7 +381,7 @@ public class FilterSettings {
 	 *            minimal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-  @JsonProperty("minDegree")
+	@JsonProperty("minDegree")
 	public void setMinDegree(int minDegree) {
 		this.minDegree = minDegree;
 	}
@@ -385,7 +390,7 @@ public class FilterSettings {
 	 * @return maximal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-  @XmlElement(name = "maxDegree")
+	@XmlElement(name = "maxDegree")
 	public int getMaxDegree() {
 		return maxDegree;
 	}
@@ -395,7 +400,7 @@ public class FilterSettings {
 	 *            maximal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-  @JsonProperty("maxDegree")
+	@JsonProperty("maxDegree")
 	public void setMaxDegree(int maxDegree) {
 		this.maxDegree = maxDegree;
 	}
@@ -500,7 +505,7 @@ public class FilterSettings {
 	 */
 	@XmlElement(name = "knowledgeTypes")
 	public Set<String> getKnowledgeTypes() {
-		if (isIrrelevantTextShown) {
+		if (isIrrelevantTextShown()) {
 			knowledgeTypes.add(KnowledgeType.OTHER.toString());
 		}
 		return knowledgeTypes;
