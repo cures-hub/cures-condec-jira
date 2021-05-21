@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,18 +27,6 @@ public class TestIsElementMatchingFilterSettings extends TestSetUp {
 		init();
 		FilterSettings settings = new FilterSettings("TEST", "");
 		filteringManager = new FilteringManager(settings);
-	}
-
-	@Test
-	public void testIsElementMatchingDecisionGroupFilter() {
-		List<String> decGroups = List.of("Low", "Medium", "High");
-		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
-
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
-		element.addDecisionGroup("Low");
-		element.addDecisionGroup("Medium");
-		element.addDecisionGroup("High");
-		assertTrue(filteringManager.isElementMatchingDecisionGroupFilter(element));
 	}
 
 	@Test
