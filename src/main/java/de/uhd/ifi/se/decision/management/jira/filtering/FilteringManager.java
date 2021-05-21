@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
@@ -53,7 +54,8 @@ public class FilteringManager {
 			return new HashSet<>();
 		}
 		Set<KnowledgeElement> elements = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
-		elements = filterElements(elements);
+		elements = elements.stream().filter(element -> isElementMatchingFilterSettings(element))
+				.collect(Collectors.toSet());
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
@@ -154,16 +156,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
-		Set<KnowledgeElement> filteredElements = new HashSet<>();
-		for (KnowledgeElement element : elements) {
-			if (isElementMatchingFilterSettings(element)) {
-				filteredElements.add(element);
-			}
-		}
-		return filteredElements;
 	}
 
 	/**
