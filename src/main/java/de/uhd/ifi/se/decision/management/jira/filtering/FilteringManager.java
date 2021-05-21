@@ -31,10 +31,6 @@ public class FilteringManager {
 	private KnowledgeGraph graph;
 
 	public FilteringManager(FilterSettings filterSettings) {
-		this(null, filterSettings);
-	}
-
-	public FilteringManager(ApplicationUser user, FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		if (filterSettings != null) {
 			this.graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
@@ -42,7 +38,7 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
-		this(user, new FilterSettings(projectKey, query, user));
+		this(new FilterSettings(projectKey, query, user));
 	}
 
 	/**

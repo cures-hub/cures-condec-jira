@@ -62,7 +62,7 @@ public class VisGraph {
 			return;
 		}
 		LOGGER.info(filterSettings.toString());
-		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		subgraph = filteringManager.getFilteredGraph();
 		selectedElement = filterSettings.getSelectedElement();
 		addNodesAndEdges(filterSettings.isHierarchical());

@@ -49,7 +49,7 @@ public class VisTimeLine {
 		LOGGER.info(filterSettings.toString());
 		this.isPlacedAtCreationDate = isPlacedAtCreationDate;
 		this.isPlacedAtUpdatingDate = isPlacedAtUpdatingDate;
-		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elements = filteringManager.getElementsMatchingFilterSettings();
 		addElements(elements);
 	}

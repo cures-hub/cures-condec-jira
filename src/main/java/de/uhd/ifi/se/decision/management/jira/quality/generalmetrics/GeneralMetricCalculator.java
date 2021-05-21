@@ -1,19 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -47,7 +45,7 @@ public class GeneralMetricCalculator {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
 	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
-		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getFilteredGraph();
 		this.filterSettings = filterSettings;
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
