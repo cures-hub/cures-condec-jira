@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering.filteringmanager;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 
@@ -18,19 +18,21 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestIsElementMatchingDecisionGroupFilter extends TestSetUp {
 
 	private FilteringManager filteringManager;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
 		FilterSettings settings = new FilterSettings("TEST", "");
 		filteringManager = new FilteringManager(settings);
+		element = KnowledgeElements.getTestKnowledgeElement();
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementWithoutGroupAndNoGroupsInFilterSettings() {
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertTrue(filteringManager.isElementMatchingDecisionGroupFilter(element));
+		assertTrue(filteringManager.isElementMatchingFilterSettings(element));
 	}
 
 	@Test
@@ -38,8 +40,8 @@ public class TestIsElementMatchingDecisionGroupFilter extends TestSetUp {
 	public void testElementWithoutGroupAndGroupsInFilterSettings() {
 		List<String> decGroups = List.of("Low", "Medium", "High");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		assertFalse(filteringManager.isElementMatchingDecisionGroupFilter(element));
+		assertFalse(filteringManager.isElementMatchingFilterSettings(element));
 	}
 
 	@Test
@@ -47,7 +49,6 @@ public class TestIsElementMatchingDecisionGroupFilter extends TestSetUp {
 		List<String> decGroups = List.of("Low", "Medium", "High");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
 
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		element.addDecisionGroup("Low");
 		element.addDecisionGroup("Medium");
 		element.addDecisionGroup("High");
@@ -59,7 +60,6 @@ public class TestIsElementMatchingDecisionGroupFilter extends TestSetUp {
 		List<String> decGroups = List.of("Low", "Medium", "High");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
 
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
 		element.addDecisionGroup("link recommendation");
 		assertFalse(filteringManager.isElementMatchingDecisionGroupFilter(element));
 	}

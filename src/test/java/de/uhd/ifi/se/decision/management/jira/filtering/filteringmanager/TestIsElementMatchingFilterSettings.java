@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.filtering.filteringmanager;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.Before;
@@ -27,24 +26,6 @@ public class TestIsElementMatchingFilterSettings extends TestSetUp {
 		init();
 		FilterSettings settings = new FilterSettings("TEST", "");
 		filteringManager = new FilteringManager(settings);
-	}
-
-	@Test
-	public void testIsElementMatchingDegreeFilter() {
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
-		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
-
-		filteringManager.getFilterSettings().setMinDegree(20);
-		assertFalse(filteringManager.isElementMatchingDegreeFilter(element));
-	}
-
-	@Test
-	public void testIsElementMatchingStatusFilter() {
-		KnowledgeElement element = KnowledgeElements.getTestKnowledgeElement();
-		assertTrue(filteringManager.isElementMatchingStatusFilter(element));
-
-		filteringManager.getFilterSettings().setStatus(new ArrayList<>());
-		assertFalse(filteringManager.isElementMatchingStatusFilter(element));
 	}
 
 	@Test
