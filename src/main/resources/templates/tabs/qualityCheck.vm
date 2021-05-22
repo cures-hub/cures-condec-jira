@@ -11,6 +11,8 @@
     </div>
     <div class="text-field" id="quality-check-decision-text">
     </div>
+    <div class="text-field" id="quality-check-knowledge-complete-text">
+    </div>
 </div>
 
 <div style="display:none">

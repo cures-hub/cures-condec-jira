@@ -6,8 +6,13 @@
 	var qualityCheckTab;
 	var minimumCoverageText;
 	var linkDistanceText;
+	var knowledgeCompleteText;
 	var issueText;
 	var decisionText;
+
+	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete."
+	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete."
+
 
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
@@ -30,17 +35,23 @@
 				var numberOfIssues = result.Issue;
 				var numberOfDecisions = result.Decision;
 
-				getHTMLNodes("menu-item-quality-check"
-					, "condec-tab-minimum-coverage"
-					, "condec-tab-link-distance"
-					, "quality-check-issue-text"
-					, "quality-check-decision-text");
+				conDecDoDCheckingAPI.hasIncompleteKnowledgeLinked(issueKey, function(result) {
+					var hasIncompleteKnowledgeLinked = result;
 
-				updateTab(qualityCheckTab, numberOfIssues, numberOfDecisions, minimumCoverage);
-				updateLabel(minimumCoverageText, minimumCoverage);
-				updateLabel(linkDistanceText, linkDistance);
-				updateText(issueText, "issues", numberOfIssues, minimumCoverage);
-				updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
+					getHTMLNodes("menu-item-quality-check"
+						, "condec-tab-minimum-coverage"
+						, "condec-tab-link-distance"
+						, "quality-check-knowledge-complete-text"
+						, "quality-check-issue-text"
+						, "quality-check-decision-text");
+
+					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, numberOfIssues, numberOfDecisions, minimumCoverage);
+					updateLabel(minimumCoverageText, minimumCoverage);
+					updateLabel(linkDistanceText, linkDistance);
+					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
+					updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
+					updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
+				});
 			});
 		});
 	}
@@ -49,8 +60,8 @@
 		label.innerText = text;
 	}
 
-	function updateTab(tab, coverageOfIssues, coverageOfDecisions, minimum) {
-		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum)) {
+	function updateTab(tab, hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
+		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked) {
 			addToken(tab, "condec-fine");
 		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
 			addToken(tab, "condec-warning");
@@ -75,10 +86,22 @@
 		}
 	}
 
-	function getHTMLNodes(tabName, minimumCoverageName, linkDistanceName, issueName, decisionName) {
+	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked) {
+		if (hasIncompleteKnowledgeLinked) {
+			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
+			addToken(knowledgeCompleteText, "condec-empty");
+		} else {
+			knowledgeCompleteText.textContent = KNOWLEDGE_COMPLETE;
+			addToken(knowledgeCompleteText, "condec-fine");
+		}
+	}
+
+	function getHTMLNodes(tabName, minimumCoverageName, linkDistanceName, knowledgeCompleteName,
+						  issueName, decisionName) {
 		qualityCheckTab = document.getElementById(tabName);
 		minimumCoverageText = document.getElementById(minimumCoverageName);
 		linkDistanceText = document.getElementById(linkDistanceName);
+		knowledgeCompleteText = document.getElementById(knowledgeCompleteName);
 		issueText = document.getElementById(issueName);
 		decisionText = document.getElementById(decisionName);
 	}
