@@ -432,8 +432,7 @@ public class KnowledgeRest {
 							"Getting elements failed due to a bad request. You need to provide the filter settings."))
 					.build();
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilteringManager filteringManager = new FilteringManager(user, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elementsMatchingQuery = filteringManager.getElementsMatchingFilterSettings();
 		LOGGER.info("Knowledge elements were retrieved for filter settings: " + filterSettings.toString());
 		return Response.ok(elementsMatchingQuery).build();

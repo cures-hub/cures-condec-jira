@@ -208,7 +208,7 @@
 		if (status !== null) {
 			var indexOfIncomplete = status.indexOf("incomplete");
 			if (indexOfIncomplete !== -1) {
-				filterSettings["isIncompleteKnowledgeShown"] = true;
+				filterSettings["isOnlyIncompleteKnowledgeShown"] = true;
 			}
 		}
 

@@ -3,10 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.graph.AsSubgraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -27,16 +30,10 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public class FilteringManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringManager.class);
-	private ApplicationUser user;
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
 
 	public FilteringManager(FilterSettings filterSettings) {
-		this(null, filterSettings);
-	}
-
-	public FilteringManager(ApplicationUser user, FilterSettings filterSettings) {
-		this.user = user;
 		this.filterSettings = filterSettings;
 		if (filterSettings != null) {
 			this.graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
@@ -44,7 +41,7 @@ public class FilteringManager {
 	}
 
 	public FilteringManager(String projectKey, ApplicationUser user, String query) {
-		this(user, new FilterSettings(projectKey, query, user));
+		this(new FilterSettings(projectKey, query, user));
 	}
 
 	/**
@@ -56,7 +53,8 @@ public class FilteringManager {
 			return new HashSet<>();
 		}
 		Set<KnowledgeElement> elements = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
-		elements = filterElements(elements);
+		elements = elements.stream().filter(element -> isElementMatchingFilterSettings(element))
+				.collect(Collectors.toSet());
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
@@ -76,7 +74,7 @@ public class FilteringManager {
 		}
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph filteredGraph = KnowledgeGraph.copy(new AsSubgraph<>(graph, elements));
+		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
 
 		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
 			addTransitiveLinksToFilteredGraph(filteredGraph);
@@ -148,7 +146,7 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
+	public Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
 			if (filterSettings.getLinkTypes().parallelStream()
@@ -157,16 +155,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private Set<KnowledgeElement> filterElements(Set<KnowledgeElement> elements) {
-		Set<KnowledgeElement> filteredElements = new HashSet<>();
-		for (KnowledgeElement element : elements) {
-			if (isElementMatchingFilterSettings(element)) {
-				filteredElements.add(element);
-			}
-		}
-		return filteredElements;
 	}
 
 	/**
@@ -182,10 +170,13 @@ public class FilteringManager {
 		if (!isElementMatchingTimeFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingStatusFilter(element) && !isElementMatchingDocumentationIncompletenessFilter(element)) {
+		if (!isElementMatchingDocumentationLocationFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingDocumentationLocationFilter(element)) {
+		if (!isElementMatchingStatusFilter(element) && !filterSettings.isOnlyIncompleteKnowledgeShown()) {
+			return false;
+		}
+		if (!isElementMatchingDocumentationCompletenessFilter(element)) {
 			return false;
 		}
 		if (!isElementMatchingDecisionGroupFilter(element)) {
@@ -261,7 +252,7 @@ public class FilteringManager {
 		if (element.getSummary() != null && element.getSummary().toLowerCase().contains(searchString)) {
 			return true;
 		}
-		return element.getKey() != null && element.getKey().toLowerCase().contains(searchString);
+		return element.getKey().toLowerCase().contains(searchString);
 	}
 
 	/**
@@ -320,29 +311,29 @@ public class FilteringManager {
 
 	/**
 	 * @param element
-	 *            {@link KnowledgeElement} object.
+	 *            {@link ChangedFile} object. (A {@link ChangedFile} is a specific
+	 *            {@link KnowledgeElement}.)
 	 * @return true if the element is a test class.
 	 */
 	public boolean isElementMatchingIsTestCodeFilter(KnowledgeElement element) {
-		// TODO Make code class recognition more explicit
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
+		if (element.getType() != KnowledgeType.CODE) {
 			return true;
 		}
-		if (!element.getSummary().contains(".java")) {
-			return true;
-		}
-		return filterSettings.isTestCodeShown() || !element.getSummary().startsWith("Test");
+		return filterSettings.isTestCodeShown() || !element.getSummary().contains("Test");
 	}
 
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return True if the element is incompletely documented according to the
-	 *         {@see CompletenessCheck} and incomplete knowledge elements should be
-	 *         shown. False otherwise.
+	 * @return always true {@link FilterSettings#isOnlyIncompleteKnowledgeShown()}
+	 *         is false. True if the element is incompletely documented according to
+	 *         the {@link DefinitionOfDone} (checked by {@link CompletenessCheck})
+	 *         and only incomplete knowledge elements should be shown
+	 *         ({@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is true).
+	 *         False otherwise.
 	 */
-	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
-		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
+	public boolean isElementMatchingDocumentationCompletenessFilter(KnowledgeElement element) {
+		return !filterSettings.isOnlyIncompleteKnowledgeShown() || element.isIncomplete();
 	}
 
 	/**
@@ -350,7 +341,7 @@ public class FilteringManager {
 	 *         manager uses.
 	 */
 	public FilterSettings getFilterSettings() {
-		return this.filterSettings;
+		return filterSettings;
 	}
 
 	/**
@@ -360,21 +351,5 @@ public class FilteringManager {
 	 */
 	public void setFilterSettings(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
-	}
-
-	/**
-	 * @return {@link ApplicationUser} who performs filtering.
-	 */
-	public ApplicationUser getUser() {
-		return user;
-	}
-
-	/**
-	 * @param user
-	 *            {@link ApplicationUser} object who performs filtering. The user
-	 *            needs to have the rights to query the database.
-	 */
-	public void setUser(ApplicationUser user) {
-		this.user = user;
 	}
 }

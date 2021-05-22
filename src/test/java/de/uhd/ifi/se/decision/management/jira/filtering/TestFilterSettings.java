@@ -1,5 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -7,22 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -159,13 +159,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testIsOnlyIncompleteElementsShown() {
-		assertFalse(filterSettings.isIncompleteKnowledgeShown());
+		assertFalse(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
 	public void testSetOnlyIncompleteElementsShown() {
-		filterSettings.setIncompleteKnowledgeShown(true);
-		assertTrue(filterSettings.isIncompleteKnowledgeShown());
+		filterSettings.setOnlyIncompleteKnowledgeShown(true);
+		assertTrue(filterSettings.isOnlyIncompleteKnowledgeShown());
 	}
 
 	@Test
@@ -310,9 +310,7 @@ public class TestFilterSettings extends TestSetUp {
 	public void testLinkImpact() {
 		// default value
 		assertEquals(9, filterSettings.getLinkImpact().size());
-		filterSettings.setLinkImpact(new HashMap<>() {{
-			put("test", 1.0f);
-		}});
+		filterSettings.setLinkImpact(Map.of("test", 1.0f));
 		assertEquals(1, filterSettings.getLinkImpact().size());
 	}
 
@@ -344,14 +342,11 @@ public class TestFilterSettings extends TestSetUp {
 	public void testPropagationRule() {
 		// default value
 		assertEquals(0, filterSettings.getPropagationRule().size());
-		filterSettings.setPropagationRule(new LinkedList<>() {{
-			add(PassRule.UNDEFINED.getTranslation());
-		}});
+		filterSettings.setPropagationRule(List.of(PassRule.UNDEFINED.getTranslation()));
 		assertEquals(1, filterSettings.getPropagationRule().size());
 		filterSettings.setPropagationRule(null);
 		assertEquals(0, filterSettings.getPropagationRule().size());
 	}
-
 
 	@Test
 	public void testToString() {

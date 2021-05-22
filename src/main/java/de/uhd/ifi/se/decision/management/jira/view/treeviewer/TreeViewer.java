@@ -87,7 +87,7 @@ public class TreeViewer {
 		}
 		LOGGER.info(filterSettings.toString());
 
-		FilteringManager filteringManager = new FilteringManager(null, filterSettings);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		graph = filteringManager.getFilteredGraph();
 
 		KnowledgeElement rootElement = filterSettings.getSelectedElement();
