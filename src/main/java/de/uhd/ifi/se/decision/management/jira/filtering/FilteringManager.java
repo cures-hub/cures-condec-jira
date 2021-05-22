@@ -170,6 +170,9 @@ public class FilteringManager {
 		if (!isElementMatchingTimeFilter(element)) {
 			return false;
 		}
+		if (!isElementMatchingDocumentationLocationFilter(element)) {
+			return false;
+		}
 		if (!isElementMatchingStatusFilter(element) && !filterSettings.isOnlyIncompleteKnowledgeShown()) {
 			return false;
 		}
