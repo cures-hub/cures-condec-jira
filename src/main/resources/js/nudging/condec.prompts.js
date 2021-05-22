@@ -49,26 +49,29 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		var filterSettings = {
-			"projectKey": conDecAPI.projectKey,
-			"selectedElement": issueKey
+		var projectKey = conDecAPI.getProjectKey();
+		if (projectKey === null || projectKey === undefined) {
+			return;
 		}
-		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
-			.then(isDoDViolated => {
-				if (!isDoDViolated) {
-					return;
-				}
-				document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-				var flag = AJS.flag({
-					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
-					title: "Definition of Done Violated!",
-					type: "warning"
-				
+		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
+			filterSettings.selectedElement = issueKey;
+			conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
+				.then(isDoDViolated => {
+					if (!isDoDViolated) {
+						return;
+					}
+					document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+					var flag = AJS.flag({
+						body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
+						title: "Definition of Done Violated!",
+						type: "warning"
+
+					});
+					document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
+						flag.close();
+					};
 				});
-				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
-					flag.close();
-				};
-			});
+		})
 	}
 
 	global.conDecPrompt = new ConDecPrompt();

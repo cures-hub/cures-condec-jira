@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CoverageHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
@@ -67,7 +68,8 @@ public class DefinitionOfDoneCheckingRest {
 					"DoD check could not be performed because the element could not be found.")).build();
 		}
 		// TODO Return all the exact criteria that are not fulfilled
-		boolean doesIssueNeedApproval = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
+		boolean doesIssueNeedApproval = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement) ||
+			CoverageHandler.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
 		return Response.ok().entity(doesIssueNeedApproval).build();
 	}
 

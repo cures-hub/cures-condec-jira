@@ -5,7 +5,7 @@
 (function (global) {
 	var qualityCheckTab;
 	var minimumCoverageText;
-	var linkDistanceText
+	var linkDistanceText;
 	var issueText;
 	var decisionText;
 
