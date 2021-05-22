@@ -199,10 +199,6 @@ public class TextClassificationRest {
 	@Path("/getNotValidatedElements")
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
 
 		if (request == null || projectKey == null || issueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
