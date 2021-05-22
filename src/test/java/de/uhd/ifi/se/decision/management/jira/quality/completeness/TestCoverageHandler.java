@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import org.junit.Before;
@@ -16,7 +15,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCoverageHandler  extends TestSetUp {
 
-	FilterSettings filterSettings;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
