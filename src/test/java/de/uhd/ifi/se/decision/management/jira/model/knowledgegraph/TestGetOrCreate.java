@@ -29,7 +29,7 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectValid() {
-		assertNotNull(KnowledgeGraph.getOrCreate(new DecisionKnowledgeProject("TEST")));
+		assertNotNull(KnowledgeGraph.getInstance(new DecisionKnowledgeProject("TEST")));
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectNull() {
-		assertNull(KnowledgeGraph.getOrCreate((DecisionKnowledgeProject) null));
+		assertNull(KnowledgeGraph.getInstance((DecisionKnowledgeProject) null));
 	}
 
 }

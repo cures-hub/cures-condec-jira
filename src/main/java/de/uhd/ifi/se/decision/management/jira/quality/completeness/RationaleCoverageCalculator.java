@@ -1,22 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Calculates the rationale coverage of requirements, code, and other software
@@ -45,26 +49,27 @@ public class RationaleCoverageCalculator {
 	}
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
-									   String sourceKnowledgeTypesString) {
+			String sourceKnowledgeTypesString) {
 		this.filterSettings = filterSettings;
-		this.filteringManager = new FilteringManager(user, filterSettings);
+		this.filteringManager = new FilteringManager(filterSettings);
 
 		Set<String> sourceKnowledgeTypes;
 		if (sourceKnowledgeTypesString.isEmpty()) {
-			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey()).getNamesOfKnowledgeTypes();
+			sourceKnowledgeTypes = new DecisionKnowledgeProject(filterSettings.getProjectKey())
+					.getNamesOfKnowledgeTypes();
 		} else {
 			sourceKnowledgeTypes = new HashSet<>(Arrays.asList(sourceKnowledgeTypesString.split(",")));
 		}
 
 		if (!sourceKnowledgeTypes.isEmpty()) {
 			this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-				sourceKnowledgeTypes, KnowledgeType.DECISION);
+					sourceKnowledgeTypes, KnowledgeType.DECISION);
 			this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+					sourceKnowledgeTypes, KnowledgeType.ISSUE);
 			this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-				sourceKnowledgeTypes, KnowledgeType.DECISION);
+					sourceKnowledgeTypes, KnowledgeType.DECISION);
 			this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-				sourceKnowledgeTypes, KnowledgeType.ISSUE);
+					sourceKnowledgeTypes, KnowledgeType.ISSUE);
 		}
 	}
 
@@ -81,7 +86,7 @@ public class RationaleCoverageCalculator {
 	}
 
 	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
-																			KnowledgeType knowledgeType) {
+			KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getKnowledgeElementsWithNeighborsOfOtherType");
 
 		if (knowledgeType == null) {
@@ -115,16 +120,16 @@ public class RationaleCoverageCalculator {
 		}
 
 		Map<String, String> result = new LinkedHashMap<>();
-		result.put("More than " + minimumDecisionCoverage + " links from selected types to " +
-			knowledgeType.toString(), withHighLinks);
-		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " +
-			knowledgeType.toString(), withLowLinks);
+		result.put("More than " + minimumDecisionCoverage + " links from selected types to " + knowledgeType.toString(),
+				withHighLinks);
+		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " + knowledgeType.toString(),
+				withLowLinks);
 		result.put("No links from selected types to " + knowledgeType.toString(), withoutLinks);
 		return result;
 	}
 
 	private Map<String, Integer> calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(Set<String> sourceTypes,
-																						 KnowledgeType knowledgeType) {
+			KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator getNumberOfDecisionKnowledgeElementsForKnowledgeElements");
 
 		if (knowledgeType == null) {
@@ -147,7 +152,7 @@ public class RationaleCoverageCalculator {
 				numberOfElementsReachable.put(knowledgeElement.getKey(), 0);
 			} else {
 				numberOfElementsReachable.put(knowledgeElement.getKey(),
-					linkedElementMap.get(knowledgeElement).get(knowledgeType));
+						linkedElementMap.get(knowledgeElement).get(knowledgeType));
 			}
 		}
 		return numberOfElementsReachable;

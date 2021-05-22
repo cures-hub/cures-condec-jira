@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.jgrapht.Graph;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,14 +102,6 @@ public class TestKnowledgeGraph extends TestSetUp {
 		node = graph.vertexSet().iterator().next();
 		assertEquals("Updated", node.getSummary());
 		assertEquals(5, graph.edgesOf(node).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCopy() {
-		Graph<KnowledgeElement, Link> copiedGraph = KnowledgeGraph.copy(graph);
-		copiedGraph.addVertex(new KnowledgeElement());
-		assertEquals(graph.vertexSet().size() + 1, copiedGraph.vertexSet().size());
 	}
 
 	@After

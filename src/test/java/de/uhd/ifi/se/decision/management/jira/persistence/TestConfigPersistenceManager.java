@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -447,11 +447,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(9, settings.getLinkImpact().size());
 		settings.setDecayValue(0.75f);
 		settings.setThreshold(0.2f);
-		settings.setLinkImpact(new HashMap<>() {
-			{
-				put("comment", 0.5f);
-			}
-		});
+		settings.setLinkImpact(Map.of("comment", 0.5f));
 		ConfigPersistenceManager.setCiaSettings("TEST", settings);
 		CiaSettings loaded = ConfigPersistenceManager.getCiaSettings("TEST");
 		assertEquals(0.75, loaded.getDecayValue(), 0.01);

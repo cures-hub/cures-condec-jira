@@ -546,7 +546,7 @@ public class KnowledgeElement {
 	 *         element of the given {@link KnowledgeType}.
 	 */
 	public Set<KnowledgeElement> getNeighborsOfType(KnowledgeType knowledgeType) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(project);
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
 		return neighbors.stream().filter(element -> element.getType() == knowledgeType).collect(Collectors.toSet());
 	}
@@ -560,7 +560,7 @@ public class KnowledgeElement {
 		if (project == null) {
 			return new HashSet<>();
 		}
-		return KnowledgeGraph.getOrCreate(project).edgesOf(this);
+		return KnowledgeGraph.getInstance(project).edgesOf(this);
 	}
 
 	/**
@@ -633,7 +633,7 @@ public class KnowledgeElement {
 	}
 
 	private ShortestPathAlgorithm<KnowledgeElement, Link> getShortestPathAlgorithm(int maxLinkDistance) {
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(project);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(project);
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 		return new DijkstraShortestPath<>(undirectedGraph, maxLinkDistance);
 	}
