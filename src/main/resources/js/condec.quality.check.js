@@ -61,18 +61,19 @@
 	}
 
 	function updateTab(tab, hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
-		var complete = (coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked;
-		var incomplete = (coverageOfIssues > 0) || (coverageOfDecisions > 0);
-		var empty = (coverageOfIssues === 0) && (coverageOfDecisions === 0);
-		if (complete) {
+		if (checkComplete(hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum)) {
 			addToken(tab, "condec-fine");
-		} else if (incomplete) {
+		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
 			addToken(tab, "condec-warning");
-		} else if (empty) {
+		} else if ((coverageOfIssues === 0) && (coverageOfDecisions === 0)) {
 			addToken(tab, "condec-empty");
 		} else {
 			addToken(tab, "condec-default");
 		}
+	}
+
+	function checkComplete(hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
+		return (coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked;
 	}
 
 	function updateText(textField, type, coverage, minimum) {
