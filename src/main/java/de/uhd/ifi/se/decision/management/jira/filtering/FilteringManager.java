@@ -146,7 +146,7 @@ public class FilteringManager {
 		return subgraph;
 	}
 
-	private Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
+	public Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
 			if (filterSettings.getLinkTypes().parallelStream()

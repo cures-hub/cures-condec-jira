@@ -418,7 +418,7 @@ public class FilterSettings {
 	 *            true if code classes for unit tests are shown in the filtered
 	 *            graph.
 	 */
-	@JsonProperty
+	@JsonProperty("isTestCodeShown")
 	public void setTestCodeShown(boolean isTestCodeShown) {
 		this.isTestCodeShown = isTestCodeShown;
 	}
