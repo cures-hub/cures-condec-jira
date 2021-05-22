@@ -26,22 +26,34 @@ public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSe
 	}
 
 	@Test
-	public void testIsDisabled() {
+	public void testIncompleteElementAndAllElementsShouldBeShown() {
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(false);
-		assertFalse(filteringManager
-				.isElementMatchingDocumentationIncompletenessFilter(KnowledgeElements.getUnsolvedDecisionProblem()));
-		assertFalse(
-				filteringManager.isElementMatchingDocumentationIncompletenessFilter(KnowledgeElements.getDecision()));
+		assertTrue(filteringManager
+				.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getUnsolvedDecisionProblem()));
 		assertFalse(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getUnsolvedDecisionProblem()));
 	}
 
 	@Test
-	public void testIsElementMatchingDocumentationCompletenessFilter() {
+	public void testCompleteElementAndAllElementsShouldBeShown() {
+		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(false);
+		assertTrue(
+				filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
+		assertFalse(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
+	}
+
+	@Test
+	public void testIncompleteElementAndOnlyIncompleteElementsShouldBeShown() {
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(true);
 		assertTrue(filteringManager
-				.isElementMatchingDocumentationIncompletenessFilter(KnowledgeElements.getUnsolvedDecisionProblem()));
-		assertFalse(
-				filteringManager.isElementMatchingDocumentationIncompletenessFilter(KnowledgeElements.getDecision()));
+				.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getUnsolvedDecisionProblem()));
 		assertTrue(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getUnsolvedDecisionProblem()));
+	}
+
+	@Test
+	public void testCompleteElementAndOnlyIncompleteElementsShouldBeShown() {
+		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(true);
+		assertFalse(
+				filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
+		assertFalse(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
 	}
 }

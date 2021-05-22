@@ -21,6 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -168,10 +170,10 @@ public class FilteringManager {
 		if (!isElementMatchingTimeFilter(element)) {
 			return false;
 		}
-		if (!isElementMatchingStatusFilter(element) && !isElementMatchingDocumentationIncompletenessFilter(element)) {
+		if (!isElementMatchingStatusFilter(element) && !filterSettings.isOnlyIncompleteKnowledgeShown()) {
 			return false;
 		}
-		if (!isElementMatchingDocumentationLocationFilter(element)) {
+		if (!isElementMatchingDocumentationCompletenessFilter(element)) {
 			return false;
 		}
 		if (!isElementMatchingDecisionGroupFilter(element)) {
@@ -320,12 +322,15 @@ public class FilteringManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return true if the element is incompletely documented according to the
-	 *         {@see CompletenessCheck} and only incomplete knowledge elements
-	 *         should be shown. False otherwise.
+	 * @return always true {@link FilterSettings#isOnlyIncompleteKnowledgeShown()}
+	 *         is false. True if the element is incompletely documented according to
+	 *         the {@link DefinitionOfDone} (checked by {@link CompletenessCheck})
+	 *         and only incomplete knowledge elements should be shown
+	 *         ({@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is true).
+	 *         False otherwise.
 	 */
-	public boolean isElementMatchingDocumentationIncompletenessFilter(KnowledgeElement element) {
-		return filterSettings.isIncompleteKnowledgeShown() && element.isIncomplete();
+	public boolean isElementMatchingDocumentationCompletenessFilter(KnowledgeElement element) {
+		return !filterSettings.isOnlyIncompleteKnowledgeShown() || element.isIncomplete();
 	}
 
 	/**
