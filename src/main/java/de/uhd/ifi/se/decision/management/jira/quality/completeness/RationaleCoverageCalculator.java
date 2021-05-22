@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.*;
 
-import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;

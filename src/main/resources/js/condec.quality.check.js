@@ -61,11 +61,14 @@
 	}
 
 	function updateTab(tab, hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
-		if ((coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked) {
+		var complete = (coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked;
+		var incomplete = (coverageOfIssues > 0) || (coverageOfDecisions > 0);
+		var empty = (coverageOfIssues === 0) && (coverageOfDecisions === 0);
+		if (complete) {
 			addToken(tab, "condec-fine");
-		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
+		} else if (incomplete) {
 			addToken(tab, "condec-warning");
-		} else if ((coverageOfIssues === 0) && (coverageOfDecisions === 0)) {
+		} else if (empty) {
 			addToken(tab, "condec-empty");
 		} else {
 			addToken(tab, "condec-default");
