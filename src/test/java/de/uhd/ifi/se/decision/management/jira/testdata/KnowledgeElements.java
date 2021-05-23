@@ -32,6 +32,10 @@ public class KnowledgeElements {
 		return getTestKnowledgeElements().get(4);
 	}
 
+	public static KnowledgeElement getUnsolvedDecisionProblem() {
+		return getTestKnowledgeElements().get(5);
+	}
+
 	public static KnowledgeElement getAlternative() {
 		return getTestKnowledgeElements().get(7);
 	}

@@ -45,6 +45,7 @@
 		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Code", "PullRequest"];
 
 		this.linkTypes = [];
+		this.allLinkTypes = [];
 
 		this.decisionGroups = [];
 	};
@@ -618,10 +619,10 @@
 	 * external references: condec.dialog, condec.filtering
 	 */
 	ConDecAPI.prototype.getAllLinkTypes = function() {
-		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
-			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllLinkTypes.json?projectKey=" + conDecAPI.projectKey);
+		if (this.allLinkTypes === undefined || this.allLinkTypes.length === 0) {
+			this.allLinkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
-		return this.linkTypes;
+		return this.allLinkTypes;
 	};
 
 	/*

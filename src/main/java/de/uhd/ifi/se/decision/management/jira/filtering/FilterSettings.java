@@ -1,11 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -18,21 +35,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents the filter criteria. For example, the filter settings cover the
@@ -52,7 +56,7 @@ public class FilterSettings {
 	private List<String> decisionGroups;
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
-	private boolean isIncompleteKnowledgeShown;
+	private boolean isOnlyIncompleteKnowledgeShown;
 	private int linkDistance;
 	private int minimumDecisionCoverage;
 	private int minDegree;
@@ -76,7 +80,7 @@ public class FilterSettings {
 
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-						  @JsonProperty("searchTerm") String searchTerm) {
+			@JsonProperty("searchTerm") String searchTerm) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 		setSearchTerm(searchTerm);
 
@@ -90,15 +94,17 @@ public class FilterSettings {
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
-		this.isIncompleteKnowledgeShown = false;
-		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMaximumLinkDistanceToDecisions();
-		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getMinimumDecisionsWithinLinkDistance();
+		this.isOnlyIncompleteKnowledgeShown = false;
+		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMaximumLinkDistanceToDecisions();
+		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMinimumDecisionsWithinLinkDistance();
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
-		this.setIrrelevantTextShown(false);
+		this.isIrrelevantTextShown = false;
 
 		this.linkImpact = new HashMap<>();
 		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
@@ -131,7 +137,7 @@ public class FilterSettings {
 	/**
 	 * @return key of the Jira project.
 	 */
-	@XmlElement(name = "projectKey")
+	@XmlElement
 	public String getProjectKey() {
 		return project != null ? project.getProjectKey() : "";
 	}
@@ -140,7 +146,7 @@ public class FilterSettings {
 	 * @param projectKey
 	 *            of the Jira project.
 	 */
-	@JsonProperty("projectKey")
+	@JsonProperty
 	public void setProjectKey(String projectKey) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 	}
@@ -160,7 +166,7 @@ public class FilterSettings {
 	 *            oder "?filter=", it is a Jira Query or a predefined
 	 *            {@link JiraFilter} (e.g. allopenissues).
 	 */
-	@JsonProperty("searchTerm")
+	@JsonProperty
 	public void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm != null ? searchTerm : "";
 	}
@@ -178,7 +184,7 @@ public class FilterSettings {
 	 *            earliest creation or update date of an element to be included in
 	 *            the filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("startDate")
+	@JsonProperty
 	public void setStartDate(long startDate) {
 		this.startDate = startDate;
 	}
@@ -196,7 +202,7 @@ public class FilterSettings {
 	 *            latest creation or update date of an element to be included in the
 	 *            filter/shown in the knowledge graph.
 	 */
-	@JsonProperty("endDate")
+	@JsonProperty
 	public void setEndDate(long endDate) {
 		this.endDate = endDate;
 	}
@@ -213,7 +219,7 @@ public class FilterSettings {
 	 * @return list of {@link DocumentationLocation}s to be shown in the knowledge
 	 *         graph as Strings.
 	 */
-	@XmlElement(name = "documentationLocations")
+	@XmlElement
 	public List<String> getNamesOfDocumentationLocations() {
 		List<String> documentationLocations = new ArrayList<>();
 		for (DocumentationLocation location : getDocumentationLocations()) {
@@ -227,7 +233,7 @@ public class FilterSettings {
 	 *            {@link DocumentationLocation}s to be shown in the knowledge graph
 	 *            as Strings.
 	 */
-	@JsonProperty("documentationLocations")
+	@JsonProperty
 	public void setDocumentationLocations(List<String> namesOfDocumentationLocations) {
 		if (namesOfDocumentationLocations != null) {
 			this.documentationLocations = new ArrayList<>();
@@ -243,7 +249,7 @@ public class FilterSettings {
 	 * @return list of {@link KnowledgeStatus} types to be shown in the knowledge
 	 *         graph as strings.
 	 */
-	@XmlElement(name = "status")
+	@XmlElement
 	public List<KnowledgeStatus> getStatus() {
 		return knowledgeStatus;
 	}
@@ -253,7 +259,7 @@ public class FilterSettings {
 	 *            list of {@link KnowledgeStatus} types to be shown in the knowledge
 	 *            graph as strings.
 	 */
-	@JsonProperty("status")
+	@JsonProperty
 	public void setStatus(List<String> status) {
 		knowledgeStatus = new ArrayList<>();
 		if (status == null) {
@@ -271,7 +277,7 @@ public class FilterSettings {
 	/**
 	 * @return {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
-	@XmlElement(name = "linkTypes")
+	@XmlElement
 	public Set<String> getLinkTypes() {
 		return linkTypes;
 	}
@@ -280,7 +286,7 @@ public class FilterSettings {
 	 * @param namesOfTypes
 	 *            {@link LinkType}s to be shown in the knowledge graph as strings.
 	 */
-	@JsonProperty("linkTypes")
+	@JsonProperty
 	public void setLinkTypes(Set<String> namesOfTypes) {
 		linkTypes = namesOfTypes != null ? namesOfTypes : DecisionKnowledgeProject.getNamesOfLinkTypes();
 	}
@@ -326,7 +332,7 @@ public class FilterSettings {
 	 * @return maximal distance from the start node to nodes to be included in the
 	 *         filtered graph. All nodes with a greater distance are not included.
 	 */
-  	@XmlElement(name = "linkDistance")
+	@XmlElement
 	public int getLinkDistance() {
 		return linkDistance;
 	}
@@ -337,16 +343,16 @@ public class FilterSettings {
 	 *            filtered graph. All nodes with a greater distance are not
 	 *            included. Also called "number of hops".
 	 */
-  	@JsonProperty("linkDistance")
+	@JsonProperty
 	public void setLinkDistance(int linkDistance) {
 		this.linkDistance = linkDistance;
 	}
 
 	/**
 	 * @return minimum number of decisions within the link distance of a knowledge
-	 * 		   element (=node) to be included in the filtered graph.
+	 *         element (=node) to be included in the filtered graph.
 	 */
-	@XmlElement(name = "minimumDecisionCoverage")
+	@XmlElement
 	public int getMinimumDecisionCoverage() {
 		return minimumDecisionCoverage;
 	}
@@ -357,7 +363,7 @@ public class FilterSettings {
 	 *            are included in the filtered graph. All nodes with less decisions
 	 *            within the link distance are not included.
 	 */
-	@JsonProperty("minimumDecisionCoverage")
+	@JsonProperty
 	public void setMinimumDecisionCoverage(int minimumDecisionCoverage) {
 		this.minimumDecisionCoverage = minimumDecisionCoverage;
 	}
@@ -366,7 +372,7 @@ public class FilterSettings {
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-  @XmlElement(name = "minDegree")
+	@XmlElement
 	public int getMinDegree() {
 		return minDegree;
 	}
@@ -376,7 +382,7 @@ public class FilterSettings {
 	 *            minimal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-  @JsonProperty("minDegree")
+	@JsonProperty
 	public void setMinDegree(int minDegree) {
 		this.minDegree = minDegree;
 	}
@@ -385,7 +391,7 @@ public class FilterSettings {
 	 * @return maximal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
-  @XmlElement(name = "maxDegree")
+	@XmlElement
 	public int getMaxDegree() {
 		return maxDegree;
 	}
@@ -395,7 +401,7 @@ public class FilterSettings {
 	 *            maximal number of links that a knowledge element (=node) needs to
 	 *            have to be included in the filtered graph.
 	 */
-  @JsonProperty("maxDegree")
+	@JsonProperty
 	public void setMaxDegree(int maxDegree) {
 		this.maxDegree = maxDegree;
 	}
@@ -418,25 +424,26 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return true if incompletely documented knowledge elements are shown in the
-	 *         filtered graph.
+	 * @return true if only incompletely documented knowledge elements according to
+	 *         the {@link DefinitionOfDone} are shown in the filtered graph.
 	 *
 	 * @see CompletenessCheck
 	 */
-	public boolean isIncompleteKnowledgeShown() {
-		return isIncompleteKnowledgeShown;
+	public boolean isOnlyIncompleteKnowledgeShown() {
+		return isOnlyIncompleteKnowledgeShown;
 	}
 
 	/**
-	 * @param isIncompleteKnowledgeShown
-	 *            true if incompletely documented knowledge elements should be shown
-	 *            in the filtered graph.
+	 * @param isOnlyIncompleteKnowledgeShown
+	 *            true if only incompletely documented knowledge elements according
+	 *            to the {@link DefinitionOfDone} should be shown in the filtered
+	 *            graph.
 	 *
 	 * @see CompletenessCheck
 	 */
-	@JsonProperty("isIncompleteKnowledgeShown")
-	public void setIncompleteKnowledgeShown(boolean isIncompleteKnowledgeShown) {
-		this.isIncompleteKnowledgeShown = isIncompleteKnowledgeShown;
+	@JsonProperty("isOnlyIncompleteKnowledgeShown")
+	public void setOnlyIncompleteKnowledgeShown(boolean isOnlyIncompleteKnowledgeShown) {
+		this.isOnlyIncompleteKnowledgeShown = isOnlyIncompleteKnowledgeShown;
 	}
 
 	/**
@@ -471,7 +478,7 @@ public class FilterSettings {
 	 *
 	 *        TODO Solve this issue and make code class recognition more explicit
 	 */
-	@JsonProperty("selectedElement")
+	@JsonProperty
 	public void setSelectedElement(String elementKey) {
 		if (elementKey == null || elementKey.isBlank()) {
 			return;
@@ -498,9 +505,9 @@ public class FilterSettings {
 	 * @return list of selected {@link KnowledgeType}s to be shown in the knowledge
 	 *         graph.
 	 */
-	@XmlElement(name = "knowledgeTypes")
+	@XmlElement
 	public Set<String> getKnowledgeTypes() {
-		if (isIrrelevantTextShown) {
+		if (isIrrelevantTextShown()) {
 			knowledgeTypes.add(KnowledgeType.OTHER.toString());
 		}
 		return knowledgeTypes;
@@ -511,7 +518,7 @@ public class FilterSettings {
 	 *            names of {@link KnowledgeType}s, such as decision knowledge types
 	 *            and other Jira {@link IssueType}s.
 	 */
-	@JsonProperty("knowledgeTypes")
+	@JsonProperty
 	public void setKnowledgeTypes(Set<String> namesOfTypes) {
 		knowledgeTypes = namesOfTypes != null ? namesOfTypes : project.getNamesOfKnowledgeTypes();
 	}
@@ -569,7 +576,7 @@ public class FilterSettings {
 	 *            provided by the {@link FilteringManager} should contain transitive
 	 *            links as a replacement for knowledge elements removed by filters.
 	 */
-	@JsonProperty("createTransitiveLinks")
+	@JsonProperty
 	public void setCreateTransitiveLinks(boolean createTransitiveLinks) {
 		this.createTransitiveLinks = createTransitiveLinks;
 	}
@@ -593,7 +600,7 @@ public class FilterSettings {
 		return context;
 	}
 
-	@JsonProperty("context")
+	@JsonProperty
 	public void setContext(long context) {
 		this.context = context;
 	}
@@ -602,7 +609,7 @@ public class FilterSettings {
 		return displayType;
 	}
 
-	@JsonProperty("displayType")
+	@JsonProperty
 	public void setDisplayType(String displayType) {
 		this.displayType = displayType;
 	}
@@ -611,7 +618,7 @@ public class FilterSettings {
 		return linkImpact;
 	}
 
-	@JsonProperty("linkImpact")
+	@JsonProperty
 	public void setLinkImpact(Map<String, Float> linkImpact) {
 		this.linkImpact = linkImpact;
 	}
@@ -620,7 +627,7 @@ public class FilterSettings {
 		return decayValue;
 	}
 
-	@JsonProperty("decayValue")
+	@JsonProperty
 	public void setDecayValue(double decayValue) {
 		this.decayValue = decayValue;
 	}
@@ -629,7 +636,7 @@ public class FilterSettings {
 		return threshold;
 	}
 
-	@JsonProperty("threshold")
+	@JsonProperty
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;
 	}
@@ -643,12 +650,12 @@ public class FilterSettings {
 		isCiaRequest = ciaRequest;
 	}
 
-	@XmlElement(name = "propagationRule")
+	@XmlElement
 	public List<PassRule> getPropagationRule() {
 		return passRule;
 	}
 
-	@JsonProperty("propagationRule")
+	@JsonProperty
 	public void setPropagationRule(List<String> rule) {
 		if (rule == null) {
 			passRule.clear();

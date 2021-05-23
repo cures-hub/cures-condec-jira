@@ -77,7 +77,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		linkToDecision = issue.getLink(decision);
 		assertNull(linkToDecision);
 
-		KnowledgeGraph graph = KnowledgeGraph.getOrCreate(issue.getProject());
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(issue.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, issue).size());
 		assertFalse(issueCompletenessCheck.execute(issue));
