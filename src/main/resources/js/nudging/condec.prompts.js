@@ -45,33 +45,37 @@
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
-		var issueKey = conDecAPI.getIssueKey();
-		if (issueKey === null || issueKey === undefined) {
-			return;
-		}
 		var projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
 		}
-		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
-			filterSettings.selectedElement = issueKey;
-			conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
-				.then(isDoDViolated => {
-					if (!isDoDViolated) {
-						return;
-					}
-					document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-					var flag = AJS.flag({
-						body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
-						title: "Definition of Done Violated!",
-						type: "warning"
 
-					});
-					document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
-						flag.close();
-					};
+		var issueKey = conDecAPI.getIssueKey();
+		if (issueKey === null || issueKey === undefined) {
+			return;
+		}
+
+		var FilterSettings = {
+			"projectKey": projectKey,
+			"selectedElement": issueKey,
+		}
+
+		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(FilterSettings)
+			.then(isDoDViolated => {
+				if (!isDoDViolated) {
+					return;
+				}
+				document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+				var flag = AJS.flag({
+					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
+					title: "Definition of Done Violated!",
+					type: "warning"
+
 				});
-		})
+				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
+					flag.close();
+				};
+			});
 	}
 
 	global.conDecPrompt = new ConDecPrompt();

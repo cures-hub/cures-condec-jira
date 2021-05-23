@@ -18,7 +18,7 @@
 	};
 
 	ConDecQualityCheck.prototype.initView = function () {
-		console.log("ConDecQualityChecking initView");
+		console.log("ConDecQualityCheck initView");
 
 		var projectKey = conDecAPI.getProjectKey();
 		var issueKey = conDecAPI.getIssueKey();
