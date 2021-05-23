@@ -49,12 +49,14 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 		}
 
 		int linkDistanceFromCodeFileToDecision = definitionOfDone.getMaximumLinkDistanceToDecisions();
-		// TODO definitionOfDone.getMinimumDecisionsWithinLinkDistance() needs to be
-		// regarded as well
+		int minimumDecisionCoverage = definitionOfDone.getMinimumDecisionsWithinLinkDistance();
 		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(linkDistanceFromCodeFileToDecision);
 		for (KnowledgeElement linkedElement : linkedElements) {
-			if (linkedElement.getType() == KnowledgeType.DECISION) {
+			if (minimumDecisionCoverage == 0) {
 				return true;
+			}
+			if (linkedElement.getType() == KnowledgeType.DECISION) {
+				minimumDecisionCoverage--;
 			}
 		}
 		return false;

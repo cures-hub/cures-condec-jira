@@ -62,8 +62,10 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsDoneLinkedFile() {
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(1);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
