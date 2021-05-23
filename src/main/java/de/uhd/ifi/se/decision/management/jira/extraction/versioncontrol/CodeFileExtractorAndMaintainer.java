@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.jgit.diff.DiffEntry;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -38,10 +37,9 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	/**
-	 * Extracts all code files and the decision knowledge from code comments from
-	 * the default branch (only the files that are present in the last version).
-	 * Links the files to the respective Jira Jira issues (e.g., work items or
-	 * requirements). Extracting means: 1) Adding code files to the
+	 * Extracts all code files and the decision knowledge from code comments within
+	 * the {@link Diff}. Links the files to the respective Jira Jira issues (e.g.,
+	 * work items or requirements). Extracting means: 1) Adding code files to the
 	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
 	 * 3) adding code files and links to the {@link KnowledgeGraph}.
 	 * 
@@ -49,11 +47,6 @@ public class CodeFileExtractorAndMaintainer {
 	 * @decision Integrate all Java files into the knowledge graph and link them to
 	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
-	public void extractAllChangedFiles(GitClient gitClient) {
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		extractAllChangedFiles(diff);
-	}
-
 	public void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);

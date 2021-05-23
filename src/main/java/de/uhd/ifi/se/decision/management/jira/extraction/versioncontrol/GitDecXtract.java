@@ -122,9 +122,7 @@ public class GitDecXtract {
 	}
 
 	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
-		Diff diffForFile = new Diff();
-		diffForFile.addChangedFile(codeFile);
-		return getElementsFromCode(diffForFile);
+		return getElementsFromCode(new Diff(codeFile));
 	}
 
 	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {

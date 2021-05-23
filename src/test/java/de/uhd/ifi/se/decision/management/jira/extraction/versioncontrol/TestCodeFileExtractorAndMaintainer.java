@@ -72,10 +72,11 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testExtractAllChangedFilesTwice() {
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(gitClient);
+		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
 		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(gitClient);
+		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
 		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}
 }
