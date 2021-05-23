@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.CoverageHandler;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
@@ -67,11 +68,31 @@ public class DefinitionOfDoneCheckingRest {
 					"DoD check could not be performed because the element could not be found.")).build();
 		}
 		// TODO Return all the exact criteria that are not fulfilled
-		boolean doesIssueNeedApproval = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
+		boolean doesIssueNeedApproval = CoverageHandler.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings) ||
+			CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
 		return Response.ok().entity(doesIssueNeedApproval).build();
 	}
 
-	@Path("/coverageOfJiraIssue")
+	@Path("/hasIncompleteKnowledgeLinked")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response hasIncompleteKnowledgeLinked(@Context HttpServletRequest request, @QueryParam("issueKey") String issueKey) {
+		if (request == null || issueKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Quality check could not be performed due to a bad request."))
+				.build();
+		}
+
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+
+		KnowledgeElement knowledgeElement = new KnowledgeElement(jiraIssue);
+
+		boolean hasIncompleteKnowledgeLinked = CompletenessHandler.hasIncompleteKnowledgeLinked(knowledgeElement);
+
+		return Response.ok().entity(hasIncompleteKnowledgeLinked).build();
+	}
+
+	@Path("/getCoverageOfJiraIssue")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCoverageOfJiraIssue(@Context HttpServletRequest request,

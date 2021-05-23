@@ -14,6 +14,7 @@
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
+	var dashboardProjectNode;
 
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
@@ -24,17 +25,19 @@
 			, "condec-rationale-coverage-dashboard-contents-container"
 			, "condec-rationale-coverage-dashboard-contents-data-error"
 			, "condec-rationale-coverage-dashboard-no-project"
-			, "condec-rationale-coverage-dashboard-processing");
+			, "condec-rationale-coverage-dashboard-processing"
+			, "condec-dashboard-selected-project-rationale-coverage");
 
 		getMetrics(filterSettings, issueType);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
+		dashboardProjectNode = document.getElementById(projectName);
 	}
 
 	function showDashboardSection(node) {
@@ -52,12 +55,14 @@
 			return;
 		}
 
+		showDashboardSection(dashboardProcessingNode);
+		var projectKey = JSON.parse(filterSettings).projectKey;
+		dashboardProjectNode.innerText = projectKey;
+
 		/*
 		 * on XHR HTTP failure codes the code aborts instead of processing with
 		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
 		 */
-		showDashboardSection(dashboardProcessingNode);
-
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?sourceKnowledgeTypes=" + sourceKnowledgeTypes;
 
 		console.log("Starting REST query.");
@@ -113,16 +118,23 @@
 		issueDocumentedForSelectedJiraIssue = calculator.issueDocumentedForSelectedJiraIssue;
 		decisionDocumentedForSelectedJiraIssue = calculator.decisionDocumentedForSelectedJiraIssue;
 
+		/* define color palette */
+		var colorpalette = ['#EE6666', '#FAC858', '#91CC75'];
+
 		/* render box-plots */
-		ConDecReqDash.initializeChart("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per selected element", issuesPerSelectedJiraIssue);
-		ConDecReqDash.initializeChart("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue);
+		ConDecReqDash.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
+			"", "# Issues per selected element", issuesPerSelectedJiraIssue,
+			colorpalette);
+		ConDecReqDash.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
+			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue,
+			colorpalette);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is a decision documented?", issueDocumentedForSelectedJiraIssue);
-		ConDecReqDash.initializeChart("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is an issue documented?", decisionDocumentedForSelectedJiraIssue);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
+			"", "For how many selected elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
+			colorpalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"", "For how many selected elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
+			colorpalette);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();

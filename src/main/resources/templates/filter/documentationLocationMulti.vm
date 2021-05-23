@@ -1,5 +1,5 @@
 <div id="documentationlocation-multi-$viewIdentifier" class="condec-dashboard-filter">
-    <label for="documentationlocation-multi-select-$viewIdentifier">Documentation Locations:</label>
+    <label for="documentationlocation-multi-select-$viewIdentifier">$i18n.getText('condec.label.documentation.locations')</label>
     <select name="documentationLocation" id="documentationlocation-multi-select-$viewIdentifier" class="select"
             multiple size="3">
     </select>

@@ -20,6 +20,8 @@
 
     var isIssueData = true;
 
+    var colorPalette = null;
+
     const CHART_RICH_PIE = "piechartRich";
     const CHART_SIMPLE_PIE = "piechartInteger";
     const CHART_BOXPLOT = "boxplot";
@@ -29,11 +31,6 @@
     };
 
     ConDecReqDash.prototype.init = function init() {
-    }
-
-    ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
-		isIssueData = true;
-		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
     }
     
     /** 
@@ -61,9 +58,22 @@
 		return jsMap;
 	}
 
+	ConDecReqDash.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
+		isIssueData = true;
+		colorPalette = null;
+		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
+	}
+
+	ConDecReqDash.prototype.initializeChartWithColorPalette = function (divId, title, subtitle, dataMap, palette) {
+		isIssueData = true;
+		colorPalette = palette;
+		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
+	}
+
     /* used by branch dashboard item featureBranches.vm */
     ConDecReqDash.prototype.initializeChartForBranchSource = function (divId, title, subtitle, dataMap) {
         isIssueData = false;
+		colorPalette = null;
         this.initializeChartForSources(divId, title, subtitle, dataMap);
     }
 
@@ -130,7 +140,7 @@
         for (var i = dataAsArray.length - 1; i >= 0; i--) {
             var key = dataAsArray[i];
             var value = objectsMap.get(key)
-            var entry = new Object();
+            var entry = {};
             if (hasRichData && (typeof value === 'string' || value instanceof String)) {
                 entry["value"] = value.split(' ').reduce(sourceCounter, 0);
             } else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
@@ -151,11 +161,11 @@
     };
 
     ConDecReqDash.prototype.navigateToElement = function (elementName) {
-        targetBaseUrl = AJS.contextPath();
-        if (elementName.indexOf('.') == -1) {
+        var targetBaseUrl = AJS.contextPath();
+        if (elementName.indexOf('.') === -1) {
             var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
             if (!isIssueData) {
-                issueKeyParts = elementName.split("origin/");
+                var issueKeyParts = elementName.split("origin/");
                 var branchName = issueKeyParts[0];
                 if (issueKeyParts.length > 1) { // not local branch name
                     branchName = issueKeyParts[1];
@@ -195,7 +205,6 @@
         } else { // CHART_SIMPLE_PIE or other case
             console.warn("Not supported chart type.")
         }
-        return;
     }
 
     function cleanPreviousChildNodes(parentNode) {
@@ -214,109 +223,113 @@
                 return this.includes(Number(elem[1]));
             }, trimmedData);
 
-        var elementsList = involvedElements.map(
-            function (val) { // value is a 2-element array
-                return val[0];
-            }
-        ).join(DEC_STRING_SEPARATOR);
-
-        return elementsList;
+		return involvedElements.map(
+			function (val) { // value is a 2-element array
+				return val[0];
+			}
+		).join(DEC_STRING_SEPARATOR);
     }
 
-    function getOptionsForBoxplot(name, xLabel, ylabel, data) {
-        return {
-            title: [{
-                text: name,
-                left: "center",
-            },],
-            tooltip: {
-                trigger: "item",
-                axisPointer: {
-                    type: "shadow"
-                }
-            },
-            grid: {
-                left: "15%",
-                right: "10%",
-                bottom: "15%"
-            },
-            xAxis: {
-                type: "category",
-                data: data.axisData,
-                boundaryGap: true,
-                nameGap: 30,
-                splitArea: {
-                    show: false
-                },
-                axisLabel: {
-                    formatter: xLabel
-                },
-            },
-            yAxis: {
-                type: "value",
-                name: ylabel,
-                splitArea: {
-                    show: true
-                }
-            },
-            series: [{
-                name: "boxplot",
-                type: "boxplot",
-                data: data.boxData,
+    function getOptionsForBoxplot(name, xLabel, yLabel, data) {
+		return {
+			title: [{
+				text: name,
+				left: "center",
+			},],
+			tooltip: {
+				trigger: "item",
+				axisPointer: {
+					type: "shadow"
+				}
+			},
+			grid: {
+				left: "15%",
+				right: "10%",
+				bottom: "15%"
+			},
+			xAxis: {
+				type: "category",
+				data: data.axisData,
+				boundaryGap: true,
+				nameGap: 30,
+				splitArea: {
+					show: false
+				},
+				axisLabel: {
+					formatter: xLabel
+				},
+			},
+			yAxis: {
+				type: "value",
+				name: yLabel,
+				splitArea: {
+					show: true
+				}
+			},
+			series: [{
+				name: "boxplot",
+				type: "boxplot",
+				data: data.boxData,
 
-            }, {
-                name: "outlier",
-                type: "scatter",
-                data: data.outliers
-            }]
-        };
+			}, {
+				name: "outlier",
+				type: "scatter",
+				data: data.outliers
+			}]
+		};
     }
 
     function getOptionsForPieChart(title, subtitle, dataKeys, dataMap) {
-        return option = {
-            title: {
-                text: title,
-                subtext: subtitle,
-                x: "center"
-            },
-            tooltip: {
-                trigger: "item",
-                formatter: "{b} : {c} ({d}%)"
-            },
-            legend: {
-                orient: "horizontal",
-                bottom: "bottom",
-                data: dataKeys
-            },
-            series: [{
-                type: "pie",
-                radius: "60%",
-                center: ["50%", "50%"],
-                data: dataMap,
-                itemStyle: {
-                    emphasis: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: "rgba(0, 0, 0, 0.5)"
-                    }
-                },
-                avoidLabelOverlap: true,
-                label: {
-                    normal: {
-                        show: false,
-                        position: 'center'
-                    },
-                    emphasis: {
-                        show: false
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        show: false
-                    }
-                }
-            }]
-        };
+        var options = {
+			title: {
+				text: title,
+				subtext: subtitle,
+				x: "center"
+			},
+			tooltip: {
+				trigger: "item",
+				formatter: "{b} : {c} ({d}%)"
+			},
+			legend: {
+				orient: "horizontal",
+				bottom: "bottom",
+				data: dataKeys
+			},
+			series: [{
+				type: "pie",
+				radius: "60%",
+				center: ["50%", "50%"],
+				data: dataMap,
+				itemStyle: {
+					emphasis: {
+						shadowBlur: 10,
+						shadowOffsetX: 0,
+						shadowColor: "rgba(0, 0, 0, 0.5)"
+					}
+				},
+				avoidLabelOverlap: true,
+				label: {
+					normal: {
+						show: false,
+						position: 'center'
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				labelLine: {
+					normal: {
+						show: false
+					}
+				}
+			}],
+		};
+
+        if (colorPalette) {
+			options.color = colorPalette;
+		}
+
+		return options;
     }
 
     function issueKeyBuilder(m, p1, p2, p3) {
