@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -64,9 +63,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		}
 		KnowledgeGraph knowledgeGraph = new KnowledgeGraph(projectKey);
 		instances.put(projectKey, knowledgeGraph);
-		new Thread(() -> {
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
-		}).start();
 		return knowledgeGraph;
 	}
 
@@ -112,9 +108,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 				if (destination.equals(source)) {
 					continue;
 				}
-				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getTarget())
-						&& this.containsVertex(link.getSource())) {
-					this.addEdge(link);
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
 					linkIds.add(link.getId());
 				}
 			}

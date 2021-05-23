@@ -49,13 +49,12 @@ public class CodeFileExtractorAndMaintainer {
 	 * @decision Integrate all Java files into the knowledge graph and link them to
 	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
-	public void extractAllChangedFiles() {
-		GitClient gitClient = GitClient.getInstance(projectKey);
+	public void extractAllChangedFiles(GitClient gitClient) {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		extractAllChangedFiles(diff);
 	}
 
-	private void extractAllChangedFiles(Diff diff) {
+	public void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {

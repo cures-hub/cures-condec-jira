@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
@@ -79,16 +80,14 @@ public class GitClient {
 
 		if (instances.containsKey(projectKey)) {
 			gitClient = instances.get(projectKey);
+			gitClient.fetchOrCloneRepositories();
 		} else {
 			gitClient = new GitClient(projectKey);
 			instances.put(projectKey, gitClient);
+			gitClient.fetchOrCloneRepositories();
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(gitClient);
 		}
-
-		if (gitClient.fetchOrCloneRepositories()) {
-			return gitClient;
-		} else {
-			return null;
-		}
+		return gitClient;
 	}
 
 	private GitClient(String projectKey) {
