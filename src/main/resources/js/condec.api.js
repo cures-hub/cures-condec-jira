@@ -292,6 +292,24 @@
 	};
 
 	/*
+	 * external references: condec.context.menu
+	 */
+	ConDecAPI.prototype.createJiraIssueFromSentence = function(id, callback) {
+		var jsondata = {
+			"id": id,
+			"projectKey": projectKey,
+			"documentationLocation": "s"
+		};
+		generalApi.postJSON(this.restPrefix + "/knowledge/createJiraIssueFromSentence.json", jsondata,
+			function(error, id, type) {
+				if (error === null) {
+					showFlag("success", "Jira issue has been created.");
+					callback();
+				}
+			});
+	};
+
+	/*
 	 * external references: jiraIssueModule.vm
 	 */
 	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
@@ -780,10 +798,10 @@
 	ConDecAPI.prototype.getCiaSettings = function(projectKey, callback) {
 		generalApi.getJSON(this.restPrefix + "/config/getCiaSettings.json?projectKey=" + projectKey, callback);
 	};
-  
-  /*
-	 * external references: condec.context.menu
-	 */
+
+	/*
+	   * external references: condec.context.menu
+	   */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
 		let newTab = window.open();
 		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {

@@ -185,7 +185,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		}
 	}
 
-	private static void setParameters(KnowledgeElement element, CodeClassInDatabase databaseEntry) {
+	private static void setParameters(ChangedFile element, CodeClassInDatabase databaseEntry) {
 		databaseEntry.setProjectKey(element.getProject().getProjectKey());
 		databaseEntry.setFileName(element.getSummary());
 		databaseEntry.setLineCount(element.getLineCount());
@@ -214,7 +214,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		if (entry == null) {
 			return false;
 		}
-		setParameters(newElement, entry);
+		setParameters((ChangedFile) newElement, entry);
 		entry.save();
 		createLinksToJiraIssues((ChangedFile) newElement, user);
 		return true;

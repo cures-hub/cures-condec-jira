@@ -4,25 +4,29 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class CodeCompletenessCheck implements CompletenessCheck {
 
-	private KnowledgeElement codeFile;
+	private ChangedFile codeFile;
 	private String projectKey;
 
-    @Override
+	@Override
 	public boolean execute(KnowledgeElement codeFile) {
-		this.codeFile = codeFile;
+		if (!(codeFile instanceof ChangedFile)) {
+			return true;
+		}
+		this.codeFile = (ChangedFile) codeFile;
 		projectKey = codeFile.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-        if (codeFile.getDescription().toLowerCase().startsWith("test")) {
-            return true;
-        }
+		if (codeFile.getDescription().toLowerCase().startsWith("test")) {
+			return true;
+		}
 		return false;
 	}
 
@@ -30,8 +34,7 @@ public class CodeCompletenessCheck implements CompletenessCheck {
 	public boolean isCompleteAccordingToSettings() {
 		int linkDistanceFromCodeFileToDecision = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 				.getMaximumLinkDistanceToDecisions();
-		int lineNumbersInCodeFile = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getLineNumbersInCodeFile();
+		int lineNumbersInCodeFile = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getLineNumbersInCodeFile();
 
 		if (codeFile.getLineCount() < lineNumbersInCodeFile) {
 			return true;
