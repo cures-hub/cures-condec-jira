@@ -34,7 +34,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	private static final long serialVersionUID = 1L;
 	protected List<Long> linkIds;
-	private KnowledgePersistenceManager persistenceManager;
 
 	// for elements that do not exist in database
 	private long nextElementId = -1;
@@ -80,37 +79,16 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	public KnowledgeGraph(String projectKey) {
 		this();
-		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		createGraph();
-	}
-
-	private void createGraph() {
-		addElements();
-		addEdges();
-	}
-
-	private void addElements() {
-		persistenceManager.getKnowledgeElements().forEach(this::addVertex);
-	}
-
-	private void addEdges() {
-		for (KnowledgeElement element : vertexSet()) {
-			List<Link> links = persistenceManager.getLinks(element);
-			for (Link link : links) {
-				KnowledgeElement destination = link.getTarget();
-				KnowledgeElement source = link.getSource();
-				if (destination == null || source == null) {
-					continue;
-				}
-				if (destination.equals(source)) {
-					continue;
-				}
-				if (!linkIds.contains(link.getId()) && containsVertex(source) && containsVertex(destination)) {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		persistenceManager.getKnowledgeElements().forEach(element -> {
+			addVertex(element);
+			persistenceManager.getLinks(element).forEach(link -> {
+				if (!linkIds.contains(link.getId())) {
 					addEdge(link);
 					linkIds.add(link.getId());
 				}
-			}
-		}
+			});
+		});
 	}
 
 	/**
