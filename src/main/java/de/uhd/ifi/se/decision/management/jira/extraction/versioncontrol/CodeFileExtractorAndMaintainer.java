@@ -38,12 +38,12 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	/**
-	 * Extracts all code files from the default branch (only the files that are
-	 * present in the last version). Links the files to the respective Jira Jira
-	 * issues (e.g., work items or requirements). Extracting means: 1) Adding code
-	 * files to the {@link CodeClassInDatabase}, 2) adding links to the
-	 * {@link LinkInDatabase}, 3) adding code files and links to the
-	 * {@link KnowledgeGraph}.
+	 * Extracts all code files and the decision knowledge from code comments from
+	 * the default branch (only the files that are present in the last version).
+	 * Links the files to the respective Jira Jira issues (e.g., work items or
+	 * requirements). Extracting means: 1) Adding code files to the
+	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
+	 * 3) adding code files and links to the {@link KnowledgeGraph}.
 	 * 
 	 * @issue Which files should be integrated into the knowledge graph?
 	 * @decision Integrate all Java files into the knowledge graph and link them to

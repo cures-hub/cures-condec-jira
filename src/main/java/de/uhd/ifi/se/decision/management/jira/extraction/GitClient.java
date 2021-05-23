@@ -77,22 +77,24 @@ public class GitClient {
 			return null;
 		}
 		GitClient gitClient;
-		boolean isNewlyCreated = false;
+		boolean extractAllCodeKnowledge = false;
 		if (instances.containsKey(projectKey)) {
 			gitClient = instances.get(projectKey);
 		} else {
 			gitClient = new GitClient(projectKey);
 			instances.put(projectKey, gitClient);
-			isNewlyCreated = true;
+			extractAllCodeKnowledge = true;
 		}
-		gitClient.fetchOrCloneRepositories();
-		if (isNewlyCreated) {
+		if (!gitClient.fetchOrCloneRepositories()) {
+			return null;
+		}
+		if (extractAllCodeKnowledge) {
 			new Thread(() -> new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(gitClient)).start();
 		}
 		return gitClient;
 	}
 
-	public GitClient(String projectKey) {
+	private GitClient(String projectKey) {
 		this();
 		this.projectKey = projectKey;
 		for (GitRepositoryConfiguration gitRepositoryConfiguration : ConfigPersistenceManager
@@ -107,7 +109,7 @@ public class GitClient {
 		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
-	public boolean fetchOrCloneRepositories() {
+	private boolean fetchOrCloneRepositories() {
 		boolean isEverythingUpToDate = true;
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			isEverythingUpToDate = isEverythingUpToDate && gitClientForSingleRepo.fetchOrClone();
