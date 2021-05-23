@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -63,6 +64,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		}
 		KnowledgeGraph knowledgeGraph = new KnowledgeGraph(projectKey);
 		instances.put(projectKey, knowledgeGraph);
+		new Thread(() -> {
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
+		}).start();
 		return knowledgeGraph;
 	}
 
@@ -97,7 +101,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	private void addEdges() {
-		for (KnowledgeElement element : this.vertexSet()) {
+		for (KnowledgeElement element : vertexSet()) {
 			List<Link> links = persistenceManager.getLinks(element);
 			for (Link link : links) {
 				KnowledgeElement destination = link.getTarget();
@@ -392,4 +396,53 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		}
 		return null;
 	}
+
+	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> elements) {
+		KnowledgeElement currentIssue = null;
+		KnowledgeElement currentAlternativeOrDecision = null;
+		for (KnowledgeElement element : elements) {
+			KnowledgeElement elementInGraph = addVertexNotBeingInDatabase(element);
+			Link link = new Link();
+			if (element.getType() == KnowledgeType.ISSUE) { // An issue is linked directly to the code file.
+				link = new Link(elementInGraph, root);
+				currentIssue = elementInGraph;
+				// Alternatives and decisions are linked to an issue.
+			} else if (element.getType() == KnowledgeType.ALTERNATIVE || element.getType() == KnowledgeType.DECISION) {
+				if (currentIssue == null) { // We have no issue, i.e. something went wrong or somebody violated
+											// structure
+					link = new Link(elementInGraph, root);
+					currentAlternativeOrDecision = null;
+				} else {
+					link = new Link(elementInGraph, currentIssue);
+					currentAlternativeOrDecision = elementInGraph;
+				}
+			} else if (element.getType().replaceProAndConWithArgument() == KnowledgeType.ARGUMENT) {
+				// Arguments are linked to alternatives and decisions.
+				if (currentIssue == null) { // We have no issue, i.e. something went wrong or somebody violated
+											// structure
+					link = new Link(elementInGraph, root);
+					currentAlternativeOrDecision = null;
+				} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
+																	// decision, i.e. something still went wrong
+																	// or somebody still violated structure
+					link = new Link(elementInGraph, currentIssue);
+				} else {
+					link = new Link(elementInGraph, currentAlternativeOrDecision, // Pro arguments support,
+																					// con arguments attack the
+																					// alternative or decision
+							element.getType() == KnowledgeType.PRO ? LinkType.SUPPORT : LinkType.ATTACK);
+				}
+			} else {
+				if (currentIssue == null || element.getType() == KnowledgeType.GOAL
+						|| element.getType() == KnowledgeType.PROBLEM) { // Goals and problems are linked
+																			// directly to the code file.
+					link = new Link(elementInGraph, root);
+				} else { // Everything else is linked to an issue, if one exists.
+					link = new Link(elementInGraph, currentIssue);
+				}
+			}
+			addEdgeNotBeingInDatabase(link);
+		}
+	}
+
 }

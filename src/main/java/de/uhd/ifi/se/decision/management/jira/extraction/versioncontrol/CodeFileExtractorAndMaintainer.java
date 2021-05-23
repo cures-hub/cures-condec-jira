@@ -7,9 +7,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -60,68 +57,14 @@ public class CodeFileExtractorAndMaintainer {
 
 	private void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
-		codeFilePersistenceManager.deleteKnowledgeElements();
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (changedFile.isCodeFile()) {
-				KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-				if (!changedFile.isCodeFile()) {
-					continue;
-				}
-				Diff diffForFile = new Diff();
-				diffForFile.addChangedFile(changedFile);
-				List<KnowledgeElement> elements = gitExtract.getElementsFromCode(diffForFile);
-				addElementsToKnowledgeGraph(source, elements);
+			if (!changedFile.isCodeFile()) {
+				continue;
 			}
-		}
-	}
-
-	private void addElementsToKnowledgeGraph(KnowledgeElement source, List<KnowledgeElement> elements) {
-		KnowledgeElement currentIssue = null;
-		KnowledgeElement currentAlternativeOrDecision = null;
-		for (KnowledgeElement element : elements) {
-			KnowledgeElement elementInGraph = KnowledgeGraph.getInstance(projectKey)
-					.addVertexNotBeingInDatabase(element);
-			Link link = new Link();
-			if (element.getType() == KnowledgeType.ISSUE) { // An issue is linked directly to the code file.
-				link = new Link(elementInGraph, source);
-				currentIssue = elementInGraph;
-				// Alternatives and decisions are linked to an issue.
-			} else if (element.getType() == KnowledgeType.ALTERNATIVE || element.getType() == KnowledgeType.DECISION) {
-				if (currentIssue == null) { // We have no issue, i.e. something went wrong or somebody violated
-											// structure
-					link = new Link(elementInGraph, source);
-					currentAlternativeOrDecision = null;
-				} else {
-					link = new Link(elementInGraph, currentIssue);
-					currentAlternativeOrDecision = elementInGraph;
-				}
-			} else if (element.getType().replaceProAndConWithArgument() == KnowledgeType.ARGUMENT) {
-				// Arguments are linked to alternatives and decisions.
-				if (currentIssue == null) { // We have no issue, i.e. something went wrong or somebody violated
-											// structure
-					link = new Link(elementInGraph, source);
-					currentAlternativeOrDecision = null;
-				} else if (currentAlternativeOrDecision == null) { // We have an issue, but no alternative or
-																	// decision, i.e. something still went wrong
-																	// or somebody still violated structure
-					link = new Link(elementInGraph, currentIssue);
-				} else {
-					link = new Link(elementInGraph, currentAlternativeOrDecision, // Pro arguments support,
-																					// con arguments attack the
-																					// alternative or decision
-							element.getType() == KnowledgeType.PRO ? LinkType.SUPPORT : LinkType.ATTACK);
-				}
-			} else {
-				if (currentIssue == null || element.getType() == KnowledgeType.GOAL
-						|| element.getType() == KnowledgeType.PROBLEM) { // Goals and problems are linked
-																			// directly to the code file.
-					link = new Link(elementInGraph, source);
-				} else { // Everything else is linked to an issue, if one exists.
-					link = new Link(elementInGraph, currentIssue);
-				}
-			}
-			KnowledgeGraph.getInstance(projectKey).addEdgeNotBeingInDatabase(link);
+			List<KnowledgeElement> decisionKnowledgeInCodeComments = gitExtract.getElementsFromCode(changedFile);
+			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+			KnowledgeGraph.getInstance(projectKey).addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 		}
 	}
 
