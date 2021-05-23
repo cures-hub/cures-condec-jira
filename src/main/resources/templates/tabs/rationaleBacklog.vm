@@ -4,6 +4,7 @@
     #parse("templates/filter/knowledgeType.vm")
     #parse("templates/filter/status.vm")
     #parse("templates/filter/documentationDate.vm")
+    #parse("templates/filter/documentationLocation.vm")
   	#parse("templates/filter/decisionGroup.vm")
 	#parse("templates/filter/linkDistance.vm")
 	#parse("templates/filter/degree.vm")

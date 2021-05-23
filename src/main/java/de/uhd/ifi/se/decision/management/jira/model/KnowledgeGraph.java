@@ -105,7 +105,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 				if (destination.equals(source)) {
 					continue;
 				}
-				if (!linkIds.contains(link.getId())) {
+				if (!linkIds.contains(link.getId()) && containsVertex(source) && containsVertex(destination)) {
 					addEdge(link);
 					linkIds.add(link.getId());
 				}
