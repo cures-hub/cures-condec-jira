@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -44,8 +45,8 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 		DecisionGroupManager.insertGroup("TestGroup1a", this.decisionKnowledgeElement);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-        codeFileEndingMap.put("JAVA_C", "java");
-        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		codeFileEndingMap.put("JAVA_C", "java");
+		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 	}
 
 	@Test
@@ -124,7 +125,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 	@Test
 	public void testInheritSetAndDeleteGroupAssignment() {
-		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles();
+		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(GitClient.getInstance("TEST"));
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
 
@@ -136,7 +137,8 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 			}
 		}
 
-		KnowledgeElement issueFromCodeCommentInGodClass = graph.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
+		KnowledgeElement issueFromCodeCommentInGodClass = graph
+				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
 
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
