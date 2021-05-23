@@ -8,11 +8,16 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
  * Checks whether a given {@link KnowledgeElement} is documented completely
- * according to the {@link DefinitionOfDone}.
+ * according to the {@link DefinitionOfDone} (DoD).
  *
  * For example, an argument needs to be linked to at least one solution option
  * (decision or alternative) in the {@link KnowledgeGraph}. Otherwise, it is
  * incomplete, i.e., its documentation needs to be improved.
+ * 
+ * @param <T>
+ *            {@link KnowledgeElement} class or a subclass, e.g.
+ *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or
+ *            {@link Recommendation}.
  */
 public interface CompletenessCheck<T extends KnowledgeElement> {
 

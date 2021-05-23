@@ -4,11 +4,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -17,10 +19,10 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 
 	private List<KnowledgeElement> elements;
 
-	private KnowledgeElement fileThatIsNotDone;
-	private KnowledgeElement smallFileThatIsDone;
-	private KnowledgeElement testFileThatIsDone;
-	private KnowledgeElement linkedFileThatIsDone;
+	private ChangedFile fileThatIsNotDone;
+	private ChangedFile smallFileThatIsDone;
+	private ChangedFile testFileThatIsDone;
+	private ChangedFile linkedFileThatIsDone;
 
 	private CodeCompletenessCheck codeCompletenessCheck;
 
@@ -29,10 +31,10 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		init();
 		codeCompletenessCheck = new CodeCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		fileThatIsNotDone = elements.get(18);
-		smallFileThatIsDone = elements.get(19);
-		testFileThatIsDone = elements.get(20);
-		linkedFileThatIsDone = elements.get(21);
+		fileThatIsNotDone = (ChangedFile) elements.get(18);
+		smallFileThatIsDone = (ChangedFile) elements.get(19);
+		testFileThatIsDone = (ChangedFile) elements.get(20);
+		linkedFileThatIsDone = (ChangedFile) elements.get(21);
 	}
 
 	@Test

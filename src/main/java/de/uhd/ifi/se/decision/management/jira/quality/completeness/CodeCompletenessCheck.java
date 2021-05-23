@@ -3,10 +3,25 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem;
 
+/**
+ * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfilles
+ * the criteria of the {@link DefinitionOfDone} (DoD).
+ * 
+ * Criteria are 1) the line count (small files are not checked, i.e. always
+ * fulfill the DoD), 2) whether the file is a test code file (test classes are
+ * also not checked), and 3) whether enough decisions are linked within a
+ * certain distance in the {@link KnowledgeGraph} (the decision coverage is
+ * checked).
+ * 
+ * @see RationaleCoverageCalculator
+ * @see RationaleCoverageDashboardItem
+ */
 public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 
 	private ChangedFile codeFile;
@@ -21,21 +36,21 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		if (codeFile.getDescription().toLowerCase().startsWith("test")) {
-			return true;
-		}
-		return false;
+		return codeFile.isTestCodeFile();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings() {
-		int linkDistanceFromCodeFileToDecision = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMaximumLinkDistanceToDecisions();
-		int lineNumbersInCodeFile = ConfigPersistenceManager.getDefinitionOfDone(projectKey).getLineNumbersInCodeFile();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 
+		int lineNumbersInCodeFile = definitionOfDone.getLineNumbersInCodeFile();
 		if (codeFile.getLineCount() < lineNumbersInCodeFile) {
 			return true;
 		}
+
+		int linkDistanceFromCodeFileToDecision = definitionOfDone.getMaximumLinkDistanceToDecisions();
+		// TODO definitionOfDone.getMinimumDecisionsWithinLinkDistance() needs to be
+		// regarded as well
 		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(linkDistanceFromCodeFileToDecision);
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (linkedElement.getType() == KnowledgeType.DECISION) {

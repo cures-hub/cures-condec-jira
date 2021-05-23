@@ -378,6 +378,10 @@ public class ChangedFile extends KnowledgeElement {
 		return getCommentStyleType() != CommentStyleType.NONE;
 	}
 
+	public boolean isTestCodeFile() {
+		return getSummary().contains("Test");
+	}
+
 	public CommentStyleType getCommentStyleType() {
 		if (getProject() == null) {
 			return CommentStyleType.NONE;
