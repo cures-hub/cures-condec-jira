@@ -497,7 +497,7 @@ public class ConfigRest {
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories
-			if (GitClient.getOrCreate(projectKey) == null) {
+			if (GitClient.getInstance(projectKey) == null) {
 				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
@@ -601,7 +601,7 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		GitClient gitClient = GitClient.getInstance(projectKey);
 		if (!gitClient.deleteRepositories()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Git repositories could not be deleted.")).build();

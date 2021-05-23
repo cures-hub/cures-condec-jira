@@ -68,7 +68,7 @@ public abstract class TestSetUpGit extends TestSetUp {
         Map<String, String> codeFileEndingMap = new HashMap<String, String>();
         codeFileEndingMap.put("JAVA_C", "java");
         ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
-		gitClient = GitClient.getOrCreate("TEST");
+		gitClient = GitClient.getInstance("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
@@ -150,13 +150,13 @@ public abstract class TestSetUpGit extends TestSetUp {
 		secureGitClients = new ArrayList<GitClient>();
 
 		ConfigPersistenceManager.setGitRepositoryConfiguration("HTTP", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
-		secureGitClients.add(GitClient.getOrCreate("HTTP"));
+		secureGitClients.add(GitClient.getInstance("HTTP"));
 
 		ConfigPersistenceManager.setGitRepositoryConfiguration("GITHUB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
-		secureGitClients.add(GitClient.getOrCreate("GITHUB"));
+		secureGitClients.add(GitClient.getInstance("GITHUB"));
 
 		ConfigPersistenceManager.setGitRepositoryConfiguration("GITLAB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
-		secureGitClients.add(GitClient.getOrCreate("GITLAB"));
+		secureGitClients.add(GitClient.getInstance("GITLAB"));
 	}
 
 	@Before

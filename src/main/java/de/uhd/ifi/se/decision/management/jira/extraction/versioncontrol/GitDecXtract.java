@@ -35,7 +35,7 @@ public class GitDecXtract {
 
 	public GitDecXtract(String projectKey) {
 		this.projecKey = projectKey;
-		gitClient = GitClient.getOrCreate(projectKey);
+		gitClient = GitClient.getInstance(projectKey);
 	}
 
 	// TODO: below method signature will further improve

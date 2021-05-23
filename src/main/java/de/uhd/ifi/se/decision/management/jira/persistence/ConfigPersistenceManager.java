@@ -170,7 +170,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 		if (isKnowledgeExtractedFromGit) {
 			// TODO Pull Repo
-			GitClient.getOrCreate(projectKey);
+			GitClient.getInstance(projectKey);
 		}
 	}
 

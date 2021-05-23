@@ -37,8 +37,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private KnowledgePersistenceManager persistenceManager;
 
 	// for elements that do not exist in database
-	private long id = -1;
-	private long linkId = -1;
+	private long nextElementId = -1;
+	private long nextLinkId = -1;
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -150,21 +150,36 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return isEdgeCreated;
 	}
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} that is not stored in the database via
+	 *            the {@link KnowledgePersistenceManager} but only exists in RAM.
+	 * @return element with a negative id to indicate that it is not stored in
+	 *         database.
+	 */
 	public KnowledgeElement addVertexNotBeingInDatabase(KnowledgeElement element) {
 		KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
 		if (existingElement != null) {
 			return existingElement;
 		}
-		--id;
-		element.setId(id);
-		element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
-		super.addVertex(element);
+		--nextElementId;
+		element.setId(nextElementId);
+		element.setKey(element.getProject().getProjectKey() + ":graph:" + nextElementId);
+		addVertex(element);
 		return element;
 	}
 
-	public void addEdgeNotBeingInDatabase(Link link) {
-		link.setId(--linkId);
-		this.addEdge(link);
+	/**
+	 * @param link
+	 *            {@link Link} that is not stored in the database via the
+	 *            {@link KnowledgePersistenceManager} but only exists in RAM.
+	 * @return link with a negative id to indicate that it is not stored in
+	 *         database.
+	 */
+	public Link addEdgeNotBeingInDatabase(Link link) {
+		link.setId(--nextLinkId);
+		addEdge(link);
+		return link;
 	}
 
 	/**

@@ -71,7 +71,7 @@ public class GitClient {
 	 *            of the Jira project.
 	 * @return either a new or already existing {@link GitClient} instance.
 	 */
-	public static GitClient getOrCreate(String projectKey) {
+	public static GitClient getInstance(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {
 			return null;
 		}
