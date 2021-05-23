@@ -301,9 +301,9 @@
 			"documentationLocation": "s"
 		};
 		generalApi.postJSON(this.restPrefix + "/knowledge/createJiraIssueFromSentence.json", jsondata,
-			function(error, id, type) {
+			function(error, jiraIssue) {
 				if (error === null) {
-					showFlag("success", "Jira issue has been created.");
+					showFlag("success", "Jira issue with key " + jiraIssue.key + " has been created.");
 					callback();
 				}
 			});

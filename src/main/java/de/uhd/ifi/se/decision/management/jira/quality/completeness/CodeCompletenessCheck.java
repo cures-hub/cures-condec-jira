@@ -7,17 +7,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class CodeCompletenessCheck implements CompletenessCheck {
+public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 
 	private ChangedFile codeFile;
 	private String projectKey;
 
 	@Override
-	public boolean execute(KnowledgeElement codeFile) {
-		if (!(codeFile instanceof ChangedFile)) {
-			return true;
-		}
-		this.codeFile = (ChangedFile) codeFile;
+	public boolean execute(ChangedFile codeFile) {
+		this.codeFile = codeFile;
 		projectKey = codeFile.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings();
 	}
