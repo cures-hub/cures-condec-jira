@@ -10,6 +10,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -70,6 +71,20 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNull() {
 		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
 				KnowledgeElements.getTestKnowledgeElement(), null), 0);
+	}
+
+	@Test
+	@NonTransactional
+	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksCorrectType() {
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+			new KnowledgeElement(), KnowledgeType.OTHER), 1);
+	}
+
+	@Test
+	@NonTransactional
+	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksIncorrectType() {
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+			new KnowledgeElement(), KnowledgeType.DECISION), 0);
 	}
 
 }

@@ -21,6 +21,7 @@ var ConDecDevBranches = [];
 	var dashboardDataErrorNode;
 	var dashboardNoContentsNode;
 	var dashboardProcessingNode;
+	var dashboardProjectNode;
 
 	var branchesQuality = [];
 
@@ -40,18 +41,20 @@ var ConDecDevBranches = [];
 			, "condec-branches-dashboard-contents-container"
 			, "condec-branches-dashboard-contents-data-error"
 			, "condec-branches-dashboard-no-project"
-			, "condec-branches-dashboard-processing");
+			, "condec-branches-dashboard-processing"
+			, "condec-dashboard-selected-project-branch");
 
 		branchesQuality = [];
 		getBranches(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName) {
+	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
 		dashboardFilterNode = document.getElementById(filterName);
 		dashboardContentNode = document.getElementById(containerName);
 		dashboardDataErrorNode = document.getElementById(dataErrorName);
 		dashboardNoContentsNode = document.getElementById(noProjectName);
 		dashboardProcessingNode = document.getElementById(processingName);
+		dashboardProjectNode = document.getElementById(projectName);
 	}
 
 	function showDashboardSection(node) {
@@ -76,6 +79,8 @@ var ConDecDevBranches = [];
 		 */
 		processing = projectKey;
 		showDashboardSection(dashboardProcessingNode);
+		dashboardProjectNode.innerText = projectKey;
+
 		url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
 
 		console.log("Starting REST query.");

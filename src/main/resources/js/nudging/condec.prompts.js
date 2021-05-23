@@ -45,15 +45,22 @@
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
+		var projectKey = conDecAPI.getProjectKey();
+		if (projectKey === null || projectKey === undefined) {
+			return;
+		}
+
 		var issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		var filterSettings = {
-			"projectKey": conDecAPI.projectKey,
-			"selectedElement": issueKey
+
+		var FilterSettings = {
+			"projectKey": projectKey,
+			"selectedElement": issueKey,
 		}
-		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(filterSettings)
+
+		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(FilterSettings)
 			.then(isDoDViolated => {
 				if (!isDoDViolated) {
 					return;
@@ -63,7 +70,7 @@
 					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
 					title: "Definition of Done Violated!",
 					type: "warning"
-				
+
 				});
 				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
 					flag.close();

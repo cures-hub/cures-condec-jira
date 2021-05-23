@@ -46,8 +46,6 @@ public class RationaleCoverageCalculator {
 
 	public RationaleCoverageCalculator(String projectKey) {
 		this.filterSettings = new FilterSettings(projectKey, "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		this.filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
 	}
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
@@ -161,7 +159,15 @@ public class RationaleCoverageCalculator {
 	}
 
 	public int calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(KnowledgeElement knowledgeElement,
-			KnowledgeType knowledgeType) {
+																			 KnowledgeType knowledgeType) {
+		if (knowledgeElement.getLinks().isEmpty()) {
+			if (knowledgeElement.getType() == knowledgeType) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
 		int numberOfElementsReachable;
 		if (!linkedElementMap.containsKey(knowledgeElement)) {
 			fillLinkedElementMap(knowledgeElement);

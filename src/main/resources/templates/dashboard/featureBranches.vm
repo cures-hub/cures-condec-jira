@@ -13,20 +13,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </form>
 </div>
 
-<div id="condec-branches-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
-	$i18n.getText("condec.dashboard.featurebranch.project.data.error")
-</div>
-
-<div id="condec-branches-dashboard-no-project" class="condec-dashboard-contents init">
-    $i18n.getText("condec.dashboard.featurebranch.project.selection.not.done")
-</div>
-
-<div id="condec-branches-dashboard-processing" class="condec-dashboard-contents waiting hidden">
-    $i18n.getText("condec.dashboard.featurebranch.project.processing")
-</div>
-
 <div id="condec-branches-dashboard-contents-container" class="condec-dashboard-contents results hidden">
-	<div id="piechartRich-QualityStatusForBranches" class="piechart"></div>
+    #set ($viewIdentifier = "branch")
+    <div class="field-group">
+        #parse("templates/dashboard/selectedProject.vm")
+    </div>
+    <div id="piechartRich-QualityStatusForBranches" class="piechart"></div>
 	<div id="piechartRich-ProblemTypesInBranches" class="piechart"></div>
 	<div id="piechartRich-BranchesPerIssue" class="piechart"></div>
 	<div id="boxplot-IssuesPerBranch" class="piechart"></div>
@@ -34,6 +26,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 	<div id="boxplot-AlternativesPerBranch" class="piechart"></div>
 	<div id="boxplot-ProsPerBranch" class="piechart"></div>
 	<div id="boxplot-ConsPerBranch" class="piechart"></div>
+</div>
+
+<div id="condec-branches-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+    $i18n.getText("condec.dashboard.requirements.project.data.error")
+</div>
+
+<div id="condec-branches-dashboard-no-project" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.requirements.project.selection.not.done")
+</div>
+
+<div id="condec-branches-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+    $i18n.getText("condec.dashboard.requirements.project.processing")
 </div>
 
 #parse("templates/dashboard/navigationOverlay.vm")
