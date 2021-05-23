@@ -85,7 +85,7 @@ public class GitClient {
 			gitClient = new GitClient(projectKey);
 			instances.put(projectKey, gitClient);
 			gitClient.fetchOrCloneRepositories();
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(gitClient);
+			new Thread(() -> new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(gitClient)).start();
 		}
 		return gitClient;
 	}

@@ -82,6 +82,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		this();
 		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		createGraph();
+
 	}
 
 	private void createGraph() {
