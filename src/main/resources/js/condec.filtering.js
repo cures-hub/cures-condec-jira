@@ -131,6 +131,11 @@
 		if (isTransitiveLinksInput !== null) {
 			filterElements.push(isTransitiveLinksInput);
 		}
+		
+		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
+		if (isTestCodeShownInput !== null) {
+			filterElements.push(isTestCodeShownInput);
+		}        
 
 		filterElements.forEach(function (filterElement) {
 			filterElement.addEventListener("input", () => callback());
@@ -231,12 +236,18 @@
 			filterSettings["isHierarchical"] = isHierarchicalGraphInput.checked;
 		}
 
-        // Read whether knowledge graph should be shown with transitive links
+        // Read whether filtered nodes should be replaced by links
         var createTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
         if (createTransitiveLinksInput !== null) {
             filterSettings["createTransitiveLinks"] = createTransitiveLinksInput.checked;
         }
-
+        
+     	// Read whether test code should be shown
+        var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
+        if (isTestCodeShownInput !== null) {
+            filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
+        }
+        
 		// Read whether knowledge graph should be shown with CIA Context or not
 		var displayType = document.getElementById("select2-display-type-" + viewIdentifier);
 		if (displayType !== null) {

@@ -19,8 +19,6 @@
 
         // Add event listeners to HTML elements for filtering
         conDecFiltering.addOnChangeEventToFilterElements("treant", conDecTreant.updateView);
-        var isTestCodeShownInput = document.getElementById("is-test-code-input-treant");
-        isTestCodeShownInput.addEventListener("click", function() { conDecTreant.updateView(); });
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);

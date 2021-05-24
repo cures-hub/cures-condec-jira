@@ -53,12 +53,12 @@
 		var filterSettings = conDecFiltering.getFilterSettings("decision-table");
 		filterSettings["knowledgeTypes"] = ["Issue", "Problem", "Goal"];
 		const selectedElementKey = conDecAPI.getIssueKey();		
-		if (selectedElementKey !== null) {
+		if (selectedElementKey !== null && selectedElementKey !== undefined) {
 			filterSettings["selectedElement"] = selectedElementKey;
 		}
 		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
 			issues = knowledgeElements;
-			if (selectedElementKey !== null) {
+			if (selectedElementKey !== null && selectedElementKey !== undefined) {
 				issues = knowledgeElements.filter(element => !isSelectedElement(element, selectedElementKey) || filterSettings["knowledgeTypes"].includes(element.type));
 			}
 			fillDecisionProblemDropDown(issues, "decision-table");

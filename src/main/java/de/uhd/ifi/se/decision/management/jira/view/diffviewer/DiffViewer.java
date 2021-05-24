@@ -28,11 +28,11 @@ public class DiffViewer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DiffViewer.class);
 
 	public DiffViewer(String projectKey) {
-		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(projectKey));
+		this(projectKey, GitClient.getInstance(projectKey).getBranches(projectKey));
 	}
 
 	public DiffViewer(String projectKey, String jiraIssueKey) {
-		this(projectKey, GitClient.getOrCreate(projectKey).getBranches(jiraIssueKey));
+		this(projectKey, GitClient.getInstance(projectKey).getBranches(jiraIssueKey));
 		LOGGER.info("projectKey:" + projectKey + ",jiraIssueKey:" + jiraIssueKey);
 	}
 

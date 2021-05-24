@@ -24,8 +24,8 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-        codeFileEndingMap.put("JAVA_C", "java");
-        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		codeFileEndingMap.put("JAVA_C", "java");
+		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
 	}
 
 	@Test
@@ -72,10 +72,11 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testExtractAllChangedFilesTwice() {
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
-		codeFileExtractorAndMaintainer.extractAllChangedFiles();
+		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
 		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles();
+		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
 		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}
 }

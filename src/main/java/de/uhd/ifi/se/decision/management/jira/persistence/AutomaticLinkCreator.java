@@ -3,8 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import com.atlassian.jira.issue.Issue;
+import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -54,28 +53,33 @@ public class AutomaticLinkCreator {
 	}
 
 	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element) {
-		if (element == null) {
-			return null;
-		}
-		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element);
-		if (potentialParentElements.isEmpty()) {
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getOrCreate(element.getProject()).getJiraIssueTextManager();
+		List<KnowledgeElement> otherElements = persistenceManager
+				.getElementsInJiraIssue(element.getJiraIssue().getId());
+		KnowledgeElement potentialParentElement = getPotentialParentElement(element, otherElements);
+		if (potentialParentElement == null) {
 			return new KnowledgeElement(element.getJiraIssue());
+		}
+		return potentialParentElement;
+	}
+
+	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element,
+			List<KnowledgeElement> otherElements) {
+		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element, otherElements);
+		if (potentialParentElements.isEmpty()) {
+			return null;
 		}
 		return getClosestParentElement(potentialParentElements, element);
 	}
 
-	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
-		Issue jiraIssue = ((PartOfJiraIssueText) element).getJiraIssue();
-		if (jiraIssue == null) {
-			return new ArrayList<KnowledgeElement>();
-		}
+	public static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element,
+			List<KnowledgeElement> otherElements) {
 		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
 		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getJiraIssueTextManager();
 		for (KnowledgeType parentType : parentTypes) {
-			potentialParentElements
-					.addAll(persistenceManager.getElementsWithTypeInJiraIssue(jiraIssue.getId(), parentType));
+			potentialParentElements.addAll(otherElements.stream()
+					.filter(otherElement -> otherElement.getType() == parentType).collect(Collectors.toList()));
 		}
 		return potentialParentElements;
 	}
@@ -104,7 +108,16 @@ public class AutomaticLinkCreator {
 	public static KnowledgeElement getClosestParentElement(List<KnowledgeElement> potentialParents,
 			KnowledgeElement childElement) {
 		return potentialParents.stream()
-				.min(Comparator.comparing(potentialElement -> childElement.getId() - potentialElement.getId()))
+				.min(Comparator.comparing(
+						potentialElement -> calculateDifference(childElement.getId(), potentialElement.getId())))
 				.orElse(potentialParents.get(0));
+	}
+
+	public static long calculateDifference(long id1, long id2) {
+		long difference = id1 < 0 ? id2 - id1 : id1 - id2;
+		if (difference < 0) {
+			return 42;
+		}
+		return difference;
 	}
 }

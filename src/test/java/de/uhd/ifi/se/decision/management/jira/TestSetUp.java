@@ -44,7 +44,7 @@ public abstract class TestSetUp {
 	 * {@link JiraIssues}) and the custom {@link ComponentGetter}.
 	 */
 	public static void init() {
-		initTestData();
+		removeTestData();
 		initComponentAccessor();
 		initComponentGetter();
 		initClassifierPaths();
@@ -80,7 +80,7 @@ public abstract class TestSetUp {
 	/**
 	 * Resets the test data.
 	 */
-	public static void initTestData() {
+	public static void removeTestData() {
 		KnowledgeElements.elements.clear();
 		JiraIssues.jiraIssues.clear();
 		JiraIssueLinks.jiraIssueLinks.clear();

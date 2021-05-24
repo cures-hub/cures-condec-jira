@@ -4,7 +4,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class DecisionCompletenessCheck implements CompletenessCheck {
+public class DecisionCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
 
 	private KnowledgeElement decision;
 	private String projectKey;

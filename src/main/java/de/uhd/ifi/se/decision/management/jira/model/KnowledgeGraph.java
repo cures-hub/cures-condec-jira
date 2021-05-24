@@ -1,12 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 /**
@@ -33,12 +34,12 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);
 
 	private static final long serialVersionUID = 1L;
-	protected List<Long> linkIds;
-	private KnowledgePersistenceManager persistenceManager;
+
+	private Set<Long> linkIds;
 
 	// for elements that do not exist in database
-	private long id = -1;
-	private long linkId = -1;
+	private long nextElementId = -1;
+	private long nextLinkId = -1;
 
 	/**
 	 * Instances of knowledge graphs that are identified by the project key.
@@ -75,46 +76,21 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	public KnowledgeGraph() {
 		super(Link.class);
-		this.linkIds = new ArrayList<Long>();
+		linkIds = new HashSet<>();
 	}
 
 	public KnowledgeGraph(String projectKey) {
 		this();
-		this.persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		createGraph();
-	}
-
-	private void createGraph() {
-		addElements();
-		addEdges();
-	}
-
-	private void addElements() {
-		List<KnowledgeElement> elements = persistenceManager.getKnowledgeElements();
-		for (KnowledgeElement element : elements) {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
-		}
-	}
-
-	private void addEdges() {
-		for (KnowledgeElement element : this.vertexSet()) {
-			List<Link> links = persistenceManager.getLinks(element);
-			for (Link link : links) {
-				KnowledgeElement destination = link.getTarget();
-				KnowledgeElement source = link.getSource();
-				if (destination == null || source == null) {
-					continue;
-				}
-				if (destination.equals(source)) {
-					continue;
-				}
-				if (!linkIds.contains(link.getId()) && this.containsVertex(link.getTarget())
-						&& this.containsVertex(link.getSource())) {
-					this.addEdge(link);
+			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
 					linkIds.add(link.getId());
 				}
-			}
-		}
+			});
+		});
 	}
 
 	/**
@@ -150,21 +126,39 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return isEdgeCreated;
 	}
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} that is not stored in the database via
+	 *            the {@link KnowledgePersistenceManager} but only exists in RAM.
+	 * @return element with a negative id to indicate that it is not stored in
+	 *         database.
+	 */
 	public KnowledgeElement addVertexNotBeingInDatabase(KnowledgeElement element) {
 		KnowledgeElement existingElement = getElementsNotInDatabaseBySummary(element.getSummary());
 		if (existingElement != null) {
 			return existingElement;
 		}
-		--id;
-		element.setId(id);
-		element.setKey(element.getProject().getProjectKey() + ":graph:" + id);
-		super.addVertex(element);
+		--nextElementId;
+		element.setId(nextElementId);
+		element.setKey(element.getProject().getProjectKey() + ":graph:" + nextElementId);
+		addVertex(element);
 		return element;
 	}
 
-	public void addEdgeNotBeingInDatabase(Link link) {
-		link.setId(--linkId);
-		this.addEdge(link);
+	/**
+	 * @param link
+	 *            {@link Link} that is not stored in the database via the
+	 *            {@link KnowledgePersistenceManager} but only exists in RAM.
+	 * @return link with a negative id to indicate that it is not stored in
+	 *         database.
+	 */
+	public Link addEdgeNotBeingInDatabase(Link link) {
+		if (link.containsUnknownDocumentationLocation()) {
+			return null;
+		}
+		link.setId(--nextLinkId);
+		addEdge(link);
+		return link;
 	}
 
 	/**
@@ -278,16 +272,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         be linked.
 	 */
 	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>(vertexSet());
-		if (element == null) {
-			return elements;
-		}
-		elements.remove(element);
-
-		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(this, element);
-		elements.removeAll(linkedElements);
-
-		return elements;
+		return vertexSet().stream()
+				.filter(vertex -> !vertex.equals(element) && !Graphs.neighborListOf(this, element).contains(vertex))
+				.collect(Collectors.toList());
 	}
 
 	public List<KnowledgeElement> getUnlinkedElementsAndNotInSameJiraIssue(KnowledgeElement element) {
@@ -306,16 +293,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 */
 	public List<KnowledgeElement> getElements(KnowledgeType type) {
 		KnowledgeType simpleType = type.replaceProAndConWithArgument();
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.addAll(this.vertexSet());
-		Iterator<KnowledgeElement> iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getType().replaceProAndConWithArgument() != simpleType) {
-				iterator.remove();
-			}
-		}
-		return elements;
+		return vertexSet().stream().filter(element -> element.getType().replaceProAndConWithArgument() == simpleType)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -364,6 +343,12 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return null;
 	}
 
+	public KnowledgeElement getElementBySummary(String summary) {
+		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
+				.filter(element -> element.getSummary().equals(summary)).findFirst();
+		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
+	}
+
 	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
 		while (iterator.hasNext()) {
@@ -376,5 +361,19 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			}
 		}
 		return null;
+	}
+
+	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
+		otherElements.forEach(element -> addVertexNotBeingInDatabase(element));
+		for (KnowledgeElement element : otherElements) {
+			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
+			Link link;
+			if (potentialParent == null) {
+				link = new Link(element, root);
+			} else {
+				link = new Link(element, potentialParent);
+			}
+			addEdgeNotBeingInDatabase(link);
+		}
 	}
 }

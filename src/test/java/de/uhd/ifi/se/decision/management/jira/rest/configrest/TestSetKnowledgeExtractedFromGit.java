@@ -68,29 +68,29 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 	public void testRequestValidProjectKeyValidIsExtractedTrue() {
 		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
 		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
-		"master", "", "", "");
+				"master", "", "", "");
 		gitRepositoryConfigurations.add(gitRepositoryConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
 				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
 		assertEquals(Response.Status.OK.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
 	}
-	
+
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
-		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration("/this/path/does/not/exist",
-				"master", "", "", "");
+		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration(
+				"/this/path/does/not/exist", "master", "", "", "");
 		List<GitRepositoryConfiguration> badGitRepositoryConfigurations = new ArrayList<>();
 		badGitRepositoryConfigurations.add(badGitRepositoryConfiguration);
 		assertEquals(Status.OK.getStatusCode(),
 				configRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
 		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				configRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
-				List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
-				GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
+		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
+		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
 				"master", "", "", "");
-				gitRepositoryConfigurations.add(gitRepositoryConfiguration);
-				assertEquals(Status.OK.getStatusCode(),
-						configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
-	}		
+		gitRepositoryConfigurations.add(gitRepositoryConfiguration);
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
+	}
 }

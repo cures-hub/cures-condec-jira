@@ -14,14 +14,14 @@ public final class CompletenessHandler {
 	private CompletenessHandler() {
 	}
 
-	private static final Map<KnowledgeType, CompletenessCheck> completenessCheckMap = Map.ofEntries(
-			entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
-			entry(KnowledgeType.ISSUE, new DecisionProblemCompletenessCheck()),
-			entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
-			entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
-			entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
-			entry(KnowledgeType.CON, new ArgumentCompletenessCheck()),
-			entry(KnowledgeType.CODE, new CodeCompletenessCheck()));
+	private static final Map<KnowledgeType, CompletenessCheck<? extends KnowledgeElement>> completenessCheckMap = Map
+			.ofEntries(entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
+					entry(KnowledgeType.ISSUE, new DecisionProblemCompletenessCheck()),
+					entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
+					entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
+					entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
+					entry(KnowledgeType.CON, new ArgumentCompletenessCheck()),
+					entry(KnowledgeType.CODE, new CodeCompletenessCheck()));
 
 	/**
 	 * @issue Should knowledge elements without definition of done be assumed to be
@@ -34,6 +34,7 @@ public final class CompletenessHandler {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean checkForCompleteness(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return true;

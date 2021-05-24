@@ -35,7 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
@@ -497,14 +496,11 @@ public class ConfigRest {
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories
-			if (GitClient.getOrCreate(projectKey) == null) {
+			if (GitClient.getInstance(projectKey) == null) {
 				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
 			}
-			// read all code files, decision knowledge elements and links from the default
-			// branch
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles();
 		}
 		return Response.ok().build();
 	}
@@ -601,7 +597,7 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		GitClient gitClient = GitClient.getOrCreate(projectKey);
+		GitClient gitClient = GitClient.getInstance(projectKey);
 		if (!gitClient.deleteRepositories()) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Git repositories could not be deleted.")).build();

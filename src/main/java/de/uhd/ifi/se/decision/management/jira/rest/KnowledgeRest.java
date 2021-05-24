@@ -438,7 +438,7 @@ public class KnowledgeRest {
 		return Response.ok(elementsMatchingQuery).build();
 	}
 
-	@Path("/createIssueFromSentence")
+	@Path("/createJiraIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,

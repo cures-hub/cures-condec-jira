@@ -20,7 +20,7 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testGetOrCreateProjectKeyInvalid() {
-		assertNull(GitClient.getOrCreate(""));
-		assertNull(GitClient.getOrCreate(null));
+		assertNull(GitClient.getInstance(""));
+		assertNull(GitClient.getInstance(null));
 	}
 }

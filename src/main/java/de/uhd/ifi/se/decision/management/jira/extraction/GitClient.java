@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
@@ -71,24 +72,27 @@ public class GitClient {
 	 *            of the Jira project.
 	 * @return either a new or already existing {@link GitClient} instance.
 	 */
-	public static GitClient getOrCreate(String projectKey) {
+	public static GitClient getInstance(String projectKey) {
 		if (projectKey == null || projectKey.isBlank()) {
 			return null;
 		}
 		GitClient gitClient;
-
+		boolean extractAllCodeKnowledge = false;
 		if (instances.containsKey(projectKey)) {
 			gitClient = instances.get(projectKey);
 		} else {
 			gitClient = new GitClient(projectKey);
 			instances.put(projectKey, gitClient);
+			extractAllCodeKnowledge = true;
 		}
-
-		if (gitClient.fetchOrCloneRepositories()) {
-			return gitClient;
-		} else {
+		if (!gitClient.fetchOrCloneRepositories()) {
 			return null;
 		}
+		if (extractAllCodeKnowledge) {
+			Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
+		}
+		return gitClient;
 	}
 
 	private GitClient(String projectKey) {

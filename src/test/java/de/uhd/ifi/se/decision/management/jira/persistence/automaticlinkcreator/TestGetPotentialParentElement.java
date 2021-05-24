@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.automaticlinkcreator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,15 +24,18 @@ public class TestGetPotentialParentElement extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testElementNull() {
-		assertNull(AutomaticLinkCreator.getPotentialParentElement(null));
-	}
-
-	@Test
-	@NonTransactional
 	public void testElementValid() {
 		element.setType(KnowledgeType.ARGUMENT);
 		KnowledgeElement parentElement = AutomaticLinkCreator.getPotentialParentElement(element);
 		assertEquals(1, parentElement.getId());
+	}
+
+	@Test
+	public void testCalculateDifference() {
+		assertEquals(1, AutomaticLinkCreator.calculateDifference(-36, -35));
+		assertEquals(42, AutomaticLinkCreator.calculateDifference(-36, -37));
+		assertEquals(1, AutomaticLinkCreator.calculateDifference(37, 36));
+		assertEquals(42, AutomaticLinkCreator.calculateDifference(36, 37));
+		assertEquals(42, AutomaticLinkCreator.calculateDifference(-36, -47));
 	}
 }
