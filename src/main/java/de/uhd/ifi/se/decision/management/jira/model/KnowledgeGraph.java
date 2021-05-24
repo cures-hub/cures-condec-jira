@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -336,6 +337,12 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			}
 		}
 		return null;
+	}
+
+	public KnowledgeElement getElementBySummary(String summary) {
+		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
+				.filter(element -> element.getSummary().equals(summary)).findFirst();
+		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
 
 	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
