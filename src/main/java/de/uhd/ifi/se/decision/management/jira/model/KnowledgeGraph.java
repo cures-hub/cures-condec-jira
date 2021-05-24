@@ -35,6 +35,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	private static final long serialVersionUID = 1L;
 
+	private Set<Long> linkIds;
+
 	// for elements that do not exist in database
 	private long nextElementId = -1;
 	private long nextLinkId = -1;
@@ -74,6 +76,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	public KnowledgeGraph() {
 		super(Link.class);
+		linkIds = new HashSet<>();
 	}
 
 	public KnowledgeGraph(String projectKey) {
@@ -82,7 +85,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
 			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
-				addEdge(link);
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
+					linkIds.add(link.getId());
+				}
 			});
 		});
 	}
@@ -105,9 +111,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 * @see #getEdgeSupplier()
 	 */
 	public boolean addEdge(Link link) {
-		if (edgeSet().contains(link) || edgeSet().contains(link.flip())) {
-			return false;
-		}
 		boolean isEdgeCreated = false;
 		KnowledgeElement source = link.getSource();
 		addVertex(source);
