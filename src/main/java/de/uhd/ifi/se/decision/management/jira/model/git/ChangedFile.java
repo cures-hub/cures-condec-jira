@@ -523,6 +523,9 @@ public class ChangedFile extends KnowledgeElement {
 			return true;
 		}
 		if (!(object instanceof ChangedFile)) {
+			if (object instanceof KnowledgeElement) {
+				return super.equals(object);
+			}
 			return false;
 		}
 		ChangedFile changedFile = (ChangedFile) object;

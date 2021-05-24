@@ -50,13 +50,14 @@ public class CodeFileExtractorAndMaintainer {
 	public void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (!changedFile.isCodeFile()) {
 				continue;
 			}
 			List<KnowledgeElement> decisionKnowledgeInCodeComments = gitExtract.getElementsFromCode(changedFile);
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			KnowledgeGraph.getInstance(projectKey).addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
+			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 		}
 	}
 

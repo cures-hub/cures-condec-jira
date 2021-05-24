@@ -108,7 +108,8 @@ public class AutomaticLinkCreator {
 	public static KnowledgeElement getClosestParentElement(List<KnowledgeElement> potentialParents,
 			KnowledgeElement childElement) {
 		return potentialParents.stream()
-				.min(Comparator.comparing(potentialElement -> childElement.getId() - potentialElement.getId()))
+				.min(Comparator.comparing(potentialElement -> (childElement.getId() - potentialElement.getId())
+						* (potentialElement.getId() - childElement.getId())))
 				.orElse(potentialParents.get(0));
 	}
 }
