@@ -80,9 +80,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph(String projectKey) {
 		this();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		persistenceManager.getKnowledgeElements().forEach(element -> {
+		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
-			persistenceManager.getLinks(element).forEach(link -> {
+			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
 				if (!linkIds.contains(link.getId())) {
 					addEdge(link);
 					linkIds.add(link.getId());
@@ -267,16 +267,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         be linked.
 	 */
 	public List<KnowledgeElement> getUnlinkedElements(KnowledgeElement element) {
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>(vertexSet());
-		if (element == null) {
-			return elements;
-		}
-		elements.remove(element);
-
-		List<KnowledgeElement> linkedElements = Graphs.neighborListOf(this, element);
-		elements.removeAll(linkedElements);
-
-		return elements;
+		return vertexSet().stream()
+				.filter(vertex -> !vertex.equals(element) && !Graphs.neighborListOf(this, element).contains(vertex))
+				.collect(Collectors.toList());
 	}
 
 	public List<KnowledgeElement> getUnlinkedElementsAndNotInSameJiraIssue(KnowledgeElement element) {
@@ -295,16 +288,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 */
 	public List<KnowledgeElement> getElements(KnowledgeType type) {
 		KnowledgeType simpleType = type.replaceProAndConWithArgument();
-		List<KnowledgeElement> elements = new ArrayList<KnowledgeElement>();
-		elements.addAll(this.vertexSet());
-		Iterator<KnowledgeElement> iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getType().replaceProAndConWithArgument() != simpleType) {
-				iterator.remove();
-			}
-		}
-		return elements;
+		return vertexSet().stream().filter(element -> element.getType().replaceProAndConWithArgument() == simpleType)
+				.collect(Collectors.toList());
 	}
 
 	/**
