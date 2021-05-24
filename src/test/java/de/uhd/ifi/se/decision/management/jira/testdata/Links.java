@@ -15,7 +15,7 @@ public class Links {
 	}
 
 	public static List<Link> getTestLinks() {
-		return createLinks(JiraProjects.TEST.createJiraProject(1));
+		return createLinks(JiraProjects.getTestProject());
 	}
 
 	public static List<Link> createLinks(Project project) {

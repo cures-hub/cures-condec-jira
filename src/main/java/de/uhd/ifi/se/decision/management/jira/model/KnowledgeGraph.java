@@ -34,6 +34,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);
 
 	private static final long serialVersionUID = 1L;
+	private Set<Long> linkIds;
 
 	// for elements that do not exist in database
 	private long nextElementId = -1;
@@ -82,7 +83,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
 			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
-				if (!containsEdge(link)) {
+				if (!edgeSet().contains(link) && !edgeSet().contains(link.flip())) {
 					addEdge(link);
 				}
 			});
