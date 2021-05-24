@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +34,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeGraph.class);
 
 	private static final long serialVersionUID = 1L;
-	protected List<Long> linkIds;
 
 	// for elements that do not exist in database
 	private long nextElementId = -1;
@@ -76,7 +74,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	public KnowledgeGraph() {
 		super(Link.class);
-		this.linkIds = new ArrayList<Long>();
 	}
 
 	public KnowledgeGraph(String projectKey) {
@@ -85,9 +82,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
 			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
-				if (!linkIds.contains(link.getId())) {
+				if (!edgeSet().contains(link)) {
 					addEdge(link);
-					linkIds.add(link.getId());
 				}
 			});
 		});
