@@ -29,8 +29,8 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		codeCompletenessCheck = new CodeCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
+		codeCompletenessCheck = new CodeCompletenessCheck();
 		fileThatIsNotDone = (ChangedFile) elements.get(18);
 		smallFileThatIsDone = (ChangedFile) elements.get(19);
 		testFileThatIsDone = (ChangedFile) elements.get(20);

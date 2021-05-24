@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.atlassian.jira.issue.Issue;
 
@@ -76,6 +77,29 @@ public class AutomaticLinkCreator {
 		for (KnowledgeType parentType : parentTypes) {
 			potentialParentElements
 					.addAll(persistenceManager.getElementsWithTypeInJiraIssue(jiraIssue.getId(), parentType));
+		}
+		return potentialParentElements;
+	}
+
+	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element,
+			List<KnowledgeElement> otherElements) {
+		if (element == null) {
+			return null;
+		}
+		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element, otherElements);
+		if (potentialParentElements.isEmpty()) {
+			return null;
+		}
+		return getClosestParentElement(potentialParentElements, element);
+	}
+
+	public static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element,
+			List<KnowledgeElement> otherElements) {
+		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
+		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
+		for (KnowledgeType parentType : parentTypes) {
+			potentialParentElements.addAll(otherElements.stream()
+					.filter(otherElement -> otherElement.getType() == parentType).collect(Collectors.toList()));
 		}
 		return potentialParentElements;
 	}

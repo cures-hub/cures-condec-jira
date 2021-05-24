@@ -146,7 +146,7 @@ public class FilterSettings {
 	 * @param projectKey
 	 *            of the Jira project.
 	 */
-	@JsonProperty
+	@JsonProperty("projectKey")
 	public void setProjectKey(String projectKey) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 	}
