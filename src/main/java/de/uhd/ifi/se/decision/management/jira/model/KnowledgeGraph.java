@@ -378,5 +378,4 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			addEdgeNotBeingInDatabase(link);
 		}
 	}
-
 }
