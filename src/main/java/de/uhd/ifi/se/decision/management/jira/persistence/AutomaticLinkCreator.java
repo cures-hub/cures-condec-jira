@@ -5,8 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -55,37 +53,19 @@ public class AutomaticLinkCreator {
 	}
 
 	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element) {
-		if (element == null) {
-			return null;
-		}
-		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element);
-		if (potentialParentElements.isEmpty()) {
-			return new KnowledgeElement(element.getJiraIssue());
-		}
-		return getClosestParentElement(potentialParentElements, element);
-	}
-
-	private static List<KnowledgeElement> getPotentialParentElements(KnowledgeElement element) {
-		Issue jiraIssue = ((PartOfJiraIssueText) element).getJiraIssue();
-		if (jiraIssue == null) {
-			return new ArrayList<KnowledgeElement>();
-		}
-		List<KnowledgeElement> potentialParentElements = new ArrayList<KnowledgeElement>();
-		List<KnowledgeType> parentTypes = KnowledgeType.getParentTypes(element.getType());
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getOrCreate(element.getProject()).getJiraIssueTextManager();
-		for (KnowledgeType parentType : parentTypes) {
-			potentialParentElements
-					.addAll(persistenceManager.getElementsWithTypeInJiraIssue(jiraIssue.getId(), parentType));
+		List<KnowledgeElement> otherElements = persistenceManager
+				.getElementsInJiraIssue(element.getJiraIssue().getId());
+		KnowledgeElement potentialParentElement = getPotentialParentElement(element, otherElements);
+		if (potentialParentElement == null) {
+			return new KnowledgeElement(element.getJiraIssue());
 		}
-		return potentialParentElements;
+		return potentialParentElement;
 	}
 
 	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element,
 			List<KnowledgeElement> otherElements) {
-		if (element == null) {
-			return null;
-		}
 		List<KnowledgeElement> potentialParentElements = getPotentialParentElements(element, otherElements);
 		if (potentialParentElements.isEmpty()) {
 			return null;

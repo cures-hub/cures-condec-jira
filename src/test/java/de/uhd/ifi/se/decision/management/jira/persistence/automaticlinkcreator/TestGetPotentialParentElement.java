@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.automaticlinkcreator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,12 +20,6 @@ public class TestGetPotentialParentElement extends TestSetUp {
 	public void setUp() {
 		init();
 		element = JiraIssues.addElementToDataBase();
-	}
-
-	@Test
-	@NonTransactional
-	public void testElementNull() {
-		assertNull(AutomaticLinkCreator.getPotentialParentElement(null));
 	}
 
 	@Test
