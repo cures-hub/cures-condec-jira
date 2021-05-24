@@ -109,8 +109,15 @@ public class AutomaticLinkCreator {
 			KnowledgeElement childElement) {
 		return potentialParents.stream()
 				.min(Comparator.comparing(
-						potentialElement -> childElement.getId() < 0 ? potentialElement.getId() - childElement.getId()
-								: childElement.getId() - potentialElement.getId()))
+						potentialElement -> calculateDifference(childElement.getId(), potentialElement.getId())))
 				.orElse(potentialParents.get(0));
+	}
+
+	public static long calculateDifference(long id1, long id2) {
+		long difference = id1 < 0 ? id2 - id1 : id1 - id2;
+		if (difference < 0) {
+			return 42;
+		}
+		return difference;
 	}
 }

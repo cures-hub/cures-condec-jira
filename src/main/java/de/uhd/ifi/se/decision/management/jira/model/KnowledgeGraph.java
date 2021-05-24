@@ -85,7 +85,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
 			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
-				addEdge(link);
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
+					linkIds.add(link.getId());
+				}
 			});
 		});
 	}
@@ -108,10 +111,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 * @see #getEdgeSupplier()
 	 */
 	public boolean addEdge(Link link) {
-		if (linkIds.contains(link.getId())) {
-			return false;
-		}
-		linkIds.add(link.getId());
 		boolean isEdgeCreated = false;
 		KnowledgeElement source = link.getSource();
 		addVertex(source);
@@ -243,7 +242,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (removedLink == null) {
 			removedLink = super.removeEdge(link.getTarget(), link.getSource());
 		}
-		linkIds.remove(link.getId());
 		return removedLink != null;
 	}
 
