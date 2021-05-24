@@ -109,9 +109,9 @@ public class GitDecXtract {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
-		// elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
+		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
 
-		List<KnowledgeElement> knowledgeElements = elementsFromCode.parallelStream().map(element -> {
+		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
 			element.setDescription(updateKeyForCodeExtractedElementWithInformationHash(element));
 			element.setDocumentationLocation(DocumentationLocation.CODE);

@@ -243,6 +243,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (removedLink == null) {
 			removedLink = super.removeEdge(link.getTarget(), link.getSource());
 		}
+		linkIds.remove(link.getId());
 		return removedLink != null;
 	}
 
