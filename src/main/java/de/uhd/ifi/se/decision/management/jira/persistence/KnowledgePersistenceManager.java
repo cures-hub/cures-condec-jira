@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DecisionProblemCompletenessCheck;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -266,21 +265,10 @@ public class KnowledgePersistenceManager {
 	 * @return true if the status of the decision problem (=issue) was updated.
 	 */
 	public boolean updateIssueStatus(KnowledgeElement element, ApplicationUser user) {
-		boolean isIssueResolved = false;
-		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
-			if (DecisionProblemCompletenessCheck.isValidDecisionLinkedToDecisionProblem(element)) {
-				isIssueResolved = true;
-			}
-
-			if (isIssueResolved && element.getStatus() == KnowledgeStatus.UNRESOLVED) {
-				element.setStatus(KnowledgeStatus.RESOLVED);
-				return updateKnowledgeElement(element, user);
-			}
-
-			if (!isIssueResolved && element.getStatus() == KnowledgeStatus.RESOLVED) {
-				element.setStatus(KnowledgeStatus.UNRESOLVED);
-				return updateKnowledgeElement(element, user);
-			}
+		KnowledgeStatus newStatus = KnowledgeStatus.getNewStatus(element);
+		if (element.getStatus() != newStatus) {
+			element.setStatus(newStatus);
+			return updateKnowledgeElement(element, user);
 		}
 		return false;
 	}

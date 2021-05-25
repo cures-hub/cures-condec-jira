@@ -381,13 +381,20 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
 			Link link;
 			if (potentialParent == null) {
-				link = new Link(element, root);
+				link = Link.instantiateDirectedLink(root, element);
 			} else {
 				addVertexNotBeingInDatabase(potentialParent);
-				link = new Link(element, potentialParent);
+				link = Link.instantiateDirectedLink(potentialParent, element);
 			}
 			addEdgeNotBeingInDatabase(link);
 		}
+		otherElements.forEach(element -> {
+			KnowledgeStatus newStatus = KnowledgeStatus.getNewStatus(element);
+			if (newStatus != element.getStatus()) {
+				element.setStatus(newStatus);
+				updateElement(element);
+			}
+		});
 	}
 
 	public KnowledgeElement getElementById(long id) {
