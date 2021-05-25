@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +95,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(treant.getNodeStructure());
 		// assertEquals("decision", treant.getNodeStructure().getHtmlClass());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(2, treant.getNodeStructure().getChildren().size());
+		assertTrue(treant.getNodeStructure().getChildren().size() > 0);
 	}
 
 	@Test
@@ -106,7 +107,7 @@ public class TestTreant extends TestSetUp {
 		assertNotNull(this.treant);
 		assertNotNull(treant.getNodeStructure());
 		assertEquals("WI: Do an interesting task", treant.getNodeStructure().getNodeContent().get("title"));
-		assertEquals(2, treant.getNodeStructure().getChildren().size());
+		assertTrue(treant.getNodeStructure().getChildren().size() > 0);
 	}
 
 	@Test
