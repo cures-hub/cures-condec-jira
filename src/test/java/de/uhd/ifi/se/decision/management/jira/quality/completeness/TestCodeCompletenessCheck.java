@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -31,11 +32,11 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		init();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		codeCompletenessCheck = new CodeCompletenessCheck();
-		KnowledgeElements.addCodeFilesToKnowledgeGraph();
-		fileThatIsNotDone = (ChangedFile) elements.get(18);
-		smallFileThatIsDone = (ChangedFile) elements.get(19);
-		testFileThatIsDone = (ChangedFile) elements.get(20);
-		linkedFileThatIsDone = (ChangedFile) elements.get(21);
+		CodeFiles.addCodeFilesToKnowledgeGraph();
+		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
+		smallFileThatIsDone = CodeFiles.getSmallCodeFileDone();
+		testFileThatIsDone = CodeFiles.getTestCodeFileDone();
+		linkedFileThatIsDone = CodeFiles.getAnotherTestCodeFileDone();
 	}
 
 	@Test

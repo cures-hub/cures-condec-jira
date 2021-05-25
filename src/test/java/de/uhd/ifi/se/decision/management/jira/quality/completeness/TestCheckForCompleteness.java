@@ -8,6 +8,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -21,7 +22,7 @@ public class TestCheckForCompleteness extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		KnowledgeElements.addCodeFilesToKnowledgeGraph();
+		CodeFiles.addCodeFilesToKnowledgeGraph();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		decision = KnowledgeElements.getDecision();
