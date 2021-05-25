@@ -530,8 +530,7 @@ public class KnowledgeElement {
 	public Set<KnowledgeElement> getNeighborsOfType(KnowledgeType knowledgeType) {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(project);
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
-		return neighbors.stream().filter(element -> element.getType().getSuperType() == knowledgeType.getSuperType())
-				.collect(Collectors.toSet());
+		return neighbors.stream().filter(element -> element.getType() == knowledgeType).collect(Collectors.toSet());
 	}
 
 	/**
