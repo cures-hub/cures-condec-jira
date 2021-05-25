@@ -46,10 +46,6 @@ public class KnowledgeElements {
 		return getTestKnowledgeElements().get(3);
 	}
 
-	public static KnowledgeElement getCodeFile() {
-		return CodeFiles.getTestCodeFileDone();
-	}
-
 	private static List<KnowledgeElement> createKnowledgeElements() {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<Issue> jiraIssues = JiraIssues.getTestJiraIssues();

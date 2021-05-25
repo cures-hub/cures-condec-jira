@@ -9,7 +9,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestIsElementMatchingTestCodeFilter extends TestSetUp {
@@ -30,25 +30,20 @@ public class TestIsElementMatchingTestCodeFilter extends TestSetUp {
 
 	@Test
 	public void testTestCodeExcludedFilterAndElementIsCodeButNoTestCode() {
-		assertTrue(filteringManager.isElementMatchingIsTestCodeFilter(KnowledgeElements.getCodeFile()));
+		assertTrue(filteringManager.isElementMatchingIsTestCodeFilter(CodeFiles.getSmallCodeFileDone()));
 	}
 
 	@Test
 	public void testTestCodeExcludedFilterAndElementIsTestCode() {
 		filteringManager.getFilterSettings().setTestCodeShown(false);
-
-		ChangedFile testClass = new ChangedFile();
-		testClass.setSummary("TestCodeFile.java");
-		assertFalse(filteringManager.isElementMatchingIsTestCodeFilter(testClass));
-		assertFalse(filteringManager.isElementMatchingFilterSettings(testClass));
+		assertFalse(filteringManager.isElementMatchingIsTestCodeFilter(CodeFiles.getTestCodeFileDone()));
+		assertFalse(filteringManager.isElementMatchingFilterSettings(CodeFiles.getTestCodeFileDone()));
 	}
 
 	@Test
 	public void testTestCodeIncludedAndElementIsTestCode() {
 		filteringManager.getFilterSettings().setTestCodeShown(true);
-		ChangedFile testClass = new ChangedFile();
-		testClass.setSummary("TestCodeFile.java");
-		assertTrue(filteringManager.isElementMatchingIsTestCodeFilter(testClass));
-		assertTrue(filteringManager.isElementMatchingFilterSettings(testClass));
+		assertTrue(filteringManager.isElementMatchingIsTestCodeFilter(CodeFiles.getTestCodeFileDone()));
+		assertTrue(filteringManager.isElementMatchingFilterSettings(CodeFiles.getTestCodeFileDone()));
 	}
 }

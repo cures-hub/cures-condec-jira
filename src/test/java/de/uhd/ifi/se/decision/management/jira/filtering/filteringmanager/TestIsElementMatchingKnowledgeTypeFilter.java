@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -48,7 +49,7 @@ public class TestIsElementMatchingKnowledgeTypeFilter extends TestSetUp {
 		filteringManager.getFilterSettings().setOnlyDecisionKnowledgeShown(true);
 		assertTrue(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getDecision()));
 		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getOtherWorkItem()));
-		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(KnowledgeElements.getCodeFile()));
+		assertFalse(filteringManager.isElementMatchingKnowledgeTypeFilter(CodeFiles.getSmallCodeFileDone()));
 	}
 
 	@Test

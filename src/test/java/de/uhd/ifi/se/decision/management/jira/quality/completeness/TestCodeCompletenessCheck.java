@@ -3,13 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
@@ -17,8 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCodeCompletenessCheck extends TestSetUp {
-
-	private List<KnowledgeElement> elements;
 
 	private ChangedFile fileThatIsNotDone;
 	private ChangedFile smallFileThatIsDone;
@@ -30,7 +25,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		elements = KnowledgeElements.getTestKnowledgeElements();
+		KnowledgeElements.getTestKnowledgeElements();
 		codeCompletenessCheck = new CodeCompletenessCheck();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();

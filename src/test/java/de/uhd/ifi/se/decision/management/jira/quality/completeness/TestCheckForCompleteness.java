@@ -28,7 +28,7 @@ public class TestCheckForCompleteness extends TestSetUp {
 		decision = KnowledgeElements.getDecision();
 		alternative = KnowledgeElements.getAlternative();
 		proArgument = KnowledgeElements.getProArgument();
-		codeFile = KnowledgeElements.getCodeFile();
+		codeFile = CodeFiles.getSmallCodeFileDone();
 	}
 
 	@Test

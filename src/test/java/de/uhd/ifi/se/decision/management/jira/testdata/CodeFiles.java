@@ -40,15 +40,8 @@ public class CodeFiles {
 		String stringThatIsNotDone = "public class ClassThatIsNotDone {\n"
 				+ "    // This file must be larger than 50 lines,\n"
 				+ "    // must not be named \"test\" at the beginning,\n"
-				+ "    // and must not be linked to a decision knowledge element.\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "}";
+				+ "    // and must not be linked to a decision knowledge element.\n";
+		stringThatIsNotDone = addLines(stringThatIsNotDone, 50);
 		ChangedFile fileThatIsNotDone = new ChangedFile(stringThatIsNotDone);
 		fileThatIsNotDone.setTreeWalkPath("ClassThatIsNotDone.java");
 		fileThatIsNotDone.setProject("TEST");
@@ -57,9 +50,7 @@ public class CodeFiles {
 		String smallStringThatIsDone = "public class SmallClassThatIsDone {\n"
 				+ "    // This file is smaller than 50 lines,\n"
 				+ "    // must not be named \"test\" at the beginning,\n"
-				+ "    // and must not be linked to a decision knowledge element.\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "}";
+				+ "    // and must not be linked to a decision knowledge element.}";
 		ChangedFile smallFileThatIsDone = new ChangedFile(smallStringThatIsDone);
 		smallFileThatIsDone.setTreeWalkPath("SmallClassThatIsDone.java");
 		smallFileThatIsDone.setProject("TEST");
@@ -67,15 +58,8 @@ public class CodeFiles {
 
 		String testStringThatIsDone = "public class TestClassThatIsDone {\n"
 				+ "    // This file must be larger than 50 lines,\n" + "    // is named \"test\" at the beginning,\n"
-				+ "    // and must not be linked to a decision knowledge element.\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "}";
+				+ "    // and must not be linked to a decision knowledge element.\n";
+		testStringThatIsDone = addLines(testStringThatIsDone, 50);
 		ChangedFile testFileThatIsDone = new ChangedFile(testStringThatIsDone);
 		testFileThatIsDone.setTreeWalkPath("TestClassThatIsDone.java");
 		testFileThatIsDone.setProject("TEST");
@@ -84,20 +68,20 @@ public class CodeFiles {
 		String linkedStringThatIsDone = "public class LinkedClassThatIsDone {\n"
 				+ "    // This file must be larger than 50 lines,\n"
 				+ "    // must not be named \"test\" at the beginning,\n"
-				+ "    // and is linked to a decision knowledge element.\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n    // …\n"
-				+ "}";
+				+ "    // and is linked to a decision knowledge element.\n";
+		linkedStringThatIsDone = addLines(linkedStringThatIsDone, 50);
 		ChangedFile linkedFileThatIsDone = new ChangedFile(linkedStringThatIsDone);
 		linkedFileThatIsDone.setTreeWalkPath("LinkedClassThatIsDone.java");
 		linkedFileThatIsDone.setProject("TEST");
 		changedFiles.add(linkedFileThatIsDone);
 		return changedFiles;
+	}
+
+	private static String addLines(String fileContent, int numberOfLines) {
+		for (int i = 0; i < numberOfLines; i++) {
+			fileContent += "...\n";
+		}
+		return fileContent + "}";
 	}
 
 	public static void addCodeFilesToKnowledgeGraph() {
