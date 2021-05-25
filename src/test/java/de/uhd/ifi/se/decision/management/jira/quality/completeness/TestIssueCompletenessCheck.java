@@ -35,7 +35,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		init();
 		issueCompletenessCheck = new DecisionProblemCompletenessCheck();
 		elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(4);
+		issue = KnowledgeElements.getSolvedDecisionProblem();
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 	}
 
@@ -66,7 +66,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToDecision() {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
-		KnowledgeElement decision = elements.get(10);
+		KnowledgeElement decision = KnowledgeElements.getDecision();
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 

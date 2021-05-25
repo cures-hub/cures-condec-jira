@@ -31,6 +31,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		init();
 		elements = KnowledgeElements.getTestKnowledgeElements();
 		codeCompletenessCheck = new CodeCompletenessCheck();
+		KnowledgeElements.addCodeFilesToKnowledgeGraph();
 		fileThatIsNotDone = (ChangedFile) elements.get(18);
 		smallFileThatIsDone = (ChangedFile) elements.get(19);
 		testFileThatIsDone = (ChangedFile) elements.get(20);

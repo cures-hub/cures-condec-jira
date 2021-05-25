@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,13 +21,13 @@ public class TestCheckForCompleteness extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(4);
+		KnowledgeElements.addCodeFilesToKnowledgeGraph();
+		issue = KnowledgeElements.getSolvedDecisionProblem();
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		decision = elements.get(10);
-		alternative = elements.get(8);
-		proArgument = elements.get(11);
-		codeFile = elements.get(19);
+		decision = KnowledgeElements.getDecision();
+		alternative = KnowledgeElements.getAlternative();
+		proArgument = KnowledgeElements.getProArgument();
+		codeFile = KnowledgeElements.getCodeFile();
 	}
 
 	@Test

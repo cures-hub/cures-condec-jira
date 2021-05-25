@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +80,6 @@ public class KnowledgeElements {
 				+ "}";
 		ChangedFile fileThatIsNotDone = new ChangedFile(stringThatIsNotDone);
 		fileThatIsNotDone.setTreeWalkPath("ClassThatIsNotDone.java");
-		fileThatIsNotDone.setId(100);
 		fileThatIsNotDone.setProject("TEST");
 		elements.add(fileThatIsNotDone);
 
@@ -94,7 +91,6 @@ public class KnowledgeElements {
 				+ "}";
 		ChangedFile smallFileThatIsDone = new ChangedFile(smallStringThatIsDone);
 		smallFileThatIsDone.setTreeWalkPath("SmallClassThatIsDone.java");
-		smallFileThatIsDone.setId(101);
 		smallFileThatIsDone.setProject("TEST");
 		elements.add(smallFileThatIsDone);
 
@@ -111,7 +107,6 @@ public class KnowledgeElements {
 				+ "}";
 		ChangedFile testFileThatIsDone = new ChangedFile(testStringThatIsDone);
 		testFileThatIsDone.setTreeWalkPath("TestClassThatIsDone.java");
-		testFileThatIsDone.setId(102);
 		testFileThatIsDone.setProject("TEST");
 		elements.add(testFileThatIsDone);
 
@@ -129,27 +124,39 @@ public class KnowledgeElements {
 				+ "}";
 		ChangedFile linkedFileThatIsDone = new ChangedFile(linkedStringThatIsDone);
 		linkedFileThatIsDone.setTreeWalkPath("LinkedClassThatIsDone.java");
-		linkedFileThatIsDone.setId(103);
 		linkedFileThatIsDone.setProject("TEST");
-		linkedFileThatIsDone.setProject("TEST");
+		elements.add(linkedFileThatIsDone);
 
+		// KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		// graph.addVertexNotBeingInDatabase(fileThatIsNotDone);
+		// graph.addVertexNotBeingInDatabase(smallFileThatIsDone);
+		// graph.addVertexNotBeingInDatabase(testFileThatIsDone);
+
+		// graph.addVertexNotBeingInDatabase(issueToBeLinked);
+		// graph.addVertexNotBeingInDatabase(decisionToBeLinked);
+
+		// Link link = new Link(linkedFileThatIsDone, issueToBeLinked);
+		// graph.addEdgeNotBeingInDatabase(link);
+		// link = new Link(issueToBeLinked, decisionToBeLinked);
+		// graph.addEdgeNotBeingInDatabase(link);
+		// assertEquals(1, linkedFileThatIsDone.getLinks().size());
+
+		return elements;
+	}
+
+	public static void addCodeFilesToKnowledgeGraph() {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-		graph.addVertexNotBeingInDatabase(fileThatIsNotDone);
-		graph.addVertexNotBeingInDatabase(smallFileThatIsDone);
-		graph.addVertexNotBeingInDatabase(testFileThatIsDone);
+		for (KnowledgeElement element : createChangedFiles()) {
+			graph.addVertex(element);
+		}
 		KnowledgeElement issueToBeLinked = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(4));
 		issueToBeLinked.setDocumentationLocation(DocumentationLocation.CODE);
+
 		KnowledgeElement decisionToBeLinked = new KnowledgeElement(JiraIssues.getTestJiraIssues().get(10));
 		decisionToBeLinked.setDocumentationLocation(DocumentationLocation.CODE);
-		graph.addVertexNotBeingInDatabase(issueToBeLinked);
-		graph.addVertexNotBeingInDatabase(decisionToBeLinked);
-
-		Link link = new Link(linkedFileThatIsDone, issueToBeLinked);
+		Link link = new Link(createChangedFiles().get(3), issueToBeLinked);
 		graph.addEdgeNotBeingInDatabase(link);
 		link = new Link(issueToBeLinked, decisionToBeLinked);
 		graph.addEdgeNotBeingInDatabase(link);
-		assertEquals(1, linkedFileThatIsDone.getLinks().size());
-		elements.add(linkedFileThatIsDone);
-		return elements;
 	}
 }
