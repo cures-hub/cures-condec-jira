@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -24,6 +25,7 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	public void setUp() {
 		init();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		CodeFiles.addCodeFilesToKnowledgeGraph();
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		String sourceKnowledgeTypes = "TEST-1";
 		calculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
@@ -76,15 +78,15 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksCorrectType() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
-			new KnowledgeElement(), KnowledgeType.OTHER), 1);
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
+				KnowledgeType.OTHER), 1);
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksIncorrectType() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
-			new KnowledgeElement(), KnowledgeType.DECISION), 0);
+		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
+				KnowledgeType.DECISION), 0);
 	}
 
 }

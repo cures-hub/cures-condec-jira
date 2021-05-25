@@ -28,6 +28,6 @@ $(document).ready(function () {
 			conDecTreant.initView();
 			isOnceClicked = true;
 		}
-    });
-  }); 
+	});
+}); 
 </script>

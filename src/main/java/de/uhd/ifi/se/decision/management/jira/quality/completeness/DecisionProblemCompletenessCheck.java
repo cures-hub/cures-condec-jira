@@ -46,6 +46,7 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck<Knowl
 	 */
 	public static boolean isValidDecisionLinkedToDecisionProblem(KnowledgeElement decisionProblem) {
 		Set<KnowledgeElement> linkedDecisions = decisionProblem.getNeighborsOfType(KnowledgeType.DECISION);
+		linkedDecisions.addAll(decisionProblem.getNeighborsOfType(KnowledgeType.SOLUTION));
 		return !linkedDecisions.isEmpty()
 				&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
 						&& decision.getStatus() != KnowledgeStatus.REJECTED);

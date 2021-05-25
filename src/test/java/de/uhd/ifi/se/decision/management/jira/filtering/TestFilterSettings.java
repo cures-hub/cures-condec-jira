@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -353,4 +358,18 @@ public class TestFilterSettings extends TestSetUp {
 		assertTrue(filterSettings.toString().contains("\"projectKey\":\"TEST\""));
 	}
 
+	@Test
+	@NonTransactional
+	public void testJsonMapping() throws JsonParseException, JsonMappingException, IOException {
+		KnowledgeElement elementInRAM = new KnowledgeElement();
+		elementInRAM.setProject("TEST");
+		elementInRAM.setDocumentationLocation(DocumentationLocation.CODE);
+		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementInRAM);
+		String jsonAsString = "{\"selectedElement\":\"TEST:graph:-2\"," + "\"projectKey\":\"TEST\"}";
+		ObjectMapper mapper = new ObjectMapper();
+		FilterSettings settings = mapper.readValue(jsonAsString, FilterSettings.class);
+		assertNotNull(settings);
+		assertEquals("TEST", settings.getProjectKey());
+		assertEquals(-2, settings.getSelectedElement().getId());
+	}
 }

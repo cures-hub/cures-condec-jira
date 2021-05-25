@@ -330,30 +330,39 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	/**
 	 * @param elementKey
 	 *            e.g. CONDEC-42.
-	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key.
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key
+	 *         or null if not existing.
 	 */
-	public KnowledgeElement getElement(String elementKey) {
-		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getKey().equals(elementKey)) {
-				return element;
-			}
-		}
-		return null;
+	public KnowledgeElement getElementByKey(String elementKey) {
+		Optional<KnowledgeElement> elementWithKey = vertexSet().parallelStream()
+				.filter(element -> element.getKey().equals(elementKey)).findFirst();
+		return elementWithKey.isPresent() ? elementWithKey.get() : null;
 	}
 
+	/**
+	 * @param summary
+	 *            of the {@link KnowledgeElement} (i.e. graph node/vertex).
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given
+	 *         summary or null if not existing.
+	 */
 	public KnowledgeElement getElementBySummary(String summary) {
 		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
 				.filter(element -> element.getSummary().equals(summary)).findFirst();
 		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
 
+	/**
+	 * @param summary
+	 *            of the {@link KnowledgeElement} (i.e. graph node/vertex).
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given
+	 *         summary or null if not existing. The returned element needs to be
+	 *         only stored in RAM, not in the database, and thus, has a negative id.
+	 */
 	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			if (element.getId() > 0) {
+			if (element.getId() >= -1) {
 				continue;
 			}
 			if (element.getSummary().equals(summary)) {
@@ -364,16 +373,37 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
-		otherElements.forEach(element -> addVertexNotBeingInDatabase(element));
 		for (KnowledgeElement element : otherElements) {
+			addVertexNotBeingInDatabase(element);
+			if (element.getId() >= 0) {
+				return;
+			}
 			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
 			Link link;
 			if (potentialParent == null) {
-				link = new Link(element, root);
+				link = Link.instantiateDirectedLink(root, element);
 			} else {
-				link = new Link(element, potentialParent);
+				addVertexNotBeingInDatabase(potentialParent);
+				link = Link.instantiateDirectedLink(potentialParent, element);
 			}
 			addEdgeNotBeingInDatabase(link);
 		}
+		updateStatusOfElements(otherElements);
+	}
+
+	public void updateStatusOfElements(List<KnowledgeElement> otherElements) {
+		otherElements.forEach(element -> {
+			KnowledgeStatus newStatus = KnowledgeStatus.getNewStatus(element);
+			if (newStatus != element.getStatus()) {
+				element.setStatus(newStatus);
+				updateElement(element);
+			}
+		});
+	}
+
+	public KnowledgeElement getElementById(long id) {
+		Optional<KnowledgeElement> vertexInGraph = vertexSet().parallelStream().filter(vertex -> vertex.getId() == id)
+				.findFirst();
+		return vertexInGraph.isPresent() ? vertexInGraph.get() : null;
 	}
 }

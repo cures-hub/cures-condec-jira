@@ -762,6 +762,17 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @return linked decision problems (issues, goals, questions) to this knowledge
+	 *         element.
+	 */
+	public List<KnowledgeElement> getLinkedDecisionProblems() {
+		List<KnowledgeElement> decisionProblems = getLinks().stream()
+				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.PROBLEM)
+				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
+		return decisionProblems;
+	}
+
+	/**
 	 * @param knowledgeTypes
 	 *            one ore more {@link KnowledgeType}s.
 	 * @return true if the element has one of the given {@link KnowledgeType}s.

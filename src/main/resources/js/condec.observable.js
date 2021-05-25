@@ -1,4 +1,4 @@
-/*
+/**
  This module provides the notification method for the ConDec views. This module is the subject/observable 
  according to the observer design pattern. The views/observers subscribe/register to this observable. 
  The views need to implement an updateView function. 
@@ -13,7 +13,6 @@
  * condec.knowledge.page
  * condec.tab.panel
  * and many other views that implement an updateView() function
- * 
  */
 (function(global) {
 
@@ -25,7 +24,12 @@
 
 	ConDecObservable.prototype.notify = function () {
 		this.observers.forEach(function(observer) {
-			observer.updateView();
+			console.log(observer);
+			if (typeof observer.updateView === "function") {
+				observer.updateView();
+			} else {
+				console.log(observer + " is not a valid view. You need to implement the updateView method.");
+			}
 		});
 	};
 

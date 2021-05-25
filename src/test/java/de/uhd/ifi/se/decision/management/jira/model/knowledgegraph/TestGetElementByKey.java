@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetElement extends TestSetUp {
+public class TestGetElementByKey extends TestSetUp {
 
 	private KnowledgeGraph graph;
 
@@ -27,7 +27,7 @@ public class TestGetElement extends TestSetUp {
 		KnowledgeElement elementNotInDatabase = new KnowledgeElement();
 		elementNotInDatabase.setProject("TEST");
 		graph.addVertexNotBeingInDatabase(elementNotInDatabase);
-		KnowledgeElement elementInGraph = graph.getElement("TEST:graph:-2");
+		KnowledgeElement elementInGraph = graph.getElementByKey("TEST:graph:-2");
 		assertEquals(elementNotInDatabase, elementInGraph);
 		KnowledgeGraph.instances.clear();
 	}
@@ -35,7 +35,7 @@ public class TestGetElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementByKeyNotExisting() {
-		KnowledgeElement elementInGraph = graph.getElement("Unknown key");
+		KnowledgeElement elementInGraph = graph.getElementByKey("Unknown key");
 		assertNull(elementInGraph);
 	}
 }
