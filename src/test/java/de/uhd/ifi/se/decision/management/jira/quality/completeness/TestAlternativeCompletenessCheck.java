@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.jgrapht.Graphs;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +27,6 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestAlternativeCompletenessCheck extends TestSetUp {
 
-	private List<KnowledgeElement> elements;
 	private KnowledgeElement alternative;
 	private ApplicationUser user;
 	private AlternativeCompletenessCheck alternativeCompletenessCheck;
@@ -38,8 +35,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		elements = KnowledgeElements.getTestKnowledgeElements();
-		alternative = elements.get(7);
+		alternative = KnowledgeElements.getAlternative();
 		alternativeCompletenessCheck = new AlternativeCompletenessCheck();
 	}
 
@@ -48,7 +44,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToIssue() {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
-		KnowledgeElement issue = elements.get(4);
+		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(alternative.getLink(issue));
@@ -60,7 +56,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToIssue() {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		assertEquals(3, alternative.getId());
-		KnowledgeElement issue = elements.get(4);
+		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		Link linkToIssue = alternative.getLink(issue);
@@ -94,7 +90,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a pro-argument
-		KnowledgeElement issue = elements.get(4);
+		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, KnowledgeType.PRO);
@@ -112,7 +108,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a con-argument
-		KnowledgeElement issue = elements.get(4);
+		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, KnowledgeType.CON);

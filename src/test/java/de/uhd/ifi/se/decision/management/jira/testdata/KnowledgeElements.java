@@ -27,7 +27,7 @@ public class KnowledgeElements {
 	}
 
 	public static KnowledgeElement getUnsolvedDecisionProblem() {
-		return getTestKnowledgeElements().get(5);
+		return getTestKnowledgeElements().get(6);
 	}
 
 	public static KnowledgeElement getAlternative() {

@@ -3,14 +3,16 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCodeCompletenessCheck extends TestSetUp {
@@ -25,7 +27,6 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		KnowledgeElements.getTestKnowledgeElements();
 		codeCompletenessCheck = new CodeCompletenessCheck();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
@@ -66,5 +67,11 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
+	}
+
+	@After
+	public void tearDown() {
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
