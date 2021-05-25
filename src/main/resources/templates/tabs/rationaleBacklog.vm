@@ -19,23 +19,20 @@
 	   #parse("templates/tabs/subgraphDetails.vm")
     </div>
 </div>
-<script>
-#if($codeFileName == "")
+<script>	
+$(document).ready(function () {
+#if(!$codeFileName) 
 	/* Inits rationale backlog as the default tab */
-	$(document).ready(function () {
-		conDecRationaleBacklog.initView();
-	});
-#else
+	conDecRationaleBacklog.initView();
+#else	
 	/* Adds the on click listener on tab opening */
-	$(document).ready(function () {
-		var isOnceClicked = false;
-		AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-			if (!isOnceClicked && event.target.href.includes("#rationale-backlog-tab")) {
-				conDecRationaleBacklog.initView();
-				isOnceClicked = true;
-			}
-		});
-	});    
+	var isOnceClicked = false;
+	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+		if (!isOnceClicked && event.target.href.includes("#rationale-backlog-tab")) {
+			conDecRationaleBacklog.initView();
+			isOnceClicked = true;
+		}
+	});
 #end
-
+});
 </script>

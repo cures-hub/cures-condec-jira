@@ -362,7 +362,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			if (element.getId() > 0) {
+			if (element.getId() >= -1) {
 				continue;
 			}
 			if (element.getSummary().equals(summary)) {

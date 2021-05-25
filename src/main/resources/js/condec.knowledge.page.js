@@ -31,7 +31,7 @@
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			const urlParams = new URLSearchParams(window.location.href);
-			if (urlParams.has('codeFileName')) {
+			if (urlParams.has("codeFileName")) {
 				if (knowledgeTypes[index] === "Code") {
 					isSelected = "selected ";
 				}
