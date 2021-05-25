@@ -330,7 +330,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	/**
 	 * @param elementKey
 	 *            e.g. CONDEC-42.
-	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key.
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key
+	 *         or null if not existing.
 	 */
 	public KnowledgeElement getElement(String elementKey) {
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
@@ -343,12 +344,25 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return null;
 	}
 
+	/**
+	 * @param summary
+	 *            of the {@link KnowledgeElement} (i.e. graph node/vertex).
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given
+	 *         summary or null if not existing.
+	 */
 	public KnowledgeElement getElementBySummary(String summary) {
 		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
 				.filter(element -> element.getSummary().equals(summary)).findFirst();
 		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
 
+	/**
+	 * @param summary
+	 *            of the {@link KnowledgeElement} (i.e. graph node/vertex).
+	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given
+	 *         summary or null if not existing. The returned element needs to be
+	 *         only stored in RAM, not in the database, and thus, has a negative id.
+	 */
 	public KnowledgeElement getElementsNotInDatabaseBySummary(String summary) {
 		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
 		while (iterator.hasNext()) {
@@ -364,13 +378,14 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
-		otherElements.forEach(element -> addVertexNotBeingInDatabase(element));
 		for (KnowledgeElement element : otherElements) {
+			addVertexNotBeingInDatabase(element);
 			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
 			Link link;
 			if (potentialParent == null) {
 				link = new Link(element, root);
 			} else {
+				addVertexNotBeingInDatabase(potentialParent);
 				link = new Link(element, potentialParent);
 			}
 			addEdgeNotBeingInDatabase(link);
