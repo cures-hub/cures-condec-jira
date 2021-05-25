@@ -6,10 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -39,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 
 /**
- * REST resource for view
+ * REST resource for creating views (e.g. tree and graph view)
  */
 @Path("/view")
 public class ViewRest {
@@ -116,7 +114,6 @@ public class ViewRest {
 
 	@Path("/getEvolutionData")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("isPlacedAtCreationDate") boolean isPlacedAtCreationDate,
 			@QueryParam("isPlacedAtUpdatingDate") boolean isPlacedAtUpdatingDate) {
@@ -137,9 +134,8 @@ public class ViewRest {
 
 	@Path("/decisionTable")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
@@ -159,7 +155,6 @@ public class ViewRest {
 	 */
 	@Path("/decisionTableCriteria")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
 		if (request == null) {
@@ -178,10 +173,8 @@ public class ViewRest {
 
 	@Path("/getTreant")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
-				|| filterSettings.getSelectedElement().getKey() == null) {
+		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
 					.build();
@@ -197,7 +190,6 @@ public class ViewRest {
 
 	@Path("/getVis")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -222,14 +214,13 @@ public class ViewRest {
 
 	@Path("/getFilterSettings")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-		  @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error",
-					"The HttpServletRequest or the projectKey are null. FilterSettings could not be created."))
-				.build();
+					.entity(ImmutableMap.of("error",
+							"The HttpServletRequest or the projectKey are null. FilterSettings could not be created."))
+					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
@@ -244,7 +235,6 @@ public class ViewRest {
 	 */
 	@Path("/getMatrix")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
 			return Response.status(Status.BAD_REQUEST)

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -353,4 +357,13 @@ public class TestFilterSettings extends TestSetUp {
 		assertTrue(filterSettings.toString().contains("\"projectKey\":\"TEST\""));
 	}
 
+	@Test
+	public void testJsonMapping() throws JsonParseException, JsonMappingException, IOException {
+		String jsonAsString = "{\"selectedElement\":\"TEST:graph:-2\"," + "\"projectKey\":\"TEST\"}";
+		ObjectMapper mapper = new ObjectMapper();
+		FilterSettings settings = mapper.readValue(jsonAsString, FilterSettings.class);
+		assertNotNull(settings);
+		assertEquals("TEST", settings.getProjectKey());
+		assertEquals(null, settings.getSelectedElement());
+	}
 }

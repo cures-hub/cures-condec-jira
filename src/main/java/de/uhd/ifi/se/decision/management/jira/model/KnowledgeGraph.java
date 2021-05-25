@@ -333,15 +333,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 * @return {@link KnowledgeElement} (i.e. graph node/vertex) with the given key
 	 *         or null if not existing.
 	 */
-	public KnowledgeElement getElement(String elementKey) {
-		Iterator<KnowledgeElement> iterator = vertexSet().iterator();
-		while (iterator.hasNext()) {
-			KnowledgeElement element = iterator.next();
-			if (element.getKey().equals(elementKey)) {
-				return element;
-			}
-		}
-		return null;
+	public KnowledgeElement getElementByKey(String elementKey) {
+		Optional<KnowledgeElement> elementWithKey = vertexSet().parallelStream()
+				.filter(element -> element.getKey().equals(elementKey)).findFirst();
+		return elementWithKey.isPresent() ? elementWithKey.get() : null;
 	}
 
 	/**
@@ -380,6 +375,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
 		for (KnowledgeElement element : otherElements) {
 			addVertexNotBeingInDatabase(element);
+			if (element.getId() >= 0) {
+				return;
+			}
 			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
 			Link link;
 			if (potentialParent == null) {
