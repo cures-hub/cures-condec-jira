@@ -407,8 +407,9 @@ public class KnowledgePersistenceManager {
 		if (isUpdated) {
 			KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId());
 			KnowledgeGraph.getInstance(projectKey).updateElement(updatedElement);
-			for (KnowledgeElement issue : updatedElement.getNeighborsOfType(KnowledgeType.PROBLEM)) {
-				updateIssueStatus(issue, user);
+
+			for (KnowledgeElement decisionProblem : updatedElement.getLinkedDecisionProblems()) {
+				updateIssueStatus(decisionProblem, user);
 			}
 		}
 		return isUpdated;
