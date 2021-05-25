@@ -35,10 +35,9 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	public void setUp() {
 		init();
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
-		issue = elements.get(4);
-		issue.setStatus(KnowledgeStatus.RESOLVED);
-		decision = elements.get(10);
-		alternative = elements.get(7);
+		issue = KnowledgeElements.getSolvedDecisionProblem();
+		decision = KnowledgeElements.getDecision();
+		alternative = KnowledgeElements.getAlternative();
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
 	}
@@ -121,6 +120,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		assertFalse(decision.isIncomplete());
 		assertNotNull(decision.getLink(issue));
+		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertFalse(issue.isIncomplete());
 		KnowledgeGraph.getInstance("TEST").removeEdge(issue.getLink(alternative));
 		assertNull(issue.getLink(alternative));
