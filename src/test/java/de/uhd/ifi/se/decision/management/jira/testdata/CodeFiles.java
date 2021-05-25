@@ -34,7 +34,7 @@ public class CodeFiles {
 		return getTestCodeFiles().get(2);
 	}
 
-	public static ChangedFile getAnotherTestCodeFileDone() {
+	public static ChangedFile getCodeFileLinkedToSolvedDecisionProblemDone() {
 		return getTestCodeFiles().get(3);
 	}
 
@@ -91,7 +91,7 @@ public class CodeFiles {
 			graph.addVertex(element);
 		}
 
-		Link link = new Link(getAnotherTestCodeFileDone(), KnowledgeElements.getSolvedDecisionProblem());
+		Link link = new Link(getCodeFileLinkedToSolvedDecisionProblemDone(), KnowledgeElements.getSolvedDecisionProblem());
 		graph.addEdgeNotBeingInDatabase(link);
 	}
 }

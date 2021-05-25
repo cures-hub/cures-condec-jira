@@ -31,7 +31,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
 		smallFileThatIsDone = CodeFiles.getSmallCodeFileDone();
 		testFileThatIsDone = CodeFiles.getTestCodeFileDone();
-		linkedFileThatIsDone = CodeFiles.getAnotherTestCodeFileDone();
+		linkedFileThatIsDone = CodeFiles.getCodeFileLinkedToSolvedDecisionProblemDone();
 	}
 
 	@Test
