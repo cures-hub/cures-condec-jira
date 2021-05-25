@@ -389,4 +389,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			addEdgeNotBeingInDatabase(link);
 		}
 	}
+
+	public KnowledgeElement getElementById(long id) {
+		Optional<KnowledgeElement> vertexInGraph = vertexSet().parallelStream().filter(vertex -> vertex.getId() == id)
+				.findFirst();
+		return vertexInGraph.isPresent() ? vertexInGraph.get() : null;
+	}
 }

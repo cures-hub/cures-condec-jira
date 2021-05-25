@@ -486,12 +486,9 @@ public class FilterSettings {
 			return;
 		}
 		if (elementKey.contains(":graph")) {
-			// not in database, only in RAM (singleton KnowledgeGraph object)
-			try {
-				selectedElement = KnowledgeGraph.getInstance(project).getElementByKey(elementKey);
-			} catch (Exception e) {
-				LOGGER.error("Element only in RAM could not be selected " + e.getMessage());
-			}
+			// not in database, only in RAM (in singleton KnowledgeGraph object)
+			long id = Integer.parseInt(elementKey.split(":")[2]);
+			selectedElement = KnowledgeGraph.getInstance(project).getElementById(id);
 			return;
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;

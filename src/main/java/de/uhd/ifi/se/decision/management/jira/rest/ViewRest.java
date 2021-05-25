@@ -135,7 +135,7 @@ public class ViewRest {
 	@Path("/decisionTable")
 	@POST
 	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
 					.build();
@@ -174,7 +174,8 @@ public class ViewRest {
 	@Path("/getTreant")
 	@POST
 	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (request == null || filterSettings == null) {
+		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
+				|| filterSettings.getSelectedElement().getKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since request or element key is invalid."))
 					.build();

@@ -27,6 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestFilterSettings extends TestSetUp {
 	private FilterSettings filterSettings;
@@ -358,12 +359,17 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testJsonMapping() throws JsonParseException, JsonMappingException, IOException {
+		KnowledgeElement elementInRAM = new KnowledgeElement();
+		elementInRAM.setProject("TEST");
+		elementInRAM.setDocumentationLocation(DocumentationLocation.CODE);
+		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(elementInRAM);
 		String jsonAsString = "{\"selectedElement\":\"TEST:graph:-2\"," + "\"projectKey\":\"TEST\"}";
 		ObjectMapper mapper = new ObjectMapper();
 		FilterSettings settings = mapper.readValue(jsonAsString, FilterSettings.class);
 		assertNotNull(settings);
 		assertEquals("TEST", settings.getProjectKey());
-		assertEquals(null, settings.getSelectedElement());
+		assertEquals(-2, settings.getSelectedElement().getId());
 	}
 }
