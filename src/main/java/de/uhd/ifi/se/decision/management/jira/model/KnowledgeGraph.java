@@ -388,6 +388,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			}
 			addEdgeNotBeingInDatabase(link);
 		}
+		updateStatusOfElements(otherElements);
+	}
+
+	public void updateStatusOfElements(List<KnowledgeElement> otherElements) {
 		otherElements.forEach(element -> {
 			KnowledgeStatus newStatus = KnowledgeStatus.getNewStatus(element);
 			if (newStatus != element.getStatus()) {
