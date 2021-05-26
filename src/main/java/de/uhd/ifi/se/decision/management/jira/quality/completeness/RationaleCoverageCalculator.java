@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Calculates the rationale coverage of requirements, code, and other software
@@ -46,8 +45,6 @@ public class RationaleCoverageCalculator {
 
 	public RationaleCoverageCalculator(String projectKey) {
 		this.filterSettings = new FilterSettings(projectKey, "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		this.filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
 	}
 
 	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
@@ -162,6 +159,14 @@ public class RationaleCoverageCalculator {
 
 	public int calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(KnowledgeElement knowledgeElement,
 			KnowledgeType knowledgeType) {
+		if (knowledgeElement.getLinks().isEmpty()) {
+			if (knowledgeElement.getType() == knowledgeType) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
 		int numberOfElementsReachable;
 		if (!linkedElementMap.containsKey(knowledgeElement)) {
 			fillLinkedElementMap(knowledgeElement);

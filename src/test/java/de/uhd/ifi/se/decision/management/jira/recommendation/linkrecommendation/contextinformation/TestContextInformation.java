@@ -29,7 +29,7 @@ public class TestContextInformation extends TestSetUp {
 	public void testGetLinkRecommendations() {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(18, linkRecommendations.size());
+		assertEquals(12, linkRecommendations.size());
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TestContextInformation extends TestSetUp {
 
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(10, linkRecommendations.size());
+		assertEquals(9, linkRecommendations.size());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class TestContextInformation extends TestSetUp {
 		JiraIssues.getIrrelevantSentence();
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(18, linkRecommendations.size());
+		assertEquals(12, linkRecommendations.size());
 	}
 
 	@After

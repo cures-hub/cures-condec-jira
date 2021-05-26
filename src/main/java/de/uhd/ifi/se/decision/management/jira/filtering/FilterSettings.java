@@ -12,7 +12,9 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,8 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
  * query in Jira Query Language (JQL), a {@link JiraFilter} or a search string
  * specified in the frontend of the plug-in.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({ "projectKey" })
 public class FilterSettings {
 
 	private DecisionKnowledgeProject project;
@@ -146,7 +150,6 @@ public class FilterSettings {
 	 * @param projectKey
 	 *            of the Jira project.
 	 */
-	@JsonProperty
 	public void setProjectKey(String projectKey) {
 		this.project = new DecisionKnowledgeProject(projectKey);
 	}
@@ -166,7 +169,6 @@ public class FilterSettings {
 	 *            oder "?filter=", it is a Jira Query or a predefined
 	 *            {@link JiraFilter} (e.g. allopenissues).
 	 */
-	@JsonProperty
 	public void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm != null ? searchTerm : "";
 	}
@@ -484,8 +486,9 @@ public class FilterSettings {
 			return;
 		}
 		if (elementKey.contains(":graph")) {
-			// not in database, only in RAM (singleton KnowledgeGraph object)
-			selectedElement = KnowledgeGraph.getInstance(elementKey.split(":")[0]).getElement(elementKey);
+			// not in database, only in RAM (in singleton KnowledgeGraph object)
+			long id = Integer.parseInt(elementKey.split(":")[2]);
+			selectedElement = KnowledgeGraph.getInstance(project).getElementById(id);
 			return;
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;

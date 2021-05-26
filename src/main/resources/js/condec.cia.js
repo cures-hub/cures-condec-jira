@@ -1,5 +1,5 @@
 /*
- *	This view provides a backlog for decision knowledge.
+ *	This view provides a support for change impact analysis on the knowledge graph.
  */
 (function (global) {
 

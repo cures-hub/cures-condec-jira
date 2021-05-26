@@ -356,13 +356,13 @@ define('dashboard/rationaleCompleteness', [], function () {
 			filterSettings.linkTypes = linkTypesList;
 		}
 
-		if (linkDistance && Number.isInteger(linkDistance)) {
+		if (linkDistance) {
 			filterSettings.linkDistance = linkDistance;
 		}
-		if (minDegree && Number.isInteger(minDegree)) {
+		if (minDegree) {
 			filterSettings.minDegree = minDegree;
 		}
-		if (maxDegree && Number.isInteger(maxDegree)) {
+		if (maxDegree) {
 			filterSettings.maxDegree = maxDegree;
 		}
 

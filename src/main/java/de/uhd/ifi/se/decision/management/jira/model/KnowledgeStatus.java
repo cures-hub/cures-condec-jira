@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DecisionProblemCompletenessCheck;
+
 /**
  * Status of decision problems (=issues) and solution options (=decisions and
  * alternatives). Issues can have the state "resolved" or "unresolved".
@@ -78,6 +80,16 @@ public enum KnowledgeStatus {
 			statuses.add(status);
 		}
 		return statuses;
+	}
+
+	public static KnowledgeStatus getNewStatus(KnowledgeElement element) {
+		if (element.getType().getSuperType() == KnowledgeType.PROBLEM) {
+			if (DecisionProblemCompletenessCheck.isValidDecisionLinkedToDecisionProblem(element)) {
+				return KnowledgeStatus.RESOLVED;
+			}
+			return KnowledgeStatus.UNRESOLVED;
+		}
+		return element.getStatus();
 	}
 
 	public String getColor() {

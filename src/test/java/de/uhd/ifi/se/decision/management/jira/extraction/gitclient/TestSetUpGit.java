@@ -27,6 +27,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -64,41 +65,30 @@ public abstract class TestSetUpGit extends TestSetUp {
 			// git client already exists
 			return;
 		}
-		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST", new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
-        Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-        codeFileEndingMap.put("JAVA_C", "java");
-        ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
-		gitClient = GitClient.getOrCreate("TEST");
+		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST",
+				new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+		codeFileEndingMap.put("JAVA_C", "java");
+		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		gitClient = GitClient.getInstance("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit();
 		makeExampleCommit("GodClass.java",
-				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + 
-				"\n" +
-				"// @goal This is a goal outside an issue, let's see where it lands.\n" +
-				"// @assumption This is an assumption outside an issue, let's see where it lands.\n" +
-				"\n" +
-				"// @alternative Here is another structure violation!\n" + 
-				"\n" + 
-				"/**\n" +
-				" * @issue Is this yet another structure violation?\n" +
-				" * @con It would appear so.\n" + 
-				" * @assumption Here is an assumption inside an issue, let's see where this one lands.\n" +
-				" * @goal Here is a goal inside an issue, let's see where this one lands.\n" +
-				" */" +
-				"\n" +
-				"public class GodClass {\n"
-						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n"
-						+ "/** \n" + 
-						" * @issue Will this issue be parsed correctly? \n" + 
-						" * @alternative We will see!\n" + 
-						" * @pro This is a very long argument, so we put it into more than one\n" + 
-						" * line. \n" +
-						" * \n" + 
-						" * not rationale text anymore\n" +
-						" */ \t \n}",
+				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + "\n"
+						+ "// @goal This is a goal outside an issue, let's see where it lands.\n"
+						+ "// @assumption This is an assumption outside an issue, let's see where it lands.\n" + "\n"
+						+ "// @alternative Here is another structure violation!\n" + "\n" + "/**\n"
+						+ " * @issue Is this yet another structure violation?\n" + " * @con It would appear so.\n"
+						+ " * @assumption Here is an assumption inside an issue, let's see where this one lands.\n"
+						+ " * @goal Here is a goal inside an issue, let's see where this one lands.\n" + " */" + "\n"
+						+ "public class GodClass {\n"
+						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n" + "/** \n"
+						+ " * @issue Will this issue be parsed correctly? \n" + " * @alternative We will see!\n"
+						+ " * @pro This is a very long argument, so we put it into more than one\n" + " * line. \n"
+						+ " * \n" + " * not rationale text anymore\n" + " */ \t \n}",
 				"TEST-12: Develop great software");
 		makeExampleCommit("Untangled.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
@@ -149,14 +139,17 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 		secureGitClients = new ArrayList<GitClient>();
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("HTTP", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
-		secureGitClients.add(GitClient.getOrCreate("HTTP"));
+		ConfigPersistenceManager.setGitRepositoryConfiguration("HTTP",
+				new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
+		secureGitClients.add(GitClient.getInstance("HTTP"));
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITHUB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
-		secureGitClients.add(GitClient.getOrCreate("GITHUB"));
+		ConfigPersistenceManager.setGitRepositoryConfiguration("GITHUB", new GitRepositoryConfiguration(
+				SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
+		secureGitClients.add(GitClient.getInstance("GITHUB"));
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITLAB", new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
-		secureGitClients.add(GitClient.getOrCreate("GITLAB"));
+		ConfigPersistenceManager.setGitRepositoryConfiguration("GITLAB", new GitRepositoryConfiguration(
+				SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
+		secureGitClients.add(GitClient.getInstance("GITLAB"));
 	}
 
 	@Before
@@ -221,7 +214,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		Git git = gitClientForSingleRepo.getGit();
 		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
 				targetName);
 		try {
@@ -238,7 +232,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	public static void makeExampleCommit(String filename, String content, String commitMessage) {
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		Git git = gitClientForSingleRepo.getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
 					filename);

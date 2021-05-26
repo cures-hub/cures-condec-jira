@@ -9,18 +9,18 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestGetLinkedSolutionOptions extends TestSetUp {
+public class TestGetLinkedDecisionProblems extends TestSetUp {
 
-	private KnowledgeElement decisionProblem;
+	private KnowledgeElement decision;
 
 	@Before
 	public void setUp() {
 		init();
-		decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
+		decision = KnowledgeElements.getDecision();
 	}
 
 	@Test
-	public void testHasSolutionOptionsLinked() {
-		assertEquals(2, decisionProblem.getLinkedSolutionOptions().size());
+	public void testHasDecisionProblemLinked() {
+		assertEquals(2, decision.getLinkedDecisionProblems().size());
 	}
 }

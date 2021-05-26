@@ -54,24 +54,6 @@ public class KnowledgeElement {
 	private Date updatingDate;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
-
-	/**
-	 * @issue Where shall we store the line count of a code file knowledge element?
-	 * @alternative In the ChangedFile class!
-	 * @pro Only files have a line count, not other knowledge elements.
-	 * @con The line count needs to be handled by the CodeClassPersistenceManager,
-	 *      which uses KnowledgeElement instead of ChangedFile in many cases.
-	 * @con The CodeCompletenessCheck class (using the lineCount) implements the
-	 *      CompletenessCheck interface, which works with KnowledgeElements, not
-	 *      ChangedFiles.
-	 * @con Converting a KnowledgeElement into a ChangedFile performs very badly.
-	 * @decision In the KnowledgeElement class!
-	 * @con Not all knowledge elements have a line count.
-	 * @pro Many functions using the lineCount already work with KnowledgeElements,
-	 *      not ChangedFiles.
-	 */
-	private int lineCount;
-
 	protected KnowledgeStatus status;
 
 	public KnowledgeElement() {
@@ -736,14 +718,6 @@ public class KnowledgeElement {
 		return getStatus().toString();
 	}
 
-	public int getLineCount() {
-		return this.lineCount;
-	}
-
-	public void setLineCount(int lineCount) {
-		this.lineCount = lineCount;
-	}
-
 	/**
 	 * @return true if the element is correctly linked according to the
 	 *         {@link DefinitionOfDone}. For example, an argument needs to be linked
@@ -785,6 +759,17 @@ public class KnowledgeElement {
 				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.SOLUTION)
 				.map(link -> new SolutionOption(link.getOppositeElement(this))).collect(Collectors.toList());
 		return solutionOptions;
+	}
+
+	/**
+	 * @return linked decision problems (issues, goals, questions) to this knowledge
+	 *         element.
+	 */
+	public List<KnowledgeElement> getLinkedDecisionProblems() {
+		List<KnowledgeElement> decisionProblems = getLinks().stream()
+				.filter(link -> link.getOppositeElement(this).getType().getSuperType() == KnowledgeType.PROBLEM)
+				.map(link -> link.getOppositeElement(this)).collect(Collectors.toList());
+		return decisionProblems;
 	}
 
 	/**

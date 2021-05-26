@@ -1,0 +1,4 @@
+<div class="text-field">
+    <label for="condec-dashboard-selected-project-$viewIdentifier">$i18n.getText("condec.dashboard.selected.project")</label>
+    <label id="condec-dashboard-selected-project-$viewIdentifier"></label>
+</div>

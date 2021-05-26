@@ -9,7 +9,7 @@
     <!-- Status Dropdown -->
     <button aria-controls="status-dropdown-cia" class="aui-button aui-dropdown2-trigger short-field"
             aria-haspopup="true">
-        $i18n.getText("condec.label.knowledge.status")
+        $i18n.getText("condec.label.status")
     </button>
     <aui-dropdown-menu id="status-dropdown-cia" name="status"></aui-dropdown-menu>
 

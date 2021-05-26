@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
@@ -35,7 +36,7 @@ public class GitDecXtract {
 
 	public GitDecXtract(String projectKey) {
 		this.projecKey = projectKey;
-		gitClient = GitClient.getOrCreate(projectKey);
+		gitClient = GitClient.getInstance(projectKey);
 	}
 
 	// TODO: below method signature will further improve
@@ -63,17 +64,17 @@ public class GitDecXtract {
 	private Comparator<KnowledgeElement> comparatorForKnowledgeElementsByLocationInCode = new Comparator<KnowledgeElement>() {
 		public int compare(KnowledgeElement e1, KnowledgeElement e2) {
 			/*
-				* The description of a knowledge element from code is structured as
-				* 
-				* "nameOfCodeFile someInteger changeType(some numbers, probably related to the
-				* git commits) startLine:endLine:inCommentCursor gitCommitHash",
-				* 
-				* e.g.: "GodClass.java 0 INSERT(0-0,0-24) 1:1:5 70297039"
-				* 
-				* We want to extract the startLine:endLine:inCommentCursor part and use it to
-				* sort the elements by their position in the code
-				* 
-				*/
+			 * The description of a knowledge element from code is structured as
+			 * 
+			 * "nameOfCodeFile someInteger changeType(some numbers, probably related to the
+			 * git commits) startLine:endLine:inCommentCursor gitCommitHash",
+			 * 
+			 * e.g.: "GodClass.java 0 INSERT(0-0,0-24) 1:1:5 70297039"
+			 * 
+			 * We want to extract the startLine:endLine:inCommentCursor part and use it to
+			 * sort the elements by their position in the code
+			 * 
+			 */
 			try {
 				// extract string containing start line, end line and "inCommentCursor"
 				// (whatever that is)
@@ -97,9 +98,10 @@ public class GitDecXtract {
 				}
 				return 0;
 			} catch (Exception e) {
-				// something went wrong – perhaps the description structure of a knowledge element was not as expected
+				// something went wrong – perhaps the description structure of a knowledge
+				// element was not as expected
 				return 0;
-			}	
+			}
 		}
 	};
 
@@ -117,6 +119,10 @@ public class GitDecXtract {
 		}).collect(Collectors.toList());
 		knowledgeElements.sort(comparatorForKnowledgeElementsByLocationInCode);
 		return knowledgeElements;
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
+		return getElementsFromCode(new Diff(codeFile));
 	}
 
 	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {

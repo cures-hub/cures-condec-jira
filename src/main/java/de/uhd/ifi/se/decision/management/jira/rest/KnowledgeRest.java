@@ -9,10 +9,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -54,7 +52,6 @@ public class KnowledgeRest {
 
 	@Path("/getDecisionKnowledgeElement")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocationIdentifier) {
 		if (projectKey == null || id <= 0) {
@@ -90,7 +87,6 @@ public class KnowledgeRest {
 	 */
 	@Path("/getUnlinkedElements")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
@@ -139,7 +135,6 @@ public class KnowledgeRest {
 	 */
 	@Path("/createDecisionKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
 			@QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
@@ -192,7 +187,6 @@ public class KnowledgeRest {
 
 	@Path("/updateDecisionKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
 			@QueryParam("idOfParentElement") long idOfParentElement,
 			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
@@ -238,7 +232,6 @@ public class KnowledgeRest {
 
 	@Path("/deleteDecisionKnowledgeElement")
 	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
 			KnowledgeElement knowledgeElement) {
 		if (knowledgeElement == null || request == null) {
@@ -260,7 +253,6 @@ public class KnowledgeRest {
 
 	@Path("/assignDecisionGroup")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("sourceId") long sourceId,
 			@QueryParam("documentationLocation") String location, @QueryParam("level") String level,
 			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
@@ -291,6 +283,7 @@ public class KnowledgeRest {
 		return Response.status(Status.OK).build();
 	}
 
+	// TODO Simplify, this method is way too long and complex!
 	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
 		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
@@ -336,7 +329,6 @@ public class KnowledgeRest {
 
 	@Path("/createLink")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("idOfParent") long idOfParent,
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
@@ -388,7 +380,6 @@ public class KnowledgeRest {
 
 	@Path("/deleteLink")
 	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			Link link) {
 		if (projectKey == null || request == null || link == null) {
@@ -424,7 +415,6 @@ public class KnowledgeRest {
 	 */
 	@Path("/knowledgeElements")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getKnowledgeElements(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
@@ -438,9 +428,8 @@ public class KnowledgeRest {
 		return Response.ok(elementsMatchingQuery).build();
 	}
 
-	@Path("/createIssueFromSentence")
+	@Path("/createJiraIssueFromSentence")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
 			KnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
@@ -464,7 +453,6 @@ public class KnowledgeRest {
 
 	@Path("/setSentenceIrrelevant")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			KnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null) {
@@ -500,7 +488,6 @@ public class KnowledgeRest {
 	// TODO Change to POST and pass FilterSettings object
 	@Path("/getSummarizedCode")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation,
 			@QueryParam("probability") int probability) {
@@ -543,7 +530,6 @@ public class KnowledgeRest {
 	 */
 	@Path("/resetDecisionKnowledgeFromText")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response resetDecisionKnowledgeFromText(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",

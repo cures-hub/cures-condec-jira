@@ -25,8 +25,23 @@
 		);
 	};
 
+	/*
+	 * external references: condec.quality.check.js
+	 */
+	ConDecDoDCheckingAPI.prototype.hasIncompleteKnowledgeLinked = function(issueKey, callback) {
+		generalApi.getJSON(this.restPrefix + `/hasIncompleteKnowledgeLinked.json?issueKey=${issueKey}`,
+			function(error, result) {
+				if (error === null) {
+					callback(result);
+				}
+			});
+	};
+
+	/*
+	 * external references: condec.quality.check.js
+	 */
 	ConDecDoDCheckingAPI.prototype.getCoverageOfJiraIssue = function(projectKey, issueKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/coverageOfJiraIssue.json?projectKey=${projectKey}&issueKey=${issueKey}`,
+		generalApi.getJSON(this.restPrefix + `/getCoverageOfJiraIssue.json?projectKey=${projectKey}&issueKey=${issueKey}`,
 			function(error, result) {
 				if (error === null) {
 					callback(result);

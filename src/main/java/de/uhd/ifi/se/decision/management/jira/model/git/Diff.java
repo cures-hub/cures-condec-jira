@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Models a list of changed files. The scope for the diff might be a single git
- * commit, a whole feature branch (with many commits), or all commits belonging
- * to a Jira issue.
+ * Models a list of {@link ChangedFile}s. The scope for the diff might be a
+ * single git commit, a whole feature branch (with many commits), or all commits
+ * belonging to a Jira issue.
  */
 public class Diff {
 
@@ -14,6 +14,11 @@ public class Diff {
 
 	public Diff() {
 		changedFiles = new ArrayList<ChangedFile>();
+	}
+
+	public Diff(ChangedFile codeFile) {
+		this();
+		addChangedFile(codeFile);
 	}
 
 	/**

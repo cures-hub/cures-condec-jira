@@ -97,6 +97,22 @@ public class ChangedFile extends KnowledgeElement {
 	private String fileContent;
 	@JsonIgnore
 	private List<RevCommit> commits;
+	/**
+	 * @issue Where shall we store the line count of a code file knowledge element?
+	 * @decision In the ChangedFile class!
+	 * @pro Only files have a line count, not other knowledge elements.
+	 * @con The line count needs to be handled by the CodeClassPersistenceManager,
+	 *      which uses KnowledgeElement instead of ChangedFile in many cases.
+	 * @con The CodeCompletenessCheck class (using the lineCount) implements the
+	 *      CompletenessCheck interface, which works with KnowledgeElements, not
+	 *      ChangedFiles.
+	 * @con Converting a KnowledgeElement into a ChangedFile performs very badly.
+	 * @alternative In the KnowledgeElement class!
+	 * @con Not all knowledge elements have a line count.
+	 * @pro Many functions using the lineCount already work with KnowledgeElements,
+	 *      not ChangedFiles.
+	 */
+	private int lineCount;
 
 	public ChangedFile() {
 		packageDistance = 0;
@@ -362,11 +378,16 @@ public class ChangedFile extends KnowledgeElement {
 		return getCommentStyleType() != CommentStyleType.NONE;
 	}
 
+	public boolean isTestCodeFile() {
+		return getSummary().contains("Test");
+	}
+
 	public CommentStyleType getCommentStyleType() {
 		if (getProject() == null) {
 			return CommentStyleType.NONE;
 		}
-		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager.getCodeFileEndings(getProject().getProjectKey());
+		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager
+				.getCodeFileEndings(getProject().getProjectKey());
 		if (codeFileEndings.containsKey(this.getFileEnding())) {
 			return codeFileEndings.get(this.getFileEnding());
 		}
@@ -485,6 +506,14 @@ public class ChangedFile extends KnowledgeElement {
 		return commits.add(revCommit);
 	}
 
+	public int getLineCount() {
+		return this.lineCount;
+	}
+
+	public void setLineCount(int lineCount) {
+		this.lineCount = lineCount;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
@@ -494,6 +523,9 @@ public class ChangedFile extends KnowledgeElement {
 			return true;
 		}
 		if (!(object instanceof ChangedFile)) {
+			if (object instanceof KnowledgeElement) {
+				return super.equals(object);
+			}
 			return false;
 		}
 		ChangedFile changedFile = (ChangedFile) object;

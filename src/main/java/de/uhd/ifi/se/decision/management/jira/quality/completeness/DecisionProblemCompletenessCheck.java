@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Checks whether a decision problem (=issue, question, goal, ...) fulfills the
  * {@link DefinitionOfDone}.
  */
-public class DecisionProblemCompletenessCheck implements CompletenessCheck {
+public class DecisionProblemCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
 
 	private KnowledgeElement decisionProblem;
 	private String projectKey;
@@ -46,6 +46,7 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck {
 	 */
 	public static boolean isValidDecisionLinkedToDecisionProblem(KnowledgeElement decisionProblem) {
 		Set<KnowledgeElement> linkedDecisions = decisionProblem.getNeighborsOfType(KnowledgeType.DECISION);
+		linkedDecisions.addAll(decisionProblem.getNeighborsOfType(KnowledgeType.SOLUTION));
 		return !linkedDecisions.isEmpty()
 				&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
 						&& decision.getStatus() != KnowledgeStatus.REJECTED);

@@ -22,7 +22,7 @@
                 <select id="edit-form-select-type" class="select full-width-field"></select>
             </div>
             <div class="field-group">
-                <label for="edit-form-select-status">$i18n.getText("condec.label.knowledge.status"):</label>
+                <label for="edit-form-select-status">$i18n.getText("condec.label.status"):</label>
                 <select id="edit-form-select-status" class="select full-width-field"></select>
             </div>
             <div class="field-group">

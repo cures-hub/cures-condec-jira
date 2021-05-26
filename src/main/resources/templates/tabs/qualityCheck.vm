@@ -1,7 +1,17 @@
 <div class="qualityCheckContainer">
+    <div class="text-field">
+        <label for="condec-tab-minimum-coverage">$i18n.getText("condec.label.quality.check.minimum.coverage")</label>
+        <label id="condec-tab-minimum-coverage"></label>
+    </div>
+    <div class="text-field">
+        <label for="condec-tab-link-distance">$i18n.getText("condec.label.quality.check.link.distance")</label>
+        <label id="condec-tab-link-distance"></label>
+    </div>
     <div class="text-field" id="quality-check-issue-text">
     </div>
     <div class="text-field" id="quality-check-decision-text">
+    </div>
+    <div class="text-field" id="quality-check-knowledge-complete-text">
     </div>
 </div>
 

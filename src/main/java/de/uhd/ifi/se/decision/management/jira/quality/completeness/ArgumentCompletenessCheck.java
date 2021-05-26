@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class ArgumentCompletenessCheck implements CompletenessCheck {
+public class ArgumentCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
 
 	private KnowledgeElement argument;
 
@@ -14,7 +15,8 @@ public class ArgumentCompletenessCheck implements CompletenessCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return argument.hasNeighborOfType(KnowledgeType.DECISION) || argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+		return argument.hasNeighborOfType(KnowledgeType.DECISION)
+				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 	@Override

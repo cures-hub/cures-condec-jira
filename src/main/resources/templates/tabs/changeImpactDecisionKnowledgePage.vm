@@ -61,9 +61,6 @@
         // Add event listeners on filter HTML elements
         conDecFiltering.addOnChangeEventToFilterElements("change-impact-decision-knowledge", conDecRationaleBacklog.updateView, false);
 
-        // Register/subscribe this view as an observer
-        conDecObservable.subscribe(this);
-        updateView(null);
         conDecCia.initView();
     });
 </script>

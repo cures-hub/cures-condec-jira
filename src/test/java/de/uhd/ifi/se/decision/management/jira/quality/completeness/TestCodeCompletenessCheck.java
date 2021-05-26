@@ -3,24 +3,24 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCodeCompletenessCheck extends TestSetUp {
 
-	private List<KnowledgeElement> elements;
-
-	private KnowledgeElement fileThatIsNotDone;
-	private KnowledgeElement smallFileThatIsDone;
-	private KnowledgeElement testFileThatIsDone;
-	private KnowledgeElement linkedFileThatIsDone;
+	private ChangedFile fileThatIsNotDone;
+	private ChangedFile smallFileThatIsDone;
+	private ChangedFile testFileThatIsDone;
+	private ChangedFile linkedFileThatIsDone;
 
 	private CodeCompletenessCheck codeCompletenessCheck;
 
@@ -28,11 +28,11 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	public void setUp() {
 		init();
 		codeCompletenessCheck = new CodeCompletenessCheck();
-		elements = KnowledgeElements.getTestKnowledgeElements();
-		fileThatIsNotDone = elements.get(18);
-		smallFileThatIsDone = elements.get(19);
-		testFileThatIsDone = elements.get(20);
-		linkedFileThatIsDone = elements.get(21);
+		CodeFiles.addCodeFilesToKnowledgeGraph();
+		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
+		smallFileThatIsDone = CodeFiles.getSmallCodeFileDone();
+		testFileThatIsDone = CodeFiles.getTestCodeFileDone();
+		linkedFileThatIsDone = CodeFiles.getCodeFileLinkedToSolvedDecisionProblemDone();
 	}
 
 	@Test
@@ -60,10 +60,18 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsDoneLinkedFile() {
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(1);
+		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
 		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
+	}
+
+	@After
+	public void tearDown() {
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

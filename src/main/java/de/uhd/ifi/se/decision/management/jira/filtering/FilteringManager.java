@@ -319,16 +319,17 @@ public class FilteringManager {
 		if (element.getType() != KnowledgeType.CODE) {
 			return true;
 		}
-		return filterSettings.isTestCodeShown() || !element.getSummary().contains("Test");
+		return filterSettings.isTestCodeShown() || !((ChangedFile) element).isTestCodeFile();
 	}
 
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement} object.
-	 * @return always true {@link FilterSettings#isOnlyIncompleteKnowledgeShown()}
-	 *         is false. True if the element is incompletely documented according to
-	 *         the {@link DefinitionOfDone} (checked by {@link CompletenessCheck})
-	 *         and only incomplete knowledge elements should be shown
+	 * @return always true if
+	 *         {@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is false.
+	 *         True if the element is incompletely documented according to the
+	 *         {@link DefinitionOfDone} (checked by {@link CompletenessCheck}) and
+	 *         only incomplete knowledge elements should be shown
 	 *         ({@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is true).
 	 *         False otherwise.
 	 */
