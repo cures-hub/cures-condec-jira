@@ -8,7 +8,10 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManag
 import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -182,8 +185,8 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 		TextClassificationConfiguration config = new DecisionKnowledgeProject(projectKey)
-				.getTextClassificationConfiguration();
-		if (!Boolean.valueOf(config.isActivated())) {
+			.getTextClassificationConfiguration();
+		if (!config.isActivated()) {
 			return Response.status(Status.FORBIDDEN)
 				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
@@ -213,13 +216,10 @@ public class TextClassificationRest {
 		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
 		for (KnowledgeElement element : elements) {
-			if (element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
 				PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
 				if (!issueTextPart.isValidated()) {
 					nonValidatedElements.add(issueTextPart);
 				}
-			}
-
 		}
 		return Response.ok().entity(ImmutableMap.of("nonValidatedElements", nonValidatedElements)).build();
 	}
