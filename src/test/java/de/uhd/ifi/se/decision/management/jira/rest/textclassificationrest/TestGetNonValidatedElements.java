@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.List.of;
 import static org.junit.Assert.assertEquals;
 
 public class TestGetNonValidatedElements extends TestSetUp {
@@ -66,13 +65,45 @@ public class TestGetNonValidatedElements extends TestSetUp {
 		nonValidatedElement1.setJiraIssue(issue);
 		nonValidatedElement1.setValidated(false);
 
-		PartOfJiraIssueText nonValidatedElement2 = JiraIssues.addElementToDataBase(12234, KnowledgeType.ARGUMENT);
+		PartOfJiraIssueText nonValidatedElement2 = JiraIssues.addElementToDataBase(12235, KnowledgeType.ARGUMENT);
 		nonValidatedElement2.setJiraIssue(issue);
 		nonValidatedElement2.setValidated(false);
 
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(issue.getProjectObject().getKey());
 		manager.updateInDatabase(nonValidatedElement1);
 		manager.updateInDatabase(nonValidatedElement2);
+
+		List<KnowledgeElement> expectedElements = Arrays.asList(nonValidatedElement1, nonValidatedElement2);
+
+		Response response = classificationRest.getNonValidatedElements(request, issue.getProjectObject().getKey(), issue.getKey());
+
+		ImmutableMap<String, List<KnowledgeElement>> expected = ImmutableMap.of("nonValidatedElements", expectedElements);
+		assertEquals(expected, response.getEntity());
+
+	}
+
+	@Test
+	@NonTransactional
+	public void testValidWithNonValidatedAndValidatedElements() {
+		Issue issue = jiraIssues.get(0);
+
+
+		PartOfJiraIssueText nonValidatedElement1 = JiraIssues.addElementToDataBase(12237, KnowledgeType.ARGUMENT);
+		nonValidatedElement1.setJiraIssue(issue);
+		nonValidatedElement1.setValidated(false);
+
+		PartOfJiraIssueText nonValidatedElement2 = JiraIssues.addElementToDataBase(12238, KnowledgeType.ARGUMENT);
+		nonValidatedElement2.setJiraIssue(issue);
+		nonValidatedElement2.setValidated(false);
+
+		PartOfJiraIssueText validatedElement = JiraIssues.addElementToDataBase(12239, KnowledgeType.ARGUMENT);
+		validatedElement.setJiraIssue(issue);
+		validatedElement.setValidated(true);
+
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(issue.getProjectObject().getKey());
+		manager.updateInDatabase(nonValidatedElement1);
+		manager.updateInDatabase(nonValidatedElement2);
+		manager.updateInDatabase(validatedElement);
 
 		List<KnowledgeElement> expectedElements = Arrays.asList(nonValidatedElement1, nonValidatedElement2);
 
