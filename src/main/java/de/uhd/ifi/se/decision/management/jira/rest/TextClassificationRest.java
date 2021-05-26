@@ -196,7 +196,7 @@ public class TextClassificationRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getNotValidatedElements")
+	@Path("/getNonValidatedElements")
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
 
