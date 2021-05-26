@@ -62,15 +62,17 @@ public class JiraIssues {
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(31, jiraIssueTypes.get(0), project, "WI: Deal with the drunken sailor", user);
 		jiraIssues.add(jiraIssue);
+		jiraIssue = createJiraIssue(39, jiraIssueTypes.get(0), project, "WI: Come up with a concept for nudging", user);
+		jiraIssues.add(jiraIssue);
 
 		// Issues (= decision problems)
 		jiraIssue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",
-				user);
+			user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(32, jiraIssueTypes.get(1), project, "What shall we do with the drunken sailor?",
-				user);
+			user);
 		jiraIssues.add(jiraIssue);
 
 		// Alternative

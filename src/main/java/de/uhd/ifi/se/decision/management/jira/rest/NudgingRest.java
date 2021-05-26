@@ -50,7 +50,7 @@ public class NudgingRest {
 		return Response.ok().build();
 	}
 
-	@Path("/activatePromptEventForNonValidatedElements")
+	@Path("/activatePromptEventForNonValidatedElementsChecking")
 	@POST
 	public Response activatePromptEventForNonValidatedElementsChecking(@Context HttpServletRequest request,
 																	   @QueryParam("projectKey") String projectKey,
