@@ -7,6 +7,7 @@
 				// just-in-time prompts when status changes
 				conDecPrompt.promptLinkSuggestion();
 				conDecPrompt.promptDefinitionOfDoneChecking();
+				conDecPrompt.promptNonValidatedElements();
 			}
 		});
 	};
@@ -63,12 +64,38 @@
 					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
 					title: "Definition of Done Violated!",
 					type: "warning"
-				
+
 				});
-				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
+				document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
 					flag.close();
 				};
 			});
+	}
+	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+		const issueKey = conDecAPI.getIssueKey();
+		if (issueKey === null || issueKey === undefined) {
+			return;
+		}
+
+		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
+			.then(response => {
+				console.log("hello", response)
+				if (response["nonValidatedElements"].length === 0) {
+					console.log("aw shucks")
+
+					return;
+				}
+				document.getElementById("non-validated-elements-prompt-jira-issue-key").innerHTML = issueKey;
+				document.getElementById("num-non-validated-elements").innerHTML = response["nonValidatedElements"].length
+				const flag = AJS.flag({
+					body: document.getElementById("non-validated-elements-prompt").outerHTML,
+					title: "Non-validated elements found!",
+					type: "warning"
+				})
+				document.getElementById("non-validated-elements-prompt-button").onclick = function () {
+					flag.close();
+				};
+			})
 	}
 
 	global.conDecPrompt = new ConDecPrompt();

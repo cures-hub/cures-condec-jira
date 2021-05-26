@@ -1,7 +1,6 @@
 <div id="non-validated-elements-prompt">
     <strong id="non-validated-elements-prompt-jira-issue-key"></strong> contains <strong
     id="num-non-validated-elements"></strong> knowledge elements that have not been manually validated. <br/>
-    ##    <a href="#menu-item-quality-check" style="width:100%" class="aui-button-link">View Violated Definition of Done Criteria</a><br/>
     Please validate the knowledge elements!<br/>
     <button id="non-validated-elements-prompt-button" class="aui-button aui-button-link">
         <span class="aui-icon aui-icon-small aui-iconfont-check">Okay</span>
