@@ -27,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfi
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -72,7 +71,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 			// git client already exists
 			return;
 		}
-		KnowledgeGraph.getInstance("TEST");
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
@@ -205,6 +203,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	public static void makeExampleCommit(String filename, String content, String commitMessage) {
 		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		if (gitClientForSingleRepo == null) {
+			return;
+		}
 		Git git = gitClientForSingleRepo.getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
@@ -225,7 +226,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	private static void setupFeatureBranch() {
 		String firstCommitMessage = "First message";
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		if (gitClientForSingleRepo == null) {
+			return;
+		}
+		Git git = gitClientForSingleRepo.getGit();
 		String currentBranch = getCurrentBranch();
 
 		createBranch("TEST-4.feature.branch");

@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -22,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-@Ignore
 public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	private GitRest gitRest;
 	protected HttpServletRequest request;

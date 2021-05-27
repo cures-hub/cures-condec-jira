@@ -20,7 +20,7 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 	private GitRest gitRest;
 
 	@Before
-	public void setUpBeforeClass() {
+	public void setUp() {
 		super.setUp();
 		gitRest = new GitRest();
 		request = new MockHttpServletRequest();
