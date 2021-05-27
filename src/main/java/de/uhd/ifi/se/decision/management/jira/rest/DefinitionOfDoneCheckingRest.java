@@ -48,7 +48,7 @@ public class DefinitionOfDoneCheckingRest {
 					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
-		ConfigPersistenceManager.setDefinitionOfDone(projectKey, definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone(projectKey, definitionOfDone);
 		return Response.ok().build();
 	}
 

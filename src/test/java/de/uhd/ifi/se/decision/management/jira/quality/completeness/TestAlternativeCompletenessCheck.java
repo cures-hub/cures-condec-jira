@@ -74,7 +74,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(alternativeCompletenessCheck.execute(alternative));
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
@@ -87,7 +87,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a pro-argument
 		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
@@ -105,7 +105,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 
 		// link alternative to a con-argument
 		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
@@ -120,6 +120,6 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 	@After
 	public void tearDown() {
 		// restore default
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 }

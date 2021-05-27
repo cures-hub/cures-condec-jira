@@ -20,7 +20,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -159,12 +159,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return configuration information of the git repositories for this project as
-	 *         a {@link List<GitRepositoryConfiguration>} (if it is set, otherwise
-	 *         an empty list).
+	 * @return configuration information of the git connection including the git
+	 *         repositories for this project as a {@link GitConfiguration} object.
 	 */
-	public List<GitRepositoryConfiguration> getGitRepositoryConfigurations() {
-		return ConfigPersistenceManager.getGitRepositoryConfigurations(getProjectKey());
+	public GitConfiguration getGitConfiguration() {
+		return ConfigPersistenceManager.getGitConfiguration(getProjectKey());
 	}
 
 	public Map<String, CommentStyleType> getCodeFileEndings() {

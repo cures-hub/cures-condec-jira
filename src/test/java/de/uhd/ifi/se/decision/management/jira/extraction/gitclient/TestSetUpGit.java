@@ -28,6 +28,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -65,8 +66,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 			// git client already exists
 			return;
 		}
-		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST",
-				new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
 		codeFileEndingMap.put("JAVA_C", "java");
 		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
@@ -139,17 +141,23 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 		secureGitClients = new ArrayList<GitClient>();
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("HTTP",
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("HTTP");
+		gitConfig.addGitRepoConfiguration(
 				new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
 		secureGitClients.add(GitClient.getInstance("HTTP"));
+		ConfigPersistenceManager.saveGitConfiguration("HTTP", gitConfig);
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITHUB", new GitRepositoryConfiguration(
-				SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
+		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITHUB");
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB",
+				"githubuser", "g1thubT0ken"));
 		secureGitClients.add(GitClient.getInstance("GITHUB"));
+		ConfigPersistenceManager.saveGitConfiguration("GITHUB", gitConfig);
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITLAB", new GitRepositoryConfiguration(
-				SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
+		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITLAB");
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB",
+				"gitlabuser", "g1tl@bT0ken"));
 		secureGitClients.add(GitClient.getInstance("GITLAB"));
+		ConfigPersistenceManager.saveGitConfiguration("GITLAB", gitConfig);
 	}
 
 	@Before

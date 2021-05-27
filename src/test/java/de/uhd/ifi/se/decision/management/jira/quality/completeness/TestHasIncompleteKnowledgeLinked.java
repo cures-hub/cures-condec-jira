@@ -126,7 +126,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertNull(issue.getLink(alternative));
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(issue.isIncomplete());
 		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
 	}
@@ -134,7 +134,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@After
 	public void tearDown() {
 		// restore default
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 
 }

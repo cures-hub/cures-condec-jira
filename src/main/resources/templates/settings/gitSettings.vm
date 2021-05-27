@@ -1,4 +1,5 @@
 <h2>Decision Knowledge Extraction from Git</h2>
+#set($gitConfig = $project.getGitConfiguration())
 
 <div class="field-group">
     <label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
@@ -14,7 +15,7 @@
 	<label for="git-uri-input-field">Git Repositories</label>
 	<div id="repo-wrapper">
     #set( $repoNumber = 1 )
-    #foreach($gitRepositoryConfiguration in $project.getGitRepositoryConfigurations())
+    #foreach($gitRepositoryConfiguration in $gitConfig.getGitRepoConfigurations())
         
         <div class="aui-group" id="repodiv$repoNumber">
             URI: 

@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -365,16 +366,19 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
 				"githubuser", "token👀");
 
-		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setGitRepoConfigurations(Arrays.asList(gitConf1, gitConf2));
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfiguration("TEST")
+				.getGitRepoConfigurations().get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("HTTP", gitConf.getAuthMethod());
 		assertEquals("user", gitConf.getUsername());
 		assertEquals("secret👀", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitConfiguration("TEST").getGitRepoConfigurations().get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
@@ -389,16 +393,19 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
 				"githubuser", "token👀");
 
-		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setGitRepoConfigurations(Arrays.asList(gitConf1, gitConf2));
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
+		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitConfiguration("TEST")
+				.getGitRepoConfigurations().get(0);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("master", gitConf.getDefaultBranch());
 		assertEquals("NONE", gitConf.getAuthMethod());
 		assertEquals("", gitConf.getUsername());
 		assertEquals("", gitConf.getToken());
 
-		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
+		gitConf = ConfigPersistenceManager.getGitConfiguration("TEST").getGitRepoConfigurations().get(1);
 		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
 		assertEquals("develop", gitConf.getDefaultBranch());
 		assertEquals("GITHUB", gitConf.getAuthMethod());
@@ -418,7 +425,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
@@ -430,7 +437,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setLineNumbersInCodeFile(20);
 		definitionOfDone.setMaximumLinkDistanceToDecisions(3);
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());

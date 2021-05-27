@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -569,7 +570,9 @@ public class ConfigRest {
 					ImmutableMap.of("error", "Git repository configurations could not be set because they are null."))
 					.build();
 		}
-		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
+		gitConfig.setGitRepoConfigurations(gitRepositoryConfigurations);
+		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		return Response.ok().build();
 	}
 

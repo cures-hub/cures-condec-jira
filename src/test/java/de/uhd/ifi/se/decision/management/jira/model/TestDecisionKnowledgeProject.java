@@ -17,6 +17,7 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -95,8 +96,10 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetGitRepositoryConfigurations() {
 		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
 				"master", "HTTP", "heinz.guenther", "P@ssw0rd!");
-		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST", gitRepositoryConfiguration);
-		List<GitRepositoryConfiguration> gitConfs = project.getGitRepositoryConfigurations();
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.addGitRepoConfiguration(gitRepositoryConfiguration);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		List<GitRepositoryConfiguration> gitConfs = project.getGitConfiguration().getGitRepoConfigurations();
 		assertEquals("master", gitConfs.get(0).getDefaultBranch());
 		assertEquals("HTTP", gitConfs.get(0).getAuthMethod());
 		assertEquals("heinz.guenther", gitConfs.get(0).getUsername());

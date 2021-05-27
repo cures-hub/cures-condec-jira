@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
@@ -188,29 +188,20 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
-	public static void setGitRepositoryConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
-		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
-		gitConfs.add(gitConf);
-		setGitRepositoryConfigurations(projectKey, gitConfs);
+	public static void saveGitConfiguration(String projectKey, GitConfiguration gitConfiguration) {
+		Type type = new TypeToken<GitConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "gitConfiguration", gitConfiguration, type);
 	}
 
-	public static void setGitRepositoryConfigurations(String projectKey,
-			List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
-		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+	public static GitConfiguration getGitConfiguration(String projectKey) {
+		Type type = new TypeToken<GitConfiguration>() {
 		}.getType();
-		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
-		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
-		}.getType();
-		List<GitRepositoryConfiguration> gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(
-				projectKey, "gitRepositoryConfigurations", type);
-		if (gitRepositoryConfigurations == null) {
-			return new ArrayList<GitRepositoryConfiguration>();
+		GitConfiguration gitConfiguration = (GitConfiguration) getSavedObject(projectKey, "gitConfiguration", type);
+		if (gitConfiguration == null) {
+			return new GitConfiguration();
 		}
-		return gitRepositoryConfigurations;
+		return gitConfiguration;
 	}
 
 	public static void setCodeFileEndings(String projectKey, Map<String, String> codeFileEndingMap) {
@@ -228,7 +219,6 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "codeFileEndings", codeFileEndings, type);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
 		Type type = new TypeToken<Map<String, CommentStyleType>>() {
 		}.getType();
@@ -345,7 +335,7 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
+	public static void saveDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
 		saveObject(projectKey, "definitionOfDone", definitionOfDone, type);

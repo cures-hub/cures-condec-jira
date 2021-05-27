@@ -47,7 +47,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		assertTrue(codeCompletenessCheck.execute(smallFileThatIsDone));
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
 		definitionOfDone.setLineNumbersInCodeFile(10);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(smallFileThatIsDone));
 	}
 
@@ -62,10 +62,10 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	public void testIsDoneLinkedFile() {
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(1);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
 
