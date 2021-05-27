@@ -1,0 +1,19 @@
+<div class="field-group">
+	<label for="delete-repos-button">Delete Git Repositories?</label>
+	<input type="button" class="aui-button" id="delete-repos-button" value="Delete Git Repositories"/>
+	<div class="description">Removes all git repositories for this project from file system. 
+		Deletes all linked code classes from the knowledge graph.<br/>
+		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+		Please note that you need to disable git extraction for a permanent removal of the repositories.
+		Otherwise they will be cloned again.
+	</div>
+</div>
+
+<script>
+	const deleteRepositoriesButton = document.getElementById("delete-repos-button");
+    deleteRepositoriesButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to delete the git repositories in file system? This cannot be reverted (only by cloning them again).")) {
+            conDecAPI.deleteGitRepos("$projectKey");
+        }
+    });
+</script>

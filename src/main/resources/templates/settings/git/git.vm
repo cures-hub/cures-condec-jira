@@ -1,0 +1,7 @@
+<h2>Decision Knowledge Extraction from Git</h2>
+#set($gitConfig = $project.getGitConfiguration())
+
+#parse("templates/settings/git/basicGitSettings.vm")
+#parse("templates/settings/git/fileEndingSettings.vm")
+#parse("templates/settings/git/postCommitMessageSettings.vm")
+#parse("templates/settings/git/deleteEverything.vm")

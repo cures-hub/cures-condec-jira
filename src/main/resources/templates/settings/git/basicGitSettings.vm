@@ -1,6 +1,3 @@
-<h2>Decision Knowledge Extraction from Git</h2>
-#set($gitConfig = $project.getGitConfiguration())
-
 <div class="field-group">
     <label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
     <aui-toggle id="isKnowledgeExtractedFromGit-toggle" value="$projectKey" label="Extract from	Git?"
@@ -94,78 +91,16 @@
 	</div>
 </div>
 
-<div class="field-group">
-    <label>Code File Endings</label>
-    Java/C code comment style: 
-    <input type="text" class="text" id="code-comment-style-java-c" value="$project.getCodeFileEndings('JAVA_C')" placeholder="Example: java, c, h, cpp, hpp"/><br/>
-    Python code comment style: 
-    <input type="text" class="text" id="code-comment-style-python" value="$project.getCodeFileEndings('PYTHON')" placeholder="Example: py, sh"/><br/>
-    HTML code comment style: 
-    <input type="text" class="text" id="code-comment-style-html" value="$project.getCodeFileEndings('HTML')" placeholder="Example: html, htm, xml, css, php, vm, js, ts"/><br/>
-    TeX code comment style: 
-    <input type="text" class="text" id="code-comment-style-tex" value="$project.getCodeFileEndings('TEX')" placeholder="Example: tex"/><br/>
-    <div class="aui-group">
-		<input type="button" id="file-endings-button" class="aui-button aui-button-primary" value="Save File Endings"/>
-	</div>
-	<div class="description">
-		Java/C code comment style: Single-line comments with //, multi-line comments with /* &hellip; */.<br/>
-        Python code comment style: Single-line comments with #.<br/>
-        HTML code comment style: Multi-line comments with &lt;!-- &hellip; --&gt;.<br/>
-        TeX code comment style: Single-line comments with %.
-	</div>
-</div>
-
-<div class="field-group">
-    <label for="isPostFeatureBranchCommitsActivated-toggle">Post Feature Branch Commit Messages as
-        Comment?</label>
-    <aui-toggle id="isPostFeatureBranchCommitsActivated-toggle"
-                value="$projectKey" label="Post feature branch commits?"
-		#if($gitConfig.isPostFeatureBranchCommitsActivated())
-			checked
-		#end
-		#if(!$gitConfig.isActivated())
-			disabled
-		#end
-	></aui-toggle>
-    <div class="description">Enables or disables whether every feature branch commit message is posted
-        as a comment under the corresponding Jira issue for this project.<br/>
-		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
-		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
-		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
-    </div>
-</div>
-
-<div class="field-group">
-    <label for="isPostSquashedCommitsActivated-toggle">Post Commit Messages on Default Branch as Comment?</label>
-    <aui-toggle id="isPostSquashedCommitsActivated-toggle"
-                value="$projectKey" label="Post squashed commits?"
-		#if($gitConfig.isPostDefaultBranchCommitsActivated())
-			checked
-		#end
-		#if(!$gitConfig.isActivated())
-			disabled
-		#end
-	></aui-toggle>
-    <div class="description">Enables or disables whether commit messages on the default branch are posted
-        as a comment under the corresponding Jira issue for this project.<br/>
-		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
-		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
-		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
-    </div>
-</div>
-
-<div class="field-group">
-<label for="delete-repos-button">Delete Git Repositories?</label>
-<input type="button" class="aui-button" id="delete-repos-button" value="Delete Git Repositories"/>
-<div class="description">Removes all git repositories for this project from file system. 
-	Deletes all linked code classes from the knowledge graph.<br/>
-	<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
-	Please note that you need to disable git extraction for a permanent removal of the repositories.
-	Otherwise they will be cloned again.
-</div>
-</div>
-
-<script>
+<script>	
+    var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
+    gitToggle.addEventListener("change", function (error) {
+        this.busy = true;
+        conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
+       	document.getElementById("isPostDefaultBranchCommits-toggle").disabled = !this.checked;
+        document.getElementById("isPostFeatureBranchCommits-toggle").disabled = !this.checked;
+        this.busy = false;
+    });
+    
 	var max_fields = 10;
 	var wrapper = AJS.$("#repo-wrapper");
 	var add_button = AJS.$("#add-repo-button");
@@ -238,25 +173,6 @@
 		x--;
 	});
 
-    var fileEndingsSubmitButton = document.getElementById("file-endings-button");
-
-    fileEndingsSubmitButton.addEventListener("click", function () {
-        var codeCommentStyleJavaC = document.getElementById("code-comment-style-java-c").value;
-        var codeCommentStylePython = document.getElementById("code-comment-style-python").value;
-        var codeCommentStyleHTML = document.getElementById("code-comment-style-html").value;
-        var codeCommentStyleTeX = document.getElementById("code-comment-style-tex").value;
-		var codeFileEndings = {
-            "JAVA_C": codeCommentStyleJavaC,
-            "PYTHON": codeCommentStylePython,
-            "HTML": codeCommentStyleHTML,
-            "TEX": codeCommentStyleTeX
-        };
-       
-        conDecAPI.setCodeFileEndings("$projectKey", codeFileEndings);
-		
-        window.onbeforeunload = null;
-    });
-	
     var gitsSubmitButton = document.getElementById("git-uris-button");
 
     gitsSubmitButton.addEventListener("click", function () {
@@ -280,36 +196,5 @@
         conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
 		
         window.onbeforeunload = null;
-    });
-	
-    var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
-    var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
-    var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
-
-    isPostSquashedCommitsActivatedToggle.addEventListener('change', function (event) {
-        this.busy = true;
-        conDecAPI.setPostDefaultBranchCommits(this.checked, this.value);
-        this.busy = false;
-    });
-
-    isPostFeatureBranchCommitsActivatedToggle.addEventListener('change', function (event) {
-        this.busy = true;
-        conDecAPI.setPostFeatureBranchCommits(this.checked, this.value);
-        this.busy = false;
-    });
-
-    gitToggle.addEventListener("change", function (error) {
-        this.busy = true;
-        conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
-        isPostSquashedCommitsActivatedToggle.disabled = !this.checked;
-        isPostFeatureBranchCommitsActivatedToggle.disabled = !this.checked;
-        this.busy = false;
-    });
-    
-    const deleteRepositoriesButton = document.getElementById("delete-repos-button");
-    deleteRepositoriesButton.addEventListener("click", function () {
-        if (confirm("Are you sure you want to delete the git repositories in file system? This cannot be reverted (only by cloning them again).")) {
-            conDecAPI.deleteGitRepos("$projectKey");
-        }
     });
 </script>

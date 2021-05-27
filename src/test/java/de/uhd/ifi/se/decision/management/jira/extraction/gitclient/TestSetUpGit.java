@@ -67,6 +67,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 			return;
 		}
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();

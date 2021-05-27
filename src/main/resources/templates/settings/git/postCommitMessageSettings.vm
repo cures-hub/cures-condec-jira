@@ -1,0 +1,52 @@
+<div class="field-group">
+    <label for="isPostFeatureBranchCommits-toggle">Post Feature Branch Commit Messages as
+        Comment?</label>
+    <aui-toggle id="isPostFeatureBranchCommits-toggle"
+                value="$projectKey" label="Post feature branch commits?"
+		#if($gitConfig.isPostFeatureBranchCommitsActivated())
+			checked
+		#end
+		#if(!$gitConfig.isActivated())
+			disabled
+		#end
+	></aui-toggle>
+    <div class="description">Enables or disables whether every feature branch commit message is posted
+        as a comment under the corresponding Jira issue for this project.<br/>
+		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
+		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
+    </div>
+</div>
+
+<div class="field-group">
+    <label for="isPostDefaultBranchCommits-toggle">Post Commit Messages on Default Branch as Comment?</label>
+    <aui-toggle id="isPostDefaultBranchCommits-toggle"
+                value="$projectKey" label="Post default branch commits?"
+		#if($gitConfig.isPostDefaultBranchCommitsActivated())
+			checked
+		#end
+		#if(!$gitConfig.isActivated())
+			disabled
+		#end
+	></aui-toggle>
+    <div class="description">Enables or disables whether commit messages on the default branch are posted
+        as a comment under the corresponding Jira issue for this project.<br/>
+		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
+		You need to make sure that the user "GIT-COMMIT-COMMENTATOR" has a project
+		role that is allowed to write comments. The user "GIT-COMMIT-COMMENTATOR" is created automatically but needs to be manually associated with the project.
+    </div>
+</div>
+
+<script>
+	document.getElementById("isPostDefaultBranchCommits-toggle").addEventListener('change', function (event) {
+        this.busy = true;
+        conDecAPI.setPostDefaultBranchCommits(this.checked, this.value);
+        this.busy = false;
+    });
+
+	document.getElementById("isPostFeatureBranchCommits-toggle").addEventListener('change', function (event) {
+        this.busy = true;
+        conDecAPI.setPostFeatureBranchCommits(this.checked, this.value);
+        this.busy = false;
+    });
+</script>
