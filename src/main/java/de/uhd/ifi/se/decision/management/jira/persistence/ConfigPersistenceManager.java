@@ -1,5 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -9,23 +18,17 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Type;
-import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -101,22 +104,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(isIssueStrategy);
 	}
 
-	// TODO Add GitConfig class with isKnowledgeExtractedFromGit attribute
-	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
-		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
-		return "true".equals(isKnowledgeExtractedFromGit);
-	}
-
-	// TODO Add GitConfig class with isPostDefaultBranchCommitsActivated attribute
-	public static boolean isPostSquashedCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
-	}
-
-	// TODO Add GitConfig class with isPostFeatureBranchCommitsActivated attribute
-	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
-	}
-
 	// TODO Testing
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
@@ -159,78 +146,24 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
 
-	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
-		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
-		if (isKnowledgeExtractedFromGit) {
-			// TODO Pull Repo
-			GitClient.getInstance(projectKey);
-		}
-	}
-
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
 		setValue(projectKey, "criteriaQuery", query);
 	}
 
-	// TODO Testing
-	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
-		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
-	}
-
-	// TODO Testing
-	public static void setPostFeatureBranchCommits(String projectKey, Boolean checked) {
-		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
-	}
-
-	public static void setGitRepositoryConfiguration(String projectKey, GitRepositoryConfiguration gitConf) {
-		List<GitRepositoryConfiguration> gitConfs = new ArrayList<GitRepositoryConfiguration>();
-		gitConfs.add(gitConf);
-		setGitRepositoryConfigurations(projectKey, gitConfs);
-	}
-
-	public static void setGitRepositoryConfigurations(String projectKey,
-			List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
-		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+	public static void saveGitConfiguration(String projectKey, GitConfiguration gitConfiguration) {
+		Type type = new TypeToken<GitConfiguration>() {
 		}.getType();
-		saveObject(projectKey, "gitRepositoryConfigurations", gitRepositoryConfigurations, type);
+		saveObject(projectKey, "gitConfiguration", gitConfiguration, type);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static List<GitRepositoryConfiguration> getGitRepositoryConfigurations(String projectKey) {
-		Type type = new TypeToken<List<GitRepositoryConfiguration>>() {
+	public static GitConfiguration getGitConfiguration(String projectKey) {
+		Type type = new TypeToken<GitConfiguration>() {
 		}.getType();
-		List<GitRepositoryConfiguration> gitRepositoryConfigurations = (List<GitRepositoryConfiguration>) getSavedObject(
-				projectKey, "gitRepositoryConfigurations", type);
-		if (gitRepositoryConfigurations == null) {
-			return new ArrayList<GitRepositoryConfiguration>();
+		GitConfiguration gitConfiguration = (GitConfiguration) getSavedObject(projectKey, "gitConfiguration", type);
+		if (gitConfiguration == null) {
+			return new GitConfiguration();
 		}
-		return gitRepositoryConfigurations;
-	}
-
-	public static void setCodeFileEndings(String projectKey, Map<String, String> codeFileEndingMap) {
-		Type type = new TypeToken<Map<String, CommentStyleType>>() {
-		}.getType();
-		Map<String, CommentStyleType> codeFileEndings = new HashMap<String, CommentStyleType>();
-		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
-			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ")
-					.split(" ");
-			for (String fileEnding : fileEndings) {
-				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
-			}
-		}
-		saveObject(projectKey, "codeFileEndings", codeFileEndings, type);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
-		Type type = new TypeToken<Map<String, CommentStyleType>>() {
-		}.getType();
-		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(projectKey,
-				"codeFileEndings", type);
-		if (codeFileEndings == null) {
-			return new HashMap<String, CommentStyleType>();
-		}
-		return codeFileEndings;
+		return gitConfiguration;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
@@ -338,7 +271,7 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
-	public static void setDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
+	public static void saveDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
 		saveObject(projectKey, "definitionOfDone", definitionOfDone, type);
@@ -355,7 +288,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void savePromptingEventConfiguration(String projectKey,
-													   PromptingEventConfiguration promptingEventConfiguration) {
+			PromptingEventConfiguration promptingEventConfiguration) {
 		Type type = new TypeToken<PromptingEventConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "promptingEventConfiguration", promptingEventConfiguration, type);

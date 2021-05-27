@@ -88,5 +88,4 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsCompleteAccordingToSettings() {
 		assertTrue(argumentCompletenessCheck.isCompleteAccordingToSettings());
 	}
-
 }

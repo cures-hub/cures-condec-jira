@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -65,19 +62,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetActivatedValid() {
 		ConfigPersistenceManager.setActivated("TEST", true);
 		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
-	}
-
-	// knowledge extraction from git
-	@Test
-	public void testIsKnowledgeExtractedFilled() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
 
 	// isKnowledgeTypeEnabled
@@ -359,54 +343,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testGetGitRepos() {
-		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "master", "HTTP",
-				"user", "secret👀");
-		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-				"githubuser", "token👀");
-
-		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
-
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
-		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
-		assertEquals("master", gitConf.getDefaultBranch());
-		assertEquals("HTTP", gitConf.getAuthMethod());
-		assertEquals("user", gitConf.getUsername());
-		assertEquals("secret👀", gitConf.getToken());
-
-		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
-		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
-		assertEquals("develop", gitConf.getDefaultBranch());
-		assertEquals("GITHUB", gitConf.getAuthMethod());
-		assertEquals("githubuser", gitConf.getUsername());
-		assertEquals("token👀", gitConf.getToken());
-	}
-
-	@Test
-	public void testGetEmptyOrCorruptConfInfo() {
-		GitRepositoryConfiguration gitConf1 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "", "Cheesecake", "",
-				"");
-		GitRepositoryConfiguration gitConf2 = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI, "develop", "GITHUB",
-				"githubuser", "token👀");
-
-		ConfigPersistenceManager.setGitRepositoryConfigurations("TEST", Arrays.asList(gitConf1, gitConf2));
-
-		GitRepositoryConfiguration gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(0);
-		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
-		assertEquals("master", gitConf.getDefaultBranch());
-		assertEquals("NONE", gitConf.getAuthMethod());
-		assertEquals("", gitConf.getUsername());
-		assertEquals("", gitConf.getToken());
-
-		gitConf = ConfigPersistenceManager.getGitRepositoryConfigurations("TEST").get(1);
-		assertEquals(TestSetUpGit.GIT_URI, gitConf.getRepoUri());
-		assertEquals("develop", gitConf.getDefaultBranch());
-		assertEquals("GITHUB", gitConf.getAuthMethod());
-		assertEquals("githubuser", gitConf.getUsername());
-		assertEquals("token👀", gitConf.getToken());
-	}
-
-	@Test
 	public void testSetAndGetReleaseNoteMapping() {
 		List<String> input = new ArrayList<>();
 		input.add("someOtherString");
@@ -418,7 +354,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetDefinitionOfDone() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
@@ -430,7 +366,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		definitionOfDone.setLineNumbersInCodeFile(20);
 		definitionOfDone.setMaximumLinkDistanceToDecisions(3);
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
 		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());

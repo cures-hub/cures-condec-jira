@@ -81,7 +81,7 @@ var ConDecDevBranches = [];
 		showDashboardSection(dashboardProcessingNode);
 		dashboardProjectNode.innerText = projectKey;
 
-		url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
+		url = conDecGitAPI.restPrefix + "/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
 
 		console.log("Starting REST query.");
 		AJS.$.ajax({

@@ -19,13 +19,13 @@ public class TestGetCommits extends TestSetUpGit {
 	public void testBranch() {
 		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
 		List<RevCommit> commits = gitClient.getCommits(featureBranch);
-		assertEquals(13, commits.size());
+		assertEquals(11, commits.size());
 	}
 
 	@Test
 	public void testJiraIssue() {
 		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		assertEquals(2, commits.size()); // should be 3: two commits are on the default branch, one commit is on the
+		assertEquals(1, commits.size()); // should be 3: two commits are on the default branch, one commit is on the
 											// feature branch
 		assertTrue(commits.get(0).getShortMessage().startsWith("TEST-12: Develop great software"));
 	}

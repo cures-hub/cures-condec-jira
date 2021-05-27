@@ -15,6 +15,6 @@ public class TestGetNumberOfCommits extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		assertEquals(2, gitClient.getNumberOfCommitsOnDefaultBranches(mockJiraIssueForGitTests));
+		assertEquals(1, gitClient.getNumberOfCommitsOnDefaultBranches(mockJiraIssueForGitTests));
 	}
 }

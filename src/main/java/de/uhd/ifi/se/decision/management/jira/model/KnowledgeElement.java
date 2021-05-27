@@ -529,6 +529,9 @@ public class KnowledgeElement {
 	 */
 	public Set<KnowledgeElement> getNeighborsOfType(KnowledgeType knowledgeType) {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(project);
+		if (graph == null) {
+			return new HashSet<>();
+		}
 		Set<KnowledgeElement> neighbors = Graphs.neighborSetOf(graph, this);
 		return neighbors.stream().filter(element -> element.getType() == knowledgeType).collect(Collectors.toSet());
 	}

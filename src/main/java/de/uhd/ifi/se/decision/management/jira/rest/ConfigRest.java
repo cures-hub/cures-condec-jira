@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
@@ -34,9 +33,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -47,15 +43,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
- * REST resource for plug-in configuration
+ * REST resource for basic plug-in configuration
  */
 @Path("/config")
 public class ConfigRest {
@@ -470,139 +464,6 @@ public class ConfigRest {
 		GenericLinkManager.deleteInvalidLinks();
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
-		return Response.ok().build();
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Git integration */
-	/*										*/
-	/* **************************************/
-
-	@Path("/setKnowledgeExtractedFromGit")
-	@POST
-	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
-
-		// deactivate other git extraction if false
-		if (!isKnowledgeExtractedFromGit) {
-			GitClient.instances.remove(projectKey);
-		} else {
-			// clone or fetch the git repositories
-			if (GitClient.getInstance(projectKey) == null) {
-				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
-			}
-		}
-		return Response.ok().build();
-	}
-
-	@Path("/setPostFeatureBranchCommits")
-	@POST
-	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (checked == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
-		}
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
-			return Response.ok().build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-		}
-	}
-
-	@Path("/setPostSquashedCommits")
-	@POST
-	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (checked == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "setPostDefaultBranchCommits-checked = null")).build();
-		}
-
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			boolean isActivated = Boolean.valueOf(checked);
-			ConfigPersistenceManager.setPostSquashedCommits(projectKey, isActivated);
-			if (isActivated) {
-				ApplicationUser user = AuthenticationManager.getUser(request);
-				List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-				jiraIssues.forEach(
-						jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
-			}
-			return Response.ok().build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-		}
-	}
-
-	@Path("/setGitRepositoryConfigurations")
-	@POST
-	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (gitRepositoryConfigurations == null
-				|| !GitRepositoryConfiguration.areAllGitRepositoryConfigurationsValid(gitRepositoryConfigurations)) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Git repository configurations could not be set because they are null."))
-					.build();
-		}
-		ConfigPersistenceManager.setGitRepositoryConfigurations(projectKey, gitRepositoryConfigurations);
-		return Response.ok().build();
-	}
-
-	@Path("/setCodeFileEndings")
-	@POST
-	public Response setCodeFileEndings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			Map<String, String> codeFileEndings) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (codeFileEndings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Code file endings could not be set because they are null."))
-					.build();
-		}
-		ConfigPersistenceManager.setCodeFileEndings(projectKey, codeFileEndings);
-		return Response.ok().build();
-	}
-
-	@Path("/deleteGitRepos")
-	@POST
-	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		GitClient gitClient = GitClient.getInstance(projectKey);
-		if (!gitClient.deleteRepositories()) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Git repositories could not be deleted.")).build();
-		}
-		new CodeClassPersistenceManager(projectKey).deleteKnowledgeElements();
 		return Response.ok().build();
 	}
 

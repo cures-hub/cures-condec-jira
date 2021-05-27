@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.eventlistener.implementation;
 
-import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -11,6 +10,7 @@ import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -27,7 +27,7 @@ public class SummarizationEventListener implements IssueEventListener {
 		String jiraIssueKey = issueEvent.getIssue().getKey();
 		long eventTypeId = issueEvent.getEventTypeId();
 
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)
+		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()
 				|| eventTypeId != EventType.ISSUE_GENERICEVENT_ID || !isClosing(issueEvent)) {
 			return;
 		}

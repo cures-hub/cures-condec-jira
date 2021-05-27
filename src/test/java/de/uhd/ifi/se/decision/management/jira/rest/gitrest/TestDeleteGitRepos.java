@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,19 +11,18 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteGitRepos extends TestSetUpGit {
-	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	private HttpServletRequest request;
+	private GitRest gitRest;
 
-	@Override
 	@Before
 	public void setUp() {
-		init();
-		configRest = new ConfigRest();
+		super.setUp();
+		gitRest = new GitRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -31,13 +30,12 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testRequestNullProjectKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.deleteGitRepos(null, null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.deleteGitRepos(null, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyValid() {
-		assertEquals(Status.OK.getStatusCode(), configRest.deleteGitRepos(request, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), gitRest.deleteGitRepos(request, "TEST").getStatus());
 	}
-
 }

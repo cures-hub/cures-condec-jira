@@ -25,7 +25,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -36,7 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -483,35 +481,6 @@ public class KnowledgeRest {
 		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
-	}
-
-	// TODO Change to POST and pass FilterSettings object
-	@Path("/getSummarizedCode")
-	@GET
-	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation,
-			@QueryParam("probability") int probability) {
-		if (projectKey == null || id <= 0) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
-		}
-
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error",
-							"Getting summarized code failed since git extraction is disabled for this project."))
-					.build();
-		}
-
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
-				documentationLocation);
-		Issue jiraIssue = element.getJiraIssue();
-
-		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
-		if (summary == null || summary.isEmpty()) {
-			summary = "This Jira issue does not have any code committed.";
-		}
-		return Response.ok(summary).build();
 	}
 
 	/**

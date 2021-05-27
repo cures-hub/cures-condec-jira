@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,25 +9,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.service.CiaService;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
-import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
@@ -41,46 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
  */
 @Path("/view")
 public class ViewRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
-
-	@Path("/elementsFromBranchesOfProject")
-	@GET
-	public Response getElementsFromAllBranchesOfProject(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
-		}
-
-		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
-		return Response.ok(new DiffViewer(projectKey)).build();
-	}
-
-	@Path("/elementsFromBranchesOfJiraIssue")
-	@GET
-	public Response getElementsOfFeatureBranchForJiraIssue(@Context HttpServletRequest request,
-			@QueryParam("issueKey") String issueKey) {
-		if (request == null || issueKey == null || issueKey.isBlank()) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
-		}
-		String projectKey = getProjectKey(issueKey);
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		if (issue == null) {
-			return jiraIssueKeyIsInvalid();
-		}
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
-		}
-		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
-
-		LOGGER.info("Feature branch dashboard opened for Jira issue:" + issueKey);
-		return Response.ok(new DiffViewer(projectKey, issueKey)).build();
-	}
 
 	/**
 	 * Returns a jstree tree viewer that matches the {@link FilterSettings}. If a
@@ -256,15 +206,5 @@ public class ViewRest {
 		}
 
 		return Response.ok(matrix).build();
-	}
-
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	private Response jiraIssueKeyIsInvalid() {
-		String message = "Decision knowledge elements cannot be shown since the Jira issue key is invalid.";
-		LOGGER.error(message);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
 	}
 }

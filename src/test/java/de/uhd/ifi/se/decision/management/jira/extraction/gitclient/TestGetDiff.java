@@ -63,26 +63,20 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void testJiraIssueKeyExisting() {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
-		assertEquals(2, diff.getChangedFiles().size());
+		assertEquals(1, diff.getChangedFiles().size());
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
 
-		assertTrue(changedFiles.get(0).getDiffEntry().toString()
-				.contains("ADD GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java"));
+		assertEquals("DiffEntry[ADD GodClass.java]", changedFiles.get(0).getDiffEntry().toString());
 		assertEquals(1, changedFiles.get(0).getEditList().size());
-		assertTrue(changedFiles.get(0).getEditList().toString().contains("INSERT(0-0,0-19)"));
-
-		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("ADD GodClass.java"));
-		assertEquals(1, changedFiles.get(1).getEditList().size());
-		assertTrue(changedFiles.get(1).getEditList().toString().contains("INSERT(0-0,0-25)"));
+		assertEquals("EditList[INSERT(0-0,0-25)]", changedFiles.get(0).getEditList().toString());
 	}
 
 	@Test
 	public void testDefaultBranchCommits() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		assertEquals(6, diff.getChangedFiles().size());
+		assertEquals(5, diff.getChangedFiles().size());
 		assertEquals(1, diff.getChangedFiles().get(2).getCommits().size());
-		assertEquals("TEST-26", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
+		assertEquals("TEST-62", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
 	}
-
 }

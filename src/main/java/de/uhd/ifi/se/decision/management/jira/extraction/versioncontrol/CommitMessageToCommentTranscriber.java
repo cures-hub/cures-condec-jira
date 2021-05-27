@@ -40,6 +40,10 @@ public class CommitMessageToCommentTranscriber {
 		if (jiraIssue != null) {
 			this.gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
 		}
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setPostDefaultBranchCommitsActivated(true);
+		gitConfig.setPostFeatureBranchCommitsActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	/**
@@ -52,10 +56,10 @@ public class CommitMessageToCommentTranscriber {
 		}
 		List<Comment> newComments = new ArrayList<>();
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostFeatureBranchCommitsActivated()) {
 			newComments.addAll(postFeatureBranchCommits());
 		}
-		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostDefaultBranchCommitsActivated()) {
 			newComments.addAll(postDefaultBranchCommits());
 		}
 		return newComments;

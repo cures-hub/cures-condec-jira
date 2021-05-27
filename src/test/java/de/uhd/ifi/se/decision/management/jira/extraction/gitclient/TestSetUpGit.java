@@ -5,14 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -21,13 +17,13 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
@@ -57,25 +53,33 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
 	private static int commitTime = 0;
 
-	@BeforeClass
-	public static void setUpBeforeClass() {
+	@Before
+	public void setUp() {
 		init();
+		mockGitRepository();
+		mockJiraIssueForGitTests = new MockIssue();
+		mockJiraIssueForGitTestsTangled = new MockIssue();
+		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
+		mockJiraIssueForGitTests.setKey("TEST-12");
+		mockJiraIssueForGitTestsTangled.setKey("TEST-26");
+		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
+	}
+
+	public static void mockGitRepository() {
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
 				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
 			// git client already exists
 			return;
 		}
-		ConfigPersistenceManager.setGitRepositoryConfiguration("TEST",
-				new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java");
-		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		gitClient = GitClient.getInstance("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit();
 		makeExampleCommit("GodClass.java",
 				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + "\n"
 						+ "// @goal This is a goal outside an issue, let's see where it lands.\n"
@@ -139,28 +143,23 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 		secureGitClients = new ArrayList<GitClient>();
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("HTTP",
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("HTTP");
+		gitConfig.addGitRepoConfiguration(
 				new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
+		ConfigPersistenceManager.saveGitConfiguration("HTTP", gitConfig);
 		secureGitClients.add(GitClient.getInstance("HTTP"));
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITHUB", new GitRepositoryConfiguration(
-				SECURE_GIT_URIS.get(1), "master", "GITHUB", "githubuser", "g1thubT0ken"));
+		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITHUB");
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB",
+				"githubuser", "g1thubT0ken"));
+		ConfigPersistenceManager.saveGitConfiguration("GITHUB", gitConfig);
 		secureGitClients.add(GitClient.getInstance("GITHUB"));
 
-		ConfigPersistenceManager.setGitRepositoryConfiguration("GITLAB", new GitRepositoryConfiguration(
-				SECURE_GIT_URIS.get(2), "master", "GITLAB", "gitlabuser", "g1tl@bT0ken"));
+		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITLAB");
+		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB",
+				"gitlabuser", "g1tl@bT0ken"));
+		ConfigPersistenceManager.saveGitConfiguration("GITLAB", gitConfig);
 		secureGitClients.add(GitClient.getInstance("GITLAB"));
-	}
-
-	@Before
-	public void setUp() {
-		init();
-		mockJiraIssueForGitTests = new MockIssue();
-		mockJiraIssueForGitTestsTangled = new MockIssue();
-		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
-		mockJiraIssueForGitTests.setKey("TEST-12");
-		mockJiraIssueForGitTestsTangled.setKey("TEST-26");
-		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
 	}
 
 	private static String getExampleUri() {
@@ -202,37 +201,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 		return uri;
 	}
 
-	private static void makeExampleCommit() {
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
-		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
-				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
-		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		URL pathUrl = classLoader.getResource(pathToExtractionVCSTestFile);
-		File fileA = new File(pathUrl.getFile());
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
-	}
-
-	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
-		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
-		Git git = gitClientForSingleRepo.getGit();
-		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
-				targetName);
-		try {
-			FileUtils.copyFile(inputFile, gitFile);
-			git.add().addFilepattern(gitFile.getName()).call();
-			PersonIdent defaultCommitter = new PersonIdent("gitTest", "gitTest@test.de");
-			PersonIdent committer = new PersonIdent(defaultCommitter, new Date(commitTime));
-			commitTime = commitTime + 86400;
-			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
-			git.push().setRemote("origin").call();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static void makeExampleCommit(String filename, String content, String commitMessage) {
 		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		if (gitClientForSingleRepo == null) {
+			return;
+		}
 		Git git = gitClientForSingleRepo.getGit();
 		try {
 			File inputFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
@@ -253,14 +226,12 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	private static void setupFeatureBranch() {
 		String firstCommitMessage = "First message";
-		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
+		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
+		if (gitClientForSingleRepo == null) {
+			return;
+		}
+		Git git = gitClientForSingleRepo.getGit();
 		String currentBranch = getCurrentBranch();
-
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToTestFilesDir = "extraction/versioncontrol/";
-		String pathToTestFile = pathToTestFilesDir + "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileB.java";
-		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
 
 		createBranch("TEST-4.feature.branch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
@@ -276,8 +247,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
 						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
-		makeExampleCommit(fileB, testFileTargetName,
-				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 		returnToPreviousBranch(currentBranch, git);

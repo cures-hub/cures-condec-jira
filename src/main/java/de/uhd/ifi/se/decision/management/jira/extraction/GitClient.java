@@ -101,7 +101,7 @@ public class GitClient {
 		this();
 		this.projectKey = projectKey;
 		for (GitRepositoryConfiguration gitRepositoryConfiguration : ConfigPersistenceManager
-				.getGitRepositoryConfigurations(projectKey)) {
+				.getGitConfiguration(projectKey).getGitRepoConfigurations()) {
 			if (gitRepositoryConfiguration.isValid()) {
 				gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitRepositoryConfiguration));
 			}

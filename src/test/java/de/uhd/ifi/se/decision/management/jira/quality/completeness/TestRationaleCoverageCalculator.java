@@ -40,53 +40,53 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDecisionsPerSelectedJiraIssue() {
-		assertEquals(calculator.getDecisionsPerSelectedJiraIssue().size(), 5);
+		assertEquals(5, calculator.getDecisionsPerSelectedJiraIssue().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetIssuesPerSelectedJiraIssue() {
-		assertEquals(calculator.getIssuesPerSelectedJiraIssue().size(), 5);
+		assertEquals(5, calculator.getIssuesPerSelectedJiraIssue().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDecisionDocumentedForSelectedJiraIssue() {
-		assertEquals(calculator.getDecisionDocumentedForSelectedJiraIssue().size(), 3);
+		assertEquals(3, calculator.getDecisionDocumentedForSelectedJiraIssue().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetIssueDocumentedForSelectedJiraIssue() {
-		assertEquals(calculator.getIssueDocumentedForSelectedJiraIssue().size(), 3);
+		assertEquals(3, calculator.getIssueDocumentedForSelectedJiraIssue().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElement() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
-				KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.ISSUE), 2);
+		assertEquals(2, calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+				KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNull() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
-				KnowledgeElements.getTestKnowledgeElement(), null), 0);
+		assertEquals(0, calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(
+				KnowledgeElements.getTestKnowledgeElement(), null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksCorrectType() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
-				KnowledgeType.OTHER), 1);
+		assertEquals(1, calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
+				KnowledgeType.OTHER));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNoLinksIncorrectType() {
-		assertEquals(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
-				KnowledgeType.DECISION), 0);
+		assertEquals(0, calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(new KnowledgeElement(),
+				KnowledgeType.DECISION));
 	}
 
 }

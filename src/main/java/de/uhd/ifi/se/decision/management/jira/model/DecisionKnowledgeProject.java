@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,8 +19,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
@@ -136,54 +134,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if decision knowledge is extracted from git commit messages.
+	 * @return configuration information of the git connection including the git
+	 *         repositories for this project as a {@link GitConfiguration} object.
 	 */
-	public boolean isKnowledgeExtractedFromGit() {
-		return ConfigPersistenceManager.isKnowledgeExtractedFromGit(getProjectKey());
-	}
-
-	/**
-	 * @return true if git commit messages of squashed commits should be posted as
-	 *         Jira issue comments.
-	 */
-	public boolean isPostSquashedCommitsActivated() {
-		return ConfigPersistenceManager.isPostSquashedCommitsActivated(getProjectKey());
-	}
-
-	/**
-	 * @return true if git commit messages of feature branch commits should be
-	 *         posted as Jira issue comments.
-	 */
-	public boolean isPostFeatureBranchCommitsActivated() {
-		return ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(getProjectKey());
-	}
-
-	/**
-	 * @return configuration information of the git repositories for this project as
-	 *         a {@link List<GitRepositoryConfiguration>} (if it is set, otherwise
-	 *         an empty list).
-	 */
-	public List<GitRepositoryConfiguration> getGitRepositoryConfigurations() {
-		return ConfigPersistenceManager.getGitRepositoryConfigurations(getProjectKey());
-	}
-
-	public Map<String, CommentStyleType> getCodeFileEndings() {
-		return ConfigPersistenceManager.getCodeFileEndings(getProjectKey());
-	}
-
-	public String getCodeFileEndings(String commentStyleTypeString) {
-		Map<String, CommentStyleType> codeFileEndingMap = this.getCodeFileEndings();
-		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-		String codeFileEndings = "";
-		for (String codeFileEnding : codeFileEndingMap.keySet()) {
-			if (codeFileEndingMap.get(codeFileEnding) == commentStyleType) {
-				codeFileEndings += codeFileEnding + ", ";
-			}
-		}
-		if (!codeFileEndings.isEmpty()) {
-			return codeFileEndings.substring(0, codeFileEndings.length() - 2); // remove last ", "
-		}
-		return codeFileEndings;
+	public GitConfiguration getGitConfiguration() {
+		return ConfigPersistenceManager.getGitConfiguration(getProjectKey());
 	}
 
 	/**

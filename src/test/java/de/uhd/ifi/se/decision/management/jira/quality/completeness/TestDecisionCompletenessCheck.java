@@ -70,11 +70,11 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void testIsNotLinkedToPro() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(decisionCompletenessCheck.execute(decision));
 
 		// restore default
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	public void testIsLinkedToPro() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
@@ -93,6 +93,6 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 	@After
 	public void tearDown() {
 		// restore default
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 }

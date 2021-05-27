@@ -82,7 +82,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		// set criteria "issue has to be linked to alternative" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", definitionOfDone);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.execute(issue));
 		assertFalse(issueCompletenessCheck.execute(KnowledgeElements.getUnsolvedDecisionProblem()));
@@ -91,6 +91,6 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 	@After
 	public void tearDown() {
 		// restore default
-		ConfigPersistenceManager.setDefinitionOfDone("TEST", new DefinitionOfDone());
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
 	}
 }
