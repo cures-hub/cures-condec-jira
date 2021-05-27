@@ -3,29 +3,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestGitDiffedCodeExtractionManager extends TestSetUpGit {
-
-	@Before
-	public void setUp() {
-		super.setUp();
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java");
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setCodeFileEndings(codeFileEndingMap);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-	}
 
 	@Test
 	public void testDiffEmpty() {

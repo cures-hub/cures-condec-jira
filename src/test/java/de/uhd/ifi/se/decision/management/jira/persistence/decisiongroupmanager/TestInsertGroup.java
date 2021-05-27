@@ -2,23 +2,19 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -43,11 +39,6 @@ public class TestInsertGroup extends TestSetUpGit {
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
 		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java");
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setCodeFileEndings(codeFileEndingMap);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	@Test

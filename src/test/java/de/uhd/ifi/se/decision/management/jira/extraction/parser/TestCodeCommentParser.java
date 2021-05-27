@@ -2,18 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestCodeCommentParser extends TestSetUp {
 
@@ -39,11 +35,6 @@ public class TestCodeCommentParser extends TestSetUp {
 						+ " * \n" + " * not rationale text anymore\n" + " */ \t \n}");
 		file.setSummary("example.java");
 		file.setProject("TEST");
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java");
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setCodeFileEndings(codeFileEndingMap);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(file);
 		assertTrue(codeComments.size() == 6);

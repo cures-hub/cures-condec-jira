@@ -28,6 +28,9 @@ public class GitConfiguration {
 		setPostDefaultBranchCommitsActivated(false);
 		setPostFeatureBranchCommitsActivated(false);
 		this.codeFileEndings = new HashMap<String, CommentStyleType>();
+		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
+		codeFileEndingMap.put("JAVA_C", "java");
+		setCodeFileEndings(codeFileEndingMap);
 	}
 
 	/**
