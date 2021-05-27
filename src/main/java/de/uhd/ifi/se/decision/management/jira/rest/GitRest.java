@@ -22,11 +22,14 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
@@ -195,6 +198,35 @@ public class GitRest {
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + issueKey);
 		return Response.ok(new DiffViewer(projectKey, issueKey)).build();
+	}
+
+	// TODO Change to POST and pass FilterSettings object
+	@Path("/getSummarizedCode")
+	@GET
+	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation,
+			@QueryParam("probability") int probability) {
+		if (projectKey == null || id <= 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
+		}
+
+		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error",
+							"Getting summarized code failed since git extraction is disabled for this project."))
+					.build();
+		}
+
+		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+				documentationLocation);
+		Issue jiraIssue = element.getJiraIssue();
+
+		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
+		if (summary == null || summary.isEmpty()) {
+			summary = "This Jira issue does not have any code committed.";
+		}
+		return Response.ok(summary).build();
 	}
 
 	private String getProjectKey(String elementKey) {

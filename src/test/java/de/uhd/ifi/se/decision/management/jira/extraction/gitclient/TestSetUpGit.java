@@ -5,12 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -69,7 +67,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	public static void mockGitRepository() {
-		// init();
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
 				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
 			// git client already exists
@@ -85,7 +82,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 			return;
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit();
 		makeExampleCommit("GodClass.java",
 				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + "\n"
 						+ "// @goal This is a goal outside an issue, let's see where it lands.\n"
@@ -207,35 +203,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		return uri;
 	}
 
-	private static void makeExampleCommit() {
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToExtractionVCSTestFilesDir = "extraction/versioncontrol/";
-		String pathToExtractionVCSTestFile = pathToExtractionVCSTestFilesDir
-				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
-		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		URL pathUrl = classLoader.getResource(pathToExtractionVCSTestFile);
-		File fileA = new File(pathUrl.getFile());
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
-	}
-
-	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
-		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
-		Git git = gitClientForSingleRepo.getGit();
-		File gitFile = new File(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().getParent(),
-				targetName);
-		try {
-			FileUtils.copyFile(inputFile, gitFile);
-			git.add().addFilepattern(gitFile.getName()).call();
-			PersonIdent defaultCommitter = new PersonIdent("gitTest", "gitTest@test.de");
-			PersonIdent committer = new PersonIdent(defaultCommitter, new Date(commitTime));
-			commitTime = commitTime + 86400;
-			git.commit().setMessage(commitMessage).setAuthor(committer).setCommitter(committer).call();
-			git.push().setRemote("origin").call();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static void makeExampleCommit(String filename, String content, String commitMessage) {
 		GitClientForSingleRepository gitClientForSingleRepo = gitClient.getGitClientsForSingleRepo(GIT_URI);
 		Git git = gitClientForSingleRepo.getGit();
@@ -261,12 +228,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		Git git = gitClient.getGitClientsForSingleRepo(GIT_URI).getGit();
 		String currentBranch = getCurrentBranch();
 
-		ClassLoader classLoader = TestSetUpGit.class.getClassLoader();
-		String pathToTestFilesDir = "extraction/versioncontrol/";
-		String pathToTestFile = pathToTestFilesDir + "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileB.java";
-		String testFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
-		File fileB = new File(classLoader.getResource(pathToTestFile).getFile());
-
 		createBranch("TEST-4.feature.branch");
 		makeExampleCommit("readMe.featureBranch.txt", "First content", firstCommitMessage);
 
@@ -281,8 +242,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
 						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
-		makeExampleCommit(fileB, testFileTargetName,
-				"modified rationale text, reproducing replace problem observed " + "with CONDEC-505 feature branch");
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
 		returnToPreviousBranch(currentBranch, git);

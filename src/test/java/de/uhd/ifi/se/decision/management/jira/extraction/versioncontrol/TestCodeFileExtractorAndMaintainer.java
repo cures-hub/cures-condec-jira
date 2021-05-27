@@ -34,7 +34,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	public void testMaintainChangedFilesDiffValidNoFilesInDatabase() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").maintainChangedFilesInDatabase(diff);
-		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
+		assertEquals(5, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		persistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").maintainChangedFilesInDatabase(diff);
-		assertEquals(7, persistenceManager.getKnowledgeElements().size());
+		assertEquals(6, persistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
@@ -62,8 +62,8 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
 		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
-		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
+		assertEquals(5, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
-		assertEquals(6, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
+		assertEquals(5, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
 	}
 }

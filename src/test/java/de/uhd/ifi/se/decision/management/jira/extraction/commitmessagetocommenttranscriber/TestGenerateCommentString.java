@@ -39,13 +39,13 @@ public class TestGenerateCommentString extends TestSetUpGit {
 
 	@Test
 	public void testEmptyCommitMessage() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(4);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(3);
 		assertEquals("", transcriber.generateCommentString(commit, branch, GIT_URI));
 	}
 
 	@Test
 	public void testIssueMessageWithAdditionalText() {
-		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(5);
+		RevCommit commit = TestSetUpGit.gitClient.getFeatureBranchCommits(branch).get(4);
 		String commitMetaData = "\r\n\r\nAuthor: gitTest\r\n" + "Repository and Branch: " + GIT_URI + " "
 				+ "refs/remotes/origin/TEST-4.feature.branch\r\n" + "Commit Hash: ";
 

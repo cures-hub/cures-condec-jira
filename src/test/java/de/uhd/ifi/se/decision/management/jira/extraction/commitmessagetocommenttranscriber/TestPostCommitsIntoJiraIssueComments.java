@@ -25,7 +25,7 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	@Test
 	public void testPostCommits() {
-		assertEquals(5, transcriber.postCommitsIntoJiraIssueComments().size());
+		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 
 	@Test
@@ -41,12 +41,12 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	@Test
 	public void testPostFeatureBranchCommits() {
-		assertEquals(5, transcriber.postFeatureBranchCommits().size());
+		assertEquals(4, transcriber.postFeatureBranchCommits().size());
 	}
 
 	@Test
 	public void testPostCommitsAlreadyPosted() {
-		assertEquals(5, transcriber.postCommitsIntoJiraIssueComments().size());
+		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 		assertEquals(0, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 }

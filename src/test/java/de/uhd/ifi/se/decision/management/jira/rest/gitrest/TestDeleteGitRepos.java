@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -16,14 +15,12 @@ import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-@Ignore
 public class TestDeleteGitRepos extends TestSetUpGit {
-	protected HttpServletRequest request;
-	protected GitRest gitRest;
+	private HttpServletRequest request;
+	private GitRest gitRest;
 
-	@Override
 	@Before
-	public void setUp() {
+	public void setUpBeforeClass() {
 		super.setUp();
 		gitRest = new GitRest();
 		request = new MockHttpServletRequest();

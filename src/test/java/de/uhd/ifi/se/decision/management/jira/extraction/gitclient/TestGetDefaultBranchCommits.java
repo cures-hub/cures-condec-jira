@@ -12,13 +12,13 @@ public class TestGetDefaultBranchCommits extends TestSetUpGit {
 	@Test
 	public void testAllDefaultBranchCommits() {
 		List<RevCommit> allCommits = gitClient.getDefaultBranchCommits();
-		assertEquals(7, allCommits.size());
+		assertEquals(6, allCommits.size());
 	}
 
 	@Test
 	public void testDefaultBranchCommitsOfJiraIssue() {
 		List<RevCommit> allCommits = gitClient.getDefaultBranchCommits(mockJiraIssueForGitTests);
-		assertEquals(2, allCommits.size());
+		assertEquals(1, allCommits.size());
 	}
 
 	@Test

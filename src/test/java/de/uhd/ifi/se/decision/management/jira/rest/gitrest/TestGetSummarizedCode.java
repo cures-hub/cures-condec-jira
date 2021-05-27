@@ -1,22 +1,23 @@
-package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
-
-import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
-import org.junit.Before;
-import org.junit.Test;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
+
 public class TestGetSummarizedCode extends TestSetUpGit {
 
-	private KnowledgeRest knowledgeRest;
+	private GitRest knowledgeRest;
 
 	@Override
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		knowledgeRest = new GitRest();
 		super.setUp();
 	}
 
