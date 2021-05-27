@@ -95,7 +95,7 @@
     var gitToggle = document.getElementById("isKnowledgeExtractedFromGit-toggle");
     gitToggle.addEventListener("change", function (error) {
         this.busy = true;
-        conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
+        conDecGitAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
        	document.getElementById("isPostDefaultBranchCommits-toggle").disabled = !this.checked;
         document.getElementById("isPostFeatureBranchCommits-toggle").disabled = !this.checked;
         this.busy = false;
@@ -193,7 +193,7 @@
 			gitRepositoryConfigurations.push(gitRepositoryConfiguration);
         }
        
-        conDecAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
+        conDecGitAPI.setGitRepositoryConfigurations("$projectKey", gitRepositoryConfigurations);
 		
         window.onbeforeunload = null;
     });

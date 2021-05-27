@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,17 +17,17 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfi
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
-	private ViewRest viewRest;
+	private GitRest gitRest;
 	protected HttpServletRequest request;
 
 	@Override
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		gitRest = new GitRest();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();
@@ -36,13 +36,13 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testEmptyIssueKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.getElementsFromAllBranchesOfProject("").getStatus());
 	}
 
 	@Test
 	public void testUnknownProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
+				gitRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		assertEquals(Status.OK.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), gitRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 		gitConfig.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
+				gitRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
 	}
 
 	@After

@@ -39,7 +39,7 @@ function getBranchesDiff(forceRest) {
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "Loading ...";
 
-	url = conDecAPI.restPrefix + "/view/elementsFromBranchesOfJiraIssue.json?issueKey="
+	url = conDecGitAPI.restPrefix + "/elementsFromBranchesOfJiraIssue.json?issueKey="
 			+ conDecAPI.getIssueKey();
 
 	/* get cache or server data? */

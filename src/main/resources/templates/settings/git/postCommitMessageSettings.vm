@@ -40,13 +40,13 @@
 <script>
 	document.getElementById("isPostDefaultBranchCommits-toggle").addEventListener('change', function (event) {
         this.busy = true;
-        conDecAPI.setPostDefaultBranchCommits(this.checked, this.value);
+        conDecGitAPI.setPostDefaultBranchCommits(this.checked, this.value);
         this.busy = false;
     });
 
 	document.getElementById("isPostFeatureBranchCommits-toggle").addEventListener('change', function (event) {
         this.busy = true;
-        conDecAPI.setPostFeatureBranchCommits(this.checked, this.value);
+        conDecGitAPI.setPostFeatureBranchCommits(this.checked, this.value);
         this.busy = false;
     });
 </script>

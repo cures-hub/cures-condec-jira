@@ -34,7 +34,7 @@
             "TEX": codeCommentStyleTeX
         };
        
-        conDecAPI.setCodeFileEndings("$projectKey", codeFileEndings);		
+        conDecGitAPI.setCodeFileEndings("$projectKey", codeFileEndings);		
         window.onbeforeunload = null;
     });
 </script>

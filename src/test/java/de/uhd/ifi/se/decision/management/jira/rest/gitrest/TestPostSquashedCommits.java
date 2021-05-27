@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,18 +11,18 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestPostSquashedCommits extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ConfigRest configRest;
+	private GitRest gitRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		gitRest = new GitRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -30,18 +30,18 @@ public class TestPostSquashedCommits extends TestSetUp {
 	@Test
 	public void testOk() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setPostDefaultBranchCommits(request, "TEST", true).getStatus());
+				gitRest.setPostDefaultBranchCommits(request, "TEST", true).getStatus());
 	}
 
 	@Test
 	public void testInvalidKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setPostDefaultBranchCommits(request, null, true).getStatus());
+				gitRest.setPostDefaultBranchCommits(request, null, true).getStatus());
 	}
 
 	@Test
 	public void testEmptyKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setPostDefaultBranchCommits(request, "", true).getStatus());
+				gitRest.setPostDefaultBranchCommits(request, "", true).getStatus());
 	}
 }

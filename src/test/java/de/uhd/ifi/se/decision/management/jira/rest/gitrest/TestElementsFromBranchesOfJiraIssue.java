@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,18 +17,18 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfi
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
-	private ViewRest viewRest;
+	private GitRest gitRest;
 	protected HttpServletRequest request;
 
 	@Override
 	@Before
 	public void setUp() {
-		viewRest = new ViewRest();
+		gitRest = new GitRest();
 		init();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
 		request = new MockHttpServletRequest();
@@ -38,25 +38,25 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Test
 	public void testRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(null, null).getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(null, null).getStatus());
 	}
 
 	@Test
 	public void testIssueKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(request, null).getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(request, null).getStatus());
 	}
 
 	@Test
 	public void testEmptyIssueKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "").getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "").getStatus());
 	}
 
 	@Test
 	public void testUnknownIssueKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "HOUDINI-1").getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "HOUDINI-1").getStatus());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 		gitConfig.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.OK.getStatusCode(),
-				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
+				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
 	}
 
 	@After

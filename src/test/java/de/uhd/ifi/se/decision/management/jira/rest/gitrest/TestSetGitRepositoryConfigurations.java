@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,19 +19,19 @@ import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSetGitRepositoryConfigurations extends TestSetUp {
 
 	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	protected GitRest gitRest;
 	private List<GitRepositoryConfiguration> gitRepositoryConfigurations;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		gitRest = new GitRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
@@ -43,19 +43,19 @@ public class TestSetGitRepositoryConfigurations extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNullGitRepositoryConfigurationsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(null, null, null).getStatus());
+				gitRest.setGitRepositoryConfigurations(null, null, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyNullGitRepositoryConfigurationsProvided() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(null, null, gitRepositoryConfigurations).getStatus());
+				gitRest.setGitRepositoryConfigurations(null, null, gitRepositoryConfigurations).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyValidGitRepositoryConfigurationsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", null).getStatus());
+				gitRest.setGitRepositoryConfigurations(request, "TEST", null).getStatus());
 	}
 
 	@Test
@@ -64,13 +64,13 @@ public class TestSetGitRepositoryConfigurations extends TestSetUp {
 		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
 		gitRepositoryConfigurations.add(gitRepositoryConfiguration);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
+				gitRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
+				gitRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
 	}
 
 	@AfterClass

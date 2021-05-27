@@ -13,7 +13,7 @@
 	const deleteRepositoriesButton = document.getElementById("delete-repos-button");
     deleteRepositoriesButton.addEventListener("click", function () {
         if (confirm("Are you sure you want to delete the git repositories in file system? This cannot be reverted (only by cloning them again).")) {
-            conDecAPI.deleteGitRepos("$projectKey");
+            conDecGitAPI.deleteGitRepos("$projectKey");
         }
     });
 </script>
