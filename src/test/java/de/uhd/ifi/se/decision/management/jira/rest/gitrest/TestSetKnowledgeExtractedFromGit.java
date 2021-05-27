@@ -74,22 +74,4 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUpGit {
 		assertEquals(Response.Status.OK.getStatusCode(),
 				gitRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
 	}
-
-	@Test
-	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
-		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration(
-				"/this/path/does/not/exist", "master", "", "", "");
-		List<GitRepositoryConfiguration> badGitRepositoryConfigurations = new ArrayList<>();
-		badGitRepositoryConfigurations.add(badGitRepositoryConfiguration);
-		assertEquals(Status.OK.getStatusCode(),
-				gitRest.setGitRepositoryConfigurations(request, "TEST", badGitRepositoryConfigurations).getStatus());
-		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-				gitRest.setKnowledgeExtractedFromGit(request, "TEST", true).getStatus());
-		List<GitRepositoryConfiguration> gitRepositoryConfigurations = new ArrayList<>();
-		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
-				"master", "", "", "");
-		gitRepositoryConfigurations.add(gitRepositoryConfiguration);
-		assertEquals(Status.OK.getStatusCode(),
-				gitRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
-	}
 }

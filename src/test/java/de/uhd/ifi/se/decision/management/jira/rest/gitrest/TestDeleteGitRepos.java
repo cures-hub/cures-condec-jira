@@ -38,5 +38,4 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 	public void testRequestValidProjectKeyValid() {
 		assertEquals(Status.OK.getStatusCode(), gitRest.deleteGitRepos(request, "TEST").getStatus());
 	}
-
 }
