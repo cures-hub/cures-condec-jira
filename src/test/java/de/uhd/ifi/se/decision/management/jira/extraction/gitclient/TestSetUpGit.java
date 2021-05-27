@@ -19,7 +19,6 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
@@ -30,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfi
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -56,14 +56,26 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
 	private static int commitTime = 0;
 
-	@BeforeClass
-	public static void setUpBeforeClass() {
+	@Before
+	public void setUp() {
 		init();
+		mockGitRepository();
+		mockJiraIssueForGitTests = new MockIssue();
+		mockJiraIssueForGitTestsTangled = new MockIssue();
+		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
+		mockJiraIssueForGitTests.setKey("TEST-12");
+		mockJiraIssueForGitTestsTangled.setKey("TEST-26");
+		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
+	}
+
+	public static void mockGitRepository() {
+		// init();
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
 				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
 			// git client already exists
 			return;
 		}
+		KnowledgeGraph.getInstance("TEST");
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
@@ -154,20 +166,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 				"gitlabuser", "g1tl@bT0ken"));
 		ConfigPersistenceManager.saveGitConfiguration("GITLAB", gitConfig);
 		secureGitClients.add(GitClient.getInstance("GITLAB"));
-	}
-
-	@Before
-	public void setUp() {
-		init();
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setActivated(true);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		mockJiraIssueForGitTests = new MockIssue();
-		mockJiraIssueForGitTestsTangled = new MockIssue();
-		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
-		mockJiraIssueForGitTests.setKey("TEST-12");
-		mockJiraIssueForGitTestsTangled.setKey("TEST-26");
-		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
 	}
 
 	private static String getExampleUri() {

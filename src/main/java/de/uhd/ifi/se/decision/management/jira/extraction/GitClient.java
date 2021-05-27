@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
@@ -88,10 +89,10 @@ public class GitClient {
 			return null;
 		}
 		if (extractAllCodeKnowledge) {
-			// new Thread(() -> {
-			// Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-			// new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
-			// }).start();
+			new Thread(() -> {
+				Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+				new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
+			}).start();
 		}
 		return gitClient;
 	}
