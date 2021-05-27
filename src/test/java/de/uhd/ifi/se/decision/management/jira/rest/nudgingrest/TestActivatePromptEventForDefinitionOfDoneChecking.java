@@ -10,11 +10,11 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.NudgingRest;
-import de.uhd.ifi.se.decision.management.jira.rest.configrest.TestConfigSuper;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestActivatePromptEventForDefinitionOfDoneChecking extends TestConfigSuper {
+public class TestActivatePromptEventForDefinitionOfDoneChecking extends TestSetUp {
 	protected HttpServletRequest request;
 	protected NudgingRest nudgingRest;
 

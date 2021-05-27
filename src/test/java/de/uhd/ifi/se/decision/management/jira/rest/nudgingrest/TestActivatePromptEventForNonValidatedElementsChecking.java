@@ -1,18 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.rest.nudgingrest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import de.uhd.ifi.se.decision.management.jira.rest.NudgingRest;
-import de.uhd.ifi.se.decision.management.jira.rest.configrest.TestConfigSuper;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestActivatePromptEventForNonValidatedElementsChecking extends TestConfigSuper {
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.NudgingRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestActivatePromptEventForNonValidatedElementsChecking extends TestSetUp {
 	protected HttpServletRequest request;
 	protected NudgingRest nudgingRest;
 
@@ -26,19 +28,19 @@ public class TestActivatePromptEventForNonValidatedElementsChecking extends Test
 
 	@Test
 	public void testRequestValidProjectValidEventTypeValidIsActivatedTrue() {
-		assertEquals(Response.Status.OK.getStatusCode(),
-			nudgingRest.activatePromptEventForNonValidatedElementsChecking(request, "TEST", "done", true).getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), nudgingRest
+				.activatePromptEventForNonValidatedElementsChecking(request, "TEST", "done", true).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectValidEventTypeValidIsActivatedTrue() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-			nudgingRest.activatePromptEventForNonValidatedElementsChecking(null, "TEST", "done", true).getStatus());
+				nudgingRest.activatePromptEventForNonValidatedElementsChecking(null, "TEST", "done", true).getStatus());
 	}
 
 	@Test
 	public void testRequestValidProjectNullEventTypeValidIsActivatedTrue() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-			nudgingRest.activatePromptEventForNonValidatedElementsChecking(request, null, "done", true).getStatus());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), nudgingRest
+				.activatePromptEventForNonValidatedElementsChecking(request, null, "done", true).getStatus());
 	}
 }
