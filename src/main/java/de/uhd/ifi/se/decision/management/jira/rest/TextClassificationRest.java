@@ -1,36 +1,39 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
+import com.google.common.collect.ImmutableMap;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import smile.validation.ClassificationMetrics;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
-import com.google.common.collect.ImmutableMap;
-
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
-import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import smile.validation.ClassificationMetrics;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * REST resource for text classification and its configuration.
@@ -182,17 +185,69 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 		TextClassificationConfiguration config = new DecisionKnowledgeProject(projectKey)
-				.getTextClassificationConfiguration();
-		if (!Boolean.valueOf(config.isActivated())) {
+			.getTextClassificationConfiguration();
+		if (!config.isActivated()) {
 			return Response.status(Status.FORBIDDEN)
-					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
 		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
-				projectKey);
+			projectKey);
 		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
 		}
 		return Response.ok().build();
+	}
+
+	@Path("/getNonValidatedElements")
+	@GET
+	public Response getNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+
+		if (request == null || projectKey == null || issueKey == null) {
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
+				.build();
+		}
+
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+		long id = jiraIssue.getId();
+
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
+		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
+		for (KnowledgeElement element : elements) {
+			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
+			if (!issueTextPart.isValidated()) {
+				nonValidatedElements.add(issueTextPart);
+			}
+		}
+		return Response.ok().entity(ImmutableMap.of("nonValidatedElements", nonValidatedElements)).build();
+	}
+
+	@Path("/validateAllElements")
+	@POST
+	public Response validateAllElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+
+		if (request == null || projectKey == null || issueKey == null) {
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
+				.build();
+		}
+
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+		long id = jiraIssue.getId();
+
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
+
+		for (KnowledgeElement element : elements) {
+			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
+			if (!issueTextPart.isValidated()) {
+				issueTextPart.setValidated(true);
+				manager.updateInDatabase(issueTextPart);
+			}
+		}
+		return Response.status(Status.OK).build();
+
 	}
 }

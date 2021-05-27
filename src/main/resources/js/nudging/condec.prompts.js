@@ -7,6 +7,7 @@
 				// just-in-time prompts when status changes
 				conDecPrompt.promptLinkSuggestion();
 				conDecPrompt.promptDefinitionOfDoneChecking();
+				conDecPrompt.promptNonValidatedElements();
 			}
 		});
 	};
@@ -72,11 +73,56 @@
 					type: "warning"
 
 				});
-				document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
+				document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
 					flag.close();
 				};
 			});
 	}
+	
+	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+		const issueKey = conDecAPI.getIssueKey();
+		if (issueKey === null || issueKey === undefined) {
+			return;
+		}
+
+		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
+			.then(response => {
+				if (response["nonValidatedElements"].length === 0) {
+					return;
+				}
+				const nonValidatedElements = response["nonValidatedElements"]
+
+				document.getElementById("non-validated-elements-prompt-jira-issue-key").innerHTML = issueKey;
+				document.getElementById("num-non-validated-elements").innerHTML = response["nonValidatedElements"].length
+
+				const flag = AJS.flag({
+					body: document.getElementById("non-validated-elements-prompt").outerHTML,
+					title: "Non-validated elements found!",
+					type: "warning"
+				})
+				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
+					flag.close();
+
+				};
+				document.getElementById("non-validated-elements-ignore-button").onclick = function () {
+					flag.close();
+				};
+
+
+				let tableContents = "";
+				nonValidatedElements.forEach(recommendation => {
+					let tableRow = "<tr>";
+					tableRow += "<td> " + recommendation.summary + "</td>";
+					tableRow += "<td>" + recommendation.type + "</td>";
+					tableRow += "</tr>";
+					tableContents += tableRow;
+
+				});
+				document.getElementById("non-validated-table-body").innerHTML = tableContents;
+			})
+	}
+
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);

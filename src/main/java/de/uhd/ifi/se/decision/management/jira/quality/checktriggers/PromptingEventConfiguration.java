@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the just-in-time-prompts of "smart"
@@ -13,10 +13,12 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 public class PromptingEventConfiguration {
 	private Set<String> eventsForLinkSuggestion;
 	private Set<String> eventsForDefinitionOfDoneChecking;
+	private Set<String> eventsForNonValidatedElementsChecking;
 
 	public PromptingEventConfiguration() {
 		eventsForLinkSuggestion = new HashSet<>();
 		eventsForDefinitionOfDoneChecking = new HashSet<>();
+		eventsForNonValidatedElementsChecking = new HashSet<>();
 	}
 
 	public boolean isPromptEventForLinkSuggestionActivated(String eventName) {
@@ -42,4 +44,14 @@ public class PromptingEventConfiguration {
 	public void setPromptEventForDefinitionOfDoneChecking(String eventKey, boolean isActivated) {
 		setPromptEvent(eventKey, isActivated, eventsForDefinitionOfDoneChecking);
 	}
+
+	public boolean isPromptEventForNonValidatedElementsCheckingActivated(String eventName) {
+		return eventsForNonValidatedElementsChecking.contains(eventName);
+	}
+
+	public void setPromptEventForNonValidatedElementsChecking(String eventKey, boolean isActivated) {
+		setPromptEvent(eventKey, isActivated, eventsForNonValidatedElementsChecking);
+	}
+
+
 }

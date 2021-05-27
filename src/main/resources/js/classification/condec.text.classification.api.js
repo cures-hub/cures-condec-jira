@@ -87,7 +87,7 @@
 
 	ConDecTextClassificationAPI.prototype.saveTrainingFile = function(projectKey, callback) {
 		generalApi.postJSON(this.restPrefix + "/saveTrainingFile.json?projectKey=" + projectKey, null,
-			function(error, response) {
+			function (error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The training file was successfully created and saved in "
 						+ response["trainingFile"] + ".");
@@ -95,6 +95,22 @@
 				}
 			});
 	};
+
+	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function (projectKey, issueKey) {
+		return generalApi.getJSONReturnPromise(`${this.restPrefix}
+		/getNonValidatedElements.json
+		?projectKey=${projectKey}
+		&issueKey=${issueKey}`
+		);
+	}
+
+	ConDecTextClassificationAPI.prototype.validateAllElements = function (projectKey, issueKey) {
+		return generalApi.postJSON(`${this.restPrefix}
+		/validateAllElements.json
+		?projectKey=${projectKey}
+		&issueKey=${issueKey}`
+		);
+	}
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
 })(window);

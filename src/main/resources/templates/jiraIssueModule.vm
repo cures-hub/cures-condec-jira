@@ -85,6 +85,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #parse("templates/contextMenu.vm")
 #parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
+<div style="display:none">
+#parse("templates/prompts/nonValidatedElementsPrompt.vm")
+</div>
+
 <script>
     $(document).ready(function () {
         conDecAPI.checkIfProjectKeyIsValid();
