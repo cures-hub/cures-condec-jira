@@ -10,7 +10,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
@@ -62,21 +61,15 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testJiraIssueKeyExisting() {
 		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		assertEquals(1, diff.getChangedFiles().size());
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();
 
-		assertTrue(changedFiles.get(0).getDiffEntry().toString()
-				.contains("ADD GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java"));
+		assertEquals("DiffEntry[ADD GodClass.java]", changedFiles.get(0).getDiffEntry().toString());
 		assertEquals(1, changedFiles.get(0).getEditList().size());
-		assertTrue(changedFiles.get(0).getEditList().toString().contains("INSERT(0-0,0-19)"));
-
-		assertTrue(changedFiles.get(1).getDiffEntry().toString().contains("ADD GodClass.java"));
-		assertEquals(1, changedFiles.get(1).getEditList().size());
-		assertTrue(changedFiles.get(1).getEditList().toString().contains("INSERT(0-0,0-25)"));
+		assertEquals("EditList[INSERT(0-0,0-25)]", changedFiles.get(0).getEditList().toString());
 	}
 
 	@Test
@@ -86,5 +79,4 @@ public class TestGetDiff extends TestSetUpGit {
 		assertEquals(1, diff.getChangedFiles().get(2).getCommits().size());
 		assertEquals("TEST-62", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
 	}
-
 }
