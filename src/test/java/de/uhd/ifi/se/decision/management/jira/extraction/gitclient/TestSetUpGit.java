@@ -164,6 +164,9 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		mockJiraIssueForGitTests = new MockIssue();
 		mockJiraIssueForGitTestsTangled = new MockIssue();
 		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
