@@ -1,16 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -20,7 +9,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -33,6 +21,11 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -362,7 +355,7 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void savePromptingEventConfiguration(String projectKey,
-			PromptingEventConfiguration promptingEventConfiguration) {
+													   PromptingEventConfiguration promptingEventConfiguration) {
 		Type type = new TypeToken<PromptingEventConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "promptingEventConfiguration", promptingEventConfiguration, type);

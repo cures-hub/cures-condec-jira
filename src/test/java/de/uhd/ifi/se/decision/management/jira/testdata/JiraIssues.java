@@ -67,10 +67,10 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(2, jiraIssueTypes.get(1), project, "How can we implement the feature?", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(12, jiraIssueTypes.get(1), project, "How can we implement the new get function?",
-				user);
+			user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(32, jiraIssueTypes.get(1), project, "What shall we do with the drunken sailor?",
-				user);
+			user);
 		jiraIssues.add(jiraIssue);
 
 		// Alternative

@@ -398,7 +398,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setDescription(element.getDescription());
 		sentence.setStatus(element.getStatus());
 		sentence.setType(element.getType());
-		sentence.setValidated(true);
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 		return updateElementInTextAndDatabase(sentence, user);
 	}
