@@ -4,11 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -75,44 +67,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetDecisionKnowledgeTypes() {
 		assertEquals(18, project.getConDecKnowledgeTypes().size());
 		assertEquals(18, project.getNamesOfConDecKnowledgeTypes().size());
-	}
-
-	@Test
-	public void testGetGitRepositoryConfigurations() {
-		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
-				"master", "HTTP", "heinz.guenther", "P@ssw0rd!");
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.addGitRepoConfiguration(gitRepositoryConfiguration);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		List<GitRepositoryConfiguration> gitConfs = project.getGitConfiguration().getGitRepoConfigurations();
-		assertEquals("master", gitConfs.get(0).getDefaultBranch());
-		assertEquals("HTTP", gitConfs.get(0).getAuthMethod());
-		assertEquals("heinz.guenther", gitConfs.get(0).getUsername());
-		assertEquals("P@ssw0rd!", gitConfs.get(0).getToken());
-	}
-
-	@Test
-	public void testGetCodeFileEndings() {
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java, c++, C");
-		codeFileEndingMap.put("PYTHON", "py");
-		codeFileEndingMap.put("HTML", "js, ts");
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setCodeFileEndings(codeFileEndingMap);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		List<String> codeFileEndingsJavaC = Arrays
-				.asList(project.getGitConfiguration().getCodeFileEndings("JAVA_C").split(", "));
-		List<String> codeFileEndingsPython = Arrays
-				.asList(project.getGitConfiguration().getCodeFileEndings("PYTHON").split(", "));
-		List<String> codeFileEndingsHTML = Arrays
-				.asList(project.getGitConfiguration().getCodeFileEndings("HTML").split(", "));
-		assertTrue(codeFileEndingsJavaC.contains("java"));
-		assertTrue(codeFileEndingsJavaC.contains("c++"));
-		assertTrue(codeFileEndingsJavaC.contains("c"));
-		assertTrue(codeFileEndingsPython.contains("py"));
-		assertTrue(codeFileEndingsHTML.contains("js"));
-		assertTrue(codeFileEndingsHTML.contains("ts"));
-		assertTrue(project.getGitConfiguration().getCodeFileEndings("TEX").equals(""));
 	}
 
 	@Test
@@ -192,6 +146,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetPromptingEventConfiguration() {
 		assertFalse(
 				project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("finished"));
+	}
+
+	@Test
+	public void testGetGitConfigurations() {
+		assertFalse(project.getGitConfiguration().isPostFeatureBranchCommitsActivated());
 	}
 
 	@AfterClass
