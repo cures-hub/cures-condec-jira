@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
@@ -22,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetGitRepositoryConfigurations extends TestSetUp {
+public class TestSetGitRepositoryConfigurations extends TestSetUpGit {
 
 	protected HttpServletRequest request;
 	protected GitRest gitRest;

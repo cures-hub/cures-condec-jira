@@ -10,18 +10,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
+public class TestSetKnowledgeExtractedFromGit extends TestSetUpGit {
 
 	protected HttpServletRequest request;
 	protected GitRest gitRest;
@@ -78,7 +76,6 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUp {
 	}
 
 	@Test
-	@Ignore
 	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
 		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration(
 				"/this/path/does/not/exist", "master", "", "", "");
