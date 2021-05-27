@@ -216,11 +216,38 @@ public class TextClassificationRest {
 		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
 		for (KnowledgeElement element : elements) {
-				PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-				if (!issueTextPart.isValidated()) {
-					nonValidatedElements.add(issueTextPart);
-				}
+			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
+			if (!issueTextPart.isValidated()) {
+				nonValidatedElements.add(issueTextPart);
+			}
 		}
 		return Response.ok().entity(ImmutableMap.of("nonValidatedElements", nonValidatedElements)).build();
+	}
+
+	@Path("/validateAllElements")
+	@POST
+	public Response validateAllElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+
+		if (request == null || projectKey == null || issueKey == null) {
+			return Response.status(Response.Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
+				.build();
+		}
+
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+		long id = jiraIssue.getId();
+
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
+
+		for (KnowledgeElement element : elements) {
+			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
+			if (!issueTextPart.isValidated()) {
+				issueTextPart.setValidated(true);
+				manager.updateInDatabase(issueTextPart);
+			}
+		}
+		return Response.status(Status.OK).build();
+
 	}
 }
