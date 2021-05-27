@@ -216,8 +216,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 				+ "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.FileA.java";
 		String extractionVCSTestFileTargetName = "GitDiffedCodeExtractionManager.REPLACE-PROBLEM.java";
 		URL pathUrl = classLoader.getResource(pathToExtractionVCSTestFile);
-		File fileA = new File(pathUrl.getFile());
-		makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+		if (pathUrl != null) {
+			File fileA = new File(pathUrl.getFile());
+			makeExampleCommit(fileA, extractionVCSTestFileTargetName, "TEST-12: File with decision knowledge");
+		}
 	}
 
 	private static void makeExampleCommit(File inputFile, String targetName, String commitMessage) {
