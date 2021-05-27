@@ -78,6 +78,7 @@
 				};
 			});
 	}
+	
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {

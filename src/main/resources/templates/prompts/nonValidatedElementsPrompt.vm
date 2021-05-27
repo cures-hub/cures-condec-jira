@@ -4,6 +4,6 @@
     Please validate the knowledge elements!<br/>
     <button id="non-validated-elements-prompt-button" class="aui-button aui-button-link">
         <span class="aui-icon aui-icon-small aui-iconfont-check">Okay</span>
-        I confirm that these elements are not validated.
+        I manually approve the automatically classified text.
     </button>
 </div>

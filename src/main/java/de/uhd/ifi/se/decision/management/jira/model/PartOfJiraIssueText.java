@@ -86,7 +86,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	/**
 	 * @return true if the classification of the text within the Jira issue comment
 	 *         is validated, i.e., is manually performed, updated, or checked by a
-	 *         human beeing.
+	 *         human beeing (=manually approved).
 	 */
 	public boolean isValidated() {
 		return isValidated;
@@ -96,7 +96,8 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 * @param isValidated
 	 *            true if the classification of the text within the Jira issue
 	 *            comment is validated. That means that the classification is
-	 *            manually performed, updated, or checked by a human beeing.
+	 *            manually performed, updated, or checked by a human beeing
+	 *            (=manually approved).
 	 */
 	public void setValidated(boolean isValidated) {
 		this.isValidated = isValidated;
