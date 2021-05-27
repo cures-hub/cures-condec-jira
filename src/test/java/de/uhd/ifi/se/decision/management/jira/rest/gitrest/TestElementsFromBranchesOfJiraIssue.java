@@ -28,9 +28,9 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Override
 	@Before
 	public void setUp() {
+		super.setUp();
 		gitRest = new GitRest();
-		init();
-		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 	}

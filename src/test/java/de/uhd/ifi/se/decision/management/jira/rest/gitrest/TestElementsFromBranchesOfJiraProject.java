@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,8 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -28,8 +25,8 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		gitRest = new GitRest();
-		init();
-		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
+		super.setUp();
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 	}
@@ -60,11 +57,5 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
 				gitRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
-	}
-
-	@After
-	public void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

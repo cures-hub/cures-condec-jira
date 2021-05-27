@@ -22,7 +22,7 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 	@Override
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		gitRest = new GitRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
