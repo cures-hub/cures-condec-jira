@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,7 @@ import com.google.common.collect.Maps;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class ConDecDashboardItem implements ContextProvider {
 	protected ApplicationUser user;
@@ -94,7 +98,7 @@ public class ConDecDashboardItem implements ContextProvider {
 		List<Project> accessableProjectsWithGitRepo = new ArrayList<>();
 		for (Project project : projects) {
 			String projectKey = project.getKey();
-			if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 				accessableProjectsWithGitRepo.add(project);
 			}
 		}

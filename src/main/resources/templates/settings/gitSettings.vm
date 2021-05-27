@@ -3,8 +3,11 @@
 
 <div class="field-group">
     <label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
-    <aui-toggle id="isKnowledgeExtractedFromGit-toggle"
-                value="$projectKey" label="Extract from	Git?"></aui-toggle>
+    <aui-toggle id="isKnowledgeExtractedFromGit-toggle" value="$projectKey" label="Extract from	Git?"
+    	#if($gitConfig.isActivated())
+			checked
+		#end
+    ></aui-toggle>
     <div class="description">Enables or disables whether decision
         knowledge is extracted from git for this project. 
 		When enabled, all code files are extracted and decision knowledge elements from code comments are added to the knowledge graph.
@@ -269,10 +272,7 @@
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
 
-    if ($project.isKnowledgeExtractedFromGit()) {
-        gitToggle.checked = true;
-    } else {
-        gitToggle.checked = false;
+    if (!$gitConfig.isActivated()) {
         isPostSquashedCommitsActivatedToggle.disabled = true;
         isPostFeatureBranchCommitsActivatedToggle.disabled = true;
     }

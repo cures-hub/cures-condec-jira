@@ -129,7 +129,7 @@ public class GeneralMetricCalculator {
 	}
 
 	private Map<String, Integer> calculateNumberOfCommits() {
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(filterSettings.getProjectKey())) {
+		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();

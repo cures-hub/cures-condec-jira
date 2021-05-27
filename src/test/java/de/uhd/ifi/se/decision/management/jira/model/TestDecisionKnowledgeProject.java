@@ -78,11 +78,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testIsKnowledgeExtractedFromGit() {
-		assertEquals(true, project.isKnowledgeExtractedFromGit());
-	}
-
-	@Test
 	public void testIsPostSquashedCommitsActivated() {
 		assertEquals(true, project.isPostSquashedCommitsActivated());
 	}

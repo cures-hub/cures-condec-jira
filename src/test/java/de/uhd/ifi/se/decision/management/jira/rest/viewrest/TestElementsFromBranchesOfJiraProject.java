@@ -12,7 +12,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -48,9 +47,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testGitExtractionDisabled() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
 				viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
 	}
 }

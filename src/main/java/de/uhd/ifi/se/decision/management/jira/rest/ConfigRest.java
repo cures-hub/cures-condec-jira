@@ -489,7 +489,9 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
+		gitConfig.setActivated(isKnowledgeExtractedFromGit);
+		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
 
 		// deactivate other git extraction if false
@@ -498,7 +500,8 @@ public class ConfigRest {
 		} else {
 			// clone or fetch the git repositories
 			if (GitClient.getInstance(projectKey) == null) {
-				ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, false);
+				gitConfig.setActivated(false);
+				ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Unable to clone git repository")).build();
 			}
@@ -518,7 +521,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
 		}
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
 			return Response.ok().build();
 		} else {
@@ -540,7 +543,7 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "setPostDefaultBranchCommits-checked = null")).build();
 		}
 
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			boolean isActivated = Boolean.valueOf(checked);
 			ConfigPersistenceManager.setPostSquashedCommits(projectKey, isActivated);
 			if (isActivated) {

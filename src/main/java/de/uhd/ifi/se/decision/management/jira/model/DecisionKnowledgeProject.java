@@ -136,13 +136,6 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if decision knowledge is extracted from git commit messages.
-	 */
-	public boolean isKnowledgeExtractedFromGit() {
-		return ConfigPersistenceManager.isKnowledgeExtractedFromGit(getProjectKey());
-	}
-
-	/**
 	 * @return true if git commit messages of squashed commits should be posted as
 	 *         Jira issue comments.
 	 */

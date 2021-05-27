@@ -496,7 +496,7 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error",
 							"Getting summarized code failed since git extraction is disabled for this project."))

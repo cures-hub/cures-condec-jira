@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
@@ -108,12 +107,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(isIssueStrategy);
 	}
 
-	// TODO Add GitConfig class with isKnowledgeExtractedFromGit attribute
-	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
-		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
-		return "true".equals(isKnowledgeExtractedFromGit);
-	}
-
 	// TODO Add GitConfig class with isPostDefaultBranchCommitsActivated attribute
 	public static boolean isPostSquashedCommitsActivated(String projectKey) {
 		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
@@ -164,14 +157,6 @@ public class ConfigPersistenceManager {
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
 		setValue(projectKey, "isIssueStrategy", Boolean.toString(isIssueStrategy));
-	}
-
-	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
-		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
-		if (isKnowledgeExtractedFromGit) {
-			// TODO Pull Repo
-			GitClient.getInstance(projectKey);
-		}
 	}
 
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {

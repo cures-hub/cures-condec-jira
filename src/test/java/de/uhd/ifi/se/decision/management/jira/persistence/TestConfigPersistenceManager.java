@@ -68,19 +68,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
-	// knowledge extraction from git
-	@Test
-	public void testIsKnowledgeExtractedFilled() {
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
-
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-
-		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
-	}
-
 	// isKnowledgeTypeEnabled
 	@Test
 	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {

@@ -50,7 +50,7 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
@@ -72,7 +72,7 @@ public class ViewRest {
 		if (issue == null) {
 			return jiraIssueKeyIsInvalid();
 		}
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
