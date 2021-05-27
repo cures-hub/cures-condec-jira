@@ -578,7 +578,9 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "Code file endings could not be set because they are null."))
 					.build();
 		}
-		ConfigPersistenceManager.setCodeFileEndings(projectKey, codeFileEndings);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
+		gitConfig.setCodeFileEndings(codeFileEndings);
+		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		return Response.ok().build();
 	}
 

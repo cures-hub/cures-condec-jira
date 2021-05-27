@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
@@ -141,25 +139,6 @@ public class DecisionKnowledgeProject {
 	 */
 	public GitConfiguration getGitConfiguration() {
 		return ConfigPersistenceManager.getGitConfiguration(getProjectKey());
-	}
-
-	public Map<String, CommentStyleType> getCodeFileEndings() {
-		return ConfigPersistenceManager.getCodeFileEndings(getProjectKey());
-	}
-
-	public String getCodeFileEndings(String commentStyleTypeString) {
-		Map<String, CommentStyleType> codeFileEndingMap = this.getCodeFileEndings();
-		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-		String codeFileEndings = "";
-		for (String codeFileEnding : codeFileEndingMap.keySet()) {
-			if (codeFileEndingMap.get(codeFileEnding) == commentStyleType) {
-				codeFileEndings += codeFileEnding + ", ";
-			}
-		}
-		if (!codeFileEndings.isEmpty()) {
-			return codeFileEndings.substring(0, codeFileEndings.length() - 2); // remove last ", "
-		}
-		return codeFileEndings;
 	}
 
 	/**

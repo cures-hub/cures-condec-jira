@@ -4,9 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
@@ -167,32 +164,6 @@ public class ConfigPersistenceManager {
 			return new GitConfiguration();
 		}
 		return gitConfiguration;
-	}
-
-	public static void setCodeFileEndings(String projectKey, Map<String, String> codeFileEndingMap) {
-		Type type = new TypeToken<Map<String, CommentStyleType>>() {
-		}.getType();
-		Map<String, CommentStyleType> codeFileEndings = new HashMap<String, CommentStyleType>();
-		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
-			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ")
-					.split(" ");
-			for (String fileEnding : fileEndings) {
-				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
-			}
-		}
-		saveObject(projectKey, "codeFileEndings", codeFileEndings, type);
-	}
-
-	public static Map<String, CommentStyleType> getCodeFileEndings(String projectKey) {
-		Type type = new TypeToken<Map<String, CommentStyleType>>() {
-		}.getType();
-		Map<String, CommentStyleType> codeFileEndings = (Map<String, CommentStyleType>) getSavedObject(projectKey,
-				"codeFileEndings", type);
-		if (codeFileEndings == null) {
-			return new HashMap<String, CommentStyleType>();
-		}
-		return codeFileEndings;
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,

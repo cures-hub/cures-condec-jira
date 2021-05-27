@@ -71,6 +71,9 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testExistingIssueKey() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.OK.getStatusCode(),
 				viewRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
 	}

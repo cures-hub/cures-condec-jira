@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -44,7 +45,9 @@ public class TestInsertGroup extends TestSetUpGit {
 		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
 		codeFileEndingMap.put("JAVA_C", "java");
-		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setCodeFileEndings(codeFileEndingMap);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	@Test

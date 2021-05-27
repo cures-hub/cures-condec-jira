@@ -97,17 +97,22 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		codeFileEndingMap.put("JAVA_C", "java, c++, C");
 		codeFileEndingMap.put("PYTHON", "py");
 		codeFileEndingMap.put("HTML", "js, ts");
-		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
-		List<String> codeFileEndingsJavaC = Arrays.asList(project.getCodeFileEndings("JAVA_C").split(", "));
-		List<String> codeFileEndingsPython = Arrays.asList(project.getCodeFileEndings("PYTHON").split(", "));
-		List<String> codeFileEndingsHTML = Arrays.asList(project.getCodeFileEndings("HTML").split(", "));
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setCodeFileEndings(codeFileEndingMap);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		List<String> codeFileEndingsJavaC = Arrays
+				.asList(project.getGitConfiguration().getCodeFileEndings("JAVA_C").split(", "));
+		List<String> codeFileEndingsPython = Arrays
+				.asList(project.getGitConfiguration().getCodeFileEndings("PYTHON").split(", "));
+		List<String> codeFileEndingsHTML = Arrays
+				.asList(project.getGitConfiguration().getCodeFileEndings("HTML").split(", "));
 		assertTrue(codeFileEndingsJavaC.contains("java"));
 		assertTrue(codeFileEndingsJavaC.contains("c++"));
 		assertTrue(codeFileEndingsJavaC.contains("c"));
 		assertTrue(codeFileEndingsPython.contains("py"));
 		assertTrue(codeFileEndingsHTML.contains("js"));
 		assertTrue(codeFileEndingsHTML.contains("ts"));
-		assertTrue(project.getCodeFileEndings("TEX").equals(""));
+		assertTrue(project.getGitConfiguration().getCodeFileEndings("TEX").equals(""));
 	}
 
 	@Test

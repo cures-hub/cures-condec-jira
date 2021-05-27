@@ -47,6 +47,9 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testExistingProjectKey() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
 	}
 

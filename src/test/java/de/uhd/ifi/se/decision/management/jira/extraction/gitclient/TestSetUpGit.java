@@ -69,10 +69,10 @@ public abstract class TestSetUpGit extends TestSetUp {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
 		codeFileEndingMap.put("JAVA_C", "java");
-		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		gitConfig.setCodeFileEndings(codeFileEndingMap);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		gitClient = GitClient.getInstance("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
 			return;

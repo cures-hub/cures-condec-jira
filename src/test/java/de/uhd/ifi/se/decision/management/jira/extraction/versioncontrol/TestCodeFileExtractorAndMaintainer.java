@@ -25,7 +25,9 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		super.setUp();
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
 		codeFileEndingMap.put("JAVA_C", "java");
-		ConfigPersistenceManager.setCodeFileEndings("TEST", codeFileEndingMap);
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setCodeFileEndings(codeFileEndingMap);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	@Test
