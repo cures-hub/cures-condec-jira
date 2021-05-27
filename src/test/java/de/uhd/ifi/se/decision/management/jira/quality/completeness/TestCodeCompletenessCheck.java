@@ -62,7 +62,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(1);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
-		definitionOfDone.setMaximumLinkDistanceToDecisions(1);
+		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
