@@ -8,15 +8,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -49,8 +46,7 @@ public class TestSetCodeFileEndings extends TestSetUp {
 
 	@Test
 	public void testRequestValidProjectKeyValidCodeFileEndingsNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.setCodeFileEndings(request, "TEST", null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.setCodeFileEndings(request, "TEST", null).getStatus());
 	}
 
 	@Test
@@ -58,11 +54,4 @@ public class TestSetCodeFileEndings extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				gitRest.setCodeFileEndings(request, "TEST", codeFileEndings).getStatus());
 	}
-
-	@AfterClass
-	public static void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
-	}
-
 }

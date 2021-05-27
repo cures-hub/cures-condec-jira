@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,8 +15,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -70,12 +67,6 @@ public class TestSetGitRepositoryConfigurations extends TestSetUpGit {
 	public void testRequestValidProjectKeyExistsGitUriProvided() {
 		assertEquals(Status.OK.getStatusCode(),
 				gitRest.setGitRepositoryConfigurations(request, "TEST", gitRepositoryConfigurations).getStatus());
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 
 }

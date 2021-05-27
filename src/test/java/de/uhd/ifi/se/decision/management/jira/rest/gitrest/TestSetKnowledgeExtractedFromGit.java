@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -77,7 +76,6 @@ public class TestSetKnowledgeExtractedFromGit extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testRequestValidProjectKeyExistsGitUriProvidedButBad() {
 		GitRepositoryConfiguration badGitRepositoryConfiguration = new GitRepositoryConfiguration(
 				"/this/path/does/not/exist", "master", "", "", "");

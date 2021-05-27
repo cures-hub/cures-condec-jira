@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,8 +13,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -76,11 +73,5 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.OK.getStatusCode(),
 				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
-	}
-
-	@After
-	public void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
