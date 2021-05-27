@@ -7,11 +7,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 
 public class TestGitRepositoryConfiguration {
-	GitConfiguration gitConfig;
+
 	private GitRepositoryConfiguration gitRepositoryConfiguration;
 
 	@Before
@@ -44,5 +43,4 @@ public class TestGitRepositoryConfiguration {
 				"P@ssw0rd!");
 		assertFalse(gitRepositoryConfiguration.isValid());
 	}
-
 }
