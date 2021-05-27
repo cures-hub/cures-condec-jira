@@ -78,16 +78,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testIsPostSquashedCommitsActivated() {
-		assertEquals(true, project.isPostSquashedCommitsActivated());
-	}
-
-	@Test
-	public void testIsPostFeatureBranchCommitsActivated() {
-		assertEquals(true, project.isPostFeatureBranchCommitsActivated());
-	}
-
-	@Test
 	public void testGetGitRepositoryConfigurations() {
 		GitRepositoryConfiguration gitRepositoryConfiguration = new GitRepositoryConfiguration(TestSetUpGit.GIT_URI,
 				"master", "HTTP", "heinz.guenther", "P@ssw0rd!");

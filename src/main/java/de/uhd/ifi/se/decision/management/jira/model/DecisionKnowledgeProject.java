@@ -136,22 +136,6 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if git commit messages of squashed commits should be posted as
-	 *         Jira issue comments.
-	 */
-	public boolean isPostSquashedCommitsActivated() {
-		return ConfigPersistenceManager.isPostSquashedCommitsActivated(getProjectKey());
-	}
-
-	/**
-	 * @return true if git commit messages of feature branch commits should be
-	 *         posted as Jira issue comments.
-	 */
-	public boolean isPostFeatureBranchCommitsActivated() {
-		return ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(getProjectKey());
-	}
-
-	/**
 	 * @return configuration information of the git connection including the git
 	 *         repositories for this project as a {@link GitConfiguration} object.
 	 */

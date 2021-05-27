@@ -52,10 +52,10 @@ public class CommitMessageToCommentTranscriber {
 		}
 		List<Comment> newComments = new ArrayList<>();
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		if (ConfigPersistenceManager.isPostFeatureBranchCommitsActivated(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostFeatureBranchCommitsActivated()) {
 			newComments.addAll(postFeatureBranchCommits());
 		}
-		if (ConfigPersistenceManager.isPostSquashedCommitsActivated(projectKey)) {
+		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostDefaultBranchCommitsActivated()) {
 			newComments.addAll(postDefaultBranchCommits());
 		}
 		return newComments;

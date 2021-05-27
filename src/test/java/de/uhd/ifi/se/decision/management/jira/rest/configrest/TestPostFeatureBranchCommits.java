@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -31,30 +30,18 @@ public class TestPostFeatureBranchCommits extends TestSetUp {
 	@Test
 	public void testOk() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setPostFeatureBranchCommits(request, "TEST", "true").getStatus());
+				configRest.setPostFeatureBranchCommits(request, "TEST", true).getStatus());
 	}
 
 	@Test
 	public void testInvalidKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setPostFeatureBranchCommits(request, null, "true").getStatus());
+				configRest.setPostFeatureBranchCommits(request, null, true).getStatus());
 	}
 
 	@Test
 	public void testEmptyKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setPostFeatureBranchCommits(request, "", "true").getStatus());
-	}
-
-	@Test
-	public void testInvalidBooleanValue() {
-		configRest.setPostFeatureBranchCommits(request, "TEST", "ok");
-		assertEquals(false, ConfigPersistenceManager.isPostFeatureBranchCommitsActivated("TEST"));
-	}
-
-	@Test
-	public void testNullBooleanValue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setPostFeatureBranchCommits(request, "TEST", null).getStatus());
+				configRest.setPostFeatureBranchCommits(request, "", true).getStatus());
 	}
 }

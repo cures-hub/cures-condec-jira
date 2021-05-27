@@ -512,51 +512,37 @@ public class ConfigRest {
 	@Path("/setPostFeatureBranchCommits")
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isPostFeatureBranchCommits") boolean isPostFeatureBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (checked == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "PostFeatureBranchCommits-checked = null")).build();
-		}
-		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
-			ConfigPersistenceManager.setPostFeatureBranchCommits(projectKey, Boolean.valueOf(checked));
-			return Response.ok().build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-		}
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
+		gitConfig.setPostFeatureBranchCommitsActivated(isPostFeatureBranchCommits);
+		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
+		return Response.ok().build();
 	}
 
-	@Path("/setPostSquashedCommits")
+	@Path("/setPostDefaultBranchCommits")
 	@POST
 	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("newSetting") String checked) {
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isPostDefaultBranchCommits") boolean isPostDefaultBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (checked == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "setPostDefaultBranchCommits-checked = null")).build();
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
+		gitConfig.setPostDefaultBranchCommitsActivated(isPostDefaultBranchCommits);
+		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
+		if (isPostDefaultBranchCommits) {
+			ApplicationUser user = AuthenticationManager.getUser(request);
+			List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+			jiraIssues
+					.forEach(jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
 		}
-
-		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
-			boolean isActivated = Boolean.valueOf(checked);
-			ConfigPersistenceManager.setPostSquashedCommits(projectKey, isActivated);
-			if (isActivated) {
-				ApplicationUser user = AuthenticationManager.getUser(request);
-				List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
-				jiraIssues.forEach(
-						jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
-			}
-			return Response.ok().build();
-		} else {
-			return Response.status(Status.CONFLICT)
-					.entity(ImmutableMap.of("error", "Git Extraction needs to be active!")).build();
-		}
+		return Response.ok().build();
 	}
 
 	@Path("/setGitRepositoryConfigurations")

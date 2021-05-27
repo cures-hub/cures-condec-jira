@@ -494,14 +494,11 @@
 	 */
 	ConDecAPI.prototype.setPostFeatureBranchCommits = function(checked, projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/setPostFeatureBranchCommits.json?projectKey="
-			+ projectKey + "&newSetting=" + checked, null, function(error,
+			+ projectKey + "&isPostFeatureBranchCommits=" + checked, null, function(error,
 				response) {
 			if (error === null) {
-				showFlag("success", "Post Feature Branch Commits for this project has been set to " + checked
+				showFlag("success", "Post feature branch commits for this project has been set to " + checked
 					+ ".");
-				return checked;
-			} else {
-				return !checked;
 			}
 		});
 	};
@@ -509,16 +506,13 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setPostSquashedCommits = function(checked, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setPostSquashedCommits.json?projectKey="
-			+ projectKey + "&newSetting=" + checked, null, function(error,
+	ConDecAPI.prototype.setPostDefaultBranchCommits = function(checked, projectKey) {
+		generalApi.postJSON(this.restPrefix + "/config/setPostDefaultBranchCommits.json?projectKey="
+			+ projectKey + "&isPostDefaultBranchCommits=" + checked, null, function(error,
 				response) {
 			if (error === null) {
-				showFlag("success", "Post Squashed Commits for this project has been set to " + checked
+				showFlag("success", "Post default branch commits for this project has been set to " + checked
 					+ ".");
-				return checked;
-			} else {
-				return !checked;
 			}
 		});
 	};

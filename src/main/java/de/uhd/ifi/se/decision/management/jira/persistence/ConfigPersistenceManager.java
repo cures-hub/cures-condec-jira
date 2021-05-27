@@ -107,16 +107,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(isIssueStrategy);
 	}
 
-	// TODO Add GitConfig class with isPostDefaultBranchCommitsActivated attribute
-	public static boolean isPostSquashedCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostSquashedCommitsActivated"));
-	}
-
-	// TODO Add GitConfig class with isPostFeatureBranchCommitsActivated attribute
-	public static boolean isPostFeatureBranchCommitsActivated(String projectKey) {
-		return "true".equals(getValue(projectKey, "isPostFeatureBranchCommitsActivated"));
-	}
-
 	// TODO Testing
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
@@ -161,16 +151,6 @@ public class ConfigPersistenceManager {
 
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
 		setValue(projectKey, "criteriaQuery", query);
-	}
-
-	// TODO Testing
-	public static void setPostSquashedCommits(String projectKey, Boolean checked) {
-		setValue(projectKey, "isPostSquashedCommitsActivated", Boolean.toString(checked));
-	}
-
-	// TODO Testing
-	public static void setPostFeatureBranchCommits(String projectKey, Boolean checked) {
-		setValue(projectKey, "isPostFeatureBranchCommitsActivated", Boolean.toString(checked));
 	}
 
 	public static void saveGitConfiguration(String projectKey, GitConfiguration gitConfiguration) {

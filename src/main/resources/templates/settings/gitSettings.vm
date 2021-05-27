@@ -119,7 +119,14 @@
     <label for="isPostFeatureBranchCommitsActivated-toggle">Post Feature Branch Commit Messages as
         Comment?</label>
     <aui-toggle id="isPostFeatureBranchCommitsActivated-toggle"
-                value="$projectKey" label="Post feature branch commits?"></aui-toggle>
+                value="$projectKey" label="Post feature branch commits?"
+		#if($gitConfig.isPostFeatureBranchCommitsActivated())
+			checked
+		#end
+		#if(!$gitConfig.isActivated())
+			disabled
+		#end
+	></aui-toggle>
     <div class="description">Enables or disables whether every feature branch commit message is posted
         as a comment under the corresponding Jira issue for this project.<br/>
 		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
@@ -131,7 +138,14 @@
 <div class="field-group">
     <label for="isPostSquashedCommitsActivated-toggle">Post Commit Messages on Default Branch as Comment?</label>
     <aui-toggle id="isPostSquashedCommitsActivated-toggle"
-                value="$projectKey" label="Post squashed commits?"></aui-toggle>
+                value="$projectKey" label="Post squashed commits?"
+		#if($gitConfig.isPostDefaultBranchCommitsActivated())
+			checked
+		#end
+		#if(!$gitConfig.isActivated())
+			disabled
+		#end
+	></aui-toggle>
     <div class="description">Enables or disables whether commit messages on the default branch are posted
         as a comment under the corresponding Jira issue for this project.<br/>
 		<span class="aui-icon aui-icon-small aui-iconfont-warning">WARNING: </span> 
@@ -272,26 +286,9 @@
     var isPostSquashedCommitsActivatedToggle = document.getElementById('isPostSquashedCommitsActivated-toggle');
     var isPostFeatureBranchCommitsActivatedToggle = document.getElementById('isPostFeatureBranchCommitsActivated-toggle');
 
-    if (!$gitConfig.isActivated()) {
-        isPostSquashedCommitsActivatedToggle.disabled = true;
-        isPostFeatureBranchCommitsActivatedToggle.disabled = true;
-    }
-
-    if ($project.isPostSquashedCommitsActivated()) {
-        isPostSquashedCommitsActivatedToggle.checked = true;
-    } else {
-        isPostSquashedCommitsActivatedToggle.checked = false;
-    }
-
-    if ($project.isPostFeatureBranchCommitsActivated()) {
-        isPostFeatureBranchCommitsActivatedToggle.checked = true;
-    } else {
-        isPostFeatureBranchCommitsActivatedToggle.checked = false;
-    }
-
     isPostSquashedCommitsActivatedToggle.addEventListener('change', function (event) {
         this.busy = true;
-        conDecAPI.setPostSquashedCommits(this.checked, this.value);
+        conDecAPI.setPostDefaultBranchCommits(this.checked, this.value);
         this.busy = false;
     });
 
