@@ -1,9 +1,24 @@
 <div id="non-validated-elements-prompt">
     <strong id="non-validated-elements-prompt-jira-issue-key"></strong> contains <strong
     id="num-non-validated-elements"></strong> knowledge elements that have not been manually validated. <br/>
-    Please validate the knowledge elements!<br/>
-    <button id="non-validated-elements-prompt-button" class="aui-button aui-button-link">
-        <span class="aui-icon aui-icon-small aui-iconfont-check">Okay</span>
-        I manually approve the automatically classified text.
+    Please validate the knowledge elements if you approve their classifications.<br/>
+
+    <table id="non-validated-container-short" class="aui aui-table-list">
+        <thead>
+        <tr>
+            <th class="aui-table-column-issue-key">$i18n.getText("condec.classification.nonvalidatedelement")</th>
+            <th class="aui-table-column-unsortable">$i18n.getText("condec.classification.classifiedknowledgetype")</th>
+        </tr>
+        </thead>
+        <tbody id="non-validated-table-body">
+        </tbody>
+    </table>
+    <button id="non-validated-elements-validate-button" class="aui-button aui-button-link">
+        <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
+        Validate all of these elements!
+    </button>
+    <button id="non-validated-elements-ignore-button" class="aui-button aui-button-link">
+        <span class="aui-icon aui-icon-small aui-iconfont-cross"></span>
+        Ignore
     </button>
 </div>

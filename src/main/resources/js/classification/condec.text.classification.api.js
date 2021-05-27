@@ -102,8 +102,14 @@
 		?projectKey=${projectKey}
 		&issueKey=${issueKey}`
 		);
+	}
 
-
+	ConDecTextClassificationAPI.prototype.validateAllElements = function (projectKey, issueKey) {
+		return generalApi.postJSON(`${this.restPrefix}
+		/validateAllElements.json
+		?projectKey=${projectKey}
+		&issueKey=${issueKey}`
+		);
 	}
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();

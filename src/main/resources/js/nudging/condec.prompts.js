@@ -87,24 +87,42 @@
 
 		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
 			.then(response => {
-				console.log("hello", response)
 				if (response["nonValidatedElements"].length === 0) {
-					console.log("aw shucks")
-
 					return;
 				}
+				const nonValidatedElements = response["nonValidatedElements"]
+
 				document.getElementById("non-validated-elements-prompt-jira-issue-key").innerHTML = issueKey;
 				document.getElementById("num-non-validated-elements").innerHTML = response["nonValidatedElements"].length
+
 				const flag = AJS.flag({
 					body: document.getElementById("non-validated-elements-prompt").outerHTML,
 					title: "Non-validated elements found!",
 					type: "warning"
 				})
-				document.getElementById("non-validated-elements-prompt-button").onclick = function () {
+				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
+					flag.close();
+
+				};
+				document.getElementById("non-validated-elements-ignore-button").onclick = function () {
 					flag.close();
 				};
+
+
+				let tableContents = "";
+				nonValidatedElements.forEach(recommendation => {
+					let tableRow = "<tr>";
+					tableRow += "<td> " + recommendation.summary + "</td>";
+					tableRow += "<td>" + recommendation.type + "</td>";
+					tableRow += "</tr>";
+					tableContents += tableRow;
+
+				});
+				document.getElementById("non-validated-table-body").innerHTML = tableContents;
 			})
 	}
+
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);
