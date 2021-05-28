@@ -64,13 +64,14 @@
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
 	}
 
+	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
 	ConDecReqDash.prototype.initializeChartWithColorPalette = function (divId, title, subtitle, dataMap, palette) {
 		isIssueData = true;
 		colorPalette = palette;
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
 	}
 
-    /* used by branch dashboard item featureBranches.vm */
+    /* used by branch dashboard item condec.git.branches.dashboard.js */
     ConDecReqDash.prototype.initializeChartForBranchSource = function (divId, title, subtitle, dataMap) {
         isIssueData = false;
 		colorPalette = null;
