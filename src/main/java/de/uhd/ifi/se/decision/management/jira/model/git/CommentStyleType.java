@@ -2,15 +2,15 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
 
 /**
  * Necessary to identify decision knowledge in code comments for different
- * programming languages.
+ * programming languages. Is part of the {@link FileType}.
  */
 public enum CommentStyleType {
 
-	NONE(null, null, null), //
 	JAVA_C("//", "/*", "*/"), // example: java, c, h, cpp, hpp
 	PYTHON("#", null, null), // example: py, sh, R
 	HTML(null, "<!--", "-->"), // example: html, htm, xml, css, php, vm, js
-	TEX("%", null, null); // example: tex
+	TEX("%", null, null), // example: tex
+	UNKNOWN(null, null, null);
 
 	private String singleLineCommentChar;
 	private String multiLineCommentCharStart;
@@ -22,7 +22,7 @@ public enum CommentStyleType {
 				return type;
 			}
 		}
-		return NONE;
+		return UNKNOWN;
 	}
 
 	private CommentStyleType(String singleLineCommentChar, String multiLineCommentCharStart,

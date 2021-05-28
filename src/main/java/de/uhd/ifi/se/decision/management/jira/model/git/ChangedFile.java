@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -376,24 +375,32 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public boolean isCodeFile() {
-		return getCommentStyleType() != CommentStyleType.NONE;
+		FileType fileType = getFileType();
+		return fileType != null && ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
+				.shouldFileTypeBeExtracted(fileType);
 	}
 
 	public boolean isTestCodeFile() {
 		return getSummary().contains("Test");
 	}
 
-	public CommentStyleType getCommentStyleType() {
+	/**
+	 * @return {@link FileType} including file ending and {@link CommentStyleType}
+	 *         necessary to identify decision knowledge in the comments of this code
+	 *         file.
+	 */
+	public FileType getFileType() {
 		if (getProject() == null) {
-			return CommentStyleType.NONE;
+			return null;
 		}
-		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager
-				.getGitConfiguration(getProject().getProjectKey()).getCodeFileEndings();
 		String fileEnding = getFileEnding();
-		if (codeFileEndings.containsKey(fileEnding)) {
-			return codeFileEndings.get(fileEnding);
-		}
-		return CommentStyleType.NONE;
+		return ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
+				.getFileTypeForEnding(fileEnding);
+	}
+
+	public CommentStyleType getCommentStyleType() {
+		FileType fileType = getFileType();
+		return fileType != null ? fileType.getCommentStyleType() : CommentStyleType.UNKNOWN;
 	}
 
 	public boolean isCorrect() {

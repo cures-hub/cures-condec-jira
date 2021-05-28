@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.model.git.FileType;
 
 /**
  * Contains the configuration details for the git connection for one Jira
@@ -20,7 +21,7 @@ public class GitConfiguration {
 	private List<GitRepositoryConfiguration> gitRepoConfigurations;
 	private boolean isPostDefaultBranchCommitsActivated;
 	private boolean isPostFeatureBranchCommitsActivated;
-	private Map<String, CommentStyleType> codeFileEndings;
+	private List<FileType> fileTypesToExtract;
 
 	/**
 	 * Constructs an object with default values.
@@ -30,10 +31,11 @@ public class GitConfiguration {
 		this.setGitRepoConfigurations(new ArrayList<>());
 		setPostDefaultBranchCommitsActivated(false);
 		setPostFeatureBranchCommitsActivated(false);
-		this.codeFileEndings = new HashMap<String, CommentStyleType>();
+		// this.codeFileEndings = new HashMap<String, CommentStyleType>();
 		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
 		codeFileEndingMap.put("JAVA_C", "java");
 		setCodeFileEndings(codeFileEndingMap);
+		this.fileTypesToExtract = new ArrayList<>();
 	}
 
 	/**
@@ -123,29 +125,24 @@ public class GitConfiguration {
 		this.isPostFeatureBranchCommitsActivated = isPostFeatureBranchCommitsActivated;
 	}
 
-	public Map<String, CommentStyleType> getCodeFileEndings() {
-		return codeFileEndings;
-	}
-
 	public void setCodeFileEndings(Map<String, String> codeFileEndingMap) {
-		codeFileEndings = new HashMap<String, CommentStyleType>();
+		fileTypesToExtract = new ArrayList<>();
 		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {
 			CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
 			String[] fileEndings = codeFileEndingMap.get(commentStyleTypeString).replaceAll("[^A-Za-z0-9+\\-$#!]+", " ")
 					.split(" ");
 			for (String fileEnding : fileEndings) {
-				codeFileEndings.put(fileEnding.toLowerCase(), commentStyleType);
+				fileTypesToExtract.add(new FileType(fileEnding.toLowerCase(), commentStyleType));
 			}
 		}
 	}
 
 	public String getCodeFileEndings(String commentStyleTypeString) {
-		Map<String, CommentStyleType> codeFileEndingMap = this.getCodeFileEndings();
 		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
 		String codeFileEndings = "";
-		for (String codeFileEnding : codeFileEndingMap.keySet()) {
-			if (codeFileEndingMap.get(codeFileEnding) == commentStyleType) {
-				codeFileEndings += codeFileEnding + ", ";
+		for (FileType codeFileEnding : fileTypesToExtract) {
+			if (codeFileEnding.getCommentStyleType() == commentStyleType) {
+				codeFileEndings += codeFileEnding.getFileEnding() + ", ";
 			}
 		}
 		if (!codeFileEndings.isEmpty()) {
@@ -154,4 +151,38 @@ public class GitConfiguration {
 		return codeFileEndings;
 	}
 
+	/**
+	 * @return which code files are extracted from git and decision knowledge from
+	 *         their code comments.
+	 */
+	public List<FileType> getFileTypesToExtract() {
+		return fileTypesToExtract;
+	}
+
+	/**
+	 * @param fileTypesToExtract
+	 *            determines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 */
+	public void setFileTypesToExtract(List<FileType> fileTypesToExtract) {
+		this.fileTypesToExtract = fileTypesToExtract;
+	}
+
+	public boolean shouldFileTypeBeExtracted(FileType fileType) {
+		for (FileType fileTypeToExtract : fileTypesToExtract) {
+			if (fileTypeToExtract.equals(fileType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public FileType getFileTypeForEnding(String fileEnding) {
+		for (FileType fileType : fileTypesToExtract) {
+			if (fileType.getFileEnding().equalsIgnoreCase(fileEnding)) {
+				return fileType;
+			}
+		}
+		return null;
+	}
 }
