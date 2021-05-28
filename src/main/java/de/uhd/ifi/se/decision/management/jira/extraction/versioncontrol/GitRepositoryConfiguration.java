@@ -6,10 +6,13 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+
 /**
  * Contains the configuration details for one git repository connected to a Jira
  * project, i.e., the {@link GitClientForSingleRepository}. A Jira project can
- * be connected to more than one git repository.
+ * be connected to more than one git repository (see {@link GitConfiguration}
+ * for entire git configuration for the {@link GitClient} of one project).
  */
 public class GitRepositoryConfiguration {
 

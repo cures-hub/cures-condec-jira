@@ -97,6 +97,7 @@ public class ChangedFile extends KnowledgeElement {
 	private String fileContent;
 	@JsonIgnore
 	private List<RevCommit> commits;
+
 	/**
 	 * @issue Where shall we store the line count of a code file knowledge element?
 	 * @decision In the ChangedFile class!
@@ -217,7 +218,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public String getFileEnding() {
-		return this.getName().substring(this.getName().lastIndexOf(".") + 1).toLowerCase();
+		return this.getName().substring(getName().lastIndexOf(".") + 1).toLowerCase();
 	}
 
 	@Override
@@ -388,8 +389,9 @@ public class ChangedFile extends KnowledgeElement {
 		}
 		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager
 				.getGitConfiguration(getProject().getProjectKey()).getCodeFileEndings();
-		if (codeFileEndings.containsKey(this.getFileEnding())) {
-			return codeFileEndings.get(this.getFileEnding());
+		String fileEnding = getFileEnding();
+		if (codeFileEndings.containsKey(fileEnding)) {
+			return codeFileEndings.get(fileEnding);
 		}
 		return CommentStyleType.NONE;
 	}

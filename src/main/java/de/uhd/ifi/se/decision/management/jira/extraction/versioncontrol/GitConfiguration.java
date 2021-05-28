@@ -22,6 +22,9 @@ public class GitConfiguration {
 	private boolean isPostFeatureBranchCommitsActivated;
 	private Map<String, CommentStyleType> codeFileEndings;
 
+	/**
+	 * Constructs an object with default values.
+	 */
 	public GitConfiguration() {
 		this.setActivated(false);
 		this.setGitRepoConfigurations(new ArrayList<>());
@@ -52,21 +55,37 @@ public class GitConfiguration {
 		this.isActivated = isActivated;
 	}
 
+	/**
+	 * @return list of configuration details for the git repositories connected to
+	 *         the Jira project, i.e., for every
+	 *         {@link GitClientForSingleRepository}.
+	 */
 	public List<GitRepositoryConfiguration> getGitRepoConfigurations() {
 		return gitRepoConfigurations;
 	}
 
+	/**
+	 * @param gitRepoConfigurations
+	 *            list of configuration details for the git repositories connected
+	 *            to the Jira project, i.e., for every
+	 *            {@link GitClientForSingleRepository}.
+	 */
 	public void setGitRepoConfigurations(List<GitRepositoryConfiguration> gitRepoConfigurations) {
 		this.gitRepoConfigurations = gitRepoConfigurations;
 	}
 
+	/**
+	 * @param gitRepositoryConfiguration
+	 *            configuration details for one git repository connected to a Jira
+	 *            project, i.e., the {@link GitClientForSingleRepository}.
+	 */
 	public void addGitRepoConfiguration(GitRepositoryConfiguration gitRepositoryConfiguration) {
 		gitRepoConfigurations.add(gitRepositoryConfiguration);
 	}
 
 	/**
 	 * @return true if git commit messages of default branch commits (e.g. squashed
-	 *         commits) should be posted as Jira issue comments. This enabled to
+	 *         commits) should be posted as Jira issue comments. This enables to
 	 *         integrate decision knowledge from commit messages into the
 	 *         {@link KnowledgeGraph}.
 	 */
@@ -76,17 +95,30 @@ public class GitConfiguration {
 
 	/**
 	 * @return true if git commit messages of feature branch commits should be
-	 *         posted as Jira issue comments. This enabled to integrate decision
+	 *         posted as Jira issue comments. This enables to integrate decision
 	 *         knowledge from commit messages into the {@link KnowledgeGraph}.
 	 */
 	public boolean isPostFeatureBranchCommitsActivated() {
 		return isPostFeatureBranchCommitsActivated;
 	}
 
+	/**
+	 * @param isPostDefaultBranchCommitsActivated
+	 *            true if git commit messages of default branch commits (e.g.
+	 *            squashed commits) should be posted as Jira issue comments. This
+	 *            enables to integrate decision knowledge from commit messages into
+	 *            the {@link KnowledgeGraph}.
+	 */
 	public void setPostDefaultBranchCommitsActivated(boolean isPostDefaultBranchCommitsActivated) {
 		this.isPostDefaultBranchCommitsActivated = isPostDefaultBranchCommitsActivated;
 	}
 
+	/**
+	 * @param isPostFeatureBranchCommitsActivated
+	 *            true if git commit messages of feature branch commits should be
+	 *            posted as Jira issue comments. This enables to integrate decision
+	 *            knowledge from commit messages into the {@link KnowledgeGraph}.
+	 */
 	public void setPostFeatureBranchCommitsActivated(boolean isPostFeatureBranchCommitsActivated) {
 		this.isPostFeatureBranchCommitsActivated = isPostFeatureBranchCommitsActivated;
 	}
