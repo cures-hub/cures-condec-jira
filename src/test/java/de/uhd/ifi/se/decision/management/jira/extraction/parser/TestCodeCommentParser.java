@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 
 public class TestCodeCommentParser extends TestSetUp {
 
@@ -35,9 +36,10 @@ public class TestCodeCommentParser extends TestSetUp {
 						+ " * \n" + " * not rationale text anymore\n" + " */ \t \n}");
 		file.setSummary("example.java");
 		file.setProject("TEST");
+		assertEquals(CommentStyleType.JAVA_C, file.getCommentStyleType());
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(file);
-		assertTrue(codeComments.size() == 6);
+		assertEquals(6, codeComments.size());
 	}
 
 }

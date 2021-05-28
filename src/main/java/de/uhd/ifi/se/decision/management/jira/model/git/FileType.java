@@ -34,7 +34,6 @@ public class FileType {
 			return false;
 		}
 		FileType otherType = (FileType) object;
-		return getCommentStyleType() == otherType.getCommentStyleType()
-				&& getFileEnding().equalsIgnoreCase(otherType.getFileEnding());
+		return getFileEnding().equalsIgnoreCase(otherType.getFileEnding());
 	}
 }

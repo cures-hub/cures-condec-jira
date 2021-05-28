@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +30,8 @@ public class GitConfiguration {
 		this.setGitRepoConfigurations(new ArrayList<>());
 		setPostDefaultBranchCommitsActivated(false);
 		setPostFeatureBranchCommitsActivated(false);
-		// this.codeFileEndings = new HashMap<String, CommentStyleType>();
-		Map<String, String> codeFileEndingMap = new HashMap<String, String>();
-		codeFileEndingMap.put("JAVA_C", "java");
-		setCodeFileEndings(codeFileEndingMap);
 		this.fileTypesToExtract = new ArrayList<>();
+		fileTypesToExtract.add(new FileType("java", CommentStyleType.JAVA_C));
 	}
 
 	/**
