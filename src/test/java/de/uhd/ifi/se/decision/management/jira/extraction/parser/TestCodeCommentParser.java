@@ -20,7 +20,7 @@ public class TestCodeCommentParser extends TestSetUp {
 	}
 
 	@Test
-	public void testCodeCommentParser() {
+	public void testVariousDifferentCommentsAndOtherText() {
 		ChangedFile file = new ChangedFile(
 				"// @con This is a structure violation, but it should not kill knowledge extraction\n\n"//
 						+ "// @goal This is a goal outside an issue, let's see where it lands.\n"//
@@ -53,6 +53,16 @@ public class TestCodeCommentParser extends TestSetUp {
 	@Test
 	public void testMultiLineCommentInOneLine() {
 		ChangedFile file = new ChangedFile("/** @issue Is this yet another structure violation?*/\n");
+		file.setSummary("example.java");
+		file.setProject("TEST");
+		CodeCommentParser parser = new CodeCommentParser();
+		List<CodeComment> codeComments = parser.getComments(file);
+		assertEquals(1, codeComments.size());
+	}
+
+	@Test
+	public void testCommentNeverEnds() {
+		ChangedFile file = new ChangedFile("/** @issue Is this yet another structure violation?\n");
 		file.setSummary("example.java");
 		file.setProject("TEST");
 		CodeCommentParser parser = new CodeCommentParser();

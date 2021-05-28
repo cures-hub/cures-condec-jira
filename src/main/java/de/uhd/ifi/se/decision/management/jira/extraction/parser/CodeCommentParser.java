@@ -32,7 +32,7 @@ public class CodeCommentParser {
 
 	public List<CodeComment> getComments(String entireEileContent, CommentStyleType commentStyleType) {
 		String fileContent = entireEileContent;
-		List<CodeComment> commentList = new ArrayList<CodeComment>();
+		List<CodeComment> codeComments = new ArrayList<CodeComment>();
 		boolean inMultilineComment = false;
 
 		String singleLineCommentChar = commentStyleType.getSingleLineCommentChar();
@@ -40,11 +40,11 @@ public class CodeCommentParser {
 		String multiLineCommentCharEnd = commentStyleType.getMultiLineCommentCharEnd();
 
 		while (fileContent.indexOf("\n") != -1) {
-			String line = fileContent.substring(0, fileContent.indexOf("\n") + 1);
+			String line = readFirstLine(fileContent);
 			if (inMultilineComment) { // we are in a multi-line comment
 				CodeComment multilineComment = parseMultiLineComment(line, comment, multiLineCommentCharEnd);
 				if (multilineComment != null) {
-					commentList.add(multilineComment);
+					codeComments.add(multilineComment);
 					comment = "";
 					inMultilineComment = false;
 				} else { // the multi-line comment does not end in this line
@@ -64,13 +64,13 @@ public class CodeCommentParser {
 					beginLine = lineNumber;
 					beginColumn = multiLineCommentCharStartPos + 1;
 					if (comment.length() > 0) { // there is a single-line comment to end
-						commentList.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn,
+						codeComments.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn,
 								beginLine, lastLineCol, lineNumber - 1));
 						comment = "";
 					}
 					CodeComment multilineComment = parseMultiLineComment(line, comment, multiLineCommentCharEnd);
 					if (multilineComment != null) {
-						commentList.add(multilineComment);
+						codeComments.add(multilineComment);
 						comment = "";
 						inMultilineComment = false;
 					} else { // the multi-line comment does not end in this line
@@ -84,23 +84,31 @@ public class CodeCommentParser {
 					comment += line.substring(singleLineCommentCharPos);
 				} else { // there is no comment in this line
 					if (comment.length() > 0) { // there is a single-line comment to end
-						commentList.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn,
+						codeComments.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn,
 								beginLine, lastLineCol, lineNumber - 1));
 						comment = "";
 					}
 				}
 			}
-			fileContent = fileContent.substring(fileContent.indexOf("\n") + 1);
+			fileContent = removeFirstLine(fileContent);
 			lineNumber++;
 			lastLineCol = line.length();
 		}
 		if (comment.length() > 0) {
-			commentList.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn, beginLine,
+			codeComments.add(new CodeComment(comment.substring(0, comment.length() - 1), beginColumn, beginLine,
 					lastLineCol, lineNumber - 1));
 		}
-		return commentList;
+		return codeComments;
 	}
-	//
+
+	private String readFirstLine(String fileContent) {
+		return fileContent.substring(0, fileContent.indexOf("\n") + 1);
+	}
+
+	private String removeFirstLine(String fileContent) {
+		return fileContent.substring(fileContent.indexOf("\n") + 1);
+	}
+
 	// public List<CodeComment> parseMultiline(String entireEileContent,
 	// CommentStyleType commentStyleType) {
 	// String fileContent = entireEileContent;
