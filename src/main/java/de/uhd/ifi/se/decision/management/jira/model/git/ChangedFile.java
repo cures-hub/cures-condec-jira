@@ -374,7 +374,7 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent.split("\n").length;
 	}
 
-	public boolean isCodeFile() {
+	public boolean isCodeFileToExtract() {
 		FileType fileType = getFileType();
 		return fileType != null && ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
 				.shouldFileTypeBeExtracted(fileType);

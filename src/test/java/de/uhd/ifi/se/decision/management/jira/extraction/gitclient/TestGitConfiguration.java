@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.model.git.FileType;
 
 public class TestGitConfiguration {
 	private GitConfiguration gitConfig;
@@ -58,6 +60,13 @@ public class TestGitConfiguration {
 		assertTrue(codeFileEndingsHTML.contains("js"));
 		assertTrue(codeFileEndingsHTML.contains("ts"));
 		assertTrue(gitConfig.getCodeFileEndings("TEX").equals(""));
+		assertEquals(6, gitConfig.getFileTypesToExtract().size());
+	}
+
+	@Test
+	public void testShouldFileTypeBeExtracted() {
+		assertTrue(gitConfig.shouldFileTypeBeExtracted(FileType.java()));
+		assertFalse(gitConfig.shouldFileTypeBeExtracted(FileType.javascript()));
 	}
 
 	@Test

@@ -36,4 +36,12 @@ public class FileType {
 		FileType otherType = (FileType) object;
 		return getFileEnding().equalsIgnoreCase(otherType.getFileEnding());
 	}
+
+	public static FileType java() {
+		return new FileType("java", CommentStyleType.JAVA_C);
+	}
+
+	public static FileType javascript() {
+		return new FileType("js", CommentStyleType.HTML);
+	}
 }

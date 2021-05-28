@@ -30,8 +30,8 @@ public class GitConfiguration {
 		this.setGitRepoConfigurations(new ArrayList<>());
 		setPostDefaultBranchCommitsActivated(false);
 		setPostFeatureBranchCommitsActivated(false);
-		this.fileTypesToExtract = new ArrayList<>();
-		fileTypesToExtract.add(new FileType("java", CommentStyleType.JAVA_C));
+		fileTypesToExtract = new ArrayList<>();
+		fileTypesToExtract.add(FileType.java());
 	}
 
 	/**
@@ -133,18 +133,19 @@ public class GitConfiguration {
 		}
 	}
 
-	public String getCodeFileEndings(String commentStyleTypeString) {
-		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeString);
-		String codeFileEndings = "";
+	public String getCodeFileEndings(String commentStyleTypeName) {
+		CommentStyleType commentStyleType = CommentStyleType.getFromString(commentStyleTypeName);
+		return getCodeFileEndings(commentStyleType);
+	}
+
+	public String getCodeFileEndings(CommentStyleType commentStyleType) {
+		List<String> codeFileEndings = new ArrayList<>();
 		for (FileType codeFileEnding : fileTypesToExtract) {
 			if (codeFileEnding.getCommentStyleType() == commentStyleType) {
-				codeFileEndings += codeFileEnding.getFileEnding() + ", ";
+				codeFileEndings.add(codeFileEnding.getFileEnding());
 			}
 		}
-		if (!codeFileEndings.isEmpty()) {
-			return codeFileEndings.substring(0, codeFileEndings.length() - 2); // remove last ", "
-		}
-		return codeFileEndings;
+		return String.join(", ", codeFileEndings);
 	}
 
 	/**
@@ -153,15 +154,6 @@ public class GitConfiguration {
 	 */
 	public List<FileType> getFileTypesToExtract() {
 		return fileTypesToExtract;
-	}
-
-	/**
-	 * @param fileTypesToExtract
-	 *            determines which code files are extracted from git and decision
-	 *            knowledge from their code comments.
-	 */
-	public void setFileTypesToExtract(List<FileType> fileTypesToExtract) {
-		this.fileTypesToExtract = fileTypesToExtract;
 	}
 
 	public boolean shouldFileTypeBeExtracted(FileType fileType) {
