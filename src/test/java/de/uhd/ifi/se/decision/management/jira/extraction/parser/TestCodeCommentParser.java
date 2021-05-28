@@ -50,4 +50,14 @@ public class TestCodeCommentParser extends TestSetUp {
 		assertEquals(6, codeComments.size());
 	}
 
+	@Test
+	public void testMultiLineCommentInOneLine() {
+		ChangedFile file = new ChangedFile("/** @issue Is this yet another structure violation?*/\n");
+		file.setSummary("example.java");
+		file.setProject("TEST");
+		CodeCommentParser parser = new CodeCommentParser();
+		List<CodeComment> codeComments = parser.getComments(file);
+		assertEquals(1, codeComments.size());
+	}
+
 }
