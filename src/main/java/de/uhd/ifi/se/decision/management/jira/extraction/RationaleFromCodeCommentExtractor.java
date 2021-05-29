@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -15,12 +15,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
- * Extracts decision knowledge elements from a single comment. Stores the source
- * of the element within the source file/comment in its key.
+ * Extracts decision knowledge elements from a single {@link CodeComment}.
+ * Stores the source of the element within the source file/comment in its key.
  */
 public class RationaleFromCodeCommentExtractor {
-	private ArrayList<KnowledgeElement> elements;
-	private final static List<String> decKnowTags = KnowledgeType.toStringList();
+	private List<KnowledgeElement> elements;
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERNS;
@@ -29,10 +28,17 @@ public class RationaleFromCodeCommentExtractor {
 	private final List<String> NEWLINE_WITH_COMMENT_CHAR_PATTERNS;
 
 	public RationaleFromCodeCommentExtractor(CodeComment comment) {
-		String tagSearch = String.join("|", decKnowTags.stream().map(tag -> "@" + tag + "\\:?") // at-char + ratType +
-																								// colon or blank
+		String tagSearch = String.join("|", KnowledgeType.toStringList().stream().map(tag -> "@" + tag + "\\:?") // at-char
+																													// +
+																													// ratType
+																													// +
+				// colon or blank
 				.collect(Collectors.toList()));
-		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all characters that may interrupt multi-line decision knowledge elements
+		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all
+																								// characters that may
+																								// interrupt multi-line
+																								// decision knowledge
+																								// elements
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
 		String TWO_EMPTY_LINES_PATTERN_STRING = "\\s*\\n\\s*(";
 		NEWLINE_WITH_COMMENT_CHAR_PATTERNS = new ArrayList<String>();
@@ -40,10 +46,11 @@ public class RationaleFromCodeCommentExtractor {
 			NEWLINE_WITH_COMMENT_CHAR_PATTERNS.add("[^\\S\\n]*\\n[^\\S\\n]*" + comment_string + "*[^\\S\\n]*");
 			TWO_EMPTY_LINES_PATTERN_STRING += comment_string + "|";
 		}
-		TWO_EMPTY_LINES_PATTERN_STRING = TWO_EMPTY_LINES_PATTERN_STRING
-				.substring(0, TWO_EMPTY_LINES_PATTERN_STRING.length() - 1) + // remove last "|"
+		TWO_EMPTY_LINES_PATTERN_STRING = TWO_EMPTY_LINES_PATTERN_STRING.substring(0,
+				TWO_EMPTY_LINES_PATTERN_STRING.length() - 1) + // remove last "|"
 				")*\\s*\\n\\s*\\**\\s*";
-		TWO_EMPTY_LINES_PATTERNS = Pattern.compile(TWO_EMPTY_LINES_PATTERN_STRING); // with optional white spaces and optional comment characters
+		TWO_EMPTY_LINES_PATTERNS = Pattern.compile(TWO_EMPTY_LINES_PATTERN_STRING); // with optional white spaces and
+																					// optional comment characters
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 		this.comment = comment;
@@ -78,7 +85,7 @@ public class RationaleFromCodeCommentExtractor {
 		return element.getDocumentationLocation() == DocumentationLocation.CODE;
 	}
 
-	public ArrayList<KnowledgeElement> getElements() {
+	public List<KnowledgeElement> getElements() {
 		if (comment.getCommentContent() == null || comment.getCommentContent().isBlank()) {
 			return elements;
 		}
@@ -112,8 +119,7 @@ public class RationaleFromCodeCommentExtractor {
 		String rationaleTextSanitized = sanitize(rationaleText);
 		return new KnowledgeElement(0, getSummary(rationaleTextSanitized), getDescription(rationaleTextSanitized),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.CODE,
-				"");
+				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.CODE, "");
 	}
 
 	private String sanitize(String rationaleText) {

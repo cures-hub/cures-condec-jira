@@ -2,6 +2,7 @@
  * This module implements the communication with the ConDec Java REST API for git configuration and conntection.
  *
  * Requires: conDecAPI
+ * Required by: conDecDialog
  *
  * Is referenced in HTML by settings/git/...
  */
@@ -70,6 +71,19 @@
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The git repos for this project were deleted.");
+				}
+			});
+	};
+	
+	/*
+	 * external references: condec.dialog
+	 */
+	ConDecGitAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability, callback) {
+		generalApi.getText(this.restPrefix + "/getSummarizedCode?projectKey=" + conDecAPI.projectKey
+			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
+			function(error, summary) {
+				if (error === null) {
+					callback(summary);
 				}
 			});
 	};

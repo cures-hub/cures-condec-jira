@@ -347,19 +347,6 @@
 	};
 
 	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability, callback) {
-		generalApi.getText(this.restPrefix + "/knowledge/getSummarizedCode?projectKey=" + projectKey
-			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
-			function(error, summary) {
-				if (error === null) {
-					callback(summary);
-				}
-			});
-	};
-
-	/*
 	 * external references: condec.vis, condec.relationship.page
 	 */
 	ConDecAPI.prototype.getVis = function(filterSettings, callback) {
