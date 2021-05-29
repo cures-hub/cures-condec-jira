@@ -79,10 +79,10 @@ public class RationaleFromCodeCommentExtractor {
 	}
 
 	public ArrayList<KnowledgeElement> getElements() {
-		if (comment.commentContent == null || comment.commentContent.isBlank()) {
+		if (comment.getCommentContent() == null || comment.getCommentContent().isBlank()) {
 			return elements;
 		}
-		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.commentContent);
+		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
 		int cursorPosition = -1;
 
 		while (tagMatcher.find() && cursorPosition <= tagMatcher.start()) {
@@ -94,7 +94,7 @@ public class RationaleFromCodeCommentExtractor {
 	private int extractElementAndMoveCursor(Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
 		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
-		String rationaleText = comment.commentContent.substring(tagMatcher.end());
+		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
 
 		int cursorPosition = tagMatcher.end();
 		int textEnd = getRationaleTextEndPosition(rationaleText);
@@ -157,9 +157,9 @@ public class RationaleFromCodeCommentExtractor {
 	 *      entries can be calculated
 	 */
 	private String calculateAndCodeRationalePositionInSourceFile(int start, String rationaleText) {
-		String fullCommentText = comment.commentContent;
+		String fullCommentText = comment.getCommentContent();
 		// calculate rationale start line in source code
-		int absoluteFileStartLine = comment.beginLine;
+		int absoluteFileStartLine = comment.getBeginLine();
 		Matcher match = NEWLINE_CHAR_PATTERN.matcher(fullCommentText);
 		while (match.find()) {
 			if (match.start() < start) {

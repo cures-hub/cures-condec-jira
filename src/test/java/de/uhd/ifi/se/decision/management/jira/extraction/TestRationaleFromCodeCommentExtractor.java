@@ -16,12 +16,11 @@ public class TestRationaleFromCodeCommentExtractor {
 	private RationaleFromCodeCommentExtractor rationaleFromCodeCommentExtractor;
 	private CodeComment codeComment;
 	private int commitBeginLine = 10;
-	private int commitBeginColumn = 20;
 	private List<KnowledgeElement> elementsFound;
 
 	@Before
 	public void setUp() {
-		codeComment = new CodeComment("", commitBeginColumn, commitBeginLine, commitBeginColumn + 1, commitBeginLine + 1
+		codeComment = new CodeComment("", commitBeginLine, commitBeginLine + 1
 		/**
 		 * end point could be recalculated given contents number of lines and last lines
 		 * length, but it does not really matter for testing
@@ -32,14 +31,14 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testEmptyComment() {
-		codeComment.commentContent = "";
+		codeComment.setCommentContent("");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		assertEquals(new ArrayList<KnowledgeElement>(), rationaleFromCodeCommentExtractor.getElements());
 	}
 
 	@Test
 	public void testCommentWithoutRationaleElement() {
-		codeComment.commentContent = "Text without rationale";
+		codeComment.setCommentContent("Text without rationale");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(new ArrayList<KnowledgeElement>(), elementsFound);
@@ -47,7 +46,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testOneRationaleElement() {
-		codeComment.commentContent = "Text @issue with rationale";
+		codeComment.setCommentContent("Text @issue with rationale");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
@@ -56,7 +55,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testOneRationaleElementAndRestTextSeparetedByNewLinesOnly() {
-		codeComment.commentContent = "Text @issue with rationale\n\n\nnot rat. text anymore";
+		codeComment.setCommentContent("Text @issue with rationale\n\n\nnot rat. text anymore");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
@@ -65,7 +64,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpaces() {
-		codeComment.commentContent = "Text @issue with rationale  \n  \n  \nnot rat. text anymore";
+		codeComment.setCommentContent("Text @issue with rationale  \n  \n  \nnot rat. text anymore");
 		String expectedKey = commitBeginLine + ":" + commitBeginLine + ":11";
 
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
@@ -82,7 +81,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpacesAndTabs() {
-		codeComment.commentContent = "Text @issue with rationale \t \n \t \n \t \nnot rat. text anymore";
+		codeComment.setCommentContent("Text @issue with rationale \t \n \t \n \t \nnot rat. text anymore");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
@@ -91,8 +90,8 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testOneRationaleElementWithinCode() {
-		codeComment.commentContent = "public class GodClass {"
-				+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}";
+		codeComment.setCommentContent("public class GodClass {"
+				+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n \t \n}");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(1, elementsFound.size());
@@ -101,7 +100,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testTwoRationaleElements() {
-		codeComment.commentContent = "@issue Hi @alternative rationale\n\n\nnot rat. text anymore";
+		codeComment.setCommentContent("@issue Hi @alternative rationale\n\n\nnot rat. text anymore");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(2, elementsFound.size());
@@ -111,7 +110,7 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testTwoRationaleElementsSeparatedByNotRationaleText() {
-		codeComment.commentContent = "@issue #1\n\n\nnot rat. text anymore @issue #2";
+		codeComment.setCommentContent("@issue #1\n\n\nnot rat. text anymore @issue #2");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(2, elementsFound.size());
@@ -121,9 +120,9 @@ public class TestRationaleFromCodeCommentExtractor {
 
 	@Test
 	public void testTwoRationaleElementsCheckDecKnowledgeElementKeys() {
-		codeComment.commentContent = "@issue #1\n\n\nnot rat. text anymore @issue #2\n\npart2";
-		String expectedKeyEnd = String.valueOf(codeComment.beginLine + 0) + ":"
-				+ String.valueOf(codeComment.beginLine + 0) + ":" + "6";
+		codeComment.setCommentContent("@issue #1\n\n\nnot rat. text anymore @issue #2\n\npart2");
+		String expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 0) + ":"
+				+ String.valueOf(codeComment.getBeginLine() + 0) + ":" + "6";
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		String foundElementKey = elementsFound.get(0).getKey();
@@ -131,67 +130,56 @@ public class TestRationaleFromCodeCommentExtractor {
 		assertEquals(foundElementKey, expectedKeyEnd);
 		assertEquals(2, elementsFound.size());
 
-		expectedKeyEnd = String.valueOf(codeComment.beginLine + 3) + ":" + String.valueOf(codeComment.beginLine + 3)
-				+ ":" + "40";
+		expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 3) + ":"
+				+ String.valueOf(codeComment.getBeginLine() + 3) + ":" + "40";
 		foundElementKey = elementsFound.get(1).getKey();
 		assertEquals(foundElementKey, expectedKeyEnd);
 	}
 
 	@Test
 	public void testRationaleElementsInMultiLineJavaComment() {
-		codeComment.commentContent = "/** \n" + 
-									 " * @issue Will this issue be parsed correctly? \n" + 
-									 " * @alternative We will see!\n" + 
-									 " * @pro This is a very long argument, so we put it into more than one\n" + 
-									 " * line. \n" +
-									 " * \n" + 
-									 " * not rat. text anymore\n" +
-									 " */";
+		codeComment.setCommentContent(
+				"/** \n" + " * @issue Will this issue be parsed correctly? \n" + " * @alternative We will see!\n"
+						+ " * @pro This is a very long argument, so we put it into more than one\n" + " * line. \n"
+						+ " * \n" + " * not rat. text anymore\n" + " */");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(3, elementsFound.size());
 		assertEquals("Will this issue be parsed correctly?", elementsFound.get(0).getSummary());
 		assertEquals("We will see!", elementsFound.get(1).getSummary());
-		assertEquals("This is a very long argument, so we put it into more than one line.", elementsFound.get(2).getSummary());
+		assertEquals("This is a very long argument, so we put it into more than one line.",
+				elementsFound.get(2).getSummary());
 	}
-
 
 	@Test
 	public void testRationaleElementsInSingleLineJavaComment() {
-		codeComment.commentContent = "// \n" + 
-									 "// @issue Will this issue be parsed correctly? \n" + 
-									 "// @alternative We will see!\n" + 
-									 "// @pro This is a very long argument, so we put it into more than one\n" + 
-									 "// line. \n" +
-									 "// \n" + 
-									 "// not rat. text anymore\n" +
-									 "//";
+		codeComment.setCommentContent(
+				"// \n" + "// @issue Will this issue be parsed correctly? \n" + "// @alternative We will see!\n"
+						+ "// @pro This is a very long argument, so we put it into more than one\n" + "// line. \n"
+						+ "// \n" + "// not rat. text anymore\n" + "//");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(3, elementsFound.size());
 		assertEquals("Will this issue be parsed correctly?", elementsFound.get(0).getSummary());
 		assertEquals("We will see!", elementsFound.get(1).getSummary());
-		assertEquals("This is a very long argument, so we put it into more than one line.", elementsFound.get(2).getSummary());
+		assertEquals("This is a very long argument, so we put it into more than one line.",
+				elementsFound.get(2).getSummary());
 	}
 
 	@Test
 	public void testRationaleElementsInPythonComment() {
-		codeComment.commentContent = "# \n" + 
-									 "# @issue Will this issue be parsed correctly? \n" + 
-									 "# @alternative We will see!\n" + 
-									 "# @pro This is a very long argument, so we put it into more than one\n" + 
-									 "# line. \n" +
-									 "# \n" + 
-									 "# not rat. text anymore\n" +
-									 "#";
+		codeComment.setCommentContent(
+				"# \n" + "# @issue Will this issue be parsed correctly? \n" + "# @alternative We will see!\n"
+						+ "# @pro This is a very long argument, so we put it into more than one\n" + "# line. \n"
+						+ "# \n" + "# not rat. text anymore\n" + "#");
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentExtractor(codeComment);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements();
 		assertEquals(3, elementsFound.size());
 		assertEquals("Will this issue be parsed correctly?", elementsFound.get(0).getSummary());
 		assertEquals("We will see!", elementsFound.get(1).getSummary());
-		assertEquals("This is a very long argument, so we put it into more than one line.", elementsFound.get(2).getSummary());
+		assertEquals("This is a very long argument, so we put it into more than one line.",
+				elementsFound.get(2).getSummary());
 	}
-
 
 	@Test
 	public void testWrongDocumentationLocation() {

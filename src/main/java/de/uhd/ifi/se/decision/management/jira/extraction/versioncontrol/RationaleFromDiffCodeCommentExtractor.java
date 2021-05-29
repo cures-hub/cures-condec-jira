@@ -169,11 +169,11 @@ public class RationaleFromDiffCodeCommentExtractor {
 			}
 			return
 			// change's end within the comment
-			(end >= comment.beginLine && end <= comment.endLine) ||
+			(end >= comment.getBeginLine() && end <= comment.getEndLine()) ||
 			// change's begin within the comment
-			(begin >= comment.beginLine && begin <= comment.endLine) ||
+			(begin >= comment.getBeginLine() && begin <= comment.getEndLine()) ||
 			// change overlaps comment
-			(begin <= comment.beginLine && end >= comment.endLine);
+			(begin <= comment.getBeginLine() && end >= comment.getEndLine());
 
 		}).collect(Collectors.toList());
 	}

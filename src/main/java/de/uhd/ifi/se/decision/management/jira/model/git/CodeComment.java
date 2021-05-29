@@ -12,18 +12,42 @@ package de.uhd.ifi.se.decision.management.jira.model.git;
  * @con The meaning of "WithRange" is not really clear.
  */
 public class CodeComment {
-	public String commentContent = null;
-	// position in source code of the file
-	public int beginColumn = -1;
-	public int beginLine = -1;
-	public int endColumn = -1;
-	public int endLine = -1;
+	private String commentContent;
+	private int beginLine = -1;
+	private int endLine = -1;
 
-	public CodeComment(String commentContent, int beginColumn, int beginLine, int endColumn, int endLine) {
+	public CodeComment(String commentContent, int beginLine, int endLine) {
 		this.commentContent = commentContent;
-		this.beginColumn = beginColumn;
 		this.beginLine = beginLine;
-		this.endColumn = endColumn;
 		this.endLine = endLine;
+	}
+
+	/**
+	 * @return textual content of the code comment.
+	 */
+	public String getCommentContent() {
+		return commentContent;
+	}
+
+	/**
+	 * @param commentContent
+	 *            textual content of the code comment.
+	 */
+	public void setCommentContent(String commentContent) {
+		this.commentContent = commentContent;
+	}
+
+	/**
+	 * @return starting position in file.
+	 */
+	public int getBeginLine() {
+		return beginLine;
+	}
+
+	/**
+	 * @return end position in file.
+	 */
+	public int getEndLine() {
+		return endLine;
 	}
 }
