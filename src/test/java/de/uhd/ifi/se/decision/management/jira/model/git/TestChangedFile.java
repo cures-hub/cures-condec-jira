@@ -140,4 +140,9 @@ public class TestChangedFile extends TestSetUpGit {
 		assertTrue(changedFile.isCodeFileToExtract());
 		assertFalse(new ChangedFile().isCodeFileToExtract());
 	}
+
+	@Test
+	public void testGetCodeComments() {
+		assertEquals(0, changedFile.getCodeComments().size());
+	}
 }

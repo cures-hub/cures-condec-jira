@@ -11,7 +11,6 @@ import org.eclipse.jgit.diff.Edit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -169,7 +168,7 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processAddEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = true;
-		List<CodeComment> commentsInFile = getCommentsFromFile(changedFile, fromNewerFile);
+		List<CodeComment> commentsInFile = changedFile.getCodeComments();
 
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
@@ -182,7 +181,7 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processDeleteEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 		boolean fromNewerFile = false;
-		List<CodeComment> commentsInFile = getCommentsFromFile(changedFile, fromNewerFile);
+		List<CodeComment> commentsInFile = changedFile.getCodeComments();
 
 		Map<Edit, List<KnowledgeElement>> elementsByEdit = getRationaleFromComments(fromNewerFile, commentsInFile,
 				changedFile);
@@ -195,9 +194,9 @@ public class GitDiffedCodeExtractionManager {
 	private CodeExtractionResult processModifyEntryEdits(ChangedFile changedFile) {
 		CodeExtractionResult codeExtractionResult = new CodeExtractionResult();
 
-		List<CodeComment> commentsInFileA = getCommentsFromFile(changedFile, false);
+		List<CodeComment> commentsInFileA = changedFile.getCodeComments();
 		// TODO Get deleted file from history
-		List<CodeComment> commentsInFileB = getCommentsFromFile(changedFile, true);
+		List<CodeComment> commentsInFileB = changedFile.getCodeComments();
 
 		Map<Edit, List<KnowledgeElement>> elementsByEditNew = getRationaleFromComments(true, commentsInFileB,
 				changedFile);
@@ -224,28 +223,6 @@ public class GitDiffedCodeExtractionManager {
 		}
 
 		return knowledgeElementsInComments;
-	}
-
-	private List<CodeComment> getCommentsFromFile(ChangedFile changedFile, boolean fromNewerFile) {
-		if (changedFile.exists()) {
-			CodeCommentParser commentParser = getCodeCommentParser(changedFile);
-			if (commentParser != null) {
-				return commentParser.getComments(changedFile);
-			}
-		}
-		LOGGER.info("File or parser could not be found for file name " + changedFile.getName());
-		// TODO Replace returning null with Optional<> everywhere to avoid
-		// NullPointerExceptions
-		return null;
-	}
-
-	private CodeCommentParser getCodeCommentParser(ChangedFile changedFile) {
-		if (changedFile.isCodeFileToExtract()) {
-			return new CodeCommentParser();
-		}
-		// TODO Replace returning null with Optional<> everywhere to avoid
-		// NullPointerExceptions
-		return null;
 	}
 
 	/**

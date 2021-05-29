@@ -31,6 +31,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -401,6 +402,14 @@ public class ChangedFile extends KnowledgeElement {
 	public CommentStyleType getCommentStyleType() {
 		FileType fileType = getFileType();
 		return fileType != null ? fileType.getCommentStyleType() : CommentStyleType.UNKNOWN;
+	}
+
+	public List<CodeComment> getCodeComments() {
+		if (fileContent != null && isCodeFileToExtract()) {
+			CodeCommentParser commentParser = new CodeCommentParser();
+			return commentParser.getComments(this);
+		}
+		return new ArrayList<>();
 	}
 
 	public boolean isCorrect() {
