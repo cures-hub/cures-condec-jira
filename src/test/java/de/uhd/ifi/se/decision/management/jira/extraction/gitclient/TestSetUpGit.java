@@ -22,9 +22,9 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.config.GitConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;

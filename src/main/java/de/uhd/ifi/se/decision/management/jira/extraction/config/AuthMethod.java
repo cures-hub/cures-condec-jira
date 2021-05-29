@@ -1,4 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.config;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
 
 /**
  * Authentication method for a {@link GitClientForSingleRepository}. The

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
+package de.uhd.ifi.se.decision.management.jira.extraction.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 
 public class TestGitRepositoryConfiguration {
 

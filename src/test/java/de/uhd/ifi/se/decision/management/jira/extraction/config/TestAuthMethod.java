@@ -1,10 +1,8 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
+package de.uhd.ifi.se.decision.management.jira.extraction.config;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.AuthMethod;
 
 public class TestAuthMethod {
 

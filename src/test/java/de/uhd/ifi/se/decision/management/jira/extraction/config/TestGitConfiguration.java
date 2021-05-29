@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
+package de.uhd.ifi.se.decision.management.jira.extraction.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -12,8 +12,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.git.FileType;
 
 public class TestGitConfiguration {
