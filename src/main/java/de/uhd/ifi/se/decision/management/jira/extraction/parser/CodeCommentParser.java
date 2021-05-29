@@ -12,13 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
  */
 public class CodeCommentParser {
 
-	private int beginLine;
+	private int beginLineOfCurrentComment;
 	private int lineNumber;
 	private String comment;
 	private List<CodeComment> codeComments;
 
 	public CodeCommentParser() {
-		beginLine = -1;
+		beginLineOfCurrentComment = -1;
 		lineNumber = 1;
 		comment = "";
 		codeComments = new ArrayList<CodeComment>();
@@ -43,42 +43,29 @@ public class CodeCommentParser {
 				comment += line;
 				inMultilineComment = !addCommentIfPresent(multilineComment);
 			} else { // we are not in a multi-line comment
-				int singleLineCommentCharPos = -1;
-				if (singleLineCommentChar != null) { // the file type does not support single-line comments
-					singleLineCommentCharPos = line.indexOf(singleLineCommentChar);
-				}
-				int multiLineCommentCharStartPos = -1;
-				if (multiLineCommentCharStart != null) { // the file type does not support multi-line comments
-					multiLineCommentCharStartPos = line.indexOf(multiLineCommentCharStart);
-				}
+				int singleLineCommentCharPos = singleLineCommentChar == null ? -1 : line.indexOf(singleLineCommentChar);
+				int multiLineCommentCharStartPos = multiLineCommentCharStart == null ? -1
+						: line.indexOf(multiLineCommentCharStart);
 				if (multiLineCommentCharStartPos != -1) { // a multi-line comment starts in this line
 					inMultilineComment = true;
-					beginLine = lineNumber;
-					if (comment.length() > 0) { // there is a single-line comment to end
-						codeComments.add(new CodeComment(comment, beginLine, lineNumber - 1));
-						comment = "";
-					}
+					beginLineOfCurrentComment = lineNumber;
+					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
 					CodeComment multilineComment = parseMultiLineComment(line, comment, multiLineCommentCharEnd);
 					comment += line;
 					inMultilineComment = !addCommentIfPresent(multilineComment);
 				} else if (singleLineCommentCharPos != -1) { // a single-line comment starts in this line
 					if (comment.length() == 0) { // there is no single-line comment present
-						beginLine = lineNumber;
+						beginLineOfCurrentComment = lineNumber;
 					}
 					comment += line.substring(singleLineCommentCharPos);
 				} else { // there is no comment in this line
-					if (comment.length() > 0) { // there is a single-line comment to end
-						codeComments.add(new CodeComment(comment, beginLine, lineNumber - 1));
-						comment = "";
-					}
+					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
 				}
 			}
 			fileContentToParse = removeFirstLine(fileContentToParse);
 			lineNumber++;
 		}
-		if (comment.length() > 0) {
-			codeComments.add(new CodeComment(comment, beginLine, lineNumber - 1));
-		}
+		addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
 		return codeComments;
 	}
 
@@ -94,6 +81,13 @@ public class CodeCommentParser {
 		return fileContent.indexOf("\n") == -1;
 	}
 
+	private CodeComment createCodeComment(String commentText, int beginLine, int endline) {
+		if (!commentText.isBlank()) {
+			return new CodeComment(commentText, beginLine, endline);
+		}
+		return null;
+	}
+
 	private boolean addCommentIfPresent(CodeComment codeComment) {
 		if (codeComment != null) {
 			comment = "";
@@ -103,13 +97,10 @@ public class CodeCommentParser {
 	}
 
 	private CodeComment parseMultiLineComment(String line, String comment, String multiLineCommentCharEnd) {
-		int multiLineCommentCharEndPos = -1;
-		if (multiLineCommentCharEnd != null) {
-			multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
-		}
+		int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
 		if (multiLineCommentCharEndPos != -1) { // the multi-line comment ends in this line
 			comment += line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
-			return new CodeComment(comment, beginLine, lineNumber);
+			return new CodeComment(comment, beginLineOfCurrentComment, lineNumber);
 		}
 		return null;
 	}
