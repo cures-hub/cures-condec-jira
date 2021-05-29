@@ -17,7 +17,7 @@ public class CodeComment {
 	private int endLine = -1;
 
 	public CodeComment(String commentContent, int beginLine, int endLine) {
-		this.commentContent = commentContent;
+		this.commentContent = commentContent.trim();
 		this.beginLine = beginLine;
 		this.endLine = endLine;
 	}

@@ -64,23 +64,26 @@ public class TestCodeCommentParser extends TestSetUp {
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.JAVA_C);
 		assertEquals(1, codeComments.size());
+		assertEquals(fileContent.trim(), codeComments.get(0).getCommentContent());
 	}
 
 	@Test
 	public void testRComment() {
 		String fileContent = "#@issue How to ...?\n" //
-				+ "#@alternative We could...";
+				+ "#@alternative We could...\n";
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.PYTHON);
 		assertEquals(1, codeComments.size());
+		assertEquals(fileContent.trim(), codeComments.get(0).getCommentContent());
 	}
 
 	@Test
 	public void testHTMLComment() {
 		String fileContent = "<!--@issue How to ...?\n" //
-				+ "@alternative We could...-->";
+				+ "@alternative We could...-->\n";
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.HTML);
 		assertEquals(1, codeComments.size());
+		assertEquals(fileContent.trim(), codeComments.get(0).getCommentContent());
 	}
 }

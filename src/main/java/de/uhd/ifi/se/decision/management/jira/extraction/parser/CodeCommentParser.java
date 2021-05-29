@@ -49,7 +49,7 @@ public class CodeCommentParser {
 				if (multiLineCommentCharStartPos != -1) { // a multi-line comment starts in this line
 					inMultilineComment = true;
 					beginLineOfCurrentComment = lineNumber;
-					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
+					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber));
 					CodeComment multilineComment = parseMultiLineComment(line, comment, multiLineCommentCharEnd);
 					comment += line;
 					inMultilineComment = !addCommentIfPresent(multilineComment);
@@ -59,13 +59,13 @@ public class CodeCommentParser {
 					}
 					comment += line.substring(singleLineCommentCharPos);
 				} else { // there is no comment in this line
-					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
+					addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber));
 				}
 			}
 			fileContentToParse = removeFirstLine(fileContentToParse);
 			lineNumber++;
 		}
-		addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber - 1));
+		addCommentIfPresent(createCodeComment(comment, beginLineOfCurrentComment, lineNumber));
 		return codeComments;
 	}
 
@@ -99,7 +99,8 @@ public class CodeCommentParser {
 	private CodeComment parseMultiLineComment(String line, String comment, String multiLineCommentCharEnd) {
 		int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
 		if (multiLineCommentCharEndPos != -1) { // the multi-line comment ends in this line
-			comment += line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
+			String commentContent = comment
+					+ line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
 			return new CodeComment(comment, beginLineOfCurrentComment, lineNumber);
 		}
 		return null;
