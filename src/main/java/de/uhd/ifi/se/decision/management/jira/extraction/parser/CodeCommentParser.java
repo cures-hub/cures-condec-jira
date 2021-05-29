@@ -101,7 +101,7 @@ public class CodeCommentParser {
 		if (multiLineCommentCharEndPos != -1) { // the multi-line comment ends in this line
 			String commentContent = comment
 					+ line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
-			return new CodeComment(comment, beginLineOfCurrentComment, lineNumber);
+			return new CodeComment(commentContent, beginLineOfCurrentComment, lineNumber);
 		}
 		return null;
 	}
