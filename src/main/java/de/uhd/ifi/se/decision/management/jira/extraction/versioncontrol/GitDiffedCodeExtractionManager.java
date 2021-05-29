@@ -240,7 +240,7 @@ public class GitDiffedCodeExtractionManager {
 	}
 
 	private CodeCommentParser getCodeCommentParser(ChangedFile changedFile) {
-		if (changedFile.isCodeFile()) {
+		if (changedFile.isCodeFileToExtract()) {
 			return new CodeCommentParser();
 		}
 		// TODO Replace returning null with Optional<> everywhere to avoid

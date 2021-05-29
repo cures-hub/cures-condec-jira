@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -97,6 +96,7 @@ public class ChangedFile extends KnowledgeElement {
 	private String fileContent;
 	@JsonIgnore
 	private List<RevCommit> commits;
+
 	/**
 	 * @issue Where shall we store the line count of a code file knowledge element?
 	 * @decision In the ChangedFile class!
@@ -217,7 +217,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public String getFileEnding() {
-		return this.getName().substring(this.getName().lastIndexOf(".") + 1).toLowerCase();
+		return this.getName().substring(getName().lastIndexOf(".") + 1).toLowerCase();
 	}
 
 	@Override
@@ -374,24 +374,33 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent.split("\n").length;
 	}
 
-	public boolean isCodeFile() {
-		return getCommentStyleType() != CommentStyleType.NONE;
+	public boolean isCodeFileToExtract() {
+		FileType fileType = getFileType();
+		return fileType != null && ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
+				.shouldFileTypeBeExtracted(fileType);
 	}
 
 	public boolean isTestCodeFile() {
 		return getSummary().contains("Test");
 	}
 
-	public CommentStyleType getCommentStyleType() {
+	/**
+	 * @return {@link FileType} including file ending and {@link CommentStyleType}
+	 *         necessary to identify decision knowledge in the comments of this code
+	 *         file.
+	 */
+	public FileType getFileType() {
 		if (getProject() == null) {
-			return CommentStyleType.NONE;
+			return null;
 		}
-		Map<String, CommentStyleType> codeFileEndings = ConfigPersistenceManager
-				.getGitConfiguration(getProject().getProjectKey()).getCodeFileEndings();
-		if (codeFileEndings.containsKey(this.getFileEnding())) {
-			return codeFileEndings.get(this.getFileEnding());
-		}
-		return CommentStyleType.NONE;
+		String fileEnding = getFileEnding();
+		return ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
+				.getFileTypeForEnding(fileEnding);
+	}
+
+	public CommentStyleType getCommentStyleType() {
+		FileType fileType = getFileType();
+		return fileType != null ? fileType.getCommentStyleType() : CommentStyleType.UNKNOWN;
 	}
 
 	public boolean isCorrect() {

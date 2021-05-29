@@ -12,7 +12,9 @@ import org.junit.Test;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class TestChangedFile extends TestSetUpGit {
 
@@ -99,15 +101,43 @@ public class TestChangedFile extends TestSetUpGit {
 		assertEquals("", changedFile.getOldName());
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
-	public void testEquals() {
+	public void testEqualsFalse() {
 		assertFalse(changedFile.equals((Object) null));
 		assertFalse(changedFile.equals(new KnowledgeElement()));
+		assertFalse(changedFile.equals(new Link()));
+	}
+
+	@Test
+	public void testEqualTrue() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setId(changedFile.getId());
+		element.setDocumentationLocation(DocumentationLocation.CODE);
+		assertTrue(changedFile.equals(element));
 	}
 
 	@Test
 	public void testParseIdFromKey() {
 		assertEquals(1, ChangedFile.parseIdFromKey("TEST:code:1"));
 		assertEquals(0, ChangedFile.parseIdFromKey("invalid key"));
+	}
+
+	@Test
+	public void testFileType() {
+		assertEquals(FileType.java(), changedFile.getFileType());
+		assertEquals(null, new ChangedFile().getFileType());
+	}
+
+	@Test
+	public void testCommentStyleType() {
+		assertEquals(FileType.java().getCommentStyleType(), changedFile.getCommentStyleType());
+		assertEquals(CommentStyleType.UNKNOWN, new ChangedFile().getCommentStyleType());
+	}
+
+	@Test
+	public void testIsCodeFileToExtract() {
+		assertTrue(changedFile.isCodeFileToExtract());
+		assertFalse(new ChangedFile().isCodeFileToExtract());
 	}
 }

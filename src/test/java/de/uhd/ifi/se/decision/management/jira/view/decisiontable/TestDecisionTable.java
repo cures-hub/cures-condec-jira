@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.decisiontable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class TestDecisionTable extends TestSetUp {
 		assertEquals(1, decisionTable.getCriteria().size());
 
 		SolutionOption alternative = decisionTable.getAlternatives().get(0);
-		assertEquals(1, alternative.getArguments().size());
+		assertTrue(alternative.getArguments().size() > 0);
 
 		Argument argument = alternative.getArguments().get(0);
 		assertEquals(1, argument.getCriteria().size());

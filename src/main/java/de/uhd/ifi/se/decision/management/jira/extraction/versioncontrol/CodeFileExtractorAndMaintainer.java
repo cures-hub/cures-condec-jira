@@ -52,7 +52,7 @@ public class CodeFileExtractorAndMaintainer {
 		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (!changedFile.isCodeFile()) {
+			if (!changedFile.isCodeFileToExtract()) {
 				continue;
 			}
 			List<KnowledgeElement> decisionKnowledgeInCodeComments = gitExtract.getElementsFromCode(changedFile);
@@ -95,7 +95,7 @@ public class CodeFileExtractorAndMaintainer {
 	 *            {@link ChangedFile} object.
 	 */
 	public void addUpdateOrDeleteChangedFileInDatabase(ChangedFile changedFile) {
-		if (!changedFile.isCodeFile()) {
+		if (!changedFile.isCodeFileToExtract()) {
 			return;
 		}
 		DiffEntry diffEntry = changedFile.getDiffEntry();

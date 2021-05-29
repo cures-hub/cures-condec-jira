@@ -11,6 +11,6 @@ public class TestCommentStyleType {
         assertEquals(CommentStyleType.PYTHON, CommentStyleType.getFromString("python"));
         assertEquals(CommentStyleType.HTML, CommentStyleType.getFromString("HTML"));
         assertEquals(CommentStyleType.TEX, CommentStyleType.getFromString("TeX"));
-        assertEquals(CommentStyleType.NONE, CommentStyleType.getFromString("cheesecake"));
+        assertEquals(CommentStyleType.UNKNOWN, CommentStyleType.getFromString("cheesecake"));
     }
 }
