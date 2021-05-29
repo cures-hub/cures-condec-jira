@@ -58,7 +58,7 @@ public class GitRepositoryConfiguration {
 	}
 
 	public boolean isValid() {
-		return repoUri != null && !repoUri.isBlank();
+		return !(repoUri == null || repoUri.isBlank());
 	}
 
 	public UsernamePasswordCredentialsProvider getCredentialsProvider() {
