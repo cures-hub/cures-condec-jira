@@ -142,7 +142,27 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGetCodeComments() {
+	public void testGetCodeCommentsEmpty() {
 		assertEquals(0, changedFile.getCodeComments().size());
+	}
+
+	@Test
+	public void testGetRationaleElementsFromCodeCommentsEmpty() {
+		assertEquals(0, changedFile.getRationaleElementsFromCodeComments().size());
+	}
+
+	@Test
+	public void testGetRationaleElementsFromCodeCommentsVariousDifferentComments() {
+		ChangedFile file = new ChangedFile("/**\r\n" //
+				+ "  * @issue How can we encrypt the password?\r\n" //
+				+ "  * @decision Encrypt password with SHA-1 algorithm!\r\n" //
+				+ "  * @pro Easy to implement.\r\n" //
+				+ "  * @con Not secure.\r\n" //
+				+ "  */");
+		file.setSummary("example.java");
+		file.setProject("TEST");
+		assertEquals(1, file.getCodeComments().size());
+		assertEquals(4, file.getRationaleElementsFromCodeComments().size());
+		assertEquals("Not secure. /", file.getRationaleElementsFromCodeComments().get(3).getSummary());
 	}
 }

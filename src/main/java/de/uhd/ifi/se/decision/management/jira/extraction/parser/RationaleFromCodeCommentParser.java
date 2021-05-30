@@ -49,6 +49,12 @@ public class RationaleFromCodeCommentParser {
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 	}
 
+	/**
+	 * @param codeFile
+	 *            {@link ChangedFile} object, i.e. a code file.
+	 * @return all decision knowledge elements within the comments of the given code
+	 *         file.
+	 */
 	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		for (CodeComment codeComment : codeFile.getCodeComments()) {
@@ -57,12 +63,10 @@ public class RationaleFromCodeCommentParser {
 
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(codeFile.getProject());
-			// element.setDescription(updateKeyForCodeExtractedElementWithInformationHash(element));
-			element.setDescription(codeFile.getName() + element.getDescription());
+			element.setDescription(codeFile.getName() + element.getKey());
 			element.setDocumentationLocation(DocumentationLocation.CODE);
 			return element;
 		}).collect(Collectors.toList());
-		// knowledgeElements.sort(comparatorForKnowledgeElementsByLocationInCode);
 		return knowledgeElements;
 	}
 
@@ -86,7 +90,7 @@ public class RationaleFromCodeCommentParser {
 
 	private KnowledgeElement parseNextElement(CodeComment comment, Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
-		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
+		String rationaleType = getRationaleTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
 
 		int textEnd = getRationaleTextEndPosition(rationaleText);
@@ -192,14 +196,18 @@ public class RationaleFromCodeCommentParser {
 		return -1;
 	}
 
-	private String getRatTypeFromTag(String rationaleTypeStartTag) {
+	/**
+	 * @param rationaleTypeStartTag
+	 *            e.g. <b>@decision</b>
+	 * @return type
+	 */
+	public static String getRationaleTypeFromTag(String rationaleTypeStartTag) {
 		int atCharPosition = rationaleTypeStartTag.indexOf("@");
 		int colonCharPosition = rationaleTypeStartTag.indexOf(":");
 		if (colonCharPosition > -1) {
 			return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
-		} else {
-			return rationaleTypeStartTag.substring(atCharPosition + 1);
 		}
+		return rationaleTypeStartTag.substring(atCharPosition + 1).split(" ")[0];
 	}
 
 	// similar 3 below methods found in

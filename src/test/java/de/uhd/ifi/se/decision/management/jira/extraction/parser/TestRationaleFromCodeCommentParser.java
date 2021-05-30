@@ -157,4 +157,10 @@ public class TestRationaleFromCodeCommentParser {
 		assertEquals("This is a very long argument, so we put it into more than one line.",
 				elementsFound.get(2).getSummary());
 	}
+
+	@Test
+	public void testGetRationaleTypeByTag() {
+		assertEquals("decision", RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision: We will"));
+		assertEquals("decision", RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision We will"));
+	}
 }
