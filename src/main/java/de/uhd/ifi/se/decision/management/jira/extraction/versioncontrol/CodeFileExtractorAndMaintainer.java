@@ -57,6 +57,7 @@ public class CodeFileExtractorAndMaintainer {
 			}
 			List<KnowledgeElement> decisionKnowledgeInCodeComments = gitExtract.getElementsFromCode(changedFile);
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+			graph.addVertex(source);
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 		}
 	}

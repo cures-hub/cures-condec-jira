@@ -17,9 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
@@ -107,9 +109,19 @@ public class GitDecXtract {
 
 	public List<KnowledgeElement> getElementsFromCode(Diff diff) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		GitDiffedCodeExtractionManager diffCodeManager = new GitDiffedCodeExtractionManager(diff);
-		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
-		elementsFromCode.addAll(diffCodeManager.getOldDecisionKnowledgeElements());
+		for (ChangedFile codeFile : diff.getChangedFiles()) {
+			elementsFromCode.addAll(getElementsFromCode(codeFile));
+		}
+		return elementsFromCode;
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
+		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
+		for (CodeComment codeComment : codeFile.getCodeComments()) {
+			RationaleFromCodeCommentExtractor rationaleFromCodeComment = new RationaleFromCodeCommentExtractor(
+					codeComment);
+			elementsFromCode.addAll(rationaleFromCodeComment.getElements());
+		}
 
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
@@ -119,10 +131,6 @@ public class GitDecXtract {
 		}).collect(Collectors.toList());
 		knowledgeElements.sort(comparatorForKnowledgeElementsByLocationInCode);
 		return knowledgeElements;
-	}
-
-	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
-		return getElementsFromCode(new Diff(codeFile));
 	}
 
 	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {

@@ -55,8 +55,8 @@ public class GitRest {
 		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
 
-		// deactivate other git extraction if false
 		if (!isKnowledgeExtractedFromGit) {
+			// destroy singleton object of GitClient
 			GitClient.instances.remove(projectKey);
 		} else {
 			// clone or fetch the git repositories

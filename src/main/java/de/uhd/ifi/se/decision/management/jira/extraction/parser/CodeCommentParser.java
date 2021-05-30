@@ -47,7 +47,7 @@ public class CodeCommentParser {
 	 */
 	public List<CodeComment> getComments(String entireFileContent, CommentStyleType commentStyleType) {
 		String fileContentToParse = entireFileContent;
-		boolean inMultilineComment = false;
+		boolean inMultiLineComment = false;
 
 		String singleLineCommentChar = commentStyleType.getSingleLineCommentChar();
 		String multiLineCommentCharStart = commentStyleType.getMultiLineCommentCharStart();
@@ -55,22 +55,22 @@ public class CodeCommentParser {
 
 		while (!isEndOfFileReached(fileContentToParse)) {
 			String line = readFirstLine(fileContentToParse);
-			if (inMultilineComment) { // we are in a multi-line comment
+			if (inMultiLineComment) { // we are in a multi-line comment
 				CodeComment multilineComment = parseMultiLineComment(line, currentCommentText, multiLineCommentCharEnd);
 				currentCommentText += line;
-				inMultilineComment = !addCommentIfPresent(multilineComment);
+				inMultiLineComment = !addCommentIfPresent(multilineComment);
 			} else { // we are not in a multi-line comment
 				int singleLineCommentCharPos = singleLineCommentChar == null ? -1 : line.indexOf(singleLineCommentChar);
 				int multiLineCommentCharStartPos = multiLineCommentCharStart == null ? -1
 						: line.indexOf(multiLineCommentCharStart);
 				if (multiLineCommentCharStartPos != -1) { // a multi-line comment starts in this line
-					inMultilineComment = true;
+					inMultiLineComment = true;
 					beginLineOfCurrentComment = lineNumber;
 					addCommentIfPresent(createCodeComment(currentCommentText, beginLineOfCurrentComment, lineNumber));
 					CodeComment multilineComment = parseMultiLineComment(line, currentCommentText,
 							multiLineCommentCharEnd);
 					currentCommentText += line;
-					inMultilineComment = !addCommentIfPresent(multilineComment);
+					inMultiLineComment = !addCommentIfPresent(multilineComment);
 				} else if (singleLineCommentCharPos != -1) { // a single-line comment starts in this line
 					if (currentCommentText.length() == 0) { // there is no single-line comment present
 						beginLineOfCurrentComment = lineNumber;
