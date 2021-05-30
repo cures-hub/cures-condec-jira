@@ -98,16 +98,15 @@ public class RationaleFromCodeCommentParser {
 			rationaleText = rationaleText.substring(0, textEnd);
 		}
 
-		return addElement(comment, tagMatcher.end(), rationaleText, rationaleType);
-	}
-
-	private KnowledgeElement addElement(CodeComment comment, int start, String rationaleText,
-			KnowledgeType rationaleType) {
 		String rationaleTextSanitized = sanitize(rationaleText);
-		return new KnowledgeElement(0, getSummary(rationaleTextSanitized), getDescription(rationaleTextSanitized),
-				rationaleType.toString(), "" // unknown, not needed at the moment
-				, calculateAndCodeRationalePositionInSourceFile(comment, start, rationaleText),
-				DocumentationLocation.CODE, "");
+		KnowledgeElement elementInCodeComment = new KnowledgeElement();
+		elementInCodeComment.setSummary(getSummary(rationaleTextSanitized));
+		elementInCodeComment.setDescription(getDescription(rationaleTextSanitized));
+		elementInCodeComment.setType(rationaleType);
+		elementInCodeComment.setDocumentationLocation(DocumentationLocation.CODE);
+		elementInCodeComment.setKey(calculateStartPositionInSourceFile(comment, tagMatcher.end()) + "");
+
+		return elementInCodeComment;
 	}
 
 	private String sanitize(String rationaleText) {
@@ -120,56 +119,22 @@ public class RationaleFromCodeCommentParser {
 	}
 
 	/**
-	 * @issue what information the dec. know. key encapsulate regarding its position
-	 *        in a source code file and the rationale itself?
-	 *
-	 *        KEY := POSITION_TEXTHASH
-	 *
-	 *        POSITION := lineBegin,columnBegin:lineEnd,columnEnd
-	 * @alternative the key must include the start POINT and end POINT in source
-	 *              code andthe hash of the rationale text!
-	 * @pro with start point(line,column) and end point the order of rationale
-	 *      within source file can be easily read.
-	 * @pro with start point(line,column) and end point intersections with diff
-	 *      entries can be calculated
-	 * @con calculating start and end column is complicated
-	 * @con end column information is not useful for diff intersections nor
-	 *      rationale order calculation.
-	 *
-	 * @decision the key must include the start LINE, end LINE in source code, tje
-	 *           cursor position within comment and the hash of the rationale text!
-	 *
-	 *           KEY := POSITION_TEXTHASH
-	 *
-	 *           POSITION := lineBegin:lineEnd:cursorInComment
-	 *
-	 * @pro start line, end line in source code and the cursor position within
-	 *      comment is sufficient to get the order of rationale within the source
-	 *      code
-	 * @pro with start line, end line and cursor position intersections with diff
-	 *      entries can be calculated
+	 * @issue What information do decision knowledge elements extracted from code
+	 *        comments contain regarding their position in a source code file?
+	 * @decision the key must include the start line in source code.
+	 * @pro start line in source code is sufficient to get the order of rationale
+	 *      within the source code.
 	 */
-	private String calculateAndCodeRationalePositionInSourceFile(CodeComment comment, int start, String rationaleText) {
+	private int calculateStartPositionInSourceFile(CodeComment comment, int start) {
 		String fullCommentText = comment.getCommentContent();
 		// calculate rationale start line in source code
 		int absoluteFileStartLine = comment.getBeginLine();
 		Matcher match = NEWLINE_CHAR_PATTERN.matcher(fullCommentText);
-		while (match.find()) {
-			if (match.start() < start) {
-				absoluteFileStartLine++;
-			} else {
-				break;
-			}
+		while (match.find() && match.start() < start) {
+			absoluteFileStartLine++;
 		}
 
-		// calculate rationale end line in source code
-		int absoluteFileEndLine = absoluteFileStartLine;
-		match = NEWLINE_CHAR_PATTERN.matcher(rationaleText);
-		while (match.find()) {
-			absoluteFileEndLine++;
-		}
-
-		return absoluteFileStartLine + ":" + absoluteFileEndLine;
+		return absoluteFileStartLine;
 	}
 
 	/* Either rationale is delimited by two new lines or @ gets observed */

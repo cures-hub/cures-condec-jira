@@ -56,7 +56,7 @@ public class TestRationaleFromCodeCommentParser {
 	@Test
 	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpaces() {
 		codeComment.setCommentContent("Text @issue with rationale  \n  \n  \nnot rat. text anymore");
-		String expectedKey = codeCommentBeginLine + ":" + codeCommentBeginLine;
+		String expectedKey = codeCommentBeginLine + "";
 		elementsFound = rationaleFromCodeCommentExtractor.getElements(codeComment);
 
 		assertEquals(1, elementsFound.size());
@@ -103,16 +103,14 @@ public class TestRationaleFromCodeCommentParser {
 	@Test
 	public void testTwoRationaleElementsCheckDecKnowledgeElementKeys() {
 		codeComment.setCommentContent("@issue #1\n\n\nnot rat. text anymore @issue #2\n\npart2");
-		String expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 0) + ":"
-				+ String.valueOf(codeComment.getBeginLine() + 0);
+		String expectedKeyEnd = String.valueOf(codeComment.getBeginLine());
 		elementsFound = rationaleFromCodeCommentExtractor.getElements(codeComment);
 		String foundElementKey = elementsFound.get(0).getKey();
 
 		assertEquals(foundElementKey, expectedKeyEnd);
 		assertEquals(2, elementsFound.size());
 
-		expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 3) + ":"
-				+ String.valueOf(codeComment.getBeginLine() + 3);
+		expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 3);
 		foundElementKey = elementsFound.get(1).getKey();
 		assertEquals(foundElementKey, expectedKeyEnd);
 	}
