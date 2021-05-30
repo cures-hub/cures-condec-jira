@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -67,6 +68,7 @@ public class TestInsertGroup extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testInheritInsertGroup() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);

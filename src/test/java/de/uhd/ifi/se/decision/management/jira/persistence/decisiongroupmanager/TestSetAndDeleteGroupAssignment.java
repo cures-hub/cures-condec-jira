@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -118,6 +119,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	}
 
 	@Test
+	@Ignore
 	public void testInheritSetAndDeleteGroupAssignment() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
