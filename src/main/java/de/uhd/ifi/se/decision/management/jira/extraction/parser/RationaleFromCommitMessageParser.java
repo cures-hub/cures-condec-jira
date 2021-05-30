@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -24,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * where [decisionKnowledgeTag] belongs to a set of {@link KnowledgeType}s, for
  * example, issue, alternative, decision, pro, and con.
  */
-public class GitCommitMessageExtractor {
+public class RationaleFromCommitMessageParser {
 
 	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	/**
@@ -39,7 +40,7 @@ public class GitCommitMessageExtractor {
 	private List<String> parseWarnings;
 	private String fullMessage;
 
-	GitCommitMessageExtractor(String message) {
+	public RationaleFromCommitMessageParser(String message) {
 		extractedElements = new ArrayList<>();
 		parseError = null;
 		parseWarnings = new ArrayList<>();

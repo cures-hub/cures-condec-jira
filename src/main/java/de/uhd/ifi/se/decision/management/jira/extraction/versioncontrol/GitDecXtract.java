@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -134,7 +135,7 @@ public class GitDecXtract {
 	}
 
 	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
-		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
+		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(commit.getFullMessage());
 		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
 			element.setProject(projecKey);
 			element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
@@ -168,7 +169,7 @@ public class GitDecXtract {
 		key += RAT_KEY_COMPONENTS_SEPARATOR + calculateRationaleTextHash(rationaleText);
 
 		// 2nd: replace placeholder with commit's hash (40 hex chars)
-		return key.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
+		return key.replace(RationaleFromCommitMessageParser.COMMIT_PLACEHOLDER,
 				String.valueOf(id).split(" ")[1] + RAT_KEY_COMPONENTS_SEPARATOR);
 	}
 
