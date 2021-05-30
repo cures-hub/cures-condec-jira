@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
@@ -68,23 +67,18 @@ public class TestInsertGroup extends TestSetUpGit {
 	}
 
 	@Test
-	@Ignore
 	public void testInheritInsertGroup() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
+		KnowledgeElement godClass = graph.getElementBySummary("GodClass.java");
 
-		KnowledgeElement godClass = null;
-		for (KnowledgeElement codeFile : codeFiles) {
-			if (codeFile.getSummary().equals("GodClass.java")) {
-				godClass = codeFile;
-				break;
-			}
-		}
+		graph.vertexSet().stream().forEach(element -> System.out.println(element.getSummary()));
 
 		KnowledgeElement issueFromCodeCommentInGodClass = graph
 				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
+		assertEquals("Will this issue be parsed correctly?", issueFromCodeCommentInGodClass.getSummary());
+		assertNotNull(godClass.getLink(issueFromCodeCommentInGodClass));
 
 		DecisionGroupManager.insertGroup("TestGroup2", godClass);
 		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup2"));

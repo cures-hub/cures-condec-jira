@@ -126,6 +126,7 @@ public class GitDecXtract {
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(projecKey);
 			element.setDescription(updateKeyForCodeExtractedElementWithInformationHash(element));
+			element.setDescription(codeFile.getName() + element.getDescription());
 			element.setDocumentationLocation(DocumentationLocation.CODE);
 			return element;
 		}).collect(Collectors.toList());
