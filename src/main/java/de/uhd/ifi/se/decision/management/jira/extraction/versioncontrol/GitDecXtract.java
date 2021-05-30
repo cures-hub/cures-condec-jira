@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
@@ -56,15 +55,7 @@ public class GitDecXtract {
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
 		Diff diff = gitClient.getDiff(revCommitStart, revCommitEnd);
-		return getElementsFromCode(diff);
-	}
-
-	public List<KnowledgeElement> getElementsFromCode(Diff diff) {
-		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		for (ChangedFile codeFile : diff.getChangedFiles()) {
-			elementsFromCode.addAll(codeFile.getRationaleElementsFromCodeComments());
-		}
-		return elementsFromCode;
+		return diff.getRationaleElementsFromCodeComments();
 	}
 
 	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
@@ -105,22 +96,5 @@ public class GitDecXtract {
 			LOGGER.error(e.getMessage());
 			return "";
 		}
-	}
-
-	public static String generateBranchShortName(Ref branch) {
-		String[] branchNameComponents = branch.getName().split("/");
-		return branchNameComponents[branchNameComponents.length - 1];
-	}
-
-	public static String generateRegexToFindAllTags(String tag) {
-		return generateRegexForOpenTag(tag) + "|" + generateRegexForCloseTag(tag);
-	}
-
-	public static String generateRegexForOpenTag(String tag) {
-		return "(?i)(\\[(" + tag + ")\\])";
-	}
-
-	public static String generateRegexForCloseTag(String tag) {
-		return "(?i)(\\[\\/(" + tag + ")\\])";
 	}
 }

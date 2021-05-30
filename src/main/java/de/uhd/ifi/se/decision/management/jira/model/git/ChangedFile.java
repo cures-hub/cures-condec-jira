@@ -38,6 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCod
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
@@ -376,12 +377,19 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent.split("\n").length;
 	}
 
+	/**
+	 * @return true if the file should be included as a node/vertex in the
+	 *         {@link KnowledgeGraph}.
+	 */
 	public boolean isCodeFileToExtract() {
 		FileType fileType = getFileType();
 		return fileType != null && ConfigPersistenceManager.getGitConfiguration(getProject().getProjectKey())
 				.shouldFileTypeBeExtracted(fileType);
 	}
 
+	/**
+	 * @return true if this file is a test class (e.g. for unit testing).
+	 */
 	public boolean isTestCodeFile() {
 		return getSummary().contains("Test");
 	}
@@ -400,11 +408,19 @@ public class ChangedFile extends KnowledgeElement {
 				.getFileTypeForEnding(fileEnding);
 	}
 
+	/**
+	 * @return {@link CommentStyleType} that defines how the comments in the
+	 *         programming language look like. The exact {@link FileType} is
+	 *         returned by this{@link #getFileType()}.
+	 */
 	public CommentStyleType getCommentStyleType() {
 		FileType fileType = getFileType();
 		return fileType != null ? fileType.getCommentStyleType() : CommentStyleType.UNKNOWN;
 	}
 
+	/**
+	 * @return all {@link CodeComment}s of this code file.
+	 */
 	public List<CodeComment> getCodeComments() {
 		if (fileContent != null && isCodeFileToExtract()) {
 			CodeCommentParser commentParser = new CodeCommentParser();
@@ -413,6 +429,10 @@ public class ChangedFile extends KnowledgeElement {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * @return all decision knowledge elements within the comments of this code
+	 *         file.
+	 */
 	public List<KnowledgeElement> getRationaleElementsFromCodeComments() {
 		return new RationaleFromCodeCommentParser().getElementsFromCode(this);
 	}

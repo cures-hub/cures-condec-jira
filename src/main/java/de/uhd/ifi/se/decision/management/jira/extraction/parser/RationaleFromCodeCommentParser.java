@@ -17,11 +17,14 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
  * Extracts decision knowledge elements from {@link CodeComment}s of a
- * {@link ChangedFile}. Stores the source of the element within the source
+ * {@link ChangedFile}. Stores the line of the element within the source
  * file/comment in its key.
  * 
- * The decision knowledge elements need to be indicated with an @ char, e.g.
- * <b>@decision</b> We decided to...
+ * Decision knowledge is documented in code comments using the following syntax:
+ * 
+ * <b>@decisionKnowledgeTag</b> knowledge summary text
+ * <p>
+ * e.g. <b>@decision</b> We decided to...
  */
 public class RationaleFromCodeCommentParser {
 	private final Pattern TAGS_SEARCH_PATTERN;
@@ -151,7 +154,9 @@ public class RationaleFromCodeCommentParser {
 		return absoluteFileStartLine;
 	}
 
-	/* Either rationale is delimited by two new lines or @ gets observed */
+	/**
+	 * Either rationale is delimited by two new lines or @ gets observed
+	 */
 	private int getRationaleTextEndPosition(String rationaleText) {
 		int twoLinesPos = -1;
 		int spaceAtCharPos = -1;
