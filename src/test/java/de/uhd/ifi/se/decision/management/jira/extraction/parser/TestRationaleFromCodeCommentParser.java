@@ -9,17 +9,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 public class TestRationaleFromCodeCommentParser {
 	private RationaleFromCodeCommentParser rationaleFromCodeCommentExtractor;
 	private CodeComment codeComment;
-	private int commitBeginLine = 10;
+	private int codeCommentBeginLine = 10;
 	private List<KnowledgeElement> elementsFound;
 
 	@Before
 	public void setUp() {
-		codeComment = new CodeComment("", commitBeginLine, commitBeginLine + 1);
+		codeComment = new CodeComment("", codeCommentBeginLine, codeCommentBeginLine + 1);
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentParser();
 	}
 
@@ -55,7 +56,7 @@ public class TestRationaleFromCodeCommentParser {
 	@Test
 	public void testOneRationaleElementAndRestTextSeparatedByLinesWithSpaces() {
 		codeComment.setCommentContent("Text @issue with rationale  \n  \n  \nnot rat. text anymore");
-		String expectedKey = commitBeginLine + ":" + commitBeginLine + ":11";
+		String expectedKey = codeCommentBeginLine + ":" + codeCommentBeginLine;
 		elementsFound = rationaleFromCodeCommentExtractor.getElements(codeComment);
 
 		assertEquals(1, elementsFound.size());
@@ -103,7 +104,7 @@ public class TestRationaleFromCodeCommentParser {
 	public void testTwoRationaleElementsCheckDecKnowledgeElementKeys() {
 		codeComment.setCommentContent("@issue #1\n\n\nnot rat. text anymore @issue #2\n\npart2");
 		String expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 0) + ":"
-				+ String.valueOf(codeComment.getBeginLine() + 0) + ":" + "6";
+				+ String.valueOf(codeComment.getBeginLine() + 0);
 		elementsFound = rationaleFromCodeCommentExtractor.getElements(codeComment);
 		String foundElementKey = elementsFound.get(0).getKey();
 
@@ -111,7 +112,7 @@ public class TestRationaleFromCodeCommentParser {
 		assertEquals(2, elementsFound.size());
 
 		expectedKeyEnd = String.valueOf(codeComment.getBeginLine() + 3) + ":"
-				+ String.valueOf(codeComment.getBeginLine() + 3) + ":" + "40";
+				+ String.valueOf(codeComment.getBeginLine() + 3);
 		foundElementKey = elementsFound.get(1).getKey();
 		assertEquals(foundElementKey, expectedKeyEnd);
 	}
@@ -160,7 +161,9 @@ public class TestRationaleFromCodeCommentParser {
 
 	@Test
 	public void testGetRationaleTypeByTag() {
-		assertEquals("decision", RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision: We will"));
-		assertEquals("decision", RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision We will"));
+		assertEquals(KnowledgeType.DECISION,
+				RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision: We will"));
+		assertEquals(KnowledgeType.DECISION,
+				RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision We will"));
 	}
 }

@@ -63,7 +63,7 @@ public class RationaleFromCodeCommentParser {
 
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(codeFile.getProject());
-			element.setDescription(codeFile.getName() + element.getKey());
+			element.setDescription(codeFile.getName() + ":" + element.getKey());
 			element.setDocumentationLocation(DocumentationLocation.CODE);
 			return element;
 		}).collect(Collectors.toList());
@@ -90,7 +90,7 @@ public class RationaleFromCodeCommentParser {
 
 	private KnowledgeElement parseNextElement(CodeComment comment, Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
-		String rationaleType = getRationaleTypeFromTag(rationaleTypeTag);
+		KnowledgeType rationaleType = getRationaleTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
 
 		int textEnd = getRationaleTextEndPosition(rationaleText);
@@ -101,10 +101,11 @@ public class RationaleFromCodeCommentParser {
 		return addElement(comment, tagMatcher.end(), rationaleText, rationaleType);
 	}
 
-	private KnowledgeElement addElement(CodeComment comment, int start, String rationaleText, String rationaleType) {
+	private KnowledgeElement addElement(CodeComment comment, int start, String rationaleText,
+			KnowledgeType rationaleType) {
 		String rationaleTextSanitized = sanitize(rationaleText);
 		return new KnowledgeElement(0, getSummary(rationaleTextSanitized), getDescription(rationaleTextSanitized),
-				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
+				rationaleType.toString(), "" // unknown, not needed at the moment
 				, calculateAndCodeRationalePositionInSourceFile(comment, start, rationaleText),
 				DocumentationLocation.CODE, "");
 	}
@@ -168,7 +169,7 @@ public class RationaleFromCodeCommentParser {
 			absoluteFileEndLine++;
 		}
 
-		return absoluteFileStartLine + ":" + absoluteFileEndLine + ":" + start;
+		return absoluteFileStartLine + ":" + absoluteFileEndLine;
 	}
 
 	/* Either rationale is delimited by two new lines or @ gets observed */
@@ -201,13 +202,16 @@ public class RationaleFromCodeCommentParser {
 	 *            e.g. <b>@decision</b>
 	 * @return type
 	 */
-	public static String getRationaleTypeFromTag(String rationaleTypeStartTag) {
+	public static KnowledgeType getRationaleTypeFromTag(String rationaleTypeStartTag) {
 		int atCharPosition = rationaleTypeStartTag.indexOf("@");
 		int colonCharPosition = rationaleTypeStartTag.indexOf(":");
+		String rationaleTypeName = "";
 		if (colonCharPosition > -1) {
-			return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
+			rationaleTypeName = rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
+		} else {
+			rationaleTypeName = rationaleTypeStartTag.substring(atCharPosition + 1).split(" ")[0];
 		}
-		return rationaleTypeStartTag.substring(atCharPosition + 1).split(" ")[0];
+		return KnowledgeType.getKnowledgeType(rationaleTypeName);
 	}
 
 	// similar 3 below methods found in
