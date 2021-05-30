@@ -118,9 +118,8 @@ public class GitDecXtract {
 	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		for (CodeComment codeComment : codeFile.getCodeComments()) {
-			RationaleFromCodeCommentParser rationaleFromCodeComment = new RationaleFromCodeCommentParser(
-					codeComment);
-			elementsFromCode.addAll(rationaleFromCodeComment.getElements());
+			RationaleFromCodeCommentParser rationaleFromCodeComment = new RationaleFromCodeCommentParser();
+			elementsFromCode.addAll(rationaleFromCodeComment.getElements(codeComment));
 		}
 
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {

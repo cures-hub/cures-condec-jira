@@ -19,23 +19,21 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
  * Extracts decision knowledge elements from {@link CodeComment}s of a
  * {@link ChangedFile}. Stores the source of the element within the source
  * file/comment in its key.
+ * 
+ * The decision knowledge elements need to be indicated with an @ char, e.g.
+ * <b>@decision</b> We decided to...
  */
 public class RationaleFromCodeCommentParser {
 	private List<KnowledgeElement> elements;
-	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERNS;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
 	private final Pattern NEWLINE_CHAR_PATTERN;
 	private final List<String> NEWLINE_WITH_COMMENT_CHAR_PATTERNS;
 
-	public RationaleFromCodeCommentParser(CodeComment comment) {
-		String tagSearch = String.join("|", KnowledgeType.toStringList().stream().map(tag -> "@" + tag + "\\:?") // at-char
-																													// +
-																													// ratType
-																													// +
-				// colon or blank
-				.collect(Collectors.toList()));
+	public RationaleFromCodeCommentParser() {
+		String tagSearch = String.join("|",
+				KnowledgeType.toStringList().stream().map(tag -> "@" + tag + "\\:?").collect(Collectors.toList()));
 		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all
 																								// characters that may
 																								// interrupt multi-line
@@ -55,24 +53,20 @@ public class RationaleFromCodeCommentParser {
 																					// optional comment characters
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
-		this.comment = comment;
 		this.elements = new ArrayList<>();
 	}
 
-	public List<KnowledgeElement> getElements() {
-		if (comment.getCommentContent() == null || comment.getCommentContent().isBlank()) {
-			return elements;
-		}
+	public List<KnowledgeElement> getElements(CodeComment comment) {
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
 		int cursorPosition = -1;
 
 		while (tagMatcher.find() && cursorPosition <= tagMatcher.start()) {
-			cursorPosition = extractElementAndMoveCursor(tagMatcher);
+			cursorPosition = extractElementAndMoveCursor(comment, tagMatcher);
 		}
 		return elements;
 	}
 
-	private int extractElementAndMoveCursor(Matcher tagMatcher) {
+	private int extractElementAndMoveCursor(CodeComment comment, Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
 		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
@@ -84,16 +78,17 @@ public class RationaleFromCodeCommentParser {
 		}
 		cursorPosition += rationaleText.length();
 
-		elements.add(addElement(tagMatcher.end(), rationaleText, rationaleType));
+		elements.add(addElement(comment, tagMatcher.end(), rationaleText, rationaleType));
 
 		return cursorPosition;
 	}
 
-	private KnowledgeElement addElement(int start, String rationaleText, String rationaleType) {
+	private KnowledgeElement addElement(CodeComment comment, int start, String rationaleText, String rationaleType) {
 		String rationaleTextSanitized = sanitize(rationaleText);
 		return new KnowledgeElement(0, getSummary(rationaleTextSanitized), getDescription(rationaleTextSanitized),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, calculateAndCodeRationalePositionInSourceFile(start, rationaleText), DocumentationLocation.CODE, "");
+				, calculateAndCodeRationalePositionInSourceFile(comment, start, rationaleText),
+				DocumentationLocation.CODE, "");
 	}
 
 	private String sanitize(String rationaleText) {
@@ -136,7 +131,7 @@ public class RationaleFromCodeCommentParser {
 	 * @pro with start line, end line and cursor position intersections with diff
 	 *      entries can be calculated
 	 */
-	private String calculateAndCodeRationalePositionInSourceFile(int start, String rationaleText) {
+	private String calculateAndCodeRationalePositionInSourceFile(CodeComment comment, int start, String rationaleText) {
 		String fullCommentText = comment.getCommentContent();
 		// calculate rationale start line in source code
 		int absoluteFileStartLine = comment.getBeginLine();
