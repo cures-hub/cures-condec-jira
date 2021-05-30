@@ -32,7 +32,7 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -532,7 +532,7 @@ public class ChangedFile extends KnowledgeElement {
 	public Set<String> getJiraIssueKeys() {
 		Set<String> jiraIssueKeys = new LinkedHashSet<>();
 		for (RevCommit commit : commits) {
-			jiraIssueKeys.addAll(CommitMessageParser.getJiraIssueKeys(commit.getFullMessage()));
+			jiraIssueKeys.addAll(JiraIssueKeyFromCommitMessageParser.getJiraIssueKeys(commit.getFullMessage()));
 		}
 		return jiraIssueKeys;
 	}

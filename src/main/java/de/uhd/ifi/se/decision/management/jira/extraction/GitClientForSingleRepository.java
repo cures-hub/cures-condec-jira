@@ -35,7 +35,7 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
@@ -438,7 +438,7 @@ public class GitClientForSingleRepository {
 			commits = getCommits(branch);
 		}
 		for (RevCommit commit : commits) {
-			String jiraIssueKeyInCommitMessage = CommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
+			String jiraIssueKeyInCommitMessage = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 				commitsForJiraIssue.add(commit);
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());

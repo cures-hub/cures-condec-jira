@@ -8,23 +8,23 @@ import java.util.Set;
 
 import org.junit.Test;
 
-public class TestCommitMessageParser {
+public class TestJiraIssueKeyFromCommitMessageParser {
 
 	@Test
 	public void testGetJiraIssueKeyFromEmptyMessage() {
-		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("");
+		String jiraIssueKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey("");
 		assertEquals("", jiraIssueKey);
 	}
 
 	@Test
 	public void testGetJiraIssueKeyFromValidMessage() {
-		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("Test-12: This is a very advanced commit.");
+		String jiraIssueKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey("Test-12: This is a very advanced commit.");
 		assertEquals("TEST-12", jiraIssueKey);
 	}
 
 	@Test
 	public void testMultipleJiraIssueKeys() {
-		Set<String> jiraIssueKeys = CommitMessageParser
+		Set<String> jiraIssueKeys = JiraIssueKeyFromCommitMessageParser
 				.getJiraIssueKeys("ConDec-1: Improve almost everything... CONDEC-2 -test ConDec-3 - hello- Great tool");
 		Iterator<String> iterator = jiraIssueKeys.iterator();
 		assertEquals("CONDEC-1", iterator.next());
@@ -35,7 +35,7 @@ public class TestCommitMessageParser {
 
 	@Test
 	public void testParseJiraIssueKeyStartingWithDifferentWord() {
-		Set<String> jiraIssueKeys = CommitMessageParser.getJiraIssueKeys("Feature/CONDEC-1 link to detail view");
+		Set<String> jiraIssueKeys = JiraIssueKeyFromCommitMessageParser.getJiraIssueKeys("Feature/CONDEC-1 link to detail view");
 		Iterator<String> iterator = jiraIssueKeys.iterator();
 		assertEquals("CONDEC-1", iterator.next());
 		assertFalse(iterator.hasNext());
@@ -43,7 +43,7 @@ public class TestCommitMessageParser {
 
 	@Test
 	public void testParseJiraIssueKeysSeparatedWithHypen() {
-		Set<String> jiraIssueKeys = CommitMessageParser.getJiraIssueKeys("CONDEC-1-link-to-detail-view");
+		Set<String> jiraIssueKeys = JiraIssueKeyFromCommitMessageParser.getJiraIssueKeys("CONDEC-1-link-to-detail-view");
 		Iterator<String> iterator = jiraIssueKeys.iterator();
 		assertEquals("CONDEC-1", iterator.next());
 		assertFalse(iterator.hasNext());
@@ -51,7 +51,7 @@ public class TestCommitMessageParser {
 
 	@Test
 	public void testParseJiraIssueKeyWithNumbers() {
-		String jiraIssueKey = CommitMessageParser.getFirstJiraIssueKey("ISE2020-1: Add Solr");
+		String jiraIssueKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey("ISE2020-1: Add Solr");
 		assertEquals("ISE2020-1", jiraIssueKey);
 	}
 
