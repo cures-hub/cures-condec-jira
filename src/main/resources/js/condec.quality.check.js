@@ -13,20 +13,28 @@
 	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete."
 	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete."
 
-
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
 
-	ConDecQualityCheck.prototype.initView = function () {
+	ConDecQualityCheck.prototype.initView = function (viewIdentifier) {
 		console.log("ConDecQualityCheck initView");
 
 		var projectKey = conDecAPI.getProjectKey();
 		var issueKey = conDecAPI.getIssueKey();
 
-		updateView(projectKey, issueKey);
+		updateView(projectKey, issueKey, viewIdentifier);
 	};
 
-	function updateView(projectKey, issueKey) {
+	ConDecQualityCheck.prototype.build = function (node, viewIdentifier) {
+		console.log("ConDecQualityCheck build");
+
+		var projectKey = conDecAPI.getProjectKey();
+		var issueKey = node.key;
+
+		updateView(projectKey, issueKey, viewIdentifier);
+	};
+
+	function updateView(projectKey, issueKey, viewIdentifier) {
 		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
 			var minimumCoverage = filterSettings.minimumDecisionCoverage;
 			var linkDistance = filterSettings.linkDistance;
@@ -38,12 +46,12 @@
 				conDecDoDCheckingAPI.hasIncompleteKnowledgeLinked(issueKey, function(result) {
 					var hasIncompleteKnowledgeLinked = result;
 
-					getHTMLNodes("menu-item-quality-check"
-						, "condec-tab-minimum-coverage"
-						, "condec-tab-link-distance"
-						, "quality-check-knowledge-complete-text"
-						, "quality-check-issue-text"
-						, "quality-check-decision-text");
+					getHTMLNodes("menu-item-quality-check-" + viewIdentifier
+						, "condec-tab-minimum-coverage-" + viewIdentifier
+						, "condec-tab-link-distance-" + viewIdentifier
+						, "quality-check-knowledge-complete-text-" + viewIdentifier
+						, "quality-check-issue-text-" + viewIdentifier
+						, "quality-check-decision-text-" + viewIdentifier);
 
 					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, numberOfIssues, numberOfDecisions, minimumCoverage);
 					updateLabel(minimumCoverageText, minimumCoverage);
