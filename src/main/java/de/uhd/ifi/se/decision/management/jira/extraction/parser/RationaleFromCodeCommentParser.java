@@ -70,6 +70,12 @@ public class RationaleFromCodeCommentParser {
 		return knowledgeElements;
 	}
 
+	/**
+	 * @param codeComments
+	 *            list of {@link CodeComment}s which contain decision knowledge
+	 *            elements.
+	 * @return all decision knowledge elements within the comments.
+	 */
 	public List<KnowledgeElement> getElements(List<CodeComment> codeComments) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		for (CodeComment codeComment : codeComments) {
@@ -78,6 +84,11 @@ public class RationaleFromCodeCommentParser {
 		return elements;
 	}
 
+	/**
+	 * @param comment
+	 *            {@link CodeComment} which contains decision knowledge elements.
+	 * @return all decision knowledge elements within the comment.
+	 */
 	public List<KnowledgeElement> getElements(CodeComment comment) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
@@ -100,11 +111,10 @@ public class RationaleFromCodeCommentParser {
 
 		String rationaleTextSanitized = sanitize(rationaleText);
 		KnowledgeElement elementInCodeComment = new KnowledgeElement();
-		elementInCodeComment.setSummary(getSummary(rationaleTextSanitized));
-		elementInCodeComment.setDescription(getDescription(rationaleTextSanitized));
+		elementInCodeComment.setSummary(rationaleTextSanitized);
 		elementInCodeComment.setType(rationaleType);
 		elementInCodeComment.setDocumentationLocation(DocumentationLocation.CODE);
-		elementInCodeComment.setKey(calculateStartPositionInSourceFile(comment, tagMatcher.end()) + "");
+		elementInCodeComment.setKey(calculateStartLineInSourceFile(comment, tagMatcher.end()) + "");
 
 		return elementInCodeComment;
 	}
@@ -124,8 +134,12 @@ public class RationaleFromCodeCommentParser {
 	 * @decision the key must include the start line in source code.
 	 * @pro start line in source code is sufficient to get the order of rationale
 	 *      within the source code.
+	 *
+	 * @param comment
+	 * @param start
+	 * @return
 	 */
-	private int calculateStartPositionInSourceFile(CodeComment comment, int start) {
+	private int calculateStartLineInSourceFile(CodeComment comment, int start) {
 		String fullCommentText = comment.getCommentContent();
 		// calculate rationale start line in source code
 		int absoluteFileStartLine = comment.getBeginLine();
@@ -164,8 +178,8 @@ public class RationaleFromCodeCommentParser {
 
 	/**
 	 * @param rationaleTypeStartTag
-	 *            e.g. <b>@decision</b>
-	 * @return type
+	 *            e.g. @decision
+	 * @return {@link KnowledgeType} instance for the tag.
 	 */
 	public static KnowledgeType getRationaleTypeFromTag(String rationaleTypeStartTag) {
 		int atCharPosition = rationaleTypeStartTag.indexOf("@");
@@ -177,21 +191,5 @@ public class RationaleFromCodeCommentParser {
 			rationaleTypeName = rationaleTypeStartTag.substring(atCharPosition + 1).split(" ")[0];
 		}
 		return KnowledgeType.getKnowledgeType(rationaleTypeName);
-	}
-
-	// similar 3 below methods found in
-	// extraction/versioncontrol/GitCommitMessageExtractor.java
-	// and possibly Jira text extractor. TODO: use one code portion
-	private String getDescription(String rationaleText) {
-		return rationaleText.substring(getSummaryEndPosition(rationaleText)).trim();
-	}
-
-	private String getSummary(String rationaleText) {
-		return rationaleText.substring(0, getSummaryEndPosition(rationaleText)).trim();
-	}
-
-	// TODO: implement logic for split between summary and description
-	private int getSummaryEndPosition(String rationaleText) {
-		return rationaleText.length();
 	}
 }
