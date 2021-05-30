@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
  * <b>@decision</b> We decided to...
  */
 public class RationaleFromCodeCommentParser {
-	private List<KnowledgeElement> elements;
 	private final Pattern TAGS_SEARCH_PATTERN;
 	private final Pattern TWO_EMPTY_LINES_PATTERNS;
 	private final Pattern SPACE_ATCHAR_LETTER_PATTERN;
@@ -53,20 +52,20 @@ public class RationaleFromCodeCommentParser {
 																					// optional comment characters
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
-		this.elements = new ArrayList<>();
 	}
 
 	public List<KnowledgeElement> getElements(CodeComment comment) {
+		List<KnowledgeElement> elements = new ArrayList<>();
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
 		int cursorPosition = -1;
 
 		while (tagMatcher.find() && cursorPosition <= tagMatcher.start()) {
-			cursorPosition = extractElementAndMoveCursor(comment, tagMatcher);
+			cursorPosition = extractElementAndMoveCursor(comment, tagMatcher, elements);
 		}
 		return elements;
 	}
 
-	private int extractElementAndMoveCursor(CodeComment comment, Matcher tagMatcher) {
+	private int extractElementAndMoveCursor(CodeComment comment, Matcher tagMatcher, List<KnowledgeElement> elements) {
 		String rationaleTypeTag = tagMatcher.group();
 		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());

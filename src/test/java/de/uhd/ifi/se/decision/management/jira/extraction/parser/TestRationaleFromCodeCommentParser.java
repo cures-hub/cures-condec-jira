@@ -19,13 +19,7 @@ public class TestRationaleFromCodeCommentParser {
 
 	@Before
 	public void setUp() {
-		codeComment = new CodeComment("", commitBeginLine, commitBeginLine + 1
-		/**
-		 * end point could be recalculated given contents number of lines and last lines
-		 * length, but it does not really matter for testing
-		 * RationaleFromCodeCommentExtractor class
-		 */
-		);
+		codeComment = new CodeComment("", commitBeginLine, commitBeginLine + 1);
 		rationaleFromCodeCommentExtractor = new RationaleFromCodeCommentParser();
 	}
 
