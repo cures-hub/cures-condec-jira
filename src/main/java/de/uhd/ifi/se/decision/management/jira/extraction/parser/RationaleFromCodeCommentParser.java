@@ -33,11 +33,7 @@ public class RationaleFromCodeCommentParser {
 	public RationaleFromCodeCommentParser() {
 		String tagSearch = String.join("|",
 				KnowledgeType.toStringList().stream().map(tag -> "@" + tag + "\\:?").collect(Collectors.toList()));
-		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#")); // matches all
-																								// characters that may
-																								// interrupt multi-line
-																								// decision knowledge
-																								// elements
+		Set<String> COMMENT_STRINGS = new HashSet<String>(Arrays.asList("\\*", "\\/\\/", "#"));
 		TAGS_SEARCH_PATTERN = Pattern.compile(tagSearch, Pattern.CASE_INSENSITIVE);
 		String TWO_EMPTY_LINES_PATTERN_STRING = "\\s*\\n\\s*(";
 		NEWLINE_WITH_COMMENT_CHAR_PATTERNS = new ArrayList<String>();
@@ -48,38 +44,57 @@ public class RationaleFromCodeCommentParser {
 		TWO_EMPTY_LINES_PATTERN_STRING = TWO_EMPTY_LINES_PATTERN_STRING.substring(0,
 				TWO_EMPTY_LINES_PATTERN_STRING.length() - 1) + // remove last "|"
 				")*\\s*\\n\\s*\\**\\s*";
-		TWO_EMPTY_LINES_PATTERNS = Pattern.compile(TWO_EMPTY_LINES_PATTERN_STRING); // with optional white spaces and
-																					// optional comment characters
+		TWO_EMPTY_LINES_PATTERNS = Pattern.compile(TWO_EMPTY_LINES_PATTERN_STRING);
 		SPACE_ATCHAR_LETTER_PATTERN = Pattern.compile("\\s@[a-z]");
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
+		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
+		for (CodeComment codeComment : codeFile.getCodeComments()) {
+			elementsFromCode.addAll(getElements(codeComment));
+		}
+
+		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
+			element.setProject(codeFile.getProject());
+			// element.setDescription(updateKeyForCodeExtractedElementWithInformationHash(element));
+			element.setDescription(codeFile.getName() + element.getDescription());
+			element.setDocumentationLocation(DocumentationLocation.CODE);
+			return element;
+		}).collect(Collectors.toList());
+		// knowledgeElements.sort(comparatorForKnowledgeElementsByLocationInCode);
+		return knowledgeElements;
+	}
+
+	public List<KnowledgeElement> getElements(List<CodeComment> codeComments) {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (CodeComment codeComment : codeComments) {
+			elements.addAll(getElements(codeComment));
+		}
+		return elements;
 	}
 
 	public List<KnowledgeElement> getElements(CodeComment comment) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
-		int cursorPosition = -1;
 
-		while (tagMatcher.find() && cursorPosition <= tagMatcher.start()) {
-			cursorPosition = extractElementAndMoveCursor(comment, tagMatcher, elements);
+		while (tagMatcher.find()) {
+			elements.add(parseNextElement(comment, tagMatcher));
 		}
 		return elements;
 	}
 
-	private int extractElementAndMoveCursor(CodeComment comment, Matcher tagMatcher, List<KnowledgeElement> elements) {
+	private KnowledgeElement parseNextElement(CodeComment comment, Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
 		String rationaleType = getRatTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
 
-		int cursorPosition = tagMatcher.end();
 		int textEnd = getRationaleTextEndPosition(rationaleText);
 		if (textEnd > 0) {
 			rationaleText = rationaleText.substring(0, textEnd);
 		}
-		cursorPosition += rationaleText.length();
 
-		elements.add(addElement(comment, tagMatcher.end(), rationaleText, rationaleType));
-
-		return cursorPosition;
+		return addElement(comment, tagMatcher.end(), rationaleText, rationaleType);
 	}
 
 	private KnowledgeElement addElement(CodeComment comment, int start, String rationaleText, String rationaleType) {
@@ -95,9 +110,8 @@ public class RationaleFromCodeCommentParser {
 		for (String pattern : NEWLINE_WITH_COMMENT_CHAR_PATTERNS) {
 			rationaleTextSanitized = rationaleTextSanitized.replaceAll(pattern, "\n");
 		}
-		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s*\n\\s*", " ");
-		rationaleTextSanitized = rationaleTextSanitized.replaceAll("\\s+", " ");
-		return rationaleTextSanitized;
+		rationaleTextSanitized = rationaleTextSanitized.replaceAll("[\t\n\r]", " ");
+		return rationaleTextSanitized.trim();
 	}
 
 	/**

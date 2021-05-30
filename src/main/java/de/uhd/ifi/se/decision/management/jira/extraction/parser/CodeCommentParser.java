@@ -8,8 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 
 /**
- * Extracts code comments from code file content. This is necessary to identify
- * decision knowledge elements in code comments using the
+ * Extracts {@link CodeComment}s from code file content. This is necessary to
+ * identify decision knowledge elements in code comments using the
  * {@link RationaleFromCodeCommentParser}.
  */
 public class CodeCommentParser {

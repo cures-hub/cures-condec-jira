@@ -34,6 +34,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.CommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -410,6 +411,10 @@ public class ChangedFile extends KnowledgeElement {
 			return commentParser.getComments(this);
 		}
 		return new ArrayList<>();
+	}
+
+	public List<KnowledgeElement> getRationaleElementsFromCodeComments() {
+		return new RationaleFromCodeCommentParser().getElementsFromCode(this);
 	}
 
 	public boolean isCorrect() {
