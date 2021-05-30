@@ -163,6 +163,6 @@ public class TestChangedFile extends TestSetUpGit {
 		file.setProject("TEST");
 		assertEquals(1, file.getCodeComments().size());
 		assertEquals(4, file.getRationaleElementsFromCodeComments().size());
-		assertEquals("Not secure. /", file.getRationaleElementsFromCodeComments().get(3).getSummary());
+		assertEquals("Not secure.", file.getRationaleElementsFromCodeComments().get(3).getSummary());
 	}
 }

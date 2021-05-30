@@ -128,6 +128,9 @@ public class RationaleFromCodeCommentParser {
 			rationaleTextSanitized = rationaleTextSanitized.replaceAll(pattern, "\n");
 		}
 		rationaleTextSanitized = rationaleTextSanitized.replaceAll("[\t\n\r]", " ");
+		if (rationaleTextSanitized.endsWith("/")) {
+			rationaleTextSanitized = rationaleTextSanitized.substring(0, rationaleTextSanitized.length() - 1);
+		}
 		return rationaleTextSanitized.trim();
 	}
 
