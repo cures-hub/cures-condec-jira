@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,13 +12,15 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 /**
- * Extracts decision knowledge elements from a single {@link CodeComment}.
- * Stores the source of the element within the source file/comment in its key.
+ * Extracts decision knowledge elements from {@link CodeComment}s of a
+ * {@link ChangedFile}. Stores the source of the element within the source
+ * file/comment in its key.
  */
-public class RationaleFromCodeCommentExtractor {
+public class RationaleFromCodeCommentParser {
 	private List<KnowledgeElement> elements;
 	private CodeComment comment;
 	private final Pattern TAGS_SEARCH_PATTERN;
@@ -27,7 +29,7 @@ public class RationaleFromCodeCommentExtractor {
 	private final Pattern NEWLINE_CHAR_PATTERN;
 	private final List<String> NEWLINE_WITH_COMMENT_CHAR_PATTERNS;
 
-	public RationaleFromCodeCommentExtractor(CodeComment comment) {
+	public RationaleFromCodeCommentParser(CodeComment comment) {
 		String tagSearch = String.join("|", KnowledgeType.toStringList().stream().map(tag -> "@" + tag + "\\:?") // at-char
 																													// +
 																													// ratType
@@ -55,34 +57,6 @@ public class RationaleFromCodeCommentExtractor {
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 		this.comment = comment;
 		this.elements = new ArrayList<>();
-	}
-
-	public static int getRationaleStartLineInCode(KnowledgeElement element) {
-		if (!canProcessElement(element)) {
-			return -1;
-		} else {
-			return RationaleCommitElementPositionCodingHelper.getStartLine(element.getKey());
-		}
-	}
-
-	public static int getRationaleEndLineInCode(KnowledgeElement element) {
-		if (!canProcessElement(element)) {
-			return -1;
-		} else {
-			return RationaleCommitElementPositionCodingHelper.getEndLine(element.getKey());
-		}
-	}
-
-	public static int getRationaleCursorInCodeComment(KnowledgeElement element) {
-		if (!canProcessElement(element)) {
-			return -1;
-		} else {
-			return RationaleCommitElementPositionCodingHelper.getCursor(element.getKey());
-		}
-	}
-
-	public static boolean canProcessElement(KnowledgeElement element) {
-		return element.getDocumentationLocation() == DocumentationLocation.CODE;
 	}
 
 	public List<KnowledgeElement> getElements() {
@@ -182,8 +156,7 @@ public class RationaleFromCodeCommentExtractor {
 			absoluteFileEndLine++;
 		}
 
-		return RationaleCommitElementPositionCodingHelper.encodeAttributes(absoluteFileStartLine, absoluteFileEndLine,
-				start);
+		return absoluteFileStartLine + ":" + absoluteFileEndLine + ":" + start;
 	}
 
 	/* Either rationale is delimited by two new lines or @ gets observed */
@@ -235,41 +208,5 @@ public class RationaleFromCodeCommentExtractor {
 	// TODO: implement logic for split between summary and description
 	private int getSummaryEndPosition(String rationaleText) {
 		return rationaleText.length();
-	}
-
-	private static class RationaleCommitElementPositionCodingHelper {
-		/*
-		 * Keyformat: ...lineStartInt_lineEndInt_CursorInCommentInt
-		 */
-		// decode method
-		public static int getAttribute(String key, int attributePositionOffsetFromEnd) {
-			String[] keyComponents = key.split(":");
-			int len = keyComponents.length;
-			int returnValue = -1;
-			if (len > 2) {
-				try {
-					returnValue = Integer.valueOf(keyComponents[len - (1 + attributePositionOffsetFromEnd)]);
-				} catch (NumberFormatException e) {
-				}
-			}
-			return returnValue;
-		}
-
-		public static int getCursor(String key) {
-			return getAttribute(key, 0);
-		}
-
-		public static int getEndLine(String key) {
-			return getAttribute(key, 1);
-		}
-
-		public static int getStartLine(String key) {
-			return getAttribute(key, 2);
-		}
-
-		// encode method
-		public static String encodeAttributes(int lineStart, int lineEnd, int inCommentCursor) {
-			return lineStart + ":" + lineEnd + ":" + inCommentCursor;
-		}
 	}
 }

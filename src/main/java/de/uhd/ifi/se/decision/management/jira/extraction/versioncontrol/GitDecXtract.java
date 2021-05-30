@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.RationaleFromCodeCommentExtractor;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -118,7 +118,7 @@ public class GitDecXtract {
 	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
 		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
 		for (CodeComment codeComment : codeFile.getCodeComments()) {
-			RationaleFromCodeCommentExtractor rationaleFromCodeComment = new RationaleFromCodeCommentExtractor(
+			RationaleFromCodeCommentParser rationaleFromCodeComment = new RationaleFromCodeCommentParser(
 					codeComment);
 			elementsFromCode.addAll(rationaleFromCodeComment.getElements());
 		}
