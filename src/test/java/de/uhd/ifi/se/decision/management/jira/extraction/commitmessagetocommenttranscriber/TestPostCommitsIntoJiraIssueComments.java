@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
 
 public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 

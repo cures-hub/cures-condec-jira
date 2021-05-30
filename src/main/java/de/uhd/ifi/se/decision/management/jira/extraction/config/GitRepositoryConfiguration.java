@@ -7,7 +7,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClientForSingleRepository;
 
 /**
  * Contains the configuration details for one git repository connected to a Jira
