@@ -88,10 +88,10 @@ public class GitClient {
 			return null;
 		}
 		if (extractAllCodeKnowledge) {
-			// new Thread(() -> {
-			Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
-			// }).start();
+			new Thread(() -> {
+				Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+				new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
+			}).start();
 		}
 		return gitClient;
 	}
@@ -459,7 +459,7 @@ public class GitClient {
 	public List<KnowledgeElement> getElements(Ref branch) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
-		if (featureBranchCommits == null || featureBranchCommits.isEmpty()) {
+		if (featureBranchCommits.isEmpty()) {
 			return elements;
 		}
 		for (RevCommit commit : featureBranchCommits) {

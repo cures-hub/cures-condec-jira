@@ -157,6 +157,15 @@ public class GitConfiguration {
 		return fileTypesToExtract;
 	}
 
+	/**
+	 * @param fileTypesToExtract
+	 *            defines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 */
+	public void setFileTypesToExtract(List<FileType> fileTypesToExtract) {
+		this.fileTypesToExtract = fileTypesToExtract;
+	}
+
 	public boolean shouldFileTypeBeExtracted(FileType fileType) {
 		for (FileType fileTypeToExtract : fileTypesToExtract) {
 			if (fileTypeToExtract.equals(fileType)) {
