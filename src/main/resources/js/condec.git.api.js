@@ -87,6 +87,12 @@
 				}
 			});
 	};
+	
+	ConDecGitAPI.prototype.getElementsFromBranchesOfJiraIssue = function(jiraIssueKey) {
+		return generalApi.getJSONReturnPromise(
+			`${this.restPrefix}/elementsFromBranchesOfJiraIssue.json
+				?issueKey=${jiraIssueKey}`);
+	};
 
 	// export ConDecGitAPI
 	global.conDecGitAPI = new ConDecGitAPI();
