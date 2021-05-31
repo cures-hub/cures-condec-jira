@@ -27,7 +27,6 @@ public class RationaleFromCommitMessageParser {
 	 * DecisionKnowledgeElement's key part to be replaced, probably by object higher
 	 * in hierarchy than this object, with commit ish.
 	 */
-	public static final String COMMIT_PLACEHOLDER = "commitish";
 	private final Pattern START_TAGS_SEARCH_PATTERN;
 	private final Pattern END_TAGS_SEARCH_PATTERN;
 	private List<KnowledgeElement> extractedElements;
@@ -109,7 +108,7 @@ public class RationaleFromCommitMessageParser {
 	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
 		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.CODE, "");
+				, start + ":" + end, DocumentationLocation.CODE, "");
 	}
 
 	private String getDescription(String rationaleText) {

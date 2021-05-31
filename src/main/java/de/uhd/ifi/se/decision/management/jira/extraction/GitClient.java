@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -478,26 +477,10 @@ public class GitClient {
 				commit.getFullMessage());
 		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
 			element.setProject(projectKey);
-			element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
+			element.setKey(commit.getId() + element.getKey() + "commit");
 			return element;
 		}).collect(Collectors.toList());
 		return elementsFromMessage;
-	}
-
-	/*
-	 * Appends rationale text hash to the DecisionKnowledgeElement key. Replaces
-	 * commit hash placeholder in the key with the actual commit hash.
-	 */
-	private String updateKeyForMessageExtractedElement(KnowledgeElement elementWithoutCommitishAndHash, ObjectId id) {
-		String key = elementWithoutCommitishAndHash.getKey();
-
-		// 1st: append rationale text hash
-		String rationaleText = elementWithoutCommitishAndHash.getSummary()
-				+ elementWithoutCommitishAndHash.getDescription();
-		key += "commit " + rationaleText;
-
-		// 2nd: replace placeholder with commit's hash (40 hex chars)
-		return key.replace(RationaleFromCommitMessageParser.COMMIT_PLACEHOLDER, String.valueOf(id).split(" ")[1] + " ");
 	}
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
