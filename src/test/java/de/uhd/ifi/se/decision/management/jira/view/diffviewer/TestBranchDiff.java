@@ -22,8 +22,7 @@ public class TestBranchDiff {
 	private KnowledgeElement rat1 = new KnowledgeElement(0, "I am an issue", "", KnowledgeType.ISSUE, "TEST",
 			"file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 	private KnowledgeElement rat2 = new KnowledgeElement(0, "I am an issue too", "", KnowledgeType.ISSUE, "TEST",
-			"012345678901234567890123456789012345678a 1:1 abcdef23", DocumentationLocation.CODE,
-			KnowledgeStatus.UNRESOLVED);
+			"commit 1:1 abcdef23", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 	private KnowledgeElement rat3 = new KnowledgeElement(0, "I am an old issue", "", KnowledgeType.ISSUE, "TEST",
 			"~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 
@@ -87,7 +86,7 @@ public class TestBranchDiff {
 		assertEquals(rat2.getKey(), key.value);
 		assertEquals("", key.diffEntrySequence);
 		assertEquals("", key.diffEntry);
-		assertEquals("012345678901234567890123456789012345678a", key.source);
+		assertEquals("commit", key.source);
 		assertEquals("1:1", key.position);
 		assertEquals("abcdef23", key.rationaleHash);
 		assertEquals(false, key.codeFileA);
