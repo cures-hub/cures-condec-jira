@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -498,22 +494,10 @@ public class GitClient {
 		// 1st: append rationale text hash
 		String rationaleText = elementWithoutCommitishAndHash.getSummary()
 				+ elementWithoutCommitishAndHash.getDescription();
-		key += " " + calculateRationaleTextHash(rationaleText);
+		key += "commit " + rationaleText;
 
 		// 2nd: replace placeholder with commit's hash (40 hex chars)
 		return key.replace(RationaleFromCommitMessageParser.COMMIT_PLACEHOLDER, String.valueOf(id).split(" ")[1] + " ");
-	}
-
-	private String calculateRationaleTextHash(String rationaleText) {
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-			messageDigest.update(rationaleText.getBytes());
-			byte[] digest = messageDigest.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
-		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error(e.getMessage());
-			return "";
-		}
 	}
 
 	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {

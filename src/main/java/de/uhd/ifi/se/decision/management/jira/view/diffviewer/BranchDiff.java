@@ -131,7 +131,7 @@ public class BranchDiff {
 
 				String[] sourceComp = Arrays.copyOfRange(keyComponents, 0, len - 2);
 				source = String.join(" ", sourceComp);
-				sourceTypeCommitMessage = source.matches("[a-f0-9]{40}");
+				sourceTypeCommitMessage = source.contains("commit");
 				sourceTypeCodeFile = !sourceTypeCommitMessage;
 
 				// source still includes filename, diff sequence number and diff entry
