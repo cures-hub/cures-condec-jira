@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,17 +8,14 @@ import org.eclipse.jgit.lib.Ref;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class TestGitDecXtract extends TestSetUpGit {
-	private GitDecXtract gitDecX;
 
 	@Test
 	public void nullOrEmptyFeatureBranchCommits() {
-		gitDecX = new GitDecXtract("TEST");
 		int numberExpectedElements = 0;
-		List<KnowledgeElement> gotElements = gitDecX.getElements(null);
+		List<KnowledgeElement> gotElements = gitClient.getElements(null);
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 
@@ -27,7 +24,6 @@ public class TestGitDecXtract extends TestSetUpGit {
 		// git repository is setup already
 		List<String> uris = new ArrayList<String>();
 		uris.add(GIT_URI);
-		gitDecX = new GitDecXtract("TEST");
 		int numberExpectedElements = 14;
 
 		// by Ref, find Ref first
@@ -42,19 +38,17 @@ public class TestGitDecXtract extends TestSetUpGit {
 			}
 		}
 
-		List<KnowledgeElement> gotElements = gitDecX.getElements(featureBranch);
+		List<KnowledgeElement> gotElements = gitClient.getElements(featureBranch);
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 
 	@Test
 	public void fromFeatureBranchCommitsNullInput() {
-		gitDecX = new GitDecXtract("TEST");
-
-		List<KnowledgeElement> gotElements = gitDecX.getElements(null);
+		List<KnowledgeElement> gotElements = gitClient.getElements(null);
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 
-		gotElements = gitDecX.getElements((Ref) null);
+		gotElements = gitClient.getElements((Ref) null);
 		Assert.assertNotNull(gotElements);
 		Assert.assertEquals(0, gotElements.size());
 

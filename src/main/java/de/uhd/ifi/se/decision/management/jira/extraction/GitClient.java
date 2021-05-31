@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,8 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -19,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -452,5 +459,65 @@ public class GitClient {
 		getGitClientsForSingleRepos()
 				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
 		return allRemoteBranches;
+	}
+
+	public List<KnowledgeElement> getElements(Ref branch) {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
+		if (featureBranchCommits == null || featureBranchCommits.isEmpty()) {
+			return elements;
+		}
+		for (RevCommit commit : featureBranchCommits) {
+			elements.addAll(getElementsFromMessage(commit));
+		}
+
+		RevCommit baseCommit = featureBranchCommits.get(0);
+		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
+		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit));
+		return elements;
+	}
+
+	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
+		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
+				commit.getFullMessage());
+		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
+			element.setProject(projectKey);
+			element.setKey(updateKeyForMessageExtractedElement(element, commit.getId()));
+			return element;
+		}).collect(Collectors.toList());
+		return elementsFromMessage;
+	}
+
+	/*
+	 * Appends rationale text hash to the DecisionKnowledgeElement key. Replaces
+	 * commit hash placeholder in the key with the actual commit hash.
+	 */
+	private String updateKeyForMessageExtractedElement(KnowledgeElement elementWithoutCommitishAndHash, ObjectId id) {
+		String key = elementWithoutCommitishAndHash.getKey();
+
+		// 1st: append rationale text hash
+		String rationaleText = elementWithoutCommitishAndHash.getSummary()
+				+ elementWithoutCommitishAndHash.getDescription();
+		key += " " + calculateRationaleTextHash(rationaleText);
+
+		// 2nd: replace placeholder with commit's hash (40 hex chars)
+		return key.replace(RationaleFromCommitMessageParser.COMMIT_PLACEHOLDER, String.valueOf(id).split(" ")[1] + " ");
+	}
+
+	private String calculateRationaleTextHash(String rationaleText) {
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(rationaleText.getBytes());
+			byte[] digest = messageDigest.digest();
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 8);
+		} catch (NoSuchAlgorithmException e) {
+			LOGGER.error(e.getMessage());
+			return "";
+		}
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
+		Diff diff = getDiff(revCommitStart, revCommitEnd);
+		return diff.getRationaleElementsFromCodeComments();
 	}
 }

@@ -22,10 +22,8 @@ public class BranchDiff {
 	public BranchDiff(String branchName, List<KnowledgeElement> decisionKnowledgeElements) {
 		this.branchName = branchName;
 		this.elements = new ArrayList<>();
-		if (decisionKnowledgeElements != null) {
-			for (KnowledgeElement rationale : decisionKnowledgeElements) {
-				elements.add(new RationaleData(rationale));
-			}
+		for (KnowledgeElement rationale : decisionKnowledgeElements) {
+			elements.add(new RationaleData(rationale));
 		}
 	}
 
@@ -73,33 +71,28 @@ public class BranchDiff {
 
 		class KeyData {
 			/*
-			 commit typed dec. elements have keys in this form:
-			 SOURCE+SPACECHAR+POSITION+SPACECHAR+RATIONALEHASHCODE
-			 where :
-				SOURCE is either commit id hash, meaning rationale comes from commit message text
-					 or the file path meaning rationale comes from source code. Therefore it is
-					defined as:
-
-					SOURCE := COMMITMESSAGE | FILESOURCE
-						COMMITMESSAGE matches regex [a-f0-9]{40}
-						FILESOURCE consists of:
-							FILEPATH+SPACECHAR+DIFFSEQUENCE+SPACECHAR+DIFFKEY
-
-
-				SPACECHAR is white space character
-
-				POSITION starts with line number of source rationale was found in
-					separated by colon character
-					followed by line number of source rationale ended
-					separated by colon character
-					followed by cursor position relative to code block comment text
-					 or commit message text
-
-				 RATIONALEHASHCODE is hash value of rationale text
-
-				Note: in case of file SOURCEs, file paths can have spaces.
-				Others components of the key will not have spaces.
-			  */
+			 * commit typed dec. elements have keys in this form:
+			 * SOURCE+SPACECHAR+POSITION+SPACECHAR+RATIONALEHASHCODE where : SOURCE is
+			 * either commit id hash, meaning rationale comes from commit message text or
+			 * the file path meaning rationale comes from source code. Therefore it is
+			 * defined as:
+			 * 
+			 * SOURCE := COMMITMESSAGE | FILESOURCE COMMITMESSAGE matches regex [a-f0-9]{40}
+			 * FILESOURCE consists of: FILEPATH+SPACECHAR+DIFFSEQUENCE+SPACECHAR+DIFFKEY
+			 * 
+			 * 
+			 * SPACECHAR is white space character
+			 * 
+			 * POSITION starts with line number of source rationale was found in separated
+			 * by colon character followed by line number of source rationale ended
+			 * separated by colon character followed by cursor position relative to code
+			 * block comment text or commit message text
+			 * 
+			 * RATIONALEHASHCODE is hash value of rationale text
+			 * 
+			 * Note: in case of file SOURCEs, file paths can have spaces. Others components
+			 * of the key will not have spaces.
+			 */
 			@XmlElement
 			public String value = "";
 			@XmlElement

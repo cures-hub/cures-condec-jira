@@ -24,6 +24,12 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
  * 
  * <b>@decisionKnowledgeTag</b> knowledge summary text
  * <p>
+ * where <b>decisionKnowledgeTag</b> belongs to set of {@link KnowledgeType}s,
+ * for example issue, alternative, decision, pro, and con. Empty two lines
+ * denote the end of the decision knowledge element. The observation of another
+ * tag ends the element, too. Comment end ends also the decision knowledge
+ * element.
+ * <p>
  * e.g. <b>@decision</b> We decided to...
  */
 public class RationaleFromCodeCommentParser {

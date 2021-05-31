@@ -19,15 +19,13 @@ public class TestBranchDiff {
 	private BranchDiff branchDiff;
 
 	private List<KnowledgeElement> rationaleInBranch;
-	private KnowledgeElement rat1 = new KnowledgeElement(0, "I am an issue", "",
-			KnowledgeType.ISSUE, "TEST", "file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.CODE,
+	private KnowledgeElement rat1 = new KnowledgeElement(0, "I am an issue", "", KnowledgeType.ISSUE, "TEST",
+			"file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
+	private KnowledgeElement rat2 = new KnowledgeElement(0, "I am an issue too", "", KnowledgeType.ISSUE, "TEST",
+			"012345678901234567890123456789012345678a 1:1 abcdef23", DocumentationLocation.CODE,
 			KnowledgeStatus.UNRESOLVED);
-	private KnowledgeElement rat2 = new KnowledgeElement(0, "I am an issue too", "",
-			KnowledgeType.ISSUE, "TEST", "012345678901234567890123456789012345678a 1:1 abcdef23",
-			DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
-	private KnowledgeElement rat3 = new KnowledgeElement(0, "I am an old issue", "",
-			KnowledgeType.ISSUE, "TEST", "~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.CODE,
-			KnowledgeStatus.UNRESOLVED);
+	private KnowledgeElement rat3 = new KnowledgeElement(0, "I am an old issue", "", KnowledgeType.ISSUE, "TEST",
+			"~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 
 	@Before
 	public void setUp() {
@@ -41,9 +39,7 @@ public class TestBranchDiff {
 	public void testConstructor() {
 		branchDiff = new BranchDiff("abc", rationaleInBranch);
 		Assert.assertNotNull(branchDiff);
-		branchDiff = new BranchDiff("abc", null);
-		Assert.assertNotNull(branchDiff);
-		branchDiff = new BranchDiff(null, null);
+		branchDiff = new BranchDiff("abc", new ArrayList<>());
 		Assert.assertNotNull(branchDiff);
 		branchDiff = new BranchDiff(null, rationaleInBranch);
 		Assert.assertNotNull(branchDiff);
@@ -59,12 +55,8 @@ public class TestBranchDiff {
 
 	@Test
 	public void testGetElements() {
-		branchDiff = new BranchDiff("abc", null);
-		List<BranchDiff.RationaleData> elements = branchDiff.getElements();
-		assertEquals(0, elements.size());
-
 		branchDiff = new BranchDiff("abc", rationaleInBranch);
-		elements = branchDiff.getElements();
+		List<BranchDiff.RationaleData> elements = branchDiff.getElements();
 		assertEquals(3, elements.size());
 
 		// first element: fileB
