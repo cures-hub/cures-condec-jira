@@ -18,10 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitClientForSingleRepository;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -455,5 +454,37 @@ public class GitClient {
 		getGitClientsForSingleRepos()
 				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
 		return allRemoteBranches;
+	}
+
+	public List<KnowledgeElement> getElements(Ref branch) {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
+		if (featureBranchCommits.isEmpty()) {
+			return elements;
+		}
+		for (RevCommit commit : featureBranchCommits) {
+			elements.addAll(getElementsFromMessage(commit));
+		}
+
+		RevCommit baseCommit = featureBranchCommits.get(0);
+		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
+		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit));
+		return elements;
+	}
+
+	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
+		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
+				commit.getFullMessage());
+		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
+			element.setProject(projectKey);
+			element.setKey(commit.getId() + element.getKey() + "commit");
+			return element;
+		}).collect(Collectors.toList());
+		return elementsFromMessage;
+	}
+
+	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
+		Diff diff = getDiff(revCommitStart, revCommitEnd);
+		return diff.getRationaleElementsFromCodeComments();
 	}
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CommitMessageToCommentTranscriber;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommitMessageToCommentTranscriber;
 
 public class TestReplaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira {
 

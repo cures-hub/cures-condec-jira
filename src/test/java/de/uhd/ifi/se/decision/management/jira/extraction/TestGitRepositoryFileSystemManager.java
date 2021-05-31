@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -8,7 +8,7 @@ import java.io.File;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFileSystemManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitRepositoryFileSystemManager;
 
 public class TestGitClient extends TestSetUpGit {
 

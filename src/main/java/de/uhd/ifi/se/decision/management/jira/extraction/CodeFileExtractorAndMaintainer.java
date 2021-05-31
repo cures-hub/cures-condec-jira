@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.List;
 
@@ -49,13 +49,12 @@ public class CodeFileExtractorAndMaintainer {
 	 */
 	public void extractAllChangedFiles(Diff diff) {
 		// Extracts Decision Knowledge from Code Comments
-		GitDecXtract gitExtract = new GitDecXtract(projectKey);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (!changedFile.isCodeFileToExtract()) {
 				continue;
 			}
-			List<KnowledgeElement> decisionKnowledgeInCodeComments = gitExtract.getElementsFromCode(changedFile);
+			List<KnowledgeElement> decisionKnowledgeInCodeComments = changedFile.getRationaleElementsFromCodeComments();
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 		}

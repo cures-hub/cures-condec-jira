@@ -39,49 +39,11 @@ function getBranchesDiff(forceRest) {
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "Loading ...";
 
-	url = conDecGitAPI.restPrefix + "/elementsFromBranchesOfJiraIssue.json?issueKey="
-			+ conDecAPI.getIssueKey();
-
-	/* get cache or server data? */
-	if (!forceRest && localStorage.getItem("condec.restCacheTTL")) {
-		if (localStorage.getItem(url)) {
-			var data = null;
-			var now = Date.now();
-			var cacheTTL = parseInt(localStorage.getItem("condec.restCacheTTL"));
-			try {
-				data = JSON.parse(localStorage.getItem(url));
-			} catch (ex) {
-				data = null;
-			}
-			if (data && cacheTTL) {
-				if (now - data.timestamp < cacheTTL) {
-					console
-							.log("Cache is within specified TTL, therefore getting data from local cache instead from server.");
-					return showBranchesDiff(data);
-				} else {
-					console.log("Cache TTL expired, therefore starting  REST query.");
-				}
-			}
-			if (!cacheTTL) {
-				console.log("Cache TTL is not a number, therefore starting  REST query.");
-			}
-		}
-	} else {
-		localStorage.setItem("condec.restCacheTTL", 1000 * 60 * 3); /*
-																	 * init 3
-																	 * minute
-																	 * caching
-																	 */
-	}
-
-	AJS.$.ajax({
-		url : url,
-		type : "get",
-		dataType : "json",
-		async : true,
-		success : showBranchesDiff,
-		error : showError
-	});
+	conDecGitAPI.getElementsFromBranchesOfJiraIssue(conDecAPI.getIssueKey())
+		.then((data) => {
+			showBranchesDiff(data);
+		})
+		.catch((error) => showError(error));
 }
 
 function showError(error) {
@@ -126,7 +88,7 @@ function getIcon(type) {
 	}
 	img = document.createElement("img");
 	path = getJiraBaseUri()
-			+ "/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
+		+ "/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
 	img.src = path + type + ".png";
 	return img;
 }
@@ -143,11 +105,11 @@ function getElementAsHTML(element, isFromMessage) {
 	if (isFromMessage) {
 		root.className = "messageBox rationale " + element.type.toLowerCase();
 		locationText = "Commit message " + element.key.source + " at position (sequence # in text, rationale length) "
-				+ locationTextShort;
+			+ locationTextShort;
 	} else {
 		root.className = "rationale " + element.type.toLowerCase();
 		locationText = "Code comment section at position (start line, end line, sequence # in comment) "
-				+ locationTextShort;
+			+ locationTextShort;
 	}
 
 	desc.className = "content";
@@ -161,7 +123,7 @@ function getElementAsHTML(element, isFromMessage) {
 	/* do not set ID for A file-rationale */
 	if (!element.key.codeFileA) {
 		root.setAttribute("id",
-				btoa(element.key.rationaleHash + "-" + lastBranch.branchName + "-" + element.key.source));
+			btoa(element.key.rationaleHash + "-" + lastBranch.branchName + "-" + element.key.source));
 	}
 	root.appendChild(getIcon(element.type.toLowerCase()));
 	root.appendChild(desc);
@@ -355,10 +317,10 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 
 		if (!lastBranchBlocks.has(blockKey)) {
 			blockData = {
-				A : [],
-				B : [],
-				filename : "",
-				sequence : blockCounter
+				A: [],
+				B: [],
+				filename: "",
+				sequence: blockCounter
 			};
 			lastBranchBlocks.set(blockKey, blockData);
 		}
@@ -405,7 +367,7 @@ function appendBranchQualityAssessment(parentNode, index) {
 	qualitySummary.id = "branchGroup-" + index + "-qualitySummary";
 	qualitySummary.className = "qualitySummary";
 	if ((lastBranchElementsFromMessages && lastBranchElementsFromMessages.length > 0)
-			|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
+		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
 		qualitySummary.innerText = NO_QUALITY_PROBLEMS_IN_BRANCH;
 		qualitySummary.classList.add("noProblems");
 	} else {
@@ -454,7 +416,7 @@ function showBranchesDiff(data) {
 	if (data === null || data === undefined) {
 		contentHtml.innerText = "Git extraction is disabled.";
 		return;
-	}	
+	}
 	data.timestamp = Date.now();
 	localStorage.setItem(url, JSON.stringify(data, null, 1));
 	contentHtml = document.getElementById("featureBranches-container");
@@ -484,7 +446,7 @@ function showBranchesDiff(data) {
 
 			/* assess relations between rationale and their problems */
 			conDecLinkBranchCandidates.init(lastBranchElementsFromMessages, lastBranch.branchName, branchIdx,
-					"messages");
+				"messages");
 			/* render results in HTML */
 			conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 

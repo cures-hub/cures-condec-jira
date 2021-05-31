@@ -1,4 +1,4 @@
-/*
+/**
  This module provides the dialogs for managing decision knowledge. The user can
  * create a new decision knowledge element,
  * edit an existing decision knowledge element,
@@ -551,7 +551,7 @@
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
 
-		conDecAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness, function(text) {
+		conDecGitAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness, function(text) {
 			document.getElementById("id").value = id;
 			document.getElementById("documentationLocation").value = documentationLocation;
 			content.innerHTML = text;

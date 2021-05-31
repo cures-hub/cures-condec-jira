@@ -11,8 +11,8 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;

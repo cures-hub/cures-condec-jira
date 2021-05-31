@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.config.GitConfiguration;
+import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -153,8 +154,13 @@ public class CommitMessageToCommentTranscriber {
 	public static String replaceAnnotationsUsedInCommitsWithAnnotationsUsedInJira(String comment) {
 		for (String tag : KnowledgeType.toStringList()) {
 			String replaceString = "{" + tag.toLowerCase() + "}";
-			comment = comment.replaceAll(GitDecXtract.generateRegexToFindAllTags(tag), replaceString);
+			comment = comment.replaceAll(generateRegexToFindAllTags(tag), replaceString);
 		}
 		return comment;
+	}
+
+	public static String generateRegexToFindAllTags(String tag) {
+		return RationaleFromCommitMessageParser.generateRegexForOpenTag(tag) + "|"
+				+ RationaleFromCommitMessageParser.generateRegexForCloseTag(tag);
 	}
 }

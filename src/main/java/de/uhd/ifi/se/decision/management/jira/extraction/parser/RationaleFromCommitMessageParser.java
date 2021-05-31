@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,27 +11,22 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Extracts decision knowledge elements from the message of a single git commit.
- * <p>
- * <p>
- * Decision knowledge can be documented in commit messages using the following
- * syntax:
- * <p>
- * <b>[decisionKnowledgeTag]</b>knowledge summary
- * text<b>[/decisionKnowledgeTag]</b>
- * <p>
- * <p>
- * where [decisionKnowledgeTag] belongs to a set of {@link KnowledgeType}s, for
- * example, issue, alternative, decision, pro, and con.
+ * Extracts decision knowledge elements from commit messages. Decision knowledge
+ * is documented in commit messages using the following syntax:
+ * 
+ * <b>[decisionKnowledgeTag]</b> knowledge summary text
+ * <b>[/decisionKnowledgeTag]</b>
+ * 
+ * where <b>[decisionKnowledgeTag]</b> belongs to a set of
+ * {@link KnowledgeType}s, for example, issue, alternative, decision, pro, and
+ * con.
  */
-public class GitCommitMessageExtractor {
+public class RationaleFromCommitMessageParser {
 
-	private final static List<String> decKnowTags = KnowledgeType.toStringList();
 	/**
 	 * DecisionKnowledgeElement's key part to be replaced, probably by object higher
 	 * in hierarchy than this object, with commit ish.
 	 */
-	public static final String COMMIT_PLACEHOLDER = "commitish";
 	private final Pattern START_TAGS_SEARCH_PATTERN;
 	private final Pattern END_TAGS_SEARCH_PATTERN;
 	private List<KnowledgeElement> extractedElements;
@@ -39,17 +34,17 @@ public class GitCommitMessageExtractor {
 	private List<String> parseWarnings;
 	private String fullMessage;
 
-	GitCommitMessageExtractor(String message) {
+	public RationaleFromCommitMessageParser(String message) {
 		extractedElements = new ArrayList<>();
 		parseError = null;
 		parseWarnings = new ArrayList<>();
 		fullMessage = message;
 
-		String startTagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> GitDecXtract.generateRegexForOpenTag(tag)).collect(Collectors.toList()));
+		String startTagSearch = String.join("|", KnowledgeType.toStringList().stream()
+				.map(tag -> generateRegexForOpenTag(tag)).collect(Collectors.toList()));
 
-		String endTagSearch = String.join("|", decKnowTags.stream()
-				.map(tag -> GitDecXtract.generateRegexForCloseTag(tag)).collect(Collectors.toList()));
+		String endTagSearch = String.join("|", KnowledgeType.toStringList().stream()
+				.map(tag -> generateRegexForCloseTag(tag)).collect(Collectors.toList()));
 
 		START_TAGS_SEARCH_PATTERN = Pattern.compile(startTagSearch, Pattern.CASE_INSENSITIVE);
 		END_TAGS_SEARCH_PATTERN = Pattern.compile(endTagSearch, Pattern.CASE_INSENSITIVE);
@@ -71,42 +66,6 @@ public class GitCommitMessageExtractor {
 			extractSequences();
 		}
 	}
-
-	/*
-	 * private void classifyMessage() { // If no Decision Knowledge was manually
-	 * annotated -> The Classifier is called. // Create splitted text. TextSplitter
-	 * splitter = new TextSplitter(); List<PartOfText> parts =
-	 * splitter.getPartsOfText(this.fullMessage, this.projectKey);
-	 * 
-	 * StringBuilder builder = new StringBuilder();
-	 * 
-	 * //Get only the text of the part of text list List<String> partStrings =
-	 * parts.stream().map(PartOfText::getText).collect(Collectors.toList());
-	 * 
-	 * // Classification List<Boolean> isRelevantPredictions =
-	 * decisionKnowledgeClassifier.makeBinaryPredictions(partStrings);
-	 * 
-	 * //create separate list of all relevant parts for fine grained prediction
-	 * List<String> relevantMessageParts = IntStream .range(0,
-	 * isRelevantPredictions.size()) .filter(isRelevantPredictions::get)
-	 * .mapToObj(partStrings::get) .collect(Collectors.toList());
-	 * 
-	 * 
-	 * List<KnowledgeType> fineGrainedPredictions =
-	 * decisionKnowledgeClassifier.makeFineGrainedPredictions(relevantMessageParts);
-	 * 
-	 * // build comment for (int partsIndex = 0, fineGrainedPredictionIndex = 0;
-	 * partsIndex < parts.size(); partsIndex++) { if
-	 * (isRelevantPredictions.get(partsIndex)) { // if a part is relevant the tags
-	 * are added KnowledgeType prediction =
-	 * fineGrainedPredictions.get(fineGrainedPredictionIndex); String predicitionTag
-	 * = "{" + prediction.name().toLowerCase() + "}";
-	 * builder.append(predicitionTag); builder.append(partStrings.get(partsIndex));
-	 * builder.append(predicitionTag); fineGrainedPredictionIndex++; } else { //
-	 * else: the string is appended as is
-	 * builder.append(partStrings.get(partsIndex)); } } this.comment =
-	 * builder.toString(); }
-	 */
 
 	private void extractSequences() {
 		Matcher startTagMatcher = START_TAGS_SEARCH_PATTERN.matcher(fullMessage);
@@ -149,7 +108,7 @@ public class GitCommitMessageExtractor {
 	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
 		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
 				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, COMMIT_PLACEHOLDER + start + ":" + end, DocumentationLocation.CODE, "");
+				, start + ":" + end, DocumentationLocation.CODE, "");
 	}
 
 	private String getDescription(String rationaleText) {
@@ -203,4 +162,11 @@ public class GitCommitMessageExtractor {
 		return extractedElements;
 	}
 
+	public static String generateRegexForOpenTag(String tag) {
+		return "(?i)(\\[(" + tag + ")\\])";
+	}
+
+	public static String generateRegexForCloseTag(String tag) {
+		return "(?i)(\\[\\/(" + tag + ")\\])";
+	}
 }

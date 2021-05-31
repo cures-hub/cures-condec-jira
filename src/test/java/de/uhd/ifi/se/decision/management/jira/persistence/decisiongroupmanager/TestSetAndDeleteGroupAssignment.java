@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +11,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -122,18 +124,12 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-		List<KnowledgeElement> codeFiles = graph.getElements(KnowledgeType.CODE);
-
-		KnowledgeElement godClass = null;
-		for (KnowledgeElement codeFile : codeFiles) {
-			if (codeFile.getSummary().equals("GodClass.java")) {
-				godClass = codeFile;
-				break;
-			}
-		}
+		KnowledgeElement godClass = graph.getElementBySummary("GodClass.java");
 
 		KnowledgeElement issueFromCodeCommentInGodClass = graph
 				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
+		assertEquals("Will this issue be parsed correctly?", issueFromCodeCommentInGodClass.getSummary());
+		assertNotNull(godClass.getLink(issueFromCodeCommentInGodClass));
 
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
@@ -141,7 +137,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 		DecisionGroupManager.setGroupAssignment(groups, godClass);
 		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1a"));
-		assertTrue(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size() == 2);
+		assertEquals(2, DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).size());
 
 		DecisionGroupManager.deleteGroupAssignment("New1", issueFromCodeCommentInGodClass);
 		assertFalse(DecisionGroupManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New1"));

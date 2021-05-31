@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitDecXtract;
 
 /**
  * Creates diff viewer content for a list of git repository branches
@@ -39,7 +38,7 @@ public class DiffViewer {
 	public DiffViewer(String projectKey, List<Ref> branches) {
 		branchDiffs = new ArrayList<>();
 
-		GitDecXtract extractor = new GitDecXtract(projectKey);
+		GitClient extractor = GitClient.getInstance(projectKey);
 		for (Ref branch : branches) {
 			branchDiffs.add(new BranchDiff(branch.getName(), extractor.getElements(branch)));
 		}

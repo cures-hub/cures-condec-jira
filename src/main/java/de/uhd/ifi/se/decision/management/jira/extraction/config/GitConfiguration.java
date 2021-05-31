@@ -1,9 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
+package de.uhd.ifi.se.decision.management.jira.extraction.config;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
@@ -154,6 +155,15 @@ public class GitConfiguration {
 	 */
 	public List<FileType> getFileTypesToExtract() {
 		return fileTypesToExtract;
+	}
+
+	/**
+	 * @param fileTypesToExtract
+	 *            defines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 */
+	public void setFileTypesToExtract(List<FileType> fileTypesToExtract) {
+		this.fileTypesToExtract = fileTypesToExtract;
 	}
 
 	public boolean shouldFileTypeBeExtracted(FileType fileType) {

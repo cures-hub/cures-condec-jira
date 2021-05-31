@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Identifies Jira issue keys within commit messages.
  */
-public interface CommitMessageParser {
+public interface JiraIssueKeyFromCommitMessageParser {
 
 	/**
 	 * @param commitMessage
