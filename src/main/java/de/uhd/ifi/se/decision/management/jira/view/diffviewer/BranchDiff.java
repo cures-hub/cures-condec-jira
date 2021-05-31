@@ -50,6 +50,9 @@ public class BranchDiff {
 			summary = rationale.getSummary();
 			description = rationale.getDescription();
 			key = new KeyData(rationale.getKey());
+			if (key.source.isBlank()) {
+				key.source = rationale.getDescription().split(":")[0];
+			}
 			key.codeFileB = true;
 			key.sourceTypeCodeFile = !key.sourceTypeCommitMessage;
 			type = rationale.getType().toString();
